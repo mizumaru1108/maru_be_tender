@@ -1146,7 +1146,13 @@ export class TenderProposalRepository {
     filter: RequestInProcessFilterRequest,
   ) {
     try {
-      const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
+      const {
+        page = 1,
+        limit = 10,
+        sort = 'desc',
+        sorting_field,
+        type = 'incoming',
+      } = filter;
 
       const offset = (page - 1) * limit;
 
@@ -1223,7 +1229,6 @@ export class TenderProposalRepository {
         if (currentUser.choosenRole === 'tender_project_supervisor') {
           whereClause = {
             ...whereClause,
-            OR: [{ supervisor_id: currentUser.id }, { supervisor_id: null }],
             inner_status: InnerStatusEnum.ACCEPTED_BY_MODERATOR,
           };
         }
@@ -1231,7 +1236,6 @@ export class TenderProposalRepository {
         if (currentUser.choosenRole === 'tender_cashier') {
           whereClause = {
             ...whereClause,
-            OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
             inner_status:
               InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
             payments: {
@@ -1247,7 +1251,6 @@ export class TenderProposalRepository {
         if (currentUser.choosenRole === 'tender_finance') {
           whereClause = {
             ...whereClause,
-            OR: [{ finance_id: currentUser.id }, { finance_id: null }],
             payments: {
               some: {
                 status: {
@@ -1262,10 +1265,6 @@ export class TenderProposalRepository {
         if (currentUser.choosenRole === 'tender_project_manager') {
           whereClause = {
             ...whereClause,
-            OR: [
-              { project_manager_id: currentUser.id },
-              { project_manager_id: null },
-            ],
             inner_status: InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
           };
         }
@@ -1287,6 +1286,47 @@ export class TenderProposalRepository {
             ...whereClause,
             inner_status: InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT,
           };
+        }
+      }
+
+      if (type === 'incoming') {
+        if (currentUser.choosenRole === 'tender_project_supervisor') {
+          whereClause = {
+            ...whereClause,
+            OR: [{ supervisor_id: null }, { supervisor_id: currentUser.id }],
+            support_outputs: null,
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_project_manager') {
+          whereClause = { ...whereClause, project_manager_id: null };
+        }
+        if (currentUser.choosenRole === 'tender_finance') {
+          whereClause = { ...whereClause, finance_id: null };
+        }
+
+        if (currentUser.choosenRole === 'tender_cashier') {
+          whereClause = { ...whereClause, cashier_id: null };
+        }
+      } else {
+        if (currentUser.choosenRole === 'tender_project_supervisor') {
+          whereClause = {
+            ...whereClause,
+            supervisor_id: currentUser.id,
+            support_outputs: { not: null },
+          };
+        }
+
+        if (currentUser.choosenRole === 'tender_project_manager') {
+          whereClause = { ...whereClause, project_manager_id: currentUser.id };
+        }
+
+        if (currentUser.choosenRole === 'tender_finance') {
+          whereClause = { ...whereClause, finance_id: currentUser.id };
+        }
+
+        if (currentUser.choosenRole === 'tender_cashier') {
+          whereClause = { ...whereClause, cashier_id: currentUser.id };
         }
       }
 
