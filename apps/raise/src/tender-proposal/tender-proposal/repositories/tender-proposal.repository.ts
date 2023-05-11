@@ -1301,13 +1301,6 @@ export class TenderProposalRepository {
         if (currentUser.choosenRole === 'tender_project_manager') {
           whereClause = { ...whereClause, project_manager_id: null };
         }
-        if (currentUser.choosenRole === 'tender_finance') {
-          whereClause = { ...whereClause, finance_id: null };
-        }
-
-        if (currentUser.choosenRole === 'tender_cashier') {
-          whereClause = { ...whereClause, cashier_id: null };
-        }
       } else {
         if (currentUser.choosenRole === 'tender_project_supervisor') {
           whereClause = {
@@ -1319,14 +1312,6 @@ export class TenderProposalRepository {
 
         if (currentUser.choosenRole === 'tender_project_manager') {
           whereClause = { ...whereClause, project_manager_id: currentUser.id };
-        }
-
-        if (currentUser.choosenRole === 'tender_finance') {
-          whereClause = { ...whereClause, finance_id: currentUser.id };
-        }
-
-        if (currentUser.choosenRole === 'tender_cashier') {
-          whereClause = { ...whereClause, cashier_id: currentUser.id };
         }
       }
 
@@ -1804,7 +1789,13 @@ export class TenderProposalRepository {
     filter: PaymentAdjustmentFilterRequest,
   ) {
     try {
-      const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
+      const {
+        page = 1,
+        limit = 10,
+        sort = 'desc',
+        sorting_field,
+        type = 'incoming',
+      } = filter;
 
       const offset = (page - 1) * limit;
 
@@ -1899,6 +1890,24 @@ export class TenderProposalRepository {
           OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
           payments: { some: { status: { in: ['accepted_by_finance'] } } },
         };
+      }
+
+      if (type === 'incoming') {
+        if (currentUser.choosenRole === 'tender_finance') {
+          whereClause = { ...whereClause, finance_id: null };
+        }
+
+        if (currentUser.choosenRole === 'tender_cashier') {
+          whereClause = { ...whereClause, cashier_id: null };
+        }
+      } else {
+        if (currentUser.choosenRole === 'tender_finance') {
+          whereClause = { ...whereClause, finance_id: currentUser.id };
+        }
+
+        if (currentUser.choosenRole === 'tender_cashier') {
+          whereClause = { ...whereClause, cashier_id: currentUser.id };
+        }
       }
 
       let queryOptions: Prisma.proposalFindManyArgs = {
