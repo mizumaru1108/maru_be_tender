@@ -290,7 +290,7 @@ export class TenderProposalController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_project_manager', 'tender_ceo')
+  @TenderRoles('tender_project_supervisor', 'tender_client')
   @Get('closing-report-list')
   async fetchClosingReportList(
     @CurrentUser() currentUser: TenderCurrentUser,

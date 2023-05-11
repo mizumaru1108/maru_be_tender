@@ -1600,9 +1600,8 @@ export class TenderProposalRepository {
           project_manager_id: currentUser.id,
           inner_status: {
             in: [
+              InnerStatusEnum.REJECTED_BY_SUPERVISOR,
               InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER,
-              InnerStatusEnum.REJECTED_BY_CEO,
-              InnerStatusEnum.REJECTED_BY_CONSULTANT,
             ],
           },
         };
@@ -1614,8 +1613,9 @@ export class TenderProposalRepository {
           supervisor_id: { not: null },
           inner_status: {
             in: [
-              InnerStatusEnum.REJECTED_BY_SUPERVISOR,
               InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER,
+              InnerStatusEnum.REJECTED_BY_CEO,
+              InnerStatusEnum.REJECTED_BY_CONSULTANT,
             ],
           },
         };
