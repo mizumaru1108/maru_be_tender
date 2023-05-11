@@ -62,7 +62,7 @@ function IncomingCloseReports() {
           <CardTableByBE
             title={translate('pages.common.close_report.text.project_report')}
             destination="project-report"
-            endPoint="tender-proposal/rejection-list"
+            endPoint="tender-proposal/closing-report-list"
             limitShowCard={6}
             cardFooterButtonAction="show-details"
           />

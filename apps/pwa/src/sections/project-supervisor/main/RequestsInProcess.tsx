@@ -119,7 +119,7 @@ export default function RequestsInProcess() {
                 }}
                 content={{
                   projectName: item.project_name,
-                  organizationName: item.user.client_data.entity,
+                  organizationName: (item && item.user && item.user.employee_name) ?? '-',
                   sentSection: item.state,
                   // employee: item.user.employee_name,
                   employee:

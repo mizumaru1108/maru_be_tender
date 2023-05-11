@@ -9,6 +9,10 @@ import { useQuery } from 'urql';
 import { useNavigate } from 'react-router';
 import { getProposals } from 'queries/commons/getProposal';
 import { generateHeader } from '../../../utils/generateProposalNumber';
+import React from 'react';
+import { useSnackbar } from 'notistack';
+import axiosInstance from 'utils/axios';
+import EmptyContent from 'components/EmptyContent';
 
 // ------------------------------------------------------------------------------------------
 
@@ -31,17 +35,48 @@ export default function IncomingClientCloseReport() {
   });
 
   const { data, fetching, error } = result;
+  // using API
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
+  const [cardData, setCardData] = React.useState([]);
 
-  if (fetching)
-    return (
-      <Grid item md={12}>
-        {translate('pages.common.loading')}
-      </Grid>
-    );
+  const fetchingIncoming = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`tender-proposal/closing-report-list?limit=4`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        // console.log('rest total :', rest.data.total);
+        setCardData(
+          rest.data.data.map((item: any) => ({
+            ...item,
+          }))
+        );
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeRole, enqueueSnackbar]);
 
-  const props = data?.data ?? [];
+  React.useEffect(() => {
+    fetchingIncoming();
+    // fetchingPrevious();
+  }, [fetchingIncoming]);
 
-  if (!props || props.length === 0) return null;
+  if (fetching || isLoading) return <>{translate('pages.common.loading')}</>;
 
   return (
     <Grid item md={12}>
@@ -66,36 +101,49 @@ export default function IncomingClientCloseReport() {
         </Button>
       </Stack>
       <Grid container spacing={3}>
-        {props?.map((item: any, index: any) => (
-          <Grid item md={6} key={index}>
-            <ProjectCard
-              title={{
-                id: item.id,
-                project_number: generateHeader(
-                  item && item.project_number && item.project_number ? item.project_number : item.id
-                ),
-                inquiryStatus: item.outter_status.toLowerCase(),
+        {cardData.length > 0 ? (
+          cardData?.map((item: any, index: any) => (
+            <Grid item md={6} key={index}>
+              <ProjectCard
+                title={{
+                  id: item.id,
+                  project_number: generateHeader(
+                    item && item.project_number && item.project_number
+                      ? item.project_number
+                      : item.id
+                  ),
+                  inquiryStatus: item.outter_status.toLowerCase(),
+                }}
+                content={{
+                  projectName: item.project_name,
+                  organizationName: (item && item.user && item.user.employee_name) ?? '-',
+                  sentSection: item.state,
+                  // employee: item.user.employee_name,
+                  employee:
+                    item.proposal_logs &&
+                    item.proposal_logs.length > 0 &&
+                    item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
+                    item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
+                  createdAtClient: new Date(item.created_at),
+                }}
+                footer={{
+                  createdAt: new Date(item.updated_at),
+                }}
+                cardFooterButtonAction="show-details"
+                destination="project-report"
+              />
+            </Grid>
+          ))
+        ) : (
+          <Grid item md={12}>
+            <EmptyContent
+              title="No Data"
+              sx={{
+                '& span.MuiBox-root': { height: 160 },
               }}
-              content={{
-                projectName: item.project_name,
-                organizationName: item.user.client_data.entity,
-                sentSection: item.state,
-                // employee: item.user.employee_name,
-                employee:
-                  item.proposal_logs &&
-                  item.proposal_logs.length > 0 &&
-                  item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
-                  item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
-                createdAtClient: new Date(item.created_at),
-              }}
-              footer={{
-                createdAt: new Date(item.updated_at),
-              }}
-              cardFooterButtonAction="show-details"
-              destination="project-report"
             />
           </Grid>
-        ))}
+        )}
       </Grid>
     </Grid>
   );
