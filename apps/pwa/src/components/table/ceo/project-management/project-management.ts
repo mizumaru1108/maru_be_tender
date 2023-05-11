@@ -22,6 +22,7 @@ export interface ProjectManagementTableColumn {
   selected?: boolean;
   onSelectRow?: VoidFunction;
   destination?: string;
+  destinationRole?: string;
 }
 
 export interface ProjectManagementTableProps {
@@ -29,6 +30,8 @@ export interface ProjectManagementTableProps {
   headerCell: ProjectManagementTableHeader[];
   headline?: string;
   isLoading?: boolean;
+  destination?: string;
+  destinationRole?: string;
   onFilterChange?: (filter: any) => void;
   onSortChange?: (sort: any) => void;
   onSortMethodChange?: (sortMethod: any) => void;

@@ -31,7 +31,7 @@ function FloatingActionBar() {
 
   const { user, activeRole } = useAuth();
 
-  const { proposal } = useSelector((state) => state.proposal);
+  const { proposal, track_list } = useSelector((state) => state.proposal);
   const { conversations } = useSelector((state) => state.wschat);
   const location = useLocation();
   const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
@@ -43,11 +43,18 @@ function FloatingActionBar() {
   const employee_id = user?.id;
 
   const [result] = useQuery({
-    query: `query MyQuery($id: String = "") {
+    query: `
+    query GetEmployeePath($id: String = "") {
       user: user_by_pk(id: $id) {
-        track: employee_path
+        path: employee_path
+        track {
+          id
+          name
+          with_consultation
+        }
       }
     }
+      
     `,
     variables: {
       id: employee_id,
@@ -71,6 +78,10 @@ function FloatingActionBar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const open = Boolean(anchorEl);
+
+  const checkConsultation =
+    data && data.user && data.user.track && data.user.track.with_consultation;
+  console.log({ checkConsultation, data });
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -467,9 +478,9 @@ function FloatingActionBar() {
               </MenuItem>
             </Menu>
           </Grid>
-          <Grid item md={data.user.track === 'CONCESSIONAL_GRANTS' ? 10 : 8} xs={12}>
+          <Grid item md={checkConsultation ? 10 : 8} xs={12}>
             <Stack direction="row" spacing={2} justifyContent="flex-start">
-              {data.user.track === 'CONCESSIONAL_GRANTS' ? (
+              {checkConsultation ? (
                 <Button
                   variant="outlined"
                   color="inherit"
@@ -559,7 +570,7 @@ function FloatingActionBar() {
         />
       )} */}
 
-      {action === 'ACCEPT' && data.user.track !== 'CONCESSIONAL_GRANTS' && (
+      {action === 'ACCEPT' && !checkConsultation && (
         <NotesModal
           title="قبول المشروع"
           onClose={handleCloseModal}
@@ -573,7 +584,7 @@ function FloatingActionBar() {
           loading={isSubmitting}
         />
       )}
-      {action === 'ACCEPT' && data.user.track === 'CONCESSIONAL_GRANTS' && (
+      {action === 'ACCEPT' && checkConsultation && (
         <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />
       )}
 

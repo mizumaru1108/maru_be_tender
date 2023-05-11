@@ -2,6 +2,7 @@
 // @mui
 import { Button, Checkbox, TableCell, TableRow, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 //
 import moment from 'moment';
@@ -19,19 +20,27 @@ export default function ProjectManagementTableRow({
 }: ProjectManagementTableColumn) {
   const navigate = useNavigate();
 
+  const { activeRole } = useAuth();
+
   const location = useLocation();
 
   const theme = useTheme();
 
   const { translate } = useLocales();
 
-  // console.log({ row });
-
   const handleOpenProposal = () => {
     const x = location.pathname.split('/');
-    const url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;
-    if (destination) {
-      navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${row.id}/show-details`);
+    let url = '';
+    // const url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;
+    if (activeRole === 'tender_project_manager') {
+      url = `/${x[1]}/${x[2]}/rejection-list/${row.id}/reject-project`;
+    } else {
+      url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;
+    }
+    console.log({ url });
+    if (destination && activeRole === 'tender_ceo') {
+      // navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${row.id}/show-details`);
+      navigate(`/${x[1]}/${x[2]}/project-management/${row.id}/${destination}`);
     } else {
       navigate(url);
     }

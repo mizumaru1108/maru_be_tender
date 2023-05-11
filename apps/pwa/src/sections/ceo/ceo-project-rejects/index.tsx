@@ -202,6 +202,7 @@ function CeoProjectRejects() {
       isLoading={fetching || isLoading}
       headerCell={headerCells}
       data={projectManagementData ?? []}
+      destination={'reject-project'}
     />
   );
 }

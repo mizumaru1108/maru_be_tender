@@ -156,7 +156,7 @@ function MainManagerPage() {
                         createdAt: new Date(item.updated_at),
                       }}
                       cardFooterButtonAction="show-details"
-                      destination="requests-in-process"
+                      destination="incoming-funding-requests"
                     />
                   </Grid>
                 ))}

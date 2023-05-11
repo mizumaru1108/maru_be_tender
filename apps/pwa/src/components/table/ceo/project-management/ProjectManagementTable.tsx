@@ -35,6 +35,7 @@ export default function ProjectManagementTable({
   headerCell,
   headline,
   isLoading,
+  destination = '',
 }: ProjectManagementTableProps) {
   const { translate } = useLocales();
   const dispatch = useDispatch();
@@ -328,6 +329,7 @@ export default function ProjectManagementTable({
                         row={projectManagement}
                         selected={selected.includes(projectManagement.id as string)}
                         onSelectRow={() => onSelectRow(projectManagement.id as string)}
+                        destination={destination}
                       />
                     ))}
               </TableBody>
