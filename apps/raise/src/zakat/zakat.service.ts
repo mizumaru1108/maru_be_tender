@@ -200,6 +200,7 @@ export class ZakatService {
             nonprofitRealmId: new Types.ObjectId(organizationId),
             campaignId: zakatCampaign._id,
             type: 'zakat',
+            donationStatus: 'SUCCESS',
           },
         },
         {
@@ -228,6 +229,7 @@ export class ZakatService {
       { total: 0, type: 'silver' },
       { total: 0, type: 'stocks' },
       { total: 0, type: 'mutual_funds' },
+      { total: 0, type: 'extra_amount' },
     ];
 
     const getZakatLogs = await this.zakatLogModel.aggregate([
@@ -259,7 +261,17 @@ export class ZakatService {
     ]);
 
     if (getZakatLogs && getZakatLogs.length) {
-      zakat_logs = getZakatLogs;
+      const totalAmountZakat = getZakatLogs.reduce(
+        (prev, cur) => prev + (cur.total ?? 0),
+        0,
+      );
+
+      const extra_amount = {
+        total: total_receive - totalAmountZakat || 0,
+        type: 'extra_amount',
+      };
+
+      zakat_logs = [...getZakatLogs, extra_amount];
     }
 
     return {

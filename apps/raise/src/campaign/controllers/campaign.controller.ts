@@ -407,7 +407,7 @@ export class CampaignController {
     @Body() request: CampaignCreateDto,
   ): Promise<BaseResponse<CampaignCreateResponse>> {
     this.logger.debug('create new campaign ', JSON.stringify(request));
-    request.campaignName = request.title ? request.title : request.campaignName;
+
     const response = await this.campaignService.campaignCreate(
       user.id,
       request,

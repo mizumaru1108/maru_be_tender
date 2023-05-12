@@ -21,6 +21,7 @@ export interface ValidateJwtResponse {
 
 export interface IVerifyEmailDto {
   email: string;
+  fullName?: string;
   domainUrl?: string;
   organizationId?: string;
   organizationEmail?: string;

@@ -191,20 +191,20 @@ export class OrganizationService {
         );
       }
 
-      const emailData = { name: orgUpdated.name };
+      // const emailData = { name: orgUpdated.name };
 
-      const emailParams: SendEmailDto = {
-        to: orgUpdated.contactEmail, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
-        subject: 'Giving Sadaqah Updates',
-        mailType: 'template',
-        templatePath: 'account_update',
-        templateContext: {
-          name: orgUpdated.name,
-        },
-        from: 'hello@tmra.io', // we can make it dynamic when new AWS SESW identity available
-      };
+      // const emailParams: SendEmailDto = {
+      //   to: orgUpdated.contactEmail, // change to your email to test, ex: rdanang.dev@gmail.com, default value is registeredUser.email
+      //   subject: 'Giving Sadaqah Updates',
+      //   mailType: 'template',
+      //   templatePath: 'account_update',
+      //   templateContext: {
+      //     name: orgUpdated.name,
+      //   },
+      //   from: 'hello@tmra.io', // we can make it dynamic when new AWS SESW identity available
+      // };
 
-      await this.emailService.sendMail(emailParams);
+      // await this.emailService.sendMail(emailParams);
 
       return {
         statusCode: 200,

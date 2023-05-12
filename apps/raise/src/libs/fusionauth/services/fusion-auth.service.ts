@@ -15,6 +15,7 @@ import ClientResponse from '@fusionauth/typescript-client/build/src/ClientRespon
 import {
   BadRequestException,
   HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -38,6 +39,10 @@ import {
   IVerifyEmailDto,
 } from '../dtos/response/validate-jwt-response';
 
+import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
+import moment from 'moment';
+import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
+
 /**
  * Nest Fusion Auth Service
  * @author RDanang (Iyoy!)
@@ -55,7 +60,10 @@ export class FusionAuthService {
   private fusionAuthTenantId: string;
   private fusionAuthAdminKey: string;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly notificationService: TenderNotificationService,
+  ) {
     const fusionAuthClientKey = this.configService.get(
       'fusionAuthConfig.clientKey',
     ) as string;
@@ -396,81 +404,34 @@ export class FusionAuthService {
   }
 
   async fusionEmailVerification(requestVerify: IVerifyEmailDto) {
-    const baseUrl = this.fusionAuthUrl;
-    const verifyUrl = baseUrl + '/api/user/verify-email';
-    const sendEmailUrl = baseUrl + '/api/email/send/';
-    const gsEmailTemplateId = '99732b56-521f-4da7-8792-bf97a3c13988';
-
-    const queryVerify: IQueryAxiosVerify = {
-      applicationId: this.fusionAuthAppId,
-      email: requestVerify.email,
+    const notifPayload: CommonNotificationMapperResponse = {
+      logTime: moment(new Date().getTime()).format('llll'),
+      generalHostEmail: 'tmra',
+      clientSubject: 'Welcome to Giving Sadaqah',
+      clientId: [],
+      clientEmail: [requestVerify.email],
+      clientMobileNumber: [],
+      clientEmailTemplatePath: `gs/en/register/donor_signup`,
+      clientEmailTemplateContext: [
+        {
+          donor_email: requestVerify.email,
+          donor_name: requestVerify.fullName,
+        },
+      ],
+      clientContent:
+        "We're excited to welcome you to Giving Sadaqah and we're even more excited about what we've got planned.",
+      reviewerId: [],
+      reviewerEmail: [requestVerify.organizationEmail!],
+      reviewerContent: 'There is a new donor that you should check!',
+      reviewerMobileNumber: [],
+      reviwerSubject:
+        'Donor has sent you an Email! Please check your inbox...`',
+      createManyWebNotifPayload: [],
     };
 
-    const variableSendEmail: SendRequest = {
-      requestData: {
-        domainUrl: requestVerify.domainUrl,
-        organizationEmail: requestVerify.organizationEmail,
-      },
-      userIds: [requestVerify.userId],
-    };
+    this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
-    const optionsVerify: AxiosRequestConfig<any> = {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.fusionAuthAdminKey,
-        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
-      },
-      params: queryVerify,
-      url: verifyUrl,
-    };
-
-    try {
-      const { data } = await axios(optionsVerify);
-
-      if (data && data.verificationId) {
-        let actVerifyUrl: string;
-        variableSendEmail.requestData!.verificationId = data.verificationId;
-
-        requestVerify &&
-        requestVerify?.organizationId === '62414373cf00cca3a830814a'
-          ? (actVerifyUrl = sendEmailUrl + gsEmailTemplateId)
-          : (actVerifyUrl =
-              sendEmailUrl + 'f1044dc5-02a3-4c73-942b-407639fe77ae');
-
-        const optionsSendEmail: AxiosRequestConfig<any> = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: this.fusionAuthAdminKey,
-            'X-FusionAuth-TenantId': this.fusionAuthTenantId,
-          },
-          data: variableSendEmail,
-          url: actVerifyUrl,
-        };
-
-        const resSendEmail = await axios(optionsSendEmail);
-
-        if (resSendEmail.status === 202) {
-          return data;
-        }
-      }
-    } catch (error) {
-      this.logger.debug('Error', error);
-      if (error.response.status < 500) {
-        console.log(error.response.data);
-        throw new BadRequestException(
-          `Verify Failed, more details: ${
-            error.response.data.fieldErrors
-              ? JSON.stringify(error.response.data.fieldErrors)
-              : JSON.stringify(error.response.data)
-          }`,
-        );
-      } else {
-        console.log(error);
-        throw new Error('Something went wrong!');
-      }
-    }
+    return notifPayload;
   }
 
   async forgotPasswordRequest(email: string): Promise<string> {

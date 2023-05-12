@@ -50,6 +50,7 @@ export class GsAuthService {
 
     const verifyEmail = await this.fusionAuthService.fusionEmailVerification({
       email: fusionAuthRes.user.email,
+      fullName: `${registerRequest.firstName} ${registerRequest.lastName}`,
       userId: fusionAuthRes.user.id,
       organizationId: registerRequest.organizationId,
       organizationEmail: registerRequest.organizationEmail,
@@ -58,7 +59,7 @@ export class GsAuthService {
 
     return {
       user: registeredUser,
-      verificationId: verifyEmail.verificationId,
+      verificationId: verifyEmail?.clientEmail,
       url: registerRequest.domainUrl,
       token: fusionAuthRes.token,
       refreshToken: fusionAuthRes.refreshToken,
