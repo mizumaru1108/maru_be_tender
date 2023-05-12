@@ -45,6 +45,7 @@ const TransactionProgressionPage = () => {
           <AddNewTrack
             // loading={loading}
             onClose={handleOnClose}
+            isEdit={true}
             // onSubmit={handleSubmit}
             // action={{
             //   actionLabel: 'إرجاع',

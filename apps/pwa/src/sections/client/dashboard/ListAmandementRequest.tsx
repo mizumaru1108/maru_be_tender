@@ -9,6 +9,7 @@ import {
   CardContent,
   Divider,
 } from '@mui/material';
+import EmptyContent from 'components/EmptyContent';
 import useLocales from 'hooks/useLocales';
 import moment from 'moment';
 import { useSnackbar } from 'notistack';
@@ -46,7 +47,7 @@ function ListAmandementRequest() {
   }, [fetchingData]);
 
   return (
-    <Container>
+    <>
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4">
           {translate('content.client.main_page.amandement_projects')}
@@ -68,8 +69,7 @@ function ListAmandementRequest() {
         </Button>
       </Stack>
       <Grid container sx={{ pt: 2 }} spacing={5}>
-        {tmpValues &&
-          tmpValues?.length > 0 &&
+        {tmpValues && tmpValues?.length > 0 ? (
           tmpValues.map((item, index) => (
             <Grid item md={6} xs={12} key={index}>
               <Card sx={{ backgroundColor: '#fff' }}>
@@ -103,27 +103,6 @@ function ListAmandementRequest() {
                   >
                     {item.proposal.project_name}
                   </Typography>
-                  {/* {content.organizationName && (
-                    <React.Fragment>
-                      <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                        {translate('project_management_headercell.clients_name')}
-                      </Typography>
-                      <Typography
-                        variant="h6"
-                        gutterBottom
-                        sx={{
-                          mb: 1.5,
-                          wordWrap: 'unset',
-                          textOverflow: 'ellipsis',
-                          overflow: 'hidden',
-                          maxWidth: '500px',
-                          fontSize: '14px !important',
-                        }}
-                      >
-                        {content.organizationName}
-                      </Typography>
-                    </React.Fragment>
-                  )} */}
                   <Stack
                     direction="row"
                     justifyContent="space-between"
@@ -150,71 +129,15 @@ function ListAmandementRequest() {
                             </Typography>
                           </Stack>
                         )}
-                        {/* {content.sentSection && (
-                          <Stack>
-                            <Typography
-                              variant="h6"
-                              color="#93A3B0"
-                              sx={{ fontSize: '10px !important' }}
-                            >
-                              {translate('project_management_headercell.sent_section')}
-                            </Typography>
-                            <Typography
-                              variant="h6"
-                              gutterBottom
-                              sx={{ fontSize: '12px !important' }}
-                            >
-                              {translate(`project_card.${content.sentSection.toLowerCase()}`)}
-                            </Typography>
-                          </Stack>
-                        )} */}
                       </Stack>
                     </Stack>
                   </Stack>
-                  {/* {content.projectDetails && (
-                    <>
-                      <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                        {translate('project_details.heading')}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          mb: 1.5,
-                          display: '-webkit-box',
-                          '-webkit-line-clamp': 2,
-                          'line-clamp': 2,
-                          '-webkit-box-orient': 'vertical',
-                        }}
-                        color="#1E1E1E"
-                      >
-                        {content.projectDetails}
-                      </Typography>
-                    </>
-                  )} */}
                   <Divider sx={{ marginTop: '30px' }} />
                 </CardContent>
 
                 {/* The Footer Section  */}
                 <CardActions sx={{ justifyContent: 'space-between', px: 3, pb: 3 }}>
                   <Grid container spacing={2}>
-                    {/* {footer.payments && (
-                      <Grid container item md={12} columnSpacing={1}>
-                        {footer.payments.map((payment: any, index: any) => (
-                          <Grid item key={index}>
-                            <Typography
-                              key={index}
-                              color="#1E1E1E"
-                              gutterBottom
-                              sx={{
-                                textDecorationLine: 'underline',
-                                color: payment.status ? '#1E1E1E' : '#93A3B0',
-                              }}
-                            >
-                              {payment.name}
-                            </Typography>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    )} */}
                     <Grid item md={12}>
                       <Stack direction="row" justifyContent="space-between">
                         <Stack direction="column">
@@ -260,7 +183,6 @@ function ListAmandementRequest() {
                             );
                           }}
                         >
-                          {/* {translate('continue_studying_the_project')} */}
                           {translate('revision_the_project')}
                         </Button>
                       </Stack>
@@ -269,9 +191,19 @@ function ListAmandementRequest() {
                 </CardActions>
               </Card>
             </Grid>
-          ))}
+          ))
+        ) : (
+          <Grid item md={12}>
+            <EmptyContent
+              title="No Data"
+              sx={{
+                '& span.MuiBox-root': { height: 160 },
+              }}
+            />
+          </Grid>
+        )}
       </Grid>
-    </Container>
+    </>
   );
 }
 
