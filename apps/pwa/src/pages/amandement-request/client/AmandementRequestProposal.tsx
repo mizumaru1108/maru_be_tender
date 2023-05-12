@@ -119,11 +119,11 @@ function AmandementRequestProposal() {
   };
 
   useEffect(() => {
+    dispatch(getProposal(params.proposal_id as string, activeRole as string));
     // setLoading(true);
     // if (!!data) {
     //   setAmandementProposal(data.proposal);
     // }
-    dispatch(getProposal(params.proposal_id as string, activeRole as string));
   }, [activeRole, params.proposal_id]);
 
   useEffect(() => {
