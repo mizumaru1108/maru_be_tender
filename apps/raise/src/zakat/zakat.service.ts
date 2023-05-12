@@ -888,9 +888,4 @@ export class ZakatService {
       span.end();
     }
   }
-
-  // @Cron('45 * * * * *')
-  // handleCron() {
-  //   this.logger.debug('Called when the current second is 45');
-  // }
 }
