@@ -61,7 +61,7 @@ function PaymentAdjustment() {
             destination={'payment-adjustment'}
           /> */}
           <CardTableByBE
-            title={translate('previous_support_requests')}
+            title={translate('pages.common.payment_adjustment')}
             endPoint="tender-proposal/payment-adjustment"
             destination="payment-adjustment"
             limitShowCard={6}

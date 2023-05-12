@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 // material
 import { Container, Divider, Skeleton, styled, useTheme } from '@mui/material';
 // components
@@ -19,6 +19,8 @@ import ActionButtonAmandementProposal from '../../../sections/amandement-request
 import ProposalAmandementHeader from '../../../sections/amandement-request/proposal/ProposalAmandementHeader';
 import axiosInstance from '../../../utils/axios';
 import AmandementForms from '../forms/AmandementForms';
+import { dispatch, useSelector } from 'redux/store';
+import { getProposal } from 'redux/slices/proposal';
 
 // -------------------------------------------------------------------------------
 
@@ -50,6 +52,8 @@ function AmandementRequestProposal() {
   const { user, activeRole } = useAuth();
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
+
+  const { proposal, isLoading } = useSelector((state) => state.proposal);
 
   // state for handling
   const [open, setOpen] = useState(false);
@@ -116,10 +120,21 @@ function AmandementRequestProposal() {
 
   useEffect(() => {
     // setLoading(true);
-    if (!!data) {
-      setAmandementProposal(data.proposal);
+    // if (!!data) {
+    //   setAmandementProposal(data.proposal);
+    // }
+    dispatch(getProposal(params.proposal_id as string, activeRole as string));
+  }, [activeRole, params.proposal_id]);
+
+  useEffect(() => {
+    if (!isLoading && proposal) {
+      // console.log({ proposal });
+      setAmandementProposal(proposal);
     }
-  }, [data]);
+  }, [isLoading, proposal]);
+
+  if (isLoading || (proposal && proposal.id === '-1')) return <>Loading...</>;
+
   return (
     // <Page title="Amandement Request">
     <Page title={translate('pages.amandement_request.client')}>

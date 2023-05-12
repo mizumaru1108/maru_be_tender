@@ -69,7 +69,7 @@ function ExchangePermission() {
             ]}
           /> */}
           <CardTableByBE
-            title={translate('previous_support_requests')}
+            title={translate('pages.common.exchange_permission')}
             endPoint="tender-proposal/payment-adjustment"
             destination="exchange-permission"
             limitShowCard={6}

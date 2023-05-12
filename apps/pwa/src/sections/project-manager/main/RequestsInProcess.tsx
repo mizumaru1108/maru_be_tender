@@ -38,7 +38,7 @@ function RequestsInProcess() {
     setIsLoading(true);
     try {
       const rest = await axiosInstance.get(
-        `tender-proposal/request-in-process?limit=4&type=incoming`,
+        `tender-proposal/request-in-process?limit=4&type=inprocess`,
         {
           headers: { 'x-hasura-role': activeRole! },
         }

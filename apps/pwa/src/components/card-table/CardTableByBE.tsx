@@ -46,7 +46,7 @@ CardTablePropsByBE) {
     if (!typeRequest) {
       url = `${endPoint}?limit=${limit}&page=${page}${filterSorting}`;
     } else {
-      url = `${endPoint}?limit=${limit}&page=${page}${filterSorting}&${typeRequest}`;
+      url = `${endPoint}?limit=${limit}&page=${page}${filterSorting}&type=${typeRequest}`;
     }
     try {
       const rest = await axiosInstance.get(`${url}`, {
