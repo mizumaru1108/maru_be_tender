@@ -102,6 +102,7 @@ export class TenderProposalController {
     );
   }
 
+  // supervisor asked to client for revision
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
   @Post('send-amandement')
@@ -138,6 +139,7 @@ export class TenderProposalController {
     );
   }
 
+  // DEPRECARED (all roles asked supervisor to send a request to edit the proposal to user)
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(
     'tender_admin',
@@ -245,6 +247,9 @@ export class TenderProposalController {
     );
   }
 
+  // both supervisor and client can see the amandment list
+  // (supervisor can see what amandement that it send to the client)
+  // client can see the list of amandement that sented by the supervisor
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor', 'tender_client')
   @Get('amandement-lists')
@@ -311,6 +316,7 @@ export class TenderProposalController {
     );
   }
 
+  // DEPRECATED (supervisor can see all roles that asked supervisor to send an amandement)
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
   @Get('amandement-request-lists')
@@ -491,6 +497,7 @@ export class TenderProposalController {
     );
   }
 
+  // client send revised version of the proposal so it goes back to the flow (not reveied anymore)
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
   @Patch('send-revision')

@@ -13,6 +13,7 @@ import {
 } from '../../../tender-commons/types';
 import {
   InnerStatusEnum,
+  OutterStatusEnum,
   ProposalAction,
 } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
@@ -325,6 +326,13 @@ export class TenderProposalRepository {
               });
             }
 
+            this.logger.log(
+              'info',
+              `deleting proposal edit request for proposal ${proposal_id}`,
+            );
+            await prisma.proposal_edit_request.deleteMany({
+              where: { proposal_id },
+            });
             return {
               proposal,
               notif: sendRevisionNotif,
@@ -742,6 +750,9 @@ export class TenderProposalRepository {
         whereClause = {
           ...whereClause,
           user_id: currentUser.id,
+          proposal: {
+            outter_status: { in: [OutterStatusEnum.ON_REVISION] },
+          },
         };
       }
 
@@ -777,9 +788,10 @@ export class TenderProposalRepository {
           id: true,
           user: { select: { employee_name: true } },
           reviewer: { select: { employee_name: true } },
-          proposal: {
-            select: { project_number: true, id: true, project_name: true },
-          },
+          // proposal: {
+          //   select: { project_number: true, id: true, project_name: true },
+          // },
+          proposal: true,
           created_at: true,
         },
         take: limit,
@@ -1199,6 +1211,7 @@ export class TenderProposalRepository {
             'tender_project_manager',
             'tender_cashier',
             'tender_finance',
+            'tender_consultant',
           ].indexOf(currentUser.choosenRole) > -1
         ) {
           const reviewer = await this.prismaService.user.findUnique({
@@ -1624,7 +1637,7 @@ export class TenderProposalRepository {
       if (currentUser.choosenRole === 'tender_project_manager') {
         whereClause = {
           ...whereClause,
-          project_manager_id: currentUser.id,
+          // project_manager_id: currentUser.id,
           inner_status: {
             in: [
               InnerStatusEnum.REJECTED_BY_SUPERVISOR,
