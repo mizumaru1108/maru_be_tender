@@ -70,7 +70,7 @@ function RequestsInProcess() {
             destination={'requests-in-process'}
           /> */}
           <CardTableByBE
-            title={translate('incoming_support_requests')}
+            title={translate('pages.common.request_in_process')}
             destination="requests-in-process"
             endPoint="tender-proposal/request-in-process"
             limitShowCard={6}

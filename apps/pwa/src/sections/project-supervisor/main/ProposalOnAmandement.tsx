@@ -76,7 +76,7 @@ function ProposalOnAmandement() {
         {translate('pages.common.loading')}
       </Grid>
     );
-  console.log({ cardData });
+  // console.log({ cardData });
   // const props = data?.data ?? [];
   // if (!props || props.length === 0) return null;
   return (
@@ -125,7 +125,8 @@ function ProposalOnAmandement() {
                     item.proposal_logs.length > 0 &&
                     item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
                     item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
-                  createdAtClient: new Date(item.user.client_data.created_at),
+                  // createdAtClient: new Date(item.user.client_data.created_at),
+                  createdAtClient: new Date(item.created_at),
                 }}
                 footer={{ createdAt: new Date(item.updated_at) }}
                 cardFooterButtonAction="show-project"

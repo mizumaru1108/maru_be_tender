@@ -14,6 +14,7 @@ import axiosInstance from 'utils/axios';
 import { useSnackbar } from 'notistack';
 import { dispatch } from 'redux/store';
 import { getTracks, updateTrack } from 'redux/slices/track';
+import { formatCapitzlizeText } from 'utils/formatCapitzlizeText';
 
 // interface ActionProps {
 //   backgroundColor: string;
@@ -52,7 +53,7 @@ const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsulta
   });
 
   const defaultValues = {
-    track_name: trackName ? trackName : '',
+    track_name: trackName ? formatCapitzlizeText(trackName) : '',
     consultant:
       withConsultation === undefined
         ? ''
