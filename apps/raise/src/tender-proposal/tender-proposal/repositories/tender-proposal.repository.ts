@@ -1243,6 +1243,9 @@ export class TenderProposalRepository {
           whereClause = {
             ...whereClause,
             inner_status: InnerStatusEnum.ACCEPTED_BY_MODERATOR,
+            outter_status: {
+              notIn: [OutterStatusEnum.ON_REVISION],
+            },
           };
         }
 
