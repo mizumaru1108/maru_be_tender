@@ -83,6 +83,11 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
     onSubmit(payload);
   };
 
+  const removeNewLineCharacters = (str: string) => {
+    const word = str.replace(/[\n\r]/g, '');
+    return word;
+  };
+
   const region = watch('region') as RegionNames | '';
 
   return (
@@ -144,11 +149,13 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
           >
             {region !== '' && (
               <>
-                {REGION[`${region}`].map((item: any, index: any) => (
-                  <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
-                    {item}
-                  </option>
-                ))}
+                {REGION[`${removeNewLineCharacters(region) as RegionNames}`].map(
+                  (item: any, index: any) => (
+                    <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
+                      {item}
+                    </option>
+                  )
+                )}
               </>
             )}
           </BaseField>

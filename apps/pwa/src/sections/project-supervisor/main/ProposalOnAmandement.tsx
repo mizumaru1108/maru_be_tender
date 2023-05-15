@@ -47,6 +47,9 @@ function ProposalOnAmandement() {
         setCardData(
           rest.data.data.map((item: any) => ({
             ...item.proposal,
+            user: {
+              employee_name: item.user.employee_name,
+            },
           }))
         );
       }
