@@ -7,13 +7,15 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useQuery } from 'urql';
 import { getOnePayments } from '../../../../queries/commons/getOnePayments';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import { role_url_map } from '../../../../@types/commons';
 
 function PaymentsTable() {
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useLocales();
   const params = useParams();
+  const navigate = useNavigate();
   // const id = params.id;
   const { id } = params;
 
@@ -180,17 +182,25 @@ function PaymentsTable() {
                 <Grid item md={2}>
                   {item.cheques.length ? (
                     <Button
-                      component={Link}
-                      href={
-                        item.cheques[0].transfer_receipt
-                          ? typeof item.cheques[0].transfer_receipt === 'string'
-                            ? item.cheques[0].transfer_receipt
-                            : item.cheques[0].transfer_receipt.url
-                          : '#'
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download="صورة بطاقة الحساب البنكي"
+                      // component={Link}
+                      // href={
+                      //   item.cheques[0].transfer_receipt
+                      //     ? typeof item.cheques[0].transfer_receipt === 'string'
+                      //       ? item.cheques[0].transfer_receipt
+                      //       : item.cheques[0].transfer_receipt.url
+                      //     : '#'
+                      // }
+                      // target="_blank"
+                      // rel="noopener noreferrer"
+                      // download="صورة بطاقة الحساب البنكي"
+                      onClick={() => {
+                        localStorage.setItem('receipt_type', 'receipt');
+                        navigate(
+                          `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                            proposal.id
+                          }/payments/${item.id}`
+                        );
+                      }}
                       sx={{
                         backgroundColor: 'transparent',
                         color: '#000',

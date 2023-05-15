@@ -261,6 +261,7 @@ export const {
 } = slice.actions;
 
 export const getProposal = (id: string, role: string) => async () => {
+  // console.log('masuk sini', id, role);
   try {
     dispatch(slice.actions.startLoading);
     if (
@@ -268,9 +269,10 @@ export const getProposal = (id: string, role: string) => async () => {
       role === 'tender_ceo' ||
       role === 'tender_project_manager' ||
       role === 'tender_project_supervisor' ||
-      role === 'tender_moderator'
+      role === 'tender_moderator' ||
+      role === 'tender_finance'
     ) {
-      console.log('masuk sni');
+      // console.log('masuk sni');
       try {
         const response = await axiosInstance.get(`tender-proposal/fetch-by-id?id=${id}`, {
           headers: { 'x-hasura-role': role },

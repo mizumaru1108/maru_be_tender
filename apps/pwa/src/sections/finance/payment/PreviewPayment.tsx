@@ -27,6 +27,8 @@ import ReactToPrint from 'react-to-print';
 //
 import { Proposal } from '../../../@types/proposal';
 import { ReactComponent as Logo } from '../../../assets/new_logo.svg';
+import { dispatch, useSelector } from 'redux/store';
+import { getProposal, getTrackList } from 'redux/slices/proposal';
 
 // -------------------------------------------------------------------------------------------------
 
@@ -42,22 +44,34 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // -------------------------------------------------------------------------------------------------
 
 export default function PreviewPayment() {
+  const { proposal, isLoading } = useSelector((state) => state.proposal);
   const { activeRole } = useAuth();
   const { translate, currentLang } = useLocales();
   const navigate = useNavigate();
   const params = useParams();
   const theme = useTheme();
+  const id = params?.id;
+  const receiptType = localStorage.getItem('receipt_type');
 
   const componentRef = useRef<HTMLDivElement>(null);
 
-  const [{ data, fetching, error }] = useQuery({
-    query: getOneProposal,
-    variables: {
-      id: params?.id,
-    },
-  });
+  // const [{ data, fetching, error }] = useQuery({
+  //   query: getOneProposal,
+  //   variables: {
+  //     id: params?.id,
+  //   },
+  // });
 
-  if (error) return <>Opss, something went wrong ...</>;
+  // console.log({ params });
+
+  useEffect(() => {
+    dispatch(getProposal(id as string, activeRole as string));
+    dispatch(getTrackList(1, activeRole as string));
+  }, [id, activeRole]);
+
+  if (isLoading || proposal.id === '-1') return <>Loading ...</>;
+
+  // if (error) return <>Opss, something went wrong ...</>;
 
   return (
     <Page title={translate('pages.project_details.details')}>
@@ -101,8 +115,8 @@ export default function PreviewPayment() {
             dir={currentLang.value === 'ar' ? 'rtl' : 'ltr'}
             sx={{
               backgroundColor: theme.palette.common.white,
-              p: 4,
-              mt: 1,
+              padding: '50px 50px 0 50px',
+              // mt: 1,
               borderRadius: 1,
             }}
           >
@@ -167,7 +181,7 @@ export default function PreviewPayment() {
                 />
               </Grid>
             </Grid>
-            {!data && fetching ? (
+            {!proposal && isLoading ? (
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   Loading ...
@@ -176,11 +190,13 @@ export default function PreviewPayment() {
             ) : (
               <>
                 <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
-                  <CardPayment proposalData={data?.proposal} loading={fetching} />
+                  <CardPayment proposalData={proposal} loading={isLoading} />
                 </Grid>
-                <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
-                  <ProposalDetails proposalData={data?.proposal} loading={fetching} />
-                </Grid>
+                {receiptType === 'generate' && (
+                  <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
+                    <ProposalDetails proposalData={proposal} loading={isLoading} />
+                  </Grid>
+                )}
               </>
             )}
           </Box>

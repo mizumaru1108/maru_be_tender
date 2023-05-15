@@ -299,6 +299,8 @@ const ar = {
           cashier_name: 'اسم أمين الصندوق',
           payment_description: 'وصف',
           payment_total: 'المبلغ الإجمالي',
+          payment_number: 'رقم الدفع',
+          payment_amount: 'مبلغ الدفع',
           project_name: 'اسم المشروع',
           project_number: 'رقم المشروع',
           project_track: 'مسار المشروع',

@@ -8,10 +8,13 @@ import React, { useMemo } from 'react';
 import useLocales from 'hooks/useLocales';
 import { fCurrencyNumber } from 'utils/formatNumber';
 import useAuth from 'hooks/useAuth';
+import { role_url_map } from '../../../../@types/commons';
+import { useNavigate } from 'react-router';
 
 function PaymentsTable() {
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -142,15 +145,23 @@ function PaymentsTable() {
               <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                 {item.cheques.length ? (
                   <Button
-                    component={Link}
-                    href={
-                      typeof item.cheques[0].transfer_receipt === 'string'
-                        ? item.cheques[0].transfer_receipt
-                        : item.cheques[0].transfer_receipt.url
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download="صورة الشيك"
+                    // component={Link}
+                    // href={
+                    //   typeof item.cheques[0].transfer_receipt === 'string'
+                    //     ? item.cheques[0].transfer_receipt
+                    //     : item.cheques[0].transfer_receipt.url
+                    // }
+                    // target="_blank"
+                    // rel="noopener noreferrer"
+                    // download="صورة الشيك"
+                    onClick={() => {
+                      localStorage.setItem('receipt_type', 'receipt');
+                      navigate(
+                        `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                          proposal.id
+                        }/payments/${item.id}`
+                      );
+                    }}
                     sx={{
                       backgroundColor: 'transparent',
                       color: '#000',

@@ -302,6 +302,8 @@ const en = {
           cashier_name: 'Name of Cashier',
           payment_description: 'Description',
           payment_total: 'Total Payment',
+          payment_number: 'Payment Number',
+          payment_amount: 'Payment Amount',
           project_name: 'Project Name',
           project_number: 'Project Number',
           project_track: 'Project Track',

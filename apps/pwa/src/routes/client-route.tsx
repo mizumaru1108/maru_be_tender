@@ -28,6 +28,7 @@ const Appointments = Loadable(lazy(() => import('pages/client/Appointments')));
 const AdjustYourTime = Loadable(lazy(() => import('pages/client/AdjustYourTime')));
 const OldProposal = Loadable(lazy(() => import('pages/client/OldProposal')));
 const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
+const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/PreviewPayment')));
 export const clientRoute = {
   path: 'client',
   element: (
@@ -63,6 +64,10 @@ export const clientRoute = {
         { element: <Navigate to="/client/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainClientPage /> },
         { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
+        {
+          path: 'generate/:id/payments/:paymentId',
+          element: <PreviewPayment />,
+        },
         {
           path: 'funding-project-request',
           element: <FundingProjectRequest />,

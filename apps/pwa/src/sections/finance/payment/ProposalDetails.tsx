@@ -11,6 +11,9 @@ import { generateHeader } from 'utils/generateProposalNumber';
 import { fCurrencyNumber } from 'utils/formatNumber';
 //
 import { Proposal } from '../../../@types/proposal';
+import { useSelector } from 'redux/store';
+import { getOneNameCashier } from 'queries/Cashier/getOneNameCashier';
+import { formatCapitzlizeText } from 'utils/formatCapitzlizeText';
 
 // -------------------------------------------------------------------------------------------------
 
@@ -22,11 +25,29 @@ interface IPropsData {
 // -------------------------------------------------------------------------------------------------
 
 export default function ProposalDetails({ proposalData, loading }: IPropsData) {
+  const { track_list } = useSelector((state) => state.proposal);
   const { activeRole } = useAuth();
   const { translate, currentLang } = useLocales();
   const navigate = useNavigate();
   const params = useParams();
   const theme = useTheme();
+
+  const [{ data, fetching, error }] = useQuery({
+    query: getOneNameCashier,
+    variables: {
+      id: proposalData?.cashier_id,
+    },
+  });
+  const trackName = track_list.find((track) => track.id === proposalData?.track_id)?.name ?? 'test';
+  const paymentNumber =
+    proposalData?.payments.find((payment) => payment.id === params.paymentId)?.order ?? -1; //it will return number of payments or -1 if it doesn't exist
+  const paymentAmount =
+    proposalData?.payments.find((payment) => payment.id === params.paymentId)?.payment_amount ?? -1; //it will return number of payments or -1 if it doesn't exist
+  // console.log('cashierName', data.user_by_pk.employee_name);
+  // console.log('role', activeRole);
+
+  // if (fetching) return <>Loading...</>;
+  if (error) return <>Oops Something went wrong!</>;
 
   return (
     <React.Fragment>
@@ -62,7 +83,8 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
                 {translate('pages.finance.payment_generate.heading.project_track')}&nbsp;:
               </Typography>
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                {translate(`${proposalData?.project_track}`) ?? '-'}
+                {/* {translate(`${proposalData?.project_track}`) ?? '-'} */}
+                {formatCapitzlizeText(trackName) ?? '-'}
               </Typography>
             </Grid>
 
@@ -90,6 +112,27 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
               </Typography>
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                 {proposalData?.project_location ?? '-'}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} md={3}>
+              <Typography variant="body1" sx={{ fontWeight: 700 }}>
+                {translate('pages.finance.payment_generate.heading.payment_number')}
+                &nbsp;:
+              </Typography>
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                {(paymentNumber !== -1 && paymentNumber) ?? 0}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} md={3}>
+              <Typography variant="body1" sx={{ fontWeight: 700 }}>
+                {translate('pages.finance.payment_generate.heading.payment_amount')}
+                &nbsp;:
+              </Typography>
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                {/* fCurrencyNumber(proposalData?.amount_required_fsupport ?? 0) */}
+                {(paymentAmount !== -1 && fCurrencyNumber(paymentAmount)) ?? 0}
               </Typography>
             </Grid>
 

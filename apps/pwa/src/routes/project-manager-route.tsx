@@ -43,6 +43,8 @@ const CeoRejectionListPage = Loadable(lazy(() => import('pages/project-manager/R
 
 const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
 
+const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/PreviewPayment')));
+
 export const projectManagerRoute = {
   path: 'project-manager',
   element: (
@@ -78,6 +80,10 @@ export const projectManagerRoute = {
         { path: 'app', element: <MainProjectManager /> },
         { path: 'amandment-request/:id', element: <AmandementRequest /> },
         { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
+        {
+          path: 'generate/:id/payments/:paymentId',
+          element: <PreviewPayment />,
+        },
         {
           path: 'current-project',
           children: [
