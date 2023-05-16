@@ -150,7 +150,7 @@ const BankingInfoForm = ({
                       // disabled={
                       //   isEdit || (checkUpdateBanks && item.bank_list.is_deleted) ? false : true
                       // }
-                      disabled={!(checkUpdateBanks && checkBank) || isEdit}
+                      disabled={!(checkUpdateBanks && checkBank) && isEdit}
                       sx={{
                         backgroundColor: '#0169DE',
                         color: '#fff',
@@ -191,7 +191,7 @@ const BankingInfoForm = ({
                     //     ? false
                     //     : true
                     // }
-                    disabled={!(checkUpdateBanks && checkBank) || isEdit || tmpBank.length <= 1}
+                    disabled={(!(checkUpdateBanks && checkBank) && isEdit) || tmpBank.length <= 1}
                     sx={{
                       backgroundColor: '#FF170F',
                       color: '#fff',
@@ -261,7 +261,10 @@ const BankingInfoForm = ({
         <Button
           // type="submit"
           onClick={onSubmitForm5}
-          disabled={tmpBank.findIndex((bank: any) => bank.bank_list.is_deleted) > -1}
+          disabled={
+            tmpBank.findIndex((bank: any) => bank && bank.bank_list && bank.bank_list.is_deleted) >
+            -1
+          }
           variant={isEdit ? 'outlined' : 'contained'}
           sx={{
             backgroundColor: isEdit ? '#fff' : 'background.paper',
