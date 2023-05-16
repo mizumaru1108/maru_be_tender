@@ -704,8 +704,9 @@ export class TenderProposalService {
       (this.configService.get('tenderAppConfig.baseUrl') as string) || '',
     );
 
-    if (!!sendRevisionPayload && updatedProposal.notif)
-      this.notifService.sendSmsAndEmailBatch(updatedProposal.notif);
+    if (!!sendRevisionPayload && updatedProposal.notif) {
+      await this.notifService.sendSmsAndEmailBatch(updatedProposal.notif);
+    }
 
     return updatedProposal.proposal;
   }
@@ -956,8 +957,9 @@ export class TenderProposalService {
       (this.configService.get('tenderAppConfig.baseUrl') as string) || '',
     );
 
-    if (!!sendRevisionPayload && updatedProposal.notif)
-      this.notifService.sendSmsAndEmailBatch(updatedProposal.notif);
+    if (!!sendRevisionPayload && updatedProposal.notif) {
+      await this.notifService.sendSmsAndEmailBatch(updatedProposal.notif);
+    }
 
     return updatedProposal.proposal;
   }
@@ -1099,7 +1101,7 @@ export class TenderProposalService {
       request.selectLang,
     );
 
-    this.notificationService.sendSmsAndEmailBatch(
+    await this.notificationService.sendSmsAndEmailBatch(
       sendAmandementResult.sendAmandementNotif,
     );
 

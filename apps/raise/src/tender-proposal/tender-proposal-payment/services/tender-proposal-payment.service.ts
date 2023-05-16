@@ -295,7 +295,7 @@ export class TenderProposalPaymentService {
         proposalUpdateInput,
       );
 
-      this.notificationService.sendSmsAndEmailBatch(response.updateNotif);
+      await this.notificationService.sendSmsAndEmailBatch(response.updateNotif);
 
       return {
         updatedPayment: response.payment,
@@ -386,7 +386,7 @@ export class TenderProposalPaymentService {
     );
 
     if (response.closeReportNotif && send) {
-      this.notificationService.sendSmsAndEmailBatch(response.closeReportNotif);
+      await this.notificationService.sendSmsAndEmailBatch(response.closeReportNotif);
     }
 
     return response.updatedProposal;

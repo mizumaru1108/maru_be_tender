@@ -182,7 +182,7 @@ export class TenderNotificationService {
     }
   }
 
-  sendSmsAndEmailBatch(
+  async sendSmsAndEmailBatch(
     notifPayload: CommonNotificationMapperResponse,
     sendClientMail: boolean = true,
     sendClientSms: boolean = true,
@@ -260,11 +260,11 @@ export class TenderNotificationService {
 
     if (sendClientSms) {
       if (clientMobileNumber && clientMobileNumber.length > 0) {
-        clientMobileNumber.forEach((clientMobile) => {
+        clientMobileNumber.forEach(async (clientMobile) => {
           if (clientMobile !== '' && clientContent !== '') {
             const clientPhone = isExistAndValidPhone(clientMobileNumber);
             if (clientPhone) {
-              this.msegatService.sendSMS({
+              await this.msegatService.sendSMS({
                 numbers: clientPhone.substring(1),
                 msg: clientSubject + ', ' + clientContent,
               });
@@ -312,7 +312,7 @@ export class TenderNotificationService {
       /* enable when msgat is already exist */
       if (sendReviwerSms) {
         if (reviewerMobileNumber && reviewerMobileNumber.length > 0) {
-          reviewerMobileNumber.forEach((reviewerMobile) => {
+          reviewerMobileNumber.forEach(async (reviewerMobile) => {
             if (reviewerMobile !== '' && reviewerContent !== '') {
               const reviewerPhone = isExistAndValidPhone(reviewerMobile);
               // if (reviewerPhone) {
@@ -324,7 +324,7 @@ export class TenderNotificationService {
               //   });
               // }
               if (reviewerPhone) {
-                this.msegatService.sendSMS({
+                await this.msegatService.sendSMS({
                   numbers: reviewerPhone.substring(1),
                   msg: reviwerSubject + ', ' + reviewerContent,
                 });

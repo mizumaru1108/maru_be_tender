@@ -290,7 +290,7 @@ export class TenderMessagesService {
 
     await this.tenderNotifRepo.createMany(createManyWebNotif);
 
-    this.notificationService.sendSmsAndEmailBatch(notifPayload);
+    await this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
     return summary;
   }

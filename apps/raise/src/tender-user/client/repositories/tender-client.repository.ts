@@ -697,8 +697,7 @@ export class TenderClientRepository {
                 id: user_id,
               },
               data: {
-                ...updateUserPayload,
-                status_id: 'ACTIVE_ACCOUNT',
+                ...updateUserPayload,                
               },
             });
 

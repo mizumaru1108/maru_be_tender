@@ -89,7 +89,7 @@ export class ContactsService {
         createManyWebNotifPayload: [],
       };
 
-      this.notificationService.sendSmsAndEmailBatch(notifPayload);
+      await this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
       const createNotif = await this.notificationsModel.create({
         organizationId: new Types.ObjectId(organization_id),

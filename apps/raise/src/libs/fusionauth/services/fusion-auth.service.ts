@@ -429,7 +429,7 @@ export class FusionAuthService {
       createManyWebNotifPayload: [],
     };
 
-    this.notificationService.sendSmsAndEmailBatch(notifPayload);
+    await this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
     return notifPayload;
   }

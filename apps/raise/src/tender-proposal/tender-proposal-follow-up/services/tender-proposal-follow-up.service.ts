@@ -200,7 +200,9 @@ export class TenderProposalFollowUpService {
         payload.selectLang,
       );
 
-      this.notifService.sendSmsAndEmailBatch(createdFolllowUp.followupNotif);
+      await this.notifService.sendSmsAndEmailBatch(
+        createdFolllowUp.followupNotif,
+      );
 
       // await this.sendFollowUpNotif(
       //   createdFolllowUp,

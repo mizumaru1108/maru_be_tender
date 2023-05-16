@@ -338,7 +338,7 @@ export class TenderClientService {
 
       await this.tenderNotifRepo.createMany(createManyWebNotif);
 
-      this.notificationService.sendSmsAndEmailBatch(notifPayload);
+      await this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
       return {
         createdUser,
@@ -1208,6 +1208,7 @@ export class TenderClientService {
         updateClientPayload.board_ofdec_file = tmpArr as any;
       }
 
+      updateUserPayload.status_id = 'ACTIVE_ACCOUNT';
       // if (!!updateClientPayload.entity) {
       //   updateUserPayload.employee_name = updateClientPayload.entity;
       // }
