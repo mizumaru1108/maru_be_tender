@@ -21,6 +21,8 @@ function PaymentsTable() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { proposal } = useSelector((state) => state.proposal);
+  console.log('test', proposal?.payments);
+  const [sortingData, setSortingData] = React.useState<any[]>([]);
 
   const handleApprovalPayment = async (id: string) => {
     try {
@@ -51,73 +53,135 @@ function PaymentsTable() {
       });
     }
   };
+  React.useEffect(() => {
+    // const
+    const neWvalue: any = proposal.payments;
+    const arr = [...neWvalue]
+      .sort((a: any, b: any) => parseInt(a.order) - parseInt(b.order))
+      .map((item: any) => item);
+    setSortingData(arr);
+    // console.log('test', arr);
 
-  React.useEffect(() => {}, [proposal]);
+    // if (arr) {
+    // }
+  }, [proposal]);
 
   return (
     <>
-      {proposal.payments.map((item, index) => (
-        <Grid item md={12} key={index} sx={{ mb: '20px' }}>
-          <Grid container direction="row" key={item.order} spacing={2} alignItems="center">
-            <Grid item md={2}>
-              <Typography variant="h6">
-                <Typography component="span">
-                  {translate('content.administrative.project_details.payment.table.td.batch_no')}
-                </Typography>
-                <Typography component="span">&nbsp;{item.order}</Typography>
-              </Typography>
-            </Grid>
-            <Grid item md={2}>
-              <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0' }}>
-                  {translate('content.administrative.project_details.payment.table.td.payment_no')}:
-                </Typography>
-                <Typography sx={{ color: '#1E1E1E' }} variant="h6">
-                  {fCurrencyNumber(item.payment_amount)}
-                </Typography>
-              </Stack>
-            </Grid>
-            <Grid item md={2}>
-              <Stack direction="column">
-                <Typography sx={{ color: '#93A3B0' }}>
-                  {translate('content.administrative.project_details.payment.table.td.batch_date')}:
-                </Typography>
-                <Typography sx={{ color: '#1E1E1E' }} variant="h6">
-                  {new Date(item.payment_date).toISOString().substring(0, 10)}
-                </Typography>
-              </Stack>
-            </Grid>
-            {item.status !== 'set_by_supervisor' &&
-            item.status !== 'accepted_by_project_manager' ? (
+      {sortingData.length > 0 &&
+        sortingData.map((item, index) => (
+          <Grid item md={12} key={index} sx={{ mb: '20px' }}>
+            <Grid container direction="row" key={item.order} spacing={2} alignItems="center">
               <Grid item md={2}>
-                <Typography
-                  sx={{
-                    color: '#0E8478',
-                  }}
-                >
-                  {translate(
-                    'content.administrative.project_details.payment.table.btn.exchange_permit_success'
-                  )}
+                <Typography variant="h6">
+                  <Typography component="span">
+                    {translate('content.administrative.project_details.payment.table.td.batch_no')}
+                  </Typography>
+                  <Typography component="span">&nbsp;{item.order}</Typography>
                 </Typography>
               </Grid>
-            ) : null}
-            {item.status === 'accepted_by_project_manager' && (
-              <Grid item>
-                <LoadingButton
-                  variant="contained"
-                  endIcon={<Check />}
-                  sx={{ backgroundColor: '#0E8478' }}
-                  onClick={() => {
-                    handleApprovalPayment(item.id);
-                  }}
-                >
-                  {translate(
-                    'content.administrative.project_details.payment.table.btn.exchange_permit_accept_finance'
-                  )}
-                </LoadingButton>
+              <Grid item md={2}>
+                <Stack direction="column">
+                  <Typography sx={{ color: '#93A3B0' }}>
+                    {translate(
+                      'content.administrative.project_details.payment.table.td.payment_no'
+                    )}
+                    :
+                  </Typography>
+                  <Typography sx={{ color: '#1E1E1E' }} variant="h6">
+                    {fCurrencyNumber(item.payment_amount)}
+                  </Typography>
+                </Stack>
               </Grid>
-            )}
-            {item.status === 'done' ? (
+              <Grid item md={2}>
+                <Stack direction="column">
+                  <Typography sx={{ color: '#93A3B0' }}>
+                    {translate(
+                      'content.administrative.project_details.payment.table.td.batch_date'
+                    )}
+                    :
+                  </Typography>
+                  <Typography sx={{ color: '#1E1E1E' }} variant="h6">
+                    {new Date(item.payment_date).toISOString().substring(0, 10)}
+                  </Typography>
+                </Stack>
+              </Grid>
+              {item.status !== 'set_by_supervisor' &&
+              item.status !== 'accepted_by_project_manager' ? (
+                <Grid item md={2}>
+                  <Typography
+                    sx={{
+                      color: '#0E8478',
+                    }}
+                  >
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_success'
+                    )}
+                  </Typography>
+                </Grid>
+              ) : null}
+              {item.status === 'accepted_by_project_manager' && (
+                <Grid item>
+                  <LoadingButton
+                    variant="contained"
+                    endIcon={<Check />}
+                    sx={{ backgroundColor: '#0E8478' }}
+                    onClick={() => {
+                      handleApprovalPayment(item.id);
+                    }}
+                  >
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_accept_finance'
+                    )}
+                  </LoadingButton>
+                </Grid>
+              )}
+
+              {item.status === 'done' && (
+                <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
+                  <Button
+                    onClick={() => {
+                      localStorage.setItem('receipt_type', 'receipt');
+                      navigate(
+                        `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                          proposal.id
+                        }/payments/${item.id}`
+                      );
+                    }}
+                    sx={{
+                      backgroundColor: 'transparent',
+                      color: '#000',
+                      textDecorationLine: 'underline',
+                    }}
+                  >
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
+                    )}
+                  </Button>
+                </Grid>
+              )}
+              {(item.status === 'done' || item.status === 'accepted_by_finance') && (
+                <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
+                  <Button
+                    variant="text"
+                    color="inherit"
+                    sx={{ '&:hover': { textDecorationLine: 'underline' } }}
+                    onClick={() => {
+                      localStorage.setItem('receipt_type', 'generate');
+                      navigate(
+                        `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                          proposal.id
+                        }/payments/${item.id}`
+                      );
+                    }}
+                  >
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_generate_finance'
+                    )}
+                  </Button>
+                </Grid>
+              )}
+              {/* {item.status === 'done' ? (
               <>
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                   {item.cheques && item.cheques.length ? (
@@ -163,6 +227,7 @@ function PaymentsTable() {
                     color="inherit"
                     sx={{ '&:hover': { textDecorationLine: 'underline' } }}
                     onClick={() => {
+                      localStorage.setItem('receipt_type', 'generate');
                       navigate(
                         `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
                           proposal.id
@@ -176,10 +241,10 @@ function PaymentsTable() {
                   </Button>
                 </Grid>
               </>
-            ) : null}
+            ) : null} */}
+            </Grid>
           </Grid>
-        </Grid>
-      ))}
+        ))}
     </>
   );
 }

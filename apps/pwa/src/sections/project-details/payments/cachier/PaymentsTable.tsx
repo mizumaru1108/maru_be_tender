@@ -73,6 +73,7 @@ function PaymentsTable() {
                 </Typography>
               </Grid>
             )}
+
             {item.status === 'accepted_by_finance' && activeRole === 'tender_cashier' ? (
               <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                 <Button
@@ -94,7 +95,7 @@ function PaymentsTable() {
                   {translate('finance_pages.button.upload_receipt')}
                 </Button>
               </Grid>
-            ) : item.status === 'done' ? (
+            ) : item.status === 'done' || item.status === 'accepted_by_finance' ? (
               <>
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                   {item.cheques.length ? (
@@ -134,6 +135,10 @@ function PaymentsTable() {
                     </Typography>
                   )}
                 </Grid>
+              </>
+            ) : null}
+            {(item.status === 'done' || item.status === 'accepted_by_finance') &&
+              activeRole !== 'tender_client' && (
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                   <Button
                     variant="text"
@@ -153,8 +158,7 @@ function PaymentsTable() {
                     )}
                   </Button>
                 </Grid>
-              </>
-            ) : null}
+              )}
           </Grid>
         </Grid>
       ))}

@@ -32,12 +32,12 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
   const params = useParams();
   const theme = useTheme();
 
-  const [{ data, fetching, error }] = useQuery({
-    query: getOneNameCashier,
-    variables: {
-      id: proposalData?.cashier_id,
-    },
-  });
+  // const [{ data, fetching, error }] = useQuery({
+  //   query: getOneNameCashier,
+  //   variables: {
+  //     id: proposalData?.cashier_id,
+  //   },
+  // });
   const trackName = track_list.find((track) => track.id === proposalData?.track_id)?.name ?? 'test';
   const paymentNumber =
     proposalData?.payments.find((payment) => payment.id === params.paymentId)?.order ?? -1; //it will return number of payments or -1 if it doesn't exist
@@ -47,7 +47,7 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
   // console.log('role', activeRole);
 
   // if (fetching) return <>Loading...</>;
-  if (error) return <>Oops Something went wrong!</>;
+  // if (error) return <>Oops Something went wrong!</>;
 
   return (
     <React.Fragment>
@@ -57,7 +57,7 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
         </Typography>
       </Grid>
       <Grid item xs={12}>
-        <Card sx={{ p: 2.5, backgroundColor: theme.palette.common.white }}>
+        <Card sx={{ p: 2.5, margin: '0 0 30px 0', backgroundColor: theme.palette.common.white }}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={3}>
               <Typography variant="body1" sx={{ fontWeight: 700 }}>

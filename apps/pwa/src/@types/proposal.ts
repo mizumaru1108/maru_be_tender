@@ -143,8 +143,9 @@ export interface Proposal {
     payment_amount: number;
     payment_date: Date;
     status: PaymentStatus;
-    order: number;
+    order: string;
     cheques: Cheques[];
+    created_at: Date;
   }[];
   number_of_payments: number;
   number_of_payments_by_supervisor: number;

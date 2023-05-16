@@ -132,7 +132,8 @@ const initialState: ProposalItme = {
         payment_amount: 0,
         payment_date: new Date('10-10-2022'),
         status: 'set_by_supervisor',
-        order: 0,
+        order: 'test',
+        created_at: new Date('10-10-2022'),
         cheques: [
           {
             id: 'test',

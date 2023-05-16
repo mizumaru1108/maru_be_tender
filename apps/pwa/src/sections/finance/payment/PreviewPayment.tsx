@@ -16,7 +16,6 @@ import {
 import Page from 'components/Page';
 import Iconify from 'components/Iconify';
 // section
-import CardPayment from './CardPayment';
 import ProposalDetails from './ProposalDetails';
 // hooks
 import useAuth from 'hooks/useAuth';
@@ -29,6 +28,8 @@ import { Proposal } from '../../../@types/proposal';
 import { ReactComponent as Logo } from '../../../assets/new_logo.svg';
 import { dispatch, useSelector } from 'redux/store';
 import { getProposal, getTrackList } from 'redux/slices/proposal';
+import CardPaymentReceipt from './CardPaymentReceipt';
+import CardPaymentGenerate from './CardPaymentGenerate';
 
 // -------------------------------------------------------------------------------------------------
 
@@ -53,13 +54,14 @@ export default function PreviewPayment() {
   const id = params?.id;
   const receiptType = localStorage.getItem('receipt_type');
 
+  console.log('masuk sini', id, activeRole!, receiptType);
   const componentRef = useRef<HTMLDivElement>(null);
 
   // const [{ data, fetching, error }] = useQuery({
-  //   query: getOneProposal,
-  //   variables: {
-  //     id: params?.id,
-  //   },
+  // query: getOneProposal,
+  // variables: {
+  //   id: params?.id,
+  // },
   // });
 
   // console.log({ params });
@@ -189,9 +191,16 @@ export default function PreviewPayment() {
               </Grid>
             ) : (
               <>
-                <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
-                  <CardPayment proposalData={proposal} loading={isLoading} />
-                </Grid>
+                {receiptType === 'receipt' && proposal.cashier_id ? (
+                  <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
+                    {/* <CardPayment proposalData={proposal} loading={isLoading} /> */}
+                    <CardPaymentReceipt proposalData={proposal} loading={isLoading} />
+                  </Grid>
+                ) : (
+                  <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
+                    <CardPaymentGenerate proposalData={proposal} loading={isLoading} />
+                  </Grid>
+                )}
                 {receiptType === 'generate' && (
                   <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
                     <ProposalDetails proposalData={proposal} loading={isLoading} />

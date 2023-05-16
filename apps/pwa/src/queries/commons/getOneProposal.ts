@@ -148,10 +148,10 @@ export const getInvoicePaymentData = `
 query getInvoicePaymentData(
   $proposal_id: String = "",
   $payment_id: String = "",
+  $cashier_id: String = "",
   $submitter_user_id: String = ""
   $supervisor_id: String = "",
   $project_manager_id: String = "",
-  $cashier_id: String = "",
   $finance_id: String = ""
 ){
   client_name: user_by_pk(id: $submitter_user_id) {
@@ -164,6 +164,49 @@ query getInvoicePaymentData(
     employee_name
   }
   cashier_name: user_by_pk(id: $cashier_id) {
+    employee_name
+  }
+  finance_name: user_by_pk(id: $finance_id) {
+    employee_name
+  }
+  ceo_name:proposal_log(where: {proposal_id: {_eq: $proposal_id}, reviewer: {roles: {user_type_id: {_eq: CEO}}}}, distinct_on: reviewer_id) {
+    reviewer_id
+    reviewer {
+      employee_name
+    }
+  }
+  payment_details: payment_by_pk(id: $payment_id) {
+    id
+    payment_amount
+    payment_date
+    status
+    payment_number: cheques {
+      id
+      number
+      payment_id
+      transfer_receipt
+      deposit_date
+    }
+  }
+}
+`;
+
+export const getGeneratePaymentData = `
+query getInvoicePaymentData(
+  $proposal_id: String = "",
+  $payment_id: String = "",
+  $submitter_user_id: String = ""
+  $supervisor_id: String = "",
+  $project_manager_id: String = "",
+  $finance_id: String = ""
+){
+  client_name: user_by_pk(id: $submitter_user_id) {
+    employee_name
+  }
+  supervisor_name: user_by_pk(id: $supervisor_id) {
+    employee_name
+  }
+  project_manager_name: user_by_pk(id: $project_manager_id) {
     employee_name
   }
   finance_name: user_by_pk(id: $finance_id) {
