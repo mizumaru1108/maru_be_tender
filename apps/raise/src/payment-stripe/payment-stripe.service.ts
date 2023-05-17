@@ -55,6 +55,9 @@ import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 
 import { StripeService } from '../libs/stripe/services/stripe.service';
 import Stripe from 'stripe';
+import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
+import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
+import moment from 'moment';
 
 @Injectable()
 export class PaymentStripeService {
@@ -89,6 +92,7 @@ export class PaymentStripeService {
     @InjectModel(ZakatLog.name)
     private readonly zakatModel: mongoose.Model<ZakatLogDocument>,
     private readonly emailService: EmailService,
+    private readonly notificationService: TenderNotificationService,
   ) {}
 
   async stripeRequest(payment: PaymentRequestDto) {
@@ -1056,18 +1060,51 @@ export class PaymentStripeService {
             },
           );
         }
+
+        const notifPayload: CommonNotificationMapperResponse = {
+          logTime: moment(new Date().getTime()).format('llll'),
+          generalHostEmail: 'tmra',
+          clientSubject: 'Thanks for your donations!',
+          clientId: [],
+          clientEmail: [donor.email],
+          clientMobileNumber: [],
+          clientEmailTemplatePath: `gs/en/payment/donor_donation`,
+          clientEmailTemplateContext: [
+            {
+              organization_name: getOrganization.name,
+              donor_email: donor.email,
+              donor_name: donor.firstName,
+              donor_amount: Number(newAmount),
+              campaign_name: elCampaign.title
+                ? elCampaign.title
+                : elCampaign.campaignName,
+            },
+          ],
+          clientContent: 'Thanks for your donations!',
+          reviewerId: [],
+          reviewerEmail: [getOrganization.contactEmail],
+          reviewerEmailTemplatePath: `gs/en/payment/organization_donation`,
+          reviewerEmailTemplateContext: [
+            {
+              donor_name: donor.firstName,
+              donor_amount: Number(newAmount),
+              campaign_name: elCampaign.title
+                ? elCampaign.title
+                : elCampaign.campaignName,
+            },
+          ],
+          reviewerContent: 'There is a new donation...',
+          reviewerMobileNumber: [],
+          reviwerSubject: 'There is a new donation...',
+          createManyWebNotifPayload: [],
+        };
+
+        await this.notificationService.sendSmsAndEmailBatch(notifPayload);
       }
     }
 
     // Insert Data to Payment Data
     const objectIdPayment = new ObjectId();
-
-    // if (isAnonymous) {
-    //   await this.anonymousModel.findOneAndUpdate(
-    //     { _id: payment.donorId },
-    //     { donationLogId: objectIdDonation },
-    //   );
-    // }
 
     const insertPaymentData = await new this.paymentDataModel({
       _id: objectIdPayment,
@@ -2031,6 +2068,46 @@ export class PaymentStripeService {
       if (!insertPaymentData) {
         throw new BadRequestException(`payment data failed to save in mongodb`);
       }
+
+      const notifPayload: CommonNotificationMapperResponse = {
+        logTime: moment(new Date().getTime()).format('llll'),
+        generalHostEmail: 'tmra',
+        clientSubject: 'Thanks for your donation!',
+        clientId: [],
+        clientEmail: [donor.email],
+        clientMobileNumber: [],
+        clientEmailTemplatePath: `gs/en/payment/donor_donation`,
+        clientEmailTemplateContext: [
+          {
+            organization_name: getOrganization.name,
+            donor_email: donor.email,
+            donor_name: donor.firstName,
+            donor_amount: payment.amount,
+            campaign_name: getCampaign.title
+              ? getCampaign.title
+              : getCampaign.campaignName,
+          },
+        ],
+        clientContent: 'Thanks for your donation!',
+        reviewerId: [],
+        reviewerEmail: [getOrganization.contactEmail],
+        reviewerEmailTemplatePath: `gs/en/payment/organization_donation`,
+        reviewerEmailTemplateContext: [
+          {
+            donor_name: donor.firstName,
+            donor_amount: payment.amount,
+            campaign_name: getCampaign.title
+              ? getCampaign.title
+              : getCampaign.campaignName,
+          },
+        ],
+        reviewerContent: 'There is a new donation...',
+        reviewerMobileNumber: [],
+        reviwerSubject: 'There is a new donation...',
+        createManyWebNotifPayload: [],
+      };
+
+      await this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
       return {
         stripeResponse: {
