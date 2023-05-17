@@ -67,3 +67,20 @@ export class GSRegisterRequestDto {
   @IsNotEmpty()
   mobile?: string;
 }
+
+export class GSVerifyUser {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  user_id: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  domain_url: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  organization_id: string;
+}

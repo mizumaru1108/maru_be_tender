@@ -25,14 +25,14 @@
         font-size: 1.2em;
         text-align: left;
         list-style: none;
-        margin-right: 20px;
-        margin-left: 0px;
+        margin: 0 !important;
       }
 
       .nav .navbar li a {
         display: block;
         color: inherit;
         text-decoration: none;
+        margin-right: 30px !important;
       }
       .nav .navbar li a:hover {
         color: #a4a4a4;
@@ -70,6 +70,9 @@
         padding: 15px 20px;
         width: 35%;
         cursor: pointer;
+        display: inline-block;
+        text-decoration: none;
+        text-align: center;
       }
 
       .buttonLgn:hover {
@@ -160,7 +163,7 @@
                             "
                           />
                         </div>
-                        <nav
+                        <!-- <nav
                           class="nav"
                           style="width: 100%; display: block; margin-top: 30px"
                         >
@@ -170,7 +173,7 @@
                             <li><a href="#">Tutorials</a></li>
                             <li><a href="#">Support</a></li>
                           </ul>
-                        </nav>
+                        </nav> -->
                       </div>
                     </td>
                   </tr>
@@ -240,9 +243,14 @@
                         <br />
                         <p>Your friend,<br /><br />Team Giving Sadaqah</p>
 
-                        <button class="buttonLgn" style="width: 90px">
+                        <a
+                          href="{{donor_redirect_link}}"
+                          target="_blank"
+                          class="buttonLgn"
+                          style="width: 60px"
+                        >
                           Log in
-                        </button>
+                        </a>
 
                         <div style="margin-top: 32px; line-height: 1.4">
                           <p>

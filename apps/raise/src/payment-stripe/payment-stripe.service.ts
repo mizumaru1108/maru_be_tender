@@ -890,32 +890,57 @@ export class PaymentStripeService {
               name: true,
               firstname: true,
               lastname: true,
+              type: true,
             },
           )
           .exec();
       } else {
         donor = await this.donorModel
-          .findOne(
+          .aggregate([
             {
-              _id: payment.donorId,
+              $match: {
+                _id: ObjectId(payment.donorId),
+              },
             },
-            { _id: true, email: true, firstName: true, lastName: true },
-          )
-          .exec();
+            { $limit: 1 },
+            { $addFields: { type: 'donor' } },
+            {
+              $project: {
+                _id: 1,
+                email: 1,
+                firstName: 1,
+                lastName: 1,
+                type: 1,
+              },
+            },
+          ])
+          .then((items) => items[0]);
 
         if (!donor) {
           donor = await this.anonymousModel
-            .findOne(
+            .aggregate([
               {
-                _id: payment.donorId,
+                $match: {
+                  _id: ObjectId(payment.donorId),
+                },
               },
-              { _id: 0, email: true, firstName: true, lastName: true },
-            )
-            .exec();
+              { $limit: 1 },
+              { $addFields: { type: 'donor' } },
+              {
+                $project: {
+                  _id: 1,
+                  email: 1,
+                  firstName: 1,
+                  lastName: 1,
+                  type: 1,
+                },
+              },
+            ])
+            .then((items) => items[0]);
 
           if (!donor) {
             throw new HttpException(
-              'User not found,  donation service is not available',
+              'User not found! donation service is not available.',
               HttpStatus.BAD_REQUEST,
             );
           } else {
@@ -923,6 +948,13 @@ export class PaymentStripeService {
           }
         }
       }
+    }
+
+    if (donor && donor.type && donor.type !== 'donor') {
+      throw new HttpException(
+        'Your account is not allowed to make donations!',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     // Total Quantity
@@ -1808,23 +1840,64 @@ export class PaymentStripeService {
             _id: payment.donorId,
           });
         } else {
-          donor = await this.donorModel.findOne({
-            _id: payment.donorId,
-          });
+          donor = await this.donorModel
+            .aggregate([
+              {
+                $match: {
+                  _id: ObjectId(payment.donorId),
+                },
+              },
+              { $limit: 1 },
+              { $addFields: { type: 'donor' } },
+              {
+                $project: {
+                  _id: 1,
+                  email: 1,
+                  firstName: 1,
+                  lastName: 1,
+                  type: 1,
+                },
+              },
+            ])
+            .then((items) => items[0]);
 
           if (!donor) {
-            donor = await this.anonymousModel.findOne({
-              _id: payment.donorId,
-            });
+            donor = await this.anonymousModel
+              .aggregate([
+                {
+                  $match: {
+                    _id: ObjectId(payment.donorId),
+                  },
+                },
+                { $limit: 1 },
+                { $addFields: { type: 'donor' } },
+                {
+                  $project: {
+                    _id: 1,
+                    email: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    type: 1,
+                  },
+                },
+              ])
+              .then((items) => items[0]);
             if (!donor) {
               throw new NotFoundException(
-                `user not found,  donation service is not available`,
+                'User not found! donation service is not available.',
               );
             } else {
               isAnonymous = true;
             }
           }
         }
+      }
+
+      if (donor && donor.type && donor.type !== 'donor') {
+        throw new HttpException(
+          'Your account is not allowed to make donations!',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       // Customer Stripe

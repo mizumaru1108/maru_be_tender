@@ -29,6 +29,11 @@ export interface IVerifyEmailDto {
   userId: UUID;
 }
 
+export interface IUserVerifyCheck {
+  user_id: UUID;
+  domain_url: string;
+}
+
 export interface IQueryAxiosVerify {
   applicationId: string;
   email: string;

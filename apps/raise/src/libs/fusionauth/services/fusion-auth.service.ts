@@ -10,6 +10,7 @@ import FusionAuthClient, {
   ForgotPasswordResponse,
   ChangePasswordRequest,
   ChangePasswordResponse,
+  SearchResponse,
 } from '@fusionauth/typescript-client';
 import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
 import {
@@ -37,6 +38,7 @@ import { UpdateFusionAuthUserDto } from '../dtos/request/update-fusion-auth-user
 import {
   IQueryAxiosVerify,
   IVerifyEmailDto,
+  IUserVerifyCheck,
 } from '../dtos/response/validate-jwt-response';
 
 import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
@@ -403,35 +405,63 @@ export class FusionAuthService {
     }
   }
 
-  async fusionEmailVerification(requestVerify: IVerifyEmailDto) {
+  async requestVerify(requestVerifyPayload: IVerifyEmailDto) {
     const notifPayload: CommonNotificationMapperResponse = {
       logTime: moment(new Date().getTime()).format('llll'),
       generalHostEmail: 'tmra',
       clientSubject: 'Welcome to Giving Sadaqah',
       clientId: [],
-      clientEmail: [requestVerify.email],
+      clientEmail: [requestVerifyPayload.email],
       clientMobileNumber: [],
-      clientEmailTemplatePath: `gs/en/register/donor_signup`,
+      clientEmailTemplatePath: `gs/en/register/request_verify`,
       clientEmailTemplateContext: [
         {
-          donor_email: requestVerify.email,
-          donor_name: requestVerify.fullName,
+          donor_email: requestVerifyPayload.email,
+          donor_name: requestVerifyPayload.fullName,
+          donor_redirect_link: `${requestVerifyPayload.domainUrl}/verif/${requestVerifyPayload.userId}`,
         },
       ],
       clientContent:
         "We're excited to welcome you to Giving Sadaqah and we're even more excited about what we've got planned.",
       reviewerId: [],
-      reviewerEmail: [requestVerify.organizationEmail!],
+      reviewerEmail: [requestVerifyPayload.organizationEmail!],
       reviewerContent: 'There is a new donor that you should check!',
       reviewerMobileNumber: [],
       reviwerSubject:
         'Donor has sent you an Email! Please check your inbox...`',
+      reviewerEmailTemplatePath: `gs/en/register/new_donor_organization`,
+      reviewerEmailTemplateContext: [
+        {
+          donor_email: requestVerifyPayload.email,
+          donor_name: requestVerifyPayload.fullName,
+        },
+      ],
       createManyWebNotifPayload: [],
     };
 
     await this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
-    return notifPayload;
+    return { user_id: requestVerifyPayload.userId, notifPayload };
+  }
+
+  async fusionUserCheck(reqPayload: IUserVerifyCheck) {
+    const retrieveFusionUser = await this.fusionAuthClient.retrieveUser(
+      reqPayload.user_id,
+    );
+
+    try {
+      if (retrieveFusionUser) {
+        if (retrieveFusionUser.statusCode === 200) {
+          return retrieveFusionUser.response;
+        } else {
+          throw new HttpException('Cannot find User', HttpStatus.BAD_REQUEST);
+        }
+      } else {
+        throw new HttpException('Something went wrong!', HttpStatus.NOT_FOUND);
+      }
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   async forgotPasswordRequest(email: string): Promise<string> {
