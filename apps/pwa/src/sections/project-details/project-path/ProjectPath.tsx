@@ -28,8 +28,8 @@ function ProjectPath() {
   const { activeRole } = useAuth();
   const { proposal } = useSelector((state) => state.proposal);
   // console.log({ proposal });
-  console.log('proposal.log', proposal.proposal_logs);
-  console.log('proposal.log', proposal.track.with_consultation);
+  // console.log('proposal.log', proposal.proposal_logs);
+  // console.log('proposal.log', proposal.track.with_consultation);
 
   const [activeStep, setActiveStep] = React.useState(-1);
   const [stepOn, setStepOn] = React.useState(1);
@@ -40,7 +40,7 @@ function ProjectPath() {
   const [stepGeneralLog, setGeneralLog] = React.useState<Log | null>(null);
   const [isPayments, setIsPayments] = React.useState(false);
 
-  const isConsultation = proposal.track.with_consultation ?? false;
+  const isConsultation = (proposal && proposal.track && proposal.track.with_consultation) ?? false;
 
   // const [stepTrack, setStepTrack] = React.useState('');
   const { id: proposal_id } = useParams();
@@ -281,7 +281,7 @@ function ProjectPath() {
                   (activeStep + 1 === proposal.proposal_logs.length &&
                     stepGeneralLog?.state === 'CLIENT')
                     ? null
-                    : translate('review.waiting1')}
+                    : translate('review.waiting')}
                 </Typography>
               )}
             </React.Fragment>
