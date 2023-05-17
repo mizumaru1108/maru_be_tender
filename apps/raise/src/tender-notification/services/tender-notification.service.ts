@@ -249,14 +249,6 @@ export class TenderNotificationService {
         }
       }
     }
-    /* enable when msgat is already exist */
-    // const clientPhone = isExistAndValidPhone(clientMobileNumber);
-    // if (clientPhone) {
-    //   this.twilioService.sendSMS({
-    //     to: clientPhone,
-    //     body: clientSubject + ', ' + clientContent,
-    //   });
-    // }
 
     if (sendClientSms) {
       if (clientMobileNumber && clientMobileNumber.length > 0) {
@@ -264,7 +256,7 @@ export class TenderNotificationService {
           if (clientMobile !== '' && clientContent !== '') {
             const clientPhone = isExistAndValidPhone(clientMobileNumber);
             if (clientPhone) {
-              await this.msegatService.sendSMS({
+              await this.msegatService.sendSMSAsync({
                 numbers: clientPhone.substring(1),
                 msg: clientSubject + ', ' + clientContent,
               });
@@ -315,16 +307,8 @@ export class TenderNotificationService {
           reviewerMobileNumber.forEach(async (reviewerMobile) => {
             if (reviewerMobile !== '' && reviewerContent !== '') {
               const reviewerPhone = isExistAndValidPhone(reviewerMobile);
-              // if (reviewerPhone) {
-              //   this.twilioService.sendSMS({
-              //     to: reviewerPhone,
-              //     body: reviwerSubject
-              //       ? reviwerSubject
-              //       : clientSubject + ', ' + reviewerContent,
-              //   });
-              // }
               if (reviewerPhone) {
-                await this.msegatService.sendSMS({
+                await this.msegatService.sendSMSAsync({
                   numbers: reviewerPhone.substring(1),
                   msg: reviwerSubject + ', ' + reviewerContent,
                 });
