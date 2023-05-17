@@ -697,7 +697,7 @@ export class TenderClientRepository {
                 id: user_id,
               },
               data: {
-                ...updateUserPayload,                
+                ...updateUserPayload,
               },
             });
 
@@ -808,17 +808,19 @@ export class TenderClientRepository {
                     is_deleted: true,
                   },
                 });
+
+                // console.log(logUtil(updatedBank));
               }
 
               const { url } = deleted_bank[i].card_image as any;
-              const oldFileManager = prisma.file_manager.findUnique({
+              const oldFileManager = await prisma.file_manager.findUnique({
                 where: {
                   url,
                 },
               });
 
               if (oldFileManager !== null) {
-                prisma.file_manager.update({
+                await prisma.file_manager.update({
                   where: {
                     url,
                   },
@@ -826,6 +828,7 @@ export class TenderClientRepository {
                     is_deleted: true,
                   },
                 });
+                // console.log(logUtil(fileM));
               }
             }
           }
@@ -860,6 +863,7 @@ export class TenderClientRepository {
             prisma,
           );
 
+          // throw new BadRequestException('on debugging!');
           return editRequestResult;
         },
         {

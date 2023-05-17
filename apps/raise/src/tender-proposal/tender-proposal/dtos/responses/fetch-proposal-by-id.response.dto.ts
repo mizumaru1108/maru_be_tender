@@ -17,7 +17,9 @@ export interface FetchProposalByIdResponse {
     | (proposal & {
         track: track | null;
         proposal_item_budgets: proposal_item_budget[];
-        proposal_logs: proposal_log[];
+        proposal_logs: (proposal_log & {
+          reviewer: user | null;
+        })[];
         bank_information: bank_information | null;
         user: {
           id: string;

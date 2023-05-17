@@ -2087,7 +2087,11 @@ export class TenderProposalRepository {
           },
           track: true,
           proposal_item_budgets: true,
-          proposal_logs: true,
+          proposal_logs: {
+            include: {
+              reviewer: true,
+            },
+          },
           payments: {
             include: {
               cheques: true,

@@ -622,13 +622,18 @@ export class TenderClientService {
       if (!clientData) throw new NotFoundException('Client data not found!');
 
       if (clientData.user.status_id !== 'ACTIVE_ACCOUNT') {
-        if (
-          (!editRequest.updated_banks && editRequest.deleted_banks) ||
-          (editRequest.updated_banks && !editRequest.deleted_banks)
-        ) {
-        } else {
+        // if (!!editRequest.updated_banks || !!editRequest.deleted_banks) {
+        //   // if one of them / both of them exist will not throw error
+        // } else {
+        //   throw new BadRequestException(
+        //     'User have to be ACTIVE to perform an edit request!',
+        //   );
+        // }
+
+        // if one of them /both of them not exist then throw error
+        if (!(editRequest.updated_banks || editRequest.deleted_banks)) {
           throw new BadRequestException(
-            'User have to be ACTIVE to perform an edit request!',
+            'User has to be ACTIVE to perform an edit request!',
           );
         }
       }
@@ -1222,8 +1227,9 @@ export class TenderClientService {
       // console.log({ old_data });
       // console.log({ new_data });
       // console.log({ updateClientPayload });
+      // console.log(logUtil(deleted_bank));
 
-      // throw new BadRequestException('iseng aja');
+      // throw new BadRequestException('lagi di debug');
       const response = await this.tenderClientRepository.approveEditRequests(
         requestId,
         reviewerId,

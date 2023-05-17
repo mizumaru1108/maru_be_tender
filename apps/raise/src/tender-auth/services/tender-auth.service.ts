@@ -84,8 +84,11 @@ export class TenderAuthService {
       }
     }
 
+    // const phoneExist = await this.tenderUserRepository.findUser({
+    // mobile_number: clientPhone,
+    // });
     const phoneExist = await this.tenderUserRepository.findUser({
-      mobile_number: clientPhone,
+      mobile_number: dataEntryMobile,
     });
     if (phoneExist) {
       throw new ConflictException('Entity Mobile exist in our app!');
@@ -125,7 +128,8 @@ export class TenderAuthService {
         email,
         employee_name: registerRequest.data.employee_name,
         password: registerRequest.data.password,
-        mobile_number: clientPhone,
+        mobile_number: dataEntryMobile,
+        // mobile_number: clientPhone,
         user_roles: ['CLIENT'],
       });
 
