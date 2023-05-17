@@ -23,6 +23,11 @@ function ProjectBudget() {
     );
 
     valueToItem = proposal.proposal_item_budgets;
+    // .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    valueToItem = [...valueToItem].sort(
+      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
+    console.log({ valueToItem });
     // valueSummary = proposal.proposal_item_budgets_aggregate.aggregate.sum.amount;
     valueSummary = totalAmount;
 

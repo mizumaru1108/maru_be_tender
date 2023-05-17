@@ -90,6 +90,7 @@ const initialState: ProposalItme = {
         explanation: 'test',
         clause: 'test',
         id: 'test',
+        created_at: new Date('10-10-2022'),
       },
     ],
     remote_or_insite: 'both',
@@ -158,6 +159,7 @@ const initialState: ProposalItme = {
         explanation: 'test',
         clause: 'test',
         id: 'test',
+        created_at: new Date('10-10-2022'),
       },
     ],
     proposal_item_budgets_aggregate: {

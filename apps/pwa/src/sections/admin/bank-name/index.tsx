@@ -98,6 +98,7 @@ export default function BankNameTable() {
         setIsSubmitting(false);
         setOpen(false);
         reExecute();
+        window.location.reload();
       }
     } catch (err) {
       if (typeof err.message === 'object') {
@@ -119,6 +120,7 @@ export default function BankNameTable() {
       setIsSubmitting(false);
       setOpen(false);
       reExecute();
+      window.location.reload();
     }
   };
 

@@ -27,6 +27,7 @@ export interface ItemBudget {
   explanation: string;
   clause: string;
   id: string;
+  created_at: Date;
 }
 
 export type PaymentStatus =
