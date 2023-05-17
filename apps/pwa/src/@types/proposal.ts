@@ -79,6 +79,28 @@ export interface Proposal {
   track_id: string;
   accreditation_type_id: AccreditationTypeId;
   governorate: string;
+  // proposal_logs: {
+  //   id: string;
+  //   proposal_id: string;
+  //   created_at: Date;
+  //   updated_at: Date;
+  //   reviewer_id: string;
+  //   state: string;
+  //   notes: string;
+  //   action: string;
+  //   message: string;
+  //   user_role: string;
+  //   // response_time: string;
+  //   reject_reason: string;
+  // }[];
+  clasification_field: string;
+  track: {
+    id: string;
+    name: string;
+    with_consultation: boolean;
+    created_at: Date;
+  };
+  proposal_logs: Log[];
   user: {
     id: string;
     employee_name: string;
@@ -320,6 +342,8 @@ export type PropsalLogGrants = {
 };
 
 export type Log = {
+  id?: string;
+  proposal_id?: string;
   message: string;
   notes: string;
   state: string;
@@ -340,9 +364,14 @@ export type Log = {
     | 'done'
     | 'project_completed';
   created_at: Date;
+  updated_at: Date;
   user_role: Role;
   reviewer: {
     employee_name: string;
   };
-  proposal: PropsalLog;
+  user_role_id: string;
+  proposal?: PropsalLog;
+  reject_reason?: string;
+  reviewer_id?: string;
+  employee_name: string;
 };

@@ -16,7 +16,8 @@ function FinancePaymentLog({ stepGeneralLog }: Props) {
   if (stepGeneralLog && stepGeneralLog.message) {
     batch = Number(stepGeneralLog.message.split('_')[1]);
   }
-  // console.log('proposal.payments', batch);
+  // console.log('stepGeneralLog', stepGeneralLog);
+  // console.log('payments batch', batch);
   // console.log('proposal.payments', proposal.payments);
 
   return (

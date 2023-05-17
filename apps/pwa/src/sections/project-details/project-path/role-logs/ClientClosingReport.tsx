@@ -14,7 +14,7 @@ import {
 import { getOneClosingReport } from '../../../../queries/commons/getOneClosingReport';
 
 interface Props {
-  stepGransLog: PropsalLogGrants;
+  stepGransLog: any;
 }
 
 interface ClosingReport {
