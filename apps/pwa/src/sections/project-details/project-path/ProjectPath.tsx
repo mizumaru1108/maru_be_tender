@@ -22,6 +22,7 @@ import CashierPaymentLog from './role-logs/CashierPaymentLog';
 import ClientClosingReport from './role-logs/ClientClosingReport';
 import { getTracks } from 'queries/commons/getTracks';
 import ProjectManagerGeneral from './role-logs/ProjectManager';
+import ClientProposalLog from './role-logs/ClientProposalLog';
 
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
@@ -31,7 +32,8 @@ function ProjectPath() {
   // console.log('proposal.log', proposal.proposal_logs);
   // console.log('proposal.log', proposal.track.with_consultation);
 
-  const [activeStep, setActiveStep] = React.useState(-1);
+  const [activeStep, setActiveStep] = React.useState(0);
+  // console.log({ activeStep });
   const [stepOn, setStepOn] = React.useState(1);
   const [stepUserRole, setStepUserRole] = React.useState('');
   const [stepActionType, setStepActionType] = React.useState('');
@@ -165,28 +167,6 @@ function ProjectPath() {
           )}
           {/*  */}
 
-          {/* {activeStep !== -1 && proposal.proposal_logs.length !== activeStep ? (
-            proposal.proposal_logs.map((item: Log, index: number) => (
-              <React.Fragment key={index}>
-                {index === activeStep && (
-                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                    <Typography>
-                      {item?.user_role === 'PROJECT_MANAGER' && item.action === 'set_by_supervisor'
-                        ? translate(`review.action.payment_rejected_by_pm`)
-                        : item.action
-                        ? translate(`review.action.${item.action}`)
-                        : '-'}
-                    </Typography>
-                  </Stack>
-                )}
-              </React.Fragment>
-            ))
-          ) : (
-            <Typography>
-              {isCompleted && activeStep === -1 ? null : translate('review.waiting')}
-            </Typography>
-          )} */}
-
           {/*  */}
           {/* ACCEPT, REJECT, and so on */}
           {activeStep !== -1 && proposal.proposal_logs.length !== activeStep ? (
@@ -195,10 +175,12 @@ function ProjectPath() {
               .map((item: Log, index: number) => (
                 <Stack key={index} direction="column" gap={2} sx={{ pb: 2 }}>
                   <Typography>
-                    {item?.user_role === 'PROJECT_MANAGER' && item.action === 'set_by_supervisor'
+                    {item?.user_role === 'PROJECT_MANAGER' && item?.action === 'set_by_supervisor'
                       ? translate(`review.action.payment_rejected_by_pm`)
                       : item.action
                       ? translate(`review.action.${item.action}`)
+                      : item?.user_role === 'CLIENT'
+                      ? translate(`review.action.proposal_created`)
                       : '-'}
                   </Typography>
                 </Stack>
@@ -211,41 +193,6 @@ function ProjectPath() {
             </Typography>
           )}
           {/*  */}
-
-          {/* {stepGeneralLog?.user_role !== 'PROJECT_SUPERVISOR' && (
-            <React.Fragment>
-              {isCompleted && activeStep === -1 ? null : (
-                <Typography variant="h6">{translate(`review.notes`)}</Typography>
-              )}
-              {activeStep !== -1 && followUps.log.length !== activeStep ? (
-                followUps.log
-                  .filter(
-                    (item: Log) =>
-                      item.action !== 'set_by_supervisor' &&
-                      item.action !== 'accepted_by_project_manager' &&
-                      item.action !== 'done'
-                  )
-                  .map((item: Log, index: number) => (
-                    <React.Fragment key={index}>
-                      {followUps.log[index].action !== 'set_by_supervisor' &&
-                      index === activeStep ? (
-                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                          <Typography>
-                            {item.notes === 'Proposal has been revised'
-                              ? translate('proposal_has_been_revised')
-                              : item.notes ?? '-'}
-                          </Typography>
-                        </Stack>
-                      ) : null}
-                    </React.Fragment>
-                  ))
-              ) : (
-                <Typography>
-                  {isCompleted && activeStep === -1 ? null : translate('review.waiting')}
-                </Typography>
-              )}
-            </React.Fragment>
-          )} */}
 
           {/*  */}
           {proposal.proposal_logs.find((item: Log, index: number) => index === activeStep && item)
@@ -287,24 +234,20 @@ function ProjectPath() {
             </React.Fragment>
           )}
           {/*  */}
-          {/* {stepGeneralLog?.user_role === 'PROJECT_SUPERVISOR' &&
-            stepGeneralLog.action === ('step_back' || 'send_back_for_revision') && (
-              <React.Fragment>
-                <Typography variant="h6">{translate(`review.notes`)}</Typography>
-                {followUps.log.length !== activeStep &&
-                  followUps.log.map((item: Log, index: number) => (
-                    <React.Fragment key={index}>
-                      {index === activeStep && (
-                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                          <Typography>{item.notes ?? '-'}</Typography>
-                        </Stack>
-                      )}
-                    </React.Fragment>
-                  ))}
-              </React.Fragment>
-            )} */}
           {/* CashierPaymentLog */}
           {isCompleted && activeStep === -1 ? null : <Divider />}
+          {/*  */}
+          {proposal.proposal_logs.filter(
+            (item: Log, index: number) =>
+              index === activeStep &&
+              (item.user_role === 'CLIENT' || item.state === 'FINANCE') &&
+              item.action !== 'send_back_for_revision' &&
+              item.action !== 'step_back' &&
+              item.action !== 'sending_closing_report' &&
+              (item.action === null || item.action === undefined)
+          ).length > 0 ? (
+            <ClientProposalLog />
+          ) : null}
           {/*  */}
           {proposal.proposal_logs.filter(
             (item: Log, index: number) =>

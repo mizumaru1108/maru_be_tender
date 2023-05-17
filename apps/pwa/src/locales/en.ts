@@ -1881,6 +1881,7 @@ const en = {
       done: 'PAYMENT DONE BY CASHIER',
       project_completed: 'PROJECT COMPLETED',
       send_revised_version: 'SEND REVISED VERSION',
+      proposal_created: 'PROPOSAL CREATED',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'Age 1 to 13',

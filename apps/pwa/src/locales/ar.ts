@@ -1855,6 +1855,7 @@ const ar = {
     attachment: 'مرفق',
     complete: 'مكان التنفيذ',
     number_of_volunteer: 'عدد المتطوعين',
+
     accreditation_type: {
       PLAN: 'يخطط',
       INCOMING: 'واردة',
@@ -1895,6 +1896,7 @@ const ar = {
       done: 'تم الدفع عن طريق الصراف',
       project_completed: 'تم المشروع',
       send_revised_version: 'إرسال النسخة المنقحة',
+      proposal_created: 'تم انشاء المشروع',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'من 1 سنة إلى 13',
