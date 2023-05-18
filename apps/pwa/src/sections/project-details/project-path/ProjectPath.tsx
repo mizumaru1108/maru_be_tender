@@ -203,7 +203,7 @@ function ProjectPath() {
                 stepGeneralLog?.state === 'CLIENT') ? null : (
                 <Typography variant="h6">{translate(`review.notes`)}</Typography>
               )}
-              {activeStep !== -1 && followUps.log.length !== activeStep ? (
+              {activeStep !== -1 && proposal.proposal_logs.length !== activeStep ? (
                 proposal.proposal_logs
                   .filter(
                     (item: Log, index: number) =>
