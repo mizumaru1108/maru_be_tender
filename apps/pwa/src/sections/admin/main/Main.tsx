@@ -5,11 +5,11 @@ import Settings from './Settings';
 function Main() {
   return (
     <Stack direction="column" gap={5}>
-      <Grid container spacing={5}>
+      {/* <Grid container spacing={5}>
         <Grid item md={12}>
           <TrackBudget />
         </Grid>
-      </Grid>
+      </Grid> */}
       <Settings />
     </Stack>
   );

@@ -22,9 +22,9 @@ function CeoDashboard() {
         <Grid item md={12}>
           <DailyStatistics />
         </Grid>
-        <Grid item md={12}>
+        {/* <Grid item md={12}>
           <TrackBudget />
-        </Grid>
+        </Grid> */}
         <Grid item md={12}>
           <DashboardProjectManagement />
         </Grid>
