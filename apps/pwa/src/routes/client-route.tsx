@@ -14,6 +14,9 @@ const PreviousFundingRequests = Loadable(
   lazy(() => import('pages/client/previous-funding-requests'))
 );
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+
+const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
+
 const ProjectOwnerDetails = Loadable(
   lazy(() => import('pages/project-details/ProjectOwnerDetails'))
 );
@@ -95,7 +98,7 @@ export const clientRoute = {
           path: 'current-project',
           children: [
             { path: ':id/:actionType', element: <ProjectDetails /> },
-
+            { path: 'preview/:id', element: <ProjectPreview /> },
             { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
           ],
         },

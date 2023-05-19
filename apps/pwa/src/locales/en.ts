@@ -1938,6 +1938,7 @@ const en = {
   upload_select_drop: 'Select or drop your file here',
   state: 'State',
   status: 'Status',
+  partner_name: 'Partner Name',
   project_owner_details: {
     accordion: {
       main_tab: {

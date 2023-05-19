@@ -1,5 +1,5 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import ActionTap from './ActionTap';
 import FollowUpsAction from './follow-ups/FollowUpsAction';
 import React from 'react';
@@ -19,6 +19,8 @@ function ProjectDetailsMainPage() {
 
   const dispatch = useDispatch();
 
+  const location = useLocation();
+
   const { activeRole } = useAuth();
   const role = activeRole!;
 
@@ -27,6 +29,12 @@ function ProjectDetailsMainPage() {
   const { proposal, isLoading, error } = useSelector((state) => state.proposal);
 
   const navigate = useNavigate();
+
+  const handlePreviewPrint = () => {
+    const x = location.pathname.split('/');
+    // console.log('test masuk sini');
+    navigate(`/${x[1] + '/' + x[2] + '/' + x[3]}/preview/${id}`);
+  };
 
   React.useEffect(() => {
     dispatch(getProposal(id as string, role as string));
@@ -63,14 +71,19 @@ function ProjectDetailsMainPage() {
         <ProjectStatus />
       </Stack>
       <Stack direction="column" justifyContent="space-between">
-        <Typography
-          variant="h4"
-          sx={{
-            maxWidth: '700px',
-          }}
-        >
-          {proposal.project_name}
-        </Typography>
+        <Stack direction="row" justifyContent="space-between">
+          <Typography
+            variant="h4"
+            sx={{
+              maxWidth: '700px',
+            }}
+          >
+            {proposal.project_name}
+          </Typography>
+          <Button variant="contained" color="primary" size="medium" onClick={handlePreviewPrint}>
+            {translate('pages.commint.print_preview')}
+          </Button>
+        </Stack>
         <Typography sx={{ color: '#93A3B0', fontSize: '14px', mb: '5px' }}>
           {` ${translate('pages.project_details.created_by')} ${
             proposal.user.employee_name

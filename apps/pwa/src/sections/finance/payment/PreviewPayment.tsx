@@ -54,7 +54,7 @@ export default function PreviewPayment() {
   const id = params?.id;
   const receiptType = localStorage.getItem('receipt_type');
 
-  console.log('masuk sini', id, activeRole!, receiptType);
+  // console.log('masuk sini', id, activeRole!, receiptType);
   const componentRef = useRef<HTMLDivElement>(null);
 
   // const [{ data, fetching, error }] = useQuery({

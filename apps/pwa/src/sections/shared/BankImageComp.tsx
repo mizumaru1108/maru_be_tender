@@ -25,6 +25,7 @@ type Props = {
   type?: string;
   size?: number;
   borderColor?: string;
+  isPrint?: boolean;
 };
 
 const BankImageComp = ({
@@ -36,6 +37,7 @@ const BankImageComp = ({
   size,
   type,
   borderColor,
+  isPrint = false,
 }: Props) => {
   const { translate } = useLocales();
   const cardImage = {
@@ -49,7 +51,7 @@ const BankImageComp = ({
       direction="column"
       gap={1}
       sx={{
-        height: '270px',
+        height: isPrint ? '180px' : '270px',
         border: 0.5,
         borderRadius: 1,
         borderColor: `${borderColor}`,
@@ -63,7 +65,7 @@ const BankImageComp = ({
           backgroundPosition: 'center',
           backgroundSize: '100% 100%',
           width: '100%',
-          height: '180px',
+          height: isPrint ? '140px' : '180px',
           padding: '10px',
           backgroundImage: `url(${BankImage})`,
           opacity: 1,
@@ -75,7 +77,7 @@ const BankImageComp = ({
           <Typography sx={{ fontSize: '15px' }}>{accountNumber}</Typography>
         </Stack>
       </Paper>
-      {enableButton && imageUrl && (
+      {!isPrint && enableButton && imageUrl && (
         // <Button
         //   component={Link}
         //   href={imageUrl}

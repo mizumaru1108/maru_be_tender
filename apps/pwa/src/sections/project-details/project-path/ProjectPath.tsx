@@ -331,6 +331,7 @@ function ProjectPath() {
               (item.user_role === 'PROJECT_SUPERVISOR' || item.state === 'PROJECT_SUPERVISOR') &&
               item.action !== 'send_back_for_revision' &&
               item.action !== 'step_back' &&
+              item.action !== 'project_completed' &&
               item.action !== 'sending_closing_report'
           ).length > 0 &&
           isConsultation === false &&
@@ -355,6 +356,7 @@ function ProjectPath() {
               (item.user_role === 'PROJECT_SUPERVISOR' || item.state === 'PROJECT_SUPERVISOR') &&
               item.action !== 'send_back_for_revision' &&
               item.action !== 'step_back' &&
+              item.action !== 'project_completed' &&
               item.action !== 'sending_closing_report'
           ).length > 0 &&
           isConsultation &&
