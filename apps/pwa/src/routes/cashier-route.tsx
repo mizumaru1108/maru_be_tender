@@ -35,6 +35,7 @@ const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectRe
 const OldProposal = Loadable(lazy(() => import('pages/cashier/OldProposal')));
 const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
 const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/PreviewPayment')));
+const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
 
 export const cashierRoute = {
   path: 'cashier',
@@ -75,7 +76,7 @@ export const cashierRoute = {
           path: 'current-project',
           children: [
             { path: ':id/:actionType', element: <ProjectDetails /> },
-
+            { path: 'preview/:id', element: <ProjectPreview /> },
             { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
           ],
         },

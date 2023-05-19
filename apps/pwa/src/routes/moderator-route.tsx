@@ -89,6 +89,7 @@ export const moderatorRoute = {
               path: ':id/:actionType',
               element: <ProjectDetails />,
             },
+            // { path: 'preview/:id', element: <ProjectPreview /> },
           ],
         },
         {

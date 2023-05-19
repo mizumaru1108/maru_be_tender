@@ -35,6 +35,7 @@ const PreviousFundingRequestsFinance = Loadable(
 
 const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
 const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/PreviewPayment')));
+const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
 
 export const financeRoute = {
   path: 'finance',
@@ -75,7 +76,7 @@ export const financeRoute = {
           path: 'current-project',
           children: [
             { path: ':id/:actionType', element: <ProjectDetails /> },
-
+            { path: 'preview/:id', element: <ProjectPreview /> },
             { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
           ],
         },

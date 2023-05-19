@@ -51,6 +51,7 @@ const BookingAMeeting = Loadable(lazy(() => import('pages/project-supervisor/Boo
 
 const ClientListPage = Loadable(lazy(() => import('pages/project-supervisor/ClientListPage')));
 const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/PreviewPayment')));
+const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
 export const projectSupervisorRoute = {
   path: 'project-supervisor',
   element: (
@@ -95,7 +96,7 @@ export const projectSupervisorRoute = {
           path: 'current-project',
           children: [
             { path: ':id/:actionType', element: <ProjectDetails /> },
-
+            { path: 'preview/:id', element: <ProjectPreview /> },
             { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
           ],
         },

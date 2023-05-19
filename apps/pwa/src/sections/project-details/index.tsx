@@ -32,8 +32,9 @@ function ProjectDetailsMainPage() {
 
   const handlePreviewPrint = () => {
     const x = location.pathname.split('/');
-    // console.log('test masuk sini');
-    navigate(`/${x[1] + '/' + x[2] + '/' + x[3]}/preview/${id}`);
+    const url = `/${x[1] + '/' + x[2] + '/'}current-project/preview/${id}`;
+    // console.log('test masuk sini ', url);
+    navigate(url);
   };
 
   React.useEffect(() => {

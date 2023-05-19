@@ -34,6 +34,8 @@ const NonClientProfileEdit = Loadable(
 );
 const Searching = Loadable(lazy(() => import('pages/searching')));
 
+const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
+
 export const ceoRoute = {
   path: 'ceo',
   element: (
@@ -75,7 +77,7 @@ export const ceoRoute = {
           path: 'current-project',
           children: [
             { path: ':id/:actionType', element: <ProjectDetails /> },
-
+            { path: 'preview/:id', element: <ProjectPreview /> },
             { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
           ],
         },
