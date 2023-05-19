@@ -20,6 +20,7 @@ import {
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -445,22 +446,35 @@ export class FusionAuthService {
   }
 
   async fusionUserCheck(reqPayload: IUserVerifyCheck) {
-    const retrieveFusionUser = await this.fusionAuthClient.retrieveUser(
-      reqPayload.user_id,
-    );
-
     try {
-      if (retrieveFusionUser) {
-        if (retrieveFusionUser.statusCode === 200) {
-          return retrieveFusionUser.response;
-        } else {
-          throw new HttpException('Cannot find User', HttpStatus.BAD_REQUEST);
-        }
-      } else {
-        throw new HttpException('Something went wrong!', HttpStatus.NOT_FOUND);
-      }
+      const retrieveFusionUser = await this.fusionAuthClient.retrieveUser(
+        reqPayload.user_id,
+      );
+
+      return retrieveFusionUser.response;
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      if (error && error.response.status === 404) {
+        throw new NotFoundException('The User could not be found!');
+      } else {
+        this.logger.debug('Error', error);
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+    }
+  }
+
+  async fusionUserCheckByEmail(email: string) {
+    try {
+      const retrieveFusionUser =
+        await this.fusionAuthClient.retrieveUserByEmail(email);
+
+      return retrieveFusionUser.response;
+    } catch (error) {
+      if (error && error.statusCode === 404) {
+        throw new NotFoundException('The User could not be found!');
+      } else {
+        this.logger.debug('Error', error);
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
     }
   }
 
@@ -485,11 +499,15 @@ export class FusionAuthService {
     };
     try {
       const response = await axios(axiosOptions);
-      // console.log({ response });
+
       return response.data.changePasswordId;
     } catch (error) {
-      this.logger.debug('Error', error);
-      throw error;
+      if (error && error.response && error.response.status === 404) {
+        throw new NotFoundException('The User could not be found!');
+      } else {
+        this.logger.debug('Error', error);
+        throw error;
+      }
     }
   }
 
@@ -516,10 +534,11 @@ export class FusionAuthService {
     };
     try {
       const response = await axios(axiosOptions);
+
       return response;
     } catch (error) {
-      if (error.statusCode === 404 || error.statusCode === 400) {
-        if (error.statusCode === 404) {
+      if (error.response.status === 404 || error.response.status === 400) {
+        if (error.response.status === 404) {
           if (oldPassword) {
             throw new BadRequestException('Invalid Old Password!');
           } else {

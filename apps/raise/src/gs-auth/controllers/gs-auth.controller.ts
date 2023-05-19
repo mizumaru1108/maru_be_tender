@@ -4,11 +4,12 @@ import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
 import {
   GSRegisterRequestDto,
   GSVerifyUser,
+  GSResetPassword,
 } from '../dtos/requests/gs-register-request.dto';
 import { GsAuthService } from '../services/gs-auth.service';
 import { BaseResponse } from '../../commons/dtos/base-response';
 import { User } from '../../user/schema/user.schema';
-import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
+import { SubmitChangePasswordDto } from 'src/tender-auth/dtos/requests/submit-change-password.dto';
 
 @Controller('gs/auth')
 export class GsAuthController {
@@ -37,6 +38,19 @@ export class GsAuthController {
     );
   }
 
+  @Post('resetPassword')
+  async resetPassword(@Body() resetRequest: GSResetPassword) {
+    const resetPwdResponse = await this.gsAuthService.resetPasswordUser(
+      resetRequest,
+    );
+
+    return baseResponseHelper<any>(
+      resetPwdResponse,
+      HttpStatus.OK,
+      'Reset password success send link email!',
+    );
+  }
+
   @Post('verifyUser')
   async verifyUserCheck(@Body() verifyPayload: GSVerifyUser) {
     const submitVerify = await this.gsAuthService.verifyUser(verifyPayload);
@@ -45,6 +59,19 @@ export class GsAuthController {
       submitVerify,
       HttpStatus.OK,
       'Verify user successfully!',
+    );
+  }
+
+  @Post('submit-change-password')
+  async submitForgotPassword(
+    @Body() request: SubmitChangePasswordDto,
+  ): Promise<BaseResponse<string>> {
+    await this.gsAuthService.submitChangePassword(request);
+
+    return baseResponseHelper(
+      'Password Changed Successfully!',
+      HttpStatus.OK,
+      'Password Changed Successfully!',
     );
   }
 }

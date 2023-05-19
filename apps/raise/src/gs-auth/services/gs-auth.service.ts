@@ -7,19 +7,21 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import moment from 'moment';
 import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
-import { LoginRequestDto, RegisterRequestDto } from '../../auth/dtos';
+import { LoginRequestDto } from '../../auth/dtos';
 import { GsUserService } from '../../gs-user/services/gs-user.service';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import {
   GSRegisterRequestDto,
   GSVerifyUser,
+  GSResetPassword,
 } from '../dtos/requests/gs-register-request.dto';
 import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
 import {
   Organization,
   OrganizationDocument,
 } from 'src/organization/schema/organization.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import { SubmitChangePasswordDto } from 'src/tender-auth/dtos/requests/submit-change-password.dto';
 
 @Injectable()
 export class GsAuthService {
@@ -87,20 +89,16 @@ export class GsAuthService {
   }
 
   async verifyUser(verifyPayload: GSVerifyUser) {
-    const ObjectId = require('mongoose').Types.ObjectId;
     const fusionCheckUser = await this.fusionAuthService.fusionUserCheck(
       verifyPayload,
     );
 
     const organizationData = await this.organizationModel.findOne({
-      _id: ObjectId(verifyPayload.organization_id),
+      _id: new Types.ObjectId(verifyPayload.organization_id),
     });
 
     if (!organizationData) {
-      throw new HttpException(
-        'Organization not found!',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('Organization not found!', HttpStatus.NOT_FOUND);
     }
 
     try {
@@ -145,5 +143,73 @@ export class GsAuthService {
     } catch (error) {
       throw new HttpException('User not verified', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  async resetPasswordUser(resetPayload: GSResetPassword) {
+    const organizationData = await this.organizationModel.findOne({
+      _id: new Types.ObjectId(resetPayload.organization_id),
+    });
+
+    if (!organizationData) {
+      throw new HttpException('Organization not found!', HttpStatus.NOT_FOUND);
+    }
+
+    const retrieveFusionUser =
+      await this.fusionAuthService.fusionUserCheckByEmail(resetPayload.email);
+
+    const fusionResetPassword =
+      await this.fusionAuthService.forgotPasswordRequest(resetPayload.email);
+
+    try {
+      if (retrieveFusionUser && fusionResetPassword) {
+        const notifPayload: CommonNotificationMapperResponse = {
+          logTime: moment(new Date().getTime()).format('llll'),
+          generalHostEmail: 'tmra',
+          clientSubject: 'Password reset instructions',
+          clientId: [],
+          clientEmail: [retrieveFusionUser.user?.email!],
+          clientMobileNumber: [],
+          clientEmailTemplatePath: `gs/en/reset/reset_password`,
+          clientEmailTemplateContext: [
+            {
+              user_name: `${retrieveFusionUser.user?.firstName ?? ''} ${
+                retrieveFusionUser.user?.lastName ?? ''
+              }`,
+              redirect_link: `${resetPayload.domain_url}/user/reset-password/${fusionResetPassword}/change-password`,
+            },
+          ],
+          clientContent:
+            'A request to reset your Giving Sadaqah password has been made.',
+          reviewerId: [],
+          reviewerEmail: [organizationData.contactEmail],
+          reviewerContent:
+            'There is a new reset password donor that you should check!',
+          reviewerMobileNumber: [],
+          reviwerSubject: 'Donor has made a request reset password...',
+          // reviewerEmailTemplatePath: `gs/en/register/new_donor_organization`,
+          // reviewerEmailTemplateContext: [
+          //   {
+          //     donor_email: fusionCheckUser.user.email,
+          //     donor_name: fusionCheckUser.user.firstName,
+          //   },
+          // ],
+          createManyWebNotifPayload: [],
+        };
+
+        await this.notificationService.sendSmsAndEmailBatch(notifPayload);
+      }
+
+      return { change_password_id: fusionResetPassword };
+    } catch (error) {
+      throw new HttpException('Something went wrong', HttpStatus.BAD_GATEWAY);
+    }
+  }
+
+  async submitChangePassword(request: SubmitChangePasswordDto) {
+    await this.fusionAuthService.submitChangePassword(
+      request.changePasswordId,
+      request.newPassword,
+      request.oldPassword,
+    );
   }
 }
