@@ -37,6 +37,8 @@ const NonClientProfileEdit = Loadable(
 
 const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
 
+const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
+
 export const moderatorRoute = {
   path: 'moderator',
   element: (
@@ -75,6 +77,7 @@ export const moderatorRoute = {
           path: 'current-project',
           children: [
             { path: ':id/:actionType', element: <ProjectDetails /> },
+            { path: 'preview/:id', element: <ProjectPreview /> },
             { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
           ],
         },

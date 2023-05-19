@@ -9,6 +9,8 @@ const en = {
   pages: {
     options_btn: 'More',
     common: {
+      go_to_print_preview: 'Print Preview',
+      print_preview: 'Print Proposal',
       old_proposal: 'Old Proposal',
       get_auth_code_google: 'Get Auth Code',
       loading: 'Loading...',
@@ -1939,6 +1941,7 @@ const en = {
   state: 'State',
   status: 'Status',
   partner_name: 'Partner Name',
+  project_name: 'Project Name',
   project_owner_details: {
     accordion: {
       main_tab: {

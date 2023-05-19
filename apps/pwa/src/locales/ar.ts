@@ -9,6 +9,8 @@ const ar = {
   pages: {
     options_btn: 'أكثر',
     common: {
+      go_to_print_preview: 'معاينة قبل الطباعة',
+      print_preview: 'طباعة الاقتراح',
       old_proposal: 'المشاريع السابقة',
       get_auth_code_google: 'أدخل رمز التأكيد الخاص بك',
       loading: 'تحميل…',
@@ -1950,6 +1952,8 @@ const ar = {
   upload_a_new_file: 'رفع ملف جديد',
   upload_a_new_image: 'رفع صورة جديدة',
   upload_select_drop: 'إختر ملفًا أو إسقاطها',
+  project_name: 'اسم المشروع',
+  partner_name: 'اسم الشريك',
   state: 'ولاية',
   status: 'حالة',
   project_owner_details: {

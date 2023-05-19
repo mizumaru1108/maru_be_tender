@@ -81,7 +81,7 @@ function ProjectDetailsMainPage() {
             {proposal.project_name}
           </Typography>
           <Button variant="contained" color="primary" size="medium" onClick={handlePreviewPrint}>
-            {translate('pages.commint.print_preview')}
+            {translate('pages.common.print_preview')}
           </Button>
         </Stack>
         <Typography sx={{ color: '#93A3B0', fontSize: '14px', mb: '5px' }}>
