@@ -330,9 +330,11 @@ export class TenderProposalRepository {
               'info',
               `deleting proposal edit request for proposal ${proposal_id}`,
             );
-            await prisma.proposal_edit_request.deleteMany({
-              where: { proposal_id },
-            });
+
+            // deleting the edit request history
+            // await prisma.proposal_edit_request.deleteMany({
+            //   where: { proposal_id },
+            // });
             return {
               proposal,
               notif: sendRevisionNotif,
