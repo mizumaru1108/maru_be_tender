@@ -1791,7 +1791,8 @@ const en = {
     closing_report: 'Closing Report',
     closing_agreement: 'Closing Agreement',
     vat_in_project: 'Vat in Project',
-    vat: 'Vat %',
+    // vat: 'Vat %',
+    vat: 'Include value added tax',
     inclu_or_exclu: 'Payment is Inclusive or Exclusive',
     number_of_payment: 'Number of Payment',
     payment_support: 'Payment Support',
@@ -1806,7 +1807,7 @@ const en = {
     clasification_field: 'Clasification Field',
     clause: 'Clause',
     support_outputs: 'Support Outputs',
-    vat_percentage: 'Vat Percentage',
+    vat_percentage: 'Vat % Percentage',
     support_goal_id: 'Support Goal ID',
     support_type: 'Support Type',
     number_of_payments_by_supervisor: 'Number of Payments',
@@ -1907,6 +1908,8 @@ const en = {
     },
   },
   project_already_reviewed_by_supervisor: 'This project already reviewed by Supervisor',
+  project_already_reviewed_by_project_manager: 'This project already reviewed by Project Manager',
+  project_already_reviewed_by_ceo: 'This project already reviewed by CEO',
   show_modified_fields: 'Show Modified Fields',
   daily_stats: 'Daily stats',
   project_implementation_date: 'Project implementation date:',
@@ -2074,7 +2077,7 @@ const en = {
   remote_or_insite: {
     remote: 'Online',
     insite: 'My Attendance',
-    both: 'Online and My Attendance',
+    both: 'Both',
   },
   // Finance pages
   finance_pages: {

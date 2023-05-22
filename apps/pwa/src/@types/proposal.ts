@@ -313,7 +313,8 @@ export type PropsalLogGrants = {
   updated_at: any;
   action: string;
   message: string;
-  proposal: {
+  user_role: string;
+  proposal?: {
     accreditation_type_id: string;
     added_value: string;
     been_made_before: boolean;

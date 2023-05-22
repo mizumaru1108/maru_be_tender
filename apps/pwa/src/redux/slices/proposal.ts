@@ -303,7 +303,8 @@ export const getProposal = (id: string, role: string) => async () => {
       role === 'tender_moderator' ||
       role === 'tender_finance' ||
       role === 'tender_client' ||
-      role === 'tender_cashier'
+      role === 'tender_cashier' ||
+      role === 'tender_consultant'
     ) {
       // console.log('masuk sni');
       try {

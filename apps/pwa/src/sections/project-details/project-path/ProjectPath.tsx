@@ -38,7 +38,7 @@ function ProjectPath() {
   const [stepUserRole, setStepUserRole] = React.useState('');
   const [stepActionType, setStepActionType] = React.useState('');
   const [stepProposal, setStepProposal] = React.useState<PropsalLog | null>(null);
-  const [stepGransLog, setGransLog] = React.useState<PropsalLogGrants | null>(null);
+  const [stepGransLog, setGransLog] = React.useState<PropsalLogGrants | null>();
   const [stepGeneralLog, setGeneralLog] = React.useState<Log | null>(null);
   const [isPayments, setIsPayments] = React.useState(false);
 
@@ -63,6 +63,7 @@ function ProjectPath() {
   const { data: logGrantsData, fetching: fetchingGrants, error: errorGrants } = logGrants;
   const { data: listTracks, fetching: fetchingTracks, error: errorTracks } = tracks;
   const handleStep = (step: number, item: Log) => () => {
+    // console.log('masuk sini');
     window.scrollTo(115, 115);
     setStepOn(step);
     setActiveStep(step);
@@ -73,10 +74,11 @@ function ProjectPath() {
           setGransLog(logGrantsData);
           setGransLog({
             ...logGrantsData,
-            notes: item.notes,
-            updated_at: item.updated_at,
-            action: item.action,
-            message: item.message,
+            notes: item?.notes || '',
+            updated_at: item?.updated_at || '',
+            action: item?.action || '',
+            message: item?.message || '',
+            user_role: item?.user_role || '',
           });
         }
       }
@@ -109,9 +111,42 @@ function ProjectPath() {
       .filter((item: Log) => item.action === 'insert_payment')
       .map((item: Log) => item);
     if (insertPayment && insertPayment.length > 0) {
-      setActiveStep(0);
       setIsPayments(true);
     }
+    setActiveStep(proposal.proposal_logs.length - 1);
+    setGransLog((current) => {
+      const tmpData = { ...current };
+      return {
+        ...current,
+        action: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.action || '',
+        message: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.message || '',
+        notes: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.notes || '',
+        updated_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.updated_at || '',
+        user_role: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.user_role || '',
+      };
+    });
+    setGeneralLog((current: any) => {
+      const tmpData = { ...current };
+      return {
+        ...current,
+        action: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.action || '',
+        message: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.message || '',
+        notes: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.notes || '',
+        updated_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.updated_at || '',
+        created_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.created_at || '',
+        state: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.state || '',
+        user_role: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.user_role || '',
+        reviewer: {
+          employee_name:
+            proposal.proposal_logs[proposal.proposal_logs.length - 1]?.reviewer?.employee_name ||
+            '',
+        },
+        employee_name:
+          proposal.proposal_logs[proposal.proposal_logs.length - 1]?.employee_name || '',
+      };
+    });
+    // proposal.proposal_logs.length,
+    // proposal.proposal_logs[proposal.proposal_logs.length]
   }, [followUps, proposal]);
 
   React.useEffect(() => {
@@ -273,29 +308,6 @@ function ProjectPath() {
             <CashierPaymentLog stepGeneralLog={stepGeneralLog} />
           ) : null}
           {/*  */}
-          {/* {activeStep !== followUps.log.length &&
-          stepGeneralLog &&
-          stepGeneralLog?.user_role === 'CASHIER' &&
-          // stepGeneralLog.proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
-          stepGeneralLog.action !== 'send_back_for_revision' &&
-          stepGeneralLog.action !== 'step_back' &&
-          stepGeneralLog.action !== 'sending_closing_report' &&
-          stepGeneralLog.action === 'done' ? (
-            <CashierPaymentLog stepGeneralLog={stepGeneralLog} />
-          ) : null} */}
-          {/*  */}
-          {/* {(activeStep !== followUps.log.length &&
-            stepGeneralLog &&
-            stepGeneralLog?.user_role === 'PROJECT_MANAGER' &&
-            // stepGeneralLog.proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
-            stepGeneralLog.action !== 'send_back_for_revision' &&
-            stepGeneralLog.action !== 'step_back' &&
-            stepGeneralLog.action !== 'sending_closing_report' &&
-            stepGeneralLog.action === 'set_by_supervisor') ||
-          (stepGeneralLog && stepGeneralLog.action === 'accepted_by_project_manager') ? (
-            <ProjectManager stepGeneralLog={stepGeneralLog} />
-          ) : null} */}
-          {/*  */}
           {proposal.proposal_logs.filter(
             (item: Log, index: number) =>
               index === activeStep &&
@@ -315,15 +327,6 @@ function ProjectPath() {
             />
           ) : null}
           {/*  */}
-          {/* {activeStep !== followUps.log.length &&
-          stepGeneralLog &&
-          stepGeneralLog?.user_role === 'PROJECT_SUPERVISOR' &&
-          // stepGeneralLog.proposal.project_track !== 'CONCESSIONAL_GRANTS' &&
-          stepGeneralLog.action !== 'send_back_for_revision' &&
-          stepGeneralLog.action !== 'step_back' &&
-          stepGeneralLog.action !== 'sending_closing_report' ? (
-            <SupervisorGeneral stepGeneralLog={stepGeneralLog} />
-          ) : null} */}
           {/*  */}
           {proposal.proposal_logs.filter(
             (item: Log, index: number) =>
@@ -339,16 +342,6 @@ function ProjectPath() {
             <SupervisorGeneral stepGeneralLog={stepGeneralLog} />
           ) : null}
           {/*  */}
-          {/* {activeStep !== followUps.log.length &&
-          stepGransLog &&
-          stepGransLog.proposal &&
-          stepGeneralLog?.user_role === 'PROJECT_SUPERVISOR' &&
-          stepGeneralLog.proposal.project_track === 'CONCESSIONAL_GRANTS' &&
-          stepGeneralLog.action !== 'send_back_for_revision' &&
-          stepGeneralLog.action !== 'step_back' &&
-          stepGeneralLog.action !== 'sending_closing_report' ? (
-            <SupervisorGrants stepGransLog={stepGransLog} />
-          ) : null} */}
           {/*  */}
           {proposal.proposal_logs.filter(
             (item: Log, index: number) =>
@@ -364,16 +357,6 @@ function ProjectPath() {
             <SupervisorGrants stepGransLog={stepGransLog} />
           ) : null}
           {/*  */}
-          {/* {activeStep !== followUps.log.length &&
-          stepGransLog &&
-          stepGransLog.proposal &&
-          stepGeneralLog?.user_role === 'CLIENT' &&
-          // stepGeneralLog.proposal.project_track === 'CONCESSIONAL_GRANTS' &&
-          stepGeneralLog.action !== 'send_back_for_revision' &&
-          stepGeneralLog.action !== 'step_back' &&
-          stepGeneralLog.action === 'project_completed' ? (
-            <ClientClosingReport stepGransLog={stepGransLog} />
-          ) : null} */}
           {/*  */}
           {proposal.proposal_logs.filter(
             (item: Log, index: number) =>

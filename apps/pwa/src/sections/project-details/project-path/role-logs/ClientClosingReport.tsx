@@ -124,13 +124,16 @@ function ClientClosingReport({ stepGransLog }: Props) {
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 <Typography>
                   {/* {translate(`review.target_group_type_enum.${closingReport.target_beneficiaries}`)} */}
-                  {target_type_map[
+                  {translate(
+                    `pages.common.close_report.text.option.${closingReport.target_beneficiaries}`
+                  )}
+                  {/* {target_type_map[
                     closingReport.target_beneficiaries.toUpperCase() as keyof BeneficiariesMap
                   ]
                     ? translate(
-                        `review.target_group_type_enum.${closingReport.target_beneficiaries.toUpperCase()}`
+                        `pages.common.close_report.text.option.${closingReport.target_beneficiaries}`
                       )
-                    : closingReport.target_beneficiaries}
+                    : closingReport.target_beneficiaries} */}
                 </Typography>
               </Stack>
             </Stack>

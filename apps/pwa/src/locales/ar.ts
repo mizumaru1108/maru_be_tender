@@ -1922,6 +1922,8 @@ const ar = {
     },
   },
   project_already_reviewed_by_supervisor: 'تمت مراجعة هذا المشروع بالفعل من قبل المشرف',
+  project_already_reviewed_by_project_manager: 'تمت مراجعة هذا المشروع بالفعل من قبل مدير المشروع',
+  project_already_reviewed_by_ceo: 'تمت مراجعة هذا المشروع بالفعل من قبل الرئيس التنفيذي',
   show_modified_fields: 'إظهار الحقول المعدلة',
   project_implementation_date: ' تاريخ تنفيذ المشروع:',
   where_to_implement_the_project: 'مكان تنفيذ المشروع:',

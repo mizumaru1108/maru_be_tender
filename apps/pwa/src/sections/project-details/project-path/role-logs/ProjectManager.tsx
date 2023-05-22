@@ -1,4 +1,5 @@
 import { Grid, Stack, Typography } from '@mui/material';
+import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import moment from 'moment';
 import React from 'react';
@@ -25,10 +26,11 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
         console.log('test ');
         return {
           ...currentProposal,
-          action: stepGeneralLog.action,
-          message: stepGeneralLog.message,
-          notes: stepGeneralLog.notes,
-          updated_at: stepGeneralLog.updated_at,
+          action: stepGeneralLog?.action || '',
+          message: stepGeneralLog?.message || '',
+          notes: stepGeneralLog?.notes || '',
+          updated_at: stepGeneralLog?.updated_at || '',
+          user_role: stepGeneralLog?.user_role || '',
           proposal: {
             accreditation_type_id: proposal.accreditation_type_id,
             added_value: proposal.added_value,
@@ -53,35 +55,29 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
             inclu_or_exclu: proposal.inclu_or_exclu,
             fsupport_by_supervisor: proposal.fsupport_by_supervisor,
             clause: proposal.clause,
+            most_clents_projects: proposal.most_clents_projects,
           },
         };
       });
     }
   }, [proposal, stepGeneralLog]);
-  // console.log('proposal.payments', batch);
-  // console.log('proposal.payments', proposal.payments);
 
-  const isVat = dataGrants
-    ? Object.entries(dataGrants!)
-        .filter(([key]) => key === 'vat')
-        .map(([key, value]) => {
-          if (value && value === true) {
-            return true;
-          } else {
-            return false;
-          }
-        })
-    : null;
+  // console.log('proposal.payments', proposal.payments);
 
   return (
     <React.Fragment>
       {isConsultation === false && stepGeneralLog.action !== 'accepted_by_project_manager' && (
         <React.Fragment>
-          <Typography variant="h6">{translate(`review.review_by_supervisor`)}</Typography>
           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Typography>
-                {translate('project_already_reviewed_by_supervisor')}{' '}
+                {translate(
+                  `${
+                    stepGeneralLog?.user_role === 'tender_ceo'
+                      ? 'project_already_reviewed_by_ceo'
+                      : 'project_already_reviewed_by_project_manager'
+                  }`
+                )}{' '}
                 {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
               </Typography>
             </Stack>
@@ -202,7 +198,13 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
         <Grid container spacing={2}>
           <Stack direction="column" gap={2} sx={{ pb: 2, px: 2 }}>
             <Typography>
-              {translate('project_already_reviewed_by_supervisor')}{' '}
+              {translate(
+                `${
+                  stepGeneralLog?.user_role === 'tender_ceo'
+                    ? 'project_already_reviewed_by_ceo'
+                    : 'project_already_reviewed_by_project_manager'
+                }`
+              )}{' '}
               {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
             </Typography>
           </Stack>
@@ -485,7 +487,7 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
                 ([key]) => key === 'inclu_or_exclu' || key === 'vat' || key === 'vat_percentage'
               )
               .map(([key, value]) => {
-                if (key === 'inclu_or_exclu' && isVat && isVat[0] === true) {
+                if (key === 'inclu_or_exclu' && proposal?.vat) {
                   return (
                     <Grid item xs={6} key={key}>
                       <Typography variant="h6">
@@ -502,7 +504,7 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
                     </Grid>
                   );
                 }
-                if (key === 'vat_percentage' && isVat && isVat[0] === true) {
+                if (key === 'vat_percentage' && proposal?.vat) {
                   return (
                     <Grid item xs={6} key={key}>
                       <Typography variant="h6">

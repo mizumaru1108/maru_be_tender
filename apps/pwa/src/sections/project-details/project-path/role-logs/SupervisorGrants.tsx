@@ -25,28 +25,19 @@ function SupervisorGrants({ stepGransLog }: Props) {
   if (stepGransLog && stepGransLog.message) {
     batch = Number(stepGransLog.message.split('_')[1]);
   }
-  const isVat = newProposal
-    ? Object.entries(newProposal!)
-        .filter(([key]) => key === 'vat')
-        .map(([key, value]) => {
-          if (value && value === true) {
-            return true;
-          } else {
-            return false;
-          }
-        })
-    : null;
 
   useEffect(() => {
     if (proposal) {
       setNewProposal((currentProposal: any) => {
-        console.log({ currentProposal });
+        // console.log({ currentProposal });
+        const tmpValue = { ...currentProposal };
         return {
           ...currentProposal,
           action: stepGransLog.action,
           message: stepGransLog.message,
           notes: stepGransLog.notes,
           updated_at: stepGransLog.updated_at,
+          user_role: stepGransLog.user_role,
           proposal: {
             accreditation_type_id: proposal.accreditation_type_id,
             added_value: proposal.added_value,
@@ -71,11 +62,14 @@ function SupervisorGrants({ stepGransLog }: Props) {
             inclu_or_exclu: proposal.inclu_or_exclu,
             fsupport_by_supervisor: proposal.fsupport_by_supervisor,
             clause: proposal.clause,
+            most_clents_projects: proposal.most_clents_projects,
           },
         };
       });
     }
   }, [proposal, stepGransLog]);
+
+  // console.log({ newProposal });
 
   // console.log(target_age_map, 'tesat');
   // console.log({ stepGransLog });
@@ -368,12 +362,12 @@ function SupervisorGrants({ stepGransLog }: Props) {
                   return null;
                 }
               })}
-            {Object.entries(stepGransLog.proposal!)
+            {Object.entries(proposal)
               .filter(
                 ([key]) => key === 'inclu_or_exclu' || key === 'vat' || key === 'vat_percentage'
               )
               .map(([key, value]) => {
-                if (key === 'inclu_or_exclu' && isVat && isVat[0] === true) {
+                if (key === 'inclu_or_exclu' && proposal?.vat) {
                   return (
                     <Grid item xs={6} key={key}>
                       <Typography variant="h6">
@@ -390,7 +384,7 @@ function SupervisorGrants({ stepGransLog }: Props) {
                     </Grid>
                   );
                 }
-                if (key === 'vat_percentage' && isVat && isVat[0] === true) {
+                if (key === 'vat_percentage' && proposal?.vat) {
                   return (
                     <Grid item xs={6} key={key}>
                       <Typography variant="h6">

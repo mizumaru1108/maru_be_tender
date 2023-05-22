@@ -81,7 +81,7 @@ function FloatingActionBar() {
 
   const checkConsultation =
     data && data.user && data.user.track && data.user.track.with_consultation;
-  console.log({ checkConsultation, data });
+  // console.log({ checkConsultation, data });
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
