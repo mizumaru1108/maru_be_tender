@@ -45,12 +45,14 @@ function ProposalOnAmandement() {
       });
       if (rest) {
         setCardData(
-          rest.data.data.map((item: any) => ({
-            ...item.proposal,
-            user: {
-              employee_name: item.user.employee_name,
-            },
-          }))
+          rest.data.data
+            .filter((item: any) => item.proposal.inner_status === 'ON_REVISION')
+            .map((item: any) => ({
+              ...item.proposal,
+              user: {
+                employee_name: item.user.employee_name,
+              },
+            }))
         );
       }
     } catch (err) {
