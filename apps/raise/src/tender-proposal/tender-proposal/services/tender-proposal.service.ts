@@ -76,6 +76,7 @@ import { SupervisorGrantTrackAccMapper } from '../mappers/supervisor-grant-track
 import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-track-acc.mapper';
 import { UpdateProposalTrackInfoMapper } from '../mappers/update-proposal-track-info.mapper';
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
+import { removePrefix } from '../../../tender-commons/utils/remove-966-prefix';
 
 @Injectable()
 export class TenderProposalService {
@@ -2050,18 +2051,23 @@ export class TenderProposalService {
     const clientPhone = isExistAndValidPhone(
       log.data.proposal.user.mobile_number,
     );
-    if (clientPhone) {
-      const sendClientNotif = this.msegatService.sendSMS({
-        numbers: clientPhone,
-        msg: subject + ',' + clientContent,
-      });
 
+    if (clientPhone) {
+      this.logger.log('info', `valid client phone ${clientPhone}`);
       if (actions === ProposalAction.ACCEPT) {
-        if (reviewerRole === 'tender_ceo') sendClientNotif;
+        if (reviewerRole === 'tender_ceo') {
+          await this.msegatService.sendSMSAsync({
+            numbers: clientPhone.substring(1),
+            msg: subject + ',' + clientContent,
+          });
+        }
       }
 
       if (actions === ProposalAction.REJECT) {
-        sendClientNotif;
+        await this.msegatService.sendSMSAsync({
+          numbers: clientPhone.substring(1),
+          msg: subject + ',' + clientContent,
+        });
       }
     }
 

@@ -3,7 +3,7 @@ export const isExistAndValidPhone = (phone: any) => {
     phone &&
     phone !== '' &&
     typeof phone === 'string' &&
-    ['+62', '+966'].some((countryCode) => phone.startsWith(countryCode))
+    ['+966'].some((countryCode) => phone.startsWith(countryCode))
   ) {
     return phone;
   }

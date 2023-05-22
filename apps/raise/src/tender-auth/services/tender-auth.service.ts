@@ -39,21 +39,19 @@ export class TenderAuthService {
       );
     }
 
-    const userData = await this.tenderUserRepository.findUser({
-      id: fusionAuthResponse.response.user.id,
-    });
-    if (!userData) {
-      throw new BadRequestException('User record not found in database');
-    }
+    // const userData = await this.tenderUserRepository.findUser({
+    //   id: fusionAuthResponse.response.user.id,
+    // });
+    // if (!userData) {
+    //   throw new BadRequestException('User record not found in database');
+    // }
 
-    const clientData = await this.tenderClientRepository.findClient({
-      user_id: fusionAuthResponse.response.user.id,
-    });
+    // const clientData = await this.tenderClientRepository.findClient({
+    //   user_id: fusionAuthResponse.response.user.id,
+    // });
 
     return {
       fusionAuthResponse,
-      userData,
-      clientData,
     };
   }
 

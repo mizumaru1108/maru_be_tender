@@ -123,9 +123,7 @@ export const UpdatePaymentNotifMapper = (
     clientEmailTemplateContext,
     reviewerId: [reviewer ? reviewer.id : ''],
     reviewerEmail: [reviewer ? reviewer.email : ''],
-    reviewerMobileNumber: [
-      reviewer && reviewer.mobile_number ? reviewer.mobile_number : '',
-    ],
+    reviewerMobileNumber: [''],
     reviewerContent,
     reviewerEmailTemplateContext,
     reviewerEmailTemplatePath,

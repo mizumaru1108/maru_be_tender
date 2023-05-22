@@ -1478,13 +1478,13 @@ export class TenderProposalRepository {
                 InnerStatusEnum.REQUESTING_CLOSING_FORM,
               ],
             },
-            payments: {
-              some: {
-                status: {
-                  in: ['done'],
-                },
-              },
-            },
+            // payments: {
+            //   some: {
+            //     status: {
+            //       in: ['done'],
+            //     },
+            //   },
+            // },
           };
         }
 
@@ -1495,7 +1495,7 @@ export class TenderProposalRepository {
             payments: {
               some: {
                 status: {
-                  in: ['accepted_by_finance', 'done'],
+                  in: [ProposalAction.ACCEPTED_BY_FINANCE, ProposalAction.DONE],
                 },
               },
             },
@@ -1505,29 +1505,29 @@ export class TenderProposalRepository {
         if (currentUser.choosenRole === 'tender_project_manager') {
           whereClause = {
             ...whereClause,
-            OR: [
-              { project_manager_id: currentUser.id },
-              { project_manager_id: null },
-            ],
+            // OR: [
+            //   { project_manager_id: currentUser.id },
+            //   { project_manager_id: null },
+            // ],
+            project_manager_id: currentUser.id,
             inner_status: {
               notIn: [
                 InnerStatusEnum.CREATED_BY_CLIENT,
                 InnerStatusEnum.ACCEPTED_BY_MODERATOR,
                 InnerStatusEnum.REJECTED_BY_MODERATOR,
-                InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
-                InnerStatusEnum.REJECTED_BY_SUPERVISOR,
-                InnerStatusEnum.ASKING_PROJECT_MANAGER_CHANGES,
-                InnerStatusEnum.REVISED_BY_PROJECT_MANAGER,
-                InnerStatusEnum.ASKING_PROJECT_MANAGER_CHANGES,
+                // InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
+                // InnerStatusEnum.REJECTED_BY_SUPERVISOR,
+                // InnerStatusEnum.ASKING_PROJECT_MANAGER_CHANGES,
+                // InnerStatusEnum.REVISED_BY_PROJECT_MANAGER,
               ],
             },
-            payments: {
-              some: {
-                status: {
-                  notIn: ['issued_by_supervisor'],
-                },
-              },
-            },
+            // payments: {
+            //   some: {
+            //     status: {
+            //       notIn: ['issued_by_supervisor'],
+            //     },
+            //   },
+            // },
           };
         }
 
@@ -1535,14 +1535,19 @@ export class TenderProposalRepository {
           whereClause = {
             ...whereClause,
             inner_status: {
-              in: [
-                'ACCEPTED_BY_CEO',
-                'REJECTED_BY_CEO',
-                InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
-                InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
-                InnerStatusEnum.DONE_BY_CASHIER,
-                InnerStatusEnum.REQUESTING_CLOSING_FORM,
-                InnerStatusEnum.PROJECT_COMPLETED,
+              // in: [
+              //   'ACCEPTED_BY_CEO',
+              //   'REJECTED_BY_CEO',
+              //   InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
+              //   InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
+              //   InnerStatusEnum.DONE_BY_CASHIER,
+              //   InnerStatusEnum.REQUESTING_CLOSING_FORM,
+              //   InnerStatusEnum.PROJECT_COMPLETED,
+              // ],
+              notIn: [
+                InnerStatusEnum.CREATED_BY_CLIENT,
+                InnerStatusEnum.ACCEPTED_BY_MODERATOR,
+                InnerStatusEnum.REJECTED_BY_MODERATOR,
               ],
             },
           };
