@@ -1,6 +1,11 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions"]
+  binaryTargets   = ["native"]
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
 }
 
 datasource db {
@@ -438,10 +443,9 @@ model edit_request_status {
 }
 
 model project_tracks {
-  id            String          @id(map: "project_kind_pkey") @unique(map: "project_kind_id_key")
-  proposal      proposal[]
-  track_section track_section[]
-  user          user[]
+  id       String     @id(map: "project_kind_pkey") @unique(map: "project_kind_id_key")
+  proposal proposal[]
+  user     user[]
 }
 
 model room_chat {
@@ -525,7 +529,7 @@ model banks {
   bank_name  String?
   created_at DateTime? @default(now()) @db.Timestamptz(6)
   updated_at DateTime? @default(now()) @db.Timestamptz(6)
-  is_deleted Boolean?
+  is_deleted Boolean?  @default(false)
 }
 
 model beneficiaries {
@@ -543,11 +547,12 @@ model recommended_support_consultant {
 }
 
 model track {
-  id                String     @id @db.VarChar
-  name              String?    @unique
-  with_consultation Boolean?   @default(false)
-  created_at        DateTime?  @default(now()) @db.Timestamptz(6)
+  id                String          @id @db.VarChar
+  name              String?         @unique
+  with_consultation Boolean?        @default(false)
+  created_at        DateTime?       @default(now()) @db.Timestamptz(6)
   proposal          proposal[]
+  track_section     track_section[]
   user              user[]
 }
 
@@ -557,9 +562,9 @@ model track_section {
   budget              Float           @db.Real
   section_id          String?
   is_leaf             Boolean?        @default(false)
-  track               String
+  track_id            String
+  track               track           @relation(fields: [track_id], references: [id], onDelete: Cascade)
   track_section       track_section?  @relation("track_sectionTotrack_section", fields: [section_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
-  project_tracks      project_tracks  @relation(fields: [track], references: [id], onDelete: Cascade)
   other_track_section track_section[] @relation("track_sectionTotrack_section")
 }
 

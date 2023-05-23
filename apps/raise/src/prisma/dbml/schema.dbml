@@ -1,0 +1,1554 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table bank_information {
+  user_id String [not null]
+  bank_account_name String
+  bank_account_number String
+  bank_name String
+  proposal_id String
+  id String [pk, unique]
+  card_image Json
+  is_deleted Boolean [default: false]
+  bank_id String
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  user user [not null]
+  proposal_bank_informationToproposal_proposal_bank_id proposal [not null]
+}
+
+Table client_data {
+  id String [pk]
+  entity String
+  authority String
+  headquarters String
+  date_of_esthablistmen DateTime
+  num_of_beneficiaries Int
+  num_of_employed_facility Int
+  governorate String
+  region String
+  entity_mobile String
+  center_administration String
+  twitter_acount String
+  phone String
+  website String
+  password String
+  license_number String [not null]
+  license_expired DateTime
+  license_issue_date DateTime
+  ceo_mobile String
+  ceo_name String
+  data_entry_mobile String
+  data_entry_name String
+  data_entry_mail String
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  client_field String
+  user_id String [unique, not null]
+  license_file Json
+  board_ofdec_file Json
+  chairman_name String
+  chairman_mobile String
+  qid Int
+  user user [not null]
+  client_log client_log [not null]
+}
+
+Table employees_permissions {
+  organization_id String
+  user_id String [not null]
+  director_of_baptisms_department Boolean [default: false]
+  director_of_initiatives_department Boolean [default: false]
+  director_of_mosque_administration Boolean [default: false]
+  director_of_charity_department Boolean [default: false]
+  president Boolean [default: false]
+  reports Boolean [default: false]
+  sorting_officer Boolean [default: false]
+  relationship_officer Boolean [default: false]
+  treasurer Boolean [default: false]
+  acountant Boolean [default: false]
+  edit_drop_down_menus Boolean [default: false]
+  entering_the_anual_plan Boolean [default: false]
+  user_and_permision Boolean [default: false]
+  correspondence Boolean [default: false]
+  advisors_committee Boolean [default: false]
+  project_supervisor Boolean [default: false]
+  id String [pk, unique]
+  user user [not null]
+}
+
+Table inquiry_type {
+  id String [pk]
+  contact_us contact_us [not null]
+}
+
+Table message {
+  id String [pk]
+  room_id String
+  owner_id String
+  read_status Boolean [default: false]
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  content_type_id String [not null]
+  content_title String
+  attachment Json
+  reply_id String
+  content String
+  receiver_id String
+  sender_role_as String
+  receiver_role_as String
+  content_type content_type [not null]
+  sender user
+  receiver user
+  room_chat room_chat
+  notification notification [not null]
+}
+
+Table organization {
+  id String [pk]
+  organization String [not null]
+}
+
+Table payment {
+  id String [pk]
+  payment_amount Decimal
+  proposal_id String [not null]
+  payment_date DateTime
+  status String [default: 'SET_BY_SUPERVISOR']
+  number_of_payments Decimal
+  order Decimal
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  proposal proposal [not null]
+  payment_status payment_status
+  cheques cheque [not null]
+}
+
+Table proposal {
+  id String [pk]
+  project_name String [not null]
+  submitter_user_id String [not null]
+  created_at DateTime [default: `now()`, not null]
+  project_track String
+  project_idea String
+  project_implement_date DateTime
+  project_location String
+  num_ofproject_binicficiaries Int
+  project_goals String
+  project_outputs String
+  project_strengths String
+  project_risks String
+  pm_name String
+  pm_email String
+  pm_mobile String
+  governorate String
+  region String
+  amount_required_fsupport Decimal
+  need_consultant Boolean [default: false]
+  step String [default: 'ZERO']
+  whole_budget Decimal
+  state String [default: 'MODERATOR']
+  inner_status String [default: 'CREATED_BY_CLIENT']
+  previously_add_bank String[] [not null]
+  outter_status String [default: 'ONGOING']
+  project_beneficiaries String
+  number_of_payments Decimal
+  finance_id String
+  cashier_id String
+  project_manager_id String
+  supervisor_id String
+  project_attachments Json
+  letter_ofsupport_req Json
+  on_revision Boolean [default: false]
+  on_consulting Boolean [default: false]
+  proposal_bank_id String
+  partial_support_amount Decimal
+  project_beneficiaries_specific_type String
+  track_id String
+  updated_at DateTime [default: `now()`]
+  clasification_field String
+  closing_report Boolean
+  support_type Boolean
+  does_an_agreement Boolean
+  need_picture Boolean
+  support_outputs String
+  clause String
+  vat Boolean
+  vat_percentage Int
+  inclu_or_exclu Boolean
+  fsupport_by_supervisor Decimal
+  number_of_payments_by_supervisor Decimal
+  chairman_of_board_of_directors String
+  been_supported_before Boolean
+  most_clents_projects String
+  added_value String
+  reasons_to_accept String
+  target_group_num Int
+  target_group_type String
+  target_group_age String
+  been_made_before Boolean
+  remote_or_insite String
+  old_inner_status String
+  support_goal_id String
+  accreditation_type_id String
+  execution_time Decimal
+  oid Int
+  project_number String [unique]
+  accreditation_type accreditation_type
+  proposal_beneficiaries proposal_beneficiaries
+  project_tracks project_tracks
+  project_manager user
+  bank_information bank_information
+  proposal_request proposal_request
+  user_type user_type
+  proposal_status proposal_status
+  proposal_step proposal_step
+  user user [not null]
+  supervisor user
+  support_goal support_goal
+  track track
+  notification notification [not null]
+  payments payment [not null]
+  proposal_asked_edit_request proposal_asked_edit_request [not null]
+  proposal_assign proposal_assign [not null]
+  proposal_closing_report proposal_closing_report [not null]
+  proposal_comment proposal_comment [not null]
+  proposal_edit_request proposal_edit_request
+  follow_ups proposal_follow_up [not null]
+  proposal_item_budgets proposal_item_budget [not null]
+  proposal_logs proposal_log [not null]
+  recommended_support_consultant recommended_support_consultant [not null]
+  payment_configuration supervisor [not null]
+}
+
+Table proposal_comment {
+  id String [pk, unique]
+  proposal_id String [not null]
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  comment String
+  user_id String
+  proposal proposal [not null]
+}
+
+Table proposal_item_budget {
+  id String [pk]
+  amount Decimal [not null]
+  explanation String [not null]
+  clause String [not null]
+  proposal_id String [not null]
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  proposal proposal [not null]
+}
+
+Table proposal_log {
+  id String [pk]
+  proposal_id String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
+  reviewer_id String
+  state String [not null]
+  notes String
+  action String
+  message String
+  user_role String
+  response_time Int
+  reject_reason String
+  user_type user_type [not null]
+  proposal proposal [not null]
+  reviewer user
+  notification notification [not null]
+}
+
+Table proposal_state {
+  id String [pk]
+}
+
+Table region {
+  id String [pk]
+  region String [not null]
+}
+
+Table user {
+  id String [pk, unique]
+  employee_name String
+  mobile_number String
+  email String [unique, not null]
+  updated_at DateTime [default: `now()`]
+  created_at DateTime [default: `now()`]
+  employee_path String
+  last_login DateTime [default: `now()`]
+  status_id String [not null]
+  address String
+  google_session Json
+  is_online Boolean
+  track_id String
+  employee_track project_tracks
+  track track
+  status user_status [not null]
+  appointment_appointment_employee_idTouser appointment [not null]
+  appointment_appointment_user_idTouser appointment [not null]
+  bank_information bank_information [not null]
+  client_data client_data
+  client_log client_log [not null]
+  contact_us_contact_us_receiver_idTouser contact_us [not null]
+  contact_us_contact_us_sender_idTouser contact_us [not null]
+  edit_requests_edit_requests_reviewer_idTouser edit_requests [not null]
+  edit_requests_edit_requests_user_idTouser edit_requests [not null]
+  email_record_email_record_receiver_idTouser email_record [not null]
+  email_record_email_record_sender_idTouser email_record [not null]
+  employees_permissions_employees_permissionsTouser employees_permissions [not null]
+  file_manager file_manager [not null]
+  message_messageTouser message [not null]
+  message_message_receiver_idTouser message [not null]
+  notifications notification [not null]
+  proposal_proposal_project_manager_idTouser proposal [not null]
+  proposals proposal [not null]
+  proposal_proposal_supervisor_idTouser proposal [not null]
+  proposal_asked_edit_request_proposal_asked_edit_request_sender_idTouser proposal_asked_edit_request [not null]
+  proposal_asked_edit_request_proposal_asked_edit_request_supervisor_idTouser proposal_asked_edit_request [not null]
+  proposal_edit_request_proposal_edit_request_reviewer_idTouser proposal_edit_request [not null]
+  proposal_edit_request_proposal_edit_request_user_idTouser proposal_edit_request [not null]
+  proposal_follow_up_proposal_follow_up_user_idTouser proposal_follow_up [not null]
+  proposal_log proposal_log [not null]
+  room_chat_as_participant1 room_chat [not null]
+  room_chat_as_participant2 room_chat [not null]
+  schedule schedule [not null]
+  roles user_role [not null]
+  user_status_log_userTouser_status_log_account_manager_id user_status_log [not null]
+  user_status_log_userTouser_status_log_user_id user_status_log [not null]
+}
+
+Table user_type {
+  id String [pk]
+  proposal proposal [not null]
+  proposal_assign proposal_assign [not null]
+  proposal_log proposal_log [not null]
+  user_by_role user_role [not null]
+}
+
+Table proposal_assign {
+  id Int [pk, increment]
+  proposal_id String [not null]
+  user_id String [not null]
+  assign String [not null]
+  created_at DateTime [default: `now()`, not null]
+  user_type user_type [not null]
+  proposal proposal [not null]
+}
+
+Table proposal_follow_up {
+  id String [pk]
+  proposal_id String [not null]
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  attachments Json
+  content String
+  user_id String [not null]
+  submitter_role String [not null]
+  employee_only Boolean [not null]
+  proposal proposal [not null]
+  user user [not null]
+}
+
+Table proposal_status {
+  id String [pk]
+  proposal proposal [not null]
+}
+
+Table client_log {
+  id String [pk]
+  reviewer_id String [not null]
+  organization_id String [not null]
+  note_account_information String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
+  status String [not null]
+  client_data client_data [not null]
+  user user [not null]
+  user_status user_status [not null]
+}
+
+Table proposal_request {
+  id String [pk]
+  proposal proposal [not null]
+}
+
+Table supervisor {
+  id String [pk]
+  user_id String [not null]
+  proposal_id String [not null]
+  clasification_field String [not null]
+  closing_report Boolean [not null]
+  support_type Boolean [not null]
+  does_an_agreement Boolean [not null]
+  need_picture Boolean [not null]
+  number_of_payments Decimal [not null]
+  support_amount Decimal [not null]
+  notes String
+  support_outputs String
+  clause String
+  vat Boolean
+  vat_percentage Int
+  inclu_or_exclu Boolean
+  support_goals String
+  proposal proposal [not null]
+}
+
+Table proposal_beneficiaries {
+  id String [pk]
+  proposal proposal [not null]
+}
+
+Table proposal_step {
+  id String [pk]
+  proposal proposal [not null]
+}
+
+Table cheque {
+  id String [pk]
+  payment_id String [not null]
+  deposit_date DateTime [not null]
+  number String [not null]
+  transfer_receipt Json [not null]
+  payment payment [not null]
+}
+
+Table payment_status {
+  id String [pk]
+  payment payment [not null]
+}
+
+Table correspondance_category {
+  id String [pk]
+  room_chat room_chat [not null]
+}
+
+Table edit_request_status {
+  id String [pk]
+  edit_requests edit_requests [not null]
+}
+
+Table project_tracks {
+  id String [pk, unique]
+  proposal proposal [not null]
+  user user [not null]
+}
+
+Table room_chat {
+  id String [pk]
+  correspondance_category_id String [not null]
+  participant1_user_id String
+  participant2_user_id String
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
+  correspondance_category correspondance_category [not null]
+  user_room_chat_participant1_user_idTouser user
+  user_room_chat_participant2_user_idTouser user
+  message message [not null]
+}
+
+Table contact_us {
+  id String [pk]
+  sender_id String [not null]
+  receiver_id String [not null]
+  inquiry_type String
+  title String
+  project_name String
+  message String
+  date_of_visit DateTime
+  reason_visit String
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  inquiry_type_contact_usToinquiry_type inquiry_type
+  user_contact_us_receiver_idTouser user [not null]
+  user_contact_us_sender_idTouser user [not null]
+}
+
+Table appointment {
+  id String [pk]
+  employee_id String [not null]
+  user_id String [not null]
+  meeting_url String [not null]
+  calendar_url String [not null]
+  date DateTime [not null]
+  start_time String [not null]
+  end_time String [not null]
+  reject_reason String
+  status String [not null]
+  day String [not null]
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  calendar_event_id String [not null]
+  employee user [not null]
+  client user [not null]
+  notification notification [not null]
+}
+
+Table schedule {
+  id String [pk]
+  user_id String [not null]
+  day String [not null]
+  start_time String
+  end_time String
+  user user [not null]
+}
+
+Table email_record {
+  id String [pk]
+  title String [not null]
+  content String [not null]
+  sender_id String [not null]
+  receiver_id String [not null]
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  receiver user [not null]
+  sender user [not null]
+}
+
+Table authority {
+  id String [pk]
+  title String [not null]
+}
+
+Table banks {
+  id String [pk]
+  bank_name String
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  is_deleted Boolean [default: false]
+}
+
+Table beneficiaries {
+  id String [pk]
+  title String [not null]
+}
+
+Table recommended_support_consultant {
+  clause String [not null]
+  explanation String [not null]
+  amount Int [not null]
+  id String [pk]
+  proposal_id String [not null]
+  proposal proposal [not null]
+}
+
+Table track {
+  id String [pk]
+  name String [unique]
+  with_consultation Boolean [default: false]
+  created_at DateTime [default: `now()`]
+  proposal proposal [not null]
+  track_section track_section [not null]
+  user user [not null]
+}
+
+Table track_section {
+  id String [pk]
+  name String [not null]
+  budget Float [not null]
+  section_id String
+  is_leaf Boolean [default: false]
+  track_id String [not null]
+  track_section track_section
+  track track [not null]
+  other_track_section track_section [not null]
+}
+
+Table user_status {
+  id String [pk]
+  client_log client_log [not null]
+  user user [not null]
+  user_status_log user_status_log [not null]
+}
+
+Table user_role {
+  id String [pk]
+  user_id String [not null]
+  user_type_id String [not null]
+  user user [not null]
+  user_type user_type [not null]
+}
+
+Table content_type {
+  id String [pk]
+  message message [not null]
+}
+
+Table accreditation_type {
+  id String [pk]
+  proposal proposal [not null]
+}
+
+Table project_timeline {
+  id String [pk]
+  name String [not null]
+  start_date DateTime [not null]
+  end_date DateTime [not null]
+  proposal_id String [not null]
+}
+
+Table support_goal {
+  id String [pk]
+  proposal proposal [not null]
+}
+
+Table notification {
+  id String [pk]
+  content String [not null]
+  proposal_id String
+  message_id String
+  appointment_id String
+  user_id String [not null]
+  type String [not null]
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  read_status Boolean [default: false]
+  subject String [not null]
+  proposal_log_id String
+  shown Boolean [not null, default: true]
+  specific_type String
+  appointment appointment
+  message message
+  proposal proposal
+  proposal_log proposal_log
+  user user [not null]
+}
+
+Table user_status_log {
+  id String [pk]
+  user_id String [not null]
+  account_manager_id String
+  status_id String [not null]
+  notes String
+  created_at DateTime [default: `now()`]
+  account_manager_detail user
+  user_status user_status [not null]
+  user_detail user [not null]
+}
+
+Table edit_requests {
+  id String [pk]
+  user_id String [not null]
+  reviewer_id String
+  status_id String [not null]
+  reject_reason String
+  rejected_at DateTime
+  accepted_at DateTime
+  created_at DateTime [default: `now()`, not null]
+  new_value String [not null]
+  old_value String [not null]
+  reviewer user
+  edit_request_status edit_request_status [not null]
+  user user [not null]
+}
+
+Table file_manager {
+  id String [pk]
+  name String [not null]
+  size Decimal [not null]
+  mimetype String [not null]
+  url String [unique, not null]
+  table_name String
+  column_name String
+  user_id String
+  is_deleted Boolean [not null, default: false]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
+  proposal_id String
+  bank_information_id String
+  fid Int
+  user user
+}
+
+Table bank_information2 {
+  user_id String
+  bank_account_name String
+  bank_account_number String
+  bank_name String
+  proposal_id String
+  id String [pk, default: '']
+  card_image String
+  is_deleted Boolean [default: false]
+}
+
+Table client_data2 {
+  id String [pk]
+  entity String
+  authority String
+  headquarters String
+  date_of_esthablistmen DateTime
+  num_of_beneficiaries Int
+  num_of_employed_facility Int
+  governorate String
+  region String
+  entity_mobile String
+  center_administration String
+  twitter_acount String
+  phone String
+  website String
+  password String
+  license_number String
+  license_expired DateTime
+  license_issue_date DateTime
+  ceo_mobile String
+  ceo_name String
+  data_entry_mobile String
+  data_entry_name String
+  data_entry_mail String
+  created_at DateTime
+  updated_at DateTime
+  client_field String
+  user_id String [not null]
+  license_file String
+  board_ofdec_file String
+  chairman_name String
+  chairman_mobile String
+  qid Int
+}
+
+Table proposal_edit_request {
+  id String [pk]
+  detail String [not null]
+  user_id String [not null]
+  reviewer_id String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
+  proposal_id String [unique, not null]
+  proposal proposal [not null]
+  reviewer user [not null]
+  user user [not null]
+}
+
+Table proposal_asked_edit_request {
+  id String [pk]
+  notes String [not null]
+  sender_id String [not null]
+  sender_role String [not null]
+  proposal_id String [not null]
+  created_at DateTime [default: `now()`, not null]
+  supervisor_id String
+  proposal proposal [not null]
+  sender user [not null]
+  supervisor user
+}
+
+Table proposal_closing_report {
+  id String [pk]
+  proposal_id String [not null]
+  number_of_beneficiaries Int [not null]
+  target_beneficiaries String [not null]
+  execution_place String [not null]
+  gender String [not null]
+  project_duration String [not null]
+  project_repeated String [not null]
+  number_of_volunteer Int [not null]
+  number_of_staff Int [not null]
+  attachments Json [not null]
+  images Json [not null]
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
+  proposal proposal [not null]
+}
+
+Table user3 {
+  id String [pk]
+  employee_name String
+  mobile_number String
+  email String [not null]
+  updated_at DateTime
+  created_at DateTime
+  employee_path String
+  last_login DateTime
+  status_id String [not null]
+  address String
+  google_session String
+  is_online String
+  fusionauth_id String
+}
+
+Table client_data4 {
+  id String [pk]
+  entity String
+  authority String
+  headquarters String
+  date_of_esthablistmen DateTime
+  num_of_beneficiaries Int
+  num_of_employed_facility Int
+  governorate String
+  region String
+  entity_mobile String
+  center_administration String
+  twitter_acount String
+  phone String
+  website String
+  password String
+  license_number String
+  license_expired DateTime
+  license_issue_date String
+  ceo_mobile String
+  ceo_name String
+  data_entry_mobile String
+  data_entry_name String
+  data_entry_mail String
+  created_at DateTime
+  updated_at DateTime
+  client_field String
+  user_id String [not null]
+  license_file String
+  board_ofdec_file String
+  chairman_name String
+  chairman_mobile String
+  qid Int
+}
+
+Table bank_information3 {
+  user_id String [not null]
+  bank_account_name String
+  bank_account_number String
+  bank_name String
+  proposal_id String
+  id String [pk, default: '']
+  card_image String
+  is_deleted Boolean [default: false]
+}
+
+Table proposal2 {
+  id String [pk]
+  project_name String [not null]
+  submitter_user_id String [not null]
+  created_at String [not null]
+  project_track String
+  project_idea String
+  project_implement_date String
+  project_location String
+  num_ofproject_binicficiaries String
+  project_goals String
+  project_outputs String
+  project_strengths String
+  project_risks String
+  pm_name String
+  pm_email String
+  pm_mobile String
+  governorate String
+  region String
+  amount_required_fsupport String
+  need_consultant String [default: 'false']
+  step String [default: 'ZERO']
+  whole_budget String
+  state String [default: 'MODERATOR']
+  inner_status String [default: 'CREATED_BY_CLIENT']
+  previously_add_bank String
+  outter_status String [default: 'ONGOING']
+  project_beneficiaries String
+  number_of_payments String
+  finance_id String
+  cashier_id String
+  project_manager_id String
+  supervisor_id String
+  project_attachments String
+  letter_ofsupport_req String
+  on_revision String [default: 'false']
+  on_consulting String [default: 'false']
+  proposal_bank_id String
+  partial_support_amount String
+  project_beneficiaries_specific_type String
+  track_id String
+  updated_at String [default: 'now()']
+  clasification_field String
+  closing_report String
+  support_type String
+  does_an_agreement String
+  need_picture String
+  support_outputs String
+  clause String
+  vat String
+  vat_percentage String
+  inclu_or_exclu String
+  fsupport_by_supervisor String
+  number_of_payments_by_supervisor String
+  chairman_of_board_of_directors String
+  been_supported_before String
+  most_clents_projects String
+  added_value String
+  reasons_to_accept String
+  target_group_num String
+  target_group_type String
+  target_group_age String
+  been_made_before String
+  remote_or_insite String
+  old_inner_status String
+  support_goal_id String
+  accreditation_type_id String
+  execution_time String
+  project_number Int
+  oid Int
+}
+
+Table user_role2 {
+  id String [pk]
+  user_id String [not null]
+  user_type_id String [not null]
+}
+
+Table file_manager4 {
+  id String [pk]
+  name String [not null]
+  size Decimal [not null]
+  mimetype String [not null]
+  url String
+  table_name String
+  column_name String
+  user_id String
+  is_deleted Boolean [not null, default: false]
+  created_at DateTime [not null]
+  updated_at DateTime [not null]
+  proposal_id String
+  bank_information_id String
+  fid String
+  source String
+}
+
+Table file_manager5 {
+  id String [pk]
+  name String [not null]
+  size Decimal [not null]
+  mimetype String [not null]
+  url String
+  table_name String
+  column_name String
+  user_id String
+  is_deleted Boolean [not null, default: false]
+  created_at DateTime [not null]
+  updated_at DateTime [not null]
+  proposal_id String
+  bank_information_id String
+  fid Int
+  source String
+}
+
+Table file_manager6 {
+  id String [pk]
+  name String [not null]
+  size Decimal [not null]
+  mimetype String [not null]
+  url String
+  table_name String
+  column_name String
+  user_id String
+  is_deleted Boolean [not null, default: false]
+  created_at DateTime [not null]
+  updated_at DateTime [not null]
+  proposal_id String
+  bank_information_id String
+  fid Int
+  source String
+  path1 String
+  path2 String
+  path3 String
+  path4 String
+}
+
+Table dept_1 {
+  id String [pk]
+  proj_id String
+  dept_1_path String
+  dept_1_tax_1 String
+  dept_1_tax_2 String
+  dept_1_tax_3 String
+  dept_1_tax_4 String
+  dept_1_tax_uid String
+  dept_1_tax_uid2 String
+  dept_1_op String
+  dept_1_notes String
+}
+
+Table dept_1001 {
+  id String [pk]
+  proj_id String
+  dept_1001_op String
+  dept_1001_notes String
+}
+
+Table dept_1002 {
+  id String [pk]
+  proj_id String
+  dept_1002_op String
+  dept_1002_notes String
+}
+
+Table dept_2 {
+  id String [pk]
+  proj_id String
+  dept_2_report String
+  dept_2_notify String
+  dept_2_agree String
+  dept_2_op String
+  dept_2_req String
+  dept_2_pay_times String
+  dept_2_notes String
+  dept_2_tax_1 String
+  dept_2_tax_2 String
+  dept_2_tax_3 String
+  dept_2_tax_4 String
+  dept_2_reject_st String
+  dept_2_notes1 String
+  dept_2_notes2 String
+  dept_2_notes3 String
+}
+
+Table dept_21 {
+  id String [pk]
+  proj_id String
+  dept_21_report String
+  dept_21_notify String
+  dept_21_agree String
+  dept_21_op String
+  dept_21_req String
+  dept_21_pay_times String
+  dept_21_notes String
+  dept_21_tax_1 String
+  dept_21_tax_2 String
+  dept_21_tax_3 String
+  dept_21_tax_4 String
+  dept_21_reject_st String
+  dept_21_notes1 String
+  dept_21_notes2 String
+  dept_21_notes3 String
+}
+
+Table dept_22 {
+  id String [pk]
+  proj_id String
+  dept_22_report String
+  dept_22_notify String
+  dept_22_agree String
+  dept_22_op String
+  dept_22_req String
+  dept_22_pay_times String
+  dept_22_notes String
+  dept_22_tax_1 String
+  dept_22_tax_2 String
+  dept_22_tax_3 String
+  dept_22_tax_4 String
+  dept_22_reject_st String
+  dept_22_notes1 String
+  dept_22_notes2 String
+  dept_22_notes3 String
+}
+
+Table dept_23 {
+  id String [pk]
+  proj_id String
+  dept_23_report String
+  dept_23_notify String
+  dept_23_agree String
+  dept_23_op String
+  dept_23_req String
+  dept_23_pay_times String
+  dept_23_notes String
+  dept_23_tax_1 String
+  dept_23_tax_2 String
+  dept_23_tax_3 String
+  dept_23_tax_4 String
+  dept_23_reject_st String
+  dept_23_notes1 String
+  dept_23_notes2 String
+  dept_23_notes3 String
+}
+
+Table dept_3 {
+  id String [pk]
+  proj_id String
+  dept_3_report String
+  dept_3_notify String
+  dept_3_agree String
+  dept_3_op String
+  dept_3_req String
+  dept_3_pay_times String
+  dept_3_notes String
+  dept_3_notes3 String
+}
+
+Table dept_4 {
+  id String [pk]
+  proj_id String
+  dept_4_report String
+  dept_4_notify String
+  dept_4_agree String
+  dept_4_op String
+  dept_4_req String
+  dept_4_pay_times String
+  dept_4_notes String
+  dept_4_notes3 String
+}
+
+Table dept_5 {
+  id String [pk]
+  proj_id String
+  dept_5_report String
+  dept_5_notify String
+  dept_5_agree String
+  dept_5_op String
+  dept_5_req String
+  dept_5_pay_times String
+  dept_5_notes String
+}
+
+Table dept_6 {
+  id String [pk]
+  proj_id String
+  dept_6_report String
+  dept_6_notify String
+  dept_6_agree String
+  dept_6_op String
+  dept_6_req String
+  dept_6_pay_times String
+  dept_6_notes String
+}
+
+Table dept_61 {
+  id String [pk]
+  proj_id String
+  dept_61_perm String
+  dept_61_created String
+}
+
+Table dept_7 {
+  id String [pk]
+  proj_id String
+  dept_7_perm String
+  dept_7_created String
+}
+
+Table dept_71 {
+  id String [pk]
+  proj_id String
+  dept_71_st String
+  dept_71_pay String
+}
+
+Table dept_72 {
+  id String [pk]
+  proj_id String
+  dept_72_st String
+  dept_72_st_fid String
+  pay String
+}
+
+Table dept_75 {
+  id String [pk]
+  proj_id String
+  dept_75_notes String
+}
+
+Table dept_8 {
+  id String [pk]
+  proj_id String
+  dept_8_perm String
+  dept_8_created String
+}
+
+Table dept_9 {
+  id String [pk]
+  proj_id String
+  dept_9_perm String
+  dept_9_created String
+}
+
+Table dept_91 {
+  id String [pk]
+  proj_id String
+  dept_91_num String
+  dept_91_num_fid String
+  dept_91_date String
+  pay String
+}
+
+Table file_manager2 {
+  id String [pk]
+  name String [not null]
+  size Decimal [not null]
+  mimetype String [not null]
+  url String
+  table_name String
+  column_name String
+  user_id String
+  is_deleted Boolean [not null, default: false]
+  created_at DateTime [not null]
+  updated_at DateTime [not null]
+  proposal_id String
+  bank_information_id String
+  fid String
+}
+
+Table file_manager3 {
+  id String [pk]
+  name String [not null]
+  size Decimal [not null]
+  mimetype String [not null]
+  url String
+  table_name String
+  column_name String
+  user_id String
+  is_deleted Boolean [not null, default: false]
+  created_at DateTime [not null]
+  updated_at DateTime [not null]
+  proposal_id String
+  bank_information_id String
+  fid String
+}
+
+Table files {
+  fid String [pk]
+  uid String
+  filename String
+  filepath String
+  filemime String
+  filesize String
+  status String
+  timestamp String
+  length String
+  views String
+  downloads String
+}
+
+Table proj_attach {
+  id String [pk]
+  proj_id String
+  created String
+  name String
+  fid String
+  uid String
+  is_agree String
+}
+
+Table proj_money_paid {
+  id String [pk]
+  proj_id String
+  pay String
+  state String
+  money String
+  mdate String
+  report String
+  rdate String
+  perm String
+  paid String
+  paid_acc String
+  report_acc String
+  date_paid String
+  date_paid_acc String
+  reportTxt String
+}
+
+Table proj_owners {
+  id String [pk]
+  uid String
+  proj_id String
+  state String
+  rate String
+  value1 String
+  value2 String
+  value3 String
+}
+
+Table proj_req {
+  id String [pk]
+  uid String [not null]
+  year String [not null]
+  proj_req_state String
+  created String [not null]
+  proj_req_proj String
+  proj_req_tax_1 String [not null]
+  proj_req_tax_2 String [not null]
+  proj_req_tax_3 String [not null]
+  proj_req_tax_4 String [not null]
+  proj_req_teaser String
+  proj_req_time String
+  proj_req_output String
+  proj_req_place String
+  proj_req_date String
+  proj_req_target String [not null]
+  proj_req_target2 String [not null]
+  proj_req_money_req String [not null]
+  proj_req_money_req_fid String [not null]
+  proj_req_money_req_fid2 String [not null]
+  proj_req_money_req_fid3 String [not null]
+  proj_req_proj_manger String
+  proj_req_proj_manger_mob String
+  proj_req_proj_manger_mail String
+  h_proj_req_bank String
+  h_proj_req_bank_name String
+  h_proj_req_bank_account_name String
+  h_proj_req_bank_account_num String
+}
+
+Table proj_track {
+  id String [pk]
+  proj_id String
+  created String
+  leaved String
+  sec_in String
+  sec_out String
+  sec_uid String
+  state String
+  ref_id String
+  notify String
+  notifyM String
+}
+
+Table proposal3 {
+  id String [pk]
+  project_name String [not null]
+  submitter_user_id String [not null]
+  created_at String [not null]
+  project_track String
+  project_idea String
+  project_implement_date String
+  project_location String
+  num_ofproject_binicficiaries String
+  project_goals String
+  project_outputs String
+  project_strengths String
+  project_risks String
+  pm_name String
+  pm_email String
+  pm_mobile String
+  governorate String
+  region String
+  amount_required_fsupport String
+  need_consultant String [default: 'false']
+  step String [default: 'ZERO']
+  whole_budget String
+  state String [default: 'MODERATOR']
+  inner_status String [default: 'CREATED_BY_CLIENT']
+  previously_add_bank String
+  outter_status String [default: 'ONGOING']
+  project_beneficiaries String
+  number_of_payments String
+  finance_id String
+  cashier_id String
+  project_manager_id String
+  supervisor_id String
+  project_attachments String
+  letter_ofsupport_req String
+  on_revision String [default: 'false']
+  on_consulting String [default: 'false']
+  proposal_bank_id String
+  partial_support_amount String
+  project_beneficiaries_specific_type String
+  track_id String
+  updated_at String [default: 'now()']
+  clasification_field String
+  closing_report String
+  support_type String
+  does_an_agreement String
+  need_picture String
+  support_outputs String
+  clause String
+  vat String
+  vat_percentage String
+  inclu_or_exclu String
+  fsupport_by_supervisor String
+  number_of_payments_by_supervisor String
+  chairman_of_board_of_directors String
+  been_supported_before String
+  most_clents_projects String
+  added_value String
+  reasons_to_accept String
+  target_group_num String
+  target_group_type String
+  target_group_age String
+  been_made_before String
+  remote_or_insite String
+  old_inner_status String
+  support_goal_id String
+  accreditation_type_id String
+  execution_time String
+  project_number Int
+  oid Int
+}
+
+Table type_reg_cont {
+  nid String [pk]
+  cont_mang_name String
+  cont_mang_mob String
+  cont_mang_mail String
+  cont_client_name String
+  cont_client_mob String
+  cont_client_mail String
+  cont_state String
+  cont_proj_result String
+  cont_notes String
+  cont_employ_uid String
+  cont_given_uid String
+  cont_mang_name2 String
+  cont_mang_mob2 String
+}
+
+Table user4 {
+  id String [pk]
+  employee_name String
+  mobile_number String
+  email String [not null]
+  updated_at DateTime
+  created_at DateTime
+  employee_path String
+  last_login DateTime
+  status_id String [not null]
+  address String
+  google_session String
+  is_online String
+  fusionauth_id String
+  entity String
+}
+
+Ref: bank_information.user_id > user.id [delete: Cascade]
+
+Ref: client_data.user_id - user.id [delete: Cascade]
+
+Ref: employees_permissions.user_id > user.id [delete: Cascade]
+
+Ref: message.content_type_id > content_type.id [delete: No Action]
+
+Ref: message.owner_id > user.id
+
+Ref: message.receiver_id > user.id
+
+Ref: message.room_id > room_chat.id [delete: Cascade]
+
+Ref: payment.proposal_id > proposal.id [delete: Cascade]
+
+Ref: payment.status > payment_status.id [delete: Cascade]
+
+Ref: proposal.accreditation_type_id > accreditation_type.id
+
+Ref: proposal.project_beneficiaries > proposal_beneficiaries.id [delete: Cascade]
+
+Ref: proposal.project_track > project_tracks.id [delete: Restrict]
+
+Ref: proposal.project_manager_id > user.id [delete: Cascade]
+
+Ref: proposal.proposal_bank_id > bank_information.id [delete: Cascade]
+
+Ref: proposal.outter_status > proposal_request.id [delete: No Action]
+
+Ref: proposal.state > user_type.id [delete: No Action]
+
+Ref: proposal.inner_status > proposal_status.id [delete: No Action]
+
+Ref: proposal.step > proposal_step.id [delete: No Action]
+
+Ref: proposal.submitter_user_id > user.id [delete: Cascade]
+
+Ref: proposal.supervisor_id > user.id [delete: Cascade]
+
+Ref: proposal.support_goal_id > support_goal.id
+
+Ref: proposal.track_id > track.id
+
+Ref: proposal_comment.proposal_id > proposal.id
+
+Ref: proposal_item_budget.proposal_id > proposal.id [delete: Cascade]
+
+Ref: proposal_log.state > user_type.id [delete: No Action]
+
+Ref: proposal_log.proposal_id > proposal.id [delete: Cascade]
+
+Ref: proposal_log.reviewer_id > user.id [delete: Restrict]
+
+Ref: user.employee_path > project_tracks.id [delete: No Action]
+
+Ref: user.track_id > track.id [delete: Cascade]
+
+Ref: user.status_id > user_status.id [delete: No Action]
+
+Ref: proposal_assign.assign > user_type.id [delete: No Action]
+
+Ref: proposal_assign.proposal_id > proposal.id [delete: Cascade]
+
+Ref: proposal_follow_up.proposal_id > proposal.id [delete: Cascade]
+
+Ref: proposal_follow_up.user_id > user.id [delete: Cascade]
+
+Ref: client_log.organization_id > client_data.id [delete: Cascade]
+
+Ref: client_log.reviewer_id > user.id [delete: Cascade]
+
+Ref: client_log.status > user_status.id [delete: No Action]
+
+Ref: supervisor.proposal_id > proposal.id [delete: Cascade]
+
+Ref: cheque.payment_id > payment.id [delete: Cascade]
+
+Ref: room_chat.correspondance_category_id > correspondance_category.id [delete: No Action]
+
+Ref: room_chat.participant1_user_id > user.id
+
+Ref: room_chat.participant2_user_id > user.id
+
+Ref: contact_us.inquiry_type > inquiry_type.id [delete: Restrict]
+
+Ref: contact_us.receiver_id > user.id
+
+Ref: contact_us.sender_id > user.id
+
+Ref: appointment.employee_id > user.id [delete: Cascade]
+
+Ref: appointment.user_id > user.id [delete: Cascade]
+
+Ref: schedule.user_id > user.id [delete: Cascade]
+
+Ref: email_record.receiver_id > user.id [delete: No Action]
+
+Ref: email_record.sender_id > user.id [delete: No Action]
+
+Ref: recommended_support_consultant.proposal_id > proposal.id [delete: Cascade]
+
+Ref: track_section.section_id - track_section.id [delete: Restrict]
+
+Ref: track_section.track_id > track.id [delete: Cascade]
+
+Ref: user_role.user_id > user.id [delete: Cascade]
+
+Ref: user_role.user_type_id > user_type.id [delete: Cascade]
+
+Ref: notification.appointment_id > appointment.id
+
+Ref: notification.message_id > message.id [delete: Cascade]
+
+Ref: notification.proposal_id > proposal.id
+
+Ref: notification.proposal_log_id > proposal_log.id [delete: Cascade]
+
+Ref: notification.user_id > user.id [delete: Cascade]
+
+Ref: user_status_log.account_manager_id > user.id [delete: Cascade]
+
+Ref: user_status_log.status_id > user_status.id [delete: Cascade]
+
+Ref: user_status_log.user_id > user.id [delete: Cascade]
+
+Ref: edit_requests.reviewer_id > user.id [delete: Cascade]
+
+Ref: edit_requests.status_id > edit_request_status.id [delete: Cascade]
+
+Ref: edit_requests.user_id > user.id [delete: Cascade]
+
+Ref: file_manager.user_id > user.id [delete: Cascade]
+
+Ref: proposal_edit_request.proposal_id - proposal.id [delete: Cascade]
+
+Ref: proposal_edit_request.reviewer_id > user.id [delete: Cascade]
+
+Ref: proposal_edit_request.user_id > user.id [delete: Cascade]
+
+Ref: proposal_asked_edit_request.proposal_id > proposal.id [delete: Cascade]
+
+Ref: proposal_asked_edit_request.sender_id > user.id [delete: Cascade]
+
+Ref: proposal_asked_edit_request.supervisor_id > user.id [delete: Cascade]
+
+Ref: proposal_closing_report.proposal_id > proposal.id [delete: Cascade]

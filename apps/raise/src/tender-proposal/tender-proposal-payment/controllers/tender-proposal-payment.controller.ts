@@ -102,7 +102,7 @@ export class TenderProposalPaymentController {
       response.data,
       response.total,
       filter.page || 1,
-      filter.limit || 10,
+      filter.limit || 0,
       HttpStatus.OK,
       'Success',
     );

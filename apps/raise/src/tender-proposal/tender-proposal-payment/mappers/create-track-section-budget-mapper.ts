@@ -11,7 +11,7 @@ export const CreateTrackBudgetMapper = (
         id: uuidv4(),
         name: request.name,
         budget: request.budget,
-        track: trackId,
+        track_id: trackId,
       };
     });
 

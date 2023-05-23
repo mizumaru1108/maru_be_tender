@@ -24,6 +24,7 @@ import {
 } from '../dtos/requests';
 import { CloseReportNotifMapper } from '../mappers';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
+import { Sql } from '@prisma/client/runtime';
 
 @Injectable()
 export class TenderProposalPaymentRepository {
@@ -699,31 +700,34 @@ export class TenderProposalPaymentRepository {
 
   async findTrackBudget(filter: FindTrackBudgetFilter) {
     try {
-      const { limit = 10, page = 1 } = filter;
+      const { limit = 0, page = 1 } = filter;
       const offset = (page - 1) * limit;
 
-      const response: any = await this.prismaService.$queryRaw`
-      SELECT 
-        track.id as id,
-        track.name as name,
-        COALESCE(SUM(track_section.budget), 0) as budget,
+      let query: Sql = Prisma.sql`SELECT 
+      track.id as id,
+      track.name as name,
+      COALESCE(SUM(track_section.budget), 0) as budget,
         (
           SELECT 
             COALESCE(JSON_AGG(track_section), '[]'::json) 
           FROM 
             track_section 
           WHERE 
-            track.name = track_section.track
+            track.id = track_section.track_id
         ) as sections,
         COUNT(*) over() as total
       FROM 
         track 
-        INNER JOIN track_section ON track.name = track_section.track
+        LEFT JOIN track_section ON track.id = track_section.track_id
       GROUP BY 
         track.id, track.name
-        LIMIT ${limit}
-        OFFSET ${offset}
-      `;
+      OFFSET ${offset}`;
+
+      if (limit > 0) {
+        query = Prisma.sql`${query} LIMIT ${limit}`;
+      }
+
+      const response: any = await this.prismaService.$queryRaw(query);
       return response;
     } catch (error) {
       const theError = prismaErrorThrower(
