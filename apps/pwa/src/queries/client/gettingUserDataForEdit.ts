@@ -30,7 +30,7 @@ query MyQuery($id: String = "") {
       chairman_mobile
       entity_mobile
     }
-    bank_informations {
+    bank_informations(where: {is_deleted: {_eq: false}}) {
       bank_account_name
       bank_account_number
       bank_name
@@ -44,6 +44,7 @@ query MyQuery($id: String = "") {
     email
   }
 }
+
 
 
 `;

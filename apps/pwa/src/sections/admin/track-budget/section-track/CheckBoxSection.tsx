@@ -37,18 +37,18 @@ export default function CheckBoxSection({ item, state, setState }: IPropsCheckbo
     if (checked) {
       setState((prevValue: { name: string; budget: number; track_ids: string[] | [] }) => ({
         ...prevValue,
-        track_ids: [...state.track_ids, item.name!],
+        track_ids: [...state.track_ids, item.id!],
       }));
     } else {
       setState((prevValue: { name: string; budget: number; track_ids: string[] | [] }) => ({
         ...prevValue,
-        track_ids: state.track_ids.filter((v: any) => v !== item.name!),
+        track_ids: state.track_ids.filter((v: any) => v !== item.id!),
       }));
     }
   };
 
   useEffect(() => {
-    if (item.name === 'INITIATIVES' || item.id === params.id) {
+    if (item.id === params.id) {
       setExpand(expand ? false : true);
     }
 
@@ -80,8 +80,8 @@ export default function CheckBoxSection({ item, state, setState }: IPropsCheckbo
           </IconButton>
         </Stack>
         {expand &&
-          (item.sections.length
-            ? item.sections.map((v, i) => (
+          (item.track_sections.length
+            ? item.track_sections.map((v, i) => (
                 <Stack
                   direction="row"
                   key={i}

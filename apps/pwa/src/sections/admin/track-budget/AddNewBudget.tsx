@@ -50,7 +50,7 @@ export default function AddNewBudget({ onClose, tracks }: IPropsNewBudget) {
   const defaultValues = {
     name: '',
     budget: 0,
-    track_ids: ['INITIATIVES'],
+    track_ids: [],
   };
 
   const [formState, setFormState] = useState<FormData>(defaultValues);
@@ -124,6 +124,7 @@ export default function AddNewBudget({ onClose, tracks }: IPropsNewBudget) {
     }
   };
 
+  console.log({ formState });
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container spacing={3} sx={{ mt: 1 }}>

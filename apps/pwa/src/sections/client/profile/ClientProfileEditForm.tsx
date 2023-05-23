@@ -77,12 +77,9 @@ function ClientProfileEditForm() {
       region: '',
       governorate: '',
       center_administration: '',
-      // entity_mobile: '',
       phone: '',
       twitter_acount: '',
       website: '',
-      // email: '',
-      // password: '',
     },
     form3: {
       license_number: '',
@@ -151,26 +148,15 @@ function ClientProfileEditForm() {
     setStep(newValue);
   };
   useEffect(() => {
-    if (
-      // data?.user_by_pk?.bank_informations.length > 0 &&
-      data?.user_by_pk?.client_data &&
-      data?.user_by_pk?.email
-    ) {
-      // console.log('data?.user_by_pk:', data?.user_by_pk);
+    if (data?.user_by_pk?.client_data && data?.user_by_pk?.email) {
       const { client_data: client, bank_informations } = data?.user_by_pk;
-      // console.log({ bank_informations });
       const checkedBanks = bank_informations.findIndex(
         (bank: any) => bank && bank.bank_list && bank.bank_list.is_deleted
       );
       const numberOfBank = bank_informations.filter(
         (bank: any) => bank && bank.bank_list && bank.bank_list.is_deleted
       );
-      // console.log({ numberOfBank });
       if (checkedBanks > -1) {
-        // setEditedTabs({
-        //   ...editedTabs,
-        //   form5: 'register_fifth_tap',
-        // });
         setEditedTabs((editedTabs) => ({
           ...editedTabs,
           form5: 'register_fifth_tap',
@@ -267,12 +253,8 @@ function ClientProfileEditForm() {
     }
   }, [data]);
 
-  // console.log({ startedValue });
-  // console.log('editedTabs', editedTabs.form5);
-
   const onSubmit1 = (data: MainValuesProps) => {
     window.scrollTo(0, 0);
-    // console.log(data);
     if (isEdit && isEdit.form1) {
       setIsEdit((prevIsEdit: any) => ({
         ...prevIsEdit,

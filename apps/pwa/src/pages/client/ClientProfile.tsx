@@ -223,47 +223,6 @@ function ClientProfile() {
 
   if (error) return <>{error.message}</>;
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-
-  // const {
-  //   user_by_pk: {
-  //     client_data: {
-  //       headquarters,
-  //       authority,
-  //       center_administration,
-  //       ceo_mobile,
-  //       ceo_name,
-  //       data_entry_mail,
-  //       data_entry_mobile,
-  //       data_entry_name,
-  //       date_of_esthablistmen,
-  //       entity,
-  //       governorate,
-  //       license_expired,
-  //       license_file,
-  //       license_issue_date,
-  //       license_number,
-  //       num_of_beneficiaries,
-  //       num_of_employed_facility,
-  //       phone,
-  //       region,
-  //       twitter_acount,
-  //       website,
-  //       chairman_name,
-  //       chairman_mobile,
-  //       entity_mobile,
-  //       board_ofdec_file,
-  //     },
-  //     email,
-  //     bank_informations,
-  //   },
-  //   proposal_aggregate: {
-  //     aggregate: { count: completed_projects },
-  //   },
-  // } = data;
-  // console.log({ clientProfiles, data });
-  // console.log('type :', typeof board_ofdec_file);
-
   return (
     // <Page title="My Profile">
     <Page title={translate('pages.common.my_profile')}>

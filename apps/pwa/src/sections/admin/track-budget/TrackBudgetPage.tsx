@@ -19,7 +19,7 @@ export interface IDataTracks {
   id: string | null;
   name: string | null;
   budget: number;
-  sections:
+  track_sections:
     | {
         id: string | null;
         name: string | null;
@@ -82,7 +82,7 @@ export default function TrackBudgetPage() {
         track {
           id
           name
-          sections{
+          track_sections{
             id
             name
             budget

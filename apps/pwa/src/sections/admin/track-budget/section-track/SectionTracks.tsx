@@ -44,8 +44,7 @@ export default function SectionTracks() {
     track: track_by_pk(id: $track_id) {
       name
       id
-      budget
-      sections{
+      track_sections{
         id
         name
         budget
@@ -68,6 +67,8 @@ export default function SectionTracks() {
 
   if (fetching) return <>Loading ...</>;
   if (error) return <>Opps, something went wrong ...</>;
+
+  // console.log({ data });
 
   return (
     <Container>
@@ -120,7 +121,7 @@ export default function SectionTracks() {
             </Stack>
           </Grid>
           {!fetching && data
-            ? data.track.sections.map(
+            ? data.track.track_sections.map(
                 (item: { id: string; budget: number; name: string }, index: number) => (
                   <Grid key={index} item md={12} xs={12}>
                     <Box

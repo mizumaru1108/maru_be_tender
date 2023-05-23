@@ -50,7 +50,7 @@ export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
   const defaultValues = {
     name: '',
     budget: 0,
-    track_ids: [`${tracks.name}`],
+    track_ids: [],
   };
 
   const [formState, setFormState] = useState<FormData>(defaultValues);
