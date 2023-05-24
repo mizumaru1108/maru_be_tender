@@ -179,20 +179,7 @@ export class GsAuthService {
             },
           ],
           clientContent:
-            'A request to reset your Giving Sadaqah password has been made.',
-          reviewerId: [],
-          reviewerEmail: [organizationData.contactEmail],
-          reviewerContent:
-            'There is a new reset password donor that you should check!',
-          reviewerMobileNumber: [],
-          reviwerSubject: 'Donor has made a request reset password...',
-          // reviewerEmailTemplatePath: `gs/en/register/new_donor_organization`,
-          // reviewerEmailTemplateContext: [
-          //   {
-          //     donor_email: fusionCheckUser.user.email,
-          //     donor_name: fusionCheckUser.user.firstName,
-          //   },
-          // ],
+            'A request to reset your Giving Sadaqah Account has been made.',
           createManyWebNotifPayload: [],
         };
 
