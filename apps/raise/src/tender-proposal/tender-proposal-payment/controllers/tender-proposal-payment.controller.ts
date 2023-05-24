@@ -108,7 +108,12 @@ export class TenderProposalPaymentController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_admin')
+  @TenderRoles(
+    'tender_admin',
+    'tender_project_supervisor',
+    'tender_project_manager',
+    'tender_ceo',
+  )
   @Get('find-track-budget')
   async findTrackBudgetsByTrackId(
     @Query() filter: FindTrackBudgetFilter,
