@@ -98,6 +98,7 @@ export class PaymentPaytabsService {
   ) {}
 
   async paytabsRequest(payloadRequest: PaymentPaytabsDto) {
+    const baseUrl = process.env.TENDER_BASE_URL;
     const ObjectId = require('mongoose').Types.ObjectId;
     let currency = payloadRequest.currency;
     let isAnonymous = false;
@@ -295,9 +296,8 @@ export class PaymentPaytabsService {
         cart_id: `${donationLogId}`,
         tran_type: PaytabsTranType.SALE,
         tran_class: PaytabsTranClass.ECOM,
-        // callback: `http://localhost:3001/paytabs/callback-single/webhook`,
-        callback: `http://localhost:3001/donor/donate-item/callback`,
-        // return: payloadRequest.success_url,
+        callback: `${baseUrl}/paytabs/callback-single`,
+        return: payloadRequest.success_url,
         framed: true,
         hide_shipping: true,
         customer_details: {
@@ -437,9 +437,10 @@ export class PaymentPaytabsService {
   }
 
   async paytabsSingleCallback(request: PaytabsIpnWebhookResponsePayload) {
-    const now = moment().toISOString();
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const now = new Date();
     const order_id = request.tran_ref;
-    let paymentStatus: DonationStatus = DonationStatus.PENDING;
+    let payment_status: DonationStatus = DonationStatus.PENDING;
     let anonymousData = null;
 
     try {
@@ -454,22 +455,22 @@ export class PaymentPaytabsService {
 
       switch (request.payment_result.response_status!) {
         case PaytabsResponseStatus.A:
-          paymentStatus = DonationStatus.SUCCESS;
+          payment_status = DonationStatus.SUCCESS;
           break;
         case PaytabsResponseStatus.D:
-          paymentStatus = DonationStatus.DECLINED;
+          payment_status = DonationStatus.DECLINED;
           break;
         case PaytabsResponseStatus.E:
-          paymentStatus = DonationStatus.ERROR;
+          payment_status = DonationStatus.ERROR;
           break;
         case PaytabsResponseStatus.H:
-          paymentStatus = DonationStatus.HOLD;
+          payment_status = DonationStatus.HOLD;
           break;
         case PaytabsResponseStatus.P:
-          paymentStatus = DonationStatus.PENDING;
+          payment_status = DonationStatus.PENDING;
           break;
         case PaytabsResponseStatus.V:
-          paymentStatus = DonationStatus.VOIDED;
+          payment_status = DonationStatus.VOIDED;
           break;
 
         default:
@@ -493,6 +494,106 @@ export class PaymentPaytabsService {
         anonymousData = await this.anonymousModel.findOne({
           _id: donationLog.donorId,
         });
+      }
+
+      if (donationLog.campaignId && request.cart_amount) {
+        let updateCampaignDonationLog;
+
+        const getCampaign = await this.campaignModel
+          .findOne({
+            _id: donationLog.campaignId,
+          })
+          .exec();
+
+        if (!getCampaign) {
+          throw new HttpException(
+            `request rejected campaignId not found`,
+            HttpStatus.NOT_FOUND,
+          );
+        }
+
+        const amount_progress = Number(getCampaign.amountProgress.toString());
+        const amount_target = Number(getCampaign.amountTarget.toString());
+
+        const subtotalAmountCampaign = (
+          amount_progress + Number(request.cart_amount)
+        ).toString();
+
+        if (getCampaign.campaignType && getCampaign.campaignType === 'zakat') {
+          updateCampaignDonationLog = await this.donationLogsModel.updateOne(
+            {
+              _id: paymentData.donationId,
+              transactionId: order_id,
+              donorUserId: donationLog.donorId,
+              campaignId: ObjectId(donationLog.campaignId),
+            },
+            { donationStatus: payment_status, updatedAt: now },
+          );
+        } else {
+          updateCampaignDonationLog = await this.donationLogModel.updateOne(
+            {
+              _id: paymentData.donationId,
+              transactionId: order_id,
+              donorUserId: donationLog.donorId,
+              campaignId: ObjectId(donationLog.campaignId),
+            },
+            { donationStatus: payment_status, updatedAt: now },
+          );
+        }
+
+        if (!updateCampaignDonationLog) {
+          throw new BadRequestException(`donation failed update to mongodb`);
+        }
+
+        const updateCampaign = await this.campaignModel.updateOne(
+          { _id: getCampaign._id },
+          {
+            amountProgress: Number(subtotalAmountCampaign),
+            updatedAt: now,
+          },
+        );
+
+        if (!updateCampaign) {
+          throw new HttpException(
+            'failed update campaign data',
+            HttpStatus.BAD_REQUEST,
+          );
+        } else if (
+          amount_target == Number(subtotalAmountCampaign) ||
+          Number(subtotalAmountCampaign) > Number(request.cart_amount)
+        ) {
+          await this.campaignModel.updateOne(
+            { _id: getCampaign._id },
+            {
+              isFinished: 'Y',
+            },
+          );
+        }
+
+        const updatePaymentData = await this.paymentDataModel.updateOne(
+          { orderId: order_id },
+          {
+            paymentStatus: payment_status,
+            responseMessage: payment_status,
+            cardType: request.payment_info?.card_type || '',
+            cardScheme: request.payment_info?.card_scheme || '',
+            paymentDescription: request.payment_info?.payment_description || '',
+            expiryMonth: Number(request.payment_info?.expiryMonth) || undefined,
+            expiryYear: Number(request.payment_info?.expiryYear) || undefined,
+            responseStatus: request.payment_result?.response_status || '',
+            responseCode: request.payment_result?.response_code || '',
+            cvvResult: request.payment_result?.cvv_result || '',
+            avsResult: request.payment_result?.avs_result || '',
+            transactionTime: request.payment_result?.transaction_time || '',
+          },
+        );
+
+        if (!updatePaymentData) {
+          throw new HttpException(
+            'failed inserting transaction data',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
       }
 
       return {

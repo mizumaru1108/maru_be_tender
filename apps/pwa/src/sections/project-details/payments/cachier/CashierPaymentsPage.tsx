@@ -30,8 +30,10 @@ function CashierPaymentsPage() {
     const payment_actual_done = proposal.payments.filter(
       (el: { status: string }) => el.status === 'done'
     ).length;
-
-    if (payment_actual_done === acc_payments && proposal.inner_status !== 'DONE_BY_CASHIER') {
+    if (
+      payment_actual_done === Number(acc_payments) &&
+      proposal.inner_status !== 'DONE_BY_CASHIER'
+    ) {
       setPayementDone(true);
     } else {
       setPayementDone(false);

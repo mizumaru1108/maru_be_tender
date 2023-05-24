@@ -40,7 +40,7 @@ export default function Section({ item }: IPropsSection) {
     setLoadingDelete(true);
 
     try {
-      const { status } = await axiosInstance.put(
+      const { status } = await axiosInstance.patch(
         '/tender/proposal/payment/delete-track-budget',
         { id: item.id },
         {
