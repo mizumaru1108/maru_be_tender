@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 // @mui
 import { Grid, Stack, Typography, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -37,6 +37,7 @@ export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
+  console.log({ tracks });
 
   const SubmitFormSchema = Yup.object().shape({
     budget: Yup.number()
@@ -120,6 +121,14 @@ export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
       }
     }
   };
+  useEffect(() => {
+    if (tracks && tracks.id) {
+      setFormState((data: any) => {
+        const tmpValues = { ...data };
+        return { ...data, track_ids: [tracks.id] };
+      });
+    }
+  }, [tracks]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>

@@ -45,7 +45,7 @@ export default function TrackBudgetPage() {
 
     try {
       const { status, data } = await axiosInstance.get(
-        '/tender/proposal/payment/find-track-budget',
+        '/tender/proposal/payment/find-track-budgets',
         {
           headers: { 'x-hasura-role': activeRole! },
         }
@@ -169,12 +169,14 @@ export default function TrackBudgetPage() {
               </Button>
             </Stack>
           </Grid>
-          {tracksValue.length
-            ? tracksValue.map((item: IDataTracks, index: number) => (
-                <Grid item md={12} xs={12} key={index}>
-                  <Track key={index} name={item.name} id={item.id} budget={item.budget} />
-                </Grid>
-              ))
+          {tracksTempValue.length
+            ? tracksTempValue
+                .sort((orderA, orderB) => orderB.budget - orderA.budget)
+                .map((item: IDataTracks, index: number) => (
+                  <Grid item md={12} xs={12} key={index}>
+                    <Track key={index} name={item.name} id={item.id} budget={item.budget} />
+                  </Grid>
+                ))
             : null}
         </Grid>
       ) : (
