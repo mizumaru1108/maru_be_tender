@@ -98,7 +98,7 @@ export class PaymentPaytabsService {
   ) {}
 
   async paytabsRequest(payloadRequest: PaymentPaytabsDto) {
-    const baseUrl = process.env.TENDER_BASE_URL;
+    // const baseUrl = process.env.TENDER_BASE_URL;
     const ObjectId = require('mongoose').Types.ObjectId;
     let currency = payloadRequest.currency;
     let isAnonymous = false;
@@ -296,7 +296,7 @@ export class PaymentPaytabsService {
         cart_id: `${donationLogId}`,
         tran_type: PaytabsTranType.SALE,
         tran_class: PaytabsTranClass.ECOM,
-        callback: `${baseUrl}/paytabs/callback-single`,
+        callback: `https://api-staging.tmra.io/v2/raise/paytabs/callback-single`,
         return: payloadRequest.success_url,
         framed: true,
         hide_shipping: true,
@@ -545,29 +545,31 @@ export class PaymentPaytabsService {
           throw new BadRequestException(`donation failed update to mongodb`);
         }
 
-        const updateCampaign = await this.campaignModel.updateOne(
-          { _id: getCampaign._id },
-          {
-            amountProgress: Number(subtotalAmountCampaign),
-            updatedAt: now,
-          },
-        );
-
-        if (!updateCampaign) {
-          throw new HttpException(
-            'failed update campaign data',
-            HttpStatus.BAD_REQUEST,
-          );
-        } else if (
-          amount_target == Number(subtotalAmountCampaign) ||
-          Number(subtotalAmountCampaign) > Number(request.cart_amount)
-        ) {
-          await this.campaignModel.updateOne(
+        if (payment_status === DonationStatus.SUCCESS) {
+          const updateCampaign = await this.campaignModel.updateOne(
             { _id: getCampaign._id },
             {
-              isFinished: 'Y',
+              amountProgress: Number(subtotalAmountCampaign),
+              updatedAt: now,
             },
           );
+
+          if (!updateCampaign) {
+            throw new HttpException(
+              'failed update campaign data',
+              HttpStatus.BAD_REQUEST,
+            );
+          } else if (
+            amount_target == Number(subtotalAmountCampaign) ||
+            Number(subtotalAmountCampaign) > Number(request.cart_amount)
+          ) {
+            await this.campaignModel.updateOne(
+              { _id: getCampaign._id },
+              {
+                isFinished: 'Y',
+              },
+            );
+          }
         }
 
         const updatePaymentData = await this.paymentDataModel.updateOne(
