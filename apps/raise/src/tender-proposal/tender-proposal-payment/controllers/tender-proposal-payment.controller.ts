@@ -5,7 +5,6 @@ import {
   HttpStatus,
   Patch,
   Post,
-  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -92,7 +91,7 @@ export class TenderProposalPaymentController {
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
-  @Get('find-track-budget')
+  @Get('find-track-budgets')
   async findTrackBudgets(
     @Query() filter: FindTrackBudgetFilter,
   ): Promise<ManualPaginatedResponse<any>> {
@@ -105,6 +104,21 @@ export class TenderProposalPaymentController {
       filter.limit || 0,
       HttpStatus.OK,
       'Success',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Get('find-track-budget')
+  async findTrackBudgetsByTrackId(
+    @Query() filter: FindTrackBudgetFilter,
+  ): Promise<BaseResponse<any>> {
+    const response = await this.paymentService.findTrackBudget(filter);
+
+    return baseResponseHelper(
+      response,
+      HttpStatus.OK,
+      'Asking for changes successfully applied!, please wait untill account manager responded to your request',
     );
   }
 
@@ -193,7 +207,7 @@ export class TenderProposalPaymentController {
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
-  @Put('delete-track-budget')
+  @Patch('delete-track-budget')
   async deleteTrackBudget(
     @Body() request: DeleteTrackBudgetDto,
   ): Promise<BaseResponse<any>> {

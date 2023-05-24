@@ -54,6 +54,7 @@ import { CreateChequeMapper, CreateClosingReportMapper } from '../mappers';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
 import { CreateTrackBudgetMapper } from '../mappers/create-track-section-budget-mapper';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
+import { logUtil } from '../../../commons/utils/log-util';
 
 @Injectable()
 export class TenderProposalPaymentService {
@@ -154,12 +155,12 @@ export class TenderProposalPaymentService {
   }
 
   async findTrackBudgets(request: FindTrackBudgetFilter) {
-    const response = await this.paymentRepo.findTrackBudget(request);
-
+    const response = await this.paymentRepo.findTrackBudgets(request);
     return {
       data:
         response.length > 0
           ? response.map((res: any) => {
+              console.log(res.name);
               return {
                 id: res.id,
                 name: res.name,
@@ -169,6 +170,23 @@ export class TenderProposalPaymentService {
             })
           : [],
       total: response.length > 0 ? Number(response[0].total) : 0,
+    };
+  }
+
+  async findTrackBudget(request: FindTrackBudgetFilter) {
+    if (!request.id) {
+      throw new BadRequestException('Please specify the track id!');
+    }
+    const result = await this.paymentRepo.findTrackBudget(request);
+    // console.log('result on service', result)
+    return {
+      data: {
+        id: result.id,
+        name: result.name,
+        budget: Number(result.budget),
+        sections: result.sections,
+        used_on: result.used_on,
+      },
     };
   }
 
@@ -386,7 +404,9 @@ export class TenderProposalPaymentService {
     );
 
     if (response.closeReportNotif && send) {
-      await this.notificationService.sendSmsAndEmailBatch(response.closeReportNotif);
+      await this.notificationService.sendSmsAndEmailBatch(
+        response.closeReportNotif,
+      );
     }
 
     return response.updatedProposal;

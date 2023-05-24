@@ -540,6 +540,7 @@ Table track {
   name String [unique]
   with_consultation Boolean [default: false]
   created_at DateTime [default: `now()`]
+  is_deleted Boolean [default: false]
   proposal proposal [not null]
   track_section track_section [not null]
   user user [not null]
@@ -552,6 +553,7 @@ Table track_section {
   section_id String
   is_leaf Boolean [default: false]
   track_id String [not null]
+  is_deleted Boolean [default: false]
   track_section track_section
   track track [not null]
   other_track_section track_section [not null]

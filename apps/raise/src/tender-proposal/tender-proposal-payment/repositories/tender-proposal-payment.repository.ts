@@ -663,10 +663,11 @@ export class TenderProposalPaymentRepository {
       `Create new track section with payload of \n ${logUtil(id)}`,
     );
     try {
-      return await this.prismaService.track_section.delete({
+      return await this.prismaService.track_section.update({
         where: {
           id,
         },
+        data: { is_deleted: true },
       });
     } catch (error) {
       const theError = prismaErrorThrower(
@@ -698,7 +699,7 @@ export class TenderProposalPaymentRepository {
     }
   }
 
-  async findTrackBudget(filter: FindTrackBudgetFilter) {
+  async findTrackBudgets(filter: FindTrackBudgetFilter) {
     try {
       const { limit = 0, page = 1 } = filter;
       const offset = (page - 1) * limit;
@@ -714,11 +715,14 @@ export class TenderProposalPaymentRepository {
             track_section 
           WHERE 
             track.id = track_section.track_id
+            AND track_section.is_deleted = false
         ) as sections,
         COUNT(*) over() as total
       FROM 
         track 
         LEFT JOIN track_section ON track.id = track_section.track_id
+      WHERE
+        track.is_deleted = false
       GROUP BY 
         track.id, track.name
       OFFSET ${offset}`;
@@ -729,6 +733,57 @@ export class TenderProposalPaymentRepository {
 
       const response: any = await this.prismaService.$queryRaw(query);
       return response;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderProposalPaymentRepository.name,
+        'findUsers Error:',
+        `finding users!`,
+      );
+      throw theError;
+    }
+  }
+
+  async findTrackBudget(filter: FindTrackBudgetFilter) {
+    try {
+      const { id } = filter;
+
+      let query: Sql = Prisma.sql`SELECT 
+      track.id::text as id,
+      track.name as name,
+      COALESCE(SUM(track_section.budget), 0) as budget,
+      (
+        SELECT
+          COALESCE(JSON_AGG(track_section), '[]'::json)
+        FROM
+          track_section
+        WHERE
+          track.id = track_section.track_id
+          AND track_section.is_deleted = false
+      ) as sections,
+      (
+        SELECT
+          COALESCE(JSON_AGG(json_build_object('id', proposal.id::text, 'project_name', proposal.project_name)), '[]'::json)
+        FROM
+          proposal
+        WHERE
+          track.id = proposal.track_id
+      ) as used_on,
+      COUNT(*) over() as total
+    FROM
+      track
+      LEFT JOIN track_section ON track.id = track_section.track_id
+    WHERE
+      track.is_deleted = false
+      AND track.id = ${id}
+    GROUP BY
+      track.id, track.name`;
+
+      console.log({ query });
+
+      const response: any = await this.prismaService.$queryRaw(query);
+      if (response.length === 0) return null;
+      return response[0];
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
