@@ -692,6 +692,10 @@ export class OrganizationService {
     paymentGatewayDto.name = paymentGatewayDto.name.toUpperCase();
     paymentGatewayDto.updatedAt = now.toISOString();
 
+    if (paymentGatewayDto.name === 'PAYTABS') {
+      paymentGatewayDto.profileId = paymentGatewayDto.profileName;
+    }
+
     const paymentGatewayUpdate =
       await this.paymentGatewayModel.findOneAndUpdate(
         { organizationId: new Types.ObjectId(organizationId) },

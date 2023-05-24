@@ -39,11 +39,6 @@ export class PaymentGateWayDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  profileId: string;
-
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
   profileName: string;
 
   @ApiProperty()

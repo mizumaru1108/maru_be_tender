@@ -64,6 +64,7 @@ import { twilioConfig } from './commons/configs/twilio-config';
 import { TenderFileManagerModule } from './tender-file-manager/tender-file-manager.module';
 import { tenderAppConfig } from './commons/configs/tender-app-config';
 import { mseGatConfig } from './commons/configs/msegat-config';
+import { PaymentPaytabsModule } from './payment-paytabs/payment-paytabs.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -169,6 +170,7 @@ import { mseGatConfig } from './commons/configs/msegat-config';
     TenderEventsModule,
     TenderNotificationModule,
     TenderFileManagerModule,
+    PaymentPaytabsModule,
   ],
   controllers: [],
 })

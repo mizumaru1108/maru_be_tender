@@ -23,6 +23,7 @@ export class PaytabsService {
   async createTransaction(
     paytabsPaymentRequest: PaytabsPaymentRequestPayloadModel,
     serverKey?: string,
+    endpointUrl?: string,
   ): Promise<PaytabsCreateTransactionResponse> {
     // console.log('paytabsPaymentRequest', paytabsPaymentRequest);
     let auth = '';
@@ -43,13 +44,15 @@ export class PaytabsService {
         Authorization: auth,
       },
       data: paytabsPaymentRequest,
-      url: 'https://secure.paytabs.sa/payment/request',
+      url: endpointUrl
+        ? endpointUrl
+        : 'https://secure.paytabs.sa/payment/request',
     };
     console.debug(`POST ${options.url} using request.body=`, options.data);
 
     try {
       const data = await axios(options);
-      // console.log('data', data);
+
       return data.data;
     } catch (err) {
       console.error(

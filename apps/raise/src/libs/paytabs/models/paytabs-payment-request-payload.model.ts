@@ -3,6 +3,7 @@ import { PaytabsTranClass } from '../enums/paytabs-tran-class.enum';
 import { PaytabsTranType } from '../enums/paytabs-tran-type.enum';
 import { PaytabsCustomerDetailsModel } from './paytabs-customer-details.model';
 import { PaytabsPaymentResultModel } from './paytabs-payment-result.model';
+import { PaytabsCardDetailsModel } from './paytabs-card-details.model';
 
 /**
  * Paytabs payment request payload model
@@ -90,6 +91,7 @@ export class PaytabsPaymentRequestPayloadModel {
    * optional for annonymous customer
    */
   public customer_details?: PaytabsCustomerDetailsModel;
+  public card_details?: PaytabsCardDetailsModel;
   public payment_result?: PaytabsPaymentResultModel;
 
   constructor(
@@ -105,6 +107,7 @@ export class PaytabsPaymentRequestPayloadModel {
     framed: boolean,
     hide_shipping: boolean,
     customer_details?: PaytabsCustomerDetailsModel,
+    card_details?: PaytabsCardDetailsModel,
     payment_result?: PaytabsPaymentResultModel,
   ) {
     this.profile_id = profile_id;
@@ -119,6 +122,7 @@ export class PaytabsPaymentRequestPayloadModel {
     this.framed = framed;
     this.hide_shipping = hide_shipping;
     this.customer_details = customer_details;
+    this.card_details = card_details;
     this.payment_result = payment_result;
   }
 }

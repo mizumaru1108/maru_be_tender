@@ -563,8 +563,8 @@ model track_section {
   section_id          String?
   is_leaf             Boolean?        @default(false)
   track_id            String
-  track               track           @relation(fields: [track_id], references: [id], onDelete: Cascade)
   track_section       track_section?  @relation("track_sectionTotrack_section", fields: [section_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  track               track           @relation(fields: [track_id], references: [id], onDelete: Cascade)
   other_track_section track_section[] @relation("track_sectionTotrack_section")
 }
 

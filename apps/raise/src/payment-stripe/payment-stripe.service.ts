@@ -1199,13 +1199,13 @@ export class PaymentStripeService {
 
       // Get Donor Data
       const donor = await this.userModel.findOne(
-        { _id: donationId },
+        { _id: payment.donorId },
         { _id: 0, firstName: 1, lastName: 2, email: 3 },
       );
 
       if (!donor) {
         anonymousData = await this.anonymousModel.findOne(
-          { _id: donationId },
+          { _id: payment.donorId },
           {
             _id: 0,
             isEmailChecklist: 1,

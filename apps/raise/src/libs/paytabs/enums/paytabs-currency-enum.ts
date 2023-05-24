@@ -69,4 +69,10 @@ export enum PaytabsCurrencyEnum {
    * Iraq
    */
   IQD = 'IQD',
+
+  /**
+   * Country Support:
+   * Indonesia
+   */
+  IDR = 'IDR',
 }
