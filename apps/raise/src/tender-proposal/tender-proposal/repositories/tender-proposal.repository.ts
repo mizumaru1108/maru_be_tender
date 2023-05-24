@@ -741,7 +741,11 @@ export class TenderProposalRepository {
       const { entity, project_name, page = 1, limit = 10 } = filter;
       const offset = (page - 1) * limit;
 
-      let whereClause: Prisma.proposal_edit_requestWhereInput = {};
+      let whereClause: Prisma.proposal_edit_requestWhereInput = {
+        proposal: {
+          outter_status: { in: [OutterStatusEnum.ON_REVISION] },
+        },
+      };
 
       if (currentUser.choosenRole === 'tender_project_supervisor') {
         whereClause = {
@@ -752,9 +756,6 @@ export class TenderProposalRepository {
         whereClause = {
           ...whereClause,
           user_id: currentUser.id,
-          proposal: {
-            outter_status: { in: [OutterStatusEnum.ON_REVISION] },
-          },
         };
       }
 

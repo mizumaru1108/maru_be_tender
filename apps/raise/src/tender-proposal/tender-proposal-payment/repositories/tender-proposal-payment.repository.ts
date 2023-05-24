@@ -748,38 +748,55 @@ export class TenderProposalPaymentRepository {
     try {
       const { id } = filter;
 
-      let query: Sql = Prisma.sql`SELECT 
-      track.id::text as id,
-      track.name as name,
-      COALESCE(SUM(track_section.budget), 0) as budget,
-      (
-        SELECT
-          COALESCE(JSON_AGG(track_section), '[]'::json)
+      let query: Sql = Prisma.sql`
+      SELECT
+        track.id::text as id,
+        track.name as name,
+        COALESCE(SUM(track_section.budget), 0) as budget,
+        (
+          SELECT
+            COALESCE(JSON_AGG(track_section), '[]'::json)
+          FROM
+            track_section
+          WHERE
+            track.id = track_section.track_id
+            AND track_section.is_deleted = false
+        ) as sections,
+        (
+          SELECT
+            COALESCE(
+              JSON_AGG(
+                json_build_object(
+                  'id', proposal.id::text,
+                  'project_name', proposal.project_name::text,
+                  'budget_used',COALESCE(proposal.fsupport_by_supervisor, 0)
+                )
+              ),
+              '[]'::json
+            )
+          FROM
+            proposal
+          WHERE
+            track.id = proposal.track_id
+        ) as used_on,
+        COALESCE(
+        (
+         SELECT
+            SUM(COALESCE(proposal.fsupport_by_supervisor, 0))
+          FROM
+            proposal
+          WHERE
+            track.id = proposal.track_id
+        ),0) AS total_budget_used
         FROM
-          track_section
+          track
+        LEFT JOIN
+          track_section ON track.id = track_section.track_id
         WHERE
-          track.id = track_section.track_id
-          AND track_section.is_deleted = false
-      ) as sections,
-      (
-        SELECT
-          COALESCE(JSON_AGG(json_build_object('id', proposal.id::text, 'project_name', proposal.project_name)), '[]'::json)
-        FROM
-          proposal
-        WHERE
-          track.id = proposal.track_id
-      ) as used_on,
-      COUNT(*) over() as total
-    FROM
-      track
-      LEFT JOIN track_section ON track.id = track_section.track_id
-    WHERE
-      track.is_deleted = false
-      AND track.id = ${id}
-    GROUP BY
-      track.id, track.name`;
-
-      console.log({ query });
+          track.is_deleted = false
+          AND track.id = ${id}
+        GROUP BY
+        track.id, track.name`;
 
       const response: any = await this.prismaService.$queryRaw(query);
       if (response.length === 0) return null;

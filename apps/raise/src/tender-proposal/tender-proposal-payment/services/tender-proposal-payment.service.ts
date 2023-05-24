@@ -184,8 +184,17 @@ export class TenderProposalPaymentService {
         id: result.id,
         name: result.name,
         budget: Number(result.budget),
+        total_budget_used: Number(result.total_budget_used),
+        remaining_budget:
+          Number(result.budget) - Number(result.total_budget_used),
         sections: result.sections,
-        used_on: result.used_on,
+        used_on: result.used_on.map((used: any) => {
+          return {
+            id: used.id,
+            project_name: used.project_name,
+            budget_used: Number(used.budget_used),
+          };
+        }),
       },
     };
   }
