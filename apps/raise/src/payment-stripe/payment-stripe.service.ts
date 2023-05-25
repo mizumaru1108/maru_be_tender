@@ -1229,7 +1229,7 @@ export class PaymentStripeService {
           throw new BadRequestException(`donation failed update to mongodb`);
         }
 
-        if (payment_status == 'SUCCESS') {
+        if (payment_status === 'SUCCESS') {
           const updateCampaign = await this.campaignModel.updateOne(
             { _id: getCampaign._id },
             {
@@ -1330,14 +1330,14 @@ export class PaymentStripeService {
           throw new HttpException('incorrect orderId', HttpStatus.BAD_REQUEST);
         }
 
-        const getDonationLog = await this.donationLogsModel.findOne(
-          { _id: donationId },
-          { _id: 0, campaignId: 1, currency: 2, amount: 3 },
-        );
+        // const getDonationLog = await this.donationLogsModel.findOne(
+        //   { _id: donationId },
+        //   { _id: 0, campaignId: 1, currency: 2, amount: 3 },
+        // );
 
-        if (!getDonationLog) {
-          throw new HttpException('incorrect orderId', HttpStatus.NOT_FOUND);
-        }
+        // if (!getDonationLog) {
+        //   throw new HttpException('incorrect orderId', HttpStatus.NOT_FOUND);
+        // }
 
         for (let i = 0; i < campaigns.length; i++) {
           campaignIds.push(campaigns[i]._id);
@@ -1346,7 +1346,7 @@ export class PaymentStripeService {
             amount: campaigns[i].amount,
           });
 
-          if (payment_status == 'SUCCESS') {
+          if (payment_status === 'SUCCESS') {
             const getCampaign = await this.campaignModel.findOne(
               { _id: campaigns[i]._id },
               { _id: 1, amountProgress: 1, amountTarget: 1, title: 1 },

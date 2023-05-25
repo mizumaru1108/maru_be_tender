@@ -39,4 +39,16 @@ export class PaymentPaytabsController {
       requestCartResponse.message,
     );
   }
+
+  @Post('/callback-cart')
+  async callbackCart(@Body() payload: PaymentPaytabsCallbackDto) {
+    const callbackCartResponse =
+      await this.paymentPaytabsService.paytabsCartCallback(payload);
+
+    return baseResponseHelper(
+      callbackCartResponse,
+      HttpStatus.OK,
+      callbackCartResponse.message,
+    );
+  }
 }
