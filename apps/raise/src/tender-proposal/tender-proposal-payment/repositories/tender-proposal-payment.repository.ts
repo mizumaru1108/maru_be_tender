@@ -704,31 +704,57 @@ export class TenderProposalPaymentRepository {
       const { limit = 0, page = 1 } = filter;
       const offset = (page - 1) * limit;
 
-      let query: Sql = Prisma.sql`SELECT 
-      track.id as id,
+      let query: Sql = Prisma.sql`
+      SELECT
+      track.id::text as id,
       track.name as name,
       COALESCE(SUM(track_section.budget), 0) as budget,
-        (
-          SELECT 
-            COALESCE(JSON_AGG(track_section), '[]'::json) 
-          FROM 
-            track_section 
-          WHERE 
-            track.id = track_section.track_id
-            AND track_section.is_deleted = false
-        ) as sections,
-        COUNT(*) over() as total
-      FROM 
-        track 
-        LEFT JOIN track_section ON track.id = track_section.track_id
+      (
+        SELECT
+          COALESCE(JSON_AGG(track_section), '[]'::json)
+        FROM
+          track_section
+        WHERE
+          track.id = track_section.track_id
+          AND track_section.is_deleted = false
+      ) as sections,
+      (
+        SELECT
+          COALESCE(
+            JSON_AGG(
+              json_build_object(
+                'id', proposal.id::text,
+                'project_name', proposal.project_name::text,
+                'budget_used',COALESCE(proposal.fsupport_by_supervisor, 0)
+              )
+            ),
+            '[]'::json
+          )
+        FROM
+          proposal
+        WHERE
+          track.id = proposal.track_id
+      ) as used_on,
+      COALESCE(
+      (
+       SELECT
+          SUM(COALESCE(proposal.fsupport_by_supervisor, 0))
+        FROM
+          proposal
+        WHERE
+          track.id = proposal.track_id
+      ),0) AS total_budget_used
+      FROM
+        track
+      LEFT JOIN
+        track_section ON track.id = track_section.track_id
       WHERE
         track.is_deleted = false
-      GROUP BY 
-        track.id, track.name
-      OFFSET ${offset}`;
+      GROUP BY
+      track.id, track.name`;
 
       if (limit > 0) {
-        query = Prisma.sql`${query} LIMIT ${limit}`;
+        query = Prisma.sql`${query} LIMIT ${limit} OFFSET ${offset}`;
       }
 
       const response: any = await this.prismaService.$queryRaw(query);

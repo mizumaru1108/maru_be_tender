@@ -160,12 +160,21 @@ export class TenderProposalPaymentService {
       data:
         response.length > 0
           ? response.map((res: any) => {
-              console.log(res.name);
               return {
                 id: res.id,
                 name: res.name,
                 budget: Number(res.budget),
+                total_budget_used: Number(res.total_budget_used),
+                remaining_budget:
+                  Number(res.budget) - Number(res.total_budget_used),
                 sections: res.sections,
+                used_on: res.used_on.map((used: any) => {
+                  return {
+                    id: used.id,
+                    project_name: used.project_name,
+                    budget_used: Number(used.budget_used),
+                  };
+                }),
               };
             })
           : [],
