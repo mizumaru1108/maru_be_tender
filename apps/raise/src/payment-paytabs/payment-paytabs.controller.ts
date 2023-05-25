@@ -27,4 +27,16 @@ export class PaymentPaytabsController {
       callbackResponse.message,
     );
   }
+
+  @Post('/request-cart')
+  async requestCart(@Body() request: PaymentPaytabsDto) {
+    const requestCartResponse =
+      await this.paymentPaytabsService.paytabsRequestCart(request);
+
+    return baseResponseHelper(
+      requestCartResponse,
+      HttpStatus.OK,
+      requestCartResponse.message,
+    );
+  }
 }

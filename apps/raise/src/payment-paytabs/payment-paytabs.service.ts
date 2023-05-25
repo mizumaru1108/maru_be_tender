@@ -98,7 +98,6 @@ export class PaymentPaytabsService {
   ) {}
 
   async paytabsRequest(payloadRequest: PaymentPaytabsDto) {
-    // const baseUrl = process.env.TENDER_BASE_URL;
     const ObjectId = require('mongoose').Types.ObjectId;
     let currency = payloadRequest.currency;
     let isAnonymous = false;
@@ -391,7 +390,7 @@ export class PaymentPaytabsService {
         await this.anonymousModel.findOneAndUpdate(
           { _id: payloadRequest.donorId },
           {
-            donationLogId: donationLogId,
+            // donationLogId: donationLogId,
             isEmailChecklist: payloadRequest.isEmailChecklist,
             anonymous: payloadRequest.isAnonymous,
           },
@@ -604,6 +603,363 @@ export class PaymentPaytabsService {
       };
     } catch (error) {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async paytabsRequestCart(request: PaymentPaytabsDto) {
+    const ObjectId = require('mongoose').Types.ObjectId;
+    let isAnonymous = false;
+    let donor = null;
+    let currency = request.currency;
+    let paytabsResponse: PaytabsCreateTransactionResponse | null = null;
+
+    try {
+      /**
+       * ? Validate request payload
+       * @body request payload
+       */
+      if (
+        !request.organizationId ||
+        !ObjectId.isValid(request.organizationId) ||
+        !request.donorId ||
+        !request.success_url ||
+        !request.cancel_url ||
+        !request.total_amount ||
+        !request.data_basket?.length
+      ) {
+        throw new HttpException(`Bad Request`, HttpStatus.BAD_REQUEST);
+      }
+      this.logger.info(`Finding organization ${request.organizationId}`);
+
+      const getOrganization = await this.organizationModel.findOne({
+        _id: request.organizationId,
+      });
+
+      /**
+       * * Finding organization
+       */
+      if (!getOrganization) {
+        throw new HttpException(
+          'Request rejected organizationId not found',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      /**
+       * ? Validate currency
+       */
+      const currencyOptions = getOrganization.currencyOptions as string[];
+      const defaultCurrency = getOrganization.defaultCurrency;
+
+      if (!currencyOptions.includes(currency)) {
+        throw new HttpException(
+          `Request rejected currency options is not allowed!`,
+          HttpStatus.BAD_REQUEST,
+        );
+      } else {
+        currency = defaultCurrency;
+      }
+
+      /**
+       * * Finding campaign list
+       */
+
+      const campaigns = request.data_basket;
+      const campaignIds: any[] = [];
+      const totalAmounts: { id: string; amount: number }[] = [];
+
+      for (let i = 0; i < campaigns.length; i++) {
+        campaignIds.push(campaigns[i]._id);
+        totalAmounts.push({
+          id: campaigns[i]._id,
+          amount: campaigns[i].amount,
+        });
+      }
+
+      this.logger.info(`Finding campaign id list ${campaignIds}`);
+
+      const getCampaign = await this.campaignModel
+        .find({
+          _id: { $in: campaignIds },
+        })
+        .exec();
+
+      if (!getCampaign) {
+        throw new HttpException(
+          'Request rejected campaignId not found',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      getCampaign.map((e) => {
+        const amount_to_pay = totalAmounts.find((el) => el.id === e.id)?.amount;
+        const amount_progress = parseInt(e.amountProgress.toString());
+        const amount_target = parseInt(e.amountTarget.toString());
+
+        if (amount_progress + amount_to_pay! > amount_target) {
+          throw new HttpException(
+            `Amount is larger than the limit the target of campaign ${e.id}`,
+            HttpStatus.BAD_REQUEST,
+          );
+        } else return e;
+      });
+
+      /**
+       * * Finding Secret Key
+       * ? for validating can use payment gateway or not
+       */
+      this.logger.info(`Finding secretKey ${getOrganization._id}`);
+      const getSecretKey = await this.paymentGatewayModel.findOne({
+        organizationId: ObjectId(getOrganization._id),
+        name: 'PAYTABS',
+      });
+
+      if (!getSecretKey) {
+        throw new HttpException(
+          'Organization can not use Paytabs Payment Gateway',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      /**
+       * * Finding Donor Data
+       * ? Validate first avail in userModel or donorModel or anonymousModel
+       * @returns donor data
+       */
+
+      if (request.donorId) {
+        if (!ObjectId.isValid(request.donorId)) {
+          donor = await this.userModel
+            .findOne(
+              {
+                _id: request.donorId,
+              },
+              {
+                _id: true,
+                email: true,
+                name: true,
+                firstname: true,
+                lastname: true,
+                type: true,
+              },
+            )
+            .exec();
+        } else {
+          donor = await this.donorModel
+            .aggregate([
+              {
+                $match: {
+                  _id: ObjectId(request.donorId),
+                },
+              },
+              { $limit: 1 },
+              { $addFields: { type: 'donor' } },
+              {
+                $project: {
+                  _id: 1,
+                  email: 1,
+                  firstName: 1,
+                  lastName: 1,
+                  type: 1,
+                },
+              },
+            ])
+            .then((items) => items[0]);
+
+          if (!donor) {
+            donor = await this.anonymousModel
+              .aggregate([
+                {
+                  $match: {
+                    _id: ObjectId(request.donorId),
+                  },
+                },
+                { $limit: 1 },
+                { $addFields: { type: 'donor' } },
+                {
+                  $project: {
+                    _id: 1,
+                    email: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    type: 1,
+                  },
+                },
+              ])
+              .then((items) => items[0]);
+
+            if (!donor) {
+              throw new HttpException(
+                'User not found! donation service is not available.',
+                HttpStatus.BAD_REQUEST,
+              );
+            } else {
+              isAnonymous = true;
+            }
+          }
+        }
+      }
+
+      if (donor && donor.type && donor.type !== 'donor') {
+        throw new HttpException(
+          'Your account is not allowed to make donations!',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      /**
+       * * Total Amount
+       */
+      const qty = totalAmounts.reduce((acc, curr) => {
+        return acc + curr.amount;
+      }, 0);
+
+      // const payQuantityToPaytabs = qty;
+
+      /**
+       * * Initialize for paytabs
+       */
+      const donationLogId = new ObjectId();
+      const firstName = donor?.firstName || '';
+      const lastName = donor?.lastName || '';
+      const name = `${firstName} ${lastName}`;
+      const now: Date = new Date();
+
+      const paytabsPayload: PaytabsPaymentRequestPayloadModel = {
+        profile_id: getSecretKey.profileId!,
+        cart_amount: qty,
+        cart_currency: 'IDR' as PaytabsCurrencyEnum,
+        cart_description: `Cart payment for donation id: [${donationLogId}]`,
+        cart_id: `${donationLogId}`,
+        tran_type: PaytabsTranType.SALE,
+        tran_class: PaytabsTranClass.ECOM,
+        callback: `https://api-staging.tmra.io/v2/raise/paytabs/callback-cart`,
+        return: request.success_url,
+        framed: true,
+        hide_shipping: true,
+        customer_details: {
+          name: name || '',
+          email: donor?.email || '',
+          phone: donor?.phone || '',
+          street1: '',
+          city: '',
+          state: '',
+          country: '',
+          zip: '',
+        },
+      };
+
+      const response = await this.paytabsService.createTransaction(
+        paytabsPayload,
+        getSecretKey.serverKey!,
+        'https://secure-global.paytabs.com/payment/request',
+      );
+
+      paytabsResponse = response;
+
+      if (paytabsResponse) {
+        const getDonationLog = await new this.donationLogsModel({
+          _id: donationLogId,
+          nonprofitRealmId: ObjectId(request.organizationId),
+          donorUserId: request.donorId,
+          amount: Number(qty),
+          transactionId: paytabsResponse.tran_ref,
+          createdAt: now,
+          updatedAt: now,
+          currency: currency,
+          donationStatus: 'PENDING',
+          type: DonationType.CART,
+          organizationId: request.organizationId,
+        }).save();
+
+        if (!getDonationLog) {
+          throw new HttpException(
+            `Cant't save donation log!`,
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        /**
+         * * Create campaign donations log
+         */
+
+        if (getCampaign && getCampaign.length) {
+          for (const elCampaign of getCampaign) {
+            const oIdCampaignDonation = new ObjectId();
+            const newAmount: any = campaigns.find(
+              (el) => el._id == elCampaign._id,
+            )?.amount;
+
+            const createDonationCampaign = await new this.donationLogsModel({
+              _id: oIdCampaignDonation,
+              nonprofitRealmId: ObjectId(request.organizationId),
+              donorUserId: request.donorId,
+              amount: Number(newAmount),
+              transactionId: paytabsResponse.tran_ref,
+              campaignId: elCampaign._id,
+              createdAt: now,
+              updatedAt: now,
+              currency: currency,
+              donationStatus: 'PENDING',
+              type: DonationType.CART,
+              organizationId: request.organizationId,
+            }).save();
+
+            if (!createDonationCampaign) {
+              throw new HttpException(
+                'Cannot create campaign donations!',
+                HttpStatus.BAD_REQUEST,
+              );
+            }
+
+            if (isAnonymous) {
+              await this.anonymousModel.findOneAndUpdate(
+                { _id: request.donorId },
+                {
+                  isEmailChecklist: request.isEmailChecklist,
+                  anonymous: request.isAnonymous,
+                },
+              );
+            }
+          }
+        }
+      }
+
+      // Insert Data to Payment Data
+      const objectIdPayment = new ObjectId();
+
+      const insertPaymentData = await new this.paymentDataModel({
+        _id: objectIdPayment,
+        donationId: donationLogId,
+        merchantId: '',
+        payerId: '',
+        orderId: paytabsResponse.tran_ref,
+        cardType: '',
+        cardScheme: '',
+        paymentDescription: '',
+        expiryMonth: '',
+        expiryYear: '',
+        responseStatus: campaigns,
+        responseCode: '',
+        responseMessage: '',
+        cvvResult: '',
+        avsResult: '',
+        transactionTime: '',
+        paymentStatus: 'OPEN',
+      }).save();
+
+      if (!insertPaymentData)
+        throw new HttpException(
+          'Payment data failed to save in mongodb',
+          HttpStatus.GATEWAY_TIMEOUT,
+        );
+
+      return {
+        paytabsResponse,
+        message: 'Paytabs request cart has been sent',
+      };
+    } catch (err) {
+      throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }
 }
