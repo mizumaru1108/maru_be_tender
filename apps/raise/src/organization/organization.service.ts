@@ -331,6 +331,7 @@ export class OrganizationService {
             createdAt: 1,
             updatedAt: 1,
             amount: 1,
+            lengthDonorId: { $strLenCP: '$donorId' },
           },
         },
         {
@@ -347,12 +348,32 @@ export class OrganizationService {
             preserveNullAndEmptyArrays: true,
           },
         },
-
+        {
+          $addFields: {
+            donorIdAnonymous: {
+              $cond: [
+                { $eq: ['$lengthDonorId', 24] },
+                { $toObjectId: '$donorId' },
+                '$donorId',
+              ],
+            },
+          },
+        },
         {
           $lookup: {
             from: 'anonymous',
-            localField: '_id',
-            foreignField: 'donationLogId',
+            let: {
+              tempDonorId: '$donorIdAnonymous',
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $or: [{ $eq: ['$$tempDonorId', '$_id'] }],
+                  },
+                },
+              },
+            ],
             as: 'user_anonymous',
           },
         },
@@ -386,6 +407,7 @@ export class OrganizationService {
             createdAt: 1,
             updatedAt: 1,
             amount: 1,
+            lengthDonorId: { $strLenCP: '$donorUserId' },
           },
         },
         {
@@ -403,10 +425,31 @@ export class OrganizationService {
           },
         },
         {
+          $addFields: {
+            donorIdAnonymous: {
+              $cond: [
+                { $eq: ['$lengthDonorId', 24] },
+                { $toObjectId: '$donorUserId' },
+                '$donorUserId',
+              ],
+            },
+          },
+        },
+        {
           $lookup: {
             from: 'anonymous',
-            localField: '_id',
-            foreignField: 'donationLogId',
+            let: {
+              tempDonorId: '$donorIdAnonymous',
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $or: [{ $eq: ['$$tempDonorId', '$_id'] }],
+                  },
+                },
+              },
+            ],
             as: 'user_anonymous',
           },
         },
