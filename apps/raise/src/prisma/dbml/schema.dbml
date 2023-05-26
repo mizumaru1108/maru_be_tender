@@ -8,7 +8,7 @@ Table bank_information {
   bank_account_number String
   bank_name String
   proposal_id String
-  id String [pk, unique]
+  id String [pk]
   card_image Json
   is_deleted Boolean [default: false]
   bank_id String
@@ -74,7 +74,7 @@ Table employees_permissions {
   correspondence Boolean [default: false]
   advisors_committee Boolean [default: false]
   project_supervisor Boolean [default: false]
-  id String [pk, unique]
+  id String [pk]
   user user [not null]
 }
 
@@ -223,7 +223,7 @@ Table proposal {
 }
 
 Table proposal_comment {
-  id String [pk, unique]
+  id String [pk]
   proposal_id String [not null]
   created_at DateTime [default: `now()`]
   updated_at DateTime [default: `now()`]
@@ -272,7 +272,7 @@ Table region {
 }
 
 Table user {
-  id String [pk, unique]
+  id String [pk]
   employee_name String
   mobile_number String
   email String [unique, not null]
@@ -432,7 +432,7 @@ Table edit_request_status {
 }
 
 Table project_tracks {
-  id String [pk, unique]
+  id String [pk]
   proposal proposal [not null]
   user user [not null]
 }

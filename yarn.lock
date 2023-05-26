@@ -7033,17 +7033,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:^4.6.1":
-  version: 4.6.1
-  resolution: "@prisma/client@npm:4.6.1"
+"@prisma/client@npm:^4.14.1":
+  version: 4.14.1
+  resolution: "@prisma/client@npm:4.14.1"
   dependencies:
-    "@prisma/engines-version": 4.6.1-3.694eea289a8462c80264df36757e4fdc129b1b32
+    "@prisma/engines-version": 4.14.0-67.d9a4c5988f480fa576d43970d5a23641aa77bc9c
   peerDependencies:
     prisma: "*"
   peerDependenciesMeta:
     prisma:
       optional: true
-  checksum: ef044195e166f96fc1f82bd8ce0d79038d416a2797bc9fb902a23ca357763f881b576694d89b8bf6ecf438ee13fc96e9e6c99df048d159410fe4097f40c38caa
+  checksum: 24d0696cfb714f50ef95eab87f260c06402b255eff529d3fbd6ae0752a42df8f63b18f5268d9b2c47261a7316299b16b6fc4079b725750eb951b4dde5ddb1d16
   languageName: node
   linkType: hard
 
@@ -7080,10 +7080,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/engines-version@npm:4.6.1-3.694eea289a8462c80264df36757e4fdc129b1b32":
-  version: 4.6.1-3.694eea289a8462c80264df36757e4fdc129b1b32
-  resolution: "@prisma/engines-version@npm:4.6.1-3.694eea289a8462c80264df36757e4fdc129b1b32"
-  checksum: 6375e3e89381f4c4faf44d8020ec67826eb8dd5eaa5b775360252aaf209506c147ac57e3c22e86388a058a8ade59f57e2c208b4b183da91045da94e2a5b86ec4
+"@prisma/engines-version@npm:4.14.0-67.d9a4c5988f480fa576d43970d5a23641aa77bc9c":
+  version: 4.14.0-67.d9a4c5988f480fa576d43970d5a23641aa77bc9c
+  resolution: "@prisma/engines-version@npm:4.14.0-67.d9a4c5988f480fa576d43970d5a23641aa77bc9c"
+  checksum: 0df2c9e7434ced708a202cb572e5cf433aae55332819700edb394b7d9c29742a6d2fd65abb778e80f9b1cc1f90daae5e331f4acd070bed395982856ff5ceccee
+  languageName: node
+  linkType: hard
+
+"@prisma/engines@npm:4.14.1":
+  version: 4.14.1
+  resolution: "@prisma/engines@npm:4.14.1"
+  checksum: 9c6af9b98303b408b667b69653fd7b2eaa2c28775cf4c2559c51e3dfa161b4104deb41222d3b2fc33fd28ab255a633a9a9c0234d2d5b2b031f9fc1e715befc83
   languageName: node
   linkType: hard
 
@@ -8138,7 +8145,7 @@ __metadata:
     "@opentelemetry/sdk-trace-base": ^1.8.0
     "@opentelemetry/sdk-trace-node": ^1.8.0
     "@opentelemetry/semantic-conventions": ^1.8.0
-    "@prisma/client": ^4.6.1
+    "@prisma/client": ^4.14.1
     "@stripe/stripe-js": ^1.35.0
     "@typegoose/typegoose": ^9.8.0
     "@types/crypto-js": ^4.1.1
@@ -8184,7 +8191,7 @@ __metadata:
     passport-google-oauth20: ^2.0.0
     passport-jwt: ^4.0.0
     prettier: ^2.7.1
-    prisma: ^4.6.1
+    prisma: ^4.14.1
     prisma-dbml-generator: ^0.10.0
     reflect-metadata: ^0.1.13
     rimraf: ^3.0.2
@@ -23780,15 +23787,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prisma@npm:^4.6.1":
-  version: 4.6.1
-  resolution: "prisma@npm:4.6.1"
+"prisma@npm:^4.14.1":
+  version: 4.14.1
+  resolution: "prisma@npm:4.14.1"
   dependencies:
-    "@prisma/engines": 4.6.1
+    "@prisma/engines": 4.14.1
   bin:
     prisma: build/index.js
     prisma2: build/index.js
-  checksum: 8041ac71b383bff3e737c2f1a047c89d8ff7684640fe842233186a561996f607b2eacb9451df6fc0135fe1ec53a8fe0dd1edbc84b3c58becad9d38850f5f0bf4
+  checksum: 2cb0085652b541aa4c855f1434083b6fc0f3df5be28a0558fe2e1b120546b95d114177f86641fa9e21e13fb3a27a48e8cfd240d683a9e8e872b72e2c8c61a7e2
   languageName: node
   linkType: hard
 
