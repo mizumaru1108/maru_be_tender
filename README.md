@@ -77,7 +77,7 @@ notes:
 
 - Backend repo is located in tmra/apps/raise.
 - This repo is using FASTIFY instead of EXPRESS.
-- Please use WINSTON (log/warn/errors), and provide a clear information in the logs.
+- Please use PinoLogger (log/warn/errors), and provide a clear information in the logs.
 
 ## Prisma related error
 
