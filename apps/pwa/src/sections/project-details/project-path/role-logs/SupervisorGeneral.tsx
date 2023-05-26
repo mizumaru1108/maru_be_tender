@@ -152,27 +152,29 @@ function SupervisorGeneral({ stepGeneralLog }: Props) {
           {proposal &&
             proposal.payments &&
             proposal.payments.length > 0 &&
-            proposal.payments.map((payment, index) => (
-              <Grid container key={index} sx={{ mb: 4 }}>
-                <Grid item xs={3}>
-                  <Typography variant="subtitle1">
-                    {translate('review.Batch') + ' ' + payment.order}
-                  </Typography>
+            [...proposal.payments]
+              .sort((a: any, b: any) => parseInt(a.order) - parseInt(b.order))
+              .map((payment, index) => (
+                <Grid container key={index} sx={{ mb: 4 }}>
+                  <Grid item xs={3}>
+                    <Typography variant="subtitle1">
+                      {translate('review.Batch') + ' ' + payment.order}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1">
+                      {moment(payment.payment_date).locale(`${currentLang.value}`).format('LLLL')}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Typography variant="subtitle1">
+                      {payment.payment_amount
+                        ? `${String(payment.payment_amount) + ' ' + translate('review.sar')}`
+                        : '-'}
+                    </Typography>
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle1">
-                    {moment(payment.payment_date).locale(`${currentLang.value}`).format('LLLL')}
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="subtitle1">
-                    {payment.payment_amount
-                      ? `${String(payment.payment_amount) + ' ' + translate('review.sar')}`
-                      : '-'}
-                  </Typography>
-                </Grid>
-              </Grid>
-            ))}
+              ))}
         </React.Fragment>
       )}
       {stepGeneralLog.action === 'issued_by_supervisor' && (

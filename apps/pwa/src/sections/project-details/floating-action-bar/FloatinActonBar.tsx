@@ -43,28 +43,28 @@ function FloatinActonBar() {
     <>
       {/* ’Moderator is done */}
       {activeTap &&
-        ['main', 'project-budget'].includes(activeTap) &&
+        ['project-path', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
         ['tender_moderator'].includes(role) && <ModeratorActionBar />}
       {/* Supervisor is done */}
       {activeTap &&
-        ['main', 'project-budget'].includes(activeTap) &&
+        ['project-path', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
         role === 'tender_project_supervisor' &&
         proposal.inner_status !== 'DONE_BY_CASHIER' && <SupervisorFloatingActionBar />}
       {/* Projectmanager is done */}
       {activeTap &&
-        ['main', 'project-budget'].includes(activeTap) &&
+        ['project-path', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
         role === 'tender_project_manager' && <ProjectManagerFloatingActionBar />}
       {/* CEO is done */}
       {activeTap &&
-        ['main', 'project-budget'].includes(activeTap) &&
+        ['project-path', 'project-budget'].includes(activeTap) &&
         actionType === 'show-details' &&
         ['tender_ceo'].includes(role) && <CeoFloatingActionBar />}
       {/* Consultant is done */}
       {activeTap &&
-        ['main', 'supervisor-revision'].includes(activeTap) &&
+        ['project-path', 'supervisor-revision'].includes(activeTap) &&
         actionType === 'show-details' &&
         ['tender_consultant'].includes(role) && <ConsultantFloatingActionBar />}
 
@@ -74,7 +74,7 @@ function FloatinActonBar() {
         ['tender_ceo', 'tender_project_manager'].includes(role) && <RejectProjectsActionBar />}
 
       {activeTap &&
-        ['main'].includes(activeTap) &&
+        ['project-path'].includes(activeTap) &&
         actionType === 'show-details' &&
         pathName &&
         pathName[3] === 'project-report' &&

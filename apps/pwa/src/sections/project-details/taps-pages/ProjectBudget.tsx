@@ -27,7 +27,7 @@ function ProjectBudget() {
     valueToItem = [...valueToItem].sort(
       (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     );
-    console.log({ valueToItem });
+    // console.log({ valueToItem });
     // valueSummary = proposal.proposal_item_budgets_aggregate.aggregate.sum.amount;
     valueSummary = totalAmount;
 

@@ -315,11 +315,11 @@ function FloatingActionBar() {
     dispatch(setStepsData(proposal));
   }, [proposal]);
 
-  console.log({ track_list, proposal });
-  console.log(
-    'testq',
-    track_list.find((item: any) => item.id === proposal.track_id)?.with_consultation
-  );
+  // console.log({ track_list, proposal });
+  // console.log(
+  //   'testq',
+  //   track_list.find((item: any) => item.id === proposal.track_id)?.with_consultation
+  // );
 
   return (
     <>

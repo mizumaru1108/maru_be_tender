@@ -20,10 +20,12 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
   if (stepGeneralLog && stepGeneralLog.message) {
     batch = Number(stepGeneralLog.message.split('_')[1]);
   }
+  // console.log({ stepGeneralLog });
   React.useEffect(() => {
     if (proposal) {
       setDataGrants((currentProposal: any) => {
-        console.log('test ');
+        // console.log('test ');
+        const tmpValues = { ...currentProposal };
         return {
           ...currentProposal,
           action: stepGeneralLog?.action || '',
@@ -73,7 +75,7 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
               <Typography>
                 {translate(
                   `${
-                    stepGeneralLog?.user_role === 'tender_ceo'
+                    stepGeneralLog?.user_role === 'CEO'
                       ? 'project_already_reviewed_by_ceo'
                       : 'project_already_reviewed_by_project_manager'
                   }`
@@ -200,7 +202,7 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
             <Typography>
               {translate(
                 `${
-                  stepGeneralLog?.user_role === 'tender_ceo'
+                  stepGeneralLog?.user_role === 'CEO'
                     ? 'project_already_reviewed_by_ceo'
                     : 'project_already_reviewed_by_project_manager'
                 }`

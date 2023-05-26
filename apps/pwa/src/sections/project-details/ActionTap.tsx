@@ -60,7 +60,12 @@ function ActionTap() {
 
   const { actionType } = useParams();
 
+  const [active, setActive] = React.useState<string>(
+    activeRole === 'tender_client' || activeRole === 'tender_admin' ? 'main' : 'project-path'
+  );
+
   const handleChange = (event: React.SyntheticEvent, newValue: ActiveTap) => {
+    setActive(newValue);
     dispatch(setActiveTap(newValue));
   };
 
@@ -75,7 +80,7 @@ function ActionTap() {
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Tabs
-        value={activeTap}
+        value={active}
         onChange={handleChange}
         indicatorColor="primary"
         textColor="inherit"
@@ -113,25 +118,25 @@ function ActionTap() {
           />
         ))}
       </Tabs>
-      <TabPanel value={activeTap} index="main" dir={theme.direction}>
+      <TabPanel value={active} index="project-path" dir={theme.direction}>
+        <ProjectPath />
+      </TabPanel>
+      <TabPanel value={active} index="main" dir={theme.direction}>
         <MainPage />
       </TabPanel>
-      <TabPanel value={activeTap} index="project-budget" dir={theme.direction}>
+      <TabPanel value={active} index="project-budget" dir={theme.direction}>
         <ProjectBudget />
       </TabPanel>
-      <TabPanel value={activeTap} index="follow-ups" dir={theme.direction}>
+      <TabPanel value={active} index="follow-ups" dir={theme.direction}>
         <FollowUps />
       </TabPanel>
-      <TabPanel value={activeTap} index="payments" dir={theme.direction}>
+      <TabPanel value={active} index="payments" dir={theme.direction}>
         <Payments />
       </TabPanel>
       {/* <TabPanel value={activeTap} index="project-timeline" dir={theme.direction}>
         <TimeLine />
       </TabPanel> */}
-      <TabPanel value={activeTap} index="project-path" dir={theme.direction}>
-        <ProjectPath />
-      </TabPanel>
-      <TabPanel value={activeTap} index="supervisor-revision" dir={theme.direction}>
+      <TabPanel value={active} index="supervisor-revision" dir={theme.direction}>
         <SupervisorRevision />
       </TabPanel>
     </Box>

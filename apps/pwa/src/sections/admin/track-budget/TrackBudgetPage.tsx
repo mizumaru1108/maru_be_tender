@@ -71,8 +71,6 @@ export default function TrackBudgetPage() {
           autoHideDuration: 3000,
         });
       }
-
-      // setLoadingPage(false);
     }
   };
 

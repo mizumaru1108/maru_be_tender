@@ -28,6 +28,7 @@ function ProjectPath() {
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
   const { proposal } = useSelector((state) => state.proposal);
+  const [logs, setLogs] = React.useState<Log[]>();
   // console.log({ proposal });
   // console.log('proposal.log', proposal.proposal_logs);
   // console.log('proposal.log', proposal.track.with_consultation);
@@ -63,7 +64,6 @@ function ProjectPath() {
   const { data: logGrantsData, fetching: fetchingGrants, error: errorGrants } = logGrants;
   const { data: listTracks, fetching: fetchingTracks, error: errorTracks } = tracks;
   const handleStep = (step: number, item: Log) => () => {
-    // console.log('masuk sini');
     window.scrollTo(115, 115);
     setStepOn(step);
     setActiveStep(step);
@@ -82,7 +82,6 @@ function ProjectPath() {
           });
         }
       }
-      // setStepTrack(item.proposal.project_track);
     } else {
       setStepUserRole('');
       setStepActionType('');
@@ -91,21 +90,14 @@ function ProjectPath() {
 
   const lastLog =
     proposal.proposal_logs && proposal.proposal_logs[proposal.proposal_logs.length - 1];
-  const hasNonRejectAction = lastLog?.action && lastLog?.action !== 'reject';
+  const hasNonRejectAction =
+    lastLog?.action && lastLog?.action !== 'reject'
+      ? true
+      : lastLog?.action === null
+      ? true
+      : false;
   const hasRejectAction = lastLog?.action && lastLog?.action === 'reject';
-  const isCompleted = lastLog?.action && lastLog?.action === 'project_completed';
-
-  // console.log({ isConsultation });
-
-  // console.log({ hasNonRejectAction, hasRejectAction, isCompleted, activeStep });
-
-  // React.useEffect(() => {
-  //   if (hasNonRejectAction) {
-  //     setActiveStep(followUps.log.length);
-  //   } else if (hasRejectAction) {
-  //     setActiveStep(followUps.log.length - 1);
-  //   }
-  // }, [followUps, hasNonRejectAction, hasRejectAction]);
+  const isCompleted = lastLog?.action && lastLog?.action === 'project_completed' ? true : false;
   React.useEffect(() => {
     const insertPayment = proposal.proposal_logs
       .filter((item: Log) => item.action === 'insert_payment')
@@ -113,7 +105,13 @@ function ProjectPath() {
     if (insertPayment && insertPayment.length > 0) {
       setIsPayments(true);
     }
-    setActiveStep(proposal.proposal_logs.length - 1);
+    const tmpLogs = [...proposal.proposal_logs]
+      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+      .filter((item: Log) => item.action || (item.action === null && item.state === 'CLIENT'));
+    if (tmpLogs.length > 0) {
+      setLogs(tmpLogs);
+      setActiveStep(tmpLogs.length - 1);
+    }
     setGransLog((current) => {
       const tmpData = { ...current };
       return {
@@ -145,15 +143,11 @@ function ProjectPath() {
           proposal.proposal_logs[proposal.proposal_logs.length - 1]?.employee_name || '',
       };
     });
-    // proposal.proposal_logs.length,
-    // proposal.proposal_logs[proposal.proposal_logs.length]
   }, [followUps, proposal]);
 
   React.useEffect(() => {
     dispatch(getProposal(proposal_id as string, activeRole! as string));
   }, [proposal_id, activeRole]);
-
-  // if (fetching) return <>.. Loading</>;
 
   const formattedDateTime = (getDate: Date) => {
     const formattedDate = `${new Date(getDate).getDate()}.${
@@ -165,7 +159,7 @@ function ProjectPath() {
     return formattedDate;
   };
   if (fetching || fetchingTracks || fetchingGrants) return <>Loading...</>;
-  if (error || errorTracks || errorGrants) {
+  if (error || errorTracks || errorGrants || (logs && logs.length === 0 && !fetching)) {
     // return (
     //   <Page500
     //     error={
@@ -188,66 +182,69 @@ function ProjectPath() {
     }
   }
 
-  // console.log({ followUps });
   return (
-    <Grid container spacing={2}>
+    <Grid container>
       <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>
         <Stack direction="column" gap={2} justifyContent="start" sx={{ paddingBottom: '10px' }}>
           <Typography variant="h6">مسار المشروع</Typography>
-          <Box sx={{ width: '100%', padding: '10px', maxHeight: '450px', overflowY: 'scroll' }}>
-            <Stepper activeStep={proposal.proposal_logs.length} orientation="vertical">
-              {proposal.proposal_logs.map((item: Log, index: number) => (
-                <Step key={index}>
-                  <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
-                    <Button
-                      sx={{
-                        padding: '0px',
-                        justifyContent: 'start',
-                        ':hover': { backgroundColor: '#fff' },
-                      }}
-                      onClick={handleStep(index, item)}
-                    >
-                      <Stack direction="row" gap={2}>
-                        <PanoramaFishEyeTwoToneIcon
-                          color={activeStep === index ? 'primary' : 'disabled'}
-                          sx={{
-                            // color: activeStep === index ? '#0E8478' : '#000',
-                            alignSelf: 'center',
-                          }}
-                        />
-                        <Stack>
-                          <Typography
+          <Box sx={{ width: '100%', padding: '10px', maxHeight: '850px', overflowY: 'scroll' }}>
+            <Stepper activeStep={logs && logs.length} orientation="vertical">
+              {logs &&
+                logs.length > 0 &&
+                logs.map((item: Log, index: number) => (
+                  <Step key={index}>
+                    <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                      <Button
+                        sx={{
+                          padding: '0px',
+                          justifyContent: 'start',
+                          ':hover': { backgroundColor: '#fff' },
+                        }}
+                        onClick={handleStep(index, item)}
+                      >
+                        <Stack direction="row" gap={2}>
+                          <PanoramaFishEyeTwoToneIcon
+                            color={activeStep === index ? 'primary' : 'disabled'}
                             sx={{
-                              fontSize: index === activeStep ? '17px' : '12px',
-                              fontWeight: index === activeStep ? 800 : 600,
-                              color: '#000',
-                              alignSelf: 'start',
+                              // color: activeStep === index ? '#0E8478' : '#000',
+                              alignSelf: 'center',
                             }}
-                          >
-                            {translate(`permissions.${item.user_role ?? item.state}`)}
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontSize: index === activeStep ? '17px' : '12px',
-                              fontWeight: index === activeStep ? 800 : 600,
-                              color: '#000',
-                              alignSelf: 'start',
-                            }}
-                          >
-                            {(item && item.reviewer && item.reviewer.employee_name) ?? 'CLIENT'}
-                          </Typography>
-                          <Typography sx={{ fontSize: '12px', color: '#000', alignSelf: 'start' }}>
-                            {formattedDateTime(item.created_at)}
-                          </Typography>
+                          />
+                          <Stack>
+                            <Typography
+                              sx={{
+                                fontSize: index === activeStep ? '17px' : '12px',
+                                fontWeight: index === activeStep ? 800 : 600,
+                                color: '#000',
+                                alignSelf: 'start',
+                              }}
+                            >
+                              {translate(`permissions.${item.user_role ?? item.state}`)}
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontSize: index === activeStep ? '17px' : '12px',
+                                fontWeight: index === activeStep ? 800 : 600,
+                                color: '#000',
+                                alignSelf: 'start',
+                              }}
+                            >
+                              {(item && item.reviewer && item.reviewer.employee_name) ?? 'CLIENT'}
+                            </Typography>
+                            <Typography
+                              sx={{ fontSize: '12px', color: '#000', alignSelf: 'start' }}
+                            >
+                              {formattedDateTime(item.created_at)}
+                            </Typography>
+                          </Stack>
                         </Stack>
-                      </Stack>
-                    </Button>
-                  </Stack>
-                </Step>
-              ))}
+                      </Button>
+                    </Stack>
+                  </Step>
+                ))}
               {(activeRole! === 'tender_moderator' || hasNonRejectAction) && !isCompleted && (
                 <>
-                  {proposal.proposal_logs.length ? (
+                  {logs && logs.length > 0 ? (
                     <Step>
                       <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
                         <Button
@@ -256,20 +253,15 @@ function ProjectPath() {
                             justifyContent: 'start',
                             ':hover': { backgroundColor: '#fff' },
                           }}
-                          onClick={handleStep(
-                            proposal.proposal_logs.length,
-                            proposal.proposal_logs[proposal.proposal_logs.length]
-                          )}
+                          onClick={handleStep(logs!.length, logs![logs!.length])}
                         >
                           {proposal && !isPayments && (
                             <Stack direction="row" gap={2} sx={{ mt: 1 }}>
                               <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
                               <Typography
                                 sx={{
-                                  fontSize:
-                                    proposal.proposal_logs.length === activeStep ? '17px' : '12px',
-                                  fontWeight:
-                                    proposal.proposal_logs.length === activeStep ? 800 : 400,
+                                  fontSize: logs && logs.length === activeStep ? '17px' : '12px',
+                                  fontWeight: logs && logs.length === activeStep ? 800 : 400,
                                   color: '#000',
                                   alignSelf: 'center',
                                 }}
@@ -316,189 +308,189 @@ function ProjectPath() {
           </Box>
         </Stack>
       </Grid>
-      {/*  */}
-      <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>
-        <Stack direction="column" gap={2} justifyContent="start">
-          {/*  */}
-          {/* Order Status or Complete */}
-          {isCompleted && activeStep === -1 ? (
-            <Typography variant="h6">{translate(`review.complete`)}</Typography>
-          ) : (
-            <Typography variant="h6">{translate(`review.order_status`)}</Typography>
-          )}
-          {/*  */}
+      {logs && logs.length > 0 && (
+        <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>
+          <Stack direction="column" gap={2} justifyContent="start">
+            {/*  */}
+            {/* Order Status or Complete */}
+            {isCompleted && activeStep === -1 ? (
+              <Typography variant="h6">{translate(`review.complete`)}</Typography>
+            ) : (
+              <Typography variant="h6">{translate(`review.order_status`)}</Typography>
+            )}
+            {/*  */}
 
-          {/*  */}
-          {/* ACCEPT, REJECT, and so on */}
-          {activeStep !== -1 && proposal.proposal_logs.length !== activeStep ? (
-            proposal.proposal_logs
-              .filter((item: Log, index: number) => index === activeStep && item)
-              .map((item: Log, index: number) => (
-                <Stack key={index} direction="column" gap={2} sx={{ pb: 2 }}>
+            {/*  */}
+            {/* ACCEPT, REJECT, and so on */}
+            {activeStep !== -1 && logs.length !== activeStep ? (
+              logs
+                .filter((item: Log, index: number) => index === activeStep && item)
+                .map((item: Log, index: number) => (
+                  <Stack key={index} direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {item?.user_role === 'PROJECT_MANAGER' && item?.action === 'set_by_supervisor'
+                        ? translate(`review.action.payment_rejected_by_pm`)
+                        : item.action
+                        ? translate(`review.action.${item.action}`)
+                        : item?.user_role === 'CLIENT'
+                        ? translate(`review.action.proposal_created`)
+                        : '-'}
+                    </Typography>
+                  </Stack>
+                ))
+            ) : (
+              <Typography>
+                {isCompleted && activeStep === logs.length ? null : translate('review.waiting')}
+              </Typography>
+            )}
+            {/*  */}
+
+            {/*  */}
+            {logs.find((item: Log, index: number) => index === activeStep && item)?.user_role !==
+              'PROJECT_SUPERVISOR' && (
+              <React.Fragment>
+                {(isCompleted && activeStep === -1) ||
+                (activeStep + 1 === logs.length && stepGeneralLog?.state === 'CLIENT') ? null : (
+                  <Typography variant="h6">{translate(`review.notes`)}</Typography>
+                )}
+                {activeStep !== -1 && logs.length !== activeStep ? (
+                  logs
+                    .filter(
+                      (item: Log, index: number) =>
+                        item.action !== 'set_by_supervisor' &&
+                        // item.action !== 'accepted_by_project_manager' &&
+                        index === activeStep
+                    )
+                    .map((item: Log, index: number) => (
+                      <React.Fragment key={index}>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>
+                            {item.notes === 'Proposal has been revised'
+                              ? translate('proposal_has_been_revised')
+                              : item.notes ?? '-'}
+                          </Typography>
+                        </Stack>
+                      </React.Fragment>
+                    ))
+                ) : (
                   <Typography>
-                    {item?.user_role === 'PROJECT_MANAGER' && item?.action === 'set_by_supervisor'
-                      ? translate(`review.action.payment_rejected_by_pm`)
-                      : item.action
-                      ? translate(`review.action.${item.action}`)
-                      : item?.user_role === 'CLIENT'
-                      ? translate(`review.action.proposal_created`)
-                      : '-'}
+                    {(isCompleted && activeStep === -1) ||
+                    (activeStep + 1 === logs.length && stepGeneralLog?.state === 'CLIENT')
+                      ? null
+                      : translate('review.waiting')}
                   </Typography>
-                </Stack>
-              ))
-          ) : (
-            <Typography>
-              {isCompleted && activeStep === proposal.proposal_logs.length
-                ? null
-                : translate('review.waiting')}
-            </Typography>
-          )}
-          {/*  */}
-
-          {/*  */}
-          {proposal.proposal_logs.find((item: Log, index: number) => index === activeStep && item)
-            ?.user_role !== 'PROJECT_SUPERVISOR' && (
-            <React.Fragment>
-              {(isCompleted && activeStep === -1) ||
-              (activeStep + 1 === proposal.proposal_logs.length &&
-                stepGeneralLog?.state === 'CLIENT') ? null : (
-                <Typography variant="h6">{translate(`review.notes`)}</Typography>
-              )}
-              {activeStep !== -1 && proposal.proposal_logs.length !== activeStep ? (
-                proposal.proposal_logs
-                  .filter(
-                    (item: Log, index: number) =>
-                      item.action !== 'set_by_supervisor' &&
-                      // item.action !== 'accepted_by_project_manager' &&
-                      index === activeStep
-                  )
-                  .map((item: Log, index: number) => (
-                    <React.Fragment key={index}>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          {item.notes === 'Proposal has been revised'
-                            ? translate('proposal_has_been_revised')
-                            : item.notes ?? '-'}
-                        </Typography>
-                      </Stack>
-                    </React.Fragment>
-                  ))
-              ) : (
-                <Typography>
-                  {(isCompleted && activeStep === -1) ||
-                  (activeStep + 1 === proposal.proposal_logs.length &&
-                    stepGeneralLog?.state === 'CLIENT')
-                    ? null
-                    : translate('review.waiting')}
-                </Typography>
-              )}
-            </React.Fragment>
-          )}
-          {/*  */}
-          {/* CashierPaymentLog */}
-          {isCompleted && activeStep === -1 ? null : <Divider />}
-          {/*  */}
-          {proposal.proposal_logs.filter(
-            (item: Log, index: number) =>
-              index === activeStep &&
-              (item.user_role === 'CLIENT' || item.state === 'FINANCE') &&
-              item.action !== 'send_back_for_revision' &&
-              item.action !== 'step_back' &&
-              item.action !== 'sending_closing_report' &&
-              (item.action === null || item.action === undefined)
-          ).length > 0 ? (
-            <ClientProposalLog />
-          ) : null}
-          {/*  */}
-          {proposal.proposal_logs.filter(
-            (item: Log, index: number) =>
-              index === activeStep &&
-              (item.user_role === 'FINANCE' || item.state === 'FINANCE') &&
-              item.action !== 'send_back_for_revision' &&
-              item.action !== 'step_back' &&
-              item.action !== 'sending_closing_report' &&
-              item.action === 'accepted_by_finance'
-          ).length > 0 && stepGeneralLog ? (
-            <FinancePaymentLog stepGeneralLog={stepGeneralLog} />
-          ) : null}
-          {/*  */}
-          {proposal.proposal_logs.filter(
-            (item: Log, index: number) =>
-              index === activeStep &&
-              (item.user_role === 'CASHIER' || item.state === 'CASHIER') &&
-              item.action !== 'send_back_for_revision' &&
-              item.action !== 'step_back' &&
-              item.action !== 'sending_closing_report' &&
-              item.action === 'done'
-          ).length > 0 && stepGeneralLog ? (
-            <CashierPaymentLog stepGeneralLog={stepGeneralLog} />
-          ) : null}
-          {/*  */}
-          {proposal.proposal_logs.filter(
-            (item: Log, index: number) =>
-              index === activeStep &&
-              (item.user_role === 'PROJECT_MANAGER' ||
-                item.user_role === 'CEO' ||
-                item.state === 'PROJECT_MANAGER' ||
-                item.state === 'CEO') &&
-              item.action !== 'send_back_for_revision' &&
-              item.action !== 'step_back' &&
-              item.action !== 'sending_closing_report' &&
-              (item.action === 'accepted_by_project_manager' || item.action === 'accept')
-          ).length > 0 &&
-          (stepGeneralLog || stepGransLog) ? (
-            <ProjectManagerGeneral
-              isConsultation={isConsultation}
-              stepGeneralLog={stepGeneralLog ?? stepGransLog}
-            />
-          ) : null}
-          {/*  */}
-          {/*  */}
-          {proposal.proposal_logs.filter(
-            (item: Log, index: number) =>
-              index === activeStep &&
-              (item.user_role === 'PROJECT_SUPERVISOR' || item.state === 'PROJECT_SUPERVISOR') &&
-              item.action !== 'send_back_for_revision' &&
-              item.action !== 'step_back' &&
-              item.action !== 'project_completed' &&
-              item.action !== 'sending_closing_report'
-          ).length > 0 &&
-          isConsultation === false &&
-          stepGeneralLog ? (
-            <SupervisorGeneral stepGeneralLog={stepGeneralLog} />
-          ) : null}
-          {/*  */}
-          {/*  */}
-          {proposal.proposal_logs.filter(
-            (item: Log, index: number) =>
-              index === activeStep &&
-              (item.user_role === 'PROJECT_SUPERVISOR' || item.state === 'PROJECT_SUPERVISOR') &&
-              item.action !== 'send_back_for_revision' &&
-              item.action !== 'step_back' &&
-              item.action !== 'project_completed' &&
-              item.action !== 'sending_closing_report'
-          ).length > 0 &&
-          isConsultation &&
-          stepGransLog ? (
-            <SupervisorGrants stepGransLog={stepGransLog} />
-          ) : null}
-          {/*  */}
-          {/*  */}
-          {proposal.proposal_logs.filter(
-            (item: Log, index: number) =>
-              index === activeStep &&
-              (item.user_role === 'CLIENT' || item.state === 'CLIENT') &&
-              item.action !== 'send_back_for_revision' &&
-              item.action !== 'step_back' &&
-              item.action !== 'sending_closing_report' &&
-              item.action === 'project_completed'
-          ).length > 0 &&
-          (stepGeneralLog || stepGransLog) ? (
-            <ClientClosingReport stepGransLog={stepGransLog ?? stepGeneralLog} />
-          ) : null}
-          {/*  */}
-        </Stack>
-      </Grid>
+                )}
+              </React.Fragment>
+            )}
+            {/*  */}
+            {/* CashierPaymentLog */}
+            {isCompleted && activeStep === -1 ? null : <Divider />}
+            {/*  */}
+            {logs.filter(
+              (item: Log, index: number) =>
+                index === activeStep &&
+                (item.user_role === 'CLIENT' || item.state === 'FINANCE') &&
+                item.action !== 'send_back_for_revision' &&
+                item.action !== 'step_back' &&
+                item.action !== 'sending_closing_report' &&
+                (item.action === null || item.action === undefined)
+            ).length > 0 ? (
+              <ClientProposalLog />
+            ) : null}
+            {/*  */}
+            {logs.filter(
+              (item: Log, index: number) =>
+                index === activeStep &&
+                (item.user_role === 'FINANCE' || item.state === 'FINANCE') &&
+                item.action !== 'send_back_for_revision' &&
+                item.action !== 'step_back' &&
+                item.action !== 'sending_closing_report' &&
+                item.action === 'accepted_by_finance'
+            ).length > 0 && stepGeneralLog ? (
+              <FinancePaymentLog stepGeneralLog={stepGeneralLog} />
+            ) : null}
+            {/*  */}
+            {logs.filter(
+              (item: Log, index: number) =>
+                index === activeStep &&
+                (item.user_role === 'CASHIER' || item.state === 'CASHIER') &&
+                item.action !== 'send_back_for_revision' &&
+                item.action !== 'step_back' &&
+                item.action !== 'sending_closing_report' &&
+                item.action === 'done'
+            ).length > 0 && stepGeneralLog ? (
+              <CashierPaymentLog stepGeneralLog={stepGeneralLog} />
+            ) : null}
+            {/*  */}
+            {logs.filter(
+              (item: Log, index: number) =>
+                index === activeStep &&
+                (item.user_role === 'PROJECT_MANAGER' ||
+                  item.user_role === 'CEO' ||
+                  item.state === 'PROJECT_MANAGER' ||
+                  item.state === 'CEO') &&
+                item.action !== 'send_back_for_revision' &&
+                item.action !== 'step_back' &&
+                item.action !== 'sending_closing_report' &&
+                (item.action === 'accepted_by_project_manager' || item.action === 'accept')
+            ).length > 0 &&
+            (stepGeneralLog || stepGransLog) ? (
+              <ProjectManagerGeneral
+                isConsultation={isConsultation}
+                stepGeneralLog={stepGeneralLog ?? stepGransLog}
+              />
+            ) : null}
+            {/*  */}
+            {/*  */}
+            {logs.filter(
+              (item: Log, index: number) =>
+                index === activeStep &&
+                (item.user_role === 'PROJECT_SUPERVISOR' || item.state === 'PROJECT_SUPERVISOR') &&
+                item.action !== 'send_back_for_revision' &&
+                item.action !== 'step_back' &&
+                item.action !== 'project_completed' &&
+                item.action !== 'sending_closing_report' &&
+                item.action !== 'send_revised_version' &&
+                item.action !== 'complete_payment'
+            ).length > 0 &&
+            isConsultation === false &&
+            stepGeneralLog ? (
+              <SupervisorGeneral stepGeneralLog={stepGeneralLog} />
+            ) : null}
+            {/*  */}
+            {/*  */}
+            {logs.filter(
+              (item: Log, index: number) =>
+                index === activeStep &&
+                (item.user_role === 'PROJECT_SUPERVISOR' || item.state === 'PROJECT_SUPERVISOR') &&
+                item.action !== 'send_back_for_revision' &&
+                item.action !== 'step_back' &&
+                item.action !== 'project_completed' &&
+                item.action !== 'sending_closing_report' &&
+                item.action !== 'send_revised_version'
+            ).length > 0 &&
+            isConsultation &&
+            stepGransLog ? (
+              <SupervisorGrants stepGransLog={stepGransLog} />
+            ) : null}
+            {/*  */}
+            {/*  */}
+            {logs.filter(
+              (item: Log, index: number) =>
+                index === activeStep &&
+                (item.user_role === 'CLIENT' || item.state === 'CLIENT') &&
+                item.action !== 'send_back_for_revision' &&
+                item.action !== 'step_back' &&
+                item.action !== 'sending_closing_report' &&
+                item.action === 'project_completed'
+            ).length > 0 &&
+            (stepGeneralLog || stepGransLog) ? (
+              <ClientClosingReport stepGransLog={stepGransLog ?? stepGeneralLog} />
+            ) : null}
+            {/*  */}
+          </Stack>
+        </Grid>
+      )}
     </Grid>
   );
 }

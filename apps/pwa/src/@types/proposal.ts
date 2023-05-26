@@ -363,7 +363,9 @@ export type Log = {
     | 'accepted_by_project_manager'
     | 'accepted_by_finance'
     | 'done'
-    | 'project_completed';
+    | 'project_completed'
+    | 'send_revised_version'
+    | 'complete_payment';
   created_at: Date;
   updated_at: Date;
   user_role: Role;

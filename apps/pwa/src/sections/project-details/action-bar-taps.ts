@@ -26,16 +26,16 @@ export const Taps = {
   tender_ceo: {
     'show-details': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
-      },
-      {
-        title: 'project_details.actions.project_path',
-        value: 'project-path',
       },
       {
         title: 'project_details.actions.follow_ups',
@@ -46,13 +46,13 @@ export const Taps = {
   tender_moderator: {
     'show-details': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
-      },
-      {
         title: 'project_details.actions.project_path',
         value: 'project-path',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
@@ -62,13 +62,13 @@ export const Taps = {
   tender_finance: {
     'show-details': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
-      },
-      {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.project_path',
         value: 'project-path',
@@ -88,16 +88,16 @@ export const Taps = {
     ],
     'completing-exchange-permission': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
-      },
-      {
-        title: 'project_details.actions.project_path',
-        value: 'project-path',
       },
       // {
       //   title: 'project_details.actions.project_timeline',
@@ -116,17 +116,18 @@ export const Taps = {
   tender_cashier: {
     'show-details': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
       },
-      {
-        title: 'project_details.actions.project_path',
-        value: 'project-path',
-      },
+
       // {
       //   title: 'project_details.actions.project_timeline',
       //   value: 'project-timeline',
@@ -142,17 +143,18 @@ export const Taps = {
     ],
     'completing-exchange-permission': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
       },
-      {
-        title: 'project_details.actions.project_path',
-        value: 'project-path',
-      },
+
       // {
       //   title: 'project_details.actions.project_timeline',
       //   value: 'project-timeline',
@@ -170,17 +172,18 @@ export const Taps = {
   tender_project_supervisor: {
     'show-details': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
       },
-      {
-        title: 'project_details.actions.project_path',
-        value: 'project-path',
-      },
+
       // {
       //   title: 'project_details.actions.project_timeline',
       //   value: 'project-timeline',
@@ -196,17 +199,18 @@ export const Taps = {
     ],
     'completing-exchange-permission': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
       },
-      {
-        title: 'project_details.actions.project_path',
-        value: 'project-path',
-      },
+
       // {
       //   title: 'project_details.actions.project_timeline',
       //   value: 'project-timeline',
@@ -224,17 +228,18 @@ export const Taps = {
   tender_project_manager: {
     'show-details': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
       },
-      {
-        title: 'project_details.actions.project_path',
-        value: 'project-path',
-      },
+
       // {
       //   title: 'project_details.actions.project_timeline',
       //   value: 'project-timeline',
@@ -250,17 +255,18 @@ export const Taps = {
     ],
     'completing-exchange-permission': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
       },
-      {
-        title: 'project_details.actions.project_path',
-        value: 'project-path',
-      },
+
       // {
       //   title: 'project_details.actions.project_timeline',
       //   value: 'project-timeline',
@@ -278,17 +284,18 @@ export const Taps = {
   tender_consultant: {
     'show-details': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
       },
-      {
-        title: 'project_details.actions.project_path',
-        value: 'project-path',
-      },
+
       // {
       //   title: 'project_details.actions.project_timeline',
       //   value: 'project-timeline',
@@ -330,17 +337,18 @@ export const Taps = {
   tender_accounts_manager: {
     'show-details': [
       {
-        title: 'project_details.actions.main',
-        value: 'main',
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
       },
+      // {
+      //   title: 'project_details.actions.main',
+      //   value: 'main',
+      // },
       {
         title: 'project_details.actions.project_budget',
         value: 'project-budget',
       },
-      {
-        title: 'project_details.actions.project_path',
-        value: 'project-path',
-      },
+
       // {
       //   title: 'project_details.actions.project_timeline',
       //   value: 'project-timeline',

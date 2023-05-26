@@ -6,10 +6,10 @@ import { dispatch, useSelector } from 'redux/store';
 import { useEffect } from 'react';
 import { getTrackList } from 'redux/slices/proposal';
 import useAuth from 'hooks/useAuth';
-import TrackBudget from 'sections/ceo/ceo-dashboard/TrackBudget';
 import { useQuery } from 'urql';
 import { getOneEmployee } from 'queries/admin/getAllTheEmployees';
 import useLocales from 'hooks/useLocales';
+import TrackBudget from 'sections/admin/main/TrackBudget';
 
 function CeoDashboard() {
   const { translate } = useLocales();
@@ -36,9 +36,9 @@ function CeoDashboard() {
         <Grid item md={12}>
           <DailyStatistics />
         </Grid>
-        {/* <Grid item md={12}>
-          <TrackBudget track_id={data.data.track_id} />
-        </Grid> */}
+        <Grid item md={12}>
+          <TrackBudget />
+        </Grid>
         <Grid item md={12}>
           <DashboardProjectManagement />
         </Grid>
