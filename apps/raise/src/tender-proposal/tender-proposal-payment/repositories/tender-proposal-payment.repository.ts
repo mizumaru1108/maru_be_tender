@@ -708,7 +708,6 @@ export class TenderProposalPaymentRepository {
       SELECT
       track.id::text as id,
       track.name as name,
-      COALESCE(SUM(track_section.budget), 0) as budget,
       (
         SELECT
           COALESCE(JSON_AGG(track_section), '[]'::json)
@@ -778,7 +777,6 @@ export class TenderProposalPaymentRepository {
       SELECT
         track.id::text as id,
         track.name as name,
-        COALESCE(SUM(track_section.budget), 0) as budget,
         (
           SELECT
             COALESCE(JSON_AGG(track_section), '[]'::json)
@@ -831,8 +829,8 @@ export class TenderProposalPaymentRepository {
       const theError = prismaErrorThrower(
         error,
         TenderProposalPaymentRepository.name,
-        'findUsers Error:',
-        `finding users!`,
+        'Find Track Budget Error:',
+        `finding !`,
       );
       throw theError;
     }

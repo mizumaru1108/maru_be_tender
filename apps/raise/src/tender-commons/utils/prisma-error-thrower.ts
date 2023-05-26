@@ -28,6 +28,7 @@ export function prismaErrorThrower(
     'log.logger': serviceName,
   });
 
+  // ref: https://www.prisma.io/docs/reference/api-reference/error-reference
   if (
     error instanceof Prisma.PrismaClientValidationError ||
     error instanceof Prisma.PrismaClientKnownRequestError ||
@@ -38,15 +39,28 @@ export function prismaErrorThrower(
   ) {
     let instance = '';
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      //Prisma Client throws a PrismaClientKnownRequestError exception if
+      //the query engine returns a known error related to the request -
+      //for example, a unique constraint violation.
+      this.logger.log('info', `prisma error code: ${error.code}`);
       instance = 'PrismaClientKnownRequestError';
     }
     if (error instanceof Prisma.PrismaClientRustPanicError) {
+      // Prisma Client throws a PrismaClientRustPanicError exception if
+      // the underlying engine crashes and exits with a non-zero exit code.
+      // In this case, Prisma Client or the whole Node process must be restarted.
       instance = 'PrismaClientRustPanicError';
     }
     if (error instanceof Prisma.PrismaClientInitializationError) {
+      // Prisma Client throws a PrismaClientInitializationError exception if
+      // something goes wrong when the query engine is started and the connection
+      // to the database is created.
       instance = 'PrismaClientInitializationError';
     }
     if (error instanceof Prisma.PrismaClientUnknownRequestError) {
+      // Prisma Client throws a PrismaClientUnknownRequestError exception if
+      // the query engine returns an error related to a request that does
+      // not have an error code.
       instance = 'PrismaClientUnknownRequestError';
     }
     if (error instanceof Prisma.NotFoundError) {
@@ -54,7 +68,7 @@ export function prismaErrorThrower(
     }
     logger.error(`( Source: Prisma ${instance}), Error:`, error);
     return new InternalServerErrorException(
-      `Something went wrong at '${errorThrowMessage}'`,
+      `Something went wrong, detail: ${instance},name: ${error.name}, message: ${error.message}, stack: ${error.stack}`,
     );
   } else if (
     error instanceof BadRequestException ||

@@ -2113,8 +2113,8 @@ export class TenderProposalRepository {
       const theError = prismaErrorThrower(
         error,
         TenderProposalRepository.name,
-        'fetchProposalById error details: ',
-        'finding proposal!',
+        'Change state error details: ',
+        'Changing proposal state!',
       );
       throw theError;
     }

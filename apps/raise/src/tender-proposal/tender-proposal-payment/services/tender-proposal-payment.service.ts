@@ -154,30 +154,45 @@ export class TenderProposalPaymentService {
     return await this.paymentRepo.createManyTrackSection(createPayload);
   }
 
+  countBudget = (sections: any): number => {
+    let budget = 0;
+
+    for (let i = 0; i < sections.length; i++) {
+      budget += sections[i].budget;
+    }
+
+    return budget;
+  };
+
   async findTrackBudgets(request: FindTrackBudgetFilter) {
     const response = await this.paymentRepo.findTrackBudgets(request);
+    if (response.length === 0) {
+      return {
+        data: [],
+        total: 0,
+      };
+    }
+
     return {
-      data:
-        response.length > 0
-          ? response.map((res: any) => {
-              return {
-                id: res.id,
-                name: res.name,
-                budget: Number(res.budget),
-                total_budget_used: Number(res.total_budget_used),
-                remaining_budget:
-                  Number(res.budget) - Number(res.total_budget_used),
-                sections: res.sections,
-                used_on: res.used_on.map((used: any) => {
-                  return {
-                    id: used.id,
-                    project_name: used.project_name,
-                    budget_used: Number(used.budget_used),
-                  };
-                }),
-              };
-            })
-          : [],
+      data: response.map((res: any) => {
+        let budget = this.countBudget(res.sections);
+
+        return {
+          id: res.id,
+          name: res.name,
+          budget,
+          total_budget_used: Number(res.total_budget_used),
+          remaining_budget: budget - res.total_budget_used,
+          sections: res.sections,
+          used_on: res.used_on.map((used: any) => {
+            return {
+              id: used.id,
+              project_name: used.project_name,
+              budget_used: Number(used.budget_used),
+            };
+          }),
+        };
+      }),
       total: response.length > 0 ? Number(response[0].total) : 0,
     };
   }
@@ -187,15 +202,17 @@ export class TenderProposalPaymentService {
       throw new BadRequestException('Please specify the track id!');
     }
     const result = await this.paymentRepo.findTrackBudget(request);
-    // console.log('result on service', result)
+
+    if (!result) return null;
+
+    const budget = this.countBudget(result.sections);
     return {
       data: {
         id: result.id,
         name: result.name,
-        budget: Number(result.budget),
+        budget,
         total_budget_used: Number(result.total_budget_used),
-        remaining_budget:
-          Number(result.budget) - Number(result.total_budget_used),
+        remaining_budget: budget - Number(result.total_budget_used),
         sections: result.sections,
         used_on: result.used_on.map((used: any) => {
           return {
