@@ -36,8 +36,7 @@ export class PaymentPaytabsDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @ValidateObjectIdDecorator()
-  donorId: Types.ObjectId;
+  donorId: string;
 
   @ApiPropertyOptional()
   @IsOptional()
