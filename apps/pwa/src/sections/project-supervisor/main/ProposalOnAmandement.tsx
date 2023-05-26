@@ -46,7 +46,7 @@ function ProposalOnAmandement() {
       if (rest) {
         setCardData(
           rest.data.data
-            .filter((item: any) => item.proposal.inner_status === 'ON_REVISION')
+            .filter((item: any) => item.proposal.outter_status === 'ON_REVISION')
             .map((item: any) => ({
               ...item.proposal,
               user: {

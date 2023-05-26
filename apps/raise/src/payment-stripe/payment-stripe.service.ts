@@ -1045,8 +1045,8 @@ export class PaymentStripeService {
 
         if (!createDonationCampaign) {
           throw new HttpException(
-            'Gateway Timeout or Stripe API down',
-            HttpStatus.GATEWAY_TIMEOUT,
+            'Cannot create campaign donations!',
+            HttpStatus.BAD_REQUEST,
           );
         }
 
@@ -1054,52 +1054,11 @@ export class PaymentStripeService {
           await this.anonymousModel.findOneAndUpdate(
             { _id: payment.donorId },
             {
-              donationLogId: createDonationCampaign._id,
               isEmailChecklist: payment.isEmailChecklist,
               anonymous: payment.isAnonymous,
             },
           );
         }
-
-        const notifPayload: CommonNotificationMapperResponse = {
-          logTime: moment(new Date().getTime()).format('llll'),
-          generalHostEmail: 'tmra',
-          clientSubject: 'Thanks for your donations!',
-          clientId: [],
-          clientEmail: [donor.email],
-          clientMobileNumber: [],
-          clientEmailTemplatePath: `gs/en/payment/donor_donation`,
-          clientEmailTemplateContext: [
-            {
-              organization_name: getOrganization.name,
-              donor_email: donor.email,
-              donor_name: donor.firstName,
-              donor_amount: Number(newAmount),
-              campaign_name: elCampaign.title
-                ? elCampaign.title
-                : elCampaign.campaignName,
-            },
-          ],
-          clientContent: 'Thanks for your donations!',
-          reviewerId: [],
-          reviewerEmail: [getOrganization.contactEmail],
-          reviewerEmailTemplatePath: `gs/en/payment/organization_donation`,
-          reviewerEmailTemplateContext: [
-            {
-              donor_name: donor.firstName,
-              donor_amount: Number(newAmount),
-              campaign_name: elCampaign.title
-                ? elCampaign.title
-                : elCampaign.campaignName,
-            },
-          ],
-          reviewerContent: 'There is a new donation...',
-          reviewerMobileNumber: [],
-          reviwerSubject: 'There is a new donation...',
-          createManyWebNotifPayload: [],
-        };
-
-        await this.notificationService.sendSmsAndEmailBatch(notifPayload);
       }
     }
 
@@ -1270,46 +1229,92 @@ export class PaymentStripeService {
           throw new BadRequestException(`donation failed update to mongodb`);
         }
 
-        const updateCampaign = await this.campaignModel.updateOne(
-          { _id: getCampaign._id },
-          {
-            amountProgress: Number(subtotalAmountCampaign),
-            updatedAt: now.toISOString(),
-          },
-        );
-
-        if (!updateCampaign) {
-          throw new HttpException(
-            'failed update campaign data',
-            HttpStatus.BAD_REQUEST,
-          );
-        } else if (
-          amount_target == Number(subtotalAmountCampaign) ||
-          Number(subtotalAmountCampaign) > Number(payment.amount)
-        ) {
-          await this.campaignModel.updateOne(
+        if (payment_status === 'SUCCESS') {
+          const updateCampaign = await this.campaignModel.updateOne(
             { _id: getCampaign._id },
             {
-              isFinished: 'Y',
+              amountProgress: Number(subtotalAmountCampaign),
+              updatedAt: now.toISOString(),
             },
           );
-        }
 
-        const updatePaymentData = await this.paymentDataModel.updateOne(
-          { orderId: order_id },
-          {
-            paymentStatus: payment_status,
-            responseMessage: payment_status,
-            transactionTime: now.toISOString(), //stripe have their own transactionTime
-            cardType: 'card',
-          },
-        );
+          if (!updateCampaign) {
+            throw new HttpException(
+              'failed update campaign data',
+              HttpStatus.BAD_REQUEST,
+            );
+          } else if (
+            amount_target == Number(subtotalAmountCampaign) ||
+            Number(subtotalAmountCampaign) > Number(payment.amount)
+          ) {
+            await this.campaignModel.updateOne(
+              { _id: getCampaign._id },
+              {
+                isFinished: 'Y',
+              },
+            );
+          }
 
-        if (!updatePaymentData) {
-          throw new HttpException(
-            'failed inserting transaction data',
-            HttpStatus.BAD_REQUEST,
+          const updatePaymentData = await this.paymentDataModel.updateOne(
+            { orderId: order_id },
+            {
+              paymentStatus: payment_status,
+              responseMessage: payment_status,
+              transactionTime: now.toISOString(), //stripe have their own transactionTime
+              cardType: 'card',
+            },
           );
+
+          if (!updatePaymentData) {
+            throw new HttpException(
+              'failed inserting transaction data',
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+
+          const notifPayload: CommonNotificationMapperResponse = {
+            logTime: moment(new Date().getTime()).format('llll'),
+            generalHostEmail: 'tmra',
+            clientSubject: 'Thanks for your donations!',
+            clientId: [],
+            clientEmail: [donor ? donor?.email! : anonymousData?.email!],
+            clientMobileNumber: [],
+            clientEmailTemplatePath: `gs/en/payment/donor_donation`,
+            clientEmailTemplateContext: [
+              {
+                organization_name: getOrganization.name,
+                donor_email: donor ? donor?.email! : anonymousData?.email!,
+                donor_name: donor
+                  ? donor?.firstname!
+                  : anonymousData?.firstName!,
+                donor_amount: Number(payment.amount),
+                campaign_name: getCampaign.title
+                  ? getCampaign.title
+                  : getCampaign.campaignName,
+              },
+            ],
+            clientContent: 'Thanks for your donations!',
+            reviewerId: [],
+            reviewerEmail: [getOrganization.contactEmail],
+            reviewerEmailTemplatePath: `gs/en/payment/organization_donation`,
+            reviewerEmailTemplateContext: [
+              {
+                donor_name: donor
+                  ? donor?.firstname!
+                  : anonymousData?.firstName!,
+                donor_amount: Number(payment.amount),
+                campaign_name: getCampaign.title
+                  ? getCampaign.title
+                  : getCampaign.campaignName,
+              },
+            ],
+            reviewerContent: 'There is a new donation...',
+            reviewerMobileNumber: [],
+            reviwerSubject: 'There is a new donation...',
+            createManyWebNotifPayload: [],
+          };
+
+          await this.notificationService.sendSmsAndEmailBatch(notifPayload);
         }
       } else if (!!paymentData && payment.data_basket?.length) {
         const campaignIds: any[] = [];
@@ -1325,14 +1330,14 @@ export class PaymentStripeService {
           throw new HttpException('incorrect orderId', HttpStatus.BAD_REQUEST);
         }
 
-        const getDonationLog = await this.donationLogsModel.findOne(
-          { _id: donationId },
-          { _id: 0, campaignId: 1, currency: 2, amount: 3 },
-        );
+        // const getDonationLog = await this.donationLogsModel.findOne(
+        //   { _id: donationId },
+        //   { _id: 0, campaignId: 1, currency: 2, amount: 3 },
+        // );
 
-        if (!getDonationLog) {
-          throw new HttpException('incorrect orderId', HttpStatus.NOT_FOUND);
-        }
+        // if (!getDonationLog) {
+        //   throw new HttpException('incorrect orderId', HttpStatus.NOT_FOUND);
+        // }
 
         for (let i = 0; i < campaigns.length; i++) {
           campaignIds.push(campaigns[i]._id);
@@ -1341,7 +1346,7 @@ export class PaymentStripeService {
             amount: campaigns[i].amount,
           });
 
-          if (payment_status == 'SUCCESS') {
+          if (payment_status === 'SUCCESS') {
             const getCampaign = await this.campaignModel.findOne(
               { _id: campaigns[i]._id },
               { _id: 1, amountProgress: 1, amountTarget: 1, title: 1 },
@@ -1423,6 +1428,50 @@ export class PaymentStripeService {
                 HttpStatus.BAD_REQUEST,
               );
             }
+
+            const notifPayload: CommonNotificationMapperResponse = {
+              logTime: moment(new Date().getTime()).format('llll'),
+              generalHostEmail: 'tmra',
+              clientSubject: 'Thanks for your donations!',
+              clientId: [],
+              clientEmail: [donor ? donor?.email! : anonymousData?.email!],
+              clientMobileNumber: [],
+              clientEmailTemplatePath: `gs/en/payment/donor_donation`,
+              clientEmailTemplateContext: [
+                {
+                  organization_name: getOrganization.name,
+                  donor_email: donor ? donor?.email! : anonymousData?.email!,
+                  donor_name: donor
+                    ? donor?.firstname!
+                    : anonymousData?.firstName!,
+                  donor_amount: Number(amount_to_pay),
+                  campaign_name: getCampaign.title
+                    ? getCampaign.title
+                    : getCampaign.campaignName,
+                },
+              ],
+              clientContent: 'Thanks for your donations!',
+              reviewerId: [],
+              reviewerEmail: [getOrganization.contactEmail],
+              reviewerEmailTemplatePath: `gs/en/payment/organization_donation`,
+              reviewerEmailTemplateContext: [
+                {
+                  donor_name: donor
+                    ? donor?.firstname!
+                    : anonymousData?.firstName!,
+                  donor_amount: Number(amount_to_pay),
+                  campaign_name: getCampaign.title
+                    ? getCampaign.title
+                    : getCampaign.campaignName,
+                },
+              ],
+              reviewerContent: 'There is a new donation...',
+              reviewerMobileNumber: [],
+              reviwerSubject: 'There is a new donation...',
+              createManyWebNotifPayload: [],
+            };
+
+            await this.notificationService.sendSmsAndEmailBatch(notifPayload);
           }
         }
       }
@@ -2035,7 +2084,7 @@ export class PaymentStripeService {
         await this.anonymousModel.findOneAndUpdate(
           { _id: payment.donorId },
           {
-            donationLogId: object_donation_id,
+            // donationLogId: object_donation_id,
             isEmailChecklist: payment.isEmailChecklist,
             anonymous: payment.isAnonymous,
           },
@@ -2068,46 +2117,6 @@ export class PaymentStripeService {
       if (!insertPaymentData) {
         throw new BadRequestException(`payment data failed to save in mongodb`);
       }
-
-      const notifPayload: CommonNotificationMapperResponse = {
-        logTime: moment(new Date().getTime()).format('llll'),
-        generalHostEmail: 'tmra',
-        clientSubject: 'Thanks for your donation!',
-        clientId: [],
-        clientEmail: [donor.email],
-        clientMobileNumber: [],
-        clientEmailTemplatePath: `gs/en/payment/donor_donation`,
-        clientEmailTemplateContext: [
-          {
-            organization_name: getOrganization.name,
-            donor_email: donor.email,
-            donor_name: donor.firstName,
-            donor_amount: payment.amount,
-            campaign_name: getCampaign.title
-              ? getCampaign.title
-              : getCampaign.campaignName,
-          },
-        ],
-        clientContent: 'Thanks for your donation!',
-        reviewerId: [],
-        reviewerEmail: [getOrganization.contactEmail],
-        reviewerEmailTemplatePath: `gs/en/payment/organization_donation`,
-        reviewerEmailTemplateContext: [
-          {
-            donor_name: donor.firstName,
-            donor_amount: payment.amount,
-            campaign_name: getCampaign.title
-              ? getCampaign.title
-              : getCampaign.campaignName,
-          },
-        ],
-        reviewerContent: 'There is a new donation...',
-        reviewerMobileNumber: [],
-        reviwerSubject: 'There is a new donation...',
-        createManyWebNotifPayload: [],
-      };
-
-      await this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
       return {
         stripeResponse: {

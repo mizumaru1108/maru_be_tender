@@ -2,20 +2,24 @@ import { Injectable, OnModuleInit, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma, PrismaClient } from '@prisma/client';
 //import LRUCache from 'lru-cache';
-import { ROOT_LOGGER } from 'src/libs/root-logger';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 /**
  * See: https://docs.nestjs.com/recipes/prisma
  */
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
-  private readonly logger = ROOT_LOGGER.child({
-    'log.logger': 'PrismaService',
-    'event.category': 'database',
-    'event.module': 'postgresql',
-  });
+  // private readonly logger = ROOT_LOGGER.child({
+  //   'log.logger': 'PrismaService',
+  //   'event.category': 'database',
+  //   'event.module': 'postgresql',
+  // });
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    @InjectPinoLogger()
+    private readonly logger: PinoLogger,
+  ) {
     //REF: https://www.npmjs.com/package/lru-cache
     // const cache = new LRUCache({
     //   max: 800000, // maximum number of items in the cache
@@ -23,18 +27,41 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     // });
 
     super({
-      // log is handled by listeners below which uses Winston
+      // log is handled by listeners below which uses PinoLogger
       log: [
         { emit: 'event', level: 'query' },
         { emit: 'event', level: 'error' },
         { emit: 'event', level: 'warn' },
         { emit: 'event', level: 'info' },
       ],
-      datasources: {
-        db: {
-          url: configService.get('POSTGRES_URL'),
+    });
+    this.$on('error' as any, async (e: Prisma.LogEvent) => {
+      this.logger.error(
+        { time: e.timestamp.getTime(), labels: { target: e.target } },
+        e.message,
+      );
+    });
+    this.$on('warn' as any, async (e: Prisma.LogEvent) => {
+      this.logger.warn(
+        { time: e.timestamp.getTime(), labels: { target: e.target } },
+        e.message,
+      );
+    });
+    this.$on('info' as any, async (e: Prisma.LogEvent) => {
+      this.logger.info(
+        { time: e.timestamp.getTime(), labels: { target: e.target } },
+        e.message,
+      );
+    });
+    this.$on('query' as any, async (e: Prisma.QueryEvent) => {
+      this.logger.debug(
+        {
+          time: e.timestamp.getTime(),
+          labels: { params: e.params },
+          'event.duration': e.duration * 1000000,
         },
-      },
+        e.query,
+      );
     });
 
     // TURNS OUT IT MAKE THE UPDATE ERROR LOL, it get CACHED awokawokawokaw, have to findout other way to cacheing
@@ -50,33 +77,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     //   cache.set(cacheKey, promise);
     //   return promise;
     // });
-
-    this.$on('error' as any, async (e: Prisma.LogEvent) => {
-      this.logger.info('dsddsd', configService.get('POSTGRES_URL'));
-      this.logger.error(e.message, {
-        '@timestamp': e.timestamp,
-        labels: { target: e.target },
-      });
-    });
-    this.$on('warn' as any, async (e: Prisma.LogEvent) => {
-      this.logger.warn(e.message, {
-        '@timestamp': e.timestamp,
-        labels: { target: e.target },
-      });
-    });
-    this.$on('info' as any, async (e: Prisma.LogEvent) => {
-      this.logger.info(e.message, {
-        '@timestamp': e.timestamp,
-        labels: { target: e.target },
-      });
-    });
-    this.$on('query' as any, async (e: Prisma.QueryEvent) => {
-      this.logger.debug(e.query, {
-        '@timestamp': e.timestamp,
-        labels: { params: JSON.stringify(e.params) },
-        'event.duration': e.duration * 1000000,
-      });
-    });
   }
 
   async onModuleInit() {

@@ -10,10 +10,10 @@ import { ROOT_LOGGER } from '../../libs/root-logger';
 
 /**
  * Prisma Error Thrower
- * for handling nest error exception and prisma error included with winston logger.
+ * for handling nest error exception and prisma error included with Pino/Winston logger.
  * @param error - the error from prisma / nest catched by try catch
- * @param serviceName - the name of the service that throw the error (for winston logger)
- * @param loggerMessage - the message that will be logged by winston logger
+ * @param serviceName - the name of the service that throw the error (for Pino/Winston logger)
+ * @param loggerMessage - the message that will be logged by Pino/Winston logger
  * @param errorThrowMessage - the message that will be shown to the user (throwed by nest)
  * @returns the error that will be throwed by nest / prisma / null
  * @author RDanang(Iyoy)

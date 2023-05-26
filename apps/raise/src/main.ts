@@ -10,11 +10,10 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { contentParser } from 'fastify-multer';
-import { WinstonModule } from 'nest-winston';
 import pino from 'pino';
-import { ROOT_LOGGER } from './libs/root-logger';
 // import { WsAdapter } from '@nestjs/platform-ws';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 async function bootstrap() {
   // bootstrap NestJS
@@ -30,11 +29,11 @@ async function bootstrap() {
       // app.use(urlencoded({ limit: '50mb', extended: true }));
     }),
     {
-      logger: WinstonModule.createLogger({
-        instance: ROOT_LOGGER,
-      }),
+      bufferLogs: true,
     },
   );
+  app.useLogger(app.get(Logger));
+  app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   app.enableCors({
     methods: ['OPTIONS', 'POST', 'GET', 'PATCH'],

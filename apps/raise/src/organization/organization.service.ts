@@ -910,6 +910,7 @@ export class OrganizationService {
           campaignId: { $toObjectId: '$campaignId' },
           amount: 1,
           donorId: 1,
+          lengthDonorId: { $strLenCP: '$donorId' },
         },
       },
       {
@@ -941,10 +942,31 @@ export class OrganizationService {
         },
       },
       {
+        $addFields: {
+          donorIdAnonymous: {
+            $cond: [
+              { $eq: ['$lengthDonorId', 24] },
+              { $toObjectId: '$donorId' },
+              '$donorId',
+            ],
+          },
+        },
+      },
+      {
         $lookup: {
           from: 'anonymous',
-          localField: '_id',
-          foreignField: 'donationLogId',
+          let: {
+            donorId: '$donorIdAnonymous',
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $or: [{ $eq: ['$$donorId', '$_id'] }],
+                },
+              },
+            },
+          ],
           as: 'user_anonymous',
         },
       },

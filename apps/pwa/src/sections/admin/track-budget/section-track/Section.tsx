@@ -60,7 +60,7 @@ export default function Section({ item }: IPropsSection) {
 
         setOpenDelete(false);
         setLoadingDelete(false);
-        window.location.reload();
+        // window.location.reload();
       }
     } catch (err) {
       if (typeof err.message === 'object') {

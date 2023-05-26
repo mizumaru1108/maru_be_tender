@@ -41,16 +41,18 @@ export default function SectionTracks() {
   const { id: track_id } = useParams();
   const [result, mutate] = useQuery({
     query: `query gettingTrackById($track_id: String = "") {
-    track: track_by_pk(id: $track_id) {
-      name
-      id
-      track_sections{
-        id
+      track: track_by_pk(id: $track_id) {
         name
-        budget
+        id
+        track_sections {
+          id
+          name
+          budget
+          is_deleted
+        }
       }
     }
-  }
+    
   `,
     variables: { track_id },
   });
@@ -121,8 +123,9 @@ export default function SectionTracks() {
             </Stack>
           </Grid>
           {!fetching && data
-            ? data.track.track_sections.map(
-                (item: { id: string; budget: number; name: string }, index: number) => (
+            ? data.track.track_sections
+                .filter((item: { is_deleted: boolean }) => item?.is_deleted !== true)
+                .map((item: { id: string; budget: number; name: string }, index: number) => (
                   <Grid key={index} item md={12} xs={12}>
                     <Box
                       sx={{
@@ -135,8 +138,7 @@ export default function SectionTracks() {
                       <Section item={item} />
                     </Box>
                   </Grid>
-                )
-              )
+                ))
             : null}
         </Grid>
       </ContentStyle>

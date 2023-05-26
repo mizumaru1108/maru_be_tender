@@ -65,6 +65,7 @@ import { TenderFileManagerModule } from './tender-file-manager/tender-file-manag
 import { tenderAppConfig } from './commons/configs/tender-app-config';
 import { mseGatConfig } from './commons/configs/msegat-config';
 import { PaymentPaytabsModule } from './payment-paytabs/payment-paytabs.module';
+import { LoggerModule } from 'nestjs-pino';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -85,6 +86,25 @@ import { PaymentPaytabsModule } from './payment-paytabs/payment-paytabs.module';
 
 @Module({
   imports: [
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: 'debug',
+        transport:
+          process.env.LOG_FORMAT === 'pretty'
+            ? {
+                target: 'pino-pretty',
+                options: {
+                  // options for pino-pretty here
+                  colorize: true,
+                  levelFirst: true,
+                  translateTime: 'SYS:standard',
+                  ignore: 'req,res,responseTime',
+                },
+              }
+            : undefined,
+      },
+    }),
+
     // OpenTelemetryModuleConfig,
     // OpenTelemetryModule.forRoot({
     //   applicationName: 'tmra-raise',

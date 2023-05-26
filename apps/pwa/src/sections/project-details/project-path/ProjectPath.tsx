@@ -191,6 +191,132 @@ function ProjectPath() {
   // console.log({ followUps });
   return (
     <Grid container spacing={2}>
+      <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>
+        <Stack direction="column" gap={2} justifyContent="start" sx={{ paddingBottom: '10px' }}>
+          <Typography variant="h6">مسار المشروع</Typography>
+          <Box sx={{ width: '100%', padding: '10px', maxHeight: '450px', overflowY: 'scroll' }}>
+            <Stepper activeStep={proposal.proposal_logs.length} orientation="vertical">
+              {proposal.proposal_logs.map((item: Log, index: number) => (
+                <Step key={index}>
+                  <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                    <Button
+                      sx={{
+                        padding: '0px',
+                        justifyContent: 'start',
+                        ':hover': { backgroundColor: '#fff' },
+                      }}
+                      onClick={handleStep(index, item)}
+                    >
+                      <Stack direction="row" gap={2}>
+                        <PanoramaFishEyeTwoToneIcon
+                          color={activeStep === index ? 'primary' : 'disabled'}
+                          sx={{
+                            // color: activeStep === index ? '#0E8478' : '#000',
+                            alignSelf: 'center',
+                          }}
+                        />
+                        <Stack>
+                          <Typography
+                            sx={{
+                              fontSize: index === activeStep ? '17px' : '12px',
+                              fontWeight: index === activeStep ? 800 : 600,
+                              color: '#000',
+                              alignSelf: 'start',
+                            }}
+                          >
+                            {translate(`permissions.${item.user_role ?? item.state}`)}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontSize: index === activeStep ? '17px' : '12px',
+                              fontWeight: index === activeStep ? 800 : 600,
+                              color: '#000',
+                              alignSelf: 'start',
+                            }}
+                          >
+                            {(item && item.reviewer && item.reviewer.employee_name) ?? 'CLIENT'}
+                          </Typography>
+                          <Typography sx={{ fontSize: '12px', color: '#000', alignSelf: 'start' }}>
+                            {formattedDateTime(item.created_at)}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                    </Button>
+                  </Stack>
+                </Step>
+              ))}
+              {(activeRole! === 'tender_moderator' || hasNonRejectAction) && !isCompleted && (
+                <>
+                  {proposal.proposal_logs.length ? (
+                    <Step>
+                      <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                        <Button
+                          sx={{
+                            padding: '0px',
+                            justifyContent: 'start',
+                            ':hover': { backgroundColor: '#fff' },
+                          }}
+                          onClick={handleStep(
+                            proposal.proposal_logs.length,
+                            proposal.proposal_logs[proposal.proposal_logs.length]
+                          )}
+                        >
+                          {proposal && !isPayments && (
+                            <Stack direction="row" gap={2} sx={{ mt: 1 }}>
+                              <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+                              <Typography
+                                sx={{
+                                  fontSize:
+                                    proposal.proposal_logs.length === activeStep ? '17px' : '12px',
+                                  fontWeight:
+                                    proposal.proposal_logs.length === activeStep ? 800 : 400,
+                                  color: '#000',
+                                  alignSelf: 'center',
+                                }}
+                              >
+                                {proposal.outter_status !== 'ASKED_FOR_AMANDEMENT'
+                                  ? translate(`permissions.${proposal.state}`)
+                                  : translate(`permissions.PROJECT_SUPERVISOR`)}
+                              </Typography>
+                            </Stack>
+                          )}
+                        </Button>
+                      </Stack>
+                    </Step>
+                  ) : (
+                    <Step>
+                      <Stack direction="row" gap={2} sx={{ mt: 1 }}>
+                        <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+                        <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                          <Button
+                            sx={{
+                              padding: '0px',
+                              justifyContent: 'start',
+                              ':hover': { backgroundColor: '#fff' },
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                fontSize: '17px',
+                                fontWeight: 800,
+                                color: '#000',
+                                alignSelf: 'center',
+                              }}
+                            >
+                              {translate(`permissions.MODERATOR`)}
+                            </Typography>
+                          </Button>
+                        </Stack>
+                      </Stack>
+                    </Step>
+                  )}
+                </>
+              )}
+            </Stepper>
+          </Box>
+        </Stack>
+      </Grid>
+      {/*  */}
       <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>
         <Stack direction="column" gap={2} justifyContent="start">
           {/*  */}
@@ -371,131 +497,6 @@ function ProjectPath() {
             <ClientClosingReport stepGransLog={stepGransLog ?? stepGeneralLog} />
           ) : null}
           {/*  */}
-        </Stack>
-      </Grid>
-      <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>
-        <Stack direction="column" gap={2} justifyContent="start" sx={{ paddingBottom: '10px' }}>
-          <Typography variant="h6">مسار المشروع</Typography>
-          <Box sx={{ width: '100%', padding: '10px', maxHeight: '450px', overflowY: 'scroll' }}>
-            <Stepper activeStep={proposal.proposal_logs.length} orientation="vertical">
-              {proposal.proposal_logs.map((item: Log, index: number) => (
-                <Step key={index}>
-                  <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
-                    <Button
-                      sx={{
-                        padding: '0px',
-                        justifyContent: 'start',
-                        ':hover': { backgroundColor: '#fff' },
-                      }}
-                      onClick={handleStep(index, item)}
-                    >
-                      <Stack direction="row" gap={2}>
-                        <PanoramaFishEyeTwoToneIcon
-                          color={activeStep === index ? 'primary' : 'disabled'}
-                          sx={{
-                            // color: activeStep === index ? '#0E8478' : '#000',
-                            alignSelf: 'center',
-                          }}
-                        />
-                        <Stack>
-                          <Typography
-                            sx={{
-                              fontSize: index === activeStep ? '17px' : '12px',
-                              fontWeight: index === activeStep ? 800 : 600,
-                              color: '#000',
-                              alignSelf: 'start',
-                            }}
-                          >
-                            {translate(`permissions.${item.user_role ?? item.state}`)}
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontSize: index === activeStep ? '17px' : '12px',
-                              fontWeight: index === activeStep ? 800 : 600,
-                              color: '#000',
-                              alignSelf: 'start',
-                            }}
-                          >
-                            {(item && item.reviewer && item.reviewer.employee_name) ?? 'CLIENT'}
-                          </Typography>
-                          <Typography sx={{ fontSize: '12px', color: '#000', alignSelf: 'start' }}>
-                            {formattedDateTime(item.created_at)}
-                          </Typography>
-                        </Stack>
-                      </Stack>
-                    </Button>
-                  </Stack>
-                </Step>
-              ))}
-              {(activeRole! === 'tender_moderator' || hasNonRejectAction) && !isCompleted && (
-                <>
-                  {proposal.proposal_logs.length ? (
-                    <Step>
-                      <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
-                        <Button
-                          sx={{
-                            padding: '0px',
-                            justifyContent: 'start',
-                            ':hover': { backgroundColor: '#fff' },
-                          }}
-                          onClick={handleStep(
-                            proposal.proposal_logs.length,
-                            proposal.proposal_logs[proposal.proposal_logs.length]
-                          )}
-                        >
-                          {proposal && !isPayments && (
-                            <Stack direction="row" gap={2} sx={{ mt: 1 }}>
-                              <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
-                              <Typography
-                                sx={{
-                                  fontSize:
-                                    proposal.proposal_logs.length === activeStep ? '17px' : '12px',
-                                  fontWeight:
-                                    proposal.proposal_logs.length === activeStep ? 800 : 400,
-                                  color: '#000',
-                                  alignSelf: 'center',
-                                }}
-                              >
-                                {proposal.outter_status !== 'ASKED_FOR_AMANDEMENT'
-                                  ? translate(`permissions.${proposal.state}`)
-                                  : translate(`permissions.PROJECT_SUPERVISOR`)}
-                              </Typography>
-                            </Stack>
-                          )}
-                        </Button>
-                      </Stack>
-                    </Step>
-                  ) : (
-                    <Step>
-                      <Stack direction="row" gap={2} sx={{ mt: 1 }}>
-                        <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
-                        <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
-                          <Button
-                            sx={{
-                              padding: '0px',
-                              justifyContent: 'start',
-                              ':hover': { backgroundColor: '#fff' },
-                            }}
-                          >
-                            <Typography
-                              sx={{
-                                fontSize: '17px',
-                                fontWeight: 800,
-                                color: '#000',
-                                alignSelf: 'center',
-                              }}
-                            >
-                              {translate(`permissions.MODERATOR`)}
-                            </Typography>
-                          </Button>
-                        </Stack>
-                      </Stack>
-                    </Step>
-                  )}
-                </>
-              )}
-            </Stepper>
-          </Box>
         </Stack>
       </Grid>
     </Grid>

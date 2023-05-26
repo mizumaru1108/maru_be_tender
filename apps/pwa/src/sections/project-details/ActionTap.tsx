@@ -64,7 +64,13 @@ function ActionTap() {
     dispatch(setActiveTap(newValue));
   };
 
-  React.useEffect(() => {}, [proposal]);
+  React.useEffect(() => {
+    if (activeRole !== 'tender_client') {
+      dispatch(setActiveTap('project-path'));
+    }
+  }, [proposal, activeRole, dispatch]);
+
+  // console.log({ activeTap });
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>

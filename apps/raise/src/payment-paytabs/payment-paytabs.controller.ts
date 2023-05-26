@@ -27,4 +27,28 @@ export class PaymentPaytabsController {
       callbackResponse.message,
     );
   }
+
+  @Post('/request-cart')
+  async requestCart(@Body() request: PaymentPaytabsDto) {
+    const requestCartResponse =
+      await this.paymentPaytabsService.paytabsRequestCart(request);
+
+    return baseResponseHelper(
+      requestCartResponse,
+      HttpStatus.OK,
+      requestCartResponse.message,
+    );
+  }
+
+  @Post('/callback-cart')
+  async callbackCart(@Body() payload: PaymentPaytabsCallbackDto) {
+    const callbackCartResponse =
+      await this.paymentPaytabsService.paytabsCartCallback(payload);
+
+    return baseResponseHelper(
+      callbackCartResponse,
+      HttpStatus.OK,
+      callbackCartResponse.message,
+    );
+  }
 }

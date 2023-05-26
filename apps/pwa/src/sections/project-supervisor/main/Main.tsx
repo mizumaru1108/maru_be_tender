@@ -19,22 +19,22 @@ function Main() {
   const { translate } = useLocales();
   const { user } = useAuth();
 
-  // const [{ data, fetching, error }] = useQuery({
-  //   query: getOneEmployee,
-  //   variables: { id: user?.id },
-  // });
+  const [{ data, fetching, error }] = useQuery({
+    query: getOneEmployee,
+    variables: { id: user?.id },
+  });
 
-  // if (fetching) return <>{translate('pages.common.loading')}</>;
-  // if (error) return <>{error.message}</>;
+  if (fetching) return <>{translate('pages.common.loading')}</>;
+  if (error) return <>{error.message}</>;
 
   return (
     <Grid container spacing={4}>
       <Grid item md={12}>
         <DailyStatistics />
       </Grid>
-      {/* <Grid item md={12}>
-        <TrackBudget path={data.data.employee_path} />
-      </Grid> */}
+      <Grid item md={12}>
+        <TrackBudget path={data.data.employee_path} track_id={data.data.track_id} />
+      </Grid>
       <IncomingFundingRequests />
       <RequestsInProcess />
       <PaymentAdjustment />

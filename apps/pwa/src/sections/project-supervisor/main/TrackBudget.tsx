@@ -12,51 +12,103 @@ import React, { useState, useEffect } from 'react';
 // config
 import { FEATURE_DAILY_STATUS } from 'config';
 import { ITrackList } from 'sections/ceo/ceo-dashboard/TrackBudget';
+import useAuth from 'hooks/useAuth';
+import { useSnackbar } from 'notistack';
+import axiosInstance from 'utils/axios';
 
 // ------------------------------------------------------------------------------------------
 
 interface IPropTrackBudgets {
   path?: string;
+  track_id?: string;
 }
 
 // ------------------------------------------------------------------------------------------
 
-export default function TrackBudget({ path }: IPropTrackBudgets) {
+export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
   const { translate } = useLocales();
   const theme = useTheme();
   const [trackList, setTrackList] = useState<ITrackList | null>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
 
-  const [{ data, fetching, error }] = useQuery({
-    query: getOneTrackBudget,
-    variables: {
-      track_id: path,
-    },
-  });
+  // const [{ data, fetching, error }] = useQuery({
+  //   query: getOneTrackBudget,
+  //   variables: {
+  //     track_id: path,
+  //   },
+  // });
 
-  useEffect(() => {
-    if (data) {
-      const newData = data.track.map((el: any) => ({
-        name: el.name,
-        total_budget: el.totalBudget.aggregate.sum.budget ?? 0,
-        total_reserved_budget: el.totalReservedBudget.aggregate.sum.fsupport_by_supervisor ?? 0,
-        total_spend_budget: el.totalSpendBudget.reduce(
-          (
-            acc: any,
-            curr: { payments_aggregate: { aggregate: { sum: { payment_amount: any } } } }
-          ) => {
-            const paymentAmount = curr.payments_aggregate.aggregate.sum.payment_amount;
-            return acc + (paymentAmount ? paymentAmount : 0);
-          },
-          0
-        ),
-      }));
-
-      setTrackList(newData[0]);
+  const fetchingSchedule = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(
+        `/tender/proposal/payment/find-track-budget?id=${track_id as string}`,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+      // console.log('rest', rest.data);
+      if (rest) {
+        const tmpValue = rest.data.data.data;
+        setTrackList((item: any) => {
+          const tmpItem = { ...item };
+          return {
+            ...tmpItem,
+            name: tmpValue.name,
+            total_budget: tmpValue.budget,
+            total_spend_budget: tmpValue.total_budget_used,
+            total_reserved_budget: tmpValue.remaining_budget,
+          };
+        });
+      }
+    } catch (err) {
+      console.log('err', err);
+      enqueueSnackbar(err.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      setIsLoading(false);
     }
-  }, [data]);
+  }, [activeRole, track_id, enqueueSnackbar]);
 
-  if (fetching) return <>{translate('pages.common.loading')}</>;
-  if (error) return <>{error.message}</>;
+  React.useEffect(() => {
+    fetchingSchedule();
+  }, [fetchingSchedule]);
+
+  // useEffect(() => {
+  //   if (data) {
+  //     const newData = data.track.map((el: any) => ({
+  //       name: el.name,
+  //       total_budget: el.totalBudget.aggregate.sum.budget ?? 0,
+  //       total_reserved_budget: el.totalReservedBudget.aggregate.sum.fsupport_by_supervisor ?? 0,
+  //       total_spend_budget: el.totalSpendBudget.reduce(
+  //         (
+  //           acc: any,
+  //           curr: { payments_aggregate: { aggregate: { sum: { payment_amount: any } } } }
+  //         ) => {
+  //           const paymentAmount = curr.payments_aggregate.aggregate.sum.payment_amount;
+  //           return acc + (paymentAmount ? paymentAmount : 0);
+  //         },
+  //         0
+  //       ),
+  //     }));
+
+  //     setTrackList(newData[0]);
+  //   }
+  // }, [data]);
+
+  // console.log({ trackList });
+
+  if (isLoading) return <>{translate('pages.commo.loading')}</>;
+  // if (error) return <>{error.message}</>;n
 
   return (
     <Grid container spacing={2}>
@@ -71,7 +123,7 @@ export default function TrackBudget({ path }: IPropTrackBudgets) {
         </Grid>
       ) : (
         <React.Fragment>
-          {!fetching && data ? (
+          {!isLoading && trackList ? (
             <React.Fragment>
               <Grid item md={2} xs={12}>
                 <Box
@@ -146,8 +198,8 @@ export default function TrackBudget({ path }: IPropTrackBudgets) {
                     {translate('content.administrative.statistic.heading.totalBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {data.track.length > 0
-                      ? fCurrencyNumber(data.track[0].totalBudget.aggregate.sum.budget)
+                    {trackList.total_budget
+                      ? fCurrencyNumber(trackList.total_budget)
                       : fCurrencyNumber(0)}
                   </Typography>
                 </Box>
