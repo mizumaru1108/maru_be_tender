@@ -120,9 +120,9 @@ Table payment {
   order Decimal
   created_at DateTime [default: `now()`]
   updated_at DateTime [default: `now()`]
+  cheques cheque [not null]
   proposal proposal [not null]
   payment_status payment_status
-  cheques cheque [not null]
 }
 
 Table proposal {
@@ -195,6 +195,8 @@ Table proposal {
   execution_time Decimal
   oid Int
   project_number String [unique]
+  notification notification [not null]
+  payments payment [not null]
   accreditation_type accreditation_type
   proposal_beneficiaries proposal_beneficiaries
   project_tracks project_tracks
@@ -208,8 +210,6 @@ Table proposal {
   supervisor user
   support_goal support_goal
   track track
-  notification notification [not null]
-  payments payment [not null]
   proposal_asked_edit_request proposal_asked_edit_request [not null]
   proposal_assign proposal_assign [not null]
   proposal_closing_report proposal_closing_report [not null]
@@ -256,10 +256,10 @@ Table proposal_log {
   user_role String
   response_time Int
   reject_reason String
+  notification notification [not null]
   user_type user_type [not null]
   proposal proposal [not null]
   reviewer user
-  notification notification [not null]
 }
 
 Table proposal_state {
@@ -285,9 +285,6 @@ Table user {
   google_session Json
   is_online Boolean
   track_id String
-  employee_track project_tracks
-  track track
-  status user_status [not null]
   appointment_appointment_employee_idTouser appointment [not null]
   appointment_appointment_user_idTouser appointment [not null]
   bank_information bank_information [not null]
@@ -316,6 +313,9 @@ Table user {
   room_chat_as_participant1 room_chat [not null]
   room_chat_as_participant2 room_chat [not null]
   schedule schedule [not null]
+  employee_track project_tracks
+  track track
+  status user_status [not null]
   roles user_role [not null]
   user_status_log_userTouser_status_log_account_manager_id user_status_log [not null]
   user_status_log_userTouser_status_log_user_id user_status_log [not null]
@@ -444,10 +444,10 @@ Table room_chat {
   participant2_user_id String
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [default: `now()`, not null]
+  message message [not null]
   correspondance_category correspondance_category [not null]
   user_room_chat_participant1_user_idTouser user
   user_room_chat_participant2_user_idTouser user
-  message message [not null]
 }
 
 Table contact_us {
@@ -523,7 +523,8 @@ Table banks {
 
 Table beneficiaries {
   id String [pk]
-  title String [not null]
+  name String [not null]
+  is_deleted Boolean [default: false]
 }
 
 Table recommended_support_consultant {
@@ -555,8 +556,8 @@ Table track_section {
   track_id String [not null]
   is_deleted Boolean [default: false]
   track_section track_section
-  track track [not null]
   other_track_section track_section [not null]
+  track track [not null]
 }
 
 Table user_status {

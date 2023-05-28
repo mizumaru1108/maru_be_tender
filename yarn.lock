@@ -8163,6 +8163,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.30.3
     "@webundsoehne/nest-fastify-file-upload": ^2.0.0
     axios: ^0.27.2
+    builder-pattern: ^2.2.0
     class-transformer: ^0.5.1
     class-validator: ^0.13.2
     crypto-js: ^4.1.1
@@ -11253,6 +11254,13 @@ __metadata:
     hexer: ^1.5.0
     xtend: ^4.0.0
   checksum: e0cdfae2d1f4c0a2ffdc4e352ce3dbd547c4683c76072d48b98322945c318cbb0b6c2ccb5719d7de14abbe2076d68796f7d905b9b2c859fa29259fe66894b6c6
+  languageName: node
+  linkType: hard
+
+"builder-pattern@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "builder-pattern@npm:2.2.0"
+  checksum: 159874cb9aa8ea92880e6f956cbfb2c60f94e1bf4e4a854354ccbdbf8d003e9126f9ce0efd7e3483996876f5856af0f4907aab0e3cf2a015e469371c06556fc8
   languageName: node
   linkType: hard
 

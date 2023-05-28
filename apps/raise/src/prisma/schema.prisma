@@ -1,6 +1,5 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["interactiveTransactions"]
   binaryTargets   = ["native"]
 }
 
@@ -85,7 +84,7 @@ model employees_permissions {
   correspondence                     Boolean? @default(false)
   advisors_committee                 Boolean? @default(false)
   project_supervisor                 Boolean? @default(false)
-  id                                 String   @id @unique(map: "employees_permissions_idd_key") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                                 String   @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user                               user     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
@@ -131,9 +130,9 @@ model payment {
   order              Decimal?        @db.Decimal
   created_at         DateTime?       @default(now()) @db.Timestamptz(6)
   updated_at         DateTime?       @default(now()) @db.Timestamptz(6)
+  cheques            cheque[]
   proposal           proposal        @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   payment_status     payment_status? @relation(fields: [status], references: [id], onDelete: Cascade)
-  cheques            cheque[]
 }
 
 model proposal {
@@ -206,6 +205,8 @@ model proposal {
   execution_time                      Decimal?                         @db.Decimal
   oid                                 Int?
   project_number                      String?                          @unique(map: "idx_project_number") @default(dbgenerated("(nextval('proposal_project_number_seq'::regclass))::text"))
+  notification                        notification[]
+  payments                            payment[]
   accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   proposal_beneficiaries              proposal_beneficiaries?          @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
@@ -219,8 +220,6 @@ model proposal {
   supervisor                          user?                            @relation("proposal_supervisor_idTouser", fields: [supervisor_id], references: [id], onDelete: Cascade)
   support_goal                        support_goal?                    @relation(fields: [support_goal_id], references: [id])
   track                               track?                           @relation(fields: [track_id], references: [id], onUpdate: NoAction)
-  notification                        notification[]
-  payments                            payment[]
   proposal_asked_edit_request         proposal_asked_edit_request[]
   proposal_assign                     proposal_assign[]
   proposal_closing_report             proposal_closing_report[]
@@ -267,10 +266,10 @@ model proposal_log {
   user_role     String?        @db.VarChar
   response_time Int?
   reject_reason String?        @db.VarChar
+  notification  notification[]
   user_type     user_type      @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
   proposal      proposal       @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   reviewer      user?          @relation(fields: [reviewer_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_log_user_id_fkey")
-  notification  notification[]
 }
 
 model proposal_state {
@@ -296,9 +295,6 @@ model user {
   google_session                                                              Json?
   is_online                                                                   Boolean?
   track_id                                                                    String?
-  employee_track                                                              project_tracks?               @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  track                                                                       track?                        @relation(fields: [track_id], references: [id], onDelete: Cascade)
-  status                                                                      user_status                   @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_status_id_fkey")
   appointment_appointment_employee_idTouser                                   appointment[]                 @relation("appointment_employee_idTouser")
   appointment_appointment_user_idTouser                                       appointment[]                 @relation("appointment_user_idTouser")
   bank_information                                                            bank_information[]
@@ -327,6 +323,9 @@ model user {
   room_chat_as_participant1                                                   room_chat[]                   @relation("room_chat_participant1_user_idTouser")
   room_chat_as_participant2                                                   room_chat[]                   @relation("room_chat_participant2_user_idTouser")
   schedule                                                                    schedule[]
+  employee_track                                                              project_tracks?               @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  track                                                                       track?                        @relation(fields: [track_id], references: [id], onDelete: Cascade)
+  status                                                                      user_status                   @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_status_id_fkey")
   roles                                                                       user_role[]
   user_status_log_userTouser_status_log_account_manager_id                    user_status_log[]             @relation("userTouser_status_log_account_manager_id")
   user_status_log_userTouser_status_log_user_id                               user_status_log[]             @relation("userTouser_status_log_user_id")
@@ -455,10 +454,10 @@ model room_chat {
   participant2_user_id                      String?
   created_at                                DateTime                @default(now()) @db.Timestamptz(6)
   updated_at                                DateTime                @default(now()) @db.Timestamptz(6)
+  message                                   message[]
   correspondance_category                   correspondance_category @relation(fields: [correspondance_category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "room_chat_correspondance_category_fkey")
   user_room_chat_participant1_user_idTouser user?                   @relation("room_chat_participant1_user_idTouser", fields: [participant1_user_id], references: [id])
   user_room_chat_participant2_user_idTouser user?                   @relation("room_chat_participant2_user_idTouser", fields: [participant2_user_id], references: [id])
-  message                                   message[]
 }
 
 model contact_us {
@@ -533,8 +532,9 @@ model banks {
 }
 
 model beneficiaries {
-  id    String @id
-  title String @db.VarChar
+  id         String   @id
+  name       String   @db.VarChar
+  is_deleted Boolean? @default(false)
 }
 
 model recommended_support_consultant {
@@ -566,8 +566,8 @@ model track_section {
   track_id            String
   is_deleted          Boolean?        @default(false)
   track_section       track_section?  @relation("track_sectionTotrack_section", fields: [section_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
-  track               track           @relation(fields: [track_id], references: [id], onDelete: Cascade)
   other_track_section track_section[] @relation("track_sectionTotrack_section")
+  track               track           @relation(fields: [track_id], references: [id], onDelete: Cascade)
 }
 
 model user_status {
