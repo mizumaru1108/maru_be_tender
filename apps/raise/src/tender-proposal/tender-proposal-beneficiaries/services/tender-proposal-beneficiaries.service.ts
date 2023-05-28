@@ -5,6 +5,8 @@ import { UpdateBeneficiaryDto } from '../dtos/requests/update-beneficiaries.dto'
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UpdateBeneficiaryProps } from '../types/beneficiary.type';
 import { Builder } from 'builder-pattern';
+import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { FindBeneficiariesFilterRequest } from '../dtos/requests/find-beneficiaries.dto';
 
 @Injectable()
 export class TenderProposalBeneficiaresService {
@@ -57,5 +59,13 @@ export class TenderProposalBeneficiaresService {
       console.trace(error);
       throw error;
     }
+  }
+
+  async find(id: string) {
+    return await this.beneficiaryRepo.find(id);
+  }
+
+  async findAll(filter: FindBeneficiariesFilterRequest) {
+    return await this.beneficiaryRepo.findAll(filter);
   }
 }
