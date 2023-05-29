@@ -13,7 +13,7 @@ import { fCurrencyNumber } from 'utils/formatNumber';
 import { Proposal } from '../../../@types/proposal';
 import { useSelector } from 'redux/store';
 import { getOneNameCashier } from 'queries/Cashier/getOneNameCashier';
-import { formatCapitzlizeText } from 'utils/formatCapitzlizeText';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 
 // -------------------------------------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
               </Typography>
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                 {/* {translate(`${proposalData?.project_track}`) ?? '-'} */}
-                {formatCapitzlizeText(trackName) ?? '-'}
+                {formatCapitalizeText(trackName) ?? '-'}
               </Typography>
             </Grid>
 

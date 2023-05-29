@@ -1,26 +1,22 @@
+import PersonIcon from '@mui/icons-material/Person';
 import {
-  Typography,
-  Stack,
+  Box,
   Button,
   Card,
   CardActions,
   CardContent,
   Divider,
-  Box,
-  Grid,
-  Chip,
+  Stack,
+  Typography,
 } from '@mui/material';
-import useLocales from 'hooks/useLocales';
-import { useLocation, useNavigate } from 'react-router';
-import { ClientCardProps } from './types';
-import moment from 'moment';
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
-import { useMutation } from 'urql';
-import { FusionAuthRoles } from '../../@types/commons';
 import React from 'react';
-import PersonIcon from '@mui/icons-material/Person';
+import { useLocation, useNavigate } from 'react-router';
 import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
+import { useMutation } from 'urql';
+import { ClientCardProps } from './types';
 /**
  *
  * Todo: 1- starting with initializing the urql and having a query for the table.

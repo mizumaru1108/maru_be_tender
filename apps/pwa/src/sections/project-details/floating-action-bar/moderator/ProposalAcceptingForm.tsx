@@ -14,7 +14,7 @@ import { useSnackbar } from 'notistack';
 import useAuth from '../../../../hooks/useAuth';
 import axiosInstance from '../../../../utils/axios';
 import { useSelector } from 'redux/store';
-import { formatCapitzlizeText } from 'utils/formatCapitzlizeText';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 
 interface FormProps {
   onSubmit: (data: any) => void;
@@ -161,7 +161,7 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
                 {track_list &&
                   track_list?.map((item: tracks, index: any) => (
                     <MenuItem key={index} value={item?.id}>
-                      {formatCapitzlizeText(item.name)}
+                      {formatCapitalizeText(item.name)}
                     </MenuItem>
                   ))}
               </RHFSelect>

@@ -9,7 +9,7 @@ import { FEATURE_DAILY_STATUS } from 'config';
 import useAuth from 'hooks/useAuth';
 import { useSnackbar } from 'notistack';
 import axiosInstance from 'utils/axios';
-import { formatCapitzlizeText } from 'utils/formatCapitzlizeText';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import { fCurrencyNumber } from 'utils/formatNumber';
 
 // ------------------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                   sx={{ display: 'flex', flexDirection: 'column' }}
                 >
                   <Grid item xs={12}>
-                    <Typography variant="h5">{formatCapitzlizeText(item?.name)}</Typography>
+                    <Typography variant="h5">{formatCapitalizeText(item?.name)}</Typography>
                   </Grid>
                   <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'row' }} gap={2}>
                     <Grid item md={4} xs={12} sx={styleBox}>

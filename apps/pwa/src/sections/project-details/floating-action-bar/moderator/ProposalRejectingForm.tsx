@@ -7,7 +7,7 @@ import ModalDialog from 'components/modal-dialog';
 import useLocales from 'hooks/useLocales';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'redux/store';
-import { formatCapitzlizeText } from 'utils/formatCapitzlizeText';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import * as Yup from 'yup';
 
 type FormData = {
@@ -83,7 +83,7 @@ function ProposalRejectingForm({ onSubmit, onClose, loading }: FormProps) {
                 {track_list &&
                   track_list?.map((item: tracks, index: any) => (
                     <MenuItem key={index} value={item?.id}>
-                      {formatCapitzlizeText(item.name)}
+                      {formatCapitalizeText(item.name)}
                     </MenuItem>
                   ))}
               </RHFSelect>
