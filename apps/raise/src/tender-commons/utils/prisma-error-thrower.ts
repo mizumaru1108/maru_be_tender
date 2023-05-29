@@ -42,7 +42,7 @@ export function prismaErrorThrower(
       //Prisma Client throws a PrismaClientKnownRequestError exception if
       //the query engine returns a known error related to the request -
       //for example, a unique constraint violation.
-      this.logger.log('info', `prisma error code: ${error.code}`);
+      // this.logger.log('info', `prisma error code: ${error}`);
       instance = 'PrismaClientKnownRequestError';
     }
     if (error instanceof Prisma.PrismaClientRustPanicError) {
@@ -68,7 +68,15 @@ export function prismaErrorThrower(
     }
     logger.error(`( Source: Prisma ${instance}), Error:`, error);
     return new InternalServerErrorException(
-      `Something went wrong, detail: ${instance},name: ${error.name}, message: ${error.message}, stack: ${error.stack}`,
+      `Something went wrong, detail: ${
+        instance ? instance : "'instance not found'"
+      },name: ${
+        error && error.name ? error.name : "'error name not found!'"
+      }, message: ${
+        error && error.message ? error.message : "'error message not found!'"
+      }, stack: ${
+        error && error.stack ? error.stack : "'error.stack not defined'"
+      }`,
     );
   } else if (
     error instanceof BadRequestException ||
