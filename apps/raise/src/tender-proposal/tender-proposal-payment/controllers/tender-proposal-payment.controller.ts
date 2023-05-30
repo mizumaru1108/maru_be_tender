@@ -113,6 +113,7 @@ export class TenderProposalPaymentController {
     'tender_project_manager',
     'tender_finance',
     'tender_cashier',
+    'tender_admin',
   )
   @Get('find-track-budget')
   async findTrackBudgetsByTrackId(
