@@ -262,8 +262,29 @@ export class FusionAuthService {
 
     try {
       const data = await axios(options);
+
       return data.data;
-    } catch (error) {}
+    } catch (error) {
+      if (
+        error.response.data &&
+        error.response.data.fieldErrors &&
+        error.response.status < 500
+      ) {
+        this.logger.error('FusionAuth Error:', error.response.data);
+        throw new BadRequestException(
+          `Registration failed on cloud app, field error (${[
+            Object.keys(error.response.data.fieldErrors)[0],
+          ]}) : ${
+            error.response.data.fieldErrors[
+              Object.keys(error.response.data.fieldErrors)[0]
+            ][0].message
+          }`,
+        );
+      } else {
+        this.logger.error('FusionAuth Error:', error);
+        throw new Error('Something went wrong!');
+      }
+    }
   }
 
   async fusionAuthDeleteUser(userId: string) {
