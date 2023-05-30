@@ -32,7 +32,7 @@ type FormData = {
 function FilePopup({ open, handleClose }: Props) {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const { currentLang } = useLocales();
+  const { currentLang, translate } = useLocales();
 
   const { enqueueSnackbar } = useSnackbar();
   const { employeeOnly } = useSelector((state) => state.proposal);
@@ -96,11 +96,27 @@ function FilePopup({ open, handleClose }: Props) {
           handleClose();
         }
       } catch (error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
+        // enqueueSnackbar(error.message, {
+        //   variant: 'error',
+        //   preventDuplicate: true,
+        //   autoHideDuration: 3000,
+        // });
+        const statusCode = (error && error.statusCode) || 0;
+        const message = (error && error.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
       }
     } else {
       try {
@@ -127,11 +143,27 @@ function FilePopup({ open, handleClose }: Props) {
           handleClose();
         }
       } catch (error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
+        // enqueueSnackbar(error.message, {
+        //   variant: 'error',
+        //   preventDuplicate: true,
+        //   autoHideDuration: 3000,
+        // });
+        const statusCode = (error && error.statusCode) || 0;
+        const message = (error && error.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
       }
     }
   };

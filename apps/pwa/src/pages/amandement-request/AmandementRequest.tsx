@@ -113,7 +113,31 @@ export default function AmandementRequest() {
         });
         navigate(dashboardUrl);
       } catch (error) {
-        enqueueSnackbar(error.message, { variant: 'error' });
+        // enqueueSnackbar(error.message, { variant: 'error' });
+        // handle error fetching
+        const statusCode = (error && error.statusCode) || 0;
+        const message = (error && error.message) || null;
+        if (message && statusCode !== 0) {
+          enqueueSnackbar(error.message, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+        } else {
+          enqueueSnackbar(translate('pages.common.internal_server_error'), {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+        }
       } finally {
         setIsLoad(false);
       }

@@ -54,7 +54,6 @@ const AmandementRequest = () => {
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      // console.log('rest', rest);
       if (rest) {
         setTmpValues({
           data: rest.data.data.proposal,
@@ -62,33 +61,26 @@ const AmandementRequest = () => {
         });
       }
     } catch (err) {
-      if (err) {
-        const statusCode = (err && err.statusCode) || 0;
-        const message = (err && err.message) || null;
-        if (message && statusCode !== 0) {
-          enqueueSnackbar(err.message, {
-            variant: 'error',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'center',
-            },
-          });
-        } else {
-          enqueueSnackbar(translate('pages.common.internal_server_error'), {
-            variant: 'error',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'center',
-            },
-          });
+      // handle error fetching
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
         }
-      }
+      );
     }
-  }, [activeRole, params.proposal_id, enqueueSnackbar, translate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRole, params.proposal_id, enqueueSnackbar]);
 
   React.useEffect(() => {
     fetchingData();

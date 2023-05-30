@@ -17,6 +17,7 @@ import uuidv4 from 'utils/uuidv4';
 import useAuth from 'hooks/useAuth';
 import { useState, useEffect } from 'react';
 import moment from 'moment';
+import useLocales from 'hooks/useLocales';
 
 type FormValuesProps = {
   payments: {
@@ -33,6 +34,7 @@ interface Props {
 function PaymentsSetForm({ refetch, fetching }: Props) {
   const { id: proposal_id } = useParams();
   const { proposal } = useSelector((state) => state.proposal);
+  const { translate } = useLocales();
 
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
@@ -134,11 +136,27 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
           });
         });
       } else {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
+        // enqueueSnackbar(error.message, {
+        //   variant: 'error',
+        //   preventDuplicate: true,
+        //   autoHideDuration: 3000,
+        // });
+        const statusCode = (error && error.statusCode) || 0;
+        const message = (error && error.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
       }
     }
   };

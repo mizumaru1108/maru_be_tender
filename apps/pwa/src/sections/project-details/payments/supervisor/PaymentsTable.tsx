@@ -74,8 +74,7 @@ function PaymentsTable() {
             horizontal: 'right',
           },
         });
-      }
-      if (error.message === "Cannot set properties of undefined (setting 'status')") {
+      } else if (error.message === "Cannot set properties of undefined (setting 'status')") {
         // reExecute();
         getProposal(id as string, activeRole! as string);
         enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
@@ -87,6 +86,23 @@ function PaymentsTable() {
             horizontal: 'right',
           },
         });
+      } else {
+        const statusCode = (error && error.statusCode) || 0;
+        const message = (error && error.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
       }
     }
   };

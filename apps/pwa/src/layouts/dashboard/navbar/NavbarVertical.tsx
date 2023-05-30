@@ -43,11 +43,12 @@ type Props = {
 
 export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props) {
   const theme = useTheme();
-  const { translate } = useLocales();
+  const { translate, onChangeLang } = useLocales();
   const { logout, activeRole } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isDesktop = useResponsive('up', 'lg');
+  // const { onChangeLang } = useLocales();
 
   // redux
   const dispatch = useDispatch();
@@ -98,6 +99,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
           dispatch(setActiveConversationId(null));
           dispatch(setConversation([]));
           dispatch(setMessageGrouped([]));
+          onChangeLang('ar');
           logout();
           // navigate(0);
           navigate('/auth/login');

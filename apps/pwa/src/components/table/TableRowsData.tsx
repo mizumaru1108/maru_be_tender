@@ -132,13 +132,12 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
       window.location.reload();
     } catch (err) {
       setIsSubimitting(false);
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
 
-      enqueueSnackbar(
-        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
-        {
-          variant: 'error',
-        }
-      );
+      enqueueSnackbar(`${statusCode < 500 && message ? message : 'something went wrong!'}`, {
+        variant: 'error',
+      });
 
       setAction('INFORMATION');
       console.log(err);
@@ -162,12 +161,11 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
       setLinkForgotPassword(rest.data.data);
       // window.location.reload();
     } catch (err) {
-      enqueueSnackbar(
-        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
-        {
-          variant: 'error',
-        }
-      );
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      enqueueSnackbar(`${statusCode < 500 && message ? message : 'something went wrong!'}`, {
+        variant: 'error',
+      });
       console.log(err);
     } finally {
       setLoadingResetLink(false);
@@ -218,11 +216,35 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
           });
         });
       } else {
-        enqueueSnackbar(err.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
+        // enqueueSnackbar(err.message, {
+        //   variant: 'error',
+        //   preventDuplicate: true,
+        //   autoHideDuration: 3000,
+        // });
+        // handle error fetching
+        const statusCode = (err && err.statusCode) || 0;
+        const message = (err && err.message) || null;
+        if (message && statusCode !== 0) {
+          enqueueSnackbar(err.message, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+        } else {
+          enqueueSnackbar(translate('pages.common.internal_server_error'), {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+        }
       }
 
       setIsSubimittingReset(false);

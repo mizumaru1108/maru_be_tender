@@ -99,21 +99,55 @@ function ConsultantFloatingActionBar() {
               });
             });
           } else {
-            enqueueSnackbar(err.message, {
-              variant: 'error',
-              preventDuplicate: true,
-              autoHideDuration: 3000,
-            });
+            // enqueueSnackbar(err.message, {
+            //   variant: 'error',
+            //   preventDuplicate: true,
+            //   autoHideDuration: 3000,
+            // });
+            const statusCode = (err && err.statusCode) || 0;
+            const message = (err && err.message) || null;
+            enqueueSnackbar(
+              `${
+                statusCode < 500 && message
+                  ? message
+                  : translate('pages.common.internal_server_error')
+              }`,
+              {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                },
+              }
+            );
           }
 
           setIsSubmitting(false);
         });
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-      });
+      // enqueueSnackbar(error.message, {
+      //   variant: 'error',
+      //   preventDuplicate: true,
+      //   autoHideDuration: 3000,
+      // });
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
 
       setIsSubmitting(false);
     }
@@ -157,22 +191,56 @@ function ConsultantFloatingActionBar() {
               });
             });
           } else {
-            enqueueSnackbar(err.message, {
-              variant: 'error',
-              preventDuplicate: true,
-              autoHideDuration: 3000,
-            });
+            // enqueueSnackbar(err.message, {
+            //   variant: 'error',
+            //   preventDuplicate: true,
+            //   autoHideDuration: 3000,
+            // });
+            const statusCode = (err && err.statusCode) || 0;
+            const message = (err && err.message) || null;
+            enqueueSnackbar(
+              `${
+                statusCode < 500 && message
+                  ? message
+                  : translate('pages.common.internal_server_error')
+              }`,
+              {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                },
+              }
+            );
           }
 
           setIsSubmitting(false);
         });
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-      });
+      // enqueueSnackbar(error.message, {
+      //   variant: 'error',
+      //   preventDuplicate: true,
+      //   autoHideDuration: 3000,
+      // });
 
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
       setIsSubmittingRejected(false);
     }
   };
@@ -215,21 +283,55 @@ function ConsultantFloatingActionBar() {
               });
             });
           } else {
-            enqueueSnackbar(err.message, {
-              variant: 'error',
-              preventDuplicate: true,
-              autoHideDuration: 3000,
-            });
+            // enqueueSnackbar(err.message, {
+            //   variant: 'error',
+            //   preventDuplicate: true,
+            //   autoHideDuration: 3000,
+            // });
+            const statusCode = (err && err.statusCode) || 0;
+            const message = (err && err.message) || null;
+            enqueueSnackbar(
+              `${
+                statusCode < 500 && message
+                  ? message
+                  : translate('pages.common.internal_server_error')
+              }`,
+              {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                },
+              }
+            );
           }
 
           setIsSubmittingStepback(false);
         });
     } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-      });
+      // enqueueSnackbar(error.message, {
+      //   variant: 'error',
+      //   preventDuplicate: true,
+      //   autoHideDuration: 3000,
+      // });
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
 
       setIsSubmittingStepback(false);
     }
