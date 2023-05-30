@@ -77,6 +77,8 @@ import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-t
 import { UpdateProposalTrackInfoMapper } from '../mappers/update-proposal-track-info.mapper';
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
 import { removePrefix } from '../../../tender-commons/utils/remove-966-prefix';
+import { Builder } from 'builder-pattern';
+import { CreateProjectTimelineDto } from '../dtos/requests/create-project-timeline.dto';
 
 @Injectable()
 export class TenderProposalService {
@@ -253,121 +255,6 @@ export class TenderProposalService {
     return await this.proposalRepo.fetchPaymentAdjustment(currentUser, filter);
   }
 
-  async create(userId: string, request: ProposalCreateDto) {
-    const proposalCreatePayload: Prisma.proposalUncheckedCreateInput =
-      CreateProposalMapper(userId, request);
-
-    // this.logger.log('info', `request payload, ${logUtil(request)}`);
-
-    const proposal_id = nanoid();
-    proposalCreatePayload.id = proposal_id;
-
-    let uploadedFilePath: string[] = [];
-
-    let proposal_item_budgets:
-      | Prisma.proposal_item_budgetCreateManyInput[]
-      | undefined = undefined;
-
-    const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
-      [];
-
-    /* validate and create path */
-    const maxSize: number = 1024 * 1024 * 6; // 6 MB
-    const allowedType: FileMimeTypeEnum[] = [
-      FileMimeTypeEnum.JPG,
-      FileMimeTypeEnum.JPEG,
-      FileMimeTypeEnum.PNG,
-      FileMimeTypeEnum.GIF,
-      FileMimeTypeEnum.PDF,
-    ];
-
-    if (request.proposal_bank_information_id) {
-      const isMyOwnBank = await this.proposalRepo.validateOwnBankAccount(
-        userId,
-        request.proposal_bank_information_id,
-      );
-      if (!isMyOwnBank) {
-        throw new BadRequestException('Bank account is not yours!');
-      }
-      proposalCreatePayload.proposal_bank_id =
-        request.proposal_bank_information_id;
-    }
-
-    // upload the project_attachments to bunny cloud service
-    if (request.project_attachments) {
-      const uploadResult = await this.uploadProposalFile(
-        userId,
-        proposalCreatePayload.id,
-        'uploading project attachments',
-        request.project_attachments,
-        'project-attachments',
-        allowedType,
-        maxSize,
-        uploadedFilePath,
-      );
-      uploadedFilePath = uploadResult.uploadedFilePath;
-      proposalCreatePayload.project_attachments = uploadResult.fileObj;
-
-      const payload: Prisma.file_managerUncheckedCreateInput = {
-        id: uuidv4(),
-        user_id: userId,
-        name: uploadResult.fileObj.url.split('/').pop() as string,
-        url: uploadResult.fileObj.url,
-        mimetype: uploadResult.fileObj.type,
-        size: uploadResult.fileObj.size,
-        column_name: 'project-attachments',
-        table_name: 'proposal',
-        proposal_id: proposalCreatePayload.id,
-      };
-      fileManagerCreateManyPayload.push(payload);
-    }
-
-    if (request.letter_ofsupport_req) {
-      const uploadResult = await this.uploadProposalFile(
-        userId,
-        proposalCreatePayload.id,
-        'uploading letter of support',
-        request.letter_ofsupport_req,
-        'letter-of-support-req',
-        allowedType,
-        maxSize,
-        uploadedFilePath,
-      );
-      uploadedFilePath = uploadResult.uploadedFilePath;
-      proposalCreatePayload.letter_ofsupport_req = uploadResult.fileObj;
-
-      const payload: Prisma.file_managerUncheckedCreateInput = {
-        id: uuidv4(),
-        user_id: userId,
-        name: uploadResult.fileObj.url.split('/').pop() as string,
-        url: uploadResult.fileObj.url,
-        mimetype: uploadResult.fileObj.type,
-        size: uploadResult.fileObj.size,
-        column_name: 'letter-of-support-req',
-        table_name: 'proposal',
-        proposal_id: proposalCreatePayload.id,
-      };
-      fileManagerCreateManyPayload.push(payload);
-    }
-
-    if (request.detail_project_budgets) {
-      proposal_item_budgets = CreateItemBudgetsMapper(
-        proposal_id,
-        request.detail_project_budgets,
-      );
-    }
-
-    // create proposal and the logs
-    const createdProposal = await this.proposalRepo.create(
-      proposalCreatePayload,
-      proposal_item_budgets,
-      fileManagerCreateManyPayload,
-      uploadedFilePath,
-    );
-
-    return createdProposal;
-  }
-
   async interceptorCreate(
     userId: string,
     request: CreateProposalInterceptorDto,
@@ -386,6 +273,9 @@ export class TenderProposalService {
       | undefined = undefined;
     const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
       [];
+    let proposalTimelinesPayloads: Prisma.project_timelineCreateManyInput[] =
+      [];
+
     /* validate and create path */
     const maxSize: number = 1024 * 1024 * 201;
     const allowedType: FileMimeTypeEnum[] = [
@@ -406,7 +296,7 @@ export class TenderProposalService {
       proposalCreatePayload.proposal_bank_id =
         request.proposal_bank_information_id;
     }
-    // // upload the project_attachments to bunny cloud service
+
     if (project_attachments[0]) {
       const uploadResult = await this.uploadProposalFileIntercept(
         userId,
@@ -467,10 +357,23 @@ export class TenderProposalService {
       );
     }
 
+    if (request.project_timeline.length > 0) {
+      proposalTimelinesPayloads = request.project_timeline.map((timeline) => {
+        return {
+          id: uuidv4(),
+          proposal_id,
+          name: timeline.name,
+          start_date: timeline.start_date,
+          end_date: timeline.end_date,
+        };
+      });
+    }
+
     // create proposal and the logs
     const createdProposal = await this.proposalRepo.create(
       proposalCreatePayload,
       proposal_item_budgets,
+      proposalTimelinesPayloads,
       fileManagerCreateManyPayload,
       uploadedFilePath,
     );

@@ -66,6 +66,8 @@ export class TenderFileManagerService {
     return await this.fileManagerRepo.fetchAll(currentUser, filter);
   }
 
+  async uploadAndCreateFileManager() {}
+
   async uploadProposalFile(
     userId: string,
     proposalId: string,

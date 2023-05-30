@@ -13,26 +13,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
-// import {
-//   HasMimeType,
-//   IsFile,
-//   MaxFileSize,
-//   MemoryStoredFile,
-// } from 'nestjs-form-data';
-
-// export class CreateProposalInterceptorFiles {
-//   @ApiProperty()
-//   @IsFile()
-//   @MaxFileSize(220000)
-//   @HasMimeType(['image/jpeg', 'image/png'])
-//   readonly letter_ofsupport_req: MemoryStoredFile;
-
-//   @ApiProperty()
-//   @IsFile()
-//   @MaxFileSize(220000)
-//   @HasMimeType(['image/jpeg', 'image/png'])
-//   readonly project_attachments: MemoryStoredFile;
-// }
+import { CreateProjectTimelineDto } from './create-project-timeline.dto';
 
 export class CreateProposalInterceptorDto {
   /* first form ---------------------------------------------------- */
@@ -172,4 +153,12 @@ export class CreateProposalInterceptorDto {
   @IsUUID()
   proposal_bank_information_id?: string;
   /* fifth form ---------------------------------------------------- */
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty({ each: true })
+  @ValidateNested({ each: true })
+  @IsArray()
+  @Type(() => CreateProjectTimelineDto)
+  project_timeline: CreateProjectTimelineDto[];
 }

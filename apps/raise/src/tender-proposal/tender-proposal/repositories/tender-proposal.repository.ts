@@ -62,38 +62,12 @@ export class TenderProposalRepository {
     }
   }
 
-  // async seq() {
-  //   const proposal = await this.prismaService.proposal.findMany({
-  //     orderBy: {
-  //       created_at: 'asc',
-  //     },
-  //   });
-
-  //   if (proposal.length > 0) {
-  //     for (let i = 0; i < proposal.length; i++) {
-  //       const proposal_id = proposal[i].id;
-  //       const proposal_name = proposal[i].project_name;
-  //       const proposal_number = proposal[i].project_number;
-  //       const created_at = moment(proposal[i].created_at).format('lll');
-  //       console.log(
-  //         `numb: ${proposal_number}`,
-  //         `proposal_id: ${proposal_id}`,
-  //         `name: ${proposal_name}`,
-  //         `created: ${created_at}\n`,
-  //       );
-  //       // await this.prismaService.proposal.update({
-  //       //   where: { id: proposal_id },
-  //       //   data: { project_number: i + 1 },
-  //       // });
-  //     }
-  //   }
-  // }
-
   async create(
     createProposalPayload: Prisma.proposalUncheckedCreateInput,
     proposal_item_budgets:
       | Prisma.proposal_item_budgetCreateManyInput[]
       | undefined,
+    proposalTimelinesPayloads: Prisma.project_timelineCreateManyInput[] = [],
     fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
     uploadedFilePath: string[],
   ) {
@@ -120,6 +94,22 @@ export class TenderProposalRepository {
             );
             await prisma.proposal_item_budget.createMany({
               data: proposal_item_budgets,
+            });
+          }
+
+          if (
+            proposalTimelinesPayloads &&
+            proposalTimelinesPayloads.length > 0
+          ) {
+            this.logger.log(
+              'info',
+              `Creating timeline with payload: \n ${logUtil(
+                proposalTimelinesPayloads,
+              )}`,
+            );
+
+            await prisma.project_timeline.createMany({
+              data: proposalTimelinesPayloads,
             });
           }
 

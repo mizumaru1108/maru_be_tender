@@ -49,24 +49,6 @@ export class TenderProposalController {
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
-  @Post('create')
-  async create(
-    @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() payload: ProposalCreateDto,
-  ) {
-    const createdProposal = await this.proposalService.create(
-      currentUser.id,
-      payload,
-    );
-    return baseResponseHelper(
-      createdProposal,
-      HttpStatus.CREATED,
-      'Proposal created successfully',
-    );
-  }
-
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_client')
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'letter_ofsupport_req', maxCount: 1 },
