@@ -2,6 +2,7 @@ import { LoadingButton } from '@mui/lab';
 import { Button, Stack, Typography } from '@mui/material';
 import ModalDialog from 'components/modal-dialog';
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router';
@@ -15,6 +16,7 @@ type Props = {
 function ConfirmApprovedEditRequest({ open, handleClose }: Props) {
   const { user, activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  const { translate } = useLocales();
   const navigate = useNavigate();
   const params = useParams();
   const [loading, setLoading] = React.useState(false);
@@ -45,15 +47,41 @@ function ConfirmApprovedEditRequest({ open, handleClose }: Props) {
         navigate(-1);
       }
     } catch (err) {
-      setLoading(false);
-      enqueueSnackbar(
-        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
-        {
+      // setLoading(false);
+      // enqueueSnackbar(
+      //   `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
+      //   {
+      //     variant: 'error',
+      //     preventDuplicate: true,
+      //     autoHideDuration: 3000,
+      //   }
+      // );
+      // handle error fetching
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(err.message, {
           variant: 'error',
           preventDuplicate: true,
           autoHideDuration: 3000,
-        }
-      );
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
+    } finally {
+      setLoading(false);
     }
   };
 

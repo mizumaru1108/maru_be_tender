@@ -112,11 +112,22 @@ const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsulta
         dispatch(getTracks(activeRole!));
         onClose();
       } catch (err) {
-        enqueueSnackbar(err.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
+        const statusCode = (err && err.statusCode) || 0;
+        const message = (err && err.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
         setLoading(false);
         onClose();
       }

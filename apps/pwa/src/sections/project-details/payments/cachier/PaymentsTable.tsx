@@ -83,66 +83,60 @@ function PaymentsTable() {
                 </Grid>
               )}
 
-              {item.status === 'accepted_by_finance' && activeRole === 'tender_cashier' ? (
+              {(item.status === 'done' || item.status === 'accepted_by_finance') &&
+              activeRole === 'tender_cashier' ? (
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                  <Button
-                    sx={{
-                      backgroundColor: 'transparent',
-                      color: '#000',
-                      textDecorationLine: 'underline',
-                      height: '100%',
-                      ':hover': { backgroundColor: '#b8b7b4', textDecorationLine: 'underline' },
-                      width: '100%',
-                      border: `1px solid #000`,
-                      borderStyle: 'dashed',
-                    }}
-                    endIcon={<img src="/icons/uploading-field/uploading-cheque-icon.svg" alt="" />}
-                    onClick={() => {
-                      handleOpenModal(item.id);
-                    }}
-                  >
-                    {translate('finance_pages.button.upload_receipt')}
-                  </Button>
+                  {item.cheques.length ? (
+                    <Button
+                      onClick={() => {
+                        localStorage.setItem('receipt_type', 'receipt');
+                        navigate(
+                          `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                            proposal.id
+                          }/payments/${item.id}`
+                        );
+                      }}
+                      sx={{
+                        backgroundColor: 'transparent',
+                        color: '#000',
+                        textDecorationLine: 'underline',
+                      }}
+                    >
+                      {translate(
+                        'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
+                      )}
+                    </Button>
+                  ) : (
+                    <Typography color="error" sx={{ textAlign: 'start' }}>
+                      {translate(
+                        'content.administrative.project_details.payment.table.btn.not_found_cheques'
+                      )}
+                    </Typography>
+                  )}
                 </Grid>
-              ) : item.status === 'done' || item.status === 'accepted_by_finance' ? (
+              ) : item.status === 'accepted_by_finance' ? (
                 <>
                   <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                    {item.cheques.length ? (
-                      <Button
-                        // component={Link}
-                        // href={
-                        //   typeof item.cheques[0].transfer_receipt === 'string'
-                        //     ? item.cheques[0].transfer_receipt
-                        //     : item.cheques[0].transfer_receipt.url
-                        // }
-                        // target="_blank"
-                        // rel="noopener noreferrer"
-                        // download="صورة بطاقة الحساب البنكي"
-                        onClick={() => {
-                          localStorage.setItem('receipt_type', 'receipt');
-                          navigate(
-                            `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
-                              proposal.id
-                            }/payments/${item.id}`
-                          );
-                        }}
-                        sx={{
-                          backgroundColor: 'transparent',
-                          color: '#000',
-                          textDecorationLine: 'underline',
-                        }}
-                      >
-                        {translate(
-                          'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
-                        )}
-                      </Button>
-                    ) : (
-                      <Typography color="error" sx={{ textAlign: 'start' }}>
-                        {translate(
-                          'content.administrative.project_details.payment.table.btn.not_found_cheques'
-                        )}
-                      </Typography>
-                    )}
+                    <Button
+                      sx={{
+                        backgroundColor: 'transparent',
+                        color: '#000',
+                        textDecorationLine: 'underline',
+                        height: '100%',
+                        ':hover': { backgroundColor: '#b8b7b4', textDecorationLine: 'underline' },
+                        width: '100%',
+                        border: `1px solid #000`,
+                        borderStyle: 'dashed',
+                      }}
+                      endIcon={
+                        <img src="/icons/uploading-field/uploading-cheque-icon.svg" alt="" />
+                      }
+                      onClick={() => {
+                        handleOpenModal(item.id);
+                      }}
+                    >
+                      {translate('finance_pages.button.upload_receipt')}
+                    </Button>
                   </Grid>
                 </>
               ) : null}

@@ -270,19 +270,36 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
         });
       }
     } catch (err) {
-      console.log('err', err);
-      enqueueSnackbar(err.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center',
-        },
-      });
+      // console.log('err', err);
+      // enqueueSnackbar(err.message, {
+      //   variant: 'error',
+      //   preventDuplicate: true,
+      //   autoHideDuration: 3000,
+      //   anchorOrigin: {
+      //     vertical: 'bottom',
+      //     horizontal: 'center',
+      //   },
+      // });
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRole, userId, enqueueSnackbar]);
 
   // console.log('appointments', appointments);
@@ -332,17 +349,34 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
         }
       }
     } catch (err) {
-      console.log('err', err);
-      enqueueSnackbar(err.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center',
-        },
-      });
+      // console.log('err', err);
+      // enqueueSnackbar(err.message, {
+      //   variant: 'error',
+      //   preventDuplicate: true,
+      //   autoHideDuration: 3000,
+      //   anchorOrigin: {
+      //     vertical: 'bottom',
+      //     horizontal: 'center',
+      //   },
+      // });
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRole, selectedDate?.month, selectedDate?.year, enqueueSnackbar]);
 
   React.useEffect(() => {
@@ -459,6 +493,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRole, enqueueSnackbar, navigate, userId, selectedTime, selectedDate.date]);
 
   React.useEffect(() => {

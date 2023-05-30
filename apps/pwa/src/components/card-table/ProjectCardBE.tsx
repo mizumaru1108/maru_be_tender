@@ -137,12 +137,36 @@ const ProjectCardBE = ({
         alert('Something went wrong');
       }
     } catch (err) {
-      enqueueSnackbar(`Something went wrong ${err.message}`, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-      });
-      console.log(err);
+      // enqueueSnackbar(`Something went wrong ${err.message}`, {
+      //   variant: 'error',
+      //   preventDuplicate: true,
+      //   autoHideDuration: 3000,
+      // });
+      // console.log(err);
+      // handle error fetching
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
     } finally {
       setLoading(false);
     }

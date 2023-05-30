@@ -103,18 +103,17 @@ function AmandementRequestProposal() {
           autoHideDuration: 3000,
         });
         navigate(dahsboardUrl);
-        setIsLoad(false);
       }
     } catch (err) {
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      enqueueSnackbar(`${statusCode < 500 && message ? message : 'something went wrong!'}`, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+      });
+    } finally {
       setIsLoad(false);
-      enqueueSnackbar(
-        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
-        {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        }
-      );
     }
   };
 

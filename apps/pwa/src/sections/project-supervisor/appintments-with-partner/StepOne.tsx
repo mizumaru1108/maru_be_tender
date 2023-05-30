@@ -69,7 +69,23 @@ function StepOne({ handleOnOpen, handleSetId, handleSetPartnerName }: Props) {
       setClients(res.data.data);
       // navigate('/');
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
+      // enqueueSnackbar(error.message, { variant: 'error' });
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
     } finally {
       setIsLoading(false);
     }

@@ -194,7 +194,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
       // console.log({ payload });
       // onSubmit(newData);
       try {
-        console.log('masuksini');
+        // console.log('masuksini');
         await dispatch(updateAcceptedDataProposalNonGrants(payload, activeRole!)).then(() => {
           setSave(true);
           onEdit(false);
@@ -213,15 +213,31 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
       } catch (error) {
         setIsLoading(false);
         reset(defaultValues);
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'right',
-          },
-        });
+        // enqueueSnackbar(error.message, {
+        //   variant: 'error',
+        //   preventDuplicate: true,
+        //   autoHideDuration: 3000,
+        //   anchorOrigin: {
+        //     vertical: 'bottom',
+        //     horizontal: 'right',
+        //   },
+        // });
+        const statusCode = (error && error.statusCode) || 0;
+        const message = (error && error.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
       }
       setSave(true);
       onEdit(false);
@@ -260,20 +276,37 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
       }
     } catch (err) {
       console.log('err', err);
-      enqueueSnackbar(err.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center',
-        },
-      });
+      // enqueueSnackbar(err.message, {
+      //   variant: 'error',
+      //   preventDuplicate: true,
+      //   autoHideDuration: 3000,
+      //   anchorOrigin: {
+      //     vertical: 'bottom',
+      //     horizontal: 'center',
+      //   },
+      // });
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
       resetField('detail_project_budgets');
     } finally {
       setIsLoading(false);
       // onEdit(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRole, enqueueSnackbar, pid, setValue, resetField]);
 
   // useEffect(() => {

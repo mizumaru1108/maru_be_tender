@@ -25,6 +25,7 @@ import { generateHeader } from '../../../utils/generateProposalNumber';
 function ListAmandementRequest() {
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
   const role = activeRole!;
   const [tmpValues, setTmpValues] = React.useState<AmandementProposalList[] | null>(null);
 
@@ -38,8 +39,25 @@ function ListAmandementRequest() {
         setTmpValues(rest.data.data);
       }
     } catch (error) {
-      console.log('error', error.message);
+      // console.log('error', error.message);
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
 
   React.useEffect(() => {

@@ -181,12 +181,28 @@ function AdjustClentAvailableTime() {
       }
     } catch (err) {
       setIsLoading(false);
+      // enqueueSnackbar(
+      //   `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
+      //   {
+      //     variant: 'error',
+      //     preventDuplicate: true,
+      //     autoHideDuration: 3000,
+      //   }
+      // );
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
       enqueueSnackbar(
-        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
         {
           variant: 'error',
           preventDuplicate: true,
           autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
         }
       );
     }
@@ -223,12 +239,28 @@ function AdjustClentAvailableTime() {
     } catch (err) {
       // setIsFetching(false);
       console.log({ err });
+      // enqueueSnackbar(
+      //   `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
+      //   {
+      //     variant: 'error',
+      //     preventDuplicate: true,
+      //     autoHideDuration: 3000,
+      //   }
+      // );
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
       enqueueSnackbar(
-        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
         {
           variant: 'error',
           preventDuplicate: true,
           autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
         }
       );
     }

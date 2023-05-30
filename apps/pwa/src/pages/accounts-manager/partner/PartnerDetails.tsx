@@ -162,12 +162,11 @@ function AccountPartnerDetails() {
       });
     } catch (err) {
       setIsSubimitting(false);
-      enqueueSnackbar(
-        `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
-        {
-          variant: 'error',
-        }
-      );
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      enqueueSnackbar(`${statusCode < 500 && message ? message : 'something went wrong!'}`, {
+        variant: 'error',
+      });
       console.log(err);
     }
   };

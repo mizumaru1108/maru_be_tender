@@ -32,6 +32,7 @@ CardTablePropsByBE) {
   // const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
+  const { translate } = useLocales();
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [cardData, setCardData] = useState([]);
@@ -62,19 +63,44 @@ CardTablePropsByBE) {
         );
       }
     } catch (err) {
-      console.log('err', err);
-      enqueueSnackbar(err.message, {
-        variant: 'error',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'center',
-        },
-      });
+      // console.log('err', err);
+      // enqueueSnackbar(err.message, {
+      //   variant: 'error',
+      //   preventDuplicate: true,
+      //   autoHideDuration: 3000,
+      //   anchorOrigin: {
+      //     vertical: 'bottom',
+      //     horizontal: 'center',
+      //   },
+      // });
+      // handle error fetching
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRole, enqueueSnackbar, endPoint, limit, page, filterSorting, typeRequest]);
 
   const handleLimitChange = (event: any) => {

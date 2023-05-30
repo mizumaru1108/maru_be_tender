@@ -89,7 +89,7 @@ const AmandementForms = ({
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // window.scrollTo(0, 0);
     if (!!defaultValues) {
       const newValues = JSON.parse(JSON.stringify(defaultValues));
 
