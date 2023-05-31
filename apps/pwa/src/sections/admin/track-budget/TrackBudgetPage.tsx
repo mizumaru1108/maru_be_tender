@@ -53,7 +53,6 @@ export default function TrackBudgetPage() {
 
       if (status === 200) {
         setTrackTempValues(data.data);
-        // setLoadingPage(false);
       }
     } catch (err) {
       if (typeof err.message === 'object') {
