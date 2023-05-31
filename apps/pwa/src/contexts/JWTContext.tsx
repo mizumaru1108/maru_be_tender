@@ -28,7 +28,10 @@ type JWTAuthPayload = {
     token?: string;
     refreshToken?: string;
   };
-  [Types.Logout]: undefined;
+  // [Types.Logout]: undefined;
+  [Types.Logout]: {
+    activeRole?: FusionAuthRoles;
+  };
   [Types.Register]: {
     user: AuthUser;
     activeRole?: FusionAuthRoles;
@@ -228,7 +231,12 @@ function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('i18nextLng');
     localStorage.removeItem('activeRoleIndex');
-    dispatch({ type: Types.Logout });
+    dispatch({
+      type: Types.Logout,
+      payload: {
+        activeRole: 'tender_client',
+      },
+    });
   };
 
   const changeActiveRole = (role: FusionAuthRoles) => {

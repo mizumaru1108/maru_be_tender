@@ -12,6 +12,7 @@ import Section from './Section';
 // hooks
 import useLocales from 'hooks/useLocales';
 import { useQuery } from 'urql';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 
 // ------------------------------------------------------------------------------------------
 
@@ -106,7 +107,8 @@ export default function SectionTracks() {
           <Grid item md={12} xs={12}>
             <Stack direction="row" justifyContent="space-between">
               <Typography flex={1} variant="h4">
-                {translate(data.track.name)}
+                {/* {translate(data.track.name)} */}
+                {formatCapitalizeText(data.track.name)}
               </Typography>
               <Button
                 sx={{

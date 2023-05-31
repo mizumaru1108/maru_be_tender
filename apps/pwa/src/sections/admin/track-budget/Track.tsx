@@ -102,7 +102,7 @@ function Track({ id, name, budget }: any) {
         }}
       />
       <Typography variant="h6" flex={1}>
-        {translate(`${formatCapitalizeText(name)}`)}
+        {formatCapitalizeText(name)}
       </Typography>
       <Stack direction="row" gap={0.7} flex={1} sx={{ alignSelf: 'center' }}>
         <Typography sx={{ fontSize: '17px' }} color={'#93A3B0'}>

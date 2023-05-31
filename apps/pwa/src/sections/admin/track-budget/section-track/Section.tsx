@@ -14,6 +14,7 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 //
 import { useSnackbar } from 'notistack';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 
 // ------------------------------------------------------------------------------------------
 
@@ -173,7 +174,7 @@ export default function Section({ item }: IPropsSection) {
         >
           <Grid item xs={3}>
             <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-              {item.name}
+              {formatCapitalizeText(item.name)}
             </Typography>
           </Grid>
           <Grid item xs={3}>

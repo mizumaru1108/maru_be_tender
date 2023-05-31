@@ -9,6 +9,7 @@ import useLocales from 'hooks/useLocales';
 import { fCurrencyNumber } from 'utils/formatNumber';
 //
 import { IDataTracks } from 'sections/admin/track-budget/TrackBudgetPage';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 
 // ------------------------------------------------------------------------------------------
 
@@ -68,7 +69,8 @@ export default function CheckBoxSection({ item, state, setState }: IPropsCheckbo
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <Checkbox checked={expand} onChange={handleOnChange} />
             <Typography variant="body1" sx={{ alignSelf: 'center' }}>
-              {translate(`${item.name}`)}
+              {/* {translate(`${item.name}`)} */}
+              {formatCapitalizeText(item.name || '')}
             </Typography>
           </Box>
           <IconButton onClick={handleExpand} color="inherit">

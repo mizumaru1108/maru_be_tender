@@ -39,12 +39,15 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
       // );
 
       let datas: AuthorityInterface[] = [];
-      if (activeRole) {
+      // console.log({ activeRole });
+      if (activeRole && activeRole !== 'tender_client') {
+        // console.log('masuk if');
         const rest = await axiosInstance.get(`/tender/proposal/payment/find-bank-list?limit=0`, {
           headers: { 'x-hasura-role': activeRole! },
         });
         datas = rest.data.data;
       } else {
+        // console.log('masuk else');
         const rest = await axios.get(
           `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list?limit=0`
         );
