@@ -3,6 +3,27 @@ import { useSelector } from 'redux/store';
 import useLocales from '../../../hooks/useLocales';
 import { fCurrencyNumber } from 'utils/formatNumber';
 
+const target_age_map = {
+  AGE_1TH_TO_13TH: 'AGE_1TH_TO_13TH',
+  AGE_14TH_TO_30TH: 'AGE_14TH_TO_30TH',
+  AGE_31TH_TO_50TH: 'AGE_31TH_TO_50TH',
+  AGE_51TH_TO_60TH: 'AGE_51TH_TO_60TH',
+  AGE_OVER_60TH: 'AGE_OVER_60TH',
+  ALL_AGE: 'ALL_AGE',
+};
+
+const target_type_map = {
+  YOUTHS: 'YOUTHS',
+  GIRLS: 'GIRLS',
+  CHILDREN: 'CHILDREN',
+  FAMILY: 'FAMILY',
+  PARENTS: 'PARENTS',
+  MOMS: 'MOMS',
+  EMPLOYEMENT: 'EMPLOYEMENT',
+  PUBLIC_BENEFIT: 'PUBLIC_BENEFIT',
+  CHARITABLE_ORGANIZATIONS: 'CHARITABLE_ORGANIZATIONS',
+  CHARITABLE_WORKERS: 'CHARITABLE_WORKERS',
+};
 function SupervisorRevision() {
   const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
@@ -74,7 +95,20 @@ function SupervisorRevision() {
             <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
               أعمار الفئة المستهدفة
             </Typography>
-            <Typography>{proposal.target_group_age}</Typography>
+            {/* <Typography>{proposal.target_group_age}</Typography> */}
+            <Typography>
+              {(Object.entries(target_age_map).find(
+                ([key, value]) => value === proposal.target_group_age
+              )?.[0] &&
+                translate(
+                  `review.target_group_age_enum.${
+                    Object.entries(target_age_map).find(
+                      ([key, value]) => value === proposal.target_group_age
+                    )?.[0]
+                  }`
+                )) ||
+                proposal.target_group_age}
+            </Typography>
           </Box>
 
           <Box>
@@ -91,12 +125,25 @@ function SupervisorRevision() {
             <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
               نوع الفئة المستهدفة
             </Typography>
-            <Typography>{proposal.target_group_type}</Typography>
+            {/* <Typography>{proposal.target_group_type}</Typography> */}
+            <Typography>
+              {(Object.entries(target_type_map).find(
+                ([key, value]) => value === proposal.target_group_type
+              )?.[0] &&
+                translate(
+                  `review.target_group_type_enum.${
+                    Object.entries(target_type_map).find(
+                      ([key, value]) => value === proposal.target_group_type
+                    )?.[0]
+                  }`
+                )) ||
+                proposal.target_group_type}
+            </Typography>
           </Box>
 
           <Box>
             <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>البند</Typography>
-            <Typography>{proposal.clause}</Typography>
+            <Typography>{proposal.clause || '-'}</Typography>
           </Box>
         </Stack>
       </Grid>

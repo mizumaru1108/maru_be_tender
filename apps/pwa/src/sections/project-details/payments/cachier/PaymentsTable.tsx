@@ -82,9 +82,29 @@ function PaymentsTable() {
                   </Typography>
                 </Grid>
               )}
-
               {(item.status === 'done' || item.status === 'accepted_by_finance') &&
-              activeRole === 'tender_cashier' ? (
+                activeRole !== 'tender_client' && (
+                  <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
+                    <Button
+                      variant="text"
+                      color="inherit"
+                      sx={{ '&:hover': { textDecorationLine: 'underline' } }}
+                      onClick={() => {
+                        localStorage.setItem('receipt_type', 'generate');
+                        navigate(
+                          `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                            proposal.id
+                          }/payments/${item.id}`
+                        );
+                      }}
+                    >
+                      {translate(
+                        'content.administrative.project_details.payment.table.btn.exchange_permit_generate_finance'
+                      )}
+                    </Button>
+                  </Grid>
+                )}
+              {item.status === 'done' && activeRole === 'tender_cashier' ? (
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                   {item.cheques.length ? (
                     <Button
@@ -140,28 +160,6 @@ function PaymentsTable() {
                   </Grid>
                 </>
               ) : null}
-              {(item.status === 'done' || item.status === 'accepted_by_finance') &&
-                activeRole !== 'tender_client' && (
-                  <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                    <Button
-                      variant="text"
-                      color="inherit"
-                      sx={{ '&:hover': { textDecorationLine: 'underline' } }}
-                      onClick={() => {
-                        localStorage.setItem('receipt_type', 'generate');
-                        navigate(
-                          `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
-                            proposal.id
-                          }/payments/${item.id}`
-                        );
-                      }}
-                    >
-                      {translate(
-                        'content.administrative.project_details.payment.table.btn.exchange_permit_generate_finance'
-                      )}
-                    </Button>
-                  </Grid>
-                )}
             </Grid>
           </Grid>
         ))}

@@ -14,6 +14,7 @@ import useAuth from 'hooks/useAuth';
 import { useSelector } from 'redux/store';
 import ProjectCard from '../ProjectCard';
 import { generateHeader } from '../../../utils/generateProposalNumber';
+import { useSnackbar } from 'notistack';
 
 function CardSearching({
   title,
@@ -25,6 +26,7 @@ function CardSearching({
   const [page, setPage] = useState(1);
   const { translate } = useLocales();
   const { sort, filtered } = useSelector((state) => state.searching);
+  const { enqueueSnackbar } = useSnackbar();
   const [params, setParams] = useState({
     limit: limitShowCard ? limitShowCard : 6,
   });
@@ -57,7 +59,24 @@ function CardSearching({
         // return res.data;
       }
     } catch (error) {
-      throw error;
+      setLoading(false);
+      // throw error;
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
     }
   };
 
