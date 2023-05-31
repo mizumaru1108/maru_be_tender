@@ -16,6 +16,18 @@ import { SubmitChangePasswordDto } from '../dtos/requests/submit-change-password
 export class TenderAuthController {
   constructor(private readonly tenderAuthService: TenderAuthService) {}
 
+  @Post('old/login')
+  async oldLogin(
+    @Body() loginRequest: LoginRequestDto,
+  ): Promise<BaseResponse<TenderLoginResponseDto>> {
+    const createdClient = await this.tenderAuthService.login(loginRequest);
+    return baseResponseHelper(
+      createdClient,
+      HttpStatus.CREATED,
+      'Client has been logged in successfully!',
+    );
+  }
+
   @Post('login')
   async login(
     @Body() loginRequest: LoginRequestDto,

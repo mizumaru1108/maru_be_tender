@@ -25,6 +25,54 @@ export class TenderUserRepository {
   ) {}
 
   /**
+   * Check Existance
+   */
+  async checkExistance(
+    phone: string = '',
+    email: string = '',
+    license_number: string = '',
+  ) {
+    try {
+      const clause: Prisma.userWhereInput = {};
+      const orClause: Prisma.userWhereInput[] = [];
+
+      if (phone && phone !== '') {
+        orClause.push({
+          mobile_number: phone,
+        });
+      }
+
+      if (email && email !== '') {
+        orClause.push({
+          email: {
+            contains: email,
+            mode: 'insensitive',
+          },
+        });
+      }
+
+      if (license_number && license_number !== '') {
+        orClause.push({
+          client_data: {
+            license_number: {
+              contains: license_number,
+              mode: 'insensitive',
+            },
+          },
+        });
+      }
+
+      clause.OR = orClause;
+
+      // console.log(logUtil(clause));
+      const result = await this.prismaService.user.findFirst({
+        where: clause,
+      });
+      // console.log(result);
+      return result;
+    } catch (error) {}
+  }
+  /**
    * validate if the track exist on the database
    */
   async validateTrack(trackName: string): Promise<project_tracks | null> {

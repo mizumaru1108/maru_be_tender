@@ -127,7 +127,7 @@ export class FusionAuthService {
       return result;
     } catch (error) {
       if (error.statusCode < 500) {
-        throw new UnauthorizedException('Invalid credentials!');
+        throw new UnauthorizedException('Wrong credentials!');
       } else {
         throw new Error('Something went wrong!');
       }

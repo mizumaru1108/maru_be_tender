@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LoginRequestDto } from '../../auth/dtos';
@@ -13,19 +14,26 @@ import { TenderUserRepository } from '../../tender-user/user/repositories/tender
 import { RegisterTenderDto } from '../dtos/requests/register-tender.dto';
 import { SubmitChangePasswordDto } from '../dtos/requests/submit-change-password.dto';
 import { TenderLoginResponseDto } from '../dtos/responses/tender-login-response.dto';
+import { ROOT_LOGGER } from '../../libs/root-logger';
 
 @Injectable()
 export class TenderAuthService {
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': TenderAuthService.name,
+  });
+
   constructor(
     private readonly fusionAuthService: FusionAuthService,
     private readonly tenderClientService: TenderClientService,
-    private readonly tenderUserRepository: TenderUserRepository,
+    private readonly tenderUserRepo: TenderUserRepository,
     private readonly tenderClientRepository: TenderClientRepository,
     private readonly emailService: EmailService,
     private readonly configService: ConfigService,
   ) {}
 
-  async login(loginRequest: LoginRequestDto): Promise<TenderLoginResponseDto> {
+  async oldLogin(
+    loginRequest: LoginRequestDto,
+  ): Promise<TenderLoginResponseDto> {
     const fusionAuthResponse = await this.fusionAuthService.fusionAuthLogin(
       loginRequest,
     );
@@ -55,6 +63,59 @@ export class TenderAuthService {
     };
   }
 
+  async login(loginRequest: LoginRequestDto): Promise<any> {
+    const { loginId, password } = loginRequest;
+    try {
+      // console.log({ loginId });
+      let license_number = '';
+      let phone_number = '';
+      let email = '';
+
+      if (/^(\+966|966)/.test(loginId)) {
+        phone_number = loginId;
+      } else if (/^\d+$/.test(loginId) && !/^(?:\+966|966)/.test(loginId)) {
+        license_number = loginId;
+      } else if (/^\S+@\S+\.\S+$/.test(loginId)) {
+        email = loginId;
+      }
+
+      // console.log({ license_number });
+      // console.log({ phone_number });
+      // console.log({ email });
+
+      const user = await this.tenderUserRepo.checkExistance(
+        phone_number,
+        email,
+        license_number,
+      );
+      // console.log('user', user);
+
+      if (!user) {
+        throw new UnauthorizedException('Wrong Credentials!');
+      }
+
+      // if user found then do regular login using fusion auth
+      const fusionAuthResponse = await this.fusionAuthService.fusionAuthLogin({
+        loginId: user.email,
+        password,
+      });
+
+      if (
+        !fusionAuthResponse.response.user ||
+        !fusionAuthResponse.response.user.id
+      ) {
+        throw new BadRequestException(
+          'Failed to get the user after fusion auth login!',
+        );
+      }
+
+      return fusionAuthResponse;
+    } catch (error) {
+      this.logger.error('login error', error);
+      throw error;
+    }
+  }
+
   /* create user with client data */
   async register(registerRequest: RegisterTenderDto) {
     const {
@@ -69,7 +130,7 @@ export class TenderAuthService {
       },
     } = registerRequest;
 
-    const emailExist = await this.tenderUserRepository.findUser({
+    const emailExist = await this.tenderUserRepo.findUser({
       email: registerRequest.data.email,
     });
     if (emailExist) {
@@ -82,10 +143,10 @@ export class TenderAuthService {
       }
     }
 
-    // const phoneExist = await this.tenderUserRepository.findUser({
+    // const phoneExist = await this.tenderUserRepo.findUser({
     // mobile_number: clientPhone,
     // });
-    const phoneExist = await this.tenderUserRepository.findUser({
+    const phoneExist = await this.tenderUserRepo.findUser({
       mobile_number: dataEntryMobile,
     });
     if (phoneExist) {
@@ -105,9 +166,7 @@ export class TenderAuthService {
     }
 
     if (employee_path) {
-      const pathExist = await this.tenderUserRepository.validateTrack(
-        employee_path,
-      );
+      const pathExist = await this.tenderUserRepo.validateTrack(employee_path);
       if (!pathExist) throw new BadRequestException('Invalid Employee Path!');
     }
 
@@ -148,7 +207,7 @@ export class TenderAuthService {
   }
 
   async askForgotPasswordUrl(email: string) {
-    const user = await this.tenderUserRepository.findByEmail(email);
+    const user = await this.tenderUserRepo.findByEmail(email);
     if (!user) throw new BadRequestException('User not found!');
 
     const response = await this.fusionAuthService.forgotPasswordRequest(email);
@@ -163,7 +222,7 @@ export class TenderAuthService {
     forgotPassword: boolean,
     selected_language?: 'ar' | 'en',
   ) {
-    const user = await this.tenderUserRepository.findByEmail(email);
+    const user = await this.tenderUserRepo.findByEmail(email);
     if (!user) throw new BadRequestException('User not found!');
 
     const response = await this.fusionAuthService.forgotPasswordRequest(email);
