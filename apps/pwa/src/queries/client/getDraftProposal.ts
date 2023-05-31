@@ -1,4 +1,5 @@
-export const getDraftProposal = `query MyQuery($id: String = "") {
+export const getDraftProposal = `
+query MyQuery($id: String = "") {
   proposal_by_pk(id: $id) {
     id
     project_name
