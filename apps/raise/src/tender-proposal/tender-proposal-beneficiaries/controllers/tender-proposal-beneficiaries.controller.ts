@@ -9,15 +9,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/guards/jwt.guard';
-import { CreateBeneficiariesDto } from '../dtos/requests/create-beneficiaries.dto';
-import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
-import { TenderProposalBeneficiaresService } from '../services/tender-proposal-beneficiaries.service';
-import { UpdateBeneficiaryDto } from '../dtos/requests/update-beneficiaries.dto';
-import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
-import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
-import { FindBeneficiariesFilterRequest } from '../dtos/requests/find-beneficiaries.dto';
-import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { GetByUUIDQueryParamDto } from '../../../commons/dtos/get-by-uuid-query-param.dto';
+import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
+import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
+import { CreateBeneficiariesDto } from '../dtos/requests/create-beneficiaries.dto';
+import { FindBeneficiariesFilterRequest } from '../dtos/requests/find-beneficiaries.dto';
+import { UpdateBeneficiaryDto } from '../dtos/requests/update-beneficiaries.dto';
+import { TenderProposalBeneficiaresService } from '../services/tender-proposal-beneficiaries.service';
 
 @Controller('tender/proposal/beneficiaries')
 export class TenderProposalBeneficiariesController {

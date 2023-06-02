@@ -54,18 +54,19 @@ export const UpdatePaymentNotifMapper = (
     cheque !== null
   ) {
     subject = 'New Payment Release';
-    clientContent = `Your payment receipt has been uploaded by ${
-      reviewer
-        ? appRoleToReadable[choosenRole] + ' (' + reviewer.employee_name + ')'
-        : appRoleToReadable[choosenRole]
-    } at ${logTime}`;
+    clientContent = `"مرحباً ${proposal.user.employee_name}، نود إخبارك أن المشروع '${proposal.project_name}' تم إرسال الدفعة.
+    يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات ، أو انقر هنا."`;
 
     const clientWebNotifPayload: CreateNotificationDto = {
       user_id: proposal.user.id,
       type: 'PROPOSAL',
       specific_type: 'PAYMENT_RELEASE',
       subject: subject,
-      content: clientContent,
+      content: `Your payment receipt has been uploaded by ${
+        reviewer
+          ? appRoleToReadable[choosenRole] + ' (' + reviewer.employee_name + ')'
+          : appRoleToReadable[choosenRole]
+      } at ${logTime}`,
     };
 
     if (clientEmailTemplatePath === undefined) {

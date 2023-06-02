@@ -1860,9 +1860,10 @@ export class TenderProposalService {
         : 'review';
 
     const subject = `Proposal ${actions}ed Notification`;
-    let clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} at (${log.data.created_at})`;
+    // let clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} at (${log.data.created_at})`;
+    let clientContent = `مرحبًا ${log.data.proposal.user.employee_name}، نود إخبارك أن المشروع "${log.data.proposal.project_name}" تم ${actions}ه. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات أو النقر هنا.`;
     if (log.data.reviewer) {
-      clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} (${log.data.reviewer.employee_name}) at (${log.data.created_at})`;
+      clientContent = `مرحبًا ${log.data.proposal.user.employee_name}، نود إخبارك أن المشروع "${log.data.proposal.project_name}" تم ${actions}ه. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات أو النقر هنا.`;
     }
     const employeeContent = `Your review has been submitted for proposal (${log.data.proposal.project_name}) at (${log.data.created_at}), and already been notified to the user ${log.data.proposal.user.employee_name} (${log.data.proposal.user.email})`;
 
@@ -1916,20 +1917,6 @@ export class TenderProposalService {
       this.emailService.sendMail(clientEmailNotifPayload);
     }
 
-    /* EMAIL NOTIF */
-
-    /* WEB NOTIF */
-    // if (log.data.reviewer_id) {
-    // const employeeWebNotifPayload: CreateNotificationDto = {
-    //   type: 'PROPOSAL',
-    //   specific_type: `PROJECT_${actions.toUpperCase()}ED`,
-    //   user_id: log.data.reviewer_id,
-    //   proposal_id: log.data.proposal_id,
-    //   subject,
-    //   content: employeeContent,
-    // };
-    // }
-
     const clientWebNotifPayload: CreateNotificationDto = {
       type: 'PROPOSAL',
       specific_type: `PROJECT_${actions.toUpperCase()}ED`,
@@ -1960,7 +1947,9 @@ export class TenderProposalService {
       if (actions === ProposalAction.ACCEPT) {
         if (reviewerRole === 'tender_ceo') {
           await this.msegatService.sendSMSAsync({
-            numbers: clientPhone.substring(1),
+            numbers: clientPhone.includes('+')
+              ? clientPhone.substring(1)
+              : clientPhone,
             msg: subject + ',' + clientContent,
           });
         }
@@ -1968,22 +1957,13 @@ export class TenderProposalService {
 
       if (actions === ProposalAction.REJECT) {
         await this.msegatService.sendSMSAsync({
-          numbers: clientPhone.substring(1),
+          numbers: clientPhone.includes('+')
+            ? clientPhone.substring(1)
+            : clientPhone,
           msg: subject + ',' + clientContent,
         });
       }
     }
-
-    // const reviewerPhone = isExistAndValidPhone(
-    //   log.data.proposal.user.mobile_number,
-    // );
-    // if (reviewerPhone) {
-    //   this.msegatService.sendSMS({
-    //     numbers: reviewerPhone,
-    //     msg: subject + ',' + clientContent,
-    //   });
-    // }
-    /* SMS NOTIF */
   }
 
   async handleUpdateProposalTrackInfo(
@@ -1995,9 +1975,6 @@ export class TenderProposalService {
     updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
     deletedItemBudgetIds: string[],
   ) {
-    // createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
-    // updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
-    // deletedRecommendedSupportIds: string[],
     const {
       created_proposal_budget,
       updated_proposal_budget,

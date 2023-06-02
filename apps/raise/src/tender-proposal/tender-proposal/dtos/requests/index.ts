@@ -1,7 +1,6 @@
 export * from './ask-amandement-request.dto';
 export * from './change-proposal-state.dto';
 export * from './create-proposal-interceptor.dto';
-export * from './create-proposal-interceptor.dto';
 export * from './create-proposal-item-budget.dto';
 export * from './create-proposal-notification.dto';
 export * from './existing-proposal-item-budget.dto';

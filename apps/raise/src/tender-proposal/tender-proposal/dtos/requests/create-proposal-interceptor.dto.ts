@@ -156,8 +156,8 @@ export class CreateProposalInterceptorDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty({ each: true })
-  @ValidateNested({ each: true })
+  @IsNotEmpty()
+  @ValidateNested()
   @IsArray()
   @Type(() => CreateProjectTimelineDto)
   project_timeline: CreateProjectTimelineDto[];

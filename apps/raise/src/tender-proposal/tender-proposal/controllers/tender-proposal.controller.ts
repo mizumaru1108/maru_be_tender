@@ -34,7 +34,6 @@ import {
   FetchRejectionListFilterRequest,
   PaymentAdjustmentFilterRequest,
   PreviousProposalFilterRequest,
-  ProposalCreateDto,
   ProposalDeleteDraftDto,
   ProposalSaveDraftDto,
   ProposalSaveDraftInterceptorDto,

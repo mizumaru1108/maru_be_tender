@@ -252,17 +252,19 @@ export class TenderNotificationService {
 
     if (sendClientSms) {
       if (clientMobileNumber && clientMobileNumber.length > 0) {
-        clientMobileNumber.forEach(async (clientMobile) => {
+        for (const clientMobile of clientMobileNumber) {
           if (clientMobile !== '' && clientContent !== '') {
             const clientPhone = isExistAndValidPhone(clientMobileNumber);
             if (clientPhone) {
               await this.msegatService.sendSMSAsync({
-                numbers: clientPhone.substring(1),
+                numbers: clientPhone.includes('+')
+                  ? clientPhone.substring(1)
+                  : clientPhone,
                 msg: clientSubject + ', ' + clientContent,
               });
             }
           }
-        });
+        }
       }
     }
 
@@ -304,17 +306,19 @@ export class TenderNotificationService {
       /* enable when msgat is already exist */
       if (sendReviwerSms) {
         if (reviewerMobileNumber && reviewerMobileNumber.length > 0) {
-          reviewerMobileNumber.forEach(async (reviewerMobile) => {
+          for (const reviewerMobile of reviewerMobileNumber) {
             if (reviewerMobile !== '' && reviewerContent !== '') {
               const reviewerPhone = isExistAndValidPhone(reviewerMobile);
               if (reviewerPhone) {
                 await this.msegatService.sendSMSAsync({
-                  numbers: reviewerPhone.substring(1),
+                  numbers: reviewerPhone.includes('+')
+                    ? reviewerPhone.substring(1)
+                    : reviewerPhone,
                   msg: reviwerSubject + ', ' + reviewerContent,
                 });
               }
             }
-          });
+          }
         }
       }
     }

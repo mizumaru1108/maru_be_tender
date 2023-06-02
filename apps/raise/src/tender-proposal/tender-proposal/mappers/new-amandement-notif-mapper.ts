@@ -17,11 +17,8 @@ export const NewAmandementNotifMapper = (
 
   const subject = `New Amandement Request`;
 
-  const clientContent = `Your proposal ${
-    proposal.project_name
-  } has been asked for revision by ${
-    reviewer ? 'Supervisor (' + reviewer.employee_name + ')' : 'Supervisor'
-  } at ${logTime}`;
+  const clientContent = `"مرحبًا ${proposal.user.employee_name}، نود إبلاغك بأنه تم طلب تعديل معلومات مشروعك '${proposal.project_name}'.
+  يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات، أو انقر هنا."`;
 
   // const reviewerContent = `Successfully send amandement request for project ${proposal.project_name} to ${proposal.user.employee_name} at ${logTime}`;
 
@@ -31,7 +28,11 @@ export const NewAmandementNotifMapper = (
     specific_type: 'NEW_AMANDEMENT_REQUEST_FROM_SUPERVISOR',
     proposal_id: proposal_id,
     subject: subject,
-    content: clientContent,
+    content: `Your proposal ${
+      proposal.project_name
+    } has been asked for revision by ${
+      reviewer ? 'Supervisor (' + reviewer.employee_name + ')' : 'Supervisor'
+    } at ${logTime}`,
   };
 
   const createWebNotifPayload: CreateManyNotificationDto['payloads'] = [
