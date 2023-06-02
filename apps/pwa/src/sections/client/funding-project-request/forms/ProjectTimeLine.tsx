@@ -1,0 +1,129 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Alert, Grid } from '@mui/material';
+import { FormProvider } from 'components/hook-form';
+import useLocales from 'hooks/useLocales';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { AmandementFields } from '../../../../@types/proposal';
+import TimeLine from '../../../../components/chart/TimeLine';
+import BaseField from '../../../../components/hook-form/BaseField';
+
+type FormValuesProps = {
+  project_timeline: {
+    name: string;
+    start_date: string;
+    end_date: string;
+  }[];
+};
+type Props = {
+  onSubmit: (data: any) => void;
+  children?: React.ReactNode;
+  defaultValues: any;
+  revised?: AmandementFields;
+};
+
+const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) => {
+  console.log({ defaultValues });
+  const { translate } = useLocales();
+  const [budgetError, setBudgetError] = useState(false);
+  const isDisabled =
+    !!revised && revised.hasOwnProperty('amount_required_fsupport') ? false : !!revised && true;
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  const ProjectTimeLineSchema = Yup.object().shape({
+    project_timeline: Yup.array().of(
+      Yup.object().shape({
+        name: Yup.string().required(
+          translate('errors.cre_proposal.detail_project_budgets.name.required')
+        ),
+        start_date: Yup.string().required(
+          translate('errors.cre_proposal.detail_project_budgets.start_date.required')
+        ),
+        end_date: Yup.string().required(
+          translate('errors.cre_proposal.detail_project_budgets.end_date.required')
+        ),
+      })
+    ),
+  });
+
+  const methods = useForm<FormValuesProps>({
+    resolver: yupResolver(ProjectTimeLineSchema),
+    defaultValues: {
+      project_timeline: (defaultValues && defaultValues.length && defaultValues) || [
+        { name: '', start_date: '', end_date: '' },
+      ],
+    },
+  });
+
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+    watch,
+  } = methods;
+
+  const project_timeline = watch('project_timeline');
+
+  const handleOnSubmit = (data: FormValuesProps) => {
+    // console.log({ data });
+    onSubmit(data);
+  };
+  return (
+    <FormProvider methods={methods} onSubmit={handleSubmit(handleOnSubmit)}>
+      <Grid container rowSpacing={4} columnSpacing={2}>
+        {budgetError && (
+          <Grid item md={12}>
+            <Alert severity="error">{translate('budget_error_message')}</Alert>
+          </Grid>
+        )}
+        <BaseField
+          type="repeater"
+          disabled={isDisabled}
+          name="project_timeline"
+          repeaterFields={[
+            {
+              disabled: isDisabled,
+              type: 'textField',
+              name: 'name',
+              label: 'funding_project_request_project_timeline.activity.label',
+              placeholder: 'funding_project_request_project_timeline.activity.placeholder',
+              md: 5,
+              xs: 12,
+            },
+            {
+              disabled: isDisabled,
+              type: 'datePicker',
+              name: 'start_date',
+              label: 'funding_project_request_project_timeline.start_date.label',
+              placeholder: 'funding_project_request_project_timeline.start_date.placeholder',
+              md: 3,
+              xs: 12,
+            },
+            {
+              disabled: isDisabled,
+              type: 'datePicker',
+              name: 'end_date',
+              label: 'funding_project_request_project_timeline.end_date.label',
+              placeholder: 'funding_project_request_project_timeline.end_date.placeholder',
+              md: 3,
+              xs: 12,
+            },
+          ]}
+          enableAddButton={true}
+          enableRemoveButton={true}
+        />
+        {project_timeline.length && (
+          <Grid item xs={12}>
+            <TimeLine projectTimeLine={project_timeline} />
+          </Grid>
+        )}
+        <Grid item xs={12}>
+          {children}
+        </Grid>
+      </Grid>
+    </FormProvider>
+  );
+};
+
+export default ProjectTimeLine;

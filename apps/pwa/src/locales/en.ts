@@ -1109,6 +1109,22 @@ const en = {
       placeholder: 'The amount required',
     },
   },
+  submit_timeline: 'Submit Activity',
+  funding_project_request_project_timeline: {
+    step: 'Project Timeline',
+    activity: {
+      label: 'Activity name*',
+      placeholder: 'Please write the Section Name',
+    },
+    start_date: {
+      label: 'Start date*',
+      placeholder: 'Please select a start date',
+    },
+    end_date: {
+      label: 'End date*',
+      placeholder: 'Please select an end date',
+    },
+  },
   funding_project_request_form5: {
     step: 'Detailed project budget',
     amount_required_for_support: {

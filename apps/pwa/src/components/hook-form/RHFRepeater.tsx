@@ -12,6 +12,7 @@ const RHFRepeater = ({
   repeaterFields,
   enableAddButton,
   enableRemoveButton,
+  buttonRepeaterLabel,
   ...other
 }: FormSingleProps) => {
   const { control } = useFormContext();
@@ -23,7 +24,8 @@ const RHFRepeater = ({
     control,
     name: name ?? '',
   });
-
+  // const test = watch(`${name}`);
+  // console.log({ test });
   const cleanField = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...restFields } = fields[0];
@@ -96,7 +98,7 @@ const RHFRepeater = ({
             }}
             disabled={disabledValue}
           >
-            {translate('add_new_line')}
+            {buttonRepeaterLabel ? buttonRepeaterLabel : translate('add_new_line')}
           </Button>
         </Grid>
       )}

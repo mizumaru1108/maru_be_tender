@@ -32,6 +32,7 @@ function BaseField({
   options,
   maxDate,
   minDate,
+  buttonRepeaterLabel,
   ...other
 }: FormSingleProps) {
   const { translate } = useLocales();
@@ -121,6 +122,7 @@ function BaseField({
           repeaterFields={repeaterFields}
           enableAddButton={enableAddButton}
           enableRemoveButton={enableRemoveButton}
+          buttonRepeaterLabel={buttonRepeaterLabel}
           {...other}
         />
       )}

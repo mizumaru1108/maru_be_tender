@@ -22,12 +22,14 @@ import {
   SupportingDurationInfoForm,
 } from './forms';
 import ActionBox from './forms/ActionBox';
+import ProjectTimeLine from './forms/ProjectTimeLine';
 
 const steps = [
   'funding_project_request_form1.step',
   'funding_project_request_form2.step',
   'funding_project_request_form3.step',
   'funding_project_request_form4.step',
+  'funding_project_request_project_timeline.step',
   'funding_project_request_form5.step',
 ];
 const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
@@ -103,7 +105,13 @@ const FundingProjectRequestForm = () => {
       },
     },
     proposal_bank_id: '',
-    project_timeline: [],
+    project_timeline: [
+      // {
+      //   name: '',
+      //   start_date: '',
+      //   end_date: '',
+      // },
+    ],
   };
 
   // const [openToast, setOpenToast] = useState(false);
@@ -197,7 +205,21 @@ const FundingProjectRequestForm = () => {
       }));
     }
   };
-
+  const onSubmitform5 = (data: any) => {
+    let newValue = { project_timeline: data.project_timeline };
+    const test = { ...newValue };
+    console.log('test', test.project_timeline);
+    if (isDraft) {
+      onSavingDraft(test);
+    } else {
+      setStep((prevStep) => prevStep + 1);
+      setRequestState((prevRegisterState: any) => ({
+        ...prevRegisterState,
+        project_timeline: [...test.project_timeline],
+      }));
+    }
+  };
+  console.log({ requestState });
   // on submit for creating a new project
   const onSubmit = async (data: any) => {
     // console.log({ data });
@@ -358,40 +380,7 @@ const FundingProjectRequestForm = () => {
   };
 
   const onSavingDraft = async (data: any) => {
-    // console.log('data', data);
-    // console.log({ requestState });
     setIsLoading(true);
-    // const proposalNewDraft = {
-    //   ...(lastIndex >= 0 && { ...requestState.form1 }),
-    //   ...(lastIndex >= 1 && { ...requestState.form2 }),
-    //   ...(lastIndex >= 2 && { ...requestState.form3 }),
-    //   ...(lastIndex >= 3 && {
-    //     // ...requestState.form4,
-    //     amount_required_fsupport: requestState.form4.amount_required_fsupport,
-    //     detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
-    //   }),
-    //   ...(lastIndex < step && step >= 1 && { ...requestState.form1 }),
-    //   ...(lastIndex < step && step >= 2 && { ...requestState.form2 }),
-    //   ...(lastIndex < step && step >= 3 && { ...requestState.form3 }),
-    //   ...(lastIndex < step &&
-    //     step >= 4 && {
-    //       // ...requestState.form4,
-    //       amount_required_fsupport: requestState.form4.amount_required_fsupport,
-    //       detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
-    //     }),
-    //   // ...data,
-    //   ...(step !== 3 && step !== 4
-    //     ? { ...data }
-    //     : step === 3
-    //     ? {
-    //         amount_required_fsupport: data.amount_required_fsupport,
-    //         detail_project_budgets: [...data.detail_project_budgets.data],
-    //       }
-    //     : { ...data }),
-    //   // no need to save the proposal_bank_informations
-    //   submitter_user_id: user?.id,
-    //   id: nanoid(),
-    // };
     const newAttachment = {
       ...(lastIndex === step &&
       step >= 0 &&
@@ -478,7 +467,10 @@ const FundingProjectRequestForm = () => {
             detail_project_budgets: [...data.detail_project_budgets.data],
           }
         : { ...data }),
-      project_timeline: [...requestState.project_timeline],
+      project_timeline:
+        data && data.project_timeline
+          ? [...data.project_timeline]
+          : [...requestState.project_timeline],
       proposal_bank_information_id: step === 4 ? data : undefined,
       proposal_id: id,
     };
@@ -661,7 +653,11 @@ const FundingProjectRequestForm = () => {
           detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
         }),
       // ...data,
-      project_timeline: [...requestState.project_timeline],
+      // project_timeline: [...requestState.project_timeline],
+      project_timeline:
+        data && data.project_timeline
+          ? [...data.project_timeline]
+          : [...requestState.project_timeline],
       proposal_bank_information_id: step === 4 ? data : undefined,
       proposal_id: id,
     };
@@ -1128,6 +1124,18 @@ const FundingProjectRequestForm = () => {
           </ProjectBudgetForm>
         )}
         {step === 4 && (
+          <ProjectTimeLine onSubmit={onSubmitform5} defaultValues={requestState?.project_timeline}>
+            <ActionBox
+              step={step}
+              onReturn={onReturn}
+              isLoad={isLoading}
+              // onSavingDraft={onSavingDraft}
+              isStep={id !== undefined ? true : false}
+              isDraft={(draft: boolean) => setIsDraft(draft)}
+            />
+          </ProjectTimeLine>
+        )}
+        {step === 5 && (
           <SupportingDurationInfoForm
             lastStep={true}
             onReturn={onReturn}

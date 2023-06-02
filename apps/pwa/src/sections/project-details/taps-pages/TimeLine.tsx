@@ -59,7 +59,7 @@ function TimeLine() {
         height: 350,
         type: 'rangeBar',
         toolbar: {
-          show: false,
+          show: true,
           tools: {
             download: true,
             selection: true,

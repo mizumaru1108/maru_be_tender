@@ -1113,6 +1113,21 @@ const ar = {
       placeholder: 'المبلغ المطلوبة',
     },
   },
+  funding_project_request_project_timeline: {
+    step: 'المخطط الزمني للمشروع',
+    activity: {
+      label: 'اسم النشاط*',
+      placeholder: 'الرجاء كتابة اسم القسم',
+    },
+    start_date: {
+      label: 'تاريخ البدء*',
+      placeholder: 'الرجاء تحديد تاريخ البدء',
+    },
+    end_date: {
+      label: 'تاريخ الانتهاء*',
+      placeholder: 'الرجاء تحديد تاريخ الانتهاء',
+    },
+  },
   funding_project_request_form5: {
     step: 'معلومات الحساب البنكي',
     amount_required_for_support: {
