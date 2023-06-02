@@ -1,8 +1,8 @@
 import { FusionAuthClient } from '@fusionauth/typescript-client';
-import { HttpException, Injectable } from '@nestjs/common';
+import { ConflictException, HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { Donor } from 'src/donor/schema/donor.schema';
 import { PrismaService } from '../prisma/prisma.service';
@@ -40,6 +40,37 @@ export class UserService {
     });
 
     await donor.save();
+    const result = await newUser.save();
+
+    return result;
+  }
+
+  /**
+   * * Register Organization for User Collection
+   */
+
+  async registerUserOrganization(
+    request: RegisterFromFusionAuthDto,
+  ): Promise<User> {
+    const existingUser = await this.userModel.findOne({
+      email: request.email,
+    });
+
+    if (existingUser) {
+      throw new ConflictException(
+        'A user account with that email already exists',
+      );
+    }
+
+    const newUser = new this.userModel({
+      _id: request._id,
+      firstname: request.firstname,
+      email: request.email,
+      lastname: request.lastname,
+      type: RoleEnum.NONPROFIT,
+      organizationId: request.organizationId,
+    });
+
     const result = await newUser.save();
 
     return result;
@@ -92,11 +123,22 @@ export class UserService {
     };
   }
 
-  async updateUser(userId: string, name: string, email: string) {
-    const updates: { name?: string; email?: string } = {};
+  async updateUser(
+    userId: string,
+    name: string,
+    email: string,
+    organizationId?: string,
+  ) {
+    const updates: {
+      name?: string;
+      email?: string;
+      organizationId?: Types.ObjectId;
+    } = {};
 
     if (name) updates.name = name;
     if (email) updates.email = email;
+    if (organizationId)
+      updates.organizationId = new Types.ObjectId(organizationId);
 
     const user = await this.userModel.findOneAndUpdate(
       { _id: userId },

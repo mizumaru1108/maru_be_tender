@@ -4,6 +4,8 @@ import {
   Injectable,
   NotFoundException,
   HttpStatus,
+  ConflictException,
+  NotImplementedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
@@ -17,6 +19,7 @@ import { FusionAuthClient } from '@fusionauth/typescript-client';
 import { ConfigService } from '@nestjs/config';
 
 import { OrganizationDto } from './dto/organization.dto';
+import { RegisterOrganizationDto } from 'src/auth/dtos';
 import {
   Organization,
   OrganizationDocument,
@@ -82,9 +85,19 @@ import moment from 'moment';
 
 //
 import { ZakatLog, ZakatLogDocument } from 'src/zakat/schemas/zakat_log.schema';
+import { FileMimeTypeEnum } from 'src/commons/enums/file-mimetype.enum';
+import { generateFileName } from 'src/tender-commons/utils/generate-filename';
+import { validateAllowedExtension } from 'src/commons/utils/validate-allowed-extension';
+import { validateFileSize } from 'src/commons/utils/validate-file-size';
+import { RegisterFileUpload } from 'src/auth/dtos';
+import { envLoadErrorHelper } from 'src/commons/helpers/env-loaderror-helper';
+import { CreateNewOrganizationMappers } from './mappers/organization.mappers';
+import { CreateNewAppearance } from './mappers/apperance.mappers';
+import { CreateNewPaymentGateway } from './mappers/payment-gateway.mappers';
 
 @Injectable()
 export class OrganizationService {
+  private readonly appEnv: string;
   private readonly logger = ROOT_LOGGER.child({
     logger: OrganizationService.name,
   });
@@ -123,7 +136,11 @@ export class OrganizationService {
     private donationLogAggregatePaginateModel: AggregatePaginateModel<DonationLogDocument>,
     @InjectModel(ZakatLog.name)
     private zakatLogModel: Model<ZakatLogDocument>,
-  ) {}
+  ) {
+    const environment = this.configService.get('APP_ENV');
+    if (!environment) envLoadErrorHelper('APP_ENV');
+    this.appEnv = environment;
+  }
 
   async findAll() {
     this.logger.debug('findAll...');
@@ -250,25 +267,22 @@ export class OrganizationService {
     const organization = await this.organizationModel.findOne({
       _id: new Types.ObjectId(organizationId),
     });
-    console.log(organizationId);
+
     if (!organization) {
-      return {
-        statusCode: 404,
-        message: 'Organization not found',
-      };
+      throw new NotFoundException('Organization not found!');
     }
 
     const appearance = await this.appearanceModel.find({
-      organizationId: organization._id,
+      _id: organization._id,
     });
+
     if (appearance) {
-      return {
-        statusCode: 400,
-        message: 'Appearance is already exist.',
-      };
+      throw new ConflictException('Appearance is already exist.');
     }
+
     appearanceDto.ownerUserId = organization.ownerUserId;
     appearanceDto.ownerRealmId = organization.ownerRealmId;
+
     const appearanceCreated = await this.appearanceModel.create(appearanceDto);
     return {
       statusCode: 200,
@@ -3480,5 +3494,182 @@ export class OrganizationService {
       // campaign_per_type: campaignPerType.slice(0, 5),
       // donor_list: donorList,
     };
+  }
+
+  /**
+   * * Add new Organization
+   */
+
+  async createOrganization(payload: RegisterOrganizationDto) {
+    try {
+      const findOrganization = await this.organizationModel.find({
+        ownerUserId: payload.ownerUserId,
+      });
+
+      if (!findOrganization.length) {
+        /**
+         * * Uplaod image
+         */
+        const maxSize: number = 1024 * 1024 * 8; // 8MB
+        let uploadedFilePath: string[] = [];
+
+        if (payload.imageLogo) {
+          const uploadResult = await this.uploadFileOrganization(
+            payload.ownerUserId!,
+            'Uploading Image for organization',
+            payload.imageLogo,
+            'cover-image',
+            [
+              FileMimeTypeEnum.JPG,
+              FileMimeTypeEnum.JPEG,
+              FileMimeTypeEnum.PNG,
+              FileMimeTypeEnum.PDF,
+            ],
+            maxSize,
+            uploadedFilePath,
+          );
+
+          uploadedFilePath = uploadResult.uploadedFilePath;
+        }
+
+        /**
+         * * Create new Organization
+         */
+        const imgBunny = uploadedFilePath[0];
+        const payloadOrgToMongo = CreateNewOrganizationMappers(
+          payload,
+          imgBunny,
+        );
+
+        const createOrg = await this.organizationModel.create(
+          payloadOrgToMongo,
+        );
+
+        if (!createOrg) {
+          throw new NotImplementedException(`Cannot create new organization!`);
+        }
+
+        /**
+         * * Create new Appearance
+         */
+
+        const payloadApperance = CreateNewAppearance({
+          orgId: createOrg._id,
+          ownerUserId: createOrg.ownerUserId,
+          ownerRealmId: createOrg.ownerRealmId,
+          logo: imgBunny,
+        });
+
+        const createNewAppearance = await this.appearanceModel.create(
+          payloadApperance,
+        );
+
+        if (!createNewAppearance) {
+          throw new NotImplementedException(
+            `Cannot create new appearance for organization ${createOrg._id}!`,
+          );
+        }
+
+        /**
+         * * Create payment Gateway
+         */
+        const paymentGName = payload.paymentGateway
+          ? payload.paymentGateway
+          : 'STRIPE';
+
+        const payloadPaymentGateway = CreateNewPaymentGateway(
+          createOrg._id,
+          paymentGName,
+          createOrg.defaultCurrency,
+        );
+
+        const createPaymentGateway = await this.paymentGatewayModel.create(
+          payloadPaymentGateway,
+        );
+
+        if (!createPaymentGateway) {
+          throw new NotImplementedException(
+            `Cannot create new payment gateway for organization ${createOrg._id}!`,
+          );
+        }
+
+        return {
+          _id: createOrg._id,
+          organization_email: createOrg.contactEmail,
+          organization_name: createOrg.name,
+          appearance: createNewAppearance ? true : false,
+          payment_gateway: createPaymentGateway ? true : false,
+        };
+      } else {
+        throw new ConflictException(
+          `User ${payload.email} already have organization nonprofit!`,
+        );
+      }
+    } catch (error) {
+      throw new HttpException(`${error}`, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  /**
+   * * Upload file image
+   */
+
+  async uploadFileOrganization(
+    userId: string,
+    uploadMessage: string,
+    file: RegisterFileUpload,
+    folderName: string,
+    AllowedFileTypes: FileMimeTypeEnum[],
+    maxSize: number = 1024 * 1024 * 6,
+    uploadedFilePath: string[],
+  ) {
+    try {
+      const fileName = generateFileName(
+        file.fullName,
+        file.imageExtension as FileMimeTypeEnum,
+      );
+
+      const filePath = `tmra/${this.appEnv}/organization/${userId}/${folderName}/${fileName}`;
+
+      const fileBuffer = Buffer.from(
+        file.base64Data.replace(/^data:.*;base64,/, ''),
+        'base64',
+      );
+
+      validateAllowedExtension(file.imageExtension, AllowedFileTypes);
+      validateFileSize(file.size, maxSize);
+
+      const imageUrl = await this.bunnyService.uploadFileBase64(
+        file.fullName,
+        fileBuffer,
+        filePath,
+        `${uploadMessage} ${userId}`,
+      );
+
+      uploadedFilePath.push(imageUrl);
+
+      const fileObj = {
+        url: imageUrl,
+        type: file.imageExtension,
+        size: file.size,
+      };
+
+      return {
+        uploadedFilePath,
+        fileObj,
+      };
+    } catch (error) {
+      if (uploadedFilePath.length > 0) {
+        this.logger.log(
+          'log',
+          `${uploadMessage} error, deleting all previous uploaded files: ${error}`,
+        );
+        uploadedFilePath.forEach(async (path) => {
+          await this.bunnyService.deleteMedia(path, true);
+        });
+      }
+
+      throw new HttpException(`${error}`, HttpStatus.BAD_REQUEST);
+    }
   }
 }

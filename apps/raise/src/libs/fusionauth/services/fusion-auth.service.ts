@@ -40,6 +40,7 @@ import {
   IQueryAxiosVerify,
   IVerifyEmailDto,
   IUserVerifyCheck,
+  ISendNewOrganization,
 } from '../dtos/response/validate-jwt-response';
 
 import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
@@ -684,5 +685,36 @@ export class FusionAuthService {
       this.logger.error('Fusion Auth Update User Error: ', err);
       return false;
     }
+  }
+
+  /**
+   * * Tmra New Organization
+   */
+
+  async welcomingNewOrganization(requestPayload: ISendNewOrganization) {
+    const notifPayload: CommonNotificationMapperResponse = {
+      logTime: moment(new Date().getTime()).format('llll'),
+      generalHostEmail: 'tmra',
+      clientSubject: 'Welcome to TMRA',
+      clientId: [],
+      clientEmail: [requestPayload.email],
+      clientMobileNumber: [],
+      clientEmailTemplatePath: `tmra/en/register/new_organization_welcome`,
+      clientEmailTemplateContext: [
+        {
+          organization_name: requestPayload.organization_name,
+          redirect_link: requestPayload.domainUrl,
+        },
+      ],
+      clientContent:
+        "We're excited to welcome you to TMRA and we're even more excited about what we've got planned.",
+      reviewerId: [],
+      reviewerEmail: [],
+      reviewerContent: '',
+      reviewerMobileNumber: [],
+      createManyWebNotifPayload: [],
+    };
+
+    await this.notificationService.sendSmsAndEmailBatch(notifPayload);
   }
 }

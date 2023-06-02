@@ -65,6 +65,10 @@ export class Organization {
   zakatTransaction: boolean;
   @Prop({ defaul: false })
   zakatCalculator: boolean;
+  @Prop()
+  organizationEmail?: string;
+  @Prop()
+  organizationName?: string;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);

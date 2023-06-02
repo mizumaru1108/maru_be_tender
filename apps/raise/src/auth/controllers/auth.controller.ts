@@ -3,7 +3,12 @@ import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BaseResponse } from '../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
-import { LoginRequestDto, LoginResponseDto, RegisterRequestDto } from '../dtos';
+import {
+  LoginRequestDto,
+  LoginResponseDto,
+  RegisterRequestDto,
+  RegisterOrganizationDto,
+} from '../dtos';
 import { HandleGoogleCallbackDto } from '../dtos/requests/handle-google-callback.dto';
 import { AuthService } from '../services/auth.service';
 
@@ -85,5 +90,22 @@ export class AuthController {
     @Body('password') password: string,
   ) {
     return await this.authService.registerUser(name, email, password);
+  }
+
+  /**
+   * * Register organization
+   */
+
+  @Post('register-organization')
+  async registerOrganization(@Body() registerRequest: RegisterOrganizationDto) {
+    // Promise<BaseResponse<User>>
+    const registeredUserOrganization =
+      await this.authService.registerUserOrganization(registerRequest);
+
+    return baseResponseHelper<any>(
+      registeredUserOrganization,
+      HttpStatus.OK,
+      'Register Success Success!',
+    );
   }
 }

@@ -29,6 +29,12 @@ export interface IVerifyEmailDto {
   userId: UUID;
 }
 
+export interface ISendNewOrganization {
+  email: string;
+  organization_name: string;
+  domainUrl: string;
+}
+
 export interface IUserVerifyCheck {
   user_id: UUID;
   domain_url: string;

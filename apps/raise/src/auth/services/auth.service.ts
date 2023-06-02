@@ -1,13 +1,26 @@
-import { User } from '@fusionauth/typescript-client';
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ROOT_LOGGER } from 'src/libs/root-logger';
+// Service
 import { UserService } from 'src/user/user.service';
-import { SendEmailDto } from '../../libs/email/dtos/requests/send-email.dto';
+import { OrganizationService } from 'src/organization/organization.service';
 import { EmailService } from '../../libs/email/email.service';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { GoogleOAuth2Service } from '../../libs/google-oauth2/google-oauth2.service';
-import { LoginRequestDto, RegisterRequestDto } from '../dtos';
+// DTO
+import { SendEmailDto } from '../../libs/email/dtos/requests/send-email.dto';
+import {
+  LoginRequestDto,
+  RegisterRequestDto,
+  RegisterOrganizationDto,
+} from '../dtos';
+//
+import { User } from '@fusionauth/typescript-client';
+import { ROOT_LOGGER } from 'src/libs/root-logger';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +33,7 @@ export class AuthService {
     private readonly fusionAuthService: FusionAuthService,
     private readonly jwtService: JwtService,
     private readonly googleOAuth2Service: GoogleOAuth2Service,
+    private readonly organizationService: OrganizationService,
   ) {}
 
   async googleLogin() {
@@ -158,6 +172,79 @@ export class AuthService {
     } catch (error) {
       throw new HttpException('An error occured while registering user', 500);
     }
+  }
+
+  async registerUserOrganization(payload: RegisterOrganizationDto) {
+    try {
+      const nameValue = this.splitName(payload.name!);
+      const fusionAuthRes = await this.fusionAuthService.fusionAuthRegister({
+        email: payload.email,
+        password: payload.password,
+        firstName: nameValue.firstName,
+        lastName: nameValue.lastName,
+        country: payload.country ?? '',
+        state: payload.state ?? '',
+        address: payload.address ?? '',
+        mobile: payload.phone ?? '',
+      });
+
+      if (!fusionAuthRes || !fusionAuthRes.user || !fusionAuthRes.user.id) {
+        throw new BadRequestException('Failed to fetch user!');
+      }
+
+      const registerUserOrganization =
+        await this.usersService.registerUserOrganization({
+          _id: fusionAuthRes.user.id,
+          email: fusionAuthRes.user.email,
+          firstname: fusionAuthRes.user.firstName,
+          lastname: fusionAuthRes.user.lastName,
+        });
+
+      const createNewOrganization =
+        await this.organizationService.createOrganization({
+          ...payload,
+          ownerUserId: fusionAuthRes.user.id,
+        });
+
+      /**
+       * ? Must be validate verification first or not
+       * * for now directly sending welcoming email template
+       */
+
+      await this.fusionAuthService.welcomingNewOrganization({
+        email: createNewOrganization.organization_email,
+        organization_name: createNewOrganization.organization_name,
+        domainUrl: payload.domainUrl!,
+      });
+
+      await this.usersService.updateUser(
+        fusionAuthRes.user.id,
+        fusionAuthRes.user.name,
+        fusionAuthRes.user.email,
+        createNewOrganization._id,
+      );
+
+      return {
+        user: registerUserOrganization,
+        organization: createNewOrganization,
+        url: payload.domainUrl,
+        token: fusionAuthRes.token,
+        refreshToken: fusionAuthRes.refreshToken,
+      };
+    } catch (error) {
+      throw new HttpException(error, error.response.status);
+    }
+  }
+
+  splitName(name: string) {
+    const nameParts = name.split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ');
+
+    return {
+      firstName,
+      lastName,
+    };
   }
 
   generateToken(user: any) {
