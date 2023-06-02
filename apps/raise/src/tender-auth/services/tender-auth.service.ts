@@ -109,7 +109,9 @@ export class TenderAuthService {
         );
       }
 
-      return fusionAuthResponse;
+      return {
+        fusionAuthResponse,
+      };
     } catch (error) {
       this.logger.error('login error', error);
       throw error;

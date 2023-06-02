@@ -160,5 +160,5 @@ export class CreateProposalInterceptorDto {
   @ValidateNested()
   @IsArray()
   @Type(() => CreateProjectTimelineDto)
-  project_timeline: CreateProjectTimelineDto[];
+  project_timeline?: CreateProjectTimelineDto[];
 }

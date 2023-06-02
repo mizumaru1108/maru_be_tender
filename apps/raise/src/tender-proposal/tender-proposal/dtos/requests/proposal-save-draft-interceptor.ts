@@ -13,6 +13,7 @@ import {
 } from 'class-validator';
 import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
 import { ProposalDeleteDraftDto } from './proposal-delete-draft';
+import { CreateProjectTimelineDto } from './create-project-timeline.dto';
 
 export class ProposalSaveDraftInterceptorDto extends ProposalDeleteDraftDto {
   /* first form ---------------------------------------------------- */
@@ -160,4 +161,12 @@ export class ProposalSaveDraftInterceptorDto extends ProposalDeleteDraftDto {
   @IsUUID()
   proposal_bank_information_id?: string;
   /* fifth form ---------------------------------------------------- */
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @ValidateNested()
+  @IsArray()
+  @Type(() => CreateProjectTimelineDto)
+  project_timeline?: CreateProjectTimelineDto[];
 }

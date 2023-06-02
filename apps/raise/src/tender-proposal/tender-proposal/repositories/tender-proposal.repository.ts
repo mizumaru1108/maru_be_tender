@@ -171,6 +171,7 @@ export class TenderProposalRepository {
     proposal_item_budgets:
       | Prisma.proposal_item_budgetCreateManyInput[]
       | undefined,
+    proposalTimelinePayloads: Prisma.project_timelineCreateManyInput[] = [],
     fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
     deletedFileManagerUrls: string[],
     uploadedFilePath: string[],
@@ -257,6 +258,28 @@ export class TenderProposalRepository {
             }
           }
 
+          // save draft not a revision
+          if (!createLog && proposalTimelinePayloads) {
+            this.logger.log(
+              'info',
+              `deleting all timeline on proposal ${proposal.id}`,
+            );
+
+            await prisma.project_timeline.deleteMany({
+              where: { proposal_id: proposal.id },
+            });
+
+            this.logger.log(
+              'info',
+              `creating new timeline on proposal ${proposal.id}`,
+            );
+
+            await prisma.project_timeline.createMany({
+              data: proposalTimelinePayloads,
+            });
+          }
+
+          // send
           if (createLog) {
             const createdLog = await prisma.proposal_log.create({
               data: {
