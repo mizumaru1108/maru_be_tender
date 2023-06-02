@@ -103,6 +103,7 @@ const FundingProjectRequestForm = () => {
       },
     },
     proposal_bank_id: '',
+    project_timeline: [],
   };
 
   // const [openToast, setOpenToast] = useState(false);
@@ -210,6 +211,7 @@ const FundingProjectRequestForm = () => {
         detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
       }),
       // no need to save the proposal_bank_informations
+      project_timeline: [...requestState.project_timeline],
       submitter_user_id: user?.id,
       proposal_bank_information_id: data,
     };
@@ -217,12 +219,13 @@ const FundingProjectRequestForm = () => {
     //<for formData>
     const datas = { ...createdProposel };
     let formData = new FormData();
-    delete createdProposel.detail_project_budgets;
-    delete createdProposel.project_attachments;
-    delete createdProposel.letter_ofsupport_req;
-    delete createdProposel.detail_project_budgets;
+    const payload = removeEmptyKey(createdProposel);
+    delete payload.detail_project_budgets;
+    delete payload.project_attachments;
+    delete payload.letter_ofsupport_req;
+    delete payload.detail_project_budgets;
     const jsonData: any = {
-      ...createdProposel,
+      ...payload,
     };
     for (const key in jsonData) {
       formData.append(key, jsonData[key]);
@@ -237,6 +240,26 @@ const FundingProjectRequestForm = () => {
         formData.append(`detail_project_budgets[${index}][explanation]`, budget.explanation);
         formData.append(`detail_project_budgets[${index}][clause]`, budget.clause);
       }
+    }
+    if (datas && datas?.project_timeline && datas?.project_timeline?.length > 0) {
+      for (let i = 0; i < datas?.project_timeline?.length; i++) {
+        const timeline: {
+          name: string;
+          start_date: string;
+          end_date: string;
+        } = datas?.project_timeline[i];
+        const index = i; // Get the index for appending to FormData
+
+        // Append the values for each object using template literals
+        formData.append(`project_timeline[${index}][name]`, timeline.name);
+        formData.append(`project_timeline[${index}][start_date]`, timeline.start_date);
+        formData.append(`project_timeline[${index}][end_date]`, timeline.end_date);
+      }
+    } else {
+      // formData.append('project_timeline[0][name]', '');
+      // formData.append('project_timeline[0][start_date]', '');
+      // formData.append('project_timeline[0][end_date]', '');
+      formData.append('project_timeline', '[]');
     }
     if (datas && datas?.project_attachments && datas?.project_attachments?.file) {
       formData.append('project_attachments', datas?.project_attachments?.file[0] as Blob);
@@ -455,6 +478,7 @@ const FundingProjectRequestForm = () => {
             detail_project_budgets: [...data.detail_project_budgets.data],
           }
         : { ...data }),
+      project_timeline: [...requestState.project_timeline],
       proposal_bank_information_id: step === 4 ? data : undefined,
       proposal_id: id,
     };
@@ -482,6 +506,26 @@ const FundingProjectRequestForm = () => {
         formData.append(`detail_project_budgets[${index}][explanation]`, budget.explanation);
         formData.append(`detail_project_budgets[${index}][clause]`, budget.clause);
       }
+    }
+    if (datas && datas?.project_timeline && datas?.project_timeline?.length > 0) {
+      for (let i = 0; i < datas?.project_timeline?.length; i++) {
+        const timeline: {
+          name: string;
+          start_date: string;
+          end_date: string;
+        } = datas?.project_timeline[i];
+        const index = i; // Get the index for appending to FormData
+
+        // Append the values for each object using template literals
+        formData.append(`project_timeline[${index}][name]`, timeline.name);
+        formData.append(`project_timeline[${index}][start_date]`, timeline.start_date);
+        formData.append(`project_timeline[${index}][end_date]`, timeline.end_date);
+      }
+    } else {
+      // formData.append('project_timeline[0][name]', '');
+      // formData.append('project_timeline[0][start_date]', '');
+      // formData.append('project_timeline[0][end_date]', '');
+      formData.append('project_timeline', '[]');
     }
     if (datas && datas?.project_attachments && datas?.project_attachments?.file) {
       // console.log('datas?.project_attachments?.file', datas?.project_attachments?.file);
@@ -617,6 +661,7 @@ const FundingProjectRequestForm = () => {
           detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
         }),
       // ...data,
+      project_timeline: [...requestState.project_timeline],
       proposal_bank_information_id: step === 4 ? data : undefined,
       proposal_id: id,
     };
@@ -643,6 +688,26 @@ const FundingProjectRequestForm = () => {
         formData.append(`detail_project_budgets[${index}][explanation]`, budget.explanation);
         formData.append(`detail_project_budgets[${index}][clause]`, budget.clause);
       }
+    }
+    if (datas && datas?.project_timeline && datas?.project_timeline?.length > 0) {
+      for (let i = 0; i < datas?.project_timeline?.length; i++) {
+        const timeline: {
+          name: string;
+          start_date: string;
+          end_date: string;
+        } = datas?.project_timeline[i];
+        const index = i; // Get the index for appending to FormData
+
+        // Append the values for each object using template literals
+        formData.append(`project_timeline[${index}][name]`, timeline.name);
+        formData.append(`project_timeline[${index}][start_date]`, timeline.start_date);
+        formData.append(`project_timeline[${index}][end_date]`, timeline.end_date);
+      }
+    } else {
+      // formData.append('project_timeline[0][name]', '');
+      // formData.append('project_timeline[0][start_date]', '');
+      // formData.append('project_timeline[0][end_date]', '');
+      formData.append('project_timeline', '[]');
     }
     if (datas && datas?.project_attachments && datas?.project_attachments?.file) {
       // console.log('datas?.project_attachments?.file', datas?.project_attachments?.file);
@@ -857,10 +922,12 @@ const FundingProjectRequestForm = () => {
             governorate,
             amount_required_fsupport,
             proposal_item_budgets,
+            timelines,
             step,
           } = data.proposal_by_pk;
           setRequestState((prevRegisterState: any) => ({
             ...prevRegisterState,
+            project_timeline: timelines || [],
             form1: {
               ...prevRegisterState.form1,
               ...{
