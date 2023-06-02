@@ -1,6 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  binaryTargets   = ["native"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 generator dbml {
@@ -207,6 +207,7 @@ model proposal {
   project_number                      String?                          @unique(map: "idx_project_number") @default(dbgenerated("(nextval('proposal_project_number_seq'::regclass))::text"))
   notification                        notification[]
   payments                            payment[]
+  timelines                           project_timeline[]
   accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   proposal_beneficiaries              proposal_beneficiaries?          @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
@@ -601,6 +602,7 @@ model project_timeline {
   start_date  DateTime @db.Date
   end_date    DateTime @db.Date
   proposal_id String
+  proposal    proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
 }
 
 model support_goal {

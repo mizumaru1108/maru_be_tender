@@ -41,7 +41,6 @@ import {
   ProposalAction,
 } from '../../../tender-commons/types/proposal';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
-import { isTenderFilePayload } from '../../../tender-commons/utils/is-tender-file-payload';
 import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { IProposalLogsResponse } from '../../tender-proposal-log/interfaces/proposal-logs-response';
@@ -60,26 +59,19 @@ import { CeoChangeStatePayload } from '../dtos/requests/ceo-change-state.dto';
 import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
 import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 import { ProjectManagerChangeStatePayload } from '../dtos/requests/project-manager-change-state-payload.dto';
-import { ProposalCreateDto } from '../dtos/requests/proposal-create.dto';
-import { ProposalSaveDraftDto } from '../dtos/requests/proposal-save-draft';
 import { SendAmandementDto } from '../dtos/requests/send-amandement.dto';
 import { SendRevisionDto } from '../dtos/requests/send-revision.dto';
 import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
 import { CreateProposalInterceptorMapper } from '../mappers';
 import { CreateItemBudgetsMapper } from '../mappers/create-item-budgets.mappers';
 import { CreateProposalAskedEditRequestMapper } from '../mappers/create-proposal-asked-edit-request.mapper';
-import { CreateProposalMapper } from '../mappers/create-proposal.mapper';
 import { ProposalUpdateRequestMapper } from '../mappers/proposal-update-request.mapper';
 import { SendRevisionMapper } from '../mappers/send-revision.mapper';
 import { SupervisorAccCreatedItemBudgetMapper } from '../mappers/supervisor-acc-created-item-budget-mapper';
-import { SupervisorAccCreatedRecommendedSupportMapper } from '../mappers/supervisor-acc-created-recommend-support-mapper';
 import { SupervisorGrantTrackAccMapper } from '../mappers/supervisor-grant-track-acc.mapper';
 import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-track-acc.mapper';
 import { UpdateProposalTrackInfoMapper } from '../mappers/update-proposal-track-info.mapper';
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
-import { removePrefix } from '../../../tender-commons/utils/remove-966-prefix';
-import { Builder } from 'builder-pattern';
-import { CreateProjectTimelineDto } from '../dtos/requests/create-project-timeline.dto';
 
 @Injectable()
 export class TenderProposalService {

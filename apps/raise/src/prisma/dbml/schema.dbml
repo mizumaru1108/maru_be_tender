@@ -197,6 +197,7 @@ Table proposal {
   project_number String [unique]
   notification notification [not null]
   payments payment [not null]
+  timelines project_timeline [not null]
   accreditation_type accreditation_type
   proposal_beneficiaries proposal_beneficiaries
   project_tracks project_tracks
@@ -591,6 +592,7 @@ Table project_timeline {
   start_date DateTime [not null]
   end_date DateTime [not null]
   proposal_id String [not null]
+  proposal proposal [not null]
 }
 
 Table support_goal {
@@ -1517,6 +1519,8 @@ Ref: track_section.track_id > track.id [delete: Cascade]
 Ref: user_role.user_id > user.id [delete: Cascade]
 
 Ref: user_role.user_type_id > user_type.id [delete: Cascade]
+
+Ref: project_timeline.proposal_id > proposal.id [delete: Cascade]
 
 Ref: notification.appointment_id > appointment.id
 

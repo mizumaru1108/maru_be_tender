@@ -2120,6 +2120,7 @@ export class TenderProposalRepository {
             },
           },
           bank_information: true,
+          timelines: true,
         },
       });
       return proposal;
