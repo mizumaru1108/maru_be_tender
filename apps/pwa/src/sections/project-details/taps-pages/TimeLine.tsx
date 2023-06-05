@@ -2,6 +2,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { useSelector } from '../../../redux/store';
+import useLocales from 'hooks/useLocales';
 
 const ChartWrapperStyle = styled('div')(({ theme }) => ({
   marginTop: theme.spacing(5),
@@ -28,6 +29,7 @@ const ChartWrapperStyle = styled('div')(({ theme }) => ({
 }));
 
 function TimeLine() {
+  const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
   console.log('test', proposal.timelines);
   const state = {
@@ -60,6 +62,7 @@ function TimeLine() {
         data: [...proposal.timelines].map((item) => ({
           x: item.name,
           y: [new Date(item.start_date).getTime(), new Date(item.end_date).getTime()],
+          fillColor: '#0E8478',
         })),
       },
     ],
@@ -122,19 +125,19 @@ function TimeLine() {
           return opts.w.globals.labels[opts.dataPointIndex];
         },
       },
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shade: 'light',
-          type: 'vertical',
-          shadeIntensity: 0.25,
-          gradientToColors: undefined,
-          inverseColors: true,
-          opacityFrom: 1,
-          opacityTo: 1,
-          stops: [50, 0, 100, 100],
-        },
-      },
+      // fill: {
+      //   type: 'gradient',
+      //   gradient: {
+      //     shade: 'light',
+      //     type: 'vertical',
+      //     shadeIntensity: 0.25,
+      //     gradientToColors: undefined,
+      //     inverseColors: true,
+      //     opacityFrom: 1,
+      //     opacityTo: 1,
+      //     stops: [50, 0, 100, 100],
+      //   },
+      // },
       xaxis: {
         type: 'datetime',
       },
@@ -143,6 +146,9 @@ function TimeLine() {
       },
     } as ApexOptions,
   };
+  if (proposal && (proposal.timelines.length === 0 || !proposal.timelines))
+    return <>{translate('pages.common.no_project_timelines')}</>;
+
   return (
     <div id="chart" dir="ltr">
       <ReactApexChart options={state.options} series={state.series} type="rangeBar" height={350} />

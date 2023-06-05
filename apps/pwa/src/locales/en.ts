@@ -9,6 +9,7 @@ const en = {
   pages: {
     options_btn: 'More',
     common: {
+      no_project_timelines:"This project does't have any project timelines",
       go_to_print_preview: 'Print Preview',
       print_preview: 'Print Proposal',
       old_proposal: 'Old Proposal',

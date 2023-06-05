@@ -23,7 +23,8 @@ export interface Cheques {
 }
 
 export interface ItemBudget {
-  amount: number;
+  // amount: number;
+  amount: any;
   explanation: string;
   clause: string;
   id: string;
@@ -68,6 +69,14 @@ export interface timeline {
   proposal_id: string;
 }
 
+export interface TrackBudget {
+  id: string;
+  name: string;
+  budget: number;
+  total_budget_used: number;
+  remaining_budget: number;
+}
+
 export interface Proposal {
   id: string;
   project_name: string;
@@ -88,6 +97,7 @@ export interface Proposal {
   accreditation_type_id: AccreditationTypeId;
   timelines: timeline[];
   governorate: string;
+  track_budget: TrackBudget;
   // proposal_logs: {
   //   id: string;
   //   proposal_id: string;

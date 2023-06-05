@@ -15,7 +15,7 @@ const RHFRepeater = ({
   buttonRepeaterLabel,
   ...other
 }: FormSingleProps) => {
-  const { control } = useFormContext();
+  const { control, watch, setValue } = useFormContext();
   const { translate } = useLocales();
 
   const [disabledValue, setDisabledValue] = useState<boolean>(false);
@@ -24,8 +24,6 @@ const RHFRepeater = ({
     control,
     name: name ?? '',
   });
-  // const test = watch(`${name}`);
-  // console.log({ test });
   const cleanField = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...restFields } = fields[0];
@@ -37,6 +35,30 @@ const RHFRepeater = ({
     return result;
   };
 
+  const isObjectEmpty = (obj: any) => {
+    for (let key in obj) {
+      if (obj[key] === null || obj[key] === undefined || obj[key] === '') {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const objectEmpty = (obj: any, index: number) => {
+    for (let key in obj) {
+      setValue(`${name}[${index}].${key}`, '');
+    }
+  };
+
+  const handleDelete = (index: number) => {
+    remove(index);
+    objectEmpty(watch(`${name}`)[index], index);
+  };
+
+  const watchAll = watch();
+  const watchName = watch(`${name}`);
+  const lastIndex = fields.length - 1;
+  const allDataFill = isObjectEmpty(watchName[lastIndex]);
   useEffect(() => {
     const reducedDisabled = repeaterFields
       ?.map((el) => (el.disabled ? el.disabled : false))
@@ -60,6 +82,7 @@ const RHFRepeater = ({
                     <BaseField
                       {...repeaterField}
                       {...other}
+                      disabled={repeaterField.disabled ? true : false}
                       name={`${name}[${index}].${repeaterField.name}`}
                     />
                   </Grid>
@@ -72,9 +95,12 @@ const RHFRepeater = ({
               <IconButton
                 sx={{ width: '100%', backgroundColor: 'red', color: '#fff', borderRadius: '10px' }}
                 onClick={() => {
-                  remove(index);
+                  // make after remove array, clear it value of it delete witch match the index
+                  // remove(index);
+                  handleDelete(index);
                 }}
                 disabled={disabledValue}
+                // disabled={other.disabled}
               >
                 <CloseIcon />
               </IconButton>
@@ -83,7 +109,7 @@ const RHFRepeater = ({
         </React.Fragment>
       ))}
 
-      {enableAddButton && (
+      {allDataFill && enableAddButton && (
         <Grid item md={12}>
           <Button
             type="button"
@@ -97,6 +123,7 @@ const RHFRepeater = ({
               append(cleanField());
             }}
             disabled={disabledValue}
+            // disabled={other.disabled}
           >
             {buttonRepeaterLabel ? buttonRepeaterLabel : translate('add_new_line')}
           </Button>

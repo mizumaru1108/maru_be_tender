@@ -33,13 +33,6 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
 
-  // const [{ data, fetching, error }] = useQuery({
-  //   query: getOneTrackBudget,
-  //   variables: {
-  //     track_id: path,
-  //   },
-  // });
-
   const fetchingSchedule = React.useCallback(async () => {
     setIsLoading(true);
     try {
@@ -64,16 +57,6 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
         });
       }
     } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(

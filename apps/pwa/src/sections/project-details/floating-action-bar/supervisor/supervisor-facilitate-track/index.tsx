@@ -30,6 +30,7 @@ function FloatinActionBar() {
   const dispatch = useDispatch();
 
   const { proposal } = useSelector((state) => state.proposal);
+
   const { conversations } = useSelector((state) => state.wschat);
   const location = useLocation();
   const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
@@ -426,7 +427,9 @@ function FloatinActionBar() {
           <Grid item md={4} xs={12}>
             <Stack direction="row" gap={2} justifyContent="space-between">
               <Button
-                onClick={() => setAction('ACCEPT')}
+                onClick={() => {
+                  setAction('ACCEPT');
+                }}
                 variant="contained"
                 color="primary"
                 endIcon={<CheckIcon />}

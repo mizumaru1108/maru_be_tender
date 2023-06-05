@@ -14,6 +14,7 @@ type IProps = {
 type Props = IProps & TextFieldProps;
 
 export default function RHFDatePicker({ name, maxDate, minDate, ...other }: Props) {
+  // console.log(other.disabled, 'test disable');
   const { control } = useFormContext();
 
   return (
@@ -26,7 +27,7 @@ export default function RHFDatePicker({ name, maxDate, minDate, ...other }: Prop
           type="date"
           fullWidth
           InputLabelProps={{ shrink: true }}
-          // InputProps={{ inputProps: { max: maxDate ?? '', min: minDate ?? '' } }}
+          InputProps={{ inputProps: { max: maxDate ?? undefined, min: minDate ?? undefined } }}
           SelectProps={{ native: true }}
           error={!!error}
           helperText={

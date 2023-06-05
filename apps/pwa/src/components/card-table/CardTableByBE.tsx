@@ -31,8 +31,8 @@ function CardTableByBE({
 CardTablePropsByBE) {
   // const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
-  const { activeRole } = useAuth();
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [cardData, setCardData] = useState([]);
