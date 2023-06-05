@@ -53,6 +53,13 @@ const initialState: ProposalItme = {
     governorate: 'test',
     track_id: 'test',
     clasification_field: 'test',
+    track_budget: {
+      id: '-1',
+      name: 'test',
+      budget: 0,
+      remaining_budget: 0,
+      total_budget_used: 0,
+    },
     timelines: [
       {
         id: '-1',
@@ -247,6 +254,9 @@ const slice = createSlice({
     setTrackList(state, action) {
       state.track_list = action.payload;
     },
+    setTrackBudget(state, action) {
+      state.proposal.track_budget = action.payload;
+    },
     // SET EMPLOYEE ONLY
     setEmployeeOnly(state, action) {
       state.employeeOnly = action.payload;
@@ -297,6 +307,7 @@ export const {
   setCheckedItems,
   setTracks,
   setEmployeeOnly,
+  setTrackBudget,
   setUpdatedStatus,
 } = slice.actions;
 
@@ -370,6 +381,30 @@ export const getTrackList = (isGeneral: number, role: string) => async () => {
     dispatch(slice.actions.endLoading);
   } catch (error) {
     dispatch(slice.actions.hasError(error));
+  }
+};
+
+export const getTrackBudget = (track_id: string, role: string) => async () => {
+  if (track_id !== 'test') {
+    try {
+      dispatch(slice.actions.startLoading);
+      const url = `/tender/proposal/payment/find-track-budget?id=${track_id as string}`;
+      try {
+        const response = await axiosInstance.get(url, {
+          headers: { 'x-hasura-role': role },
+        });
+        if (response.data.statusCode === 200) {
+          console.log(response.data.data.data, 'test response');
+          dispatch(slice.actions.setTrackBudget(response.data.data.data));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+      dispatch(slice.actions.endLoading);
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
   }
 };
 export const insertPaymentsBySupervisor = (data: any) => async () => {

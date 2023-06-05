@@ -24,7 +24,7 @@ type Props = {
 };
 
 const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) => {
-  console.log({ defaultValues });
+  // console.log({ defaultValues });
   const { translate } = useLocales();
   const [budgetError, setBudgetError] = useState(false);
   const isDisabled =
@@ -64,6 +64,7 @@ const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) 
   } = methods;
 
   const project_timeline = watch('project_timeline');
+  // console.log(project_timeline[lastIndex].start_date ? true : false, 'test');
 
   const handleOnSubmit = (data: FormValuesProps) => {
     // console.log({ data });
@@ -99,6 +100,9 @@ const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) 
               placeholder: 'funding_project_request_project_timeline.start_date.placeholder',
               md: 3,
               xs: 12,
+              minDate: new Date(new Date().setDate(new Date().getDate() + 1))
+                .toISOString()
+                .split('T')[0],
             },
             {
               disabled: isDisabled,
@@ -108,6 +112,9 @@ const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) 
               placeholder: 'funding_project_request_project_timeline.end_date.placeholder',
               md: 3,
               xs: 12,
+              minDate: new Date(new Date().setDate(new Date().getDate() + 1))
+                .toISOString()
+                .split('T')[0],
             },
           ]}
           enableAddButton={true}

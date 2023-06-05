@@ -255,7 +255,7 @@ export default function RegisterForm() {
         </Container>
       )}
       {step === 2 && (
-        <Container sx={{ padding: '10px' }}>
+        <Container sx={{ padding: '10px', overflow: 'auto' }}>
           <LicenseInfoForm onSubmit={onSubmit3} defaultValues={registerState.form3}>
             <ActionsBox done={done} onReturn={onReturn} />
           </LicenseInfoForm>

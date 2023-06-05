@@ -19,6 +19,7 @@ function TimeLine({ projectTimeLine }: Props) {
         data: projectTimeLine.map((item) => ({
           x: item.name,
           y: [new Date(item.start_date).getTime(), new Date(item.end_date).getTime()],
+          fillColor: '#0E8478',
         })),
       },
     ],
@@ -50,19 +51,19 @@ function TimeLine({ projectTimeLine }: Props) {
           return opts.w.globals.labels[opts.dataPointIndex];
         },
       },
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shade: 'light',
-          type: 'vertical',
-          shadeIntensity: 0.25,
-          gradientToColors: undefined,
-          inverseColors: true,
-          opacityFrom: 1,
-          opacityTo: 1,
-          stops: [50, 0, 100, 100],
-        },
-      },
+      // fill: {
+      //   type: 'gradient',
+      //   gradient: {
+      //     shade: 'light',
+      //     type: 'vertical',
+      //     shadeIntensity: 0.25,
+      //     gradientToColors: undefined,
+      //     inverseColors: true,
+      //     opacityFrom: 1,
+      //     opacityTo: 1,
+      //     stops: [50, 0, 100, 100],
+      //   },
+      // },
       xaxis: {
         type: 'datetime',
       },

@@ -21,8 +21,9 @@ function PaymentsTable() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { proposal } = useSelector((state) => state.proposal);
-  console.log('test', proposal?.payments);
+  // console.log('test', proposal?.payments);
   const [sortingData, setSortingData] = React.useState<any[]>([]);
+  const [currentIssuedPayament, setCurrentIssuedPayament] = React.useState(0);
 
   const handleApprovalPayment = async (id: string) => {
     try {
@@ -69,6 +70,19 @@ function PaymentsTable() {
       );
     }
   };
+
+  // useEffect(() => {
+  //   const payments = [...proposal.payments].sort(
+  //     (a: any, b: any) => parseInt(a.order) - parseInt(b.order)
+  //   );
+  //   console.log({ payments });
+  // for (var i = 0; i < payments.length; i++) {
+  //   if (payments[i].status === 'set_by_supervisor') {
+  //     setCurrentIssuedPayament(i);
+  //     break;
+  //   }
+  // }
+  // }, [proposal]);
   React.useEffect(() => {
     // const
     const neWvalue: any = proposal.payments;
@@ -78,9 +92,14 @@ function PaymentsTable() {
     setSortingData(arr);
     // console.log('test', arr);
 
-    // if (arr) {
-    // }
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i].status === 'accepted_by_project_manager') {
+        setCurrentIssuedPayament(i);
+        break;
+      }
+    }
   }, [proposal]);
+  // console.log({ currentIssuedPayament });
 
   return (
     <>
@@ -141,7 +160,12 @@ function PaymentsTable() {
                   <LoadingButton
                     variant="contained"
                     endIcon={<Check />}
-                    sx={{ backgroundColor: '#0E8478' }}
+                    sx={{
+                      backgroundColor: currentIssuedPayament !== index ? '#93A3B03D' : '#0E8478',
+                      color: index !== currentIssuedPayament ? '#1E1E1E' : '#fff',
+                      boxShadow: 'none',
+                    }}
+                    disabled={index !== currentIssuedPayament}
                     onClick={() => {
                       handleApprovalPayment(item.id);
                     }}

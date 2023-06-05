@@ -12,6 +12,8 @@ import { setBankList } from '../../redux/slices/banks';
 import { AuthorityInterface } from '../../sections/admin/bank-name/list/types';
 import useAuth from '../../hooks/useAuth';
 import axiosInstance from '../../utils/axios';
+import { useSnackbar } from 'notistack';
+import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +28,8 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
   const { control } = useFormContext();
   const theme = useTheme();
   const { activeRole } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+  const { translate } = useLocales();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [bankValue, setBankValue] = useState<AuthorityInterface[] | []>([]);
@@ -53,6 +57,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
         );
         datas = rest.data.data;
       }
+      // console.log({ datas });
       if (datas) {
         const test = datas
           .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
@@ -64,6 +69,29 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
         setLoading(false);
       }
     } catch (error) {
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
       setLoading(false);
       console.error(error);
     }
@@ -73,6 +101,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
     getBankList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  console.log({ bankValue });
 
   return (
     <Controller
@@ -183,7 +212,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
               }}
             >
               {
-                !children && name === 'bank_name' && !loading && bankValue && bankValue.length
+                !children && name === 'bank_name' && !loading && bankValue && bankValue.length > 0
                   ? bankValue.map((option) => (
                       <MenuItem key={option.id} value={option.id}>
                         {option.bank_name}

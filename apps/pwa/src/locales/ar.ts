@@ -9,6 +9,7 @@ const ar = {
   pages: {
     options_btn: 'أكثر',
     common: {
+      no_project_timelines: 'لا يحتوي هذا المشروع على أي مخططات زمنية للمشروع',
       go_to_print_preview: 'معاينة قبل الطباعة',
       print_preview: 'طباعة الاقتراح',
       old_proposal: 'المشاريع السابقة',

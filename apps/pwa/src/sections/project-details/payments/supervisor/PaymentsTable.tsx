@@ -9,6 +9,7 @@ import { useQuery } from 'urql';
 import { getOnePayments } from '../../../../queries/commons/getOnePayments';
 import { useNavigate, useParams } from 'react-router';
 import { role_url_map } from '../../../../@types/commons';
+import { LoadingButton } from '@mui/lab';
 
 function PaymentsTable() {
   const { activeRole } = useAuth();
@@ -20,6 +21,7 @@ function PaymentsTable() {
   const { id } = params;
 
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { proposal, isLoading } = useSelector((state) => state.proposal);
   const [trigger, setTrigger] = useState(false);
@@ -33,7 +35,9 @@ function PaymentsTable() {
   const [currentIssuedPayament, setCurrentIssuedPayament] = useState(0);
 
   const handleIssuePayment = async (data: any) => {
+    // setIsLoad
     // console.log({ data });
+    setLoading(true);
     try {
       await dispatch(
         // updatePaymentBySupervisorAndManagerAndFinance({
@@ -104,6 +108,8 @@ function PaymentsTable() {
           }
         );
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -112,8 +118,12 @@ function PaymentsTable() {
   }, [trigger, dispatch, id, activeRole]);
 
   useEffect(() => {
-    for (var i = 0; i < proposal.payments.length; i++) {
-      if (proposal.payments[i].status === 'set_by_supervisor') {
+    const payments = [...proposal.payments].sort(
+      (a: any, b: any) => parseInt(a.order) - parseInt(b.order)
+    );
+    console.log({ payments });
+    for (var i = 0; i < payments.length; i++) {
+      if (payments[i].status === 'set_by_supervisor') {
         setCurrentIssuedPayament(i);
         break;
       }
@@ -179,7 +189,7 @@ function PaymentsTable() {
                   </Grid>
                 ) : (
                   <Grid item md={3}>
-                    <Button
+                    <LoadingButton
                       sx={{
                         color: index !== currentIssuedPayament ? '#fff' : '#1E1E1E',
                         backgroundColor: index === currentIssuedPayament ? '#0E8478' : '#93A3B03D',
@@ -191,11 +201,12 @@ function PaymentsTable() {
                         setTrigger(!trigger);
                         handleIssuePayment(item);
                       }}
+                      loading={loading}
                     >
                       {translate(
                         'content.administrative.project_details.payment.table.btn.exchange_permit_issued'
                       )}
-                    </Button>
+                    </LoadingButton>
                   </Grid>
                 )}
                 {item.status === 'done' ? (

@@ -208,7 +208,7 @@ const FundingProjectRequestForm = () => {
   const onSubmitform5 = (data: any) => {
     let newValue = { project_timeline: data.project_timeline };
     const test = { ...newValue };
-    console.log('test', test.project_timeline);
+    // console.log('test', test.project_timeline);
     if (isDraft) {
       onSavingDraft(test);
     } else {
@@ -219,7 +219,7 @@ const FundingProjectRequestForm = () => {
       }));
     }
   };
-  console.log({ requestState });
+  // console.log({ requestState });
   // on submit for creating a new project
   const onSubmit = async (data: any) => {
     // console.log({ data });

@@ -133,9 +133,9 @@ function ActionTap() {
       <TabPanel value={active} index="payments" dir={theme.direction}>
         <Payments />
       </TabPanel>
-      {/* <TabPanel value={activeTap} index="project-timeline" dir={theme.direction}>
+      <TabPanel value={activeTap} index="project-timeline" dir={theme.direction}>
         <TimeLine />
-      </TabPanel> */}
+      </TabPanel>
       <TabPanel value={active} index="supervisor-revision" dir={theme.direction}>
         <SupervisorRevision />
       </TabPanel>
