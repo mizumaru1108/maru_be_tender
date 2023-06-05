@@ -7,6 +7,7 @@ import { baseJoiRequiredUrl } from '../utils/joi-required-url';
  */
 interface ITenderAppConfig {
   baseUrl: string;
+  apiUrl: string;
 }
 
 export const tenderAppConfig = registerAs(
@@ -14,10 +15,12 @@ export const tenderAppConfig = registerAs(
   (): ITenderAppConfig => {
     const values = {
       baseUrl: process.env.TENDER_BASE_URL,
+      apiUrl: process.env.TENDER_API_URL,
     };
 
     const schema = Joi.object<ITenderAppConfig>({
       baseUrl: baseJoiRequiredUrl('TENDER_BASE_URL'),
+      apiUrl: Joi.string().optional(), // optional for now
     });
 
     const { error, value } = schema.validate(values, {

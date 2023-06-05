@@ -101,8 +101,8 @@ export class EmailService {
       templateContext,
       attachments,
     } = sendMailDto;
-    this.logger.log('info', `Sending email to ${to}`);
-    console.log(`Sending email to ${to}`);
+    this.logger.log('info', `Sending ${mailType} email to ${to}`);
+    // console.log(`Sending email to ${to}`);
 
     const param: ISendMailOptions = {
       to: to,
@@ -148,7 +148,7 @@ export class EmailService {
     data: Record<string, any>,
     from?: string,
   ): Promise<boolean> {
-    this.logger.debug(`Sending email to ${to}`);
+    this.logger.debug(`Sending email with template to ${to}`);
     try {
       const resp = await this.mailerService.sendMail({
         to: to,

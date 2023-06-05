@@ -1,4 +1,12 @@
-import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { LoginRequestDto } from '../../auth/dtos';
 import { BaseResponse } from '../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
@@ -11,6 +19,7 @@ import { TenderJwtGuard } from '../guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../guards/tender-roles.guard';
 import { TenderAuthService } from '../services/tender-auth.service';
 import { SubmitChangePasswordDto } from '../dtos/requests/submit-change-password.dto';
+import { SendEmailVerifDto } from '../dtos/requests/send-email-verif.dto';
 
 @Controller('tender-auth')
 export class TenderAuthController {
@@ -38,6 +47,25 @@ export class TenderAuthController {
       HttpStatus.CREATED,
       'Client has been logged in successfully!',
     );
+  }
+
+  @Post('send-email-verif')
+  async sendEmailVerif(@Body() request: SendEmailVerifDto) {
+    const res = await this.tenderAuthService.sendEmailVerif(
+      request.email,
+      request.selectLang || 'ar',
+    );
+    return baseResponseHelper(
+      res,
+      HttpStatus.CREATED,
+      'Send email verif success!',
+    );
+  }
+
+  @Get('verify-email/:token')
+  async verifyEmail(@Param('token') token: string) {
+    const res = await this.tenderAuthService.verifyEmail(token);
+    return baseResponseHelper(res, HttpStatus.CREATED, 'Verify email success!');
   }
 
   @Post('register')

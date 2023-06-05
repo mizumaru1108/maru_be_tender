@@ -136,6 +136,7 @@ export class FusionAuthService {
   }
 
   /* login without thorwing error when not exist */
+  /* PS: login will return 204 when the email has not been verified, and 200 when it is */
   async login(email: string, password: string): Promise<boolean> {
     try {
       await this.fusionAuthClient.login({
@@ -572,6 +573,28 @@ export class FusionAuthService {
           'Something went wrong when submitting change password!',
         );
       }
+    }
+  }
+
+  async fusionAuthToggleVerifiedEmailStatus(
+    userId: string,
+    emailVerified: boolean,
+  ) {
+    this.logger.log(
+      'info',
+      `Change email verified status for user (${userId}) on FusionAuth, to : ${emailVerified}`,
+    );
+
+    try {
+      await this.fusionAuthAdminClient.patchUser(userId, {
+        user: {
+          verified: emailVerified,
+        },
+      });
+      return true;
+    } catch (err) {
+      this.logger.error('Fusion Auth Update User Error: ', err);
+      return false;
     }
   }
 

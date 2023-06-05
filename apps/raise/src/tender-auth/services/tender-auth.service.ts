@@ -118,6 +118,91 @@ export class TenderAuthService {
     }
   }
 
+  async sendEmailVerif(email: string, selectLang: 'en' | 'ar') {
+    // passwordless login
+    const loginCode =
+      await this.fusionAuthService.fusionAuthPasswordlessLoginStart(email);
+    if (typeof loginCode !== 'number') {
+      // console.log({ loginCode });
+
+      // check that email has been verified / not
+      const loginResponse =
+        await this.fusionAuthService.fusionAuthPasswordlessLogin(loginCode);
+
+      if (!loginResponse.user) {
+        throw new BadRequestException('User Data Not Found!');
+      }
+
+      // console.log({ loginResponse });
+      if (loginResponse.user.verified) {
+        return 'user already verified!';
+      }
+
+      const emailVerifiedToken =
+        await this.fusionAuthService.fusionAuthPasswordlessLoginStart(email);
+
+      this.emailService.sendMail({
+        mailType: 'template',
+        to: email,
+        from: 'no-reply@hcharity.org',
+        subject: 'Verrify Your Email',
+        templateContext: {
+          user_email: email,
+          verify_url: `${this.configService.get<string>(
+            'tenderAppConfig.baseUrl',
+          )}/verify-email/${emailVerifiedToken}`,
+        },
+        templatePath: `tender/${selectLang || 'ar'}/account/verify_your_email`,
+      });
+
+      return 'email verification sent';
+    } else {
+      throw new UnauthorizedException('User not found!');
+    }
+  }
+
+  async verifyEmail(token: string, selectLang?: 'en' | 'ar') {
+    try {
+      const loginResponse =
+        await this.fusionAuthService.fusionAuthPasswordlessLogin(token);
+
+      if (!loginResponse) {
+        throw new BadRequestException('invalid/expire token!');
+      }
+
+      if (!loginResponse.user) {
+        throw new BadRequestException('User Data Not Found!');
+      }
+
+      if (loginResponse.user.verified) {
+        throw new BadRequestException('user already verified!');
+      }
+
+      await this.fusionAuthService.fusionAuthToggleVerifiedEmailStatus(
+        loginResponse.user.id,
+        true,
+      );
+
+      this.emailService.sendMail({
+        mailType: 'template',
+        to: loginResponse.user.email,
+        from: 'no-reply@hcharity.org',
+        subject: 'Email Verified',
+        templateContext: {
+          user_email: loginResponse.user.email,
+          app_url: `${this.configService.get<string>(
+            'tenderAppConfig.baseUrl',
+          )}`,
+        },
+        templatePath: `tender/${selectLang || 'ar'}/account/user_verified`,
+      });
+      return 'user verified';
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+
   /* create user with client data */
   async register(registerRequest: RegisterTenderDto) {
     const {
