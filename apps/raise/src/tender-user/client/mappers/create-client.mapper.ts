@@ -6,7 +6,7 @@ export function CreateClientMapper(userId: string, request: RegisterTenderDto) {
     id: userId,
     employee_name: request.data.employee_name,
     email: request.data.email,
-    mobile_number: request.data.entity_mobile,
+    mobile_number: request.data.data_entry_mobile,
     status: {
       connect: {
         id: 'WAITING_FOR_ACTIVATION',

@@ -228,6 +228,38 @@ export class FusionAuthService {
     }
   }
 
+  async verifyEmail(loginId: string) {
+    const baseUrl = this.fusionAuthUrl;
+    const verifyEmailUrl = baseUrl + '/api/user/verify-email';
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+      },
+      data: {
+        loginId,
+      },
+      url: verifyEmailUrl,
+    };
+
+    // console.log('passwordless login start options', options);
+
+    try {
+      const data = await axios(options);
+      return data.data.code;
+    } catch (error) {
+      if (error.response.status < 500) {
+        return error.response.status;
+      }
+      console.log('error', error.response.status);
+      this.logger.error("Can't start verify email!", error.response.status);
+      return 500;
+    }
+  }
+
   /**
    * Fusion Auth Register
    * why use raw axios post o fusion auth ?
@@ -573,28 +605,6 @@ export class FusionAuthService {
           'Something went wrong when submitting change password!',
         );
       }
-    }
-  }
-
-  async fusionAuthToggleVerifiedEmailStatus(
-    userId: string,
-    emailVerified: boolean,
-  ) {
-    this.logger.log(
-      'info',
-      `Change email verified status for user (${userId}) on FusionAuth, to : ${emailVerified}`,
-    );
-
-    try {
-      await this.fusionAuthAdminClient.patchUser(userId, {
-        user: {
-          verified: emailVerified,
-        },
-      });
-      return true;
-    } catch (err) {
-      this.logger.error('Fusion Auth Update User Error: ', err);
-      return false;
     }
   }
 

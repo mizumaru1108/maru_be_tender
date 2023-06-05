@@ -129,6 +129,8 @@ export class TenderAuthService {
       const loginResponse =
         await this.fusionAuthService.fusionAuthPasswordlessLogin(loginCode);
 
+      console.log('login response send email verif', loginResponse);
+
       if (!loginResponse.user) {
         throw new BadRequestException('User Data Not Found!');
       }
@@ -140,6 +142,7 @@ export class TenderAuthService {
 
       const emailVerifiedToken =
         await this.fusionAuthService.fusionAuthPasswordlessLoginStart(email);
+      console.log({ emailVerifiedToken });
 
       this.emailService.sendMail({
         mailType: 'template',
@@ -162,9 +165,11 @@ export class TenderAuthService {
   }
 
   async verifyEmail(token: string, selectLang?: 'en' | 'ar') {
+    console.log({ token });
     try {
       const loginResponse =
         await this.fusionAuthService.fusionAuthPasswordlessLogin(token);
+      console.log('verify email login response', loginResponse);
 
       if (!loginResponse) {
         throw new BadRequestException('invalid/expire token!');
@@ -178,10 +183,7 @@ export class TenderAuthService {
         throw new BadRequestException('user already verified!');
       }
 
-      await this.fusionAuthService.fusionAuthToggleVerifiedEmailStatus(
-        loginResponse.user.id,
-        true,
-      );
+      await this.fusionAuthService.verifyEmail(loginResponse.user.id);
 
       this.emailService.sendMail({
         mailType: 'template',
@@ -194,7 +196,7 @@ export class TenderAuthService {
             'tenderAppConfig.baseUrl',
           )}`,
         },
-        templatePath: `tender/${selectLang || 'ar'}/account/user_verified`,
+        templatePath: `tender/${selectLang || 'ar'}/account/email_verified`,
       });
       return 'user verified';
     } catch (error) {
@@ -205,92 +207,97 @@ export class TenderAuthService {
 
   /* create user with client data */
   async register(registerRequest: RegisterTenderDto) {
-    const {
-      data: {
-        ceo_mobile: ceoMobile,
-        data_entry_mobile: dataEntryMobile,
-        entity_mobile: clientPhone,
-        email,
-        employee_path,
-        status,
-        selectLang,
-      },
-    } = registerRequest;
+    try {
+      const {
+        data: {
+          ceo_mobile: ceoMobile,
+          data_entry_mobile: dataEntryMobile,
+          entity_mobile: clientPhone,
+          email,
+          employee_path,
+          status,
+          selectLang,
+        },
+      } = registerRequest;
 
-    const emailExist = await this.tenderUserRepo.findUser({
-      email: registerRequest.data.email,
-    });
-    if (emailExist) {
-      if (selectLang === 'en') {
-        throw new ConflictException('Email already exist in our app!');
-      } else {
-        throw new ConflictException(
-          'البريد الإلكتروني مُسجل بالفعل في تطبيقنا!',
+      const emailExist = await this.tenderUserRepo.findUser({
+        email: registerRequest.data.email,
+      });
+      // console.log({ emailExist });
+      if (emailExist) {
+        if (selectLang === 'en') {
+          throw new ConflictException('Email already exist in our app!');
+        } else {
+          throw new ConflictException(
+            'البريد الإلكتروني مُسجل بالفعل في تطبيقنا!',
+          );
+        }
+      }
+
+      const phoneExist = await this.tenderUserRepo.findUser({
+        mobile_number: dataEntryMobile,
+      });
+      if (phoneExist) {
+        throw new ConflictException('Data Entry exist in our app!');
+      }
+
+      if (dataEntryMobile === clientPhone) {
+        throw new BadRequestException(
+          'Data Entry Mobile cannot be same as Client Mobile!',
         );
       }
-    }
 
-    // const phoneExist = await this.tenderUserRepo.findUser({
-    // mobile_number: clientPhone,
-    // });
-    const phoneExist = await this.tenderUserRepo.findUser({
-      mobile_number: dataEntryMobile,
-    });
-    if (phoneExist) {
-      throw new ConflictException('Entity Mobile exist in our app!');
-    }
-
-    if (dataEntryMobile === clientPhone) {
-      throw new BadRequestException(
-        'Data Entry Mobile cannot be same as Client Mobile!',
-      );
-    }
-
-    if (clientPhone === ceoMobile) {
-      throw new BadRequestException(
-        'Phone number and CEO mobile number cannot be the same!',
-      );
-    }
-
-    if (employee_path) {
-      const pathExist = await this.tenderUserRepo.validateTrack(employee_path);
-      if (!pathExist) throw new BadRequestException('Invalid Employee Path!');
-    }
-
-    if (status) {
-      const statusExist = await this.tenderClientRepository.validateStatus(
-        status,
-      );
-      if (!statusExist) {
-        throw new BadRequestException('Invalid client status!');
+      if (clientPhone === ceoMobile) {
+        throw new BadRequestException(
+          'Phone number and CEO mobile number cannot be the same!',
+        );
       }
-    }
 
-    // create user on fusion auth
-    const fusionAuthResult =
-      await this.fusionAuthService.fusionAuthTenderRegisterUser({
-        email,
-        employee_name: registerRequest.data.employee_name,
-        password: registerRequest.data.password,
-        mobile_number: dataEntryMobile,
-        // mobile_number: clientPhone,
-        user_roles: ['CLIENT'],
-      });
+      if (employee_path) {
+        const pathExist = await this.tenderUserRepo.validateTrack(
+          employee_path,
+        );
+        if (!pathExist) throw new BadRequestException('Invalid Employee Path!');
+      }
 
-    // if you want to make a type for register result
-    // see trough mr danang soluvas note, theres' fustion auth register result type there for details.
-    if (!fusionAuthResult.user.id) {
-      throw new BadRequestException(
-        'Failed to get the user id after creating fusion auth account!',
+      if (status) {
+        const statusExist = await this.tenderClientRepository.validateStatus(
+          status,
+        );
+        if (!statusExist) {
+          throw new BadRequestException('Invalid client status!');
+        }
+      }
+
+      // create user on fusion auth
+      const fusionAuthResult =
+        await this.fusionAuthService.fusionAuthTenderRegisterUser({
+          email,
+          employee_name: registerRequest.data.employee_name,
+          password: registerRequest.data.password,
+          mobile_number: dataEntryMobile,
+          // mobile_number: clientPhone,
+          user_roles: ['CLIENT'],
+        });
+
+      // if you want to make a type for register result
+      // see trough mr danang soluvas note, theres' fustion auth register result type there for details.
+      if (!fusionAuthResult.user.id) {
+        throw new BadRequestException(
+          'Failed to get the user id after creating fusion auth account!',
+        );
+      }
+
+      const result = await this.tenderClientService.createUserAndClient(
+        fusionAuthResult.user.id,
+        registerRequest,
       );
+
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
-
-    const result = await this.tenderClientService.createUserAndClient(
-      fusionAuthResult.user.id,
-      registerRequest,
-    );
-
-    return result;
   }
 
   async askForgotPasswordUrl(email: string) {

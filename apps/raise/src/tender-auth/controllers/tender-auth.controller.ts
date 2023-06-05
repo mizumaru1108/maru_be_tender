@@ -62,7 +62,7 @@ export class TenderAuthController {
     );
   }
 
-  @Get('verify-email/:token')
+  @Post('verify-email/:token')
   async verifyEmail(@Param('token') token: string) {
     const res = await this.tenderAuthService.verifyEmail(token);
     return baseResponseHelper(res, HttpStatus.CREATED, 'Verify email success!');
