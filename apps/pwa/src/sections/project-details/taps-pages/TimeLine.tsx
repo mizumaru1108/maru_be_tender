@@ -1,6 +1,7 @@
 import { styled, useTheme } from '@mui/material/styles';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
+import { useSelector } from '../../../redux/store';
 
 const ChartWrapperStyle = styled('div')(({ theme }) => ({
   marginTop: theme.spacing(5),
@@ -27,31 +28,39 @@ const ChartWrapperStyle = styled('div')(({ theme }) => ({
 }));
 
 function TimeLine() {
+  const { proposal } = useSelector((state) => state.proposal);
+  console.log('test', proposal.timelines);
   const state = {
     series: [
+      // {
+      //   data: [
+      //     {
+      //       x: 'البند الأول',
+      //       y: [new Date('2019-03-20').getTime(), new Date('2019-03-23').getTime()],
+      //     },
+      //     {
+      //       x: 'البند الثاني',
+      //       y: [new Date('2019-03-24').getTime(), new Date('2019-03-27').getTime()],
+      //     },
+      //     {
+      //       x: 'البند الثالث',
+      //       y: [new Date('2019-03-24').getTime(), new Date('2019-03-27').getTime()],
+      //     },
+      //     {
+      //       x: 'البند الرابع',
+      //       y: [new Date('2019-03-27').getTime(), new Date('2019-04-03').getTime()],
+      //     },
+      //     {
+      //       x: 'البند الخامس',
+      //       y: [new Date('2019-04-03').getTime(), new Date('2019-04-09').getTime()],
+      //     },
+      //   ],
+      // },
       {
-        data: [
-          {
-            x: 'البند الأول',
-            y: [new Date('2019-03-20').getTime(), new Date('2019-03-23').getTime()],
-          },
-          {
-            x: 'البند الثاني',
-            y: [new Date('2019-03-24').getTime(), new Date('2019-03-27').getTime()],
-          },
-          {
-            x: 'البند الثالث',
-            y: [new Date('2019-03-24').getTime(), new Date('2019-03-27').getTime()],
-          },
-          {
-            x: 'البند الرابع',
-            y: [new Date('2019-03-27').getTime(), new Date('2019-04-03').getTime()],
-          },
-          {
-            x: 'البند الخامس',
-            y: [new Date('2019-04-03').getTime(), new Date('2019-04-09').getTime()],
-          },
-        ],
+        data: [...proposal.timelines].map((item) => ({
+          x: item.name,
+          y: [new Date(item.start_date).getTime(), new Date(item.end_date).getTime()],
+        })),
       },
     ],
     options: {

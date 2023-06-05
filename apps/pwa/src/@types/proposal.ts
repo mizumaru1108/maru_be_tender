@@ -60,6 +60,14 @@ export interface tracks {
   with_consultation: boolean;
 }
 
+export interface timeline {
+  id: string;
+  name: string;
+  start_date: Date;
+  end_date: Date;
+  proposal_id: string;
+}
+
 export interface Proposal {
   id: string;
   project_name: string;
@@ -78,6 +86,7 @@ export interface Proposal {
   support_outputs: string;
   track_id: string;
   accreditation_type_id: AccreditationTypeId;
+  timelines: timeline[];
   governorate: string;
   // proposal_logs: {
   //   id: string;

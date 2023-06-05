@@ -246,6 +246,7 @@ const FundingProjectRequestForm = () => {
     delete payload.project_attachments;
     delete payload.letter_ofsupport_req;
     delete payload.detail_project_budgets;
+    delete payload.project_timeline;
     const jsonData: any = {
       ...payload,
     };
@@ -277,11 +278,6 @@ const FundingProjectRequestForm = () => {
         formData.append(`project_timeline[${index}][start_date]`, timeline.start_date);
         formData.append(`project_timeline[${index}][end_date]`, timeline.end_date);
       }
-    } else {
-      // formData.append('project_timeline[0][name]', '');
-      // formData.append('project_timeline[0][start_date]', '');
-      // formData.append('project_timeline[0][end_date]', '');
-      formData.append('project_timeline', '[]');
     }
     if (datas && datas?.project_attachments && datas?.project_attachments?.file) {
       formData.append('project_attachments', datas?.project_attachments?.file[0] as Blob);
@@ -482,6 +478,7 @@ const FundingProjectRequestForm = () => {
     delete payload.project_attachments;
     delete payload.letter_ofsupport_req;
     delete payload.detail_project_budgets;
+    delete payload.project_timeline;
     const jsonData: any = {
       ...payload,
     };
@@ -513,11 +510,6 @@ const FundingProjectRequestForm = () => {
         formData.append(`project_timeline[${index}][start_date]`, timeline.start_date);
         formData.append(`project_timeline[${index}][end_date]`, timeline.end_date);
       }
-    } else {
-      // formData.append('project_timeline[0][name]', '');
-      // formData.append('project_timeline[0][start_date]', '');
-      // formData.append('project_timeline[0][end_date]', '');
-      formData.append('project_timeline', '[]');
     }
     if (datas && datas?.project_attachments && datas?.project_attachments?.file) {
       // console.log('datas?.project_attachments?.file', datas?.project_attachments?.file);
@@ -658,7 +650,7 @@ const FundingProjectRequestForm = () => {
         data && data.project_timeline
           ? [...data.project_timeline]
           : [...requestState.project_timeline],
-      proposal_bank_information_id: step === 4 ? data : undefined,
+      proposal_bank_information_id: step === 5 ? data : undefined,
       proposal_id: id,
     };
     const formData = new FormData();
@@ -668,6 +660,7 @@ const FundingProjectRequestForm = () => {
     delete payload.project_attachments;
     delete payload.letter_ofsupport_req;
     delete payload.detail_project_budgets;
+    delete payload.project_timeline;
     const jsonData: any = {
       ...payload,
     };
@@ -699,11 +692,6 @@ const FundingProjectRequestForm = () => {
         formData.append(`project_timeline[${index}][start_date]`, timeline.start_date);
         formData.append(`project_timeline[${index}][end_date]`, timeline.end_date);
       }
-    } else {
-      // formData.append('project_timeline[0][name]', '');
-      // formData.append('project_timeline[0][start_date]', '');
-      // formData.append('project_timeline[0][end_date]', '');
-      formData.append('project_timeline', '[]');
     }
     if (datas && datas?.project_attachments && datas?.project_attachments?.file) {
       // console.log('datas?.project_attachments?.file', datas?.project_attachments?.file);

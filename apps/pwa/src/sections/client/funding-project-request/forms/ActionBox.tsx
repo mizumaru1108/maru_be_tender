@@ -51,7 +51,7 @@ const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft, isLoad }: PROPS)
               borderColor: '#000',
             }}
             onClick={() => isDraft(true)}
-            disabled={!FEATURE_PROJECT_SAVE_DRAFT ? true : step < 4 ? false : true}
+            disabled={!FEATURE_PROJECT_SAVE_DRAFT ? true : step < 5 ? false : true}
             // disabled
           >
             {translate('saving_as_draft')}

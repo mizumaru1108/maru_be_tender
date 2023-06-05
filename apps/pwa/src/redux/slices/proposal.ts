@@ -53,6 +53,15 @@ const initialState: ProposalItme = {
     governorate: 'test',
     track_id: 'test',
     clasification_field: 'test',
+    timelines: [
+      {
+        id: '-1',
+        name: 'test',
+        start_date: new Date('10-10-2022'),
+        end_date: new Date('10-10-2022'),
+        proposal_id: '-1',
+      },
+    ],
     track: {
       id: '-1',
       name: 'test',
