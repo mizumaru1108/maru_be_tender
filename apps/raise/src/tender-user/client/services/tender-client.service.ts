@@ -280,31 +280,31 @@ export class TenderClientService {
         specific_type: 'NEW_ACCOUNT_CREATED',
       });
 
-      const accountsManager = await this.tenderUserRepository.findByRole(
-        'ACCOUNTS_MANAGER',
-      );
+      // const accountsManager = await this.tenderUserRepository.findByRole(
+      //   'ACCOUNTS_MANAGER',
+      // );
 
-      const accountManagerSubject = "There's new Account Created!";
-      const accountManagerContent = `There's new Account Created!, account name: ${createdUser.employee_name}`;
-      const accountManagerIds: string[] = [];
-      const accountMangerEmails: string[] = [];
-      const accountManagerMobileNumbers: string[] = [];
+      // const accountManagerSubject = "There's new Account Created!";
+      // const accountManagerContent = `There's new Account Created!, account name: ${createdUser.employee_name}`;
+      // const accountManagerIds: string[] = [];
+      // const accountMangerEmails: string[] = [];
+      // const accountManagerMobileNumbers: string[] = [];
 
-      if (accountsManager.length > 0) {
-        accountsManager.forEach((accManager) => {
-          accountManagerIds.push(accManager.id);
-          accountMangerEmails.push(accManager.email);
-          accountManagerMobileNumbers.push(accManager.mobile_number || '');
-          createManyWebNotif.push({
-            id: uuidv4(),
-            user_id: accManager.id,
-            content: accountManagerContent,
-            subject: accountManagerSubject,
-            type: 'ACCOUNT',
-            specific_type: 'NEW_ACCOUNT_CREATED',
-          });
-        });
-      }
+      // if (accountsManager.length > 0) {
+      //   accountsManager.forEach((accManager) => {
+      //     accountManagerIds.push(accManager.id);
+      //     accountMangerEmails.push(accManager.email);
+      //     accountManagerMobileNumbers.push(accManager.mobile_number || '');
+      //     createManyWebNotif.push({
+      //       id: uuidv4(),
+      //       user_id: accManager.id,
+      //       content: accountManagerContent,
+      //       subject: accountManagerSubject,
+      //       type: 'ACCOUNT',
+      //       specific_type: 'NEW_ACCOUNT_CREATED',
+      //     });
+      //   });
+      // }
 
       const notifPayload: CommonNotificationMapperResponse = {
         logTime: moment(new Date().getTime()).format('llll'),
@@ -328,11 +328,11 @@ export class TenderClientService {
           },
         ],
         clientContent: 'Your account has registered successfully!',
-        reviewerId: accountManagerIds,
-        reviewerEmail: accountMangerEmails,
-        reviewerContent: accountManagerContent,
-        reviewerMobileNumber: accountManagerMobileNumbers,
-        reviwerSubject: accountManagerSubject,
+        reviewerId: [],
+        reviewerEmail: [],
+        reviewerContent: '',
+        reviewerMobileNumber: [],
+        reviwerSubject: '',
         createManyWebNotifPayload: createManyWebNotif,
       };
 
