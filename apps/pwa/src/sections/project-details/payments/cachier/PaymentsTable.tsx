@@ -15,6 +15,8 @@ function PaymentsTable() {
   const { activeRole } = useAuth();
 
   const [modalState, setModalState] = React.useState({ isOpen: false, payment_id: '' });
+  const [sortingData, setSortingData] = React.useState<any[]>([]);
+  const [currentIssuedPayament, setCurrentIssuedPayament] = React.useState(0);
 
   const handleOpenModal = (payment_id: string) => {
     setModalState({ isOpen: true, payment_id });
@@ -23,16 +25,32 @@ function PaymentsTable() {
   const handleCloseModal = () => {
     setModalState({ isOpen: false, payment_id: '' });
   };
-  console.log('proposal.payments.', proposal.payments);
+
+  React.useEffect(() => {
+    // const
+    const neWvalue: any = proposal.payments;
+    const arr = [...neWvalue]
+      .sort((a: any, b: any) => parseInt(a.order) - parseInt(b.order))
+      .map((item: any) => item);
+    setSortingData(arr);
+    // console.log('test', arr);
+
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i].status === 'accepted_by_finance') {
+        setCurrentIssuedPayament(i);
+        break;
+      }
+    }
+  }, [proposal]);
+  // console.log('proposal.payments.', proposal.payments);
 
   return (
     <>
       {modalState.isOpen && (
         <UploadingForm paymentId={modalState.payment_id} onClose={handleCloseModal} />
       )}
-      {[...proposal.payments]
-        .sort((a: any, b: any) => parseInt(a.order) - parseInt(b.order))
-        .map((item, index) => (
+      {sortingData.length > 0 &&
+        sortingData.map((item, index) => (
           <Grid item md={12} key={index} sx={{ mb: '20px' }}>
             <Grid container direction="row" key={item.order} spacing={2} alignItems="center">
               <Grid item md={2} sx={{ alignSelf: 'center' }}>
@@ -148,6 +166,7 @@ function PaymentsTable() {
                         border: `1px solid #000`,
                         borderStyle: 'dashed',
                       }}
+                      disabled={index !== currentIssuedPayament}
                       endIcon={
                         <img src="/icons/uploading-field/uploading-cheque-icon.svg" alt="" />
                       }
