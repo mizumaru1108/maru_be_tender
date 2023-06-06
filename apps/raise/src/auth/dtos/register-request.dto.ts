@@ -26,7 +26,7 @@ export class RegisterRequestDto {
 
   @ApiPropertyOptional()
   @ValidateObjectIdDecorator()
-  organizationId?: string;
+  organizationId?: string | null;
 
   @ApiProperty()
   country?: string;

@@ -144,7 +144,11 @@ export class OrganizationService {
 
   async findAll() {
     this.logger.debug('findAll...');
-    return await this.organizationModel.find({}, {}, { sort: { name: 1 } });
+    return await this.organizationModel.find(
+      {},
+      { _id: true, name: true, organizationEmail: true, contactEmail: true },
+      { sort: { name: 1 } },
+    );
   }
 
   async getOrganization(organizationId: string) {

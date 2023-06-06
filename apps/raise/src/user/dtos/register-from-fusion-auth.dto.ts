@@ -47,7 +47,7 @@ export class RegisterFromFusionAuthDto {
   @IsOptional()
   @IsString()
   @ValidateObjectIdDecorator()
-  organizationId?: string;
+  organizationId?: string | null;
 }
 
 export class RegFromFusionAuthTenderDto {

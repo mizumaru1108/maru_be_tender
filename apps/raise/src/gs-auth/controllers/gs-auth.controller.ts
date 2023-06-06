@@ -20,7 +20,7 @@ export class GsAuthController {
     const submitLogin = await this.gsAuthService.login(loginRequest);
     return baseResponseHelper<any>(
       submitLogin,
-      HttpStatus.CREATED,
+      HttpStatus.OK,
       'Login Success!',
     );
   }

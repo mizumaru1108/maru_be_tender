@@ -14,7 +14,7 @@ export class User {
    * to define which user belongs to which organization.
    */
   @Prop({ type: Types.ObjectId, ref: 'User', default: null })
-  organizationId: Types.ObjectId | Organization;
+  organizationId?: Types.ObjectId | Organization | null;
 
   /**
    * it's not event used at all

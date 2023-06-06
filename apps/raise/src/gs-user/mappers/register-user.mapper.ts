@@ -10,6 +10,8 @@ export function GSRegisterUserMapper(request: GSRegisterRequestDto) {
   user.password = request.password;
   user.firstname = request.firstName;
   user.lastname = request.lastName;
-  user.organizationId = new Types.ObjectId(request.organizationId);
+  user.organizationId = request.organizationId
+    ? new Types.ObjectId(request.organizationId)
+    : null;
   return user;
 }

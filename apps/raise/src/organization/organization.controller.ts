@@ -55,7 +55,6 @@ export class OrganizationController {
   async findAll() {
     this.logger.debug('findAll...');
     return await this.organizationService.findAll();
-    // return { message: 'hello' };
   }
 
   @Get(':organizationId')

@@ -37,12 +37,23 @@ export class GsAuthService {
     const fusionRes = await this.fusionAuthService.fusionAuthLogin(
       loginRequest,
     );
+
     if (!fusionRes || !fusionRes.response.user || !fusionRes.response.user.id) {
       throw new BadRequestException('Failed to fetch user!');
     }
+
+    if (
+      fusionRes &&
+      fusionRes.response.user &&
+      !fusionRes.response.user.verified
+    ) {
+      throw new HttpException('User not verified!', HttpStatus.FORBIDDEN);
+    }
+
     const user = await this.gsUserService.findUserById(
       fusionRes.response.user.id,
     );
+
     return {
       fusionAuthRes: fusionRes,
       user: user,
@@ -50,12 +61,15 @@ export class GsAuthService {
   }
 
   async register(registerRequest: GSRegisterRequestDto) {
-    const fusionAuthRes = await this.fusionAuthService.fusionAuthRegister(
-      registerRequest,
-    );
+    const fusionAuthRes = await this.fusionAuthService.fusionAuthRegister({
+      ...registerRequest,
+      organizationId: registerRequest.organizationId,
+    });
 
     if (!fusionAuthRes || !fusionAuthRes.user || !fusionAuthRes.user.id) {
       throw new BadRequestException('Failed to fetch user!');
+
+      return;
     }
 
     const registeredUser = await this.gsUserService.registerFromFusion({
@@ -74,14 +88,14 @@ export class GsAuthService {
       email: fusionAuthRes.user.email,
       fullName: `${registerRequest.firstName} ${registerRequest.lastName}`,
       userId: fusionAuthRes.user.id,
-      organizationId: registerRequest.organizationId,
-      organizationEmail: registerRequest.organizationEmail,
+      organizationId: registerRequest.organizationId!,
+      organizationEmail: registerRequest.organizationEmail!,
       domainUrl: registerRequest.domainUrl,
     });
 
     return {
       user: registeredUser,
-      verificationId: verifyEmail?.user_id,
+      verificationId: verifyEmail,
       url: registerRequest.domainUrl,
       token: fusionAuthRes.token,
       refreshToken: fusionAuthRes.refreshToken,
@@ -89,59 +103,17 @@ export class GsAuthService {
   }
 
   async verifyUser(verifyPayload: GSVerifyUser) {
-    const fusionCheckUser = await this.fusionAuthService.fusionUserCheck(
-      verifyPayload,
-    );
-
-    const organizationData = await this.organizationModel.findOne({
-      _id: new Types.ObjectId(verifyPayload.organization_id),
-    });
-
-    if (!organizationData) {
-      throw new HttpException('Organization not found!', HttpStatus.NOT_FOUND);
-    }
-
     try {
-      if (fusionCheckUser.user?.verified) {
-        const notifPayload: CommonNotificationMapperResponse = {
-          logTime: moment(new Date().getTime()).format('llll'),
-          generalHostEmail: 'tmra',
-          clientSubject: 'Welcome to Giving Sadaqah',
-          clientId: [],
-          clientEmail: [fusionCheckUser.user.email!],
-          clientMobileNumber: [],
-          clientEmailTemplatePath: `gs/en/register/success_donor_verify`,
-          clientEmailTemplateContext: [
-            {
-              donor_email: fusionCheckUser.user.email,
-              donor_name: fusionCheckUser.user.firstName,
-              donor_redirect_link: `${verifyPayload.domain_url}/user/login`,
-            },
-          ],
-          clientContent:
-            "We're excited to welcome you to Giving Sadaqah and we're even more excited about what we've got planned.",
-          reviewerId: [],
-          reviewerEmail: [organizationData.contactEmail],
-          reviewerContent: 'There is a new donor that you should check!',
-          reviewerMobileNumber: [],
-          reviwerSubject:
-            'Donor has sent you an Email! Please check your inbox...`',
-          reviewerEmailTemplatePath: `gs/en/register/new_donor_organization`,
-          reviewerEmailTemplateContext: [
-            {
-              donor_email: fusionCheckUser.user.email,
-              donor_name: fusionCheckUser.user.firstName,
-            },
-          ],
-          createManyWebNotifPayload: [],
-        };
+      const verifResponse =
+        await this.fusionAuthService.fusionAuthVerifRegistration(
+          verifyPayload.token,
+        );
 
-        await this.notificationService.sendSmsAndEmailBatch(notifPayload);
-
-        return fusionCheckUser.user;
+      if (verifResponse) {
+        return verifResponse;
       }
     } catch (error) {
-      throw new HttpException('User not verified', HttpStatus.BAD_REQUEST);
+      throw new HttpException(`User can't verified`, HttpStatus.FORBIDDEN);
     }
   }
 

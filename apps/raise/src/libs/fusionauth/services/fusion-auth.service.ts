@@ -2,15 +2,11 @@ import FusionAuthClient, {
   ChangePasswordRequest as IFusionAuthChangePasswordRequest,
   LoginResponse,
   RegistrationRequest as IFusionAuthRegistrationRequest,
-  SendRequest,
   User as IFusionAuthUser,
   UserRegistration as IFusionAuthUserRegistration,
   ValidateResponse,
   ForgotPasswordRequest,
-  ForgotPasswordResponse,
   ChangePasswordRequest,
-  ChangePasswordResponse,
-  SearchResponse,
 } from '@fusionauth/typescript-client';
 import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
 import {
@@ -123,8 +119,7 @@ export class FusionAuthService {
           password: loginRequest.password,
           applicationId: this.fusionAuthAppId,
         });
-      // console.log(result);
-      // !TODO: if result.statusCode = 204 the user hasn't validate their email. (STILL TO DO), using param emailShouldBeVerified.
+
       return result;
     } catch (error) {
       if (error.statusCode < 500) {
@@ -245,8 +240,6 @@ export class FusionAuthService {
       url: verifyEmailUrl,
     };
 
-    // console.log('passwordless login start options', options);
-
     try {
       const data = await axios(options);
       return data.data.code;
@@ -318,6 +311,37 @@ export class FusionAuthService {
         this.logger.error('FusionAuth Error:', error);
         throw new Error('Something went wrong!');
       }
+    }
+  }
+
+  async fusionAuthVerifRegistration(token: string) {
+    const baseUrl = this.fusionAuthUrl;
+    const verifRegistrationUrl = baseUrl + '/api/user/verify-email/';
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+      },
+      data: {
+        verificationId: token,
+      },
+      url: verifRegistrationUrl,
+    };
+
+    try {
+      const { data, status } = await axios(options);
+
+      if (status === 200) {
+        return 'The user has been verified!';
+      }
+
+      this.logger.info('FusionAuth Success:', data);
+    } catch (error) {
+      this.logger.error('FusionAuth Error:', error.response?.data);
+      throw new Error('Something went wrong!');
     }
   }
 
@@ -462,42 +486,94 @@ export class FusionAuthService {
   }
 
   async requestVerify(requestVerifyPayload: IVerifyEmailDto) {
-    const notifPayload: CommonNotificationMapperResponse = {
-      logTime: moment(new Date().getTime()).format('llll'),
-      generalHostEmail: 'tmra',
-      clientSubject: 'Welcome to Giving Sadaqah',
-      clientId: [],
-      clientEmail: [requestVerifyPayload.email],
-      clientMobileNumber: [],
-      clientEmailTemplatePath: `gs/en/register/request_verify`,
-      clientEmailTemplateContext: [
-        {
-          donor_email: requestVerifyPayload.email,
-          donor_name: requestVerifyPayload.fullName,
-          donor_redirect_link: `${requestVerifyPayload.domainUrl}/verif/${requestVerifyPayload.userId}`,
-        },
-      ],
-      clientContent:
-        "We're excited to welcome you to Giving Sadaqah and we're even more excited about what we've got planned.",
-      reviewerId: [],
-      reviewerEmail: [requestVerifyPayload.organizationEmail!],
-      reviewerContent: 'There is a new donor that you should check!',
-      reviewerMobileNumber: [],
-      reviwerSubject:
-        'Donor has sent you an Email! Please check your inbox...`',
-      reviewerEmailTemplatePath: `gs/en/register/new_donor_organization`,
-      reviewerEmailTemplateContext: [
-        {
-          donor_email: requestVerifyPayload.email,
-          donor_name: requestVerifyPayload.fullName,
-        },
-      ],
-      createManyWebNotifPayload: [],
+    const baseUrl = this.fusionAuthUrl;
+    const verifyUrl = baseUrl + '/api/user/verify-email';
+
+    const queryVerify: IQueryAxiosVerify = {
+      applicationId: this.fusionAuthAppId,
+      email: requestVerifyPayload.email,
     };
 
-    await this.notificationService.sendSmsAndEmailBatch(notifPayload);
+    const optionsVerify: AxiosRequestConfig<any> = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+      },
+      params: queryVerify,
+      url: verifyUrl,
+    };
 
-    return { user_id: requestVerifyPayload.userId, notifPayload };
+    try {
+      const { data } = await axios(optionsVerify);
+
+      if (data && data.verificationId) {
+        const notifPayload: CommonNotificationMapperResponse = {
+          logTime: moment(new Date().getTime()).format('llll'),
+          generalHostEmail: 'tmra',
+          clientSubject:
+            requestVerifyPayload.organizationId &&
+            requestVerifyPayload.organizationId === '62414373cf00cca3a830814a'
+              ? 'Welcome to Giving Sadaqah'
+              : 'Welcome to TMRA',
+          clientId: [],
+          clientEmail: [requestVerifyPayload.email],
+          clientMobileNumber: [],
+          clientEmailTemplatePath:
+            requestVerifyPayload.organizationId &&
+            requestVerifyPayload.organizationId === '62414373cf00cca3a830814a'
+              ? 'gs/en/register/request_verify'
+              : 'tmra/en/register/request_verify_tmra',
+          clientEmailTemplateContext: [
+            {
+              donor_email: requestVerifyPayload.email,
+              donor_name: requestVerifyPayload.fullName,
+              donor_redirect_link: `${requestVerifyPayload.domainUrl}/verif/${data.verificationId}`,
+            },
+          ],
+          clientContent:
+            "We're excited to welcome you to Giving Sadaqah and we're even more excited about what we've got planned.",
+          reviewerId: [],
+          reviewerEmail: [requestVerifyPayload.organizationEmail!],
+          reviewerContent: 'There is a new donor that you should check!',
+          reviewerMobileNumber: [],
+          reviwerSubject:
+            'Donor has sent you an Email! Please check your inbox...`',
+          reviewerEmailTemplatePath:
+            requestVerifyPayload.organizationId &&
+            requestVerifyPayload.organizationId === '62414373cf00cca3a830814a'
+              ? 'gs/en/register/new_donor_organization'
+              : 'tmra/en/register/new_donor_organization_tmra',
+          reviewerEmailTemplateContext: [
+            {
+              donor_email: requestVerifyPayload.email,
+              donor_name: requestVerifyPayload.fullName,
+            },
+          ],
+          createManyWebNotifPayload: [],
+        };
+
+        await this.notificationService.sendSmsAndEmailBatch(notifPayload);
+
+        return data.verificationId;
+      }
+    } catch (error) {
+      this.logger.debug('Error', error);
+      if (error.response.status < 500) {
+        console.log(error.response.data);
+        throw new BadRequestException(
+          `Verify Failed, more details: ${
+            error.response.data.fieldErrors
+              ? JSON.stringify(error.response.data.fieldErrors)
+              : JSON.stringify(error.response.data)
+          }`,
+        );
+      } else {
+        console.log(error);
+        throw new Error('Something went wrong!');
+      }
+    }
   }
 
   async fusionUserCheck(reqPayload: IUserVerifyCheck) {
