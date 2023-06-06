@@ -26,6 +26,7 @@
         padding-top: 20px;
         background-color: #fff;
         width: 100%;
+        direction: rtl;
       }
       .cardHeader p {
         color: #931267;
@@ -41,9 +42,9 @@
         font-weight: 700;
         font-size: 1em;
         text-align: left;
-        margin: 0;
         list-style: none;
         cursor: pointer;
+        margin-right: 20px;
       }
 
       .cardHeader li:hover {
@@ -56,7 +57,7 @@
 
       .navbar {
         display: flex;
-        gap: 30px;
+        /* gap: 10px; */
       }
       .cardBody {
         background-color: #fff;
@@ -74,7 +75,8 @@
         font-family: Inter, Helvetica, sans-serif;
         display: flex;
         flex-direction: column;
-        padding: 30px;
+        padding: 30px 60px;
+        direction: rtl;
       }
       .wrapper span {
         cursor: pointer;
@@ -92,6 +94,7 @@
         padding: 30px;
         justify-content: space-between;
         align-items: center;
+        direction: rtl;
       }
       .cardBody p {
         font-weight: 450;
@@ -99,7 +102,7 @@
         text-align: justify;
         margin-block-end: 10px;
         margin-block-start: 10px;
-        padding-right: 50px;
+        padding-left: 50px;
       }
       .cardBody img {
         width: 80%;
@@ -115,7 +118,7 @@
         border-radius: 7px;
         margin: 10px 0;
         padding: 15px 20px;
-        width: 16%;
+        width: 27%;
         cursor: pointer;
       }
       .cardBody button:hover {
@@ -126,6 +129,7 @@
         align-items: center;
         background-color: #fff;
         height: 100px;
+        padding: 0 20px;
       }
       .cardFooter img {
         height: 3.3vh;
@@ -159,16 +163,16 @@
       <div class="card">
         <div class="cardHeader">
           <img
-            src="https://media.tmra.io/tender-assets/tender-logo.png"
+            src="https://media.tmra.io/tender-assets/tender-newlogo.png"
             alt="Logo Tmra Tender"
-            style="margin-left: 36px"
+            style="margin-right: 60px"
           />
-          <nav>
+          <!-- <nav>
             <ul class="navbar">
-              <li>Home</li>
-              <li>Support</li>
+              <li>الدعم</li>
+              <li>مسكن</li>
             </ul>
-          </nav>
+          </nav> -->
         </div>
         <div class="cardBody">
           <div class="wrapper">
@@ -177,7 +181,7 @@
               src="https://tmra-media-shared.b-cdn.net/tmra/dev/organization/undefined/young-arabic-woman-drinking-coffee-and-working-onl-2022-02-02-03-49-39-utc.jpg"
               alt="Thumbnail Email"
             />
-            <p>Hi {{name}},</p>
+           <p>Hi {{name}},</p>
             <p>
               We’re excited to welcome you to Tender and we’re even more excited
               about what we’ve got planned.
@@ -190,7 +194,7 @@
 
             <button>Log in</button>
 
-            <div style="margin-top: 32px">
+             <div style="margin-top: 32px">
               <p>
                 This email was sent to
                 <span>olivia@gs.com</span>. If you'd rather not receive this
@@ -206,9 +210,9 @@
         <div class="cardFooter">
           <div class="wrapperFooter">
             <img
-              src="https://media.tmra.io/tender-assets/tender-logo.png"
+              src="https://media.tmra.io/tender-assets/tender-newlogo.png"
               alt="Logo Tmra Tender"
-              style="height: 6.3vh"
+              style="height: 4.3vh"
             />
             <div>
               <img

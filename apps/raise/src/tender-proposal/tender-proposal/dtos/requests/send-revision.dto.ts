@@ -8,9 +8,10 @@ import {
   IsString,
   Max,
   Min,
-  ValidateNested
+  ValidateNested,
 } from 'class-validator';
 import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
+import { CreateProjectTimelineDto } from './create-project-timeline.dto';
 
 export class SendRevisionDto {
   @ApiProperty()
@@ -96,4 +97,12 @@ export class SendRevisionDto {
   @ValidateNested()
   @Type(() => CreateProjectBudgetDto)
   detail_project_budgets?: CreateProjectBudgetDto[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @ValidateNested()
+  @IsArray()
+  @Type(() => CreateProjectTimelineDto)
+  project_timeline?: CreateProjectTimelineDto[];
 }

@@ -11,6 +11,9 @@ import { TenderProposalPaymentService } from './tender-proposal-payment/services
 import { TenderProposalController } from './tender-proposal/controllers/tender-proposal.controller';
 import { TenderProposalRepository } from './tender-proposal/repositories/tender-proposal.repository';
 import { TenderProposalService } from './tender-proposal/services/tender-proposal.service';
+import { TenderProposalBeneficiariesController } from './tender-proposal-beneficiaries/controllers/tender-proposal-beneficiaries.controller';
+import { TenderProposalBeneficiaresService } from './tender-proposal-beneficiaries/services/tender-proposal-beneficiaries.service';
+import { TenderProposalBeneficiariesRepository } from './tender-proposal-beneficiaries/repositories/tender-proposal-beneficiaries.repository';
 
 @Module({
   controllers: [
@@ -20,6 +23,8 @@ import { TenderProposalService } from './tender-proposal/services/tender-proposa
     TenderProposalPaymentController,
     /* Follow Ups */
     TenderProposalFollowUpController,
+    /* Beneficiaries */
+    TenderProposalBeneficiariesController,
   ],
   providers: [
     /* Proposal */
@@ -34,6 +39,9 @@ import { TenderProposalService } from './tender-proposal/services/tender-proposa
     /* Follow Ups */
     TenderProposalFollowUpService,
     TenderProposalFollowUpRepository,
+    /* Beneficiaries */
+    TenderProposalBeneficiaresService,
+    TenderProposalBeneficiariesRepository,
   ],
 })
 export class TenderProposalModule {}

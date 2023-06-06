@@ -845,6 +845,23 @@ export class TenderProposalService {
             sendRevisionPayload.detail_project_budgets,
           );
         }
+
+        if (
+          sendRevisionPayload.project_timeline &&
+          sendRevisionPayload.project_timeline.length > 0
+        ) {
+          proposalTimelinePayloads = sendRevisionPayload.project_timeline.map(
+            (timeline) => {
+              return {
+                id: uuidv4(),
+                proposal_id: proposal.id,
+                name: timeline.name,
+                start_date: timeline.start_date,
+                end_date: timeline.end_date,
+              };
+            },
+          );
+        }
         updateProposalPayload.outter_status = OutterStatusEnum.ONGOING;
       } catch (err) {
         if (uploadedFilePath.length > 0) {

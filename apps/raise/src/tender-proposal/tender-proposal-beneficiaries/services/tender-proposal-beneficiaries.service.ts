@@ -1,12 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TenderProposalBeneficiariesRepository } from '../repositories/tender-proposal-beneficiaries.repository';
-import { CreateBeneficiariesDto } from '../dtos/requests/create-beneficiaries.dto';
-import { UpdateBeneficiaryDto } from '../dtos/requests/update-beneficiaries.dto';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { UpdateBeneficiaryProps } from '../types/beneficiary.type';
 import { Builder } from 'builder-pattern';
-import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { CreateBeneficiariesDto } from '../dtos/requests/create-beneficiaries.dto';
 import { FindBeneficiariesFilterRequest } from '../dtos/requests/find-beneficiaries.dto';
+import { UpdateBeneficiaryDto } from '../dtos/requests/update-beneficiaries.dto';
+import { TenderProposalBeneficiariesRepository } from '../repositories/tender-proposal-beneficiaries.repository';
+import { UpdateBeneficiaryProps } from '../types/beneficiary.type';
 
 @Injectable()
 export class TenderProposalBeneficiaresService {

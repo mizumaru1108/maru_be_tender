@@ -30,6 +30,9 @@ export class TenderRolesGuard implements CanActivate {
       context.getHandler(),
     );
 
+    // console.log({ allowedRoles });
+    // console.log(request.user.choosenRole);
+
     // act as multiple roles
     // see if if one of the request.user.type[] is in the type[] array
     // ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some

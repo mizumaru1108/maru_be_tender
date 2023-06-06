@@ -158,8 +158,8 @@ export class TenderProposalBeneficiariesRepository {
         };
       }
 
-      console.log(logUtil(whereClause));
-      console.log(logUtil(queryOptions));
+      // console.log(logUtil(whereClause));
+      // console.log(logUtil(queryOptions));
       const data = await prisma.beneficiaries.findMany(queryOptions);
 
       const total = await prisma.beneficiaries.count({

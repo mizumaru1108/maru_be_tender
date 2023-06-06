@@ -35,7 +35,6 @@ import {
   PaymentAdjustmentFilterRequest,
   PreviousProposalFilterRequest,
   ProposalDeleteDraftDto,
-  ProposalSaveDraftDto,
   ProposalSaveDraftInterceptorDto,
   RequestInProcessFilterRequest,
   SendAmandementDto,
@@ -423,27 +422,6 @@ export class TenderProposalController {
       `Proposal change state success!, current state: ${proposal.outter_status}, details: ${proposal.inner_status}`,
     );
   }
-
-  // DEPRECATED USING INTERCEPTOR (interceptor-save-draft),
-  // changing upload with interceptor than base64
-  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  // @TenderRoles('tender_client')
-  // @Patch('save-draft')
-  // async saveDraft(
-  //   @CurrentUser() currentUser: TenderCurrentUser,
-  //   @Body() request: ProposalSaveDraftDto,
-  // ) {
-  //   const updateResponse = await this.proposalService.clientUpdateProposal(
-  //     currentUser.id,
-  //     request,
-  //     undefined,
-  //   );
-  //   return baseResponseHelper(
-  //     updateResponse,
-  //     HttpStatus.OK,
-  //     'Proposal updated successfully',
-  //   );
-  // }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')

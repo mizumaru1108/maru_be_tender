@@ -259,7 +259,7 @@ export class TenderProposalRepository {
           }
 
           // save draft not a revision
-          if (!createLog && proposalTimelinePayloads) {
+          if (proposalTimelinePayloads) {
             this.logger.log(
               'info',
               `deleting all timeline on proposal ${proposal.id}`,
