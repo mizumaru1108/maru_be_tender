@@ -9,7 +9,7 @@ const en = {
   pages: {
     options_btn: 'More',
     common: {
-      no_project_timelines:"This project does't have any project timelines",
+      no_project_timelines: "This project does't have any project timelines",
       go_to_print_preview: 'Print Preview',
       print_preview: 'Print Proposal',
       old_proposal: 'Old Proposal',
@@ -222,6 +222,8 @@ const en = {
           beneficiaries: 'Beneficiaries',
           add_bank: 'Add Bank',
           search_form: 'Type a name to search for',
+          list_of_beneficiaries: 'Beneficiaries',
+          add_beneficiaries: 'Add Beneficiaries',
           table: {
             name: 'Name',
             permissions: 'Permissions',
@@ -234,8 +236,16 @@ const en = {
             edit_bank: 'Edit bank',
             success_add_new_bank: 'New bank added successfully',
             success_edit_bank: 'Bank edited successfully',
+            success_edit_beneficiaries: 'Beneficiaries edited successfully',
+            success_add_new_beneficiaries: 'New beneficiaries added successfully',
+            edit_beneficiaries: 'Edit beneficiaries',
+            add_beneficiaries: 'Add beneficiaries',
           },
           form: {
+            beneficiaries: {
+              label: 'Beneficiaries',
+              placeholder: 'Beneficiaries',
+            },
             bank_name: {
               required: 'Bank name is required',
               label: 'Bank name',

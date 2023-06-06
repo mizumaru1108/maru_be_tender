@@ -19,6 +19,7 @@ function Beneficiaries() {
     <Page title={translate('pages.admin.beneficiaries_table')}>
       <ContentStyle>
         <Box sx={{ px: '30px' }}>
+          {/* <BeneficiariesTable /> */}
           <BeneficiariesTable />
         </Box>
       </ContentStyle>

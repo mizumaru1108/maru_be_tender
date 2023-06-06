@@ -16,7 +16,7 @@ import SupervisorGrants from './role-logs/SupervisorGrants';
 import SupervisorGeneral from './role-logs/SupervisorGeneral';
 import PanoramaFishEyeTwoToneIcon from '@mui/icons-material/PanoramaFishEyeTwoTone';
 import { dispatch, useSelector } from '../../../redux/store';
-import { getProposal } from '../../../redux/slices/proposal';
+import { getProposal, getTrackBudget } from '../../../redux/slices/proposal';
 import FinancePaymentLog from './role-logs/FinancePaymentLog';
 import CashierPaymentLog from './role-logs/CashierPaymentLog';
 import ClientClosingReport from './role-logs/ClientClosingReport';
@@ -27,7 +27,7 @@ import ClientProposalLog from './role-logs/ClientProposalLog';
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
-  const { proposal } = useSelector((state) => state.proposal);
+  const { proposal, isLoading } = useSelector((state) => state.proposal);
   const [logs, setLogs] = React.useState<Log[]>();
   // console.log({ proposal });
   // console.log('proposal.log', proposal.proposal_logs);
@@ -146,8 +146,12 @@ function ProjectPath() {
   }, [followUps, proposal]);
 
   React.useEffect(() => {
-    dispatch(getProposal(proposal_id as string, activeRole! as string));
-  }, [proposal_id, activeRole]);
+    // dispatch(getProposal(proposal_id as string, activeRole! as string));
+    dispatch(getTrackBudget(proposal.track_id as string, activeRole! as string));
+    // if (!isLoading) {
+    // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRole, isLoading]);
 
   const formattedDateTime = (getDate: Date) => {
     const formattedDate = `${new Date(getDate).getDate()}.${
@@ -158,7 +162,7 @@ function ProjectPath() {
 
     return formattedDate;
   };
-  if (fetching || fetchingTracks || fetchingGrants) return <>Loading...</>;
+  if (fetching || fetchingTracks || fetchingGrants || isLoading) return <>Loading...</>;
   if (error || errorTracks || errorGrants || (logs && logs.length === 0 && !fetching)) {
     // return (
     //   <Page500
@@ -181,7 +185,6 @@ function ProjectPath() {
       return <Page500 error={errorTracks.message} />;
     }
   }
-
   return (
     <Grid container>
       <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>

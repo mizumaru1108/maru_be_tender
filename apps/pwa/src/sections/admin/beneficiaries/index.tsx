@@ -1,294 +1,203 @@
-import { paramCase } from 'change-case';
-import { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+// react
+import { useEffect, useState } from 'react';
 // @mui
-import {
-  Box,
-  Card,
-  Table,
-  Button,
-  Tooltip,
-  TableBody,
-  Container,
-  IconButton,
-  TableContainer,
-  TablePagination,
-  Typography,
-  Stack,
-} from '@mui/material';
-// routes
-import { PATH_DASHBOARD } from '../../../routes/paths';
-import useTable, { emptyRows, getComparator } from 'hooks/useTable';
+import { Button, Container, Stack, Typography } from '@mui/material';
+// hooks
+import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 import useSettings from 'hooks/useSettings';
-// import { _userList } from '_mock';
-import Page from 'components/Page';
-import Iconify from 'components/Iconify';
-import { BeneficiariesTableToolbar, BeneficiariesTableRow } from './list';
-import Scrollbar from 'components/Scrollbar';
-import {
-  TableEmptyRows,
-  TableHeadCustom,
-  TableNoData,
-  TableSelectedActions,
-} from 'components/table';
-import useTabs from 'hooks/useTabs';
-import { BeneficiariesInterface } from './list/types';
-import AddBeneficiareModal from './list/AddBeneficiareModal';
+// component
+//
+import { useSnackbar } from 'notistack';
+import FormModalBeneficiaries from 'sections/admin/beneficiaries/list/FormModalBeneficiaries';
+import axiosInstance from 'utils/axios';
+import { useDispatch } from '../../../redux/store';
+import BeneficiariesTableContent from './list/BeneficiariesTableContent';
+import { FormInput } from './list/types';
 
-const mockData = [
-  {
-    id: '1',
-    name: 'آخرى',
-    permissions: true,
-  },
-  {
-    id: '2',
-    name: 'اشبال',
-    permissions: true,
-  },
-  {
-    id: '3',
-    name: 'رجال',
-    permissions: true,
-  },
-  {
-    id: '4',
-    name: 'شباب',
-    permissions: true,
-  },
-  {
-    id: '5',
-    name: 'فتيات',
-    permissions: true,
-  },
-];
-const TABLE_HEAD = [
-  { id: 'name', label: 'الاسم', align: 'left' },
-  { id: 'permissions', label: 'سماحيات', align: 'left' },
-];
+// --------------------------------------------------------------------------------------------------
 
-// ----------------------------------------------------------------------
+type ISubmit = {
+  id?: string;
+  name?: string;
+  is_deleted?: boolean;
+};
 
 export default function BeneficiariesTable() {
-  const {
-    dense,
-    page,
-    order,
-    orderBy,
-    rowsPerPage,
-    setPage,
-    //
-    selected,
-    setSelected,
-    onSelectRow,
-    onSelectAllRows,
-    //
-    onSort,
-    onChangePage,
-    onChangeRowsPerPage,
-  } = useTable();
-
+  const { translate } = useLocales();
   const { themeStretch } = useSettings();
-
-  const navigate = useNavigate();
-
-  const [tableData, setTableData] = useState(mockData);
-
-  const [filterName, setFilterName] = useState('');
-
-  const [filterRole, setFilterRole] = useState('all');
-
-  const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('all');
-
-  const handleFilterName = (filterName: string) => {
-    setFilterName(filterName);
-    setPage(0);
-  };
-
-  const handleFilterRole = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterRole(event.target.value);
-  };
-
-  const handleDeleteRow = (id: string) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
-    setTableData(deleteRow);
-  };
-
-  const handleDeleteRows = (selected: string[]) => {
-    const deleteRows = tableData.filter((row) => !selected.includes(row.id));
-    setSelected([]);
-    setTableData(deleteRows);
-  };
-
-  const handleEditRow = (id: string) => {
-    navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
-  };
-
-  const dataFiltered = applySortFilter({
-    tableData,
-    comparator: getComparator(order, orderBy),
-    filterName,
-    filterRole,
-    filterStatus,
-  });
+  const { activeRole } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [refetch, setRefetch] = useState<boolean>(false);
+  // const [bankValue, setBankValue] = useState<AuthorityInterface[] | []>([]);
+  const [beneficiaries, setBeneficiaries] = useState<any[] | []>([]);
+  const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
-  const handleAddBeneficiare = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleOpenModal = () => {
     setOpen(true);
   };
-  const handleCloseAddBeneficiare = () => {
+
+  const handleCloseAddBeneficiaries = () => {
     setOpen(false);
   };
 
-  const denseHeight = dense ? 52 : 72;
+  const getBeneficiaries = async () => {
+    setLoading(true);
+    // console.log('test masuk');
+    try {
+      const rest = await axiosInstance.get(`/tender/proposal/beneficiaries/find-all?limit=0`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        // console.log('test data', rest.data.data);
+        const test = rest.data.data
+          .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
+          .map((bank: any) => bank);
+        // console.log({ test });
+        // // console.log(rest.data.data);
+        setBeneficiaries(test);
+        // setBankValue(test);
+        // dispatch(setBankList(test));
+        // setLoading(false);
+      }
+    } catch (error) {
+      // console.error(error.message);
+      setBeneficiaries([]);
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const isNotFound =
-    (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterRole) ||
-    (!dataFiltered.length && !!filterStatus);
+  const handleSubmit = async (formValue: ISubmit) => {
+    setIsSubmitting(true);
 
+    try {
+      const { status } = await axiosInstance.post(
+        '/tender/proposal/beneficiaries/create',
+        { ...formValue },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+
+      if (status === 201) {
+        enqueueSnackbar(
+          translate('pages.admin.settings.label.modal.success_add_new_beneficiaries'),
+          {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          }
+        );
+
+        setIsSubmitting(false);
+        setOpen(false);
+        // window.location.reload();
+      }
+    } catch (err) {
+      if (typeof err.message === 'object') {
+        err.message.forEach((el: any) => {
+          enqueueSnackbar(el, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        });
+      } else {
+        // enqueueSnackbar(err.message, {
+        //   variant: 'error',
+        //   preventDuplicate: true,
+        //   autoHideDuration: 3000,
+        // });
+        const statusCode = (err && err.statusCode) || 0;
+        const message = (err && err.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
+      }
+
+      setIsSubmitting(false);
+      setOpen(false);
+      // window.location.reload();
+    } finally {
+      setRefetch(!refetch);
+    }
+  };
+
+  useEffect(() => {
+    getBeneficiaries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refetch]);
+
+  if (loading) return <>{translate('pages.common.loading')}</>;
+  // if (error) return <>{error.message}</>;
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
-      <AddBeneficiareModal open={open} handleClose={handleCloseAddBeneficiare} />
-      <Stack direction="row" justifyContent="space-between" sx={{ mb: '40px' }}>
-        <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
-          <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
-            المستفيدين
-          </Typography>
-        </Box>
-        <Button variant="contained" onClick={handleAddBeneficiare}>
-          اضافة مستفيد
+      <FormModalBeneficiaries
+        type="add"
+        loading={isSubmitting}
+        open={open}
+        handleClose={handleCloseAddBeneficiaries}
+        handleSubmitProps={handleSubmit}
+      />
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 5, mt: 1 }}
+      >
+        <Typography variant="h4" sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
+          {translate('pages.admin.settings.label.list_of_beneficiaries')}
+        </Typography>
+        <Button variant="contained" onClick={handleOpenModal} sx={{ px: '50px', fontSize: '16px' }}>
+          {translate('pages.admin.settings.label.add_beneficiaries')}
         </Button>
       </Stack>
-      <Card sx={{ backgroundColor: '#fff' }}>
-        {/* done */}
-        <BeneficiariesTableToolbar
-          filterName={filterName}
-          filterRole={filterRole}
-          onFilterName={handleFilterName}
-          onFilterRole={handleFilterRole}
-        />
-
-        <Scrollbar>
-          <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
-            {selected.length > 0 && (
-              <TableSelectedActions
-                dense={dense}
-                numSelected={selected.length}
-                rowCount={tableData.length}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    tableData.map((row) => row.id)
-                  )
-                }
-                actions={
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={() => handleDeleteRows(selected)}>
-                      <Iconify icon={'eva:trash-2-outline'} />
-                    </IconButton>
-                  </Tooltip>
-                }
-              />
-            )}
-
-            <Table size={dense ? 'small' : 'medium'}>
-              <TableHeadCustom
-                order={order}
-                orderBy={orderBy}
-                headLabel={TABLE_HEAD}
-                rowCount={tableData.length}
-                numSelected={selected.length}
-                onSort={onSort}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    tableData.map((row) => row.id)
-                  )
-                }
-              />
-
-              <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <BeneficiariesTableRow
-                      key={row.id}
-                      row={row}
-                      selected={selected.includes(row.id)}
-                      onSelectRow={() => onSelectRow(row.id)}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
-                      onEditRow={() => handleEditRow(row.name)}
-                    />
-                  ))}
-
-                <TableEmptyRows
-                  height={denseHeight}
-                  emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                />
-
-                <TableNoData isNotFound={isNotFound} />
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
-
-        <Box sx={{ position: 'relative' }}>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={dataFiltered.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
-          />
-        </Box>
-      </Card>
+      <BeneficiariesTableContent
+        trigger={() => {
+          // console.log('test');
+          setRefetch(!refetch);
+        }}
+        data={!loading && beneficiaries ? beneficiaries : []}
+      />
     </Container>
   );
-}
-
-// ----------------------------------------------------------------------
-
-function applySortFilter({
-  tableData,
-  comparator,
-  filterName,
-  filterStatus,
-  filterRole,
-}: {
-  tableData: BeneficiariesInterface[];
-  comparator: (a: any, b: any) => number;
-  filterName: string;
-  filterStatus: string;
-  filterRole: string;
-}) {
-  const stabilizedThis = tableData.map((el, index) => [el, index] as const);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  tableData = stabilizedThis.map((el) => el[0]);
-
-  if (filterName) {
-    tableData = tableData.filter(
-      (item: Record<string, any>) =>
-        item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
-  }
-
-  if (filterStatus !== 'all') {
-    tableData = tableData.filter((item: Record<string, any>) => item.status === filterStatus);
-  }
-
-  if (filterRole !== 'all') {
-    tableData = tableData.filter((item: Record<string, any>) => item.role === filterRole);
-  }
-
-  return tableData;
 }

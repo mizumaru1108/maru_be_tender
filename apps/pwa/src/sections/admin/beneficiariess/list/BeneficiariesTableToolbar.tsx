@@ -1,7 +1,6 @@
 import { Stack, InputAdornment, TextField, Typography, Button } from '@mui/material';
 // components
 import Iconify from '../../../../components/Iconify';
-import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -13,24 +12,21 @@ type Props = {
 };
 
 export default function BeneficiariesTableToolbar({ filterName, onFilterName }: Props) {
-  const { translate } = useLocales();
-
   return (
     <Stack
       spacing={2}
       direction={{ xs: 'column', sm: 'row' }}
       sx={{ py: 2.5, px: 3 }}
-      justifyContent="start"
-      alignItems="center"
+      justifyContent="space-between"
     >
       <TextField
+        fullWidth
         value={filterName}
         onChange={(event) => onFilterName(event.target.value)}
-        placeholder={translate('pages.admin.settings.label.search_form')}
-        sx={{ minWidth: '47%' }}
-        size="small"
+        placeholder="اكتب اسم للبحث عنه"
+        sx={{ flex: 1 }}
       />
-      {/* <Stack direction="row" gap={1} flex={1} justifyContent="end">
+      <Stack direction="row" gap={1} flex={1} justifyContent="end">
         <Typography sx={{ textAlign: 'center', my: 'auto' }}>ترتيب حسب:</Typography>
         <Button
           endIcon={<img src="/icons/asc-order-icon.svg" alt="" />}
@@ -38,7 +34,7 @@ export default function BeneficiariesTableToolbar({ filterName, onFilterName }: 
         >
           اسم المشروع من أ الى ي
         </Button>
-      </Stack> */}
+      </Stack>
     </Stack>
   );
 }

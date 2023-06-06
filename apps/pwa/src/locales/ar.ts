@@ -221,6 +221,8 @@ const ar = {
           beneficiaries: 'المستفيدين',
           add_bank: 'اضافة بنك',
           search_form: 'اكتب اسم للبحث عنه',
+          list_of_beneficiaries: 'قائمة المستفيدين',
+          add_beneficiaries: 'اضافة مستفيد',
           table: {
             name: 'الاسم',
             permissions: 'سماحيات',
@@ -233,8 +235,16 @@ const ar = {
             edit_bank: 'تحرير البنك',
             success_add_new_bank: 'تمت إضافة بنك جديد بنجاح',
             success_edit_bank: 'تم تحرير البنك بنجاح',
+            success_edit_beneficiaries: 'تم تحرير المستفيدين بنجاح',
+            success_add_new_beneficiaries: 'تمت اضافة مستفيد جديد بنجاح',
+            edit_beneficiaries: 'تحرير المستفيدين',
+            add_beneficiaries: 'اضافة مستفيد',
           },
           form: {
+            beneficiaries: {
+              label: 'المستفيدين',
+              placeholder: 'الرجاء كتابة الاسم',
+            },
             bank_name: {
               required: 'اسم البنك مطلوب',
               edit_bank: 'تحرير البنك',

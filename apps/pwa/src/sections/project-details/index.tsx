@@ -37,11 +37,17 @@ function ProjectDetailsMainPage() {
     navigate(url);
   };
 
+  const handleFetching = React.useCallback(async () => {
+    await dispatch(getProposal(id as string, role as string));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   React.useEffect(() => {
-    dispatch(getProposal(id as string, role as string));
+    // dispatch(getProposal(id as string, role as string));
+    handleFetching();
     // getTrackList
     dispatch(getTrackList(0, role as string));
-  }, [dispatch, id, role]);
+  }, [dispatch, id, role, handleFetching]);
 
   if (isLoading) return <>... Loading</>;
 

@@ -333,6 +333,17 @@ export const getProposal = (id: string, role: string) => async () => {
         });
         if (response.data.statusCode === 200) {
           dispatch(slice.actions.setProposal(response.data.data));
+          try {
+            const url = `/tender/proposal/payment/find-track-budget?id=${
+              response.data.data.track_id as string
+            }`;
+            const res = await axiosInstance.get(url, {
+              headers: { 'x-hasura-role': role },
+            });
+            dispatch(slice.actions.setTrackBudget(res.data.data.data));
+          } catch (err) {
+            console.error(err);
+          }
         }
       } catch (error) {
         console.log(error);
