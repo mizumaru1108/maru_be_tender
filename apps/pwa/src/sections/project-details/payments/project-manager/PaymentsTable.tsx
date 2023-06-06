@@ -22,6 +22,9 @@ function PaymentsTable() {
 
   const { translate } = useLocales();
 
+  const [sortingData, setSortingData] = React.useState<any[]>([]);
+  const [currentIssuedPayament, setCurrentIssuedPayament] = React.useState(0);
+
   const payments = useMemo(() => {
     const paymentsHistory = proposal.payments.map((v) => ({
       ...v,
@@ -30,6 +33,19 @@ function PaymentsTable() {
 
     return paymentsHistory.sort((a, b) => a.order - b.order);
   }, [proposal]);
+
+  const currentSelectedIndex = useMemo(() => {
+    let currIndex = 0;
+    if (payments.length > 0) {
+      for (var i = 0; i < payments.length; i++) {
+        if (payments[i].status === 'issued_by_supervisor') {
+          currIndex = i;
+          break;
+        }
+      }
+    }
+    return currIndex;
+  }, [payments]);
 
   const handleApprovalPayment = async (id: string) => {
     try {
@@ -127,6 +143,23 @@ function PaymentsTable() {
     }
   };
 
+  // React.useEffect(() => {
+  //   // const
+  //   const neWvalue: any = proposal.payments;
+  //   const arr = [...neWvalue]
+  //     .sort((a: any, b: any) => parseInt(a.order) - parseInt(b.order))
+  //     .map((item: any) => item);
+  //   setSortingData(arr);
+  //   // console.log('test', arr);
+
+  // for (var i = 0; i < arr.length; i++) {
+  //   if (arr[i].status === 'accepted_by_finance') {
+  //     setCurrentIssuedPayament(i);
+  //     break;
+  //   }
+  // }
+  // }, [proposal]);
+
   return (
     <>
       {payments.map((item, index) => (
@@ -223,6 +256,7 @@ function PaymentsTable() {
                       ':hover': { backgroundColor: '#FF170F' },
                     }}
                     startIcon={<CloseIcon />}
+                    disabled={currentSelectedIndex !== index}
                     onClick={() => {
                       handleRejectPayment(item.id);
                     }}
@@ -239,6 +273,7 @@ function PaymentsTable() {
                       color: '#fff',
                     }}
                     startIcon={<CheckIcon />}
+                    disabled={currentSelectedIndex !== index}
                     onClick={() => {
                       handleApprovalPayment(item.id);
                     }}
