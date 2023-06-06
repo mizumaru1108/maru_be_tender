@@ -16,6 +16,7 @@ function Payments() {
     [
       'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
       'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
+      'DONE_BY_CASHIER',
     ].includes(proposal.inner_status) &&
     activeRole === 'tender_project_supervisor'!
   )
