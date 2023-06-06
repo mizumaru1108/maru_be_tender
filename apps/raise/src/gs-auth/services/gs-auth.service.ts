@@ -146,12 +146,19 @@ export class GsAuthService {
   }
 
   async resetPasswordUser(resetPayload: GSResetPassword) {
-    const organizationData = await this.organizationModel.findOne({
-      _id: new Types.ObjectId(resetPayload.organization_id),
-    });
+    let organizationData;
 
-    if (!organizationData) {
-      throw new HttpException('Organization not found!', HttpStatus.NOT_FOUND);
+    if (resetPayload.organization_id) {
+      organizationData = await this.organizationModel.findOne({
+        _id: new Types.ObjectId(resetPayload.organization_id),
+      });
+
+      if (!organizationData) {
+        throw new HttpException(
+          'Organization not found!',
+          HttpStatus.NOT_FOUND,
+        );
+      }
     }
 
     const retrieveFusionUser =
@@ -169,7 +176,9 @@ export class GsAuthService {
           clientId: [],
           clientEmail: [retrieveFusionUser.user?.email!],
           clientMobileNumber: [],
-          clientEmailTemplatePath: `gs/en/reset/reset_password`,
+          clientEmailTemplatePath: organizationData
+            ? 'gs/en/reset/reset_password'
+            : 'tmra/en/reset/reset_password_tmra',
           clientEmailTemplateContext: [
             {
               user_name: `${retrieveFusionUser.user?.firstName ?? ''} ${

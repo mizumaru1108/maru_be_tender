@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { isString } from 'lodash';
 import { ValidateObjectIdDecorator } from 'src/commons/decorators/validate-object-id.decorator';
 
 export class GSRegisterRequestDto {
@@ -86,10 +85,9 @@ export class GSVerifyUser {
 }
 
 export class GSResetPassword {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  organization_id: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  organization_id?: string | null;
 
   @ApiProperty()
   @IsString()
