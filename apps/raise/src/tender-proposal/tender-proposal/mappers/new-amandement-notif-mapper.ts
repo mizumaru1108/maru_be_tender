@@ -28,11 +28,12 @@ export const NewAmandementNotifMapper = (
     specific_type: 'NEW_AMANDEMENT_REQUEST_FROM_SUPERVISOR',
     proposal_id: proposal_id,
     subject: subject,
-    content: `Your proposal ${
-      proposal.project_name
-    } has been asked for revision by ${
-      reviewer ? 'Supervisor (' + reviewer.employee_name + ')' : 'Supervisor'
-    } at ${logTime}`,
+    // content: `Your proposal ${
+    //   proposal.project_name
+    // } has been asked for revision by ${
+    //   reviewer ? 'Supervisor (' + reviewer.employee_name + ')' : 'Supervisor'
+    // } at ${logTime}`,
+    content: clientContent,
   };
 
   const createWebNotifPayload: CreateManyNotificationDto['payloads'] = [
