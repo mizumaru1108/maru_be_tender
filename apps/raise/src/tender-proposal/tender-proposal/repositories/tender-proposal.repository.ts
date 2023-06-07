@@ -1391,7 +1391,13 @@ export class TenderProposalRepository {
     filter: PreviousProposalFilterRequest,
   ) {
     try {
-      const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
+      const {
+        page = 1,
+        limit = 10,
+        sort = 'desc',
+        sorting_field,
+        outter_status,
+      } = filter;
 
       const offset = (page - 1) * limit;
 
@@ -1414,10 +1420,14 @@ export class TenderProposalRepository {
           ...whereClause,
           submitter_user_id: currentUser.id,
           step: 'ZERO',
-          outter_status: {
-            notIn: ['ONGOING'],
-          },
         };
+
+        if (outter_status) {
+          whereClause = {
+            ...whereClause,
+            outter_status: { in: outter_status },
+          };
+        }
       } else {
         whereClause = {
           ...whereClause,
