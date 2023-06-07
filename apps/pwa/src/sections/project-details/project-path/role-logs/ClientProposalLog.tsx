@@ -1,8 +1,9 @@
-import { Grid, Link, Stack, Typography } from '@mui/material';
+import { Box, Grid, Link, Stack, Typography } from '@mui/material';
+import { FEATURE_PROJECT_DETAILS } from 'config';
 import useLocales from 'hooks/useLocales';
 import moment from 'moment';
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { useSelector } from 'redux/store';
 import { useQuery } from 'urql';
 import { PropsalLogGrants } from '../../../../@types/proposal';
@@ -20,6 +21,15 @@ function ClientProposalLog() {
   const { proposal, isLoading } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
   const { id: proposal_id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleOpenProjectOwnerDetails = () => {
+    const submiterId = proposal.submitter_user_id;
+    const urls = location.pathname.split('/');
+    const url = location.pathname.split('/').slice(0, 3).join('/');
+    navigate(`/${urls[1]}/dashboard/current-project/owner/${submiterId}`);
+  };
 
   if (isLoading) return <>Loading...</>;
 
@@ -212,6 +222,31 @@ function ClientProposalLog() {
               </Typography>
             </Stack>
           </Stack>
+        </Grid>
+        <Grid item md={12} xs={12}>
+          {' '}
+          <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>
+            <Stack direction="column">
+              <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+                {translate('project_owner_details.card_title')}
+              </Typography>
+              <Typography sx={{ color: '#0E8478', fontSize: '12px', mb: '5px', fontWeight: 700 }}>
+                {(proposal.user && proposal.user.employee_name) ?? '-No Data-'}
+              </Typography>
+              <Typography
+                sx={{
+                  color: '#1E1E1E',
+                  fontSize: '12px',
+                  mb: '5px',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                }}
+                onClick={FEATURE_PROJECT_DETAILS ? handleOpenProjectOwnerDetails : undefined}
+              >
+                {translate('project_owner_details.card_href')}
+              </Typography>
+            </Stack>
+          </Box>
         </Grid>
         <Grid item md={12} xs={12}>
           <Stack direction="row" justifyContent="space-between" gap={3}>
