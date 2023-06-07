@@ -731,6 +731,16 @@ const ar = {
       something_wrong: 'هناك خطأ ما',
     },
   },
+  sorting: {
+    label: {
+      sorting: 'الترتيب',
+      no_sorting: 'لا يوجد ترتيب',
+      project_name: 'اسم المشروع',
+      ascending: 'تصاعدي',
+      descending: 'تنازلي',
+      created_at: 'تاريخ الانشاء',
+    },
+  },
   commons: {
     supervising_authority_name: 'اسم الجهة المشرفة',
     project_tracks: 'مسارات المشروع',

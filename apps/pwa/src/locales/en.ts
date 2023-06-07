@@ -724,6 +724,16 @@ const en = {
       something_wrong: 'Opss, something went wrong.',
     },
   },
+  sorting: {
+    label: {
+      sorting: 'Sorting',
+      no_sorting: 'No sorting',
+      project_name: 'Project name',
+      ascending: 'Ascending',
+      descending: 'Descending',
+      created_at: 'Created at',
+    },
+  },
   commons: {
     supervising_authority_name: 'Supervisor Authority Name',
     project_tracks: 'Project tracks',
