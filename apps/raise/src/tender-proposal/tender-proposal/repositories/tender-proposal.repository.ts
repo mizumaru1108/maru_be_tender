@@ -2402,7 +2402,7 @@ export class TenderProposalRepository {
             proposal_logs,
           };
         },
-        { maxWait: 50000, timeout: 150000 },
+        { maxWait: 1500000, timeout: 1500000 },
       );
     } catch (error) {
       const theError = prismaErrorThrower(
