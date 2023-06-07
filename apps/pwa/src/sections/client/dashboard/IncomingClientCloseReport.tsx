@@ -18,23 +18,7 @@ import EmptyContent from 'components/EmptyContent';
 
 export default function IncomingClientCloseReport() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { translate } = useLocales();
-  const [result] = useQuery({
-    query: getProposals,
-    variables: {
-      limit: 4,
-      order_by: { updated_at: 'desc' },
-      where: {
-        submitter_user_id: { _eq: user?.id },
-        inner_status: {
-          _in: ['REQUESTING_CLOSING_FORM'],
-        },
-      },
-    },
-  });
-
-  const { data, fetching, error } = result;
   // using API
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -93,7 +77,7 @@ export default function IncomingClientCloseReport() {
     // fetchingPrevious();
   }, [fetchingIncoming]);
 
-  if (fetching || isLoading) return <>{translate('pages.common.loading')}</>;
+  // if (fetching) return <>{translate('pages.common.loading')}</>;
 
   return (
     <Grid item md={12}>
@@ -118,7 +102,7 @@ export default function IncomingClientCloseReport() {
         </Button>
       </Stack>
       <Grid container spacing={3}>
-        {cardData.length > 0 ? (
+        {!isLoading && cardData.length > 0 ? (
           cardData?.map((item: any, index: any) => (
             <Grid item md={6} key={index}>
               <ProjectCard
