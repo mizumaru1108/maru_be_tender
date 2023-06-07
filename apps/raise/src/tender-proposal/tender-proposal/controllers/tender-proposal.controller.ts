@@ -231,7 +231,14 @@ export class TenderProposalController {
   // (supervisor can see what amandement that it send to the client)
   // client can see the list of amandement that sented by the supervisor
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_project_supervisor', 'tender_client')
+  @TenderRoles(
+    'tender_project_supervisor',
+    'tender_client',
+    'tender_project_manager',
+    'tender_consultant',
+    'tender_cashier',
+    'tender_finance',
+  )
   @Get('amandement-lists')
   async fetchAmandementList(
     @CurrentUser() currentUser: TenderCurrentUser,
