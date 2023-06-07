@@ -1,4 +1,4 @@
-import { Button, Container, Grid, Stack, styled, Typography } from '@mui/material';
+import { Box, Button, Container, Grid, Stack, styled, Typography } from '@mui/material';
 import { CardInsight } from 'components/card-insight';
 import Page from 'components/Page';
 import useLocales from 'hooks/useLocales';
@@ -15,6 +15,7 @@ import { useSnackbar } from 'notistack';
 import useAuth from '../../hooks/useAuth';
 import React from 'react';
 import axiosInstance from '../../utils/axios';
+import SortingCardTable from 'components/sorting/sorting';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -113,10 +114,12 @@ function MainManagerPage() {
 
   React.useEffect(() => {
     fetchingIncoming();
-    // fetchingPrevious();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchingIncoming]);
 
-  if (fetching || incomingFetching || isLoading) return <>{translate('pages.common.loading')}</>;
+  if (fetching || incomingFetching) return <>{translate('pages.common.loading')}</>;
+  console.log({ isLoading });
+  // if (isLoading) return <>{translate('pages.common.loading')}</>;
 
   return (
     // <Page title="Moderator Dashboard">
@@ -139,52 +142,63 @@ function MainManagerPage() {
                 <Typography variant="h4" sx={{ mb: '20px' }}>
                   {translate('incoming_support_requests')}
                 </Typography>
-                <Button
-                  sx={{
-                    backgroundColor: 'transparent',
-                    color: '#93A3B0',
-                    textDecoration: 'underline',
-                    ':hover': {
+                <Box>
+                  <SortingCardTable
+                    isLoading={isLoading}
+                    limit={4}
+                    api={'tender-proposal/request-in-process'}
+                    returnData={setCardData}
+                    loadingState={setIsLoading}
+                  />
+                  <Button
+                    sx={{
                       backgroundColor: 'transparent',
-                    },
-                  }}
-                  onClick={() => {
-                    navigate('/moderator/dashboard/incoming-support-requests');
-                  }}
-                >
-                  {translate('view_all')}
-                </Button>
+                      color: '#93A3B0',
+                      textDecoration: 'underline',
+                      ':hover': {
+                        backgroundColor: 'transparent',
+                      },
+                    }}
+                    onClick={() => {
+                      navigate('/moderator/dashboard/incoming-support-requests');
+                    }}
+                  >
+                    {translate('view_all')}
+                  </Button>
+                </Box>
               </Stack>
             </Grid>
             <Grid item md={12} xs={12}>
               <Grid container rowSpacing={3} columnSpacing={3}>
-                {cardData.map((item: any, index: any) => (
-                  <Grid item md={6} xs={12} key={index}>
-                    <ProjectCard
-                      title={{
-                        id: item.id,
-                        project_number: generateHeader(
-                          item && item.project_number && item.project_number
-                            ? item.project_number
-                            : item.id
-                        ),
-                        inquiryStatus: item.outter_status.toLowerCase(),
-                      }}
-                      content={{
-                        projectName: item.project_name,
-                        organizationName: (item && item.user && item.user.employee_name) ?? '-',
-                        sentSection: item.state,
-                        employee: item.user.employee_name,
-                        createdAtClient: new Date(item.created_at),
-                      }}
-                      footer={{
-                        createdAt: new Date(item.updated_at),
-                      }}
-                      cardFooterButtonAction="show-details"
-                      destination="requests-in-process"
-                    />
-                  </Grid>
-                ))}
+                {isLoading && translate('pages.common.loading')}
+                {!isLoading &&
+                  cardData.map((item: any, index: any) => (
+                    <Grid item md={6} xs={12} key={index}>
+                      <ProjectCard
+                        title={{
+                          id: item.id,
+                          project_number: generateHeader(
+                            item && item.project_number && item.project_number
+                              ? item.project_number
+                              : item.id
+                          ),
+                          inquiryStatus: item.outter_status.toLowerCase(),
+                        }}
+                        content={{
+                          projectName: item.project_name,
+                          organizationName: (item && item.user && item.user.employee_name) ?? '-',
+                          sentSection: item.state,
+                          employee: item.user.employee_name,
+                          createdAtClient: new Date(item.created_at),
+                        }}
+                        footer={{
+                          createdAt: new Date(item.updated_at),
+                        }}
+                        cardFooterButtonAction="show-details"
+                        destination="requests-in-process"
+                      />
+                    </Grid>
+                  ))}
               </Grid>
             </Grid>
           </Grid>

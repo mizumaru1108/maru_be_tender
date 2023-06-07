@@ -1,4 +1,4 @@
-import { Typography, Grid, Stack, Button } from '@mui/material';
+import { Typography, Grid, Stack, Button, Box } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import { getProposals } from 'queries/commons/getProposal';
 import { useNavigate } from 'react-router';
@@ -10,23 +10,11 @@ import { useSnackbar } from 'notistack';
 import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 import EmptyContent from '../../../components/EmptyContent';
+import SortingCardTable from 'components/sorting/sorting';
 
 function IncomingExchangePermissionRequests() {
   const { translate } = useLocales();
   const navigate = useNavigate();
-  const [result] = useQuery({
-    query: getProposals,
-    variables: {
-      order_by: { updated_at: 'desc' },
-      limit: 4,
-      where: {
-        // inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
-        payments: { status: { _eq: 'accepted_by_finance' } },
-        _and: { cashier_id: { _is_null: true } },
-      },
-    },
-  });
-  const { data, fetching, error } = result;
   // fetching by API
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -84,9 +72,6 @@ function IncomingExchangePermissionRequests() {
     fetchingIncoming();
     // fetchingPrevious();
   }, [fetchingIncoming]);
-  if (fetching || isLoading) {
-    return <>{translate('pages.common.loading')}</>;
-  }
   // const props = data?.data ?? [];
   // if (props.length === 0) return <></>;
   return (
@@ -96,24 +81,34 @@ function IncomingExchangePermissionRequests() {
           <Typography variant="h4" sx={{ mb: '20px' }}>
             {translate('finance_pages.heading.outgoing_exchange_request')}
           </Typography>
-          <Button
-            sx={{
-              backgroundColor: 'transparent',
-              color: '#93A3B0',
-              textDecoration: 'underline',
-              ':hover': {
+          <Box>
+            <SortingCardTable
+              limit={4}
+              isLoading={isLoading}
+              api={'tender-proposal/payment-adjustment'}
+              returnData={setCardData}
+              loadingState={setIsLoading}
+            />
+            <Button
+              sx={{
                 backgroundColor: 'transparent',
-              },
-            }}
-            onClick={() => {
-              navigate('/cashier/dashboard/incoming-exchange-permission-requests');
-            }}
-          >
-            {translate('finance_pages.heading.link_view_all')}
-          </Button>
+                color: '#93A3B0',
+                textDecoration: 'underline',
+                ':hover': {
+                  backgroundColor: 'transparent',
+                },
+              }}
+              onClick={() => {
+                navigate('/cashier/dashboard/incoming-exchange-permission-requests');
+              }}
+            >
+              {translate('finance_pages.heading.link_view_all')}
+            </Button>
+          </Box>
         </Stack>
       </Grid>
-      {cardData.length > 0 ? (
+      {isLoading && translate('pages.common.loading')}
+      {!isLoading && cardData.length > 0 ? (
         cardData.map((item: any, index: any) => (
           <Grid item md={6} key={index}>
             <ProjectCard

@@ -5,27 +5,62 @@ import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
 import { generateHeader } from '../../../utils/generateProposalNumber';
+import { useSnackbar } from 'notistack';
+import React from 'react';
+import useAuth from 'hooks/useAuth';
+import axiosInstance from 'utils/axios';
 
 function ProposalOnAmandement() {
   const { translate } = useLocales();
-  const navigate = useNavigate();
-  const [result] = useQuery({
-    query: getProposals,
-    variables: {
-      limit: 4,
-      order_by: { updated_at: 'desc' },
-      where: {
-        inner_status: { _eq: 'ACCEPTED_AND_NEED_CONSULTANT' },
-        outter_status: { _in: ['ASKED_FOR_AMANDEMENT'] },
-      },
-    },
-  });
-  const { data, fetching, error } = result;
-  if (fetching) {
-    return <>{translate('pages.common.loading')}</>;
-  }
-  const props = data?.data ?? [];
-  if (!props || props.length === 0) return <></>;
+  const { enqueueSnackbar } = useSnackbar();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { activeRole } = useAuth();
+  const [cardData, setCardData] = React.useState([]);
+  const fetchingIncoming = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`tender-proposal/amandement-lists?limit=4`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        setCardData(
+          rest.data.data
+            .filter((item: any) => item.proposal.outter_status === 'ON_REVISION')
+            .map((item: any) => ({
+              ...item.proposal,
+              user: {
+                employee_name: item.user.employee_name,
+              },
+            }))
+        );
+      }
+    } catch (err) {
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
+    } finally {
+      setIsLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRole, enqueueSnackbar]);
+
+  React.useEffect(() => {
+    fetchingIncoming();
+    // fetchingPrevious();
+  }, [fetchingIncoming]);
   return (
     <Grid container spacing={2}>
       <Grid item md={12} xs={12}>
@@ -53,36 +88,37 @@ function ProposalOnAmandement() {
           </Stack>
         </Grid>
       </Grid>
-      {props.map((item: any, index: any) => (
-        <Grid item md={6} key={index}>
-          <ProjectCard
-            title={{
-              id: item.id,
-              project_number: generateHeader(
-                item && item.project_number && item.project_number ? item.project_number : item.id
-              ),
-              inquiryStatus: item.outter_status.toLowerCase(),
-            }}
-            content={{
-              projectName: item.project_name,
-              organizationName: item.user.client_data.entity,
-              sentSection: item.state,
-              // employee: item.user.employee_name,
-              employee:
-                item.proposal_logs &&
-                item.proposal_logs.length > 0 &&
-                item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
-                item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
-              createdAtClient: new Date(item.created_at),
-            }}
-            footer={{
-              createdAt: new Date(item.updated_at),
-            }}
-            cardFooterButtonAction="show-project"
-            destination="incoming-funding-requests"
-          />
-        </Grid>
-      ))}
+      {cardData.length > 0 &&
+        cardData?.map((item: any, index: any) => (
+          <Grid item md={6} key={index}>
+            <ProjectCard
+              title={{
+                id: item.id,
+                project_number: generateHeader(
+                  item && item.project_number && item.project_number ? item.project_number : item.id
+                ),
+                inquiryStatus: item.outter_status.toLowerCase(),
+              }}
+              content={{
+                projectName: item.project_name,
+                organizationName: (item && item.user && item.user.employee_name) ?? '-',
+                sentSection: item.state,
+                // employee: item.user.employee_name,
+                employee:
+                  item.proposal_logs &&
+                  item.proposal_logs.length > 0 &&
+                  item.proposal_logs[item.proposal_logs.length - 1].reviewer &&
+                  item.proposal_logs[item.proposal_logs.length - 1].reviewer.employee_name,
+                createdAtClient: new Date(item.created_at),
+              }}
+              footer={{
+                createdAt: new Date(item.updated_at),
+              }}
+              cardFooterButtonAction="show-project"
+              destination="incoming-funding-requests"
+            />
+          </Grid>
+        ))}
     </Grid>
   );
 }

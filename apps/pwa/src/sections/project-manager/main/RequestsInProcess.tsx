@@ -1,4 +1,4 @@
-import { Typography, Grid, Box } from '@mui/material';
+import { Typography, Grid, Box, Stack } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import useAuth from 'hooks/useAuth';
 import { getProposals } from 'queries/commons/getProposal';
@@ -9,26 +9,10 @@ import React from 'react';
 import { useSnackbar } from 'notistack';
 import axiosInstance from 'utils/axios';
 import EmptyContent from 'components/EmptyContent';
+import SortingCardTable from 'components/sorting/sorting';
 
 function RequestsInProcess() {
   const { translate } = useLocales();
-  const { user } = useAuth();
-  const [result] = useQuery({
-    query: getProposals,
-    variables: {
-      order_by: { updated_at: 'desc' },
-      limit: 4,
-      offset: 0,
-      where: {
-        project_manager_id: { _eq: user?.id },
-        _and: {
-          inner_status: { _in: ['ACCEPTED_BY_SUPERVISOR'] },
-          outter_status: { _nin: ['ON_REVISION', 'ASKED_FOR_AMANDEMENT'] },
-        },
-      },
-    },
-  });
-  const { data, fetching, error } = result;
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
@@ -88,20 +72,29 @@ function RequestsInProcess() {
     fetchingIncoming();
   }, [fetchingIncoming]);
 
-  if (fetching || isLoading) {
-    return (
-      <Grid item md={12}>
-        {translate('pages.common.loading')}
-      </Grid>
-    );
-  }
   return (
     <Grid item md={12}>
-      <Typography variant="h4" sx={{ mb: '20px' }}>
+      {/* <Typography variant="h4" sx={{ mb: '20px' }}>
         {translate('content.client.main_page.process_request')}
-      </Typography>
+      </Typography> */}
+      <Stack direction="row" justifyContent="space-between">
+        <Typography variant="h4" sx={{ mb: '20px' }}>
+          {translate('content.client.main_page.process_request')}
+        </Typography>
+        <Box>
+          <SortingCardTable
+            limit={4}
+            type={'inprocess'}
+            isLoading={isLoading}
+            api={'tender-proposal/request-in-process'}
+            returnData={setCardData}
+            loadingState={setIsLoading}
+          />
+        </Box>
+      </Stack>
       <Grid container rowSpacing={3} columnSpacing={3}>
-        {cardData.length > 0 ? (
+        {isLoading && translate('pages.common.loading')}
+        {!isLoading && cardData.length > 0 ? (
           cardData?.map((item: any, index: any) => (
             <Grid item md={6} key={index}>
               <ProjectCard

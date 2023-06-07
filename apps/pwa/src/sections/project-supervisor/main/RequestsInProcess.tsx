@@ -10,27 +10,11 @@ import React from 'react';
 import { useSnackbar } from 'notistack';
 import axiosInstance from 'utils/axios';
 import EmptyContent from 'components/EmptyContent';
+import SortingCardTable from 'components/sorting/sorting';
 
 export default function RequestsInProcess() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { translate } = useLocales();
-  const [result] = useQuery({
-    query: getProposals,
-    variables: {
-      limit: 4,
-      order_by: { updated_at: 'desc' },
-      where: {
-        // supervisor_id: { _eq: user?.id },
-        support_outputs: { _is_null: false },
-        _and: {
-          inner_status: { _eq: 'ACCEPTED_BY_MODERATOR' },
-          outter_status: { _neq: 'ON_REVISION' },
-        },
-      },
-    },
-  });
-  const { data, fetching, error } = result;
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
@@ -90,12 +74,6 @@ export default function RequestsInProcess() {
     fetchingIncoming();
     // fetchingPrevious();
   }, [fetchingIncoming]);
-  if (fetching || isLoading)
-    return (
-      <Grid item md={12}>
-        {translate('pages.common.loading')}
-      </Grid>
-    );
   // const props = data?.data ?? [];
   // if (!props || props.length === 0) return null;
   return (
@@ -104,24 +82,35 @@ export default function RequestsInProcess() {
         <Typography variant="h4" sx={{ mb: '20px' }}>
           {translate('content.client.main_page.process_request')}
         </Typography>
-        <Button
-          sx={{
-            backgroundColor: 'transparent',
-            color: '#93A3B0',
-            textDecoration: 'underline',
-            ':hover': {
+        <Box>
+          <SortingCardTable
+            limit={4}
+            type={'inprocess'}
+            isLoading={isLoading}
+            api={'tender-proposal/request-in-process'}
+            returnData={setCardData}
+            loadingState={setIsLoading}
+          />
+          <Button
+            sx={{
               backgroundColor: 'transparent',
-            },
-          }}
-          onClick={() => {
-            navigate('/project-supervisor/dashboard/requests-in-process');
-          }}
-        >
-          {translate('view_all')}
-        </Button>
+              color: '#93A3B0',
+              textDecoration: 'underline',
+              ':hover': {
+                backgroundColor: 'transparent',
+              },
+            }}
+            onClick={() => {
+              navigate('/project-supervisor/dashboard/requests-in-process');
+            }}
+          >
+            {translate('view_all')}
+          </Button>
+        </Box>
       </Stack>
       <Grid container spacing={3}>
-        {cardData.length > 0 ? (
+        {isLoading && translate('pages.common.loading')}
+        {!isLoading && cardData.length > 0 ? (
           cardData?.map((item: any, index: any) => (
             <Grid item md={6} key={index}>
               <ProjectCard
