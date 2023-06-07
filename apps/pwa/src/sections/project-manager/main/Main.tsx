@@ -35,7 +35,7 @@ function Main() {
       <IncomingFundingRequests />
       <RequestsInProcess />
       <ExchangePermission />
-      <ProposalOnAmandement />
+      {/* <ProposalOnAmandement /> */}
     </Grid>
   );
 }

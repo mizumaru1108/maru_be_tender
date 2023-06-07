@@ -1,4 +1,4 @@
-import { Typography, Grid, Box } from '@mui/material';
+import { Typography, Grid, Box, Stack } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import { getProposals } from 'queries/commons/getProposal';
 import { useQuery } from 'urql';
@@ -9,6 +9,7 @@ import { useSnackbar } from 'notistack';
 import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 import EmptyContent from '../../../components/EmptyContent';
+import SortingCardTable from 'components/sorting/sorting';
 
 function IncomingFundingRequests() {
   const { translate } = useLocales();
@@ -88,7 +89,7 @@ function IncomingFundingRequests() {
     fetchingIncoming();
   }, [fetchingIncoming]);
 
-  if (fetching || isLoading) {
+  if (fetching) {
     return (
       <Grid item md={12}>
         {translate('pages.common.loading')}
@@ -99,11 +100,24 @@ function IncomingFundingRequests() {
   // if (!cardData || cardData.length === 0) return null;
   return (
     <Grid item md={12}>
-      <Typography variant="h4" sx={{ mb: '20px' }}>
-        {translate('incoming_funding_requests_project_supervisor')}
-      </Typography>
+      <Stack direction="row" justifyContent="space-between">
+        <Typography variant="h4" sx={{ mb: '20px' }}>
+          {translate('incoming_funding_requests_project_supervisor')}
+        </Typography>
+        <Box>
+          <SortingCardTable
+            limit={4}
+            type={'incoming'}
+            isLoading={isLoading}
+            api={'tender-proposal/request-in-process'}
+            returnData={setCardData}
+            loadingState={setIsLoading}
+          />
+        </Box>
+      </Stack>
       <Grid container rowSpacing={3} columnSpacing={3}>
-        {cardData.length > 0 ? (
+        {isLoading && translate('pages.common.loading')}
+        {!isLoading && cardData.length > 0 ? (
           cardData?.map((item: any, index: any) => (
             <Grid item md={6} key={index}>
               <ProjectCard

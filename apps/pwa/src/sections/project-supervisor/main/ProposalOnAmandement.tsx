@@ -10,6 +10,7 @@ import React from 'react';
 import { useSnackbar } from 'notistack';
 import axiosInstance from 'utils/axios';
 import EmptyContent from 'components/EmptyContent';
+import SortingCardTable from 'components/sorting/sorting';
 
 function ProposalOnAmandement() {
   const navigate = useNavigate();
@@ -56,16 +57,6 @@ function ProposalOnAmandement() {
         );
       }
     } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(`Something went wrong ${err.message}`, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(
@@ -92,7 +83,7 @@ function ProposalOnAmandement() {
     fetchingIncoming();
     // fetchingPrevious();
   }, [fetchingIncoming]);
-  if (fetching || isLoading)
+  if (fetching)
     return (
       <Grid item md={12}>
         {translate('pages.common.loading')}
@@ -107,6 +98,13 @@ function ProposalOnAmandement() {
         <Typography variant="h4" sx={{ mb: '20px' }}>
           {translate('amandement_requests_project_supervisor')}
         </Typography>
+        <SortingCardTable
+          limit={4}
+          isLoading={isLoading}
+          api={'tender-proposal/amandement-lists'}
+          returnData={setCardData}
+          loadingState={setIsLoading}
+        />
         {/* <Button
           sx={{
             backgroundColor: 'transparent',
@@ -124,7 +122,8 @@ function ProposalOnAmandement() {
         </Button> */}
       </Stack>
       <Grid container spacing={2}>
-        {cardData.length > 0 ? (
+        {isLoading && translate('pages.common.loading')}
+        {!isLoading && cardData.length > 0 ? (
           cardData.map((item: any, index: any) => (
             <Grid item md={6} key={index}>
               <ProjectCard

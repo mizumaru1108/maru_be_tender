@@ -1,5 +1,6 @@
-import { Typography, Grid, Stack, Button } from '@mui/material';
+import { Typography, Grid, Stack, Button, Box } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
+import SortingCardTable from 'components/sorting/sorting';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
@@ -11,50 +12,8 @@ import axiosInstance from '../../../utils/axios';
 import { generateHeader } from '../../../utils/generateProposalNumber';
 
 function RequestsInProcess() {
-  const { translate } = useLocales();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [result] = useQuery({
-    query: getProposals,
-    variables: {
-      limit: 10,
-      order_by: { updated_at: 'desc' },
-      where: {
-        // inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
-        // payments: { status: { _eq: 'accepted_by_finance' } },
-        // _and: { cashier_id: { _eq: user?.id } },
-        cashier_id: { _eq: user?.id },
-        _or: [
-          {
-            inner_status: {
-              _in: ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR'],
-            },
-            payments: { status: { _in: ['accepted_by_finance'] } },
-          },
-          {
-            payments: { status: { _in: ['accepted_by_finance', 'done'] } },
-            _not: {
-              payments: {
-                status: {
-                  _in: ['set_by_supervisor', 'issued_by_supervisor', 'accepted_by_project_manager'],
-                },
-              },
-            },
-            _and: [
-              {
-                _not: {
-                  inner_status: {
-                    _in: ['DONE_BY_CASHIER', 'PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'],
-                  },
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-  });
-
+  const { translate } = useLocales();
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
@@ -63,9 +22,12 @@ function RequestsInProcess() {
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
     try {
-      const rest = await axiosInstance.get(`tender-proposal/request-in-process?limit=4`, {
-        headers: { 'x-hasura-role': activeRole! },
-      });
+      const rest = await axiosInstance.get(
+        `tender-proposal/request-in-process?limit=4&type=inprocess`,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
       if (rest) {
         // console.log('rest total :', rest.data.total);
         setCardData(
@@ -75,16 +37,6 @@ function RequestsInProcess() {
         );
       }
     } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(
@@ -109,15 +61,7 @@ function RequestsInProcess() {
 
   React.useEffect(() => {
     fetchingIncoming();
-    // fetchingPrevious();
   }, [fetchingIncoming]);
-
-  const { data, fetching, error } = result;
-  if (fetching || isLoading) {
-    return <>{translate('pages.common.loading')}</>;
-  }
-  const props = data?.data ?? [];
-  if (props.length === 0) return <></>;
   return (
     <Grid container spacing={3}>
       <Grid item md={12} xs={12}>
@@ -125,23 +69,35 @@ function RequestsInProcess() {
           <Typography variant="h4">
             {translate('finance_pages.heading.proccess_request')}
           </Typography>
-          <Button
-            sx={{
-              backgroundColor: 'transparent',
-              color: '#93A3B0',
-              textDecoration: 'underline',
-              ':hover': {
+          <Box>
+            <SortingCardTable
+              limit={4}
+              isLoading={isLoading}
+              type={'inprocess'}
+              api={'tender-proposal/request-in-process'}
+              returnData={setCardData}
+              loadingState={setIsLoading}
+            />
+
+            <Button
+              sx={{
                 backgroundColor: 'transparent',
-              },
-            }}
-            onClick={() => {
-              navigate('/cashier/dashboard/requests-in-process');
-            }}
-          >
-            {translate('finance_pages.heading.link_view_all')}
-          </Button>
+                color: '#93A3B0',
+                textDecoration: 'underline',
+                ':hover': {
+                  backgroundColor: 'transparent',
+                },
+              }}
+              onClick={() => {
+                navigate('/cashier/dashboard/requests-in-process');
+              }}
+            >
+              {translate('finance_pages.heading.link_view_all')}
+            </Button>
+          </Box>
         </Stack>
       </Grid>
+      {isLoading && translate('pages.common.loading')}
       {!isLoading &&
         cardData.map((item: any, index: any) => (
           <Grid item md={6} key={index}>

@@ -10,30 +10,11 @@ import React from 'react';
 import { useSnackbar } from 'notistack';
 import axiosInstance from '../../../utils/axios';
 import EmptyContent from '../../../components/EmptyContent';
+import SortingCardTable from 'components/sorting/sorting';
 
 function PaymentAdjustment() {
   const navigate = useNavigate();
   const { translate } = useLocales();
-  const { user } = useAuth();
-  const [result] = useQuery({
-    query: getProposals,
-    variables: {
-      limit: 4,
-      order_by: { updated_at: 'desc' },
-      where: {
-        supervisor_id: { _eq: user?.id },
-        _or: [
-          {
-            inner_status: {
-              _in: ['ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION'],
-            },
-          },
-          { payments: { status: { _eq: 'set_by_supervisor' } } },
-        ],
-      },
-    },
-  });
-  const { data, fetching, error } = result;
 
   // fetching by API
   const [isLoading, setIsLoading] = React.useState(false);
@@ -56,16 +37,6 @@ function PaymentAdjustment() {
         );
       }
     } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(`Something went wrong ${err.message}`, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(
@@ -92,13 +63,6 @@ function PaymentAdjustment() {
     fetchingIncoming();
     // fetchingPrevious();
   }, [fetchingIncoming]);
-  if (fetching || isLoading) {
-    return (
-      <Grid item md={12}>
-        {translate('pages.common.loading')}
-      </Grid>
-    );
-  }
   // const props = data?.data ?? [];
   // if (!props || props.length === 0) return null;
 
@@ -108,24 +72,34 @@ function PaymentAdjustment() {
         <Typography variant="h4" sx={{ mb: '20px' }}>
           {translate('payment_adjustment')}
         </Typography>
-        <Button
-          sx={{
-            backgroundColor: 'transparent',
-            color: '#93A3B0',
-            textDecoration: 'underline',
-            ':hover': {
+        <Box>
+          <SortingCardTable
+            limit={4}
+            isLoading={isLoading}
+            api={'tender-proposal/payment-adjustment'}
+            returnData={setCardData}
+            loadingState={setIsLoading}
+          />
+          <Button
+            sx={{
               backgroundColor: 'transparent',
-            },
-          }}
-          onClick={() => {
-            navigate('/project-supervisor/dashboard/payment-adjustment');
-          }}
-        >
-          {translate('view_all')}
-        </Button>
+              color: '#93A3B0',
+              textDecoration: 'underline',
+              ':hover': {
+                backgroundColor: 'transparent',
+              },
+            }}
+            onClick={() => {
+              navigate('/project-supervisor/dashboard/payment-adjustment');
+            }}
+          >
+            {translate('view_all')}
+          </Button>
+        </Box>
       </Stack>
       <Grid container spacing={3}>
-        {cardData.length > 0 ? (
+        {isLoading && translate('pages.common.loading')}
+        {!isLoading && cardData.length > 0 ? (
           cardData.map((item: any, index: any) => (
             <Grid item md={6} key={index}>
               <ProjectCard

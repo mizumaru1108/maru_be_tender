@@ -1,4 +1,4 @@
-import { Typography, Grid, Stack, Button } from '@mui/material';
+import { Typography, Grid, Stack, Button, Box } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 import useAuth from 'hooks/useAuth';
 import { getProposals } from 'queries/commons/getProposal';
@@ -10,23 +10,11 @@ import React from 'react';
 import axiosInstance from '../../../utils/axios';
 import { useSnackbar } from 'notistack';
 import EmptyContent from '../../../components/EmptyContent';
+import SortingCardTable from 'components/sorting/sorting';
 
 function IncomingExchangePermissionRequests() {
-  const { translate } = useLocales();
   const navigate = useNavigate();
-  const [result] = useQuery({
-    query: getProposals,
-    variables: {
-      limit: 4,
-      order_by: { updated_at: 'desc' },
-      where: {
-        // inner_status: { _eq: 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR' },
-        payments: { status: { _eq: 'accepted_by_project_manager' } },
-        _and: { finance_id: { _is_null: true } },
-      },
-    },
-  });
-  const { data, fetching, error } = result;
+  const { translate } = useLocales();
 
   // fetching by API
   const [isLoading, setIsLoading] = React.useState(false);
@@ -49,16 +37,6 @@ function IncomingExchangePermissionRequests() {
         );
       }
     } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(`Something went wrong ${err.message}`, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(
@@ -85,12 +63,6 @@ function IncomingExchangePermissionRequests() {
     fetchingIncoming();
     // fetchingPrevious();
   }, [fetchingIncoming]);
-
-  if (fetching) {
-    return <>{translate('pages.common.loading')}</>;
-  }
-  // const props = data?.data ?? [];
-  // if (!props || props.length === 0) return <></>;
   return (
     <Grid container spacing={3}>
       <Grid item md={12} xs={12}>
@@ -98,24 +70,34 @@ function IncomingExchangePermissionRequests() {
           <Typography variant="h4" sx={{ mb: '20px' }}>
             {translate('finance_pages.heading.outgoing_exchange_request')}
           </Typography>
-          <Button
-            sx={{
-              backgroundColor: 'transparent',
-              color: '#93A3B0',
-              textDecoration: 'underline',
-              ':hover': {
+          <Box>
+            <SortingCardTable
+              limit={4}
+              isLoading={isLoading}
+              api={'tender-proposal/payment-adjustment'}
+              returnData={setCardData}
+              loadingState={setIsLoading}
+            />
+            <Button
+              sx={{
                 backgroundColor: 'transparent',
-              },
-            }}
-            onClick={() => {
-              navigate('/finance/dashboard/incoming-exchange-permission-requests');
-            }}
-          >
-            {translate('finance_pages.heading.link_view_all')}
-          </Button>
+                color: '#93A3B0',
+                textDecoration: 'underline',
+                ':hover': {
+                  backgroundColor: 'transparent',
+                },
+              }}
+              onClick={() => {
+                navigate('/finance/dashboard/incoming-exchange-permission-requests');
+              }}
+            >
+              {translate('finance_pages.heading.link_view_all')}
+            </Button>
+          </Box>
         </Stack>
       </Grid>
-      {cardData.length > 0 ? (
+      {isLoading && translate('pages.common.loading')}
+      {!isLoading && cardData.length > 0 ? (
         cardData.map((item: any, index: any) => (
           <Grid item md={6} key={index}>
             <ProjectCard

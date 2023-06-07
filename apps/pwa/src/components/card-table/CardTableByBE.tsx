@@ -1,14 +1,5 @@
-import {
-  FormControl,
-  Grid,
-  InputLabel,
-  ListSubheader,
-  MenuItem,
-  Pagination,
-  Select,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Grid, MenuItem, Pagination, Select, Stack, Typography } from '@mui/material';
+import SortingCardTable from 'components/sorting/sorting';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
@@ -16,7 +7,6 @@ import useAuth from '../../hooks/useAuth';
 import axiosInstance from '../../utils/axios';
 import CardTableLoading from './CardTableLoading';
 import CardTableNoData from './CardTableNoData';
-import LoadingPage from './LoadingPage';
 import ProjectTableBE from './ProjectCardBE';
 import { CardTablePropsByBE } from './types';
 
@@ -39,15 +29,15 @@ CardTablePropsByBE) {
   const [limit, setLimit] = useState(limitShowCard);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
-  const [filterSorting, setFilterSorting] = useState('');
+  // const [filterSorting, setFilterSorting] = useState('');
 
   const fetchingPrevious = React.useCallback(async () => {
     setIsLoading(true);
     let url = '';
     if (!typeRequest) {
-      url = `${endPoint}?limit=${limit}&page=${page}${filterSorting}`;
+      url = `${endPoint}?limit=${limit}&page=${page}`;
     } else {
-      url = `${endPoint}?limit=${limit}&page=${page}${filterSorting}&type=${typeRequest}`;
+      url = `${endPoint}?limit=${limit}&page=${page}&type=${typeRequest}`;
     }
     try {
       const rest = await axiosInstance.get(`${url}`, {
@@ -101,7 +91,7 @@ CardTablePropsByBE) {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, endPoint, limit, page, filterSorting, typeRequest]);
+  }, [activeRole, enqueueSnackbar, endPoint, limit, page, typeRequest]);
 
   const handleLimitChange = (event: any) => {
     setLimit(event.target.value as number);
@@ -110,27 +100,7 @@ CardTablePropsByBE) {
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
-  const handleSortingFilter = (event: any) => {
-    const value = event.target.value as number;
-    let tmpFilter = '';
-    if (value < 3) {
-      tmpFilter = '&sorting_field=project_name';
-      if (value === 1) {
-        tmpFilter = '&sorting_field=project_name&sort=asc';
-      } else {
-        tmpFilter = '&sorting_field=project_name&sort=desc';
-      }
-    } else {
-      if (value === 3) {
-        tmpFilter = '&sort=asc';
-      } else {
-        tmpFilter = '&sort=desc';
-      }
-    }
-    if (!!tmpFilter) {
-      setFilterSorting(tmpFilter);
-    }
-  };
+
   React.useEffect(() => {
     fetchingPrevious();
   }, [fetchingPrevious, page, limit]);
@@ -150,40 +120,15 @@ CardTablePropsByBE) {
           alignItems: 'center',
         }}
       >
-        {/* <Typography variant="h4">{title}</Typography> */}
-        <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel htmlFor="grouped-select">Sorting</InputLabel>
-          <Select
-            defaultValue=""
-            id="grouped-select"
-            label="Sorting"
-            onChange={handleSortingFilter}
-            disabled={isLoading}
-          >
-            <MenuItem value="">
-              {/* <em>None</em> */}
-              No Sorting
-            </MenuItem>
-            <ListSubheader
-              sx={{
-                backgroundColor: '#fff',
-              }}
-            >
-              Project Name
-            </ListSubheader>
-            <MenuItem value={1}>Acsending</MenuItem>
-            <MenuItem value={2}>Descending</MenuItem>
-            <ListSubheader
-              sx={{
-                backgroundColor: '#fff',
-              }}
-            >
-              Created At
-            </ListSubheader>
-            <MenuItem value={3}>Acsending</MenuItem>
-            <MenuItem value={4}>Descending</MenuItem>
-          </Select>
-        </FormControl>
+        <SortingCardTable
+          isLoading={isLoading}
+          limit={limit}
+          page={page}
+          typeRequest={typeRequest}
+          api={!typeRequest ? `${endPoint}` : `${endPoint}`}
+          returnData={setCardData}
+          loadingState={setIsLoading}
+        />
       </Grid>
       {isLoading && (
         <Grid item md={12} xs={12}>

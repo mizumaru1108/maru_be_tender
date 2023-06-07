@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 import EmptyContent from '../../../components/EmptyContent';
+import SortingCardTable from 'components/sorting/sorting';
 
 function IncomingFundingRequests() {
   const navigate = useNavigate();
@@ -90,7 +91,7 @@ function IncomingFundingRequests() {
     // fetchingPrevious();
   }, [fetchingIncoming]);
 
-  if (fetching || isLoading) {
+  if (fetching) {
     return (
       <Grid item md={12}>
         {translate('pages.common.loading')}
@@ -107,24 +108,35 @@ function IncomingFundingRequests() {
         <Typography variant="h4" sx={{ mb: '20px' }}>
           {translate('incoming_funding_requests_project_supervisor')}
         </Typography>
-        <Button
-          sx={{
-            backgroundColor: 'transparent',
-            color: '#93A3B0',
-            textDecoration: 'underline',
-            ':hover': {
+        <Box>
+          <SortingCardTable
+            limit={4}
+            type={'incoming'}
+            isLoading={isLoading}
+            api={'tender-proposal/request-in-process'}
+            returnData={setCardData}
+            loadingState={setIsLoading}
+          />
+          <Button
+            sx={{
               backgroundColor: 'transparent',
-            },
-          }}
-          onClick={() => {
-            navigate('/project-supervisor/dashboard/incoming-funding-requests');
-          }}
-        >
-          {translate('view_all')}
-        </Button>
+              color: '#93A3B0',
+              textDecoration: 'underline',
+              ':hover': {
+                backgroundColor: 'transparent',
+              },
+            }}
+            onClick={() => {
+              navigate('/project-supervisor/dashboard/incoming-funding-requests');
+            }}
+          >
+            {translate('view_all')}
+          </Button>
+        </Box>
       </Stack>
       <Grid container spacing={2}>
-        {cardData.length > 0 ? (
+        {isLoading && translate('pages.common.loading')}
+        {!isLoading && cardData.length > 0 ? (
           cardData.map((item: any, index: any) => (
             <Grid item md={6} key={index}>
               <ProjectCard
