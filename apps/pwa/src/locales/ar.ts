@@ -33,6 +33,7 @@ const ar = {
       page_not_found: '404 الصفحة غير موجودة',
       internal_server_error: '500 خطأ في الخادم الداخلي',
       search: 'بحث',
+      no_data: 'لايوجد بيانات',
       close_report: {
         text: {
           sidebar: 'تقرير ختامي',
@@ -152,6 +153,9 @@ const ar = {
       send_amandement: 'طلب تعديل الشريك',
     },
     admin: {
+      transaction_progress: 'تقدم المعاملة',
+      create_a_new_transaction_flow_track: 'قم بإنشاء مسار تدفق معاملات جديد',
+      project_state: 'حالة المشروع',
       application_and_admission: 'إعدادات التطبيق والقبول',
       authority_table: 'الجهة المشرفة | الجدول',
       bank_new_table: 'اسم البنك | الجدول',
@@ -2102,13 +2106,29 @@ const ar = {
     error_exceeds_amount: 'إجمالي ميزانيات المشروع يتجاوز مبلغ الدعم المقدم',
   },
   button: {
+    back: 'خلف',
     btn_final_save_as_draft: ' انهاء',
     btn_create_proposal: ' انهاء',
     btn_next_save_as_draft: 'التالي',
     confirm: 'تأكيد',
     cancel: 'إلغاء',
+    re_edit: 'إعادة التحرير',
+    save: 'يحفظ',
+    amandement: 'تعديل',
+    review: 'استعراض',
   },
   modal: {
+    headline: {
+      track: 'مسار',
+      add_new_track: 'إضافة مسار جديد',
+    },
+    label: {
+      track_name: 'اسم المسار',
+      consultant: 'مستشار *',
+    },
+    placeholder: {
+      please_type_track_name: 'الرجاء كتابة اسم المسار',
+    },
     confirm_amandement: 'طلب تعديل',
   },
   remote_or_insite: {

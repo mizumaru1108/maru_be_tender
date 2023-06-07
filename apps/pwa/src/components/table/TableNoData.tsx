@@ -2,6 +2,7 @@
 import { TableRow, TableCell } from '@mui/material';
 //
 import EmptyContent from '../EmptyContent';
+import useLocales from '../../hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -10,12 +11,13 @@ type Props = {
 };
 
 export default function TableNoData({ isNotFound }: Props) {
+  const { translate } = useLocales();
   return (
     <TableRow>
       {isNotFound ? (
         <TableCell colSpan={12}>
           <EmptyContent
-            title="No Data"
+            title={translate('pages.common.no_data')}
             sx={{
               '& span.MuiBox-root': { height: 160 },
             }}

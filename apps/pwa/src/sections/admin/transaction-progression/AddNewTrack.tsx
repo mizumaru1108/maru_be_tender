@@ -167,7 +167,9 @@ const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsulta
           gutterBottom
           sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', mb: 7, mt: 3 }}
         >
-          {isEdit ? 'Add a new track' : 'track'}
+          {isEdit
+            ? `${translate('modal.headline.add_new_track')}`
+            : translate('modal.headline.track')}
         </Typography>
         <Grid item md={12} xs={12} sx={{ mb: 6 }}>
           {/* <TextField
@@ -178,15 +180,15 @@ const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsulta
           /> */}
           <RHFTextField
             name="track_name"
-            label="Track name"
-            placeholder="Please type the track name"
+            label={translate('modal.label.track_name')}
+            placeholder={translate('modal.placeholder.please_type_track_name')}
             disabled={!isEdit}
           />
 
           <RHFSelectNoGenerator
             name={`consultant`}
             size="medium"
-            label="Consultant*"
+            label={translate('modal.label.consultant')}
             placeholder="Chosen one"
             InputLabelProps={{ shrink: true }}
             sx={{ mt: 3 }}
@@ -215,7 +217,7 @@ const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsulta
                 '&:hover': { backgroundColor: '#13B2A2' },
               }}
             >
-              Save
+              {translate('button.save')}
             </LoadingButton>
             <Button
               onClick={onClose}
@@ -227,8 +229,7 @@ const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsulta
                 ':hover': { backgroundColor: '#efefef' },
               }}
             >
-              {/* إغلاق */}
-              Back
+              {translate('button.back')}
             </Button>
           </Stack>
         )}

@@ -617,8 +617,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                 }}
                 variant="contained"
               >
-                Re-Edit
-                {/* under construction... */}
+                {translate('button.re_edit')}
               </LoadingButton>
             )}
           </Grid>

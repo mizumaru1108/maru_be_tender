@@ -1,14 +1,14 @@
 import { Button, Grid, Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import ModalDialog from 'components/modal-dialog';
-import AddNewTrack from './AddNewTrack';
 import React from 'react';
-import { useNavigate } from 'react-router';
+import useLocales from '../../../hooks/useLocales';
+import AddNewTrack from './AddNewTrack';
 
 function ContentTrackCard({ id, name, withConsultation }: any) {
-  const navigate = useNavigate();
   const [open, setOpen] = React.useState<boolean>(false);
   const [isEdit, setIsEdit] = React.useState<boolean>(false);
+  const { translate } = useLocales();
 
   const tempName = name.toLowerCase();
   const resultName = tempName
@@ -129,7 +129,7 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
               }
               onClick={handleEdit}
             >
-              تعديل
+              {translate('button.amandement')}
             </Button>
             <Button
               sx={{
@@ -165,7 +165,7 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
               }
               onClick={handleReview}
             >
-              استعراض
+              {translate('button.review')}
             </Button>
           </Stack>
         </Box>
