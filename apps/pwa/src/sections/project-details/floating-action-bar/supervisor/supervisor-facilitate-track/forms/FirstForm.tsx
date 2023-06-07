@@ -211,7 +211,7 @@ function FirstForm({ children, onSubmit }: any) {
             <BaseField
               type="radioGroup"
               name="inclu_or_exclu"
-              label="هل مبلغ السداد شامل أو غير شامل لضريبة القيمة المضافة"
+              label={translate('review.support_amount_inclu')}
               options={[
                 { label: 'نعم', value: true },
                 { label: 'لا', value: false },

@@ -1850,7 +1850,7 @@ const ar = {
     inclu_or_exclu: 'هل يشمل المشروع ضريبة القيمة المضافة',
     number_of_payment: 'عدد الدفعات',
     payment_support: 'مبلغ الدعم',
-    support_amount_inclu: 'هل مبلغ السداد شامل أو غير شامل لضريبة القيمة المضافة',
+    support_amount_inclu: 'هل مبلغ السداد شامل لضريبة القيمة المضافة',
     procedure: 'إجراء',
     note_on_project: 'ملاحظة حول المشروع',
     support_output: 'مخرجات الدعم',
