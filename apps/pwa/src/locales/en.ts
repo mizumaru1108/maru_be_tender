@@ -34,6 +34,7 @@ const en = {
       page_not_found: '404 Page Not Found',
       internal_server_error: '500 Internal Server Error',
       search: 'Search',
+      no_data: 'No Data',
       close_report: {
         text: {
           sidebar: 'Closing Report',
@@ -153,6 +154,9 @@ const en = {
       send_amandement: 'Partner Amandement Request',
     },
     admin: {
+      transaction_progress: 'Transaction Progress',
+      create_a_new_transaction_flow_track: 'Create a New Transaction Flow Track',
+      project_state: 'Project State',
       application_and_admission: 'Application and Admission Settings',
       authority_table: 'Authority | Table',
       bank_new_table: 'Bank New | Table',
@@ -2102,13 +2106,29 @@ const en = {
     error_exceeds_amount: 'total project budgets exceeds the support amount provided',
   },
   button: {
+    back: 'Back',
     btn_final_save_as_draft: 'Send',
     btn_create_proposal: 'Send',
     btn_next_save_as_draft: 'Next',
     confirm: 'Confirm',
     cancel: 'Cancel',
+    re_edit: 'Re-Edit',
+    save: 'Save',
+    amandement: 'Amandement',
+    review: 'Review',
   },
   modal: {
+    headline: {
+      track: 'Track',
+      add_new_track: 'Add New Track',
+    },
+    label: {
+      track_name: 'Track Name',
+      consultant: 'Consultant *',
+    },
+    placeholder: {
+      please_type_track_name: 'Please Type Track Name',
+    },
     confirm_amandement: 'Do amendment request',
   },
   remote_or_insite: {

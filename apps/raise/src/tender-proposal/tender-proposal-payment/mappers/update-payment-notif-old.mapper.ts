@@ -42,11 +42,13 @@ export const UpdatePaymentNotifMapperOld = (
 
   /* client notif for payment release (payment receipt uploaded by cashier) */
   if (choosenRole === 'CASHIER' && action === 'upload_receipt') {
-    clientContent = `Your payment receipt has been uploaded by ${
-      reviewer
-        ? appRoleToReadable[choosenRole] + ' (' + reviewer.employee_name + ')'
-        : appRoleToReadable[choosenRole]
-    } at ${logTime}`;
+    // clientContent = `Your payment receipt has been uploaded by ${
+    //   reviewer
+    //     ? appRoleToReadable[choosenRole] + ' (' + reviewer.employee_name + ')'
+    //     : appRoleToReadable[choosenRole]
+    // } at ${logTime}`;
+    clientContent = `مرحبًا ${proposal.user.employee_name}، نود إخبارك أن المشروع "${proposal.project_name}" تم استلام دفعة.
+    يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات، أو انقر هنا.`;
 
     const clientWebNotifPayload: CreateNotificationDto = {
       user_id: proposal.user.id,

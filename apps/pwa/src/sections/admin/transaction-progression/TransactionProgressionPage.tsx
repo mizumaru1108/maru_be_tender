@@ -1,20 +1,16 @@
-import React from 'react';
-import { Grid, Typography, Card, Box, Button, Stack } from '@mui/material';
-import useLocales from 'hooks/useLocales';
-import ContentTrackCard from './ContentTrackCard';
+import { Box, Button, Card, Grid, Stack, Typography } from '@mui/material';
 import ModalDialog from 'components/modal-dialog';
-import AddNewTrack from './AddNewTrack';
 import useAuth from 'hooks/useAuth';
-import { dispatch, useSelector } from 'redux/store';
+import useLocales from 'hooks/useLocales';
+import React from 'react';
 import { getTracks } from 'redux/slices/track';
-import axiosInstance from 'utils/axios';
-import { useSnackbar } from 'notistack';
+import { dispatch, useSelector } from 'redux/store';
+import AddNewTrack from './AddNewTrack';
+import ContentTrackCard from './ContentTrackCard';
 
 const TransactionProgressionPage = () => {
   const { translate } = useLocales();
-  const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
-  const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState<boolean>(false);
   const { tracks } = useSelector((state) => state.tracks);
 
@@ -58,7 +54,7 @@ const TransactionProgressionPage = () => {
       />
       <Grid sx={{ display: 'flex', justifyContent: 'space-between', mt: 6, mb: 3 }}>
         <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
-          Transaction Progress
+          {translate('pages.admin.transaction_progress')}
         </Typography>
         <Box
           sx={{
@@ -68,7 +64,9 @@ const TransactionProgressionPage = () => {
             px: 4,
           }}
         >
-          <Typography sx={{ color: '#0E8478', fontWeight: 700 }}>Project State</Typography>
+          <Typography sx={{ color: '#0E8478', fontWeight: 700 }}>
+            {translate('pages.admin.project_state')}
+          </Typography>
         </Box>
       </Grid>
       <Grid container spacing={2}>
@@ -86,7 +84,7 @@ const TransactionProgressionPage = () => {
               // borderSpacing: '10px',
             }}
           >
-            <Typography>Create a new transaction flow track</Typography>
+            <Typography>{translate('pages.admin.create_a_new_transaction_flow_track')}</Typography>
             <Button
               size="large"
               sx={{

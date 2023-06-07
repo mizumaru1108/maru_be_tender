@@ -141,8 +141,8 @@ export class TenderAppointmentService {
     // Notification
     const subject = `Tender's New Appointment`;
     const appointmentTime = `${dayOfWeek}, ${date} at ${start_time} - ${end_time}`;
-    const clientContent = `New Appointment request from ${currentUser.email}, on ${appointmentTime}`;
-    const employeeContent = `Successfully sent appointment invitation to ${client.email}, details:  ${appointmentTime}`;
+    const clientContent = `مرحبًا ${appointment.client.employee_name}، نود إبلاغك بأن ${appointment.employee.employee_name} قد تمت دعوتك لحضور اجتماع يوم الخميس. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات، أو انقر هنا.`;
+    // const employeeContent = `Successfully sent appointment invitation to ${client.email}, details:  ${appointmentTime}`;
 
     // via email
     const clientEmailPayload: SendEmailDto = {
@@ -159,16 +159,16 @@ export class TenderAppointmentService {
         appointmentDate: appointmentTime,
       },
     };
-    const employeeEmailPayload: SendEmailDto = {
-      mailType: 'plain',
-      to: appointment.employee.email,
-      subject,
-      content: employeeContent,
-      from: 'no-reply@hcharity.org',
-    };
+    // const employeeEmailPayload: SendEmailDto = {
+    //   mailType: 'plain',
+    //   to: appointment.employee.email,
+    //   subject,
+    //   content: employeeContent,
+    //   from: 'no-reply@hcharity.org',
+    // };
 
     this.emailService.sendMail(clientEmailPayload);
-    this.emailService.sendMail(employeeEmailPayload);
+    // this.emailService.sendMail(employeeEmailPayload);
 
     // via web app
     const createNotifPayload: CreateManyNotificationDto = {
@@ -180,13 +180,13 @@ export class TenderAppointmentService {
           content: clientContent,
           subject,
         },
-        {
-          type: 'APPOINTMENT',
-          user_id: appointment.employee.id,
-          appointment_id: appointment.id,
-          content: employeeContent,
-          subject,
-        },
+        // {
+        //   type: 'APPOINTMENT',
+        //   user_id: appointment.employee.id,
+        //   appointment_id: appointment.id,
+        //   content: employeeContent,
+        //   subject,
+        // },
       ],
     };
     await this.tenderNotificationService.createMany(createNotifPayload);
@@ -200,15 +200,15 @@ export class TenderAppointmentService {
       });
     }
 
-    const employeeNumber = isExistAndValidPhone(
-      appointment.employee.mobile_number,
-    );
-    if (employeeNumber) {
-      this.twilioService.sendSMS({
-        to: employeeNumber,
-        body: subject + ',' + employeeContent,
-      });
-    }
+    // const employeeNumber = isExistAndValidPhone(
+    //   appointment.employee.mobile_number,
+    // );
+    // if (employeeNumber) {
+    //   this.twilioService.sendSMS({
+    //     to: employeeNumber,
+    //     body: subject + ',' + employeeContent,
+    //   });
+    // }
 
     return appointment;
   }
