@@ -373,6 +373,30 @@ export class TenderProposalService {
     return createdProposal;
   }
 
+  async getProposalCount(currentUser: TenderCurrentUser) {
+    const { total: incoming } = await this.fetchRequestInProcess(currentUser, {
+      type: 'incoming',
+    });
+
+    const { total: inprocess } = await this.fetchRequestInProcess(currentUser, {
+      type: 'inprocess',
+    });
+
+    const { total: previous } = await this.getPreviousProposal(currentUser, {});
+
+    const { total: closeReport } = await this.fetchClosingReportList(
+      currentUser,
+      {},
+    );
+
+    return {
+      incoming,
+      inprocess,
+      previous,
+      close_report: closeReport,
+    };
+  }
+
   // async clientUpdateProposal(
   //   userId: string,
   //   saveDraftPayload?: ProposalSaveDraftDto,

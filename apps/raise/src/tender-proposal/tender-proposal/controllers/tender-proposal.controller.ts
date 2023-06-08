@@ -348,6 +348,18 @@ export class TenderProposalController {
   }
 
   @UseGuards(TenderJwtGuard)
+  @Get('proposal-count')
+  async getProposalCount(@CurrentUser() currentUser: TenderCurrentUser) {
+    const result = await this.proposalService.getProposalCount(currentUser);
+
+    return baseResponseHelper(
+      result,
+      HttpStatus.OK,
+      'Proposal Fetched Successfully!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard)
   @Get('/old/list')
   async fetchOldProposalList(
     @CurrentUser() currentUser: TenderCurrentUser,

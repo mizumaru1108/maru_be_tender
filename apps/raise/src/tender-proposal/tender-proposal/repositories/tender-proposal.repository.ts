@@ -1363,8 +1363,8 @@ export class TenderProposalRepository {
         };
       }
 
-      console.log(logUtil(whereClause));
-      console.log({ queryOptions });
+      // console.log(logUtil(whereClause));
+      // console.log({ queryOptions });
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
@@ -1601,8 +1601,8 @@ export class TenderProposalRepository {
         };
       }
 
-      console.log(logUtil(whereClause));
-      console.log(logUtil(queryOptions));
+      // console.log(logUtil(whereClause));
+      // console.log(logUtil(queryOptions));
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
