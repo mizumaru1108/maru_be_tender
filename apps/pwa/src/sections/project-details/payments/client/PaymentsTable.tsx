@@ -2,6 +2,7 @@ import { Box, Button, Grid, Link, Stack, Typography } from '@mui/material';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import { useEffect, useState } from 'react';
 import { useMutation } from 'urql';
+import useLocales from '../../../../hooks/useLocales';
 
 // The general page after the payments are set
 /**
@@ -34,7 +35,9 @@ type PaymentProps = {
     | 'accepted_by_finance'
     | 'done';
 };
+
 function PaymentsTable({ payments, children }: { payments: PaymentProps[]; children?: any }) {
+  const { translate } = useLocales();
   const [currentIssuedPayament, setCurrentIssuedPayament] = useState(0);
   const [beenIssued, setBeenIssued] = useState(false);
   const [_, updatePay] = useMutation(updatePayment);
@@ -85,22 +88,39 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
               </Stack>
             </Grid>
             {item.status === 'done' ? (
-              <Grid item md={6} sx={{ textAlign: '-webkit-center' }}>
-                <Button
-                  component={Link}
-                  href={item.cheques[0].transfer_receipt}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download="صورة بطاقة الحساب البنكي"
-                  sx={{
-                    backgroundColor: 'transparent',
-                    color: '#000',
-                    textDecorationLine: 'underline',
-                  }}
-                >
-                  استعراض ايصال التحويل
-                </Button>
-              </Grid>
+              <>
+                <Grid item md={6} sx={{ textAlign: '-webkit-center' }}>
+                  <Button
+                    component={Link}
+                    href={item.cheques[0].transfer_receipt}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download="صورة بطاقة الحساب البنكي"
+                    sx={{
+                      backgroundColor: 'transparent',
+                      color: '#000',
+                      textDecorationLine: 'underline',
+                    }}
+                  >
+                    استعراض ايصال التحويل
+                  </Button>
+                </Grid>
+                <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
+                  <Button
+                    variant="text"
+                    color="inherit"
+                    sx={{
+                      '&:hover': { textDecorationLine: 'underline' },
+                    }}
+                    href={item.cheques[0].transfer_receipt.url ?? '#'}
+                    target="_blank"
+                  >
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
+                    )}
+                  </Button>
+                </Grid>
+              </>
             ) : (
               <Grid item md={6}>
                 <Box>{''}</Box>
