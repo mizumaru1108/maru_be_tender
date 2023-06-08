@@ -32,6 +32,7 @@ import { generateFileName } from '../../../tender-commons/utils/generate-filenam
 import { DeleteProposalFollowUpDto } from '../dtos/requests/delete-follow-up.dto';
 import { GenerateFollowUpMessageNotif } from '../utils/generate-follow-up-message-notif';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
+import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
 
 @Injectable()
 export class TenderProposalFollowUpService {
@@ -212,11 +213,17 @@ export class TenderProposalFollowUpService {
 
       return createdFolllowUp.followUps;
     } catch (error) {
-      this.logger.error('Error while uploading project attachment: ' + error);
-      if (uploadedFilePath.length > 0) {
-        uploadedFilePath.forEach(async (path) => {
-          await this.bunnyService.deleteMedia(path, true);
-        });
+      if (error instanceof MsegatSendingMessageError) {
+        throw new BadRequestException(
+          `Request might be success but sms notif may not be sented to the client details ${error.message}`,
+        );
+      } else {
+        this.logger.error('Error while uploading project attachment: ' + error);
+        if (uploadedFilePath.length > 0) {
+          uploadedFilePath.forEach(async (path) => {
+            await this.bunnyService.deleteMedia(path, true);
+          });
+        }
       }
       throw error;
     }

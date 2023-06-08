@@ -51,6 +51,7 @@ import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-fi
 import { TenderNotificationRepository } from '../../../tender-notification/repository/tender-notification.repository';
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
+import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -344,19 +345,25 @@ export class TenderClientService {
         createdUser,
       };
     } catch (err) {
-      this.logger.log(
-        'info',
-        `Falied to store user data on db, deleting the user ${idFromFusionAuth} from fusion auth`,
-      );
-      await this.fusionAuthService.fusionAuthDeleteUser(idFromFusionAuth);
-      this.logger.log(
-        'info',
-        `deleting all uploaded files related for user ${idFromFusionAuth}`,
-      );
-      if (uploadedFilePath && uploadedFilePath.length > 0) {
-        uploadedFilePath.forEach(async (path) => {
-          await this.bunnyService.deleteMedia(path, true);
-        });
+      if (err instanceof MsegatSendingMessageError) {
+        throw new BadRequestException(
+          `Request might be success but sms notif may not be sented to the client details ${err.message}`,
+        );
+      } else {
+        this.logger.log(
+          'info',
+          `Falied to store user data on db, deleting the user ${idFromFusionAuth} from fusion auth`,
+        );
+        await this.fusionAuthService.fusionAuthDeleteUser(idFromFusionAuth);
+        this.logger.log(
+          'info',
+          `deleting all uploaded files related for user ${idFromFusionAuth}`,
+        );
+        if (uploadedFilePath && uploadedFilePath.length > 0) {
+          uploadedFilePath.forEach(async (path) => {
+            await this.bunnyService.deleteMedia(path, true);
+          });
+        }
       }
       throw err;
     }

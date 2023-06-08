@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
 import { SendSmsDto } from '../dtos/requests';
 import { MsegatSendSmsDto } from '../dtos/requests/msegat-send-sms.dto';
+import { MsegatSendingMessageError } from '../exceptions/send.message.error.exceptions';
 
 /**
  * Nest Msegat Module
@@ -41,11 +42,11 @@ export class MsegatService {
     };
     try {
       const response = await axios(axiosOptions);
-      this.logger.log('info', `Response: ${response.data}`);
+      // this.logger.log('info', `Response: ${response.data}`);
       return response;
     } catch (error) {
-      this.logger.debug('Error', error);
-      throw error;
+      this.logger.error('Error', error);
+      throw new MsegatSendingMessageError(numbers);
     }
   }
 
