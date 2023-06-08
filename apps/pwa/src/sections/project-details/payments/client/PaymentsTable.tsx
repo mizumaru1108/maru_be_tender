@@ -1,6 +1,6 @@
 import { Box, Button, Grid, Link, Stack, Typography } from '@mui/material';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation } from 'urql';
 
 // The general page after the payments are set

@@ -427,6 +427,7 @@ const en = {
               exchange_permit_approve: 'Approval of the exchange authorization',
               exchange_permit_accept_finance: 'Acceptance of exchange authorization',
               exchange_permit_generate_finance: 'Generate exchange permission data',
+              view_transfer_receipt: 'View Receipt',
             },
           },
         },
