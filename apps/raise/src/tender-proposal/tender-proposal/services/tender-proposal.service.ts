@@ -390,11 +390,17 @@ export class TenderProposalService {
       {},
     );
 
+    const { total: paymentAdjustment } = await this.fetchPaymentAdjustment(
+      currentUser,
+      {},
+    );
+
     return {
       incoming,
       inprocess,
       previous,
       close_report: closeReport,
+      payment_adjustment: paymentAdjustment,
     };
   }
 
