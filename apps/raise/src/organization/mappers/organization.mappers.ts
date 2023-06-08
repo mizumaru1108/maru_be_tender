@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import { RegisterOrganizationDto } from 'src/auth/dtos/register-organization.dto';
+import { AuthzedRelationship } from 'src/libs/authzed/enums/relationship.enum';
 
 export function CreateNewOrganizationMappers(
   request: RegisterOrganizationDto,
@@ -38,6 +39,7 @@ export function CreateNewOrganizationMappers(
     selectedLanguage: ['en-US'],
     zakatTransaction: false,
     zakatCalculator: false,
+    organizationType: AuthzedRelationship.NONPROFIT,
   };
 
   return { ...organizationData };

@@ -81,7 +81,6 @@ export class PermissionsGuard implements CanActivate {
       subject,
       permissions[0],
     );
-    // console.log('isAllowed', isAllowed);
 
     if (
       !isAllowed ||

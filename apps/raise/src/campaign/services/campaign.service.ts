@@ -126,7 +126,7 @@ export class CampaignService {
 
       await Promise.all(processImages);
     } catch (error) {
-      console.log('error', error);
+      this.logger.error('error', error);
       if (error.response) {
         throw new HttpException(
           error.response.message,

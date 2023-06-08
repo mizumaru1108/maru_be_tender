@@ -146,7 +146,13 @@ export class OrganizationService {
     this.logger.debug('findAll...');
     return await this.organizationModel.find(
       {},
-      { _id: true, name: true, organizationEmail: true, contactEmail: true },
+      {
+        _id: true,
+        name: true,
+        organizationEmail: true,
+        contactEmail: true,
+        organizationType: true,
+      },
       { sort: { name: 1 } },
     );
   }
