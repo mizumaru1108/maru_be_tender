@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -17,6 +18,7 @@ import { createNotificationMapper } from '../mappers/create-notification.mapper'
 import { TenderNotificationRepository } from '../repository/tender-notification.repository';
 import { MsegatService } from '../../libs/msegat/services/msegat.service';
 import { logUtil } from '../../commons/utils/log-util';
+import { MsegatSendingMessageError } from '../../libs/msegat/exceptions/send.message.error.exceptions';
 
 @Injectable()
 export class TenderNotificationService {
@@ -189,138 +191,143 @@ export class TenderNotificationService {
     sendReviwerMail: boolean = true,
     sendReviwerSms: boolean = true,
   ) {
-    const {
-      clientSubject,
-      clientContent,
-      clientEmail,
-      clientMobileNumber,
-      clientEmailTemplatePath,
-      clientEmailTemplateContext,
-      reviwerSubject,
-      reviewerContent,
-      reviewerEmail,
-      reviewerMobileNumber,
-      reviewerEmailTemplateContext,
-      reviewerEmailTemplatePath,
-      clientAttachmentFiles,
-      generalHostEmail,
-    } = notifPayload;
+    try {
+      const {
+        clientSubject,
+        clientContent,
+        clientEmail,
+        clientMobileNumber,
+        clientEmailTemplatePath,
+        clientEmailTemplateContext,
+        reviwerSubject,
+        reviewerContent,
+        reviewerEmail,
+        reviewerMobileNumber,
+        reviewerEmailTemplateContext,
+        reviewerEmailTemplatePath,
+        clientAttachmentFiles,
+        generalHostEmail,
+      } = notifPayload;
 
-    const baseSendEmail: Omit<SendEmailDto, 'to' | 'mailType'> = {
-      subject: clientSubject,
-      from:
-        generalHostEmail && generalHostEmail === 'tmra'
-          ? 'hello@tmra.io' // no-reply@tmra.io
-          : 'no-reply@hcharity.org',
-      attachments:
-        clientAttachmentFiles && clientAttachmentFiles.length
-          ? clientAttachmentFiles
-          : [],
-    };
+      const baseSendEmail: Omit<SendEmailDto, 'to' | 'mailType'> = {
+        subject: clientSubject,
+        from:
+          generalHostEmail && generalHostEmail === 'tmra'
+            ? 'hello@tmra.io' // no-reply@tmra.io
+            : 'no-reply@hcharity.org',
+        attachments:
+          clientAttachmentFiles && clientAttachmentFiles.length
+            ? clientAttachmentFiles
+            : [],
+      };
 
-    // console.log(logUtil(notifPayload));
+      // console.log(logUtil(notifPayload));
 
-    if (sendClientMail) {
-      if (clientEmail && clientEmail.length > 0) {
-        for (let i = 0; i < clientEmail.length; i++) {
-          if (clientEmail[i] !== '') {
-            const clientEmailNotif: SendEmailDto = {
-              ...baseSendEmail,
-              mailType:
-                clientEmailTemplateContext && clientEmailTemplatePath
-                  ? 'template'
-                  : 'plain',
-              to: clientEmail[i],
-            };
-
-            if (clientEmailNotif.mailType === 'plain') {
-              clientEmailNotif.content = clientContent;
-              if (clientEmailNotif.content !== '') {
-                this.emailService.sendMail(clientEmailNotif);
-              }
-            }
-
-            if (clientEmailTemplateContext && clientEmailTemplatePath) {
-              clientEmailNotif.templateContext = clientEmailTemplateContext[i];
-              clientEmailNotif.templatePath = clientEmailTemplatePath;
-              this.emailService.sendMail(clientEmailNotif);
-            }
-          }
-        }
-      }
-    }
-
-    if (sendClientSms) {
-      if (clientMobileNumber && clientMobileNumber.length > 0) {
-        for (const clientMobile of clientMobileNumber) {
-          if (clientMobile !== '' && clientContent !== '') {
-            const clientPhone = isExistAndValidPhone(clientMobileNumber);
-            if (clientPhone) {
-              await this.msegatService.sendSMSAsync({
-                numbers: clientPhone.includes('+')
-                  ? clientPhone.substring(1)
-                  : clientPhone,
-                msg: clientSubject + ', ' + clientContent,
-              });
-            }
-          }
-        }
-      }
-    }
-
-    if (sendReviwerMail) {
-      if (reviewerContent && reviewerContent !== '') {
-        if (reviewerEmail && reviewerEmail.length > 0) {
-          for (let i = 0; i < reviewerEmail.length; i++) {
-            if (reviewerEmail[i] !== '') {
-              const reviewerEmailNotif: SendEmailDto = {
+      if (sendClientMail) {
+        if (clientEmail && clientEmail.length > 0) {
+          for (let i = 0; i < clientEmail.length; i++) {
+            if (clientEmail[i] !== '') {
+              const clientEmailNotif: SendEmailDto = {
                 ...baseSendEmail,
-                subject: reviwerSubject ? reviwerSubject : clientSubject,
                 mailType:
-                  reviewerEmailTemplateContext && reviewerEmailTemplatePath
+                  clientEmailTemplateContext && clientEmailTemplatePath
                     ? 'template'
                     : 'plain',
-                to: reviewerEmail[i],
+                to: clientEmail[i],
               };
 
-              if (reviewerEmailNotif.mailType === 'plain') {
-                reviewerEmailNotif.content = reviewerContent
-                  ? reviewerContent
-                  : clientContent;
-                if (reviewerContent !== '') {
-                  this.emailService.sendMail(reviewerEmailNotif);
+              if (clientEmailNotif.mailType === 'plain') {
+                clientEmailNotif.content = clientContent;
+                if (clientEmailNotif.content !== '') {
+                  this.emailService.sendMail(clientEmailNotif);
                 }
               }
 
-              if (reviewerEmailTemplateContext && reviewerEmailTemplatePath) {
-                reviewerEmailNotif.templateContext =
-                  reviewerEmailTemplateContext[i];
-                reviewerEmailNotif.templatePath = reviewerEmailTemplatePath;
-                this.emailService.sendMail(reviewerEmailNotif);
+              if (clientEmailTemplateContext && clientEmailTemplatePath) {
+                clientEmailNotif.templateContext =
+                  clientEmailTemplateContext[i];
+                clientEmailNotif.templatePath = clientEmailTemplatePath;
+                this.emailService.sendMail(clientEmailNotif);
               }
             }
           }
         }
       }
 
-      /* enable when msgat is already exist */
-      if (sendReviwerSms) {
-        if (reviewerMobileNumber && reviewerMobileNumber.length > 0) {
-          for (const reviewerMobile of reviewerMobileNumber) {
-            if (reviewerMobile !== '' && reviewerContent !== '') {
-              const reviewerPhone = isExistAndValidPhone(reviewerMobile);
-              if (reviewerPhone) {
+      if (sendClientSms) {
+        if (clientMobileNumber && clientMobileNumber.length > 0) {
+          for (const clientMobile of clientMobileNumber) {
+            if (clientMobile !== '' && clientContent !== '') {
+              const clientPhone = isExistAndValidPhone(clientMobileNumber);
+              if (clientPhone) {
                 await this.msegatService.sendSMSAsync({
-                  numbers: reviewerPhone.includes('+')
-                    ? reviewerPhone.substring(1)
-                    : reviewerPhone,
-                  msg: reviwerSubject + ', ' + reviewerContent,
+                  numbers: clientPhone.includes('+')
+                    ? clientPhone.substring(1)
+                    : clientPhone,
+                  msg: clientSubject + ', ' + clientContent,
                 });
               }
             }
           }
         }
       }
+
+      if (sendReviwerMail) {
+        if (reviewerContent && reviewerContent !== '') {
+          if (reviewerEmail && reviewerEmail.length > 0) {
+            for (let i = 0; i < reviewerEmail.length; i++) {
+              if (reviewerEmail[i] !== '') {
+                const reviewerEmailNotif: SendEmailDto = {
+                  ...baseSendEmail,
+                  subject: reviwerSubject ? reviwerSubject : clientSubject,
+                  mailType:
+                    reviewerEmailTemplateContext && reviewerEmailTemplatePath
+                      ? 'template'
+                      : 'plain',
+                  to: reviewerEmail[i],
+                };
+
+                if (reviewerEmailNotif.mailType === 'plain') {
+                  reviewerEmailNotif.content = reviewerContent
+                    ? reviewerContent
+                    : clientContent;
+                  if (reviewerContent !== '') {
+                    this.emailService.sendMail(reviewerEmailNotif);
+                  }
+                }
+
+                if (reviewerEmailTemplateContext && reviewerEmailTemplatePath) {
+                  reviewerEmailNotif.templateContext =
+                    reviewerEmailTemplateContext[i];
+                  reviewerEmailNotif.templatePath = reviewerEmailTemplatePath;
+                  this.emailService.sendMail(reviewerEmailNotif);
+                }
+              }
+            }
+          }
+        }
+
+        /* enable when msgat is already exist */
+        if (sendReviwerSms) {
+          if (reviewerMobileNumber && reviewerMobileNumber.length > 0) {
+            for (const reviewerMobile of reviewerMobileNumber) {
+              if (reviewerMobile !== '' && reviewerContent !== '') {
+                const reviewerPhone = isExistAndValidPhone(reviewerMobile);
+                if (reviewerPhone) {
+                  await this.msegatService.sendSMSAsync({
+                    numbers: reviewerPhone.includes('+')
+                      ? reviewerPhone.substring(1)
+                      : reviewerPhone,
+                    msg: reviwerSubject + ', ' + reviewerContent,
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      throw error;
     }
   }
 }

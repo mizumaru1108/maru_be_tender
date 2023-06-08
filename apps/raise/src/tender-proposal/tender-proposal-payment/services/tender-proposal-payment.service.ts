@@ -55,6 +55,7 @@ import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
 import { CreateTrackBudgetMapper } from '../mappers/create-track-section-budget-mapper';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
 import { logUtil } from '../../../commons/utils/log-util';
+import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
 
 @Injectable()
 export class TenderProposalPaymentService {
@@ -355,6 +356,11 @@ export class TenderProposalPaymentService {
         createdCheque: response.cheque,
       };
     } catch (err) {
+      if (err instanceof MsegatSendingMessageError) {
+        throw new BadRequestException(
+          `Request might be success but sms notif may not be sented to the client details ${err.message}`,
+        );
+      }
       throw err;
     }
   }
@@ -426,25 +432,36 @@ export class TenderProposalPaymentService {
     currentUser: TenderCurrentUser,
     request: SendClosingReportDto,
   ) {
-    const { id, send } = request;
-    const proposal = await this.tenderProposalRepository.fetchProposalById(id);
-    if (!proposal) {
-      throw new NotFoundException('No proposal data found on this payment');
-    }
-
-    const response = await this.paymentRepo.sendClosingReport(
-      currentUser,
-      id,
-      send,
-    );
-
-    if (response.closeReportNotif && send) {
-      await this.notificationService.sendSmsAndEmailBatch(
-        response.closeReportNotif,
+    try {
+      const { id, send } = request;
+      const proposal = await this.tenderProposalRepository.fetchProposalById(
+        id,
       );
-    }
+      if (!proposal) {
+        throw new NotFoundException('No proposal data found on this payment');
+      }
 
-    return response.updatedProposal;
+      const response = await this.paymentRepo.sendClosingReport(
+        currentUser,
+        id,
+        send,
+      );
+
+      if (response.closeReportNotif && send) {
+        await this.notificationService.sendSmsAndEmailBatch(
+          response.closeReportNotif,
+        );
+      }
+
+      return response.updatedProposal;
+    } catch (error) {
+      if (error instanceof MsegatSendingMessageError) {
+        throw new BadRequestException(
+          `Request might be success but sms notif may not be sented to the client details ${error.message}`,
+        );
+      }
+      throw error;
+    }
   }
 
   async completePayment(currentUser: TenderCurrentUser, proposal_id: string) {

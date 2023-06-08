@@ -275,7 +275,7 @@ const ar = {
       requests_in_process: 'طلبات قيد الإجراء',
     },
     ceo: {
-      project_management: 'إدارة المشروع',
+      project_management: 'ادارة المشاريع',
       main: ' الرئيسية | المدير التنفيذي',
     },
     client: {
@@ -424,6 +424,7 @@ const ar = {
               exchange_permit_approve: 'اعتماد إذن الصرف',
               exchange_permit_accept_finance: 'قبول إذن الصرف',
               exchange_permit_generate_finance: 'توليد بيانات إذن الصرف',
+              view_transfer_receipt: 'استلام عرض',
             },
           },
         },
@@ -911,7 +912,7 @@ const ar = {
       options: {},
     },
     center: {
-      label: 'مركز الإدارة',
+      label: 'المركز الإداري ( ترجمة)',
       placeholder: 'الرجاء اختيار المركز',
       options: {},
     },
@@ -1340,7 +1341,7 @@ const ar = {
   client_list: 'قائمة العملاء', // navigation
   project_management: 'إدارة المشروع', //navigation
   project_management_table: {
-    headline: 'إدارة المشروع',
+    headline: 'ادارة المشاريع',
   },
   rejection_list_table: {
     headline: 'قائمة الرفض',

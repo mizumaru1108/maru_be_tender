@@ -1180,6 +1180,7 @@ export class TenderProposalRepository {
         sort = 'desc',
         sorting_field,
         type = 'incoming',
+        vat,
       } = filter;
 
       const offset = (page - 1) * limit;
@@ -1187,6 +1188,20 @@ export class TenderProposalRepository {
       let whereClause: Prisma.proposalWhereInput = {
         oid: null,
       };
+
+      if (vat !== undefined) {
+        if (vat) {
+          whereClause = {
+            ...whereClause,
+            vat: true,
+          };
+        } else {
+          whereClause = {
+            ...whereClause,
+            vat: false,
+          };
+        }
+      }
 
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
       const field =
@@ -1363,8 +1378,8 @@ export class TenderProposalRepository {
         };
       }
 
-      console.log(logUtil(whereClause));
-      console.log({ queryOptions });
+      // console.log(logUtil(whereClause));
+      // console.log({ queryOptions });
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
@@ -1601,8 +1616,8 @@ export class TenderProposalRepository {
         };
       }
 
-      console.log(logUtil(whereClause));
-      console.log(logUtil(queryOptions));
+      // console.log(logUtil(whereClause));
+      // console.log(logUtil(queryOptions));
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
