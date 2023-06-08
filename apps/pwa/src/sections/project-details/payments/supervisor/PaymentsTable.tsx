@@ -283,25 +283,23 @@ function PaymentsTable() {
                 </svg>
               </Button>
             </Grid> */}
-                {
-                  (item.status = 'done' && (
-                    <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                      <Button
-                        variant="text"
-                        color="inherit"
-                        sx={{
-                          '&:hover': { textDecorationLine: 'underline' },
-                        }}
-                        href={item.cheques[0].transfer_receipt.url ?? '#'}
-                        target="_blank"
-                      >
-                        {translate(
-                          'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
-                        )}
-                      </Button>
-                    </Grid>
-                  ))
-                }
+                {item.status === 'done' && (
+                  <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
+                    <Button
+                      variant="text"
+                      color="inherit"
+                      sx={{
+                        '&:hover': { textDecorationLine: 'underline' },
+                      }}
+                      href={item.cheques[0].transfer_receipt.url ?? '#'}
+                      target="_blank"
+                    >
+                      {translate(
+                        'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
+                      )}
+                    </Button>
+                  </Grid>
+                )}
               </Grid>
             </Grid>
           ))}
