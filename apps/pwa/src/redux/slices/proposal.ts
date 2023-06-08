@@ -3,7 +3,7 @@ import { getOneProposal } from 'queries/commons/getOneProposal';
 import { insertPayments } from 'queries/project-supervisor/insertPayments';
 import { dispatch } from 'redux/store';
 import graphQlAxiosInstance from 'utils/axisoGraphQlInstance';
-import { ActiveTap, Proposal, tracks, UpdateStatus } from '../../@types/proposal';
+import { ActiveTap, Proposal, ProposalCount, tracks, UpdateStatus } from '../../@types/proposal';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import { insertChequeUpdatePayment } from 'queries/Cashier/insertChequeUpdatePayment';
 import { createNewFollowUp } from 'queries/commons/createNewFollowUp';
@@ -14,18 +14,21 @@ import { useQuery } from 'urql';
 
 interface ProposalItme {
   isLoading: boolean;
+  loadingCount: boolean;
   error: Error | string | null;
   activeTap: ActiveTap;
   checkedItems: any;
   tracks: string[];
   employeeOnly: boolean;
   proposal: Proposal;
+  proposalCount: ProposalCount;
   updateStatus: UpdateStatus;
   track_list: tracks[];
 }
 
 const initialState: ProposalItme = {
   isLoading: false,
+  loadingCount: false,
   error: null,
   activeTap: 'main',
   checkedItems: [],
@@ -33,6 +36,13 @@ const initialState: ProposalItme = {
   employeeOnly: false,
   updateStatus: 'no-change',
   track_list: [],
+  proposalCount: {
+    incoming: 0,
+    inprocess: 0,
+    previous: 0,
+    close_report: 0,
+    payment_adjustment: 0,
+  },
   proposal: {
     id: '-1',
     project_name: 'test',
@@ -229,6 +239,17 @@ const slice = createSlice({
     endLoading(state) {
       state.isLoading = false;
     },
+    // START LOADING COUNT
+    startLoadingCount(state) {
+      state.loadingCount = true;
+    },
+    setLoadingCount(state, action) {
+      state.loadingCount = action.payload;
+    },
+    // END LOADING COUNT
+    endLoadingCount(state) {
+      state.loadingCount = false;
+    },
     // HAS ERROR
     hasError(state, action) {
       state.isLoading = false;
@@ -293,6 +314,9 @@ const slice = createSlice({
     setUpdatedStatus(state, action) {
       state.updateStatus = action.payload;
     },
+    setProposalCount(state, action) {
+      state.proposalCount = action.payload;
+    },
   },
 });
 
@@ -308,6 +332,7 @@ export const {
   setTracks,
   setEmployeeOnly,
   setTrackBudget,
+  setProposalCount,
   setUpdatedStatus,
 } = slice.actions;
 
@@ -395,26 +420,49 @@ export const getTrackList = (isGeneral: number, role: string) => async () => {
   }
 };
 
-export const getTrackBudget = (track_id: string, role: string) => async () => {
-  if (track_id !== 'test') {
+// export const getTrackBudget = (track_id: string, role: string) => async () => {
+//   if (track_id !== 'test') {
+//     try {
+//       dispatch(slice.actions.startLoading);
+//       const url = `/tender/proposal/payment/find-track-budget?id=${track_id as string}`;
+//       try {
+//         const response = await axiosInstance.get(url, {
+//           headers: { 'x-hasura-role': role },
+//         });
+//         if (response.data.statusCode === 200) {
+//           console.log(response.data.data.data, 'test response');
+//           dispatch(slice.actions.setTrackBudget(response.data.data.data));
+//         }
+//       } catch (error) {
+//         console.log(error);
+//       }
+
+//       dispatch(slice.actions.endLoading);
+//     } catch (error) {
+//       dispatch(slice.actions.hasError(error));
+//     }
+//   }
+// };
+export const getProposalCount = (role: string) => async () => {
+  if (role !== 'test') {
+    dispatch(slice.actions.setLoadingCount(true));
     try {
-      dispatch(slice.actions.startLoading);
-      const url = `/tender/proposal/payment/find-track-budget?id=${track_id as string}`;
+      const url = `/tender-proposal/proposal-count`;
       try {
         const response = await axiosInstance.get(url, {
           headers: { 'x-hasura-role': role },
         });
         if (response.data.statusCode === 200) {
-          console.log(response.data.data.data, 'test response');
-          dispatch(slice.actions.setTrackBudget(response.data.data.data));
+          // console.log(response.data, 'test response');
+          dispatch(slice.actions.setProposalCount(response.data.data));
         }
       } catch (error) {
         console.log(error);
       }
-
-      dispatch(slice.actions.endLoading);
     } catch (error) {
       dispatch(slice.actions.hasError(error));
+    } finally {
+      dispatch(slice.actions.setLoadingCount(false));
     }
   }
 };

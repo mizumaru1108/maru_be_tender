@@ -21,7 +21,7 @@ const RootStyle = styled(Box)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 interface Props extends BoxProps {
-  title: string;
+  title?: string;
   img?: string;
   description?: string;
   actionButton?: React.ReactNode;
@@ -46,7 +46,8 @@ export default function EmptyContent({ title, description, img, actionButton, ..
         sx={{ color: theme.palette.grey[600], fontStyle: 'italic' }}
         gutterBottom
       >
-        {title ? title : translate('errors.empty_data')}
+        {/* {title ? title : translate('errors.empty_data')} */}
+        {translate('errors.empty_data')}
       </Typography>
 
       {description && (

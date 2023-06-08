@@ -407,6 +407,11 @@ const navConfig = {
           icon: ICONS.tender_project_manager.requests_in_process,
         },
         {
+          title: 'exchange_permission',
+          path: PATH_PROJECT_MANAGER.exchange_permission,
+          icon: ICONS.tender_project_manager.exchange_permission,
+        },
+        {
           title: 'previous_funding_requests',
           path: PATH_PROJECT_MANAGER.previous_funding_requests,
           icon: ICONS.tender_project_manager.previous_funding_requests,
@@ -430,11 +435,6 @@ const navConfig = {
           title: 'rejection_list',
           path: PATH_PROJECT_MANAGER.rejection_list,
           icon: ICONS.tender_ceo.rejection_list,
-        },
-        {
-          title: 'exchange_permission',
-          path: PATH_PROJECT_MANAGER.exchange_permission,
-          icon: ICONS.tender_project_manager.exchange_permission,
         },
         {
           title: 'portal_reports',

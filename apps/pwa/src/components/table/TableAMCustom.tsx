@@ -15,6 +15,7 @@ import {
   Typography,
   Button,
   Stack,
+  TableRow,
 } from '@mui/material';
 // components
 import { TableHeadCustom, TableRowsData, TableSelectedActions } from 'components/table';
@@ -26,6 +27,7 @@ import useLocales from 'hooks/useLocales';
 //
 import { IPropsTablesList } from './type';
 import { Link as RouterLink } from 'react-router-dom';
+import EmptyContent from 'components/EmptyContent';
 
 // -------------------------------------------------------------------------------
 
@@ -101,7 +103,7 @@ export default function TableAMCustom({
     });
 
     tableData = stabilizedThis.map((el) => el[0]);
-    console.log({ tableData, filterName });
+    // console.log({ tableData, filterName });
     if (filterName) {
       tableData = tableData.filter(
         (item: Record<string, any>) =>
@@ -243,6 +245,7 @@ export default function TableAMCustom({
                 ))}
           </TableBody>
         </Table>
+        {dataTable.length === 0 && <EmptyContent />}
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"

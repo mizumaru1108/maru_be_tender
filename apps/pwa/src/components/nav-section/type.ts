@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 import { BoxProps } from '@mui/material';
+import { ProposalCount } from '../../@types/proposal';
 
 // ----------------------------------------------------------------------
 
@@ -20,6 +21,7 @@ export type NavItemProps = {
   open: boolean;
   active: boolean;
   isCollapse?: boolean;
+  count?: ProposalCount;
 };
 
 export interface NavSectionProps extends BoxProps {

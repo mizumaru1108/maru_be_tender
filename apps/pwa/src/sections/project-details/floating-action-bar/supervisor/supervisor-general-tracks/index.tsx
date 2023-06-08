@@ -27,6 +27,7 @@ import moment from 'moment';
 import axiosInstance from 'utils/axios';
 import PendingProposalRequestSending from '../PendingProposalRequestSending';
 import { FEATURE_AMANDEMENT_PROPOSAL } from '../../../../../config';
+import { getProposalCount } from '../../../../../redux/slices/proposal';
 
 function FloatingActionBar() {
   const { id: pid } = useParams();
@@ -99,7 +100,9 @@ function FloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmitting(false);
           navigate(`/project-supervisor/dashboard/app`);
         })
@@ -192,7 +195,9 @@ function FloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmittingRejected(false);
           navigate(`/project-supervisor/dashboard/app`);
         })
@@ -319,7 +324,9 @@ function FloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmittingStepback(false);
           navigate(`/project-supervisor/dashboard/app`);
         })

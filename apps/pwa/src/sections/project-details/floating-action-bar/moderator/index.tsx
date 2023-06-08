@@ -17,7 +17,7 @@ import { addConversation, setActiveConversationId, setMessageGrouped } from 'red
 import { dispatch, useDispatch, useSelector } from 'redux/store';
 import moment from 'moment';
 import { Conversation } from '../../../../@types/wschat';
-import { getTrackList } from 'redux/slices/proposal';
+import { getProposalCount, getTrackList } from 'redux/slices/proposal';
 
 function ModeratorActionBar() {
   const { user, activeRole } = useAuth();
@@ -49,7 +49,7 @@ function ModeratorActionBar() {
 
   const handleApproval = async (data: any) => {
     setIsSubmitting(true);
-    console.log({ data });
+    // console.log({ data });
 
     try {
       const payload = {
@@ -74,7 +74,9 @@ function ModeratorActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmitting(false);
           navigate(`/moderator/dashboard/app`);
         })
@@ -142,7 +144,7 @@ function ModeratorActionBar() {
 
   const handleRejected = async (data: any) => {
     setIsSubmittingRejected(true);
-    console.log({ data });
+    // console.log({ data });
 
     try {
       const payload = {
@@ -168,7 +170,9 @@ function ModeratorActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmittingRejected(false);
           navigate(`/moderator/dashboard/app`);
         })

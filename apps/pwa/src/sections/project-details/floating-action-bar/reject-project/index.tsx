@@ -12,6 +12,8 @@ import useLocales from 'hooks/useLocales';
 
 //
 import axiosInstance from 'utils/axios';
+import { getProposalCount } from '../../../../redux/slices/proposal';
+import { useDispatch } from '../../../../redux/store';
 
 function RejectProject() {
   const [action, setAction] = React.useState('');
@@ -19,6 +21,7 @@ function RejectProject() {
   const { translate, currentLang } = useLocales();
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const { user, activeRole } = useAuth();
 
@@ -57,7 +60,9 @@ function RejectProject() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmitting(false);
           navigate(
             `/${activeRole === 'tender_project_manager' ? 'project-manager' : 'ceo'}/dashboard/app`

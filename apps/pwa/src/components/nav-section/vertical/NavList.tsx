@@ -9,6 +9,7 @@ import { getActive, isExternalLink } from '..';
 //redux
 import { setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
 import { useDispatch } from 'redux/store';
+import { ProposalCount } from '../../../@types/proposal';
 
 // ----------------------------------------------------------------------
 
@@ -17,6 +18,7 @@ type NavListRootProps = {
   depth: number;
   hasChildren: boolean;
   isCollapse?: boolean;
+  count?: ProposalCount;
 };
 
 export default function NavList({
@@ -24,7 +26,9 @@ export default function NavList({
   depth,
   hasChildren,
   isCollapse = false,
+  count,
 }: NavListRootProps) {
+  // console.log({ count });
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -64,6 +68,7 @@ export default function NavList({
             open={open}
             active={active}
             isCollapse={isCollapse}
+            count={count}
           />
         </Link>
       ) : (
@@ -80,6 +85,7 @@ export default function NavList({
           open={open}
           active={active}
           isCollapse={isCollapse}
+          count={count}
           onClick={handleClickItem}
         />
       )}

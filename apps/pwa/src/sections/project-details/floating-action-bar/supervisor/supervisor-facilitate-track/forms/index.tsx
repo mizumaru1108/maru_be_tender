@@ -25,6 +25,7 @@ import FirstForm from './FirstForm';
 import ForthFrom from './ForthFrom';
 import SecondForm from './SecondForm';
 import ThirdForm from './ThirdForm';
+import { getProposalCount } from '../../../../../../redux/slices/proposal';
 //
 
 const steps = [
@@ -174,7 +175,9 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmitting(false);
           navigate(`/${editedBy}/dashboard/app`);
           dispatch(stepResetActive({}));

@@ -17,6 +17,7 @@ import axiosInstance from '../../../utils/axios';
 // import useLocales from '../../../hooks/useLocales';
 import { useNavigate } from 'react-router';
 import useLocales from '../../../hooks/useLocales';
+import EmptyContent from 'components/EmptyContent';
 
 // -------------------------------------------------------------------------------
 
@@ -72,18 +73,20 @@ function InfoUpdateRequestPage() {
       resultInfoUpdate?.edit_requests &&
       resultInfoUpdate?.edit_requests.length > 0
     ) {
-      const newEditRequestList = resultInfoUpdate?.edit_requests.map((item: any) => {
-        const vcd = item;
-        return {
-          id: vcd.id,
-          partner_name:
-            vcd && vcd.user && vcd.user.client_data && vcd.user.client_data.entity
-              ? vcd.user.client_data.entity
-              : '-No Data-',
-          createdAt: vcd.created_at,
-          status_id: vcd.status_id,
-        };
-      });
+      const newEditRequestList = resultInfoUpdate?.edit_requests
+        .filter((item: any) => item.status_id !== 'APPROVED')
+        .map((item: any) => {
+          const vcd = item;
+          return {
+            id: vcd.id,
+            partner_name:
+              vcd && vcd.user && vcd.user.client_data && vcd.user.client_data.entity
+                ? vcd.user.client_data.entity
+                : '-No Data-',
+            createdAt: vcd.created_at,
+            status_id: vcd.status_id,
+          };
+        });
       setInfoUpdateRequest(newEditRequestList);
       setLoading(false);
     }

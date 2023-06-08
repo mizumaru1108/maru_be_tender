@@ -25,6 +25,7 @@ import axiosInstance from 'utils/axios';
 import { Conversation } from '../../../../@types/wschat';
 import FacilitateSupervisorAcceptingForm from '../supervisor/supervisor-facilitate-track/forms';
 import { setStepsData, stepResetActive } from '../../../../redux/slices/supervisorAcceptingForm';
+import { getProposalCount } from '../../../../redux/slices/proposal';
 
 function FloatingActionBar() {
   const { id: proposal_id } = useParams();
@@ -120,7 +121,9 @@ function FloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmitting(false);
           navigate(`/project-manager/dashboard/app`);
         })
@@ -200,7 +203,7 @@ function FloatingActionBar() {
         selectLang: currentLang.value,
       };
 
-      console.log('payloadApprovalConsultant', payload);
+      // console.log('payloadApprovalConsultant', payload);
 
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
@@ -212,7 +215,9 @@ function FloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmitting(false);
           navigate(`/project-manager/dashboard/app`);
         })
@@ -305,7 +310,9 @@ function FloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmittingRejected(false);
           navigate(`/project-manager/dashboard/app`);
         })
@@ -397,7 +404,9 @@ function FloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmittingStepback(false);
           navigate(`/project-manager/dashboard/app`);
         })

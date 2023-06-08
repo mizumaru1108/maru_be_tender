@@ -150,7 +150,8 @@ function MainManagerPage() {
       setCardInsightData(newDataInsight);
     }
 
-    if (resultNewRequest && resultNewRequest?.user && resultNewRequest?.user.lenght > 0) {
+    if (resultNewRequest && resultNewRequest?.user && resultNewRequest?.user.length > 0) {
+      // console.log({ resultNewRequest });
       const resultDataNR = resultNewRequest?.user.map((v: any) => ({
         id: v.id,
         // partner_name: (v.client_data.entity && v.client_data.entity) ?? '-No Data-',
@@ -183,21 +184,25 @@ function MainManagerPage() {
     //   setInfoUpdateRequest(resultDataInfoUpdate);
     // }
     if (resultInfoUpdate) {
-      const newEditRequestList = resultInfoUpdate?.edit_requests.map((item: any) => {
-        const vcd = item;
-        let tmpName = '';
-        if (vcd && vcd.user && vcd.user.client_data && !!vcd.user.client_data.entity) {
-          tmpName = vcd.user.client_data.entity;
-        } else {
-          tmpName = '-No Data-';
-        }
-        return {
-          id: vcd.id,
-          partner_name: tmpName,
-          createdAt: vcd.created_at,
-          status_id: vcd.status_id,
-        };
-      });
+      const newEditRequestList = resultInfoUpdate?.edit_requests
+        .filter((item: any) => item.status_id !== 'APPROVED')
+        .map((item: any) => {
+          const vcd = item;
+          let tmpName = '';
+          if (vcd && vcd.user && vcd.user.client_data && !!vcd.user.client_data.entity) {
+            tmpName = vcd.user.client_data.entity;
+          } else {
+            tmpName = '-No Data-';
+          }
+          return {
+            id: vcd.id,
+            partner_name: tmpName,
+            createdAt: vcd.created_at,
+            status_id: vcd.status_id,
+          };
+        });
+      console.log({ resultInfoUpdate });
+      console.log({ newEditRequestList });
       setInfoUpdateRequest(newEditRequestList);
     }
   }, [

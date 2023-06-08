@@ -16,7 +16,7 @@ import SupervisorGrants from './role-logs/SupervisorGrants';
 import SupervisorGeneral from './role-logs/SupervisorGeneral';
 import PanoramaFishEyeTwoToneIcon from '@mui/icons-material/PanoramaFishEyeTwoTone';
 import { dispatch, useSelector } from '../../../redux/store';
-import { getProposal, getTrackBudget } from '../../../redux/slices/proposal';
+// import { getProposal, getTrackBudget } from '../../../redux/slices/proposal';
 import FinancePaymentLog from './role-logs/FinancePaymentLog';
 import CashierPaymentLog from './role-logs/CashierPaymentLog';
 import ClientClosingReport from './role-logs/ClientClosingReport';
@@ -145,13 +145,13 @@ function ProjectPath() {
     });
   }, [followUps, proposal]);
 
-  React.useEffect(() => {
-    // dispatch(getProposal(proposal_id as string, activeRole! as string));
-    dispatch(getTrackBudget(proposal.track_id as string, activeRole! as string));
-    // if (!isLoading) {
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, isLoading]);
+  // React.useEffect(() => {
+  //   // dispatch(getProposal(proposal_id as string, activeRole! as string));
+  //   dispatch(getTrackBudget(proposal.track_id as string, activeRole! as string));
+  //   // if (!isLoading) {
+  //   // }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [activeRole, isLoading]);
 
   const formattedDateTime = (getDate: Date) => {
     const formattedDate = `${new Date(getDate).getDate()}.${

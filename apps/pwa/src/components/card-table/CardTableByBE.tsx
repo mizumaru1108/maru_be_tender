@@ -45,6 +45,7 @@ CardTablePropsByBE) {
       });
       if (rest) {
         const tmpTotalPage = Math.ceil(rest.data.total / limit);
+        // console.log('rest.data.data', rest.data.data);
         setTotalPage(tmpTotalPage);
         setCardData(
           rest.data.data.map((item: any) => ({

@@ -7,11 +7,13 @@ import useLocales from 'hooks/useLocales';
 import useAuth from 'hooks/useAuth';
 //
 import { role_url_map } from '../../../@types/commons';
+import { useDispatch } from '../../../redux/store';
 
 // ------------------------------------------------------------------------------------------
 
 export default function FloatingClientSubmit() {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const { id, actionType } = useParams();
   const navigate = useNavigate();
   const { translate } = useLocales();

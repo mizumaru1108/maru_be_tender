@@ -191,6 +191,13 @@ query getInvoicePaymentData(
 }
 `;
 
+export const getFinanceName = `query MyQuery($id: String = "") {
+  user_by_pk(id: $id) {
+    employee_name
+  }
+}
+`;
+
 export const getGeneratePaymentData = `
 query getInvoicePaymentData(
   $proposal_id: String = "",

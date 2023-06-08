@@ -11,6 +11,7 @@ import axiosInstance from 'utils/axios';
 //
 import { useSelector, useDispatch } from 'redux/store';
 import { useSnackbar } from 'notistack';
+import { getProposalCount } from '../../../redux/slices/proposal';
 
 // ------------------------------------------------------------------------------------------
 
@@ -21,6 +22,7 @@ export default function FloatingSpv() {
   const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
   const { enqueueSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -50,6 +52,9 @@ export default function FloatingSpv() {
           autoHideDuration: 3000,
         });
 
+        // for re count total proposal
+        dispatch(getProposalCount(activeRole ?? 'test'));
+        //
         navigate('/project-supervisor/dashboard/project-report');
       }
     } catch (err) {

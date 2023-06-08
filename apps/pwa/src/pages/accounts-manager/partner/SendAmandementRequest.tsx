@@ -55,6 +55,8 @@ export default function AccountSendAmandementRequest() {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuth();
 
+  // console.log('masuk sini');
+
   // Routes
   const params = useParams();
   const navigate = useNavigate();
@@ -127,17 +129,19 @@ export default function AccountSendAmandementRequest() {
 
   useEffect(() => {
     if (data) {
-      setPartnerDetails(data?.client_data_by_pk);
+      // console.log('data sini', data?.user_by_pk);
+      setPartnerDetails(data?.user_by_pk);
     }
   }, [data]);
+  // console.log({ data, partnerDetails });
 
   return (
     // <Page title="Partner Amandement Request">
     <Page title={translate('pages.account_manager.send_amandement')}>
       <Container>
         <ContentStyle>
-          {fetching && <Skeleton variant="rectangular" sx={{ height: 500, borderRadius: 2 }} />}
-          {partnerDetails && (
+          {/* {fetching && <Skeleton variant="rectangular" sx={{ height: 500, borderRadius: 2 }} />} */}
+          {!fetching && partnerDetails && (
             <>
               <Stack
                 spacing={4}

@@ -25,6 +25,7 @@ import moment from 'moment';
 import { Conversation } from '../../../../../@types/wschat';
 
 import { LoadingButton } from '@mui/lab';
+import { getProposalCount } from '../../../../../redux/slices/proposal';
 
 function FloatinActionBar() {
   const dispatch = useDispatch();
@@ -131,7 +132,9 @@ function FloatinActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmittingStepback(false);
           navigate(`/project-supervisor/dashboard/app`);
         })
@@ -254,7 +257,9 @@ function FloatinActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmittingRejected(false);
           navigate(`/project-supervisor/dashboard/app`);
         })

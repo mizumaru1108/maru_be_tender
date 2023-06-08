@@ -18,6 +18,7 @@ import { addConversation, setActiveConversationId, setMessageGrouped } from 'red
 import { dispatch, useSelector } from 'redux/store';
 import moment from 'moment';
 import { Conversation } from '../../../../@types/wschat';
+import { getProposalCount } from '../../../../redux/slices/proposal';
 
 function ConsultantFloatingActionBar() {
   const { enqueueSnackbar } = useSnackbar();
@@ -85,7 +86,9 @@ function ConsultantFloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmitting(false);
           navigate(`/consultant/dashboard/app`);
         })
@@ -177,7 +180,9 @@ function ConsultantFloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmitting(false);
           navigate(`/consultant/dashboard/app`);
         })
@@ -269,7 +274,9 @@ function ConsultantFloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmittingStepback(false);
           navigate(`/consultant/dashboard/app`);
         })

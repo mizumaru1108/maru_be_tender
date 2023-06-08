@@ -10,16 +10,39 @@ import Iconify from '../../Iconify';
 //
 import { NavItemProps } from '../type';
 import { ListItemStyle, ListItemTextStyle, ListItemIconStyle } from './style';
+import React from 'react';
 
 // ----------------------------------------------------------------------
 
 type Props = NavItemProps & ListItemButtonProps;
 
-export default function NavItem({ item, depth, active, open, isCollapse, ...other }: Props) {
+export default function NavItem({ item, depth, active, open, isCollapse, count, ...other }: Props) {
   const { translate } = useLocales();
   const theme = useTheme();
   const { title, icon, info, children, disabled, caption } = item;
-
+  // console.log({ count });
+  const menuTitle = React.useMemo(() => {
+    let tmpTitle = '';
+    if (
+      title === 'incoming_funding_requests_project_supervisor' ||
+      title === 'incoming_funding_requests' ||
+      title === 'incoming_exchange_permission_requests'
+    ) {
+      tmpTitle = `( ${count?.incoming || 0} ) ${translate(title)}`;
+    } else if (title === 'requests_in_process') {
+      tmpTitle = `( ${count?.inprocess || 0} ) ${translate(title)}`;
+    } else if (title === 'previous_funding_requests') {
+      tmpTitle = `( ${count?.previous || 0} ) ${translate(title)}`;
+    } else if (title === 'payment_adjustment' || title === 'exchange_permission') {
+      tmpTitle = `( ${count?.payment_adjustment || 0} ) ${translate(title)}`;
+    } else if (title === 'pages.common.close_report.text.project_report') {
+      tmpTitle = `( ${count?.close_report || 0} ) ${translate(title)}`;
+    } else {
+      tmpTitle = translate(title);
+    }
+    return tmpTitle;
+  }, [title, translate, count]);
+  // console.log({ menuTitle });
   const renderContent = (
     <ListItemStyle depth={depth} active={active} disabled={disabled} {...other}>
       {icon && <ListItemIconStyle>{icon}</ListItemIconStyle>}
@@ -28,7 +51,7 @@ export default function NavItem({ item, depth, active, open, isCollapse, ...othe
 
       <ListItemTextStyle
         isCollapse={isCollapse}
-        primary={translate(title)}
+        primary={menuTitle}
         secondary={
           caption && (
             <Tooltip title={translate(caption)} placement="top-start">

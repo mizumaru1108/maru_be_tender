@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router';
 // component
-import { Grid, useTheme, Typography, Card } from '@mui/material';
+import { Grid, useTheme, Typography, Card, Divider } from '@mui/material';
 // hooks
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
@@ -14,6 +14,7 @@ import { Proposal } from '../../../@types/proposal';
 import { useSelector } from 'redux/store';
 import { getOneNameCashier } from 'queries/Cashier/getOneNameCashier';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
+import { getFinanceName } from 'queries/commons/getOneProposal';
 
 // -------------------------------------------------------------------------------------------------
 
@@ -32,6 +33,13 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
   const params = useParams();
   const theme = useTheme();
 
+  const [{ data, fetching, error }] = useQuery({
+    query: getFinanceName,
+    variables: {
+      id: proposalData?.finance_id,
+    },
+  });
+
   // const [{ data, fetching, error }] = useQuery({
   //   query: getOneNameCashier,
   //   variables: {
@@ -46,8 +54,12 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
   // console.log('cashierName', data.user_by_pk.employee_name);
   // console.log('role', activeRole);
 
-  // if (fetching) return <>Loading...</>;
-  // if (error) return <>Oops Something went wrong!</>;
+  const financeName = data?.user_by_pk?.employee_name ?? 'test';
+
+  // console.log({ financeName });
+
+  if (fetching) return <>Loading...</>;
+  if (error) return <>Oops Something went wrong!</>;
 
   return (
     <React.Fragment>
@@ -184,6 +196,19 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                 {proposalData?.bank_information?.bank_name ?? '-'}
               </Typography>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Grid container justifyContent={'center'} sx={{ textAlign: 'center', mt: 10 }}>
+                <Grid item xs={12} md={4}>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    {/* {data.cashier_name.employee_name} */}
+                    {/* Nama Finance Here */}
+                    {financeName}
+                  </Typography>
+                  <Divider color="#000" variant="fullWidth" sx={{ margin: '8px 0 8px 0' }} />
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </Card>

@@ -327,6 +327,15 @@ export type PropsalLog = {
   track_id: string;
 };
 
+export type ProposalCount = {
+  incoming: number;
+  inprocess: number;
+  previous: number;
+  // payments: number;
+  payment_adjustment: number;
+  close_report: number;
+};
+
 export type PropsalLogGrants = {
   notes: string;
   updated_at: any;

@@ -20,6 +20,7 @@ import moment from 'moment';
 import { Conversation } from '../../../../@types/wschat';
 import FacilitateSupervisorAcceptingForm from '../supervisor/supervisor-facilitate-track/forms';
 import { setStepsData } from '../../../../redux/slices/supervisorAcceptingForm';
+import { getProposalCount } from '../../../../redux/slices/proposal';
 
 function FloatingActionBar() {
   const { user, activeRole } = useAuth();
@@ -87,7 +88,9 @@ function FloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmitting(false);
           navigate(`/ceo/dashboard/app`);
         })
@@ -179,7 +182,9 @@ function FloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmittingRejected(false);
           navigate(`/ceo/dashboard/app`);
         })
@@ -266,7 +271,9 @@ function FloatingActionBar() {
               variant: 'success',
             });
           }
-
+          // for re count total proposal
+          dispatch(getProposalCount(activeRole ?? 'test'));
+          //
           setIsSubmittingStepback(false);
           navigate(`/ceo/dashboard/app`);
         })
