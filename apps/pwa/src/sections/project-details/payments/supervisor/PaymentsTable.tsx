@@ -284,7 +284,7 @@ function PaymentsTable() {
               </Button>
             </Grid> */}
                 {
-                  (item.staus = 'done' && (
+                  (item.status = 'done' && (
                     <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                       <Button
                         variant="text"
