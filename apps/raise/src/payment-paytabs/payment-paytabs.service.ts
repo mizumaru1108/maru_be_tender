@@ -285,8 +285,16 @@ export class PaymentPaytabsService {
        * * Initialize for paytabs
        */
       const donationLogId = new ObjectId();
-      const firstName = donor?.firstname;
-      const lastName = donor?.lastname;
+      const firstName = donor
+        ? donor?.firstname
+          ? donor?.firstname
+          : donor?.firstName
+        : '';
+      const lastName = donor
+        ? donor?.lastname
+          ? donor?.lastname
+          : donor?.lastName
+        : '';
       const name = `${firstName} ${lastName}`;
       const now: Date = new Date();
       let getDonationLog;
@@ -894,8 +902,16 @@ export class PaymentPaytabsService {
        * * Initialize for paytabs
        */
       const donationLogId = new ObjectId();
-      const firstName = donor?.firstName || '';
-      const lastName = donor?.lastName || '';
+      const firstName = donor
+        ? donor?.firstname
+          ? donor?.firstname
+          : donor?.firstName
+        : '';
+      const lastName = donor
+        ? donor?.lastname
+          ? donor?.lastname
+          : donor?.lastName
+        : '';
       const name = `${firstName} ${lastName}`;
       const now: Date = new Date();
 

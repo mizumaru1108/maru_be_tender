@@ -27,6 +27,7 @@ export interface IVerifyEmailDto {
   organizationEmail?: string;
   verificationId?: string;
   userId: UUID;
+  role: string;
 }
 
 export interface ISendNewOrganization {

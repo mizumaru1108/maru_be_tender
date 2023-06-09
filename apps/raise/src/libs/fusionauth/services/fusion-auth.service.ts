@@ -42,6 +42,7 @@ import {
 import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
 import moment from 'moment';
 import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
+import { RoleEnum } from 'src/user/enums/role-enum';
 
 /**
  * Nest Fusion Auth Service
@@ -299,7 +300,7 @@ export class FusionAuthService {
       ) {
         this.logger.error('FusionAuth Error:', error.response.data);
         throw new BadRequestException(
-          `Registration failed on cloud app, field error (${[
+          `Field error (${[
             Object.keys(error.response.data.fieldErrors)[0],
           ]}) : ${
             error.response.data.fieldErrors[
@@ -470,7 +471,7 @@ export class FusionAuthService {
       ) {
         this.logger.error('FusionAuth Error:', error.response.data);
         throw new BadRequestException(
-          `Registration failed on cloud app, field error (${[
+          `Field error (${[
             Object.keys(error.response.data.fieldErrors)[0],
           ]}) : ${
             error.response.data.fieldErrors[
@@ -532,25 +533,31 @@ export class FusionAuthService {
               donor_redirect_link: `${requestVerifyPayload.domainUrl}/verif/${data.verificationId}`,
             },
           ],
-          clientContent:
-            "We're excited to welcome you to Giving Sadaqah and we're even more excited about what we've got planned.",
-          reviewerId: [],
-          reviewerEmail: [requestVerifyPayload.organizationEmail!],
-          reviewerContent: 'There is a new donor that you should check!',
-          reviewerMobileNumber: [],
-          reviwerSubject:
-            'Donor has sent you an Email! Please check your inbox...`',
-          reviewerEmailTemplatePath:
+          clientContent: `We're excited to welcome you to ${
             requestVerifyPayload.organizationId &&
             requestVerifyPayload.organizationId === '62414373cf00cca3a830814a'
-              ? 'gs/en/register/new_donor_organization'
-              : 'tmra/en/register/new_donor_organization_tmra',
-          reviewerEmailTemplateContext: [
-            {
-              donor_email: requestVerifyPayload.email,
-              donor_name: requestVerifyPayload.fullName,
-            },
-          ],
+              ? 'Giving Sadaqah'
+              : 'TMRA'
+          } and we're even more excited about what we've got planned.`,
+          reviewerId: [],
+          ...(requestVerifyPayload.role === RoleEnum.DONOR && {
+            reviewerEmail: [requestVerifyPayload.organizationEmail!],
+            reviewerContent: 'There is a new donor that you should check!',
+            reviewerMobileNumber: [],
+            reviwerSubject:
+              'Donor has sent you an Email! Please check your inbox...`',
+            reviewerEmailTemplatePath:
+              requestVerifyPayload.organizationId &&
+              requestVerifyPayload.organizationId === '62414373cf00cca3a830814a'
+                ? 'gs/en/register/new_donor_organization'
+                : 'tmra/en/register/new_donor_organization_tmra',
+            reviewerEmailTemplateContext: [
+              {
+                donor_email: requestVerifyPayload.email,
+                donor_name: requestVerifyPayload.fullName,
+              },
+            ],
+          }),
           createManyWebNotifPayload: [],
         };
 

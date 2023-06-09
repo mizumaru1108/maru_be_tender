@@ -209,12 +209,23 @@ export class AuthService {
       /**
        * ? Must be validate verification first or not
        * * for now directly sending welcoming email template
+       * * to be done by function below after fusion auth welcoming service
        */
 
-      await this.fusionAuthService.welcomingNewOrganization({
-        email: createNewOrganization.organization_email,
-        organization_name: createNewOrganization.organization_name,
+      // await this.fusionAuthService.welcomingNewOrganization({
+      //   email: createNewOrganization.organization_email,
+      //   organization_name: createNewOrganization.organization_name,
+      //   domainUrl: payload.domainUrl!,
+      // });
+
+      const verifyEmail = await this.fusionAuthService.requestVerify({
+        email: fusionAuthRes.user.email,
+        fullName: `${fusionAuthRes.user.firstName} ${fusionAuthRes.user.lastName}`,
+        userId: fusionAuthRes.user.id,
+        organizationId: createNewOrganization._id,
+        organizationEmail: createNewOrganization.organization_email,
         domainUrl: payload.domainUrl!,
+        role: registerUserOrganization.type,
       });
 
       await this.usersService.updateUser(
@@ -227,6 +238,7 @@ export class AuthService {
       return {
         user: registerUserOrganization,
         organization: createNewOrganization,
+        verificationId: verifyEmail,
         url: payload.domainUrl,
         token: fusionAuthRes.token,
         refreshToken: fusionAuthRes.refreshToken,

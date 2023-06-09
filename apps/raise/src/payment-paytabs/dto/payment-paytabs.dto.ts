@@ -93,7 +93,6 @@ export class PaymentPaytabsDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsArray()
   zakatLogs?: Array<ZakatLogDto>;
 
   @ApiPropertyOptional()

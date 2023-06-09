@@ -69,6 +69,8 @@ export class Organization {
   organizationEmail?: string;
   @Prop()
   organizationName?: string;
+  @Prop()
+  organizationType?: string;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);

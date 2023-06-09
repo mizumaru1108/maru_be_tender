@@ -91,6 +91,7 @@ export class GsAuthService {
       organizationId: registerRequest.organizationId!,
       organizationEmail: registerRequest.organizationEmail!,
       domainUrl: registerRequest.domainUrl,
+      role: registeredUser.type,
     });
 
     return {
