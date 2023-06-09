@@ -185,6 +185,7 @@ function ProjectPath() {
       return <Page500 error={errorTracks.message} />;
     }
   }
+  // console.log({ logs, proposal });
   return (
     <Grid container>
       <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>
@@ -232,7 +233,8 @@ function ProjectPath() {
                                 alignSelf: 'start',
                               }}
                             >
-                              {(item && item.reviewer && item.reviewer.employee_name) ?? 'CLIENT'}
+                              {(item && item.reviewer && item.reviewer.employee_name) ??
+                                proposal?.user?.employee_name}
                             </Typography>
                             <Typography
                               sx={{ fontSize: '12px', color: '#000', alignSelf: 'start' }}

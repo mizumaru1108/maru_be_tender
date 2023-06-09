@@ -61,6 +61,7 @@ function ProposalOnAmandement() {
     fetchingIncoming();
     // fetchingPrevious();
   }, [fetchingIncoming]);
+
   return (
     <Grid item md={12}>
       {/* <Typography variant="h4" sx={{ mb: '20px' }}>

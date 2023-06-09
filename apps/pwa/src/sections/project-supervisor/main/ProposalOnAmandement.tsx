@@ -89,7 +89,7 @@ function ProposalOnAmandement() {
   //       {translate('pages.common.loading')}
   //     </Grid>
   //   );
-  console.log({ cardData });
+  // console.log({ cardData });
   // const props = data?.data ?? [];
   // if (!props || props.length === 0) return null;
   return (
