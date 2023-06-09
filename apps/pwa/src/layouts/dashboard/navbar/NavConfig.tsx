@@ -58,6 +58,9 @@ const ICONS = {
   tender_finance: {
     main: getIcon('main'),
     incoming_exchange_permission_requests: getIcon('incoming-exchange-permission-requests'),
+    incoming_exchange_permission_requests_with_vat: getIcon(
+      'incoming-exchange-permission-requests'
+    ),
     requests_in_process: getIcon('requests-in-process'),
     previous_funding_requests: getIcon('previous-request'),
     portal_reports: getIcon('portal-reports'),
@@ -253,6 +256,11 @@ const navConfig = {
         {
           title: 'incoming_exchange_permission_requests',
           path: PATH_FINANCE.incoming_exchange_permission_requests,
+          icon: ICONS.tender_finance.incoming_exchange_permission_requests,
+        },
+        {
+          title: 'incoming_exchange_permission_requests_with_vat',
+          path: PATH_FINANCE.incoming_exchange_permission_requests_with_vat,
           icon: ICONS.tender_finance.incoming_exchange_permission_requests,
         },
         {

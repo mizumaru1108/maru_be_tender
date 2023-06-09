@@ -9,6 +9,9 @@ const MainFinance = Loadable(lazy(() => import('pages/finance/MainPage')));
 const IncomingExchangePermissionRequestsFinance = Loadable(
   lazy(() => import('pages/finance/IncomingExchangePermissionRequests'))
 );
+const IncomingExchangePermissionRequestsFinanceWithVat = Loadable(
+  lazy(() => import('pages/finance/IncomingExchangePermissionRequestsWithVat'))
+);
 const RequestsInProcessFinance = Loadable(lazy(() => import('pages/finance/RequestsInProcess')));
 const PortalReportsFinance = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesFinance = Loadable(lazy(() => import('pages/finance/Messages')));
@@ -84,6 +87,16 @@ export const financeRoute = {
           path: 'incoming-exchange-permission-requests',
           children: [
             { path: '', element: <IncomingExchangePermissionRequestsFinance /> },
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
+          path: 'incoming-exchange-permission-requests-with-vat',
+          children: [
+            { path: '', element: <IncomingExchangePermissionRequestsFinanceWithVat /> },
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,
