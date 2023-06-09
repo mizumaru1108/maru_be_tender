@@ -34,7 +34,7 @@ import { _supportGoalsArr } from '../../../../../_mock/_supportGoalsArr';
 
 function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType) {
   const { translate } = useLocales();
-  // const { proposal } = useSelector((state) => state.proposal);
+  const { proposal } = useSelector((state) => state.proposal);
   const { enqueueSnackbar } = useSnackbar();
   const { id: pid } = useParams();
   const [basedBudget, setBasedBudget] = useState<
@@ -48,7 +48,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
 
   const [isLoading, setIsLoading] = React.useState(false);
   const { activeRole } = useAuth();
-  const [proposal, setProposal] = useState<any>();
+  const [proposals, setProposal] = useState<any>();
 
   // const [proposalResult] = useQuery({
   //   query: getOneProposal,
@@ -139,6 +139,37 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   });
 
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
+    console.log('data', data);
+    // console.log('proposal,', proposal);
+    let totalSupportProposal: number | undefined = undefined;
+    if (proposal.proposal_item_budgets) {
+      totalSupportProposal = proposal
+        .proposal_item_budgets!.map((item) => parseInt(item.amount))
+        .reduce((acc, curr) => acc! + curr!, 0);
+    }
+    let totalAmount: number | undefined = undefined;
+    if (data.detail_project_budgets) {
+      totalAmount = data
+        .detail_project_budgets!.map((item) => item.amount)
+        .reduce((acc, curr) => acc! + curr!, 0);
+    }
+    // console.log('data support type:', data.support_type);
+    // console.log({ totalAmount, totalSupportProposal });
+    let checkPassAmount = false;
+    if (data.support_type) {
+      if (totalAmount <= totalSupportProposal) {
+        checkPassAmount = true;
+      } else {
+        checkPassAmount = false;
+      }
+    } else {
+      if (totalAmount < totalSupportProposal) {
+        checkPassAmount = true;
+      } else {
+        checkPassAmount = false;
+      }
+    }
+    // console.log({ checkPassAmount });
     if (data.detail_project_budgets.length) {
       const created_proposal_budget = data.detail_project_budgets
         .filter((item) => !basedBudget.find((i) => i.id === item.id))
@@ -171,8 +202,22 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         deleted_proposal_budget,
         ...data,
       };
-      console.log({ newData });
-      onSubmit(newData);
+      // console.log({ newData });
+      if (checkPassAmount) {
+        onSubmit(newData);
+      } else {
+        // console.log('false');
+        enqueueSnackbar(
+          `${translate('notification.error_exceeds_amount')}: ${
+            data.support_type ? totalSupportProposal : totalSupportProposal - 1
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          }
+        );
+      }
     } else {
       enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {
         variant: 'error',
@@ -246,6 +291,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   }, [fetchingIncoming]);
 
   // if (isLoading) return <>loading...</>;
+  // console.log({ support_type });
 
   return (
     <FormProvider methods={methods}>
@@ -293,8 +339,8 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     name="support_type"
                     label="نوع الدعم"
                     options={[
-                      { label: 'دعم جزئي', value: true },
-                      { label: 'دعم كلي', value: false },
+                      { label: 'دعم جزئي', value: false },
+                      { label: 'دعم كلي', value: true },
                     ]}
                   />
                 </Grid>
@@ -450,8 +496,8 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                               helperText={error?.message}
                               disabled={
                                 support_type === 'false' || support_type === undefined
-                                  ? true
-                                  : false
+                                  ? false
+                                  : true
                               }
                               sx={{
                                 '& > .MuiFormHelperText-root': {
@@ -476,8 +522,8 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                               helperText={error?.message}
                               disabled={
                                 support_type === 'false' || support_type === undefined
-                                  ? true
-                                  : false
+                                  ? false
+                                  : true
                               }
                               sx={{
                                 '& > .MuiFormHelperText-root': {
@@ -503,8 +549,8 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                               helperText={error?.message}
                               disabled={
                                 support_type === 'false' || support_type === undefined
-                                  ? true
-                                  : false
+                                  ? false
+                                  : true
                               }
                               sx={{
                                 '& > .MuiFormHelperText-root': {
@@ -535,7 +581,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                             remove(i);
                           }}
                           disabled={
-                            support_type === 'false' || support_type === undefined ? true : false
+                            support_type === 'false' || support_type === undefined ? false : true
                           }
                         >
                           <CloseIcon />
@@ -557,7 +603,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                         id: uuidv4(),
                       });
                     }}
-                    disabled={support_type === 'false' || support_type === undefined ? true : false}
+                    disabled={support_type === 'false' || support_type === undefined ? false : true}
                   >
                     {translate('add_new_line')}
                   </Button>

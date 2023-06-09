@@ -88,10 +88,10 @@ function FloatingActionBar() {
         selectLang: currentLang.value,
       };
 
-      console.log('acceptSupervisor', payload);
+      // console.log('acceptSupervisor', payload);
 
       await axiosInstance
-        .patch('/tender-proposal/change-satate', payload, {
+        .patch('/tender-proposal/change-state', payload, {
           headers: { 'x-hasura-role': activeRole! },
         })
         .then((res) => {
@@ -312,7 +312,7 @@ function FloatingActionBar() {
         selectLang: currentLang.value,
       };
 
-      console.log('payloadStepBackSupervisor', payload);
+      // console.log('payloadStepBackSupervisor', payload);
 
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
