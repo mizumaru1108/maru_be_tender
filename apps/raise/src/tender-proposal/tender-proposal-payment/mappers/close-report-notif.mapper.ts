@@ -15,9 +15,11 @@ export const CloseReportNotifMapper = (
 
   const logTime = moment(created_at).format('llll');
 
-  const subject = `Project Close Report`;
+  // const subject = `Project Close Report`;
+  const subject = `تقرير إغلاق المشروع`;
 
-  const clientContent = `Your proposal ${proposal.project_name} is almost complete, one more step to getting close report!, you just need to submit project close report form \n${logTime}`;
+  // const clientContent = `Your proposal ${proposal.project_name} is almost complete, one more step to getting close report!, you just need to submit project close report form \n${logTime}`;
+  const clientContent = `اقتراحك ${proposal.project_name} قريب من الاكتمال، خطوة واحدة فقط للحصول على تقرير الإغلاق! عليك فقط تقديم نموذج تقرير إغلاق المشروع \n${logTime}`;
   let clientEmailTemplatePath: string | undefined = undefined;
   let clientEmailTemplateContext: Record<string, any>[] | undefined = undefined;
 

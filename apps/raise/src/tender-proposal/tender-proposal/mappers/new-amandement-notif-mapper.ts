@@ -15,7 +15,7 @@ export const NewAmandementNotifMapper = (
 
   const logTime = moment(created_at).format('llll');
 
-  const subject = `New Amandement Request`;
+  const subject = `طلب تعديل جديد`;
 
   const clientContent = `"مرحبًا ${proposal.user.employee_name}، نود إبلاغك بأنه تم طلب تعديل معلومات مشروعك '${proposal.project_name}'.
   يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات، أو انقر هنا."`;
