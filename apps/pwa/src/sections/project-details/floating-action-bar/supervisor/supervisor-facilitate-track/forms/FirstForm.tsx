@@ -116,8 +116,8 @@ function FirstForm({ children, onSubmit }: any) {
               }
             }}
             options={[
-              { label: 'دعم جزئي', value: true },
-              { label: 'دعم كلي', value: false },
+              { label: 'دعم جزئي', value: false },
+              { label: 'دعم كلي', value: true },
             ]}
           />
         </Grid>
