@@ -83,13 +83,13 @@ function ProposalOnAmandement() {
     fetchingIncoming();
     // fetchingPrevious();
   }, [fetchingIncoming]);
-  if (fetching)
-    return (
-      <Grid item md={12}>
-        {translate('pages.common.loading')}
-      </Grid>
-    );
-  // console.log({ cardData });
+  // if (fetching)
+  //   return (
+  //     <Grid item md={12}>
+  //       {translate('pages.common.loading')}
+  //     </Grid>
+  //   );
+  console.log({ cardData });
   // const props = data?.data ?? [];
   // if (!props || props.length === 0) return null;
   return (
@@ -134,7 +134,8 @@ function ProposalOnAmandement() {
                       ? item.project_number
                       : item.id
                   ),
-                  inquiryStatus: item.outter_status.toLowerCase(),
+                  inquiryStatus:
+                    (item && item.outter_status && item.outter_status.toLowerCase()) || undefined,
                 }}
                 content={{
                   projectName: item.project_name,

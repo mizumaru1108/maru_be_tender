@@ -322,7 +322,7 @@ const ar = {
           project_number: 'رقم المشروع',
           project_track: 'مسار المشروع',
           project_goals: 'أهداف المشروع',
-          project_region: 'منطقة',
+          project_region: 'المنطقة',
           project_area: 'موقع المشروع',
           project_total_support_amount: 'إجمالي مبلغ الدعم',
           project_outcome: 'نتيجة المشروع',
@@ -2259,6 +2259,30 @@ const ar = {
       section_name: 'اسم القسم',
       download: 'تحميل',
       view: 'منظر',
+    },
+  },
+  amandement: {
+    client: {
+      amandement_request: {
+        amount_required_fsupport: 'المبلغ المطلوب للدعم',
+        letter_ofsupport_req: 'خطاب طلب الدعم',
+        num_ofproject_binicficiaries: 'عدد المستفيدين من المشروع',
+        project_attachments: 'مرفقات المشروع',
+        project_beneficiaries: 'نوع الفئة المستهدفة',
+        project_goals: 'أهداف المشروع',
+        project_idea: 'فكرة المشروع',
+        project_implement_date: 'تاريخ تنفيذ المشروع',
+        project_location: ' مكان تنفيذ المشروع',
+        project_outputs: 'مخرجات المشروع',
+        project_risks: 'مخاطر المشروع',
+        project_strengths: 'نقاط القوة للمشروع',
+        notes: 'ملاحظات',
+      },
+    },
+  },
+  snackbar: {
+    supervisor: {
+      sent_success_amandement: 'تم قبول طلب التعديل',
     },
   },
 };

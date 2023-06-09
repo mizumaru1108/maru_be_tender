@@ -172,7 +172,7 @@ function PaymentsTable() {
                     </Typography>
                   )}
                 </Grid>
-              ) : item.status === 'accepted_by_finance' ? (
+              ) : item.status === 'accepted_by_finance' && activeRole !== 'tender_client' ? (
                 <>
                   <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                     <Button

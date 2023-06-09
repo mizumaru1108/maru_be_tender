@@ -172,7 +172,7 @@ const ProjectCard = ({
       }
     }
   }, [role, destination, translate, title.inquiryStatus]);
-
+  // console.log('test', title);
   return (
     <Card sx={{ backgroundColor: '#fff' }}>
       <CardContent>
@@ -187,11 +187,13 @@ const ProjectCard = ({
             {/* {title.id} */}
             {title.project_number ?? title.id}
           </Typography>
-          {title.inquiryStatus && (
+          {title && title.inquiryStatus && (
             <Box
               sx={{
                 borderRadius: '10px',
-                backgroundColor: inquiryStatusStyle[title.inquiryStatus].backgroundColor,
+                backgroundColor: title.inquiryStatus
+                  ? inquiryStatusStyle[title.inquiryStatus].backgroundColor
+                  : '#fff',
                 p: '5px',
               }}
             >

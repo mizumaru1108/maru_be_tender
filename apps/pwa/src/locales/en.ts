@@ -2251,6 +2251,30 @@ const en = {
       view: 'View',
     },
   },
+  amandement: {
+    client: {
+      amandement_request: {
+        amount_required_fsupport: 'Amount required for support',
+        letter_ofsupport_req: 'Letter of support requirment',
+        num_ofproject_binicficiaries: 'Number of project biniciaries',
+        project_attachments: 'Project attachments',
+        project_beneficiaries: 'Project beneficiaries',
+        project_goals: 'Project goals',
+        project_idea: 'Project idea',
+        project_implement_date: 'Project implement date',
+        project_location: ' Project location',
+        project_outputs: 'Project outputs',
+        project_risks: 'Project risks',
+        project_strengths: 'Project strengths',
+        notes: 'Notes',
+      },
+    },
+  },
+  snackbar: {
+    supervisor: {
+      sent_success_amandement: 'The amandement request has been sent successfully',
+    },
+  },
 };
 
 export default en;

@@ -54,6 +54,10 @@ export const Taps = {
         value: 'project-path',
       },
       {
+        title: 'project_details.actions.project_budget',
+        value: 'project-budget',
+      },
+      {
         title: 'project_details.actions.project_timeline',
         value: 'project-timeline',
       },

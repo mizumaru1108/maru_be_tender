@@ -151,7 +151,9 @@ const AmandementRequest = () => {
                         <Typography
                           sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', color: 'text.secondary' }}
                         >
-                          {formatingFieldName(name)}
+                          {/* {formatingFieldName(name)} */}
+                          {/* {name} */}
+                          {translate(`amandement.client.amandement_request.${name}`)}
                         </Typography>
                         <Typography
                           sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', color: 'text.primary' }}

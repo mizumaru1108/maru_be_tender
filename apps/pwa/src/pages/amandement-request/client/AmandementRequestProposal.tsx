@@ -97,7 +97,7 @@ function AmandementRequestProposal() {
         }
       );
       if (rest) {
-        enqueueSnackbar('Edit request has been approved', {
+        enqueueSnackbar(translate('snackbar.supervisor.sent_success_amandement'), {
           variant: 'success',
           preventDuplicate: true,
           autoHideDuration: 3000,

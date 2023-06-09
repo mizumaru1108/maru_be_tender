@@ -69,6 +69,14 @@ function FifthForm({ children, onSubmit }: any) {
   });
 
   const onSubmitForm = (data: SupervisorStep4) => {
+    // console.log(step1, 'step1');
+    let totalAmount: number | undefined = undefined;
+    if (data.proposal_item_budgets.length) {
+      totalAmount = data
+        ?.proposal_item_budgets!.map((item) => item.amount)
+        .reduce((acc, curr) => acc! + curr!, 0);
+    }
+    // console.log(totalAmount);
     if (data.proposal_item_budgets.length) {
       data.created_proposal_budget = data.proposal_item_budgets
         .filter((item) => !basedBudget.find((i) => i.id === item.id))
@@ -88,19 +96,30 @@ function FifthForm({ children, onSubmit }: any) {
 
       data.deleted_proposal_budget = tempDeletedBudget;
 
-      const totalAmount = data.updated_proposal_budget.reduce(
-        (acc, cur) => acc + Number(cur.amount),
-        0
-      );
+      // const totalAmount = data.updated_proposal_budget.reduce(
+      //   (acc, cur) => acc + Number(cur.amount),
+      //   0
+      // );
 
-      if (totalAmount <= step1.fsupport_by_supervisor!) {
-        onSubmit(data);
-      } else {
-        enqueueSnackbar(translate('notification.error_exceeds_amount'), {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
+      if (step1 && step1.fsupport_by_supervisor && totalAmount) {
+        if (step1.support_type && totalAmount <= step1.fsupport_by_supervisor!) {
+          onSubmit(data);
+        } else {
+          if (totalAmount < step1.fsupport_by_supervisor!) {
+            onSubmit(data);
+          } else {
+            enqueueSnackbar(
+              `${translate('notification.error_exceeds_amount')}: ${
+                step1.support_type ? step1.fsupport_by_supervisor : step1.fsupport_by_supervisor - 1
+              }`,
+              {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              }
+            );
+          }
+        }
       }
     } else {
       enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {

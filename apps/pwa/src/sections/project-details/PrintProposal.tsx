@@ -251,7 +251,7 @@ export default function PrintProposal() {
                         fontSize: '12px',
                       }}
                     >
-                      {translate('region')}
+                      {translate('pages.finance.payment_generate.heading.project_region')}
                     </Typography>
                     <Typography>{(proposal.region && proposal.region) ?? '-No Data-'}</Typography>
                   </Stack>

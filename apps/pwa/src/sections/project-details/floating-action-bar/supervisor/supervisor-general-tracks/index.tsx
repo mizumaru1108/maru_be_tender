@@ -91,7 +91,7 @@ function FloatingActionBar() {
       console.log('acceptSupervisor', payload);
 
       await axiosInstance
-        .patch('/tender-proposal/change-state', payload, {
+        .patch('/tender-proposal/change-satate', payload, {
           headers: { 'x-hasura-role': activeRole! },
         })
         .then((res) => {
