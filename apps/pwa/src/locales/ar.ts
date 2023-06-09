@@ -1239,6 +1239,7 @@ const ar = {
     },
   },
   incoming_exchange_permission_requests: 'طلبات إذن الصرف الواردة',
+  incoming_exchange_permission_requests_with_vat: 'طلبات إذن الصرف الواردة مع ضريبة القيمة المضافة',
   requests_in_process: 'طلبات قيد الاجراء',
   incoming_funding_requests_project_supervisor: 'طلبات الدعم الواردة',
   amandement_requests_project_supervisor: 'طلبات التعديل',

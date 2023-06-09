@@ -1237,6 +1237,7 @@ const en = {
     content: {},
   },
   incoming_exchange_permission_requests: 'Incoming Exchange Permission Requests',
+  incoming_exchange_permission_requests_with_vat: 'Incoming Exchange Permission Requests With VAT',
   requests_in_process: 'Requests in Process',
   incoming_funding_requests_project_supervisor: 'Incoming Funding Requests',
   amandement_requests_project_supervisor: 'Amandement Requests',

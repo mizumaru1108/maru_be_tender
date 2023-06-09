@@ -11,6 +11,14 @@ export function isExternalLink(path: string) {
   return path.includes('http');
 }
 
+// export function getActive(path: string, pathname: string) {
+//   return path ? !!matchPath({ path: path, end: false }, pathname) : false;
+// }
+
 export function getActive(path: string, pathname: string) {
-  return path ? !!matchPath({ path: path, end: false }, pathname) : false;
+  // console.log({ path, pathname });
+  // console.log(!!matchPath({ path: path, end: false }, pathname), 'test');
+  return path && pathname && path === pathname
+    ? !!matchPath({ path: path, end: false }, pathname)
+    : false;
 }

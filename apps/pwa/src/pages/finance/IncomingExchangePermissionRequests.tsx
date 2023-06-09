@@ -53,10 +53,11 @@ function IncomingExchangePermissionRequests() {
           /> */}
           <CardTableByBE
             title={translate('previous_support_requests')}
-            endPoint="tender-proposal/payment-adjustment?vat=false"
+            endPoint="tender-proposal/payment-adjustment"
             destination="incoming-exchange-permission-requests"
             limitShowCard={6}
             cardFooterButtonAction="completing-exchange-permission"
+            addCustomFilter={'&vat=true'}
           />
         </ContentStyle>
       </Container>

@@ -194,6 +194,7 @@ export type CardTablePropsByBE = {
     | 'payment-adjustment'
     | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
     | 'project-report';
+  addCustomFilter?: string;
   // staticFilters?: any;
   // baseFilters?: any;
 };
