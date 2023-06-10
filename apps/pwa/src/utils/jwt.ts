@@ -6,15 +6,18 @@ import axios from './axios';
 
 // ----------------------------------------------------------------------
 
-const isValidToken = (accessToken: string) => {
+export const isValidToken = (accessToken: string, forwardSeconds: number) => {
   if (!accessToken) {
     return false;
   }
-  const decoded = jwtDecode<{ exp: number }>(accessToken);
-
-  const currentTime = Date.now() / 1000;
-
-  return decoded.exp > currentTime;
+  try {
+    const decoded = jwtDecode<{ exp: number }>(accessToken);
+    const currentTime = Date.now() / 1000;
+    return decoded.exp >= currentTime + forwardSeconds;
+  } catch (err) {
+    console.error('Error decoding JWT token:', accessToken, err);
+    return false;
+  }
 };
 
 const handleTokenExpired = (exp: number) => {
@@ -42,7 +45,7 @@ const handleTokenExpired = (exp: number) => {
   }, timeLeft);
 };
 
-const setSession = (accessToken: string | null, refreshToken: string | null) => {
+export const setSession = (accessToken: string | null, refreshToken: string | null) => {
   if (accessToken && refreshToken) {
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
@@ -55,5 +58,3 @@ const setSession = (accessToken: string | null, refreshToken: string | null) => 
     // delete axios.defaults.headers.common.Authorization;
   }
 };
-
-export { isValidToken, setSession };

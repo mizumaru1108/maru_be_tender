@@ -47,7 +47,6 @@
     "@reduxjs/toolkit": "^1.8.3",
     "@turf/bbox": "^6.5.0",
     "@urql/exchange-auth": "^1.0.0",
-    "@urql/preact": "^3.0.2",
     "amazon-cognito-identity-js": "^5.2.9",
     "apexcharts": "^3.35.3",
     "assert": "^2.0.0",
@@ -115,7 +114,8 @@
     "stylis": "^4.1.1",
     "stylis-plugin-rtl": "^2.1.1",
     "subscriptions-transport-ws": "^0.11.0",
-    "urql": "^3.0.3",
+    "typed-assert": "^1.0.9",
+    "urql": "^3.0.4",
     "util": "^0.12.4",
     "uuid": "^9.0.0",
     "web-vitals": "^2.1.4",
@@ -127,6 +127,7 @@
     "workbox-strategies": "^6.5.4",
     "workbox-webpack-plugin": "^6.5.4",
     "yup": "^0.32.11",
+    "zod": "^3.21.4",
     "zustand": "^4.1.1"
   },
   "devDependencies": {

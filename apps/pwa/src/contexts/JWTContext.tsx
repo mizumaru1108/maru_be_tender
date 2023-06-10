@@ -113,7 +113,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         const accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
         const activeRoleIndex = Number(localStorage.getItem('activeRoleIndex'));
-        if (accessToken && isValidToken(accessToken)) {
+        if (accessToken && isValidToken(accessToken, 15)) {
           setSession(accessToken, refreshToken);
           const user = (await fusionAuthClient.retrieveUserUsingJWT(accessToken)) as {
             response: { user: { registrations: Array<{ roles: Array<FusionAuthRoles> }> } };
@@ -133,7 +133,7 @@ function AuthProvider({ children }: AuthProviderProps) {
           // dispatchState(setAuthenticated(true));
           // dispatchState(setUser(user.response.user));
           // dispatchState(setActiveRole(user.response.user.registrations[0].roles[0]));
-        } else if (accessToken && refreshToken && !isValidToken(accessToken)) {
+        } else if (accessToken && refreshToken && !isValidToken(accessToken, 15)) {
           const result = await fusionAuthClient.exchangeRefreshTokenForJWT({
             refreshToken: refreshToken,
           });

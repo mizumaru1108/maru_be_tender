@@ -4,6 +4,7 @@ import { enUS, arSD } from '@mui/material/locale';
 import { SettingsValueProps } from './components/settings/type';
 // routes
 import { PATH_DASHBOARD } from './routes/paths';
+import z from 'zod';
 
 export const HASURA_GRAPHQL_URL = process.env.REACT_APP_HASURA_GRAPHQL_URL!;
 export const HASURA_ADMIN_SECRET = process.env.REACT_APP_HASURA_ADMIN_SECRET!;
@@ -27,12 +28,19 @@ export const FIREBASE_API = {
   appId: process.env.REACT_APP_FIREBASE_APPID,
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
-export const FUSIONAUTH_API = {
-  clientKey: process.env.REACT_APP_FUSIONAUTH_CLIENT_KEY,
-  apiUrl: process.env.REACT_APP_FUSIONAUTH_URL,
-  tenantId: process.env.REACT_APP_FUSIONAUTH_TENANT_ID,
-  appId: process.env.REACT_APP_FUSIONAUTH_APP_ID,
-};
+export const FUSIONAUTH_API = z
+  .object({
+    clientKey: z.string(),
+    apiUrl: z.string(),
+    tenantId: z.string(),
+    appId: z.string(),
+  })
+  .parse({
+    clientKey: process.env.REACT_APP_FUSIONAUTH_CLIENT_KEY,
+    apiUrl: process.env.REACT_APP_FUSIONAUTH_URL,
+    tenantId: process.env.REACT_APP_FUSIONAUTH_TENANT_ID,
+    appId: process.env.REACT_APP_FUSIONAUTH_APP_ID,
+  });
 
 export const COGNITO_API = {
   userPoolId: process.env.REACT_APP_AWS_COGNITO_USER_POOL_ID,

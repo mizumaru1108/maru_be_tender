@@ -1,8 +1,7 @@
-import { useEffect } from 'react';
-import { makeClient } from 'utils/urql';
-import { Provider } from 'urql';
 import useAuth from 'hooks/useAuth';
-import { Box } from '@mui/material';
+import { useEffect } from 'react';
+import { Provider } from 'urql';
+import { makeClient } from 'utils/urql';
 
 function CreateClient({ children }: any) {
   const { isAuthenticated, activeRole, user } = useAuth();

@@ -1,6 +1,11 @@
 import { HASURA_GRAPHQL_URL } from 'config';
-import { createClient, dedupExchange, fetchExchange, subscriptionExchange } from 'urql';
-import { makeOperation } from '@urql/core';
+import {
+  createClient,
+  dedupExchange,
+  fetchExchange,
+  subscriptionExchange,
+  makeOperation,
+} from 'urql';
 import { authExchange } from '@urql/exchange-auth';
 import { fusionAuthClient } from 'utils/fusionAuth';
 import jwtDecode from 'jwt-decode';
