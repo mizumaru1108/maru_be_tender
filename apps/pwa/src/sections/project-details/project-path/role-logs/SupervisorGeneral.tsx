@@ -93,9 +93,7 @@ function SupervisorGeneral({ stepGeneralLog }: Props) {
                 <Typography variant="h6">{translate(`review.number_of_payment`)}</Typography>
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                    <Typography>
-                      {proposal.number_of_payments_by_supervisor} {translate('review.sar')}
-                    </Typography>
+                    <Typography>{proposal.number_of_payments_by_supervisor}</Typography>
                   </Stack>
                 </Stack>
               </Grid>

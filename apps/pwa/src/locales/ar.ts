@@ -640,6 +640,11 @@ const ar = {
         required: 'نسبة ضريبة القيمة المضافة مطلوبة',
         greater_than_0: 'يجب أن تكون النسبة المئوية لضريبة القيمة المضافة أكبر من أو تساوي 1',
       },
+      payment_number: {
+        message: '',
+        required: 'رقم الدفع مطلوب',
+        greater_than: 'يجب أن يكون اسم الدفع أكبر من',
+      },
       project_beneficiaries: {
         message: '',
         required: 'نوع الفئة المستهدفة مطلوبة',
@@ -2133,6 +2138,7 @@ const ar = {
     headline: {
       track: 'مسار',
       add_new_track: 'إضافة مسار جديد',
+      payment_reject: 'تم رفض الدفع',
     },
     label: {
       track_name: 'اسم المسار',

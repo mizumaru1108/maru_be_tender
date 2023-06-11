@@ -14,7 +14,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import uuidv4 from 'utils/uuidv4';
 import { useSnackbar } from 'notistack';
 
-function FifthForm({ children, onSubmit }: any) {
+function FifthForm({ children, onSubmit, paymentNumber }: any) {
   const { step4, step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const { proposal } = useSelector((state) => state.proposal);
 
@@ -56,8 +56,11 @@ function FifthForm({ children, onSubmit }: any) {
     setValue,
     resetField,
     getValues,
+    watch,
     formState: { isSubmitting },
   } = methods;
+
+  // const item_budgets = watch('proposal_item_budgets');
 
   const {
     fields: recommendedSupportItems,
@@ -132,12 +135,33 @@ function FifthForm({ children, onSubmit }: any) {
     }
   };
 
+  // useEffect(() => {
+  //   // handleLoop();
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [paymentNumber]);
+
   useEffect(() => {
     if (proposal && proposal.proposal_item_budgets.length) {
       setBasedBudget(proposal.proposal_item_budgets);
       setValue('proposal_item_budgets', proposal.proposal_item_budgets);
     } else {
       resetField('proposal_item_budgets');
+    }
+
+    let loopNumber = -1;
+    if (paymentNumber > proposal.proposal_item_budgets.length) {
+      loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
+      if (loopNumber > 0) {
+        for (let i = 0; i < loopNumber; i++) {
+          append({
+            amount: undefined,
+            clause: '',
+            explanation: '',
+            id: uuidv4(),
+          });
+        }
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

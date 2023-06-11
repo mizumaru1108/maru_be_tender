@@ -632,6 +632,11 @@ const en = {
         required: 'Vat percentage is required',
         greater_than_0: 'Vat percentage must be greater than or equal to 1',
       },
+      payment_number: {
+        message: '',
+        required: 'Payment Number required',
+        greater_than: 'Payment Numnner must be greater than',
+      },
       project_beneficiaries: {
         message: '',
         required: 'The type of target group is required',
@@ -2123,6 +2128,7 @@ const en = {
     headline: {
       track: 'Track',
       add_new_track: 'Add New Track',
+      payment_reject: 'Payment Reject',
     },
     label: {
       track_name: 'Track Name',

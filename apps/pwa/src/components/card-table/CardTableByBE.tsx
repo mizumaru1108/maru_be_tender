@@ -17,7 +17,7 @@ function CardTableByBE({
   cardFooterButtonAction,
   destination,
   typeRequest,
-  addCustomFilter = '',
+  addCustomFilter,
 }: // isIncoming = false,
 CardTablePropsByBE) {
   // const { translate } = useLocales();
@@ -41,7 +41,7 @@ CardTablePropsByBE) {
       url = `${endPoint}?limit=${limit}&page=${page}&type=${typeRequest}`;
     }
     try {
-      const rest = await axiosInstance.get(`${url}${addCustomFilter}`, {
+      const rest = await axiosInstance.get(`${url}${addCustomFilter || ''}`, {
         headers: { 'x-hasura-role': activeRole! },
       });
       if (rest) {

@@ -58,6 +58,8 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   const location = useLocation();
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [numberPayment, setNumberPayment] = useState<number>(0);
+  // console.log({ numberPayment });
 
   const handleSubmitFirstForm = (data: any) => {
     setIsSubmitting(true);
@@ -264,7 +266,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
       content={
         <>
           {activeStep === 0 && (
-            <FirstForm onSubmit={handleSubmitFirstForm}>
+            <FirstForm onSubmit={handleSubmitFirstForm} setPaymentNumber={setNumberPayment}>
               <ActionBox
                 isLoading={isSubmitting}
                 onClose={onClose}
@@ -304,7 +306,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
             </ForthFrom>
           )} */}
           {activeStep === 3 && (
-            <FifthForm onSubmit={handleSubmitFifthForm}>
+            <FifthForm onSubmit={handleSubmitFifthForm} paymentNumber={numberPayment}>
               <ActionBox
                 isLoading={isSubmitting}
                 onClose={onClose}

@@ -34,7 +34,8 @@ interface Props {
 function PaymentsSetForm({ refetch, fetching }: Props) {
   const { id: proposal_id } = useParams();
   const { proposal } = useSelector((state) => state.proposal);
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
+  console.log('value lang');
 
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
@@ -80,12 +81,20 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
 
       if (currentDate.isBefore(previousDate)) {
         const errorObject = data?.payments[i];
-
-        enqueueSnackbar(`Payment ${i + 1} date is less than payment ${i} date.`, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
+        const isEnglish = currentLang.value === 'en' ? true : false;
+        if (isEnglish) {
+          enqueueSnackbar(`Payment ${i + 1} date is less than payment ${i} date.`, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        } else {
+          enqueueSnackbar(`${i + 1} تاريخ الدفعة ${i} قبل تاريخ الدفعة.`, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        }
 
         setError(`payments.${i}.payment_date`, { type: 'focus' }, { shouldFocus: true });
 

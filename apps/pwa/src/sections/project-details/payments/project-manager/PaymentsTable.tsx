@@ -10,6 +10,7 @@ import { fCurrencyNumber } from 'utils/formatNumber';
 import useAuth from 'hooks/useAuth';
 import { role_url_map } from '../../../../@types/commons';
 import { useNavigate } from 'react-router';
+import RejectionModal from 'components/modal-dialog/RejectionModal';
 
 function PaymentsTable() {
   const { activeRole } = useAuth();
@@ -22,8 +23,10 @@ function PaymentsTable() {
 
   const { translate } = useLocales();
 
-  const [sortingData, setSortingData] = React.useState<any[]>([]);
-  const [currentIssuedPayament, setCurrentIssuedPayament] = React.useState(0);
+  const [selectedPaymentId, setSelectedPaymentId] = React.useState('');
+  const [openModalReject, setOpenModalReject] = React.useState(false);
+  // const [sortingData, setSortingData] = React.useState<any[]>([]);
+  // const [currentIssuedPayament, setCurrentIssuedPayament] = React.useState(0);
 
   const payments = useMemo(() => {
     const paymentsHistory = proposal.payments.map((v) => ({
@@ -97,7 +100,7 @@ function PaymentsTable() {
     }
   };
 
-  const handleRejectPayment = async (id: string) => {
+  const handleRejectPayment = async (id: string, note?: string) => {
     try {
       await dispatch(
         updatePaymentBySupervisorAndManagerAndFinance({ id, role: activeRole!, action: 'reject' })
@@ -115,15 +118,6 @@ function PaymentsTable() {
         }
       });
     } catch (error) {
-      // enqueueSnackbar(error.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'right',
-      //   },
-      // });
       const statusCode = (error && error.statusCode) || 0;
       const message = (error && error.message) || null;
       enqueueSnackbar(
@@ -162,6 +156,13 @@ function PaymentsTable() {
 
   return (
     <>
+      <RejectionModal
+        open={openModalReject}
+        handleClose={() => setOpenModalReject(!openModalReject)}
+        onReject={(data: string) => handleRejectPayment(selectedPaymentId, data)}
+        message={'modal.headline.payment_reject'}
+        key={'reject'}
+      />
       {payments.map((item, index) => (
         <Grid item md={12} key={index} sx={{ mb: '20px' }}>
           <Grid container direction="row" key={Number(item.order)} spacing={2} alignItems="center">
@@ -258,7 +259,9 @@ function PaymentsTable() {
                     startIcon={<CloseIcon />}
                     disabled={currentSelectedIndex !== index}
                     onClick={() => {
-                      handleRejectPayment(item.id);
+                      setSelectedPaymentId(item.id);
+                      setOpenModalReject(true);
+                      // handleRejectPayment(item.id);
                     }}
                   >
                     {translate(

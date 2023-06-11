@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid, MenuItem, Typography } from '@mui/material';
-import { FormProvider, RHFRadioGroup, RHFSelect } from 'components/hook-form';
+import { FormProvider, RHFRadioGroup, RHFSelect, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import BaseField from 'components/hook-form/BaseField';
@@ -13,8 +13,10 @@ import useLocales from 'hooks/useLocales';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
 
-function FirstForm({ children, onSubmit }: any) {
+function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   const { translate } = useLocales();
+
+  const { proposal } = useSelector((state) => state.proposal);
 
   const validationSchema = Yup.object().shape({
     // clause: Yup.string().required('Procedures is required!'),
@@ -32,13 +34,28 @@ function FirstForm({ children, onSubmit }: any) {
       .integer()
       .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
     inclu_or_exclu: Yup.boolean(),
+    payment_number: Yup.string()
+      .required(translate('errors.cre_proposal.payment_number.required'))
+      .test(
+        'len',
+        `${translate('errors.cre_proposal.payment_number.greater_than')} ${
+          proposal.proposal_item_budgets.length
+        }`,
+        (val) => {
+          const number_of_payment = Number(val);
+          // console.log(
+          //   'check number (number_of_payment, prop.length)',
+          //   number_of_payment,
+          //   proposal.proposal_item_budgets.length
+          // );
+          return !(number_of_payment < proposal.proposal_item_budgets.length);
+        }
+      ),
     // accreditation_type_id: Yup.string().required('Procedures is required!'),
     // support_goal_id: Yup.string().required('Procedures is required!'),
   });
 
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
-
-  const { proposal } = useSelector((state) => state.proposal);
 
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
   const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
@@ -51,6 +68,8 @@ function FirstForm({ children, onSubmit }: any) {
 
   const vat = watch('vat');
   const support_type = watch('support_type');
+  const paymentNum = watch('payment_number');
+  // console.log({ paymentNum });
   // const inclu_or_exclu = watch('inclu_or_exclu');
 
   const onSubmitForm = async (data: SupervisorStep1) => {
@@ -61,18 +80,15 @@ function FirstForm({ children, onSubmit }: any) {
     setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
     if (proposal) {
       setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
-      // reset({
-      //   fsupport_by_supervisor: proposal.amount_required_fsupport ?? 0,
-      //   accreditation_type_id: proposal.accreditation_type_id ?? '',
-      //   closing_report: proposal.closing_report ? proposal.closing_report.toString() : 'false',
-      //   does_an_agreement: proposal.does_an_agreement ?? false,
-      // });
     }
-    // if (support_type === 'true') resetField('fsupport_by_supervisor');
-    // if (support_type === 'false')
-    //   setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
   }, [proposal, setValue, reset]);
-  console.log({ isSupport });
+
+  useEffect(() => {
+    if (paymentNum) {
+      setPaymentNumber(Number(paymentNum));
+    }
+  }, [paymentNum, setPaymentNumber]);
+  // console.log({ proposal });
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
@@ -219,6 +235,21 @@ function FirstForm({ children, onSubmit }: any) {
             />
           </Grid>
         )}
+        <Grid item md={6} xs={12}>
+          {/* <RHFTextField
+            type={'number'}
+            size={'small'}
+            name="payment_number"
+            placeholder="عدد المدفوعات"
+            label="عدد المدفوعات"
+          /> */}
+          <BaseField
+            type="numberField"
+            name="payment_number"
+            placeholder="عدد المدفوعات"
+            label="عدد المدفوعات"
+          />
+        </Grid>
         {/* <Grid item md={6} xs={12}>
           <BaseField
             type="textField"

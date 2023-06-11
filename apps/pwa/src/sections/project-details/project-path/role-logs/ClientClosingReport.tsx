@@ -53,7 +53,7 @@ function ClientClosingReport({ stepGransLog }: Props) {
   const { data, fetching, error } = result;
 
   useEffect(() => {
-    if (!fetching) {
+    if (data && !fetching) {
       setClosingReport(data.proposal_closing_report[0]);
     }
   }, [fetching, data]);

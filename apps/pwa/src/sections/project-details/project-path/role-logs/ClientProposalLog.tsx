@@ -60,7 +60,7 @@ function ClientProposalLog() {
             {translate('implementation_period')}
           </Typography>
           <Typography>
-            {(proposal.execution_time && proposal.execution_time) ?? '-No Data-'}
+            {(proposal.execution_time && proposal.execution_time / 60) ?? '-No Data-'}
           </Typography>
         </Stack>
         <Stack direction="column">

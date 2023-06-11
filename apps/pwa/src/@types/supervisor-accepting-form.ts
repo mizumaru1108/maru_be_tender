@@ -58,6 +58,7 @@ export interface SupervisorStep1 {
   inclu_or_exclu: boolean | undefined;
   support_goal_id: string;
   accreditation_type_id: string;
+  payment_number?: number;
 }
 
 export interface SupervisorStep2 {

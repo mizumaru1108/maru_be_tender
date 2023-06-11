@@ -41,6 +41,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     | { id?: string; amount?: number | undefined | null; clause?: string; explanation?: string }[]
     | []
   >([]);
+  // console.log({ basedBudget, proposal });
   const [tempDeletedBudget, setTempDeletedBudget] = useState<
     | { id?: string; amount?: number | undefined | null; clause?: string; explanation?: string }[]
     | []
@@ -48,7 +49,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
 
   const [isLoading, setIsLoading] = React.useState(false);
   const { activeRole } = useAuth();
-  const [proposals, setProposal] = useState<any>();
+  // const [proposals, setProposal] = useState<any>();
 
   // const [proposalResult] = useQuery({
   //   query: getOneProposal,
@@ -128,6 +129,9 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
 
   const vat = watch('vat');
   const support_type = watch('support_type');
+  const paymentNumber = watch('payment_number');
+  const item_budgets = watch('detail_project_budgets');
+  // console.log({ item_budgets });
 
   const {
     fields: itemBudgets,
@@ -139,8 +143,6 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   });
 
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
-    console.log('data', data);
-    // console.log('proposal,', proposal);
     let totalSupportProposal: number | undefined = undefined;
     if (proposal.proposal_item_budgets) {
       totalSupportProposal = proposal
@@ -153,8 +155,6 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         .detail_project_budgets!.map((item) => item.amount)
         .reduce((acc, curr) => acc! + curr!, 0);
     }
-    // console.log('data support type:', data.support_type);
-    // console.log({ totalAmount, totalSupportProposal });
     let checkPassAmount = false;
     if (data.support_type) {
       if (totalAmount <= totalSupportProposal) {
@@ -169,7 +169,6 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         checkPassAmount = false;
       }
     }
-    // console.log({ checkPassAmount });
     if (data.detail_project_budgets.length) {
       const created_proposal_budget = data.detail_project_budgets
         .filter((item) => !basedBudget.find((i) => i.id === item.id))
@@ -194,7 +193,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
 
       delete data.detail_project_budgets;
 
-      const newData = {
+      let newData: any = {
         fsupport_by_supervisor: totalFSupport,
         number_of_payments_by_supervisor: length,
         created_proposal_budget,
@@ -202,7 +201,11 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         deleted_proposal_budget,
         ...data,
       };
+      if (newData.payment_number) {
+        delete newData.payment_number;
+      }
       // console.log({ newData });
+
       if (checkPassAmount) {
         onSubmit(newData);
       } else {
@@ -236,8 +239,8 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         headers: { 'x-hasura-role': activeRole! },
       });
       if (rest) {
-        console.log('rest total :', rest.data.data);
-        setProposal(rest.data.data);
+        // console.log('rest total :', rest.data.data);
+        // setProposal(rest.data.data);
         setBasedBudget(rest.data.data.proposal_item_budgets);
         setValue('detail_project_budgets', rest.data.data.proposal_item_budgets);
       }
@@ -275,23 +278,47 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRole, enqueueSnackbar, pid, setValue, resetField]);
 
-  // useEffect(() => {
-  //   if (!fetchingProposal && proposalData && proposalData.proposal.proposal_item_budgets.length) {
-  //     setBasedBudget(proposalData.proposal.proposal_item_budgets);
-  //     setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
-  //   } else {
-  //     resetField('detail_project_budgets');
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [proposalData, fetchingProposal, setValue, resetField]);
+  const handleLoop = (loopNumber: number) => {
+    for (let i = 0; i < loopNumber; i++) {
+      append({
+        amount: undefined,
+        clause: '',
+        explanation: '',
+        id: uuidv4(),
+      });
+    }
+  };
+
+  const handleRemoveLoop = (loopNumber: number) => {
+    for (let i = 0; i < loopNumber; i++) {
+      remove(item_budgets.length - 1 - i);
+    }
+  };
 
   React.useEffect(() => {
-    fetchingIncoming();
-    // fetchingPrevious();
-  }, [fetchingIncoming]);
+    let loopNumber = -1;
 
-  // if (isLoading) return <>loading...</>;
-  // console.log({ support_type });
+    if (paymentNumber > item_budgets.length) {
+      loopNumber = Number(paymentNumber) - item_budgets.length;
+      if (loopNumber > 0) {
+        handleLoop(loopNumber);
+      }
+    }
+    if (paymentNumber < item_budgets.length) {
+      loopNumber = Number(paymentNumber);
+      // console.log('masuk else', loopNumber);
+      if (loopNumber >= proposal.proposal_item_budgets.length) {
+        handleRemoveLoop(loopNumber);
+      }
+    }
+    // console.log({ paymentNumber, loopNumber });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentNumber, handleLoop, handleRemoveLoop]);
+
+  React.useEffect(() => {
+    setBasedBudget(proposal.proposal_item_budgets);
+    setValue('detail_project_budgets', proposal.proposal_item_budgets);
+  }, [proposal, setValue]);
 
   return (
     <FormProvider methods={methods}>
@@ -431,6 +458,15 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                       </MenuItem>
                     ))}
                   </RHFSelect>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <RHFTextField
+                    type={'number'}
+                    size={'small'}
+                    name="payment_number"
+                    placeholder="عدد المدفوعات"
+                    label="عدد المدفوعات"
+                  />
                 </Grid>
                 {vat === 'true' && (
                   <Grid item md={6} xs={12}>

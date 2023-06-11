@@ -63,7 +63,8 @@ function RejectionModal({ open, handleClose, onReject, message }: Props) {
         title={
           <Stack display="flex">
             <Typography variant="h6" fontWeight="bold" color="#000000">
-              {message}
+              {/* {message} */}
+              {translate(message)}
             </Typography>
           </Stack>
         }
