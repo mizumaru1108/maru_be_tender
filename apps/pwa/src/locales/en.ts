@@ -618,6 +618,21 @@ const en = {
         message: '',
         required: 'The location of the project is required',
       },
+      project_timeline: {
+        name: {
+          message: '',
+          required: 'Timeline name is required',
+        },
+        start_date: {
+          message: '',
+          required: 'Start date is required',
+        },
+        end_date: {
+          message: '',
+          required: 'End date is required',
+        },
+        required: 'Project timeline is required',
+      },
       project_implement_date: {
         message: '',
         required: 'Project implementation date is required',

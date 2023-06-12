@@ -240,8 +240,16 @@ export type AmandementProposal = Omit<
   | 'proposal_item_budgets'
   | 'proposal_item_budgets_aggregate'
   | 'follow_ups'
+  // | 'timelines'
 >;
 
+type FormValuesProps = {
+  project_timeline: {
+    name: string;
+    start_date: string;
+    end_date: string;
+  }[];
+};
 export interface AmandmentRequestForm extends AmandementProposal {
   project_name: string;
   execution_time: number;
@@ -252,6 +260,7 @@ export interface AmandmentRequestForm extends AmandementProposal {
   region: string;
   governorate: string;
   proposal_item_budgets: ItemBudget[];
+  // timelines: FormValuesProps;
 }
 
 export type AmandementProposalList = {
@@ -284,6 +293,7 @@ export type AmandementFields = {
   project_risks: string;
   project_strengths: string;
   notes: string;
+  timelines: string;
 };
 
 export type ActiveTap =

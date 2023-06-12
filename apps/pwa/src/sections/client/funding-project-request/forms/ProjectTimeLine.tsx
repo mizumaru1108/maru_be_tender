@@ -24,11 +24,9 @@ type Props = {
 };
 
 const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) => {
-  // console.log({ defaultValues });
   const { translate } = useLocales();
   const [budgetError, setBudgetError] = useState(false);
-  const isDisabled =
-    !!revised && revised.hasOwnProperty('amount_required_fsupport') ? false : !!revised && true;
+  const isDisabled = !!revised && revised.hasOwnProperty('timelines') ? false : true;
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -36,13 +34,13 @@ const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) 
     project_timeline: Yup.array().of(
       Yup.object().shape({
         name: Yup.string().required(
-          translate('errors.cre_proposal.detail_project_budgets.name.required')
+          translate('errors.cre_proposal.project_timeline.name.required')
         ),
         start_date: Yup.string().required(
-          translate('errors.cre_proposal.detail_project_budgets.start_date.required')
+          translate('errors.cre_proposal.project_timeline.start_date.required')
         ),
         end_date: Yup.string().required(
-          translate('errors.cre_proposal.detail_project_budgets.end_date.required')
+          translate('errors.cre_proposal.project_timeline.end_date.required')
         ),
       })
     ),
@@ -89,7 +87,7 @@ const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) 
               name: 'name',
               label: 'funding_project_request_project_timeline.activity.label',
               placeholder: 'funding_project_request_project_timeline.activity.placeholder',
-              md: 5,
+              md: 6,
               xs: 12,
             },
             {
@@ -109,7 +107,7 @@ const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) 
               type: 'datePicker',
               name: 'end_date',
               label: 'funding_project_request_project_timeline.end_date.label',
-              placeholder: 'funding_project_request_project_timeline.end_date.placeholder',
+              placeholder: 'funding_project_request_project_timeline.start_date.placeholder',
               md: 3,
               xs: 12,
               minDate: new Date(new Date().setDate(new Date().getDate() + 1))

@@ -143,6 +143,9 @@ const ar = {
         },
       },
     },
+    amandement_request: {
+      client: 'طلب تعديل',
+    },
     account_manager: {
       update_request: 'طلب تحديث المعلومات',
       join_request: 'طلبات الانضمام الواردة',
@@ -625,6 +628,21 @@ const ar = {
       project_location: {
         message: '',
         required: 'مكان تنفيذ المشروع مطلوب',
+      },
+      project_timeline: {
+        name: {
+          message: '',
+          required: 'اسم الخط الزمني مطلوب',
+        },
+        start_date: {
+          message: '',
+          required: 'تاريخ البدء مطلوب',
+        },
+        end_date: {
+          message: '',
+          required: 'تاريخ الانتهاء مطلوب',
+        },
+        required: 'الجدول الزمني للمشروع مطلوب',
       },
       project_implement_date: {
         message: '',
