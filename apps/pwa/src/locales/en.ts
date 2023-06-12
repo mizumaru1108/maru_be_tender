@@ -2135,7 +2135,14 @@ const en = {
       consultant: 'Consultant *',
     },
     placeholder: {
+      choose_one: 'Choose One',
       please_type_track_name: 'Please Type Track Name',
+    },
+    value: {
+      select: {
+        with_consultant: 'With Consultant',
+        no_consultant: 'No Consultant',
+      },
     },
     confirm_amandement: 'Do amendment request',
   },
