@@ -33,7 +33,9 @@ export default function SortingCardTable({
   const { activeRole } = useAuth();
   const [filterSorting, setFilterSorting] = React.useState('');
   const [limitPage, setLimitPage] = React.useState<string>(`?limit=${limit}`);
-  const [typeFilter, setTypeFilter] = React.useState(type ? `&type=${type ?? typeRequest}` : '');
+  const [typeFilter, setTypeFilter] = React.useState(
+    type || typeRequest ? `&type=${type ?? typeRequest}` : ''
+  );
   const [pageFilter, setPageFilter] = React.useState(page ? `&page=${page}` : '');
   // const [isLoading, setIsLoading] = React.useState(false);
 

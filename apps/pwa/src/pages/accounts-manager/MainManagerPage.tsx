@@ -201,8 +201,8 @@ function MainManagerPage() {
             status_id: vcd.status_id,
           };
         });
-      console.log({ resultInfoUpdate });
-      console.log({ newEditRequestList });
+      // console.log({ resultInfoUpdate });
+      // console.log({ newEditRequestList });
       setInfoUpdateRequest(newEditRequestList);
     }
   }, [

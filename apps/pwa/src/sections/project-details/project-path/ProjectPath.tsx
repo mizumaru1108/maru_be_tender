@@ -191,7 +191,7 @@ function ProjectPath() {
       <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>
         <Stack direction="column" gap={2} justifyContent="start" sx={{ paddingBottom: '10px' }}>
           <Typography variant="h6">مسار المشروع</Typography>
-          <Box sx={{ width: '100%', padding: '10px', maxHeight: '100vh', overflowY: 'scroll' }}>
+          <Box sx={{ width: '100%', padding: '10px', maxHeight: '180vh', overflowY: 'scroll' }}>
             <Stepper activeStep={logs && logs.length} orientation="vertical">
               {logs &&
                 logs.length > 0 &&
