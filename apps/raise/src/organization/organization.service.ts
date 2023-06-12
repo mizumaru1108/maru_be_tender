@@ -157,6 +157,7 @@ export class OrganizationService {
     );
   }
 
+  // Test rebuild
   async getOrganization(organizationId: string) {
     this.logger.debug('Get Organization...');
     const organization = await this.organizationModel.findOne({
