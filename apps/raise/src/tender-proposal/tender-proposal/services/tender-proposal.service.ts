@@ -404,241 +404,6 @@ export class TenderProposalService {
     };
   }
 
-  // async clientUpdateProposal(
-  //   userId: string,
-  //   saveDraftPayload?: ProposalSaveDraftDto,
-  //   sendRevisionPayload?: SendRevisionDto,
-  // ) {
-  //   const proposalId =
-  //     saveDraftPayload?.proposal_id || sendRevisionPayload?.proposal_id || '';
-
-  //   // find proposal by id
-  //   const proposal = await this.proposalRepo.fetchProposalById(proposalId);
-  //   if (!proposal) throw new BadRequestException(`Proposal not found`);
-
-  //   if (proposal.submitter_user_id !== userId) {
-  //     throw new BadRequestException(
-  //       `You are not allowed to edit this proposal`,
-  //     );
-  //   }
-
-  //   const project_attachments: any =
-  //     saveDraftPayload?.project_attachments ||
-  //     sendRevisionPayload?.project_attachments;
-
-  //   const letter_ofsupport_req: any =
-  //     saveDraftPayload?.letter_ofsupport_req ||
-  //     sendRevisionPayload?.letter_ofsupport_req;
-
-  //   let updateProposalPayload: Prisma.proposalUncheckedUpdateInput = {};
-
-  //   let uploadedFilePath: string[] = [];
-  //   const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
-  //     [];
-  //   const deletedFileManagerUrls: string[] = []; // id of file manager that we want to mark as soft delete.
-
-  //   let proposal_item_budgets:
-  //     | Prisma.proposal_item_budgetCreateManyInput[]
-  //     | undefined = undefined;
-
-  //   if (!!saveDraftPayload) {
-  //     updateProposalPayload = UpdateProposalMapper(saveDraftPayload);
-  //     if (saveDraftPayload.proposal_bank_information_id) {
-  //       const isMyOwnBank = await this.proposalRepo.validateOwnBankAccount(
-  //         userId,
-  //         saveDraftPayload.proposal_bank_information_id,
-  //       );
-  //       if (!isMyOwnBank) {
-  //         throw new BadRequestException('Bank account is not yours');
-  //       }
-  //       updateProposalPayload.proposal_bank_id =
-  //         saveDraftPayload.proposal_bank_information_id;
-  //     }
-
-  //     if (saveDraftPayload.detail_project_budgets) {
-  //       proposal_item_budgets = CreateItemBudgetsMapper(
-  //         proposal.id,
-  //         saveDraftPayload.detail_project_budgets,
-  //       );
-  //     }
-  //   }
-
-  //   /* validate and create path */
-  //   const maxSize: number = 1024 * 1024 * 512; // 512MB
-  //   const allowedType: FileMimeTypeEnum[] = [
-  //     FileMimeTypeEnum.JPG,
-  //     FileMimeTypeEnum.JPEG,
-  //     FileMimeTypeEnum.PNG,
-  //     FileMimeTypeEnum.GIF,
-  //     FileMimeTypeEnum.PDF,
-  //     FileMimeTypeEnum.DOC,
-  //     FileMimeTypeEnum.DOCX,
-  //     FileMimeTypeEnum.XLS,
-  //     FileMimeTypeEnum.XLSX,
-  //     FileMimeTypeEnum.PPT,
-  //     FileMimeTypeEnum.PPTX,
-  //   ];
-
-  //   if (!!project_attachments && isTenderFilePayload(project_attachments)) {
-  //     const uploadResult = await this.uploadProposalFile(
-  //       userId,
-  //       proposalId,
-  //       'uploading project attachments',
-  //       project_attachments,
-  //       'project-attachments',
-  //       allowedType,
-  //       maxSize,
-  //       uploadedFilePath,
-  //     );
-  //     uploadedFilePath = uploadResult.uploadedFilePath;
-  //     updateProposalPayload.project_attachments = uploadResult.fileObj;
-
-  //     const payload: Prisma.file_managerUncheckedCreateInput = {
-  //       id: uuidv4(),
-  //       user_id: userId,
-  //       name: uploadResult.fileObj.url.split('/').pop() as string,
-  //       url: uploadResult.fileObj.url,
-  //       mimetype: uploadResult.fileObj.type,
-  //       size: uploadResult.fileObj.size,
-  //       column_name: 'project-attachments',
-  //       table_name: 'proposal',
-  //       proposal_id: proposalId,
-  //     };
-  //     fileManagerCreateManyPayload.push(payload);
-
-  //     if (isUploadFileJsonb(proposal.project_attachments)) {
-  //       const oldFile = proposal.project_attachments as {
-  //         url: string;
-  //         type: string;
-  //         size: number;
-  //       };
-  //       if (!!oldFile.url) {
-  //         this.logger.log(
-  //           'info',
-  //           'Old proposal project attachment exist, it will marked as deleted files',
-  //         );
-  //         deletedFileManagerUrls.push(oldFile.url);
-  //       }
-  //     }
-  //   }
-
-  //   if (!!letter_ofsupport_req && isTenderFilePayload(letter_ofsupport_req)) {
-  //     const uploadResult = await this.uploadProposalFile(
-  //       userId,
-  //       proposalId,
-  //       'uploading letter of support',
-  //       letter_ofsupport_req,
-  //       'letter-of-support-req',
-  //       allowedType,
-  //       maxSize,
-  //       uploadedFilePath,
-  //     );
-  //     uploadedFilePath = uploadResult.uploadedFilePath;
-  //     updateProposalPayload.letter_ofsupport_req = uploadResult.fileObj;
-
-  //     const payload: Prisma.file_managerUncheckedCreateInput = {
-  //       id: uuidv4(),
-  //       user_id: userId,
-  //       name: uploadResult.fileObj.url.split('/').pop() as string,
-  //       url: uploadResult.fileObj.url,
-  //       mimetype: uploadResult.fileObj.type,
-  //       size: uploadResult.fileObj.size,
-  //       column_name: 'letter-of-support-req',
-  //       table_name: 'proposal',
-  //       proposal_id: proposalId,
-  //     };
-  //     fileManagerCreateManyPayload.push(payload);
-
-  //     if (isUploadFileJsonb(proposal.letter_ofsupport_req)) {
-  //       const oldFile = proposal.letter_ofsupport_req as {
-  //         url: string;
-  //         type: string;
-  //         size: number;
-  //       };
-  //       if (!!oldFile.url) {
-  //         this.logger.log(
-  //           'info',
-  //           'Old proposal letter of support req exist, it will marked as deleted files',
-  //         );
-  //         deletedFileManagerUrls.push(oldFile.url);
-  //       }
-  //     }
-  //   }
-
-  //   if (!!sendRevisionPayload) {
-  //     try {
-  //       if (Object.keys(updateProposalPayload).length > 0) {
-  //         const restOfPayload = SendRevisionMapper(sendRevisionPayload);
-  //         updateProposalPayload = {
-  //           ...updateProposalPayload,
-  //           ...restOfPayload,
-  //         };
-  //       } else {
-  //         updateProposalPayload = SendRevisionMapper(sendRevisionPayload);
-  //       }
-  //       if (Object.keys(updateProposalPayload).length === 0) {
-  //         throw new BadRequestException(
-  //           'You must change at least one value that defined by supervisor',
-  //         );
-  //       }
-  //       const amandementDetail =
-  //         await this.proposalRepo.findAmandementDetailByProposalId(proposalId);
-  //       if (!amandementDetail) {
-  //         throw new BadRequestException('Failed to fetch amandement detail!');
-  //       }
-  //       const rawAllowedKeys = JSON.parse(amandementDetail.detail);
-  //       const allowedKeys = Object.keys(rawAllowedKeys);
-  //       const keySet = new Set(allowedKeys);
-  //       // console.log({ allowedKeys });
-  //       // console.log('update proposal key', Object.keys(updateProposalPayload));
-  //       for (const key of Object.keys(updateProposalPayload)) {
-  //         if (!keySet.has(key)) {
-  //           throw new BadRequestException(
-  //             'You are just allowed to change what defined by the supervisor!',
-  //           );
-  //         }
-  //       }
-  //       if (sendRevisionPayload.detail_project_budgets) {
-  //         proposal_item_budgets = CreateItemBudgetsMapper(
-  //           proposal.id,
-  //           sendRevisionPayload.detail_project_budgets,
-  //         );
-  //       }
-  //       updateProposalPayload.outter_status = OutterStatusEnum.ONGOING;
-  //     } catch (err) {
-  //       if (uploadedFilePath.length > 0) {
-  //         this.logger.log('info', `error details \n ${logUtil(err)}`);
-  //         this.logger.log(
-  //           'info',
-  //           `error orccured during send revision, deleting all previous uploaded files`,
-  //         );
-  //         uploadedFilePath.forEach(async (path) => {
-  //           await this.bunnyService.deleteMedia(path, true);
-  //         });
-  //       }
-  //       throw err;
-  //     }
-  //   }
-
-  //   // create proposal and the logs
-  //   const updatedProposal = await this.proposalRepo.updateMyProposal(
-  //     proposal.id,
-  //     updateProposalPayload,
-  //     proposal_item_budgets,
-  //     fileManagerCreateManyPayload,
-  //     deletedFileManagerUrls,
-  //     uploadedFilePath,
-  //     !!sendRevisionPayload ? true : false,
-  //     (this.configService.get('tenderAppConfig.baseUrl') as string) || '',
-  //   );
-
-  //   if (!!sendRevisionPayload && updatedProposal.notif) {
-  //     await this.notifService.sendSmsAndEmailBatch(updatedProposal.notif);
-  //   }
-
-  //   return updatedProposal.proposal;
-  // }
-
   async clientUpdateProposalInterceptor(
     userId: string,
     saveDraftPayload?: ProposalSaveDraftInterceptorDto,
@@ -1235,22 +1000,12 @@ export class TenderProposalService {
         deletedItemBudgetIds,
         currentUser,
       );
-      // createdRecommendedSupportPayload,
-      // updatedRecommendedSupportPayload,
-      // deletedRecommendedSupportIds,
 
       proposalUpdatePayload = { ...pm.proposalUpdatePayload };
       proposalLogCreateInput = { ...pm.proposalLogCreateInput };
       createdItemBudgetPayload = [...pm.createdItemBudgetPayload];
       updatedItemBudgetPayload = [...pm.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...pm.deletedItemBudgetIds];
-      // createdRecommendedSupportPayload = [
-      //   ...pm.createdRecommendedSupportPayload,
-      // ];
-      // updatedRecommendedSupportPayload = [
-      //   ...pm.updatedRecommendedSupportPayload,
-      // ];
-      // deletedRecommendedSupportIds = [...pm.deletedRecommendedSupportIds];
     }
 
     if (currentUser.choosenRole === 'tender_consultant') {
@@ -1273,21 +1028,11 @@ export class TenderProposalService {
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
       );
-      // createdRecommendedSupportPayload,
-      // updatedRecommendedSupportPayload,
-      // deletedRecommendedSupportIds,
       proposalUpdatePayload = { ...ceo.proposalUpdatePayload };
       proposalLogCreateInput = { ...ceo.proposalLogCreateInput };
       createdItemBudgetPayload = [...ceo.createdItemBudgetPayload];
       updatedItemBudgetPayload = [...ceo.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...ceo.deletedItemBudgetIds];
-      // createdRecommendedSupportPayload = [
-      //   ...ceo.createdRecommendedSupportPayload,
-      // ];
-      // updatedRecommendedSupportPayload = [
-      //   ...ceo.updatedRecommendedSupportPayload,
-      // ];
-      // deletedRecommendedSupportIds = [...ceo.deletedRecommendedSupportIds];
     }
 
     /* update proposal and create the logs */
@@ -1327,20 +1072,6 @@ export class TenderProposalService {
         `You are not allowed to perform this action ${request.action}`,
       );
     }
-    /* if moderator_acc_payload is not exist  */
-    // if (!request.moderator_payload) {
-    //   throw new BadRequestException('Moderator accept payload is required!');
-    // }
-
-    // /* validate the sended track */
-    // const track = await this.proposalRepo.findTrackById(
-    //   request.moderator_payload.project_track,
-    // );
-    // if (!track) {
-    //   throw new BadRequestException(
-    //     `Invalid Track (${request.moderator_payload.project_track})`,
-    //   );
-    // }
 
     if (request.action === ProposalAction.ACCEPT) {
       if (!request.moderator_payload) {
@@ -1408,9 +1139,6 @@ export class TenderProposalService {
     deletedItemBudgetIds: string[],
     currentUser: TenderCurrentUser,
   ) {
-    // createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
-    // updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
-    // deletedRecommendedSupportIds: string[],
     /* supervisor only allowed to acc and reject and step back */
     if (
       [
@@ -1434,9 +1162,6 @@ export class TenderProposalService {
         created_proposal_budget,
         deleted_proposal_budget,
         updated_proposal_budget,
-        // created_recommended_support,
-        // updated_recommended_support,
-        // deleted_recommended_support,
       } = request.supervisor_payload;
 
       proposalUpdatePayload = SupervisorRegularTrackAccMapper(
@@ -1484,29 +1209,6 @@ export class TenderProposalService {
           proposalUpdatePayload,
           request.supervisor_payload,
         );
-
-        // createdRecommendedSupportPayload =
-        //   SupervisorAccCreatedRecommendedSupportMapper(
-        //     request.proposal_id,
-        //     created_recommended_support,
-        //     createdRecommendedSupportPayload,
-        //   );
-
-        // if (
-        //   updated_recommended_support &&
-        //   updated_recommended_support.length > 0
-        // ) {
-        //   updatedRecommendedSupportPayload = updated_recommended_support;
-        // }
-
-        // if (
-        //   deleted_recommended_support &&
-        //   deleted_recommended_support.length > 0
-        // ) {
-        //   for (const recommendSuppport of deleted_recommended_support) {
-        //     deletedRecommendedSupportIds.push(recommendSuppport.id);
-        //   }
-        // }
       }
 
       /* accept supervisor logs */
@@ -1542,16 +1244,6 @@ export class TenderProposalService {
       proposalLogCreateInput.user_role = 'PROJECT_SUPERVISOR';
     }
 
-    // return {
-    //   proposalUpdatePayload,
-    //   proposalLogCreateInput,
-    //   createdItemBudgetPayload,
-    //   updatedItemBudgetPayload,
-    //   deletedItemBudgetIds,
-    //   createdRecommendedSupportPayload,
-    //   updatedRecommendedSupportPayload,
-    //   deletedRecommendedSupportIds,
-    // };
     return {
       proposalUpdatePayload,
       proposalLogCreateInput,
@@ -1571,9 +1263,6 @@ export class TenderProposalService {
     deletedItemBudgetIds: string[],
     currentUser: TenderCurrentUser,
   ) {
-    // createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
-    // updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
-    // deletedRecommendedSupportIds: string[],
     /* Project manager only allowed to acc and reject and step back, and ask for consultation*/
     if (
       [
@@ -1633,9 +1322,6 @@ export class TenderProposalService {
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
       );
-      // createdRecommendedSupportPayload,
-      // updatedRecommendedSupportPayload,
-      // deletedRecommendedSupportIds,
 
       proposalUpdatePayload = { ...result.proposalUpdatePayload };
       createdItemBudgetPayload = [...result.createdItemBudgetPayload];
@@ -1667,6 +1353,7 @@ export class TenderProposalService {
       proposalLogCreateInput.action = ProposalAction.REJECT;
       proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalLogCreateInput.notes = request.notes;
     }
 
     if (request.action === ProposalAction.STEP_BACK) {
@@ -1719,9 +1406,6 @@ export class TenderProposalService {
     updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
     deletedItemBudgetIds: string[],
   ) {
-    // createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
-    // updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
-    // deletedRecommendedSupportIds: string[],
     /* CEO only allowed to acc and reject and step back */
     if (
       [
