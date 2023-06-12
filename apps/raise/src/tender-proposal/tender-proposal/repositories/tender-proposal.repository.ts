@@ -9,7 +9,6 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import {
   TenderAppRoleEnum,
   appRoleMappers,
-  appRolesMappers,
 } from '../../../tender-commons/types';
 import {
   InnerStatusEnum,
@@ -18,12 +17,6 @@ import {
 } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
-import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
-import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
-import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
-import { UpdateMyProposalResponseDto } from '../dtos/responses/update-my-proposal-response.dto';
-import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
-import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
 import {
   FetchClosingReportListFilterRequest,
   FetchRejectionListFilterRequest,
@@ -31,6 +24,12 @@ import {
   PreviousProposalFilterRequest,
   RequestInProcessFilterRequest,
 } from '../dtos/requests';
+import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
+import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
+import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
+import { UpdateMyProposalResponseDto } from '../dtos/responses/update-my-proposal-response.dto';
+import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
+import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
 @Injectable()
 export class TenderProposalRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -259,7 +258,7 @@ export class TenderProposalRepository {
           }
 
           // save draft not a revision
-          if (proposalTimelinePayloads) {
+          if (proposalTimelinePayloads && proposalTimelinePayloads.length > 0) {
             this.logger.log(
               'info',
               `deleting all timeline on proposal ${proposal.id}`,
