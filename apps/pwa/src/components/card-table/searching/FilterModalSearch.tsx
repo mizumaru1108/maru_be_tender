@@ -56,7 +56,7 @@ export default function FilterModalSearch({ open, handleClose, data, appliedFilt
             <ProposalAcceptingForm
               data={data}
               onSubmit={(data) => {
-                console.log('data :', data);
+                // console.log('data :', data);
                 appliedFilter(data);
                 handleClose();
               }}

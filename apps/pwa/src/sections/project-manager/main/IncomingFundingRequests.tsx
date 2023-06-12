@@ -153,7 +153,7 @@ function IncomingFundingRequests() {
           <Grid item md={12}>
             {/* {'test'} */}
             <EmptyContent
-              title="No Data"
+              title="لا يوجد بيانات"
               sx={{
                 '& span.MuiBox-root': { height: 160 },
               }}

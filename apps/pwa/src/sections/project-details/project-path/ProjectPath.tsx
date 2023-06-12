@@ -191,7 +191,7 @@ function ProjectPath() {
       <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>
         <Stack direction="column" gap={2} justifyContent="start" sx={{ paddingBottom: '10px' }}>
           <Typography variant="h6">مسار المشروع</Typography>
-          <Box sx={{ width: '100%', padding: '10px', maxHeight: '100vh', overflowY: 'scroll' }}>
+          <Box sx={{ width: '100%', padding: '10px', maxHeight: '180vh', overflowY: 'scroll' }}>
             <Stepper activeStep={logs && logs.length} orientation="vertical">
               {logs &&
                 logs.length > 0 &&
@@ -472,6 +472,7 @@ function ProjectPath() {
                 item.action !== 'step_back' &&
                 item.action !== 'project_completed' &&
                 item.action !== 'sending_closing_report' &&
+                item.action !== 'complete_payment' &&
                 item.action !== 'send_revised_version'
             ).length > 0 &&
             isConsultation &&

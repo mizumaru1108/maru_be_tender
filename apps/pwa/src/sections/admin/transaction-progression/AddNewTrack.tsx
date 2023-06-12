@@ -189,16 +189,18 @@ const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsulta
             name={`consultant`}
             size="medium"
             label={translate('modal.label.consultant')}
-            placeholder="Chosen one"
+            placeholder={translate('modal.placeholder.choose_one')}
             InputLabelProps={{ shrink: true }}
             sx={{ mt: 3 }}
             disabled={!isEdit}
           >
             <option value="with_consultant" style={{ backgroundColor: '#fff' }}>
-              With Consultant
+              {/* With Consultant */}
+              {translate('modal.value.select.with_consultant')}
             </option>
             <option value="without_consultant" style={{ backgroundColor: '#fff' }}>
-              No Consultant
+              {/* No Consultant */}
+              {translate('modal.value.select.no_consultant')}
             </option>
           </RHFSelectNoGenerator>
         </Grid>

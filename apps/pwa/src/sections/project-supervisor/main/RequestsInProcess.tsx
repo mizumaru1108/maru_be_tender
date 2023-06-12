@@ -146,7 +146,7 @@ export default function RequestsInProcess() {
         ) : (
           <Grid item md={12}>
             <EmptyContent
-              title="No Data"
+              title="لا يوجد بيانات"
               sx={{
                 '& span.MuiBox-root': { height: 160 },
               }}

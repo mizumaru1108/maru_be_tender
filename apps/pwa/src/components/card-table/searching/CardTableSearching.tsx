@@ -96,7 +96,7 @@ function CardTableSearching({
         handleClose={handleCloseFilter}
         appliedFilter={(data) => {
           setFilter(data);
-          console.log('data appliedFilter :', filter);
+          // console.log('data appliedFilter :', filter);
         }}
       />
       <Grid item md={6} xs={12}>

@@ -127,7 +127,8 @@ CardTablePropsByBE) {
           limit={limit}
           page={page}
           typeRequest={typeRequest}
-          api={!typeRequest ? `${endPoint}` : `${endPoint}`}
+          // api={!typeRequest ? `${endPoint}` : `${endPoint}`}
+          api={endPoint ? endPoint : ''}
           returnData={setCardData}
           loadingState={setIsLoading}
         />

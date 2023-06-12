@@ -80,7 +80,7 @@ const AmandementForms = ({
 
   const resetForm = (field: any) => {
     const newValues = JSON.parse(JSON.stringify(defaultValues));
-    console.log('field value', { defaultValues });
+    // console.log('field value', { defaultValues });
     if (field !== 'letter_ofsupport_req' && field !== 'project_attachments') {
       setValue(field, newValues[field]);
     } else {
@@ -112,8 +112,8 @@ const AmandementForms = ({
   }, [defaultValues, reset]);
   const handleChange = (e: any) => {
     const newSelectedValues = [...selectedCheckbox];
-    console.log('test checked', e.target.checked);
-    console.log({ newSelectedValues });
+    // console.log('test checked', e.target.checked);
+    // console.log({ newSelectedValues });
     if (e.target.checked) {
       newSelectedValues.push(e.target.value);
       selectedLength(newSelectedValues.length);

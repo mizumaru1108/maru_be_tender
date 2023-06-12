@@ -739,12 +739,12 @@ const ar = {
   },
   sorting: {
     label: {
-      sorting: 'الترتيب',
-      no_sorting: 'لا يوجد ترتيب',
+      sorting: 'فرز',
+      no_sorting: 'بدون فرز',
       project_name: 'اسم المشروع',
       ascending: 'تصاعدي',
       descending: 'تنازلي',
-      created_at: 'تاريخ الانشاء',
+      created_at: 'أنشئ في',
     },
   },
   commons: {
@@ -2145,7 +2145,14 @@ const ar = {
       consultant: 'مستشار *',
     },
     placeholder: {
+      choose_one: 'اختر واحداً',
       please_type_track_name: 'الرجاء كتابة اسم المسار',
+    },
+    value: {
+      select: {
+        with_consultant: 'إضافة مستشار  ',
+        no_consultant: 'بدون مستشار',
+      },
     },
     confirm_amandement: 'طلب تعديل',
   },

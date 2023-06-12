@@ -1873,7 +1873,7 @@ const en = {
     target_group_age: 'Target Group Age',
     target_group_num: 'Target Group Number',
     target_group_type: 'Target Group Type',
-    most_clents_projects: 'The most prominent work of the entity*',
+    most_clents_projects: 'The most prominent work of the entity',
     payment_insert: 'Payment Insert',
     payment: 'Payment',
     Batch: 'Batch',
@@ -2135,7 +2135,14 @@ const en = {
       consultant: 'Consultant *',
     },
     placeholder: {
+      choose_one: 'Choose One',
       please_type_track_name: 'Please Type Track Name',
+    },
+    value: {
+      select: {
+        with_consultant: 'With Consultant',
+        no_consultant: 'No Consultant',
+      },
     },
     confirm_amandement: 'Do amendment request',
   },
