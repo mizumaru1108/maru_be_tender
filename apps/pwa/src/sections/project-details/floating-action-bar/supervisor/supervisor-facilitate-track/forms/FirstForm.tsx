@@ -125,9 +125,9 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             onClick={(e) => {
               if (e && e.target.value) {
                 if (e.target.value === 'true') {
-                  setIsSupport(true);
-                } else {
                   setIsSupport(false);
+                } else {
+                  setIsSupport(true);
                 }
               }
             }}

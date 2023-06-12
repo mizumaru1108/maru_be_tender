@@ -472,6 +472,7 @@ function ProjectPath() {
                 item.action !== 'step_back' &&
                 item.action !== 'project_completed' &&
                 item.action !== 'sending_closing_report' &&
+                item.action !== 'complete_payment' &&
                 item.action !== 'send_revised_version'
             ).length > 0 &&
             isConsultation &&
