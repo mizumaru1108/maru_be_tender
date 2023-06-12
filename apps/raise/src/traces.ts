@@ -95,7 +95,7 @@ export async function initTraces() {
           [SemanticResourceAttributes.SERVICE_VERSION]: process.env.APP_VERSION,
         }),
         // traceExporter: otlpExporter ?? consoleExporter,
-        spanProcessor,
+        // spanProcessor,
         contextManager: new AsyncLocalStorageContextManager(),
         instrumentations: [
           getNodeAutoInstrumentations(),
