@@ -10,6 +10,7 @@ import { getDraftProposal } from 'queries/client/getDraftProposal';
 import { updateDraftProposal } from 'queries/client/updateDraftProposal';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import ProjectTimeLine from 'sections/client/funding-project-request/forms/ProjectTimeLine';
 import { useMutation, useQuery } from 'urql';
 import axiosInstance from 'utils/axios';
 import { AmandementFields, AmandmentRequestForm } from '../../../../@types/proposal';
@@ -29,6 +30,7 @@ const steps = [
   'funding_project_request_form2.step',
   'funding_project_request_form3.step',
   'funding_project_request_form4.step',
+  'funding_project_request_project_timeline.step',
   // 'funding_project_request_form5.step',
 ];
 // const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
@@ -52,6 +54,13 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
   const { state } = location as any;
 
   const defaultValues = {
+    timelines: [
+      {
+        name: '',
+        start_date: '',
+        end_date: '',
+      },
+    ],
     form1: {
       project_name: '',
       project_idea: '',
@@ -153,35 +162,62 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
   };
 
   // on submit for the fourth step
-  const onSubmitform4 = async (data: any) => {
-    // console.log('data form 4', data);
-    setIsLoading(true);
-    let newValue = { ...data };
+  const onSubmitform4 = (data: any) => {
+    console.log('data form 4', data);
+    setStep((prevStep) => prevStep + 1);
+    setRequestState((prevRegisterState: any) => ({
+      ...prevRegisterState,
+      form4: {
+        // ...prevRegisterState.form4,
+        ...data,
+        amount_required_fsupport: data.amount_required_fsupport,
+        detail_project_budgets: [...data.detail_project_budgets],
+      },
+    }));
+  };
+
+  const onSubmitform5 = async (data: any) => {
+    // console.log('data form 5', data.project_timeline);
+
+    let newValue: any = {};
     newValue = {
       ...newValue,
       ...requestState.form1,
       ...requestState.form2,
       ...requestState.form3,
-      amount_required_fsupport: data.amount_required_fsupport,
+      ...requestState.form4,
+      // timelines: data.project_timeline,
     };
+
     let filteredValue = Object.keys(newValue)
       .filter((key) => Object.keys(tmpValues?.revised!).includes(key))
       .reduce((obj: any, key: any) => {
         obj[key] = newValue[key];
         return obj;
       }, {});
+
     filteredValue = {
       ...filteredValue,
       proposal_id: tmpValues?.data.id,
     };
+
     if (filteredValue.hasOwnProperty('amount_required_fsupport')) {
       filteredValue = {
         ...filteredValue,
-        detail_project_budgets: [...data.detail_project_budgets],
+        detail_project_budgets: requestState.form4.detail_project_budgets,
+      };
+    }
+
+    if (filteredValue.hasOwnProperty('timelines')) {
+      delete filteredValue.timelines;
+      filteredValue = {
+        ...filteredValue,
+        project_timeline: data.project_timeline,
       };
     }
 
     // console.log({ filteredValue });
+
     try {
       const rest = await axiosInstance.patch(
         '/tender-proposal/send-revision',
@@ -208,15 +244,6 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
       }
     } catch (err) {
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(
@@ -233,6 +260,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
           },
         }
       );
+    } finally {
       setIsLoading(false);
     }
   };
@@ -254,6 +282,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         if (tmpValues.data) {
           setRequestState((prevRegisterState: any) => ({
             ...prevRegisterState,
+            timelines: tmpValues?.data?.timelines || [],
             form1: {
               ...prevRegisterState.form1,
               ...{
@@ -387,20 +416,11 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
             <AmandementActionBox step={step} onReturn={onReturn} isLoad={isLoading} />
           </ProjectBudgetForm>
         )}
-        {/* {step === 4 && (
-          <SupportingDurationInfoForm
-            lastStep={true}
-            onReturn={onReturn}
-            onUpdate={(data: any) => {
-              onLastSavingDraft(data);
-            }}
-            proposal_id={id}
-            onSubmit={onSubmit}
-            onLoader={(load) => setIsLoading(load)}
-            isLoading={isLoading}
-            defaultValues={requestState?.proposal_bank_id}
-          ></SupportingDurationInfoForm>
-        )} */}
+        {step === 4 && (
+          <ProjectTimeLine onSubmit={onSubmitform5} defaultValues={requestState?.timelines}>
+            <AmandementActionBox step={step} onReturn={onReturn} isLoad={isLoading} />
+          </ProjectTimeLine>
+        )}
         <Toast
           variant="outlined"
           toastType={'success'}

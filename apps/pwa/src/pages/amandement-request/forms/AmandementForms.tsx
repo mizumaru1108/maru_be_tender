@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Checkbox, Grid, Stack } from '@mui/material';
-import { FormProvider, RHFTextField } from 'components/hook-form';
+import { FormProvider, RHFDatePicker, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormGenerator from 'components/FormGenerator';
@@ -13,6 +13,8 @@ import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles'
 import { async } from '@firebase/util';
 import { useParams } from 'react-router';
 import { LeftField, RightField } from './FormFieldData';
+import BaseField from 'components/hook-form/BaseField';
+import moment from 'moment';
 
 type Props = {
   // onSubmit: (data: any) => void;
@@ -64,6 +66,7 @@ const AmandementForms = ({
       translate('errors.cre_proposal.project_attachments.required')
     ),
     notes: Yup.string().required(translate('errors.cre_proposal.notes.required')),
+    timelines: Yup.string().required(translate('errors.cre_proposal.project_timeline.required')),
   });
 
   const methods = useForm<AmandementFields>({
@@ -106,6 +109,7 @@ const AmandementForms = ({
         project_outputs: newValues.project_outputs,
         project_risks: newValues.project_risks,
         project_strengths: newValues.project_strengths,
+        timelines: '-',
         notes: '',
       });
     }
@@ -264,6 +268,139 @@ const AmandementForms = ({
             </Grid>
           </Grid>
         )}
+        <Grid item xs={12} md={12} sx={{ display: 'flex', flexDirection: 'row' }}>
+          {/* <Grid item xs={1} md={1}> */}
+          <Stack>
+            <Checkbox
+              checked={selectedCheckbox.length > 0 ? selectedCheckbox.includes('timelines') : false}
+              onChange={(e) => handleChange(e)}
+              value={'timelines'}
+            />
+          </Stack>
+          {/* </Grid> */}
+          {!selectedCheckbox.includes('timelines') ? (
+            <Grid
+              item
+              xs={12}
+              md={12}
+              sx={{ display: 'flex', flexDirection: 'row', paddingLeft: 2 }}
+            >
+              {defaultValues && defaultValues?.timelines?.length > 0 ? (
+                defaultValues?.timelines.map((item, index) => (
+                  <React.Fragment key={index}>
+                    <Grid item xs={12} md={6} sx={{ margin: '0 4px' }}>
+                      <RHFTextField
+                        disabled={selectedCheckbox.includes('timelines') ? false : true}
+                        type={'textField'}
+                        value={item.name}
+                        name={'name'}
+                        label={translate(`funding_project_request_project_timeline.activity.label`)}
+                        placeholder={translate(
+                          `funding_project_request_project_timeline.activity.placeholder`
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3} sx={{ margin: '0 4px' }}>
+                      <RHFDatePicker
+                        disabled={selectedCheckbox.includes('timelines') ? false : true}
+                        value={moment(item.start_date).format('LLL')}
+                        type={'datePicker'}
+                        name={'start_date'}
+                        label={translate(
+                          `funding_project_request_project_timeline.start_date.label`
+                        )}
+                        placeholder={translate(
+                          `funding_project_request_project_timeline.start_date.placeholder`
+                        )}
+                        minDate={
+                          new Date(new Date().setDate(new Date().getDate() + 1))
+                            .toISOString()
+                            .split('T')[0]
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3} sx={{ margin: '0 4px' }}>
+                      <RHFDatePicker
+                        disabled={selectedCheckbox.includes('timelines') ? false : true}
+                        type={'datePicker'}
+                        value={moment(item.end_date).format('LLL')}
+                        name={'end_date'}
+                        label={translate(`funding_project_request_project_timeline.end_date.label`)}
+                        placeholder={translate(
+                          `funding_project_request_project_timeline.start_date.placeholder`
+                        )}
+                        minDate={
+                          new Date(new Date().setDate(new Date().getDate() + 1))
+                            .toISOString()
+                            .split('T')[0]
+                        }
+                      />
+                    </Grid>
+                  </React.Fragment>
+                ))
+              ) : (
+                <React.Fragment>
+                  <Grid item xs={12} md={6} sx={{ margin: '0 4px' }}>
+                    <RHFTextField
+                      disabled={selectedCheckbox.includes('timelines') ? false : true}
+                      type={'textField'}
+                      name={'name'}
+                      label={translate(`funding_project_request_project_timeline.activity.label`)}
+                      placeholder={translate(
+                        `funding_project_request_project_timeline.activity.placeholder`
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3} sx={{ margin: '0 4px' }}>
+                    <RHFDatePicker
+                      disabled={selectedCheckbox.includes('timelines') ? false : true}
+                      type={'datePicker'}
+                      name={'start_date'}
+                      label={translate(`funding_project_request_project_timeline.start_date.label`)}
+                      placeholder={translate(
+                        `funding_project_request_project_timeline.start_date.placeholder`
+                      )}
+                      minDate={
+                        new Date(new Date().setDate(new Date().getDate() + 1))
+                          .toISOString()
+                          .split('T')[0]
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3} sx={{ margin: '0 4px' }}>
+                    <RHFDatePicker
+                      disabled={selectedCheckbox.includes('timelines') ? false : true}
+                      type={'datePicker'}
+                      name={'end_date'}
+                      label={translate(`funding_project_request_project_timeline.end_date.label`)}
+                      placeholder={translate(
+                        `funding_project_request_project_timeline.start_date.placeholder`
+                      )}
+                      minDate={
+                        new Date(new Date().setDate(new Date().getDate() + 1))
+                          .toISOString()
+                          .split('T')[0]
+                      }
+                    />
+                  </Grid>
+                </React.Fragment>
+              )}
+            </Grid>
+          ) : (
+            <React.Fragment>
+              {' '}
+              <Grid item xs={12} md={12} sx={{ paddingLeft: 3 }}>
+                <RHFTextArea
+                  name={'timelines'}
+                  label={translate(`funding_project_request_project_timeline.step`)}
+                  placeholder={translate(`funding_project_request_project_timeline.step`)}
+                  // sx={{ paddingLeft: 2 }}
+                />
+              </Grid>
+            </React.Fragment>
+          )}
+        </Grid>
+        {/* {defaultValues?.timelines && defaultValues?.timelines.length > 0 ? <>test</> : <>test</>} */}
         <Grid item xs={12} md={12} sx={{ mb: 4, mt: 2 }}>
           <RHFTextArea
             name={'notes'}
