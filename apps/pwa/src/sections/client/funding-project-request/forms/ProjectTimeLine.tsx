@@ -78,20 +78,20 @@ const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) 
         )}
         <BaseField
           type="repeater"
-          disabled={isDisabled}
+          disabled={!!revised && isDisabled ? true : false}
           name="project_timeline"
           repeaterFields={[
             {
-              disabled: isDisabled,
+              disabled: !!revised && isDisabled ? true : false,
               type: 'textField',
               name: 'name',
               label: 'funding_project_request_project_timeline.activity.label',
               placeholder: 'funding_project_request_project_timeline.activity.placeholder',
-              md: 6,
+              md: 5,
               xs: 12,
             },
             {
-              disabled: isDisabled,
+              disabled: !!revised && isDisabled ? true : false,
               type: 'datePicker',
               name: 'start_date',
               label: 'funding_project_request_project_timeline.start_date.label',
@@ -103,7 +103,7 @@ const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) 
                 .split('T')[0],
             },
             {
-              disabled: isDisabled,
+              disabled: !!revised && isDisabled ? true : false,
               type: 'datePicker',
               name: 'end_date',
               label: 'funding_project_request_project_timeline.end_date.label',
