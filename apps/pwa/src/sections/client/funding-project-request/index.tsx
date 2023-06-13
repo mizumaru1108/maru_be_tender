@@ -126,7 +126,6 @@ const FundingProjectRequestForm = () => {
   const [isDraft, setIsDraft] = useState(false);
   const [lastIndex, setLastIndex] = useState(0);
   const [tempValues, setTempValues] = useState({});
-  // console.log({ requestState });
 
   // on submit for the first step
   const onSubmitform1 = (data: any) => {
