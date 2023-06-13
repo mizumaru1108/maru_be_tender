@@ -114,7 +114,6 @@ const FundingProjectRequestForm = () => {
     ],
   };
 
-  // const [openToast, setOpenToast] = useState(false);
   const [toast, setToast] = useState({
     open: false,
     message: '',
