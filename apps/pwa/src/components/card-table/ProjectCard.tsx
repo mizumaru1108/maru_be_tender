@@ -19,6 +19,8 @@ import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
 import { useMutation } from 'urql';
 import { FusionAuthRoles } from '../../@types/commons';
 import React from 'react';
+import { dispatch } from 'redux/store';
+import { getProposalCount } from 'redux/slices/proposal';
 
 /**
  *
@@ -126,6 +128,7 @@ const ProjectCard = ({
         },
       });
     }
+    dispatch(getProposalCount(activeRole ?? 'test'));
     if (destination) {
       const x = location.pathname.split('/');
       navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`);
