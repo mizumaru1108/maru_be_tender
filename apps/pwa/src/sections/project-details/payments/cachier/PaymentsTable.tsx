@@ -146,10 +146,11 @@ function PaymentsTable() {
                       ))}
                   </>
                 )}
-              {item.status === 'done' && activeRole === 'tender_cashier' ? (
+              {item.status === 'done' ? (
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                   {item.cheques.length ? (
                     <Button
+                      data-cy="btn.review_transfer_receipt"
                       onClick={() => {
                         localStorage.setItem('receipt_type', 'receipt');
                         navigate(
@@ -169,39 +170,17 @@ function PaymentsTable() {
                       )}
                     </Button>
                   ) : (
-                    <Typography color="error" sx={{ textAlign: 'start' }}>
+                    <Typography
+                      data-cy={'table.btn.not_found_cheques'}
+                      color="error"
+                      sx={{ textAlign: 'start' }}
+                    >
                       {translate(
                         'content.administrative.project_details.payment.table.btn.not_found_cheques'
                       )}
                     </Typography>
                   )}
                 </Grid>
-              ) : item.status === 'accepted_by_finance' && activeRole !== 'tender_client' ? (
-                <>
-                  <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                    <Button
-                      sx={{
-                        backgroundColor: 'transparent',
-                        color: '#000',
-                        textDecorationLine: 'underline',
-                        height: '100%',
-                        ':hover': { backgroundColor: '#b8b7b4', textDecorationLine: 'underline' },
-                        width: '100%',
-                        border: `1px solid #000`,
-                        borderStyle: 'dashed',
-                      }}
-                      disabled={index !== currentIssuedPayament}
-                      endIcon={
-                        <img src="/icons/uploading-field/uploading-cheque-icon.svg" alt="" />
-                      }
-                      onClick={() => {
-                        handleOpenModal(item.id);
-                      }}
-                    >
-                      {translate('finance_pages.button.upload_receipt')}
-                    </Button>
-                  </Grid>
-                </>
               ) : null}
             </Grid>
           </Grid>

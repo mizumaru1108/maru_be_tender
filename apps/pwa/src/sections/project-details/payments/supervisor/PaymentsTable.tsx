@@ -283,23 +283,63 @@ function PaymentsTable() {
                 </svg>
               </Button>
             </Grid> */}
-                {item.status === 'done' && (
+                {item &&
+                  item.status === 'done' &&
+                  item.cheques.length > 0 &&
+                  item.cheques.map((item: any, index: number) => (
+                    <Grid item key={index} md={2} sx={{ textAlign: '-webkit-center' }}>
+                      <Button
+                        data-cy="btn.view_transfer_receipt"
+                        variant="text"
+                        color="inherit"
+                        sx={{
+                          '&:hover': { textDecorationLine: 'underline' },
+                        }}
+                        href={item?.transfer_receipt?.url ?? '#'}
+                        target="_blank"
+                      >
+                        {translate(
+                          'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
+                        )}
+                      </Button>
+                    </Grid>
+                  ))}
+                {item.status === 'done' ? (
                   <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                    <Button
-                      variant="text"
-                      color="inherit"
-                      sx={{
-                        '&:hover': { textDecorationLine: 'underline' },
-                      }}
-                      href={item.cheques[0].transfer_receipt.url ?? '#'}
-                      target="_blank"
-                    >
-                      {translate(
-                        'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
-                      )}
-                    </Button>
+                    {item.cheques.length ? (
+                      <Button
+                        data-cy="btn.review_transfer_receipt"
+                        onClick={() => {
+                          localStorage.setItem('receipt_type', 'receipt');
+                          navigate(
+                            `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                              proposal.id
+                            }/payments/${item.id}`
+                          );
+                        }}
+                        sx={{
+                          backgroundColor: 'transparent',
+                          color: '#000',
+                          textDecorationLine: 'underline',
+                        }}
+                      >
+                        {translate(
+                          'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
+                        )}
+                      </Button>
+                    ) : (
+                      <Typography
+                        data-cy="btn.not_found_cheques"
+                        color="error"
+                        sx={{ textAlign: 'start' }}
+                      >
+                        {translate(
+                          'content.administrative.project_details.payment.table.btn.not_found_cheques'
+                        )}
+                      </Typography>
+                    )}
                   </Grid>
-                )}
+                ) : null}
               </Grid>
             </Grid>
           ))}
