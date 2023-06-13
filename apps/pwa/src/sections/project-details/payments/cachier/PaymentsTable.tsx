@@ -125,21 +125,25 @@ function PaymentsTable() {
                       </Button>
                     </Grid>
 
-                    <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                      <Button
-                        variant="text"
-                        color="inherit"
-                        sx={{
-                          '&:hover': { textDecorationLine: 'underline' },
-                        }}
-                        href={item.cheques[0].transfer_receipt.url ?? '#'}
-                        target="_blank"
-                      >
-                        {translate(
-                          'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
-                        )}
-                      </Button>
-                    </Grid>
+                    {item &&
+                      item.cheques.length > 0 &&
+                      item.cheques.map((item: any, index: number) => (
+                        <Grid item key={index} md={2} sx={{ textAlign: '-webkit-center' }}>
+                          <Button
+                            variant="text"
+                            color="inherit"
+                            sx={{
+                              '&:hover': { textDecorationLine: 'underline' },
+                            }}
+                            href={item?.transfer_receipt?.url ?? '#'}
+                            target="_blank"
+                          >
+                            {translate(
+                              'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
+                            )}
+                          </Button>
+                        </Grid>
+                      ))}
                   </>
                 )}
               {item.status === 'done' && activeRole === 'tender_cashier' ? (

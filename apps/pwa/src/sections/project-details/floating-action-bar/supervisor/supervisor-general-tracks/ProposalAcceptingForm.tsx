@@ -184,7 +184,10 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
           amount: Number(el.amount),
         }));
 
-      const deleted_proposal_budget = tempDeletedBudget;
+      const deleted_proposal_budget = tempDeletedBudget.map((el) => ({
+        ...el,
+        amount: Number(el.amount),
+      }));
 
       const { length } = data.detail_project_budgets;
       const totalFSupport = data.detail_project_budgets

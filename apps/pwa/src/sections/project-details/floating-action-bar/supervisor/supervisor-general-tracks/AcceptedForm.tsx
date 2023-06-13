@@ -137,6 +137,33 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
 
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
     setIsLoading(true);
+    // console.log('data.support_type', data.support_type);
+    let totalSupportProposal: number | undefined = undefined;
+    if (proposal.proposal_item_budgets) {
+      totalSupportProposal = proposal
+        .proposal_item_budgets!.map((item) => parseInt(item.amount))
+        .reduce((acc, curr) => acc! + curr!, 0);
+    }
+    let totalAmount: number | undefined = undefined;
+    if (data.detail_project_budgets) {
+      totalAmount = data
+        .detail_project_budgets!.map((item) => item.amount)
+        .reduce((acc, curr) => acc! + curr!, 0);
+    }
+    let checkPassAmount = false;
+    if (data.support_type) {
+      if (totalAmount <= totalSupportProposal) {
+        checkPassAmount = true;
+      } else {
+        checkPassAmount = false;
+      }
+    } else {
+      if (totalAmount < totalSupportProposal) {
+        checkPassAmount = true;
+      } else {
+        checkPassAmount = false;
+      }
+    }
     if (data.detail_project_budgets.length) {
       const created_proposal_budget = data.detail_project_budgets
         .filter((item) => !basedBudget.find((i) => i.id === item.id))
@@ -152,7 +179,10 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           amount: Number(el.amount),
         }));
 
-      const deleted_proposal_budget = tempDeletedBudget;
+      const deleted_proposal_budget = tempDeletedBudget.map((el) => ({
+        ...el,
+        amount: Number(el.amount),
+      }));
 
       const { length } = data.detail_project_budgets;
       const totalFSupport = data.detail_project_budgets
@@ -193,54 +223,62 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
       }
       // console.log({ payload });
       // onSubmit(newData);
-      try {
-        // console.log('masuksini');
-        await dispatch(updateAcceptedDataProposalNonGrants(payload, activeRole!)).then(() => {
-          setSave(true);
-          onEdit(false);
-          dispatch(getProposal(pid as string, activeRole! as string));
-          enqueueSnackbar('تم إرسال الشيك بنجاح, بالإضافة إلى تعديل حالة الدفعة', {
-            variant: 'success',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'right',
-            },
+
+      if (checkPassAmount) {
+        // console.log('masuk true');
+        try {
+          await dispatch(updateAcceptedDataProposalNonGrants(payload, activeRole!)).then(() => {
+            setSave(true);
+            onEdit(false);
+            dispatch(getProposal(pid as string, activeRole! as string));
+            enqueueSnackbar('تم إرسال الشيك بنجاح, بالإضافة إلى تعديل حالة الدفعة', {
+              variant: 'success',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'right',
+              },
+            });
+            setIsLoading(false);
           });
+        } catch (error) {
           setIsLoading(false);
-        });
-      } catch (error) {
-        setIsLoading(false);
-        reset(defaultValues);
-        // enqueueSnackbar(error.message, {
-        //   variant: 'error',
-        //   preventDuplicate: true,
-        //   autoHideDuration: 3000,
-        //   anchorOrigin: {
-        //     vertical: 'bottom',
-        //     horizontal: 'right',
-        //   },
-        // });
-        const statusCode = (error && error.statusCode) || 0;
-        const message = (error && error.message) || null;
+          reset(defaultValues);
+          const statusCode = (error && error.statusCode) || 0;
+          const message = (error && error.message) || null;
+          enqueueSnackbar(
+            `${
+              statusCode < 500 && message
+                ? message
+                : translate('pages.common.internal_server_error')
+            }`,
+            {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'center',
+              },
+            }
+          );
+        }
+        setSave(true);
+        onEdit(false);
+      } else {
+        console.log(' masuk false');
         enqueueSnackbar(
-          `${
-            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          `${translate('notification.error_exceeds_amount')}: ${
+            data.support_type ? totalSupportProposal : totalSupportProposal - 1
           }`,
           {
             variant: 'error',
             preventDuplicate: true,
             autoHideDuration: 3000,
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'center',
-            },
           }
         );
       }
-      setSave(true);
-      onEdit(false);
     } else {
       enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {
         variant: 'error',
@@ -330,6 +368,8 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
 
   if (errorProposal) return <>Something when wrong on get proposal details</>;
 
+  console.log({ support_type });
+
   return (
     <FormProvider methods={methods}>
       {!fetchingProposal && (
@@ -341,8 +381,8 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
               name="support_type"
               label="نوع الدعم"
               options={[
-                { label: 'دعم جزئي', value: true },
-                { label: 'دعم كلي', value: false },
+                { label: 'دعم جزئي', value: false },
+                { label: 'دعم كلي', value: true },
               ]}
             />
           </Grid>
@@ -471,9 +511,9 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                         error={!!error}
                         helperText={error?.message}
                         disabled={
-                          support_type === 'false' || support_type === undefined || save
-                            ? true
-                            : false
+                          (support_type === 'false' || !support_type || support_type === undefined
+                            ? false
+                            : true) || save
                         }
                         sx={{
                           '& > .MuiFormHelperText-root': {
@@ -497,9 +537,9 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                         error={!!error}
                         helperText={error?.message}
                         disabled={
-                          support_type === 'false' || support_type === undefined || save
-                            ? true
-                            : false
+                          (support_type === 'false' || !support_type || support_type === undefined
+                            ? false
+                            : true) || save
                         }
                         sx={{
                           '& > .MuiFormHelperText-root': {
@@ -524,9 +564,9 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                         error={!!error}
                         helperText={error?.message}
                         disabled={
-                          support_type === 'false' || support_type === undefined || save
-                            ? true
-                            : false
+                          (support_type === 'false' || !support_type || support_type === undefined
+                            ? false
+                            : true) || save
                         }
                         sx={{
                           '& > .MuiFormHelperText-root': {
@@ -555,7 +595,9 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                       remove(i);
                     }}
                     disabled={
-                      support_type === 'false' || support_type === undefined || save ? true : false
+                      (support_type === 'false' || !support_type || support_type === undefined
+                        ? false
+                        : true) || save
                     }
                   >
                     <CloseIcon />
@@ -578,7 +620,9 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                 });
               }}
               disabled={
-                support_type === 'false' || support_type === undefined || save ? true : false
+                (support_type === 'false' || !support_type || support_type === undefined
+                  ? false
+                  : true) || save
               }
             >
               {translate('add_new_line')}
