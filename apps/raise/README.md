@@ -5,7 +5,7 @@ The API service backend for Tmra Organization, serving both OpenAPI and GraphQL 
 
 This mono-repo contain:\
 BackEnd (Raise Folder) [NESTJS] For Tender Management (with prefix "tender-"), Giving Sadaqah, and Ommar\
-FrontEnd (pwa Folder) [React] For Tender Management
+FrontEnd (pwa Folder) [React] For Tender Management.
 
 ## Installation
 
