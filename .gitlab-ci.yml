@@ -80,6 +80,8 @@ sonarqube-check:
     # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
     - cd apps/raise
     - yarn --immutable
+    # ensure Dockerfile COPY not failed: https://stackoverflow.com/a/70097693/122441
+    - mkdir -vp apps/raise/node_modules
     - yarn build
     # - ls -F dist/
     - '[ -f "dist/main.js" ] || { ls -F dist/; echo "Error: Build was invalid. apps/raise/dist/main.js must exist after build! Hint: Make sure you only use src/ folder."; exit 1; }'
