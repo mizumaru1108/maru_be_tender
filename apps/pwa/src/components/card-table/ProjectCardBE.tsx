@@ -23,6 +23,7 @@ import { LoadingButton } from '@mui/lab';
 import { FEATURE_PROJECT_SAVE_DRAFT } from '../../config';
 import { generateHeader } from '../../utils/generateProposalNumber';
 import { useSnackbar } from 'notistack';
+import { getProposalCount } from 'redux/slices/proposal';
 
 const cardFooterButtonActionLocal = {
   'show-project': 'show_project',
@@ -216,6 +217,7 @@ const ProjectCardBE = ({
         },
       });
     }
+    getProposalCount(activeRole ?? 'test');
     if (destination) {
       const x = location.pathname.split('/');
       // console.log(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
