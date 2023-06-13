@@ -1648,7 +1648,10 @@ export class TenderProposalService {
       to: log.data.proposal.user.email,
       from: 'no-reply@hcharity.org',
       subject,
-      templatePath: `tender/${selected_language || 'ar'}/proposal/${
+      // templatePath: `tender/${selected_language || 'ar'}/proposal/${
+      //   log.data.action === 'reject' ? 'project_declined' : 'project_approved'
+      // }`,
+      templatePath: `tender/ar/proposal/${
         log.data.action === 'reject' ? 'project_declined' : 'project_approved'
       }`,
       templateContext: {
