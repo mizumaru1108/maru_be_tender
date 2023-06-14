@@ -345,7 +345,7 @@ export class OrganizationController {
     const response = baseResponseHelper(
       editAboutUs,
       HttpStatus.OK,
-      'LandingPage updated',
+      'About Us updated',
     );
     return response;
   }

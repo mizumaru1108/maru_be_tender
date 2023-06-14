@@ -47,7 +47,25 @@ export function CreateNewAppearance(request: RequestMapperAppearance) {
 }
 
 export function randomHexColor() {
-  const n = (Math.random() * 0xfffff * 1000000).toString(16);
+  const listColor = [
+    '#f44336',
+    '#e91e63',
+    '#673ab7',
+    '#3f51b5',
+    '#2196f3',
+    '#00bcd4',
+    '#009688',
+    '#00AA55',
+    '#8bc34a',
+    '#cddc39',
+    '#ffeb3b',
+    '#ffc107',
+    '#ff9800',
+    '#795548',
+    '#9e9e9e',
+    '#607d8b',
+  ];
+  const randomIndex = Math.floor(Math.random() * listColor.length);
 
-  return '#' + n.slice(0, 6);
+  return listColor[randomIndex];
 }
