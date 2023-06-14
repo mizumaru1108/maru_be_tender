@@ -247,7 +247,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             type="numberField"
             name="payment_number"
             placeholder="عدد المدفوعات"
-            label="عدد المدفوعات"
+            label="عدد المدفوعات*"
           />
         </Grid>
         {/* <Grid item md={6} xs={12}>

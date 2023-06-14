@@ -1,5 +1,5 @@
 // react
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams, useNavigate } from 'react-router';
 // @mui + component
@@ -14,8 +14,17 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 // types
 import { IPropFromProjectReport, CloseReportForm } from '../types';
+import axiosInstance from 'utils/axios';
+import useAuth from 'hooks/useAuth';
+import { useSnackbar } from 'notistack';
 
 // ------------------------------------------------------------------------------------------
+
+type ITargetBeneficiaries = {
+  id: string;
+  is_deleted: boolean;
+  name: string;
+};
 
 export default function SubmitProjectReportForm({
   onSubmit,
@@ -27,6 +36,11 @@ export default function SubmitProjectReportForm({
   const { translate, currentLang } = useLocales();
   const { id, actionType } = useParams();
   const navigate = useNavigate();
+
+  const [beneficiaries, setBeneficiaries] = React.useState<ITargetBeneficiaries[] | []>([]);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const { activeRole } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [tmpCloseReportValues, setTmpCloseReportValues] = useState<CloseReportForm>(defaultValues);
 
@@ -68,6 +82,56 @@ export default function SubmitProjectReportForm({
     onSubmit(data);
   };
 
+  const getBeneficiaries = async () => {
+    setIsLoading(true);
+    try {
+      const rest = await axiosInstance.get(`/tender/proposal/beneficiaries/find-all?limit=0`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        const test = rest.data.data
+          .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
+          .map((bank: any) => bank);
+        setBeneficiaries(test);
+      }
+    } catch (error) {
+      // console.error(error.message);
+      setBeneficiaries([]);
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    getBeneficiaries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (isLoading) return <>{translate('pages.common.loading')}</>;
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container spacing={4} sx={{ pb: 10 }}>
@@ -97,7 +161,7 @@ export default function SubmitProjectReportForm({
               'pages.common.close_report.text.form.target_beneficiaries.placeholder'
             )}
           >
-            <MenuItem value="children">
+            {/* <MenuItem value="children">
               {translate('pages.common.close_report.text.option.children')}
             </MenuItem>
             <MenuItem value="general_students">
@@ -108,7 +172,17 @@ export default function SubmitProjectReportForm({
             </MenuItem>
             <MenuItem value="residents">
               {translate('pages.common.close_report.text.option.residents')}
-            </MenuItem>
+            </MenuItem> */}
+            {beneficiaries.length > 0 &&
+              beneficiaries.map((item, index) => (
+                <MenuItem
+                  data-cy={`pages.common.close_report.text.target_beneficiaries.option${index}`}
+                  key={index}
+                  value={item.name}
+                >
+                  {item.name}
+                </MenuItem>
+              ))}
           </RHFSelect>
         </Grid>
         <Grid item xs={12} md={6}>

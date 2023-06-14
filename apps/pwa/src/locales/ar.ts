@@ -2308,6 +2308,7 @@ const ar = {
         project_outputs: 'مخرجات المشروع',
         project_risks: 'مخاطر المشروع',
         project_strengths: 'نقاط القوة للمشروع',
+        timelines: 'مواعيد المشروع',
         notes: 'ملاحظات',
       },
     },

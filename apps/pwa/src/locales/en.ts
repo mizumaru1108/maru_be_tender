@@ -2295,6 +2295,7 @@ const en = {
         project_outputs: 'Project outputs',
         project_risks: 'Project risks',
         project_strengths: 'Project strengths',
+        timelines: 'Timelines',
         notes: 'Notes',
       },
     },

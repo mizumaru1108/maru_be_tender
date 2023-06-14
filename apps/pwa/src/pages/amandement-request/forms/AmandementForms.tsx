@@ -84,7 +84,11 @@ const AmandementForms = ({
   const resetForm = (field: any) => {
     const newValues = JSON.parse(JSON.stringify(defaultValues));
     // console.log('field value', { defaultValues });
-    if (field !== 'letter_ofsupport_req' && field !== 'project_attachments') {
+    if (
+      field !== 'letter_ofsupport_req' &&
+      field !== 'project_attachments' &&
+      field !== 'timelines'
+    ) {
       setValue(field, newValues[field]);
     } else {
       setValue(field, '-');
@@ -116,14 +120,17 @@ const AmandementForms = ({
   }, [defaultValues, reset]);
   const handleChange = (e: any) => {
     const newSelectedValues = [...selectedCheckbox];
-    // console.log('test checked', e.target.checked);
+    // console.log('test checked', e.target.value);
     // console.log({ newSelectedValues });
     if (e.target.checked) {
+      // console.log('masuk true');
       newSelectedValues.push(e.target.value);
       selectedLength(newSelectedValues.length);
       setSelectedCheckbox(newSelectedValues);
     } else {
+      // console.log('masuk false');
       newSelectedValues.splice(newSelectedValues.indexOf(e.target.value), 1);
+      // resetForm(e.target.value as string);
       resetForm(e.target.value as string);
       selectedLength(newSelectedValues.length);
       setSelectedCheckbox(newSelectedValues);
@@ -390,11 +397,16 @@ const AmandementForms = ({
             <React.Fragment>
               {' '}
               <Grid item xs={12} md={12} sx={{ paddingLeft: 3 }}>
-                <RHFTextArea
+                {/* <RHFTextArea
                   name={'timelines'}
                   label={translate(`funding_project_request_project_timeline.step`)}
                   placeholder={translate(`funding_project_request_project_timeline.step`)}
-                  // sx={{ paddingLeft: 2 }}
+                /> */}
+                <RHFTextField
+                  data-cy="funding_project_request_project_timeline.step"
+                  name={'timelines'}
+                  label={translate(`funding_project_request_project_timeline.step`)}
+                  placeholder={translate(`funding_project_request_project_timeline.step`)}
                 />
               </Grid>
             </React.Fragment>

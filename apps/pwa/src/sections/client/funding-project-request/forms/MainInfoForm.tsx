@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Grid } from '@mui/material';
 import { FormProvider, RHFDatePicker, RHFTextField } from 'components/hook-form';
 import { useForm } from 'react-hook-form';
@@ -14,6 +14,9 @@ import { REGION } from '../../../../_mock/region';
 import BaseField from '../../../../components/hook-form/BaseField';
 import { RHFUploadSingleFileBe } from '../../../../components/hook-form/RHFUploadBe';
 import { borderColor } from '@mui/system';
+import axiosInstance from 'utils/axios';
+import useAuth from 'hooks/useAuth';
+import { useSnackbar } from 'notistack';
 
 type FormValuesProps = {
   project_name: string;
@@ -25,6 +28,12 @@ type FormValuesProps = {
   letter_ofsupport_req: CustomFile | string | null;
   project_attachments: CustomFile | string | null;
   // project_beneficiaries_specific_type: string;
+};
+
+type beneficiaries = {
+  id: string;
+  is_deleted: boolean;
+  name: string;
 };
 
 type Props = {
@@ -57,7 +66,6 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
           const maxSize = 1024 * 1024 * 200;
           console.log('size:', value.size);
           console.log('maxSize: ', maxSize);
-          // const trueSize = value.size * 28;
           if (value.size > 1024 * 1024 * 200) {
             return false;
           }
@@ -69,14 +77,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
         translate('errors.cre_proposal.letter_ofsupport_req.fileExtension'),
         (value) => {
           if (value) {
-            // console.log('fileExtension:', value);
-            if (
-              value.fileExtension &&
-              value.fileExtension !== 'application/pdf'
-              // value.type !== 'image/png' &&
-              // value.type !== 'image/jpeg' &&
-              // value.type !== 'image/jpg'
-            ) {
+            if (value.fileExtension && value.fileExtension !== 'application/pdf') {
               return false;
             } else if (value.type && value.type !== 'application/pdf') {
               return false;
@@ -99,14 +100,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
         translate('errors.cre_proposal.project_attachments.fileExtension'),
         (value) => {
           if (value) {
-            // console.log({ value });
-            if (
-              value.fileExtension &&
-              value.fileExtension !== 'application/pdf'
-              // value.type !== 'image/png' &&
-              // value.type !== 'image/jpeg' &&
-              // value.type !== 'image/jpg'
-            ) {
+            if (value.fileExtension && value.fileExtension !== 'application/pdf') {
               return false;
             } else if (value.type && value.type !== 'application/pdf') {
               return false;
@@ -115,12 +109,6 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
           return true;
         }
       ),
-    // project_beneficiaries_specific_type: Yup.string().when('project_beneficiaries', {
-    //   is: 'GENERAL',
-    //   then: Yup.string().required(
-    //     translate('errors.cre_proposal.project_beneficiaries_specific_type.required')
-    //   ),
-    // }),
     project_beneficiaries_specific_type: Yup.string().when('project_beneficiaries', {
       is: 'GENERAL',
       then: Yup.string().required(
@@ -140,6 +128,53 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
     reset,
   } = methods;
 
+  const [beneficiaries, setBeneficiaries] = React.useState<beneficiaries[] | []>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const { activeRole } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+  const getBeneficiaries = async () => {
+    setLoading(true);
+    try {
+      const rest = await axiosInstance.get(`/tender/proposal/beneficiaries/find-all?limit=0`, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
+      if (rest) {
+        const test = rest.data.data
+          .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
+          .map((bank: any) => bank);
+        setBeneficiaries(test);
+      }
+    } catch (error) {
+      // console.error(error.message);
+      setBeneficiaries([]);
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
     let newValue = { ...defaultValues };
@@ -150,10 +185,12 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
     } else {
       reset(newValue);
     }
-    // console.log({ newValue });
-    // reset(newValue);
+    getBeneficiaries();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
+
+  if (loading) return <>{translate('pages.common.loading')}</>;
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
@@ -241,7 +278,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
             label={translate('funding_project_request_form1.target_group_type.label')}
             placeholder={translate('funding_project_request_form1.target_group_type.placeholder')}
           >
-            <>
+            {/* <>
               <option value="GENERAL" style={{ backgroundColor: '#fff' }}>
                 أخرى
               </option>
@@ -260,7 +297,18 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
               <option value="ELDERLY" style={{ backgroundColor: '#fff' }}>
                 كبار السن
               </option>
-            </>
+            </> */}
+            {beneficiaries.length > 0 &&
+              beneficiaries.map((item, index) => (
+                <option
+                  data-cy={`funding_project_request_form1.target_group_type${index}`}
+                  key={index}
+                  value={item?.name}
+                  style={{ backgroundColor: '#fff' }}
+                >
+                  {item?.name}
+                </option>
+              ))}
           </RHFSelectNoGenerator>
         </Grid>
         {/* <Grid item md={12} xs={12}>
