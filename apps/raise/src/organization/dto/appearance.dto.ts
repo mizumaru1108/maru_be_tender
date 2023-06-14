@@ -25,8 +25,8 @@ export class AppearancenDto {
   secondaryColor: string;
 
   @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   logo: string;
 
   @ApiPropertyOptional()
@@ -138,8 +138,8 @@ export class AppearancenDto {
   @IsString()
   whySupportUs3: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   favIcon: string;
 }
