@@ -20,6 +20,27 @@ function PaymentsTable() {
   const dispatch = useDispatch();
 
   const { proposal } = useSelector((state) => state.proposal);
+  // console.log({ proposal });
+  const paymentSorting = [...proposal.payments].sort(
+    (a, b) => parseInt(a.order) - parseInt(b.order)
+  );
+  // const alreadyExist =
+  //   proposal.proposal_logs.findIndex((item) => {
+  //     if (item.action === 'set_by_supervisor' && item.user_role === 'PROJECT_MANAGER') {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   }) !== -1
+  //     ? true
+  //     : false;
+  const stepBeforeComplete = paymentSorting.findIndex(
+    (item) => item.status === 'issued_by_supervisor' || item.status === 'set_by_supervisor'
+  );
+  // const stepAfterComplete = paymentSorting.findIndex(
+  //   (item) => item.status !== 'issued_by_supervisor' && item.status !== 'set_by_supervisor'
+  // );
+  // const complete = stepBeforeComplete === stepAfterComplete + 1;
 
   const { translate } = useLocales();
 
@@ -41,7 +62,14 @@ function PaymentsTable() {
     let currIndex = 0;
     if (payments.length > 0) {
       for (var i = 0; i < payments.length; i++) {
-        if (payments[i].status === 'issued_by_supervisor') {
+        // if (payments[i].status === 'issued_by_supervisor') {
+        //   currIndex = i;
+        //   break;
+        // }
+        if (
+          payments[i].status === 'issued_by_supervisor' ||
+          payments[i].status === 'set_by_supervisor'
+        ) {
           currIndex = i;
           break;
         }
@@ -49,6 +77,7 @@ function PaymentsTable() {
     }
     return currIndex;
   }, [payments]);
+  // console.log({ stepBeforeComplete, currentSelectedIndex, paymentSorting });
 
   const handleApprovalPayment = async (id: string) => {
     try {
@@ -257,7 +286,9 @@ function PaymentsTable() {
                       ':hover': { backgroundColor: '#FF170F' },
                     }}
                     startIcon={<CloseIcon />}
-                    disabled={currentSelectedIndex !== index}
+                    disabled={
+                      currentSelectedIndex !== index || currentSelectedIndex !== stepBeforeComplete
+                    }
                     onClick={() => {
                       setSelectedPaymentId(item.id);
                       setOpenModalReject(true);
@@ -276,7 +307,9 @@ function PaymentsTable() {
                       color: '#fff',
                     }}
                     startIcon={<CheckIcon />}
-                    disabled={currentSelectedIndex !== index}
+                    disabled={
+                      currentSelectedIndex !== index || currentSelectedIndex !== stepBeforeComplete
+                    }
                     onClick={() => {
                       handleApprovalPayment(item.id);
                     }}
@@ -287,6 +320,19 @@ function PaymentsTable() {
                   </Button>
                 </Grid>
               </>
+            ) : currentSelectedIndex === stepBeforeComplete &&
+              item.status === 'set_by_supervisor' ? (
+              <Grid item md={2}>
+                <Typography
+                  data-cy="content.administrative.project_details.payment.table.btn.exchange_permit_refuse"
+                  color="error"
+                  variant="h6"
+                >
+                  {translate(
+                    'content.administrative.project_details.payment.table.btn.exchange_permit_refuse'
+                  )}
+                </Typography>
+              </Grid>
             ) : null}
             {item &&
               item.status === 'done' &&
