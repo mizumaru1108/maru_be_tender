@@ -497,7 +497,10 @@ sonarqube-check:
 "trigger deploy tmra-raise to dev":
   stage: deploy
   needs:
-    ["prepare version", "build tmra-raise", "publish tmra-raise to non-prod"]
+    - job: prepare version
+    - job: build tmra-raise
+      artifacts: false
+    - job: publish tmra-raise to non-prod
   variables:
     APP_NAME: tmra-raise
     APP_ENV: dev
@@ -525,7 +528,10 @@ sonarqube-check:
 "trigger deploy tmra-raise to qc":
   stage: deploy
   needs:
-    ["prepare version", "build tmra-raise", "publish tmra-raise to non-prod"]
+    - job: prepare version
+    - job: build tmra-raise
+      artifacts: false
+    - job: publish tmra-raise to non-prod
   variables:
     APP_NAME: tmra-raise
     APP_ENV: qc
@@ -553,7 +559,10 @@ sonarqube-check:
 "trigger deploy tmra-raise to staging":
   stage: deploy
   needs:
-    ["prepare version", "build tmra-raise", "publish tmra-raise to non-prod"]
+    - job: prepare version
+    - job: build tmra-raise
+      artifacts: false
+    - job: publish tmra-raise to non-prod
   variables:
     APP_NAME: tmra-raise
     APP_ENV: staging
@@ -580,7 +589,11 @@ sonarqube-check:
 
 "trigger deploy tmra-raise to prod":
   stage: deploy
-  needs: ["prepare version", "build tmra-raise", "publish tmra-raise to prod"]
+  needs:
+    - job: prepare version
+    - job: build tmra-raise
+      artifacts: false
+    - job: publish tmra-raise to prod
   variables:
     APP_NAME: tmra-raise
     APP_ENV: prod
