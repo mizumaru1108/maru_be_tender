@@ -157,7 +157,6 @@ export class OrganizationService {
     );
   }
 
-  // Test rebuild
   async getOrganization(organizationId: string) {
     this.logger.debug('Get Organization...');
     const organization = await this.organizationModel.findOne({
@@ -319,15 +318,23 @@ export class OrganizationService {
       { new: true },
     );
 
-    if (appearanceUpdated && appearance.favIcon) {
-      organization.favicon = appearance.favIcon;
-      organization.save();
+    console.log({
+      appearanceUpdated,
+      favicon: appearance.favIcon,
+    });
+
+    if (appearanceUpdated) {
+      await this.organizationModel.findOneAndUpdate(
+        { _id: appearanceUpdated._id },
+        { favicon: appearanceUpdated.favIcon },
+        { new: true },
+      );
     }
 
     if (!appearanceUpdated) {
       return {
         statusCode: 400,
-        message: 'Failed',
+        message: 'Failed update appearance',
       };
     }
 
@@ -2311,12 +2318,14 @@ export class OrganizationService {
     organizationId: string,
     editNonProfitAppearanceNavigationDto: EditNonProfApperNavDto,
   ): Promise<AppearanceNavigation> {
+    // ) {
     this.logger.debug(`Get Organization ${organizationId}...`);
     const getOrgsId = await this.getOrganization(organizationId);
     if (!getOrgsId) {
       throw new NotFoundException(`OrganizationId ${organizationId} not found`);
     }
     editNonProfitAppearanceNavigationDto.organizationId = organizationId;
+
     const missionPath: any = [];
     /** Create Path Url ForImage mission */
     if (
@@ -2615,15 +2624,18 @@ export class OrganizationService {
         editNonProfitAppearanceNavigationDto,
         { new: true },
       );
-    // const landingPageUpdated: any = editNonProfitAppearanceNavigationDto
 
     if (!landingPageUpdated) {
-      throw new BadRequestException({
-        statusCode: 400,
-        message: `Failed to update Landingpage`,
-      });
+      const appearanceCreateLandingPage =
+        await this.appearanceNavigationModel.create({
+          ...editNonProfitAppearanceNavigationDto,
+          page: 'LANDINGPAGE',
+        });
+
+      return appearanceCreateLandingPage;
+    } else {
+      return landingPageUpdated;
     }
-    return landingPageUpdated;
   }
 
   async editAboutUs(
@@ -2869,21 +2881,25 @@ export class OrganizationService {
     editNonProfApprceNaviAboutUsDto.updatedAt = now.toISOString();
     editNonProfApprceNaviAboutUsDto.companyValues = companyPath;
     editNonProfApprceNaviAboutUsDto.featuresItem = featuresPath;
+
     const aboutUsPageUpdated =
       await this.appearanceNavigationModel.findOneAndUpdate(
         { organizationId: organizationId, page: 'ABOUTUS' },
         editNonProfApprceNaviAboutUsDto,
         { new: true },
       );
-    // const abouUsPageUpdated: any = editNonProfApprceNaviAboutUsDto;
 
     if (!aboutUsPageUpdated) {
-      throw new BadRequestException({
-        statusCode: 400,
-        message: `Failed to update aboutUs`,
-      });
+      const appearanceCreateAboutUs =
+        await this.appearanceNavigationModel.create({
+          ...editNonProfApprceNaviAboutUsDto,
+          page: 'ABOUTUS',
+        });
+
+      return appearanceCreateAboutUs;
+    } else {
+      return aboutUsPageUpdated;
     }
-    return aboutUsPageUpdated;
   }
 
   async editBlog(
@@ -3017,21 +3033,24 @@ export class OrganizationService {
     const now: Date = new Date();
     editNonProfitAppearanceNavBlogDto.updatedAt = now.toISOString();
     editNonProfitAppearanceNavBlogDto.news = newsPath;
+
     const blogUpdated = await this.appearanceNavigationModel.findOneAndUpdate(
       { organizationId: organizationId, page: 'BLOG' },
       editNonProfitAppearanceNavBlogDto,
       { new: true },
     );
-    // const blogUpdated: any = editNonProfitAppearanceNavBlogDto;
 
     if (!blogUpdated) {
-      throw new BadRequestException({
-        statusCode: 400,
-        message: `Failed to update blog`,
+      const appearanceCreateBlog = await this.appearanceNavigationModel.create({
+        ...editNonProfitAppearanceNavBlogDto,
+        organizationId: organizationId,
+        page: 'BLOG',
       });
-    }
 
-    return blogUpdated;
+      return appearanceCreateBlog;
+    } else {
+      return blogUpdated;
+    }
   }
 
   async getLandingPage(organizationId: string) {
@@ -3127,36 +3146,70 @@ export class OrganizationService {
     organizationId: string,
     editNonProfitAppearancePageDto: EditNonProfitAppearancePageDto,
   ) {
-    this.logger.debug(`Get Organization ${organizationId}...`);
-    const getOrgsId = await this.getOrganization(organizationId);
-    if (getOrgsId.statusCode === 404) {
-      return {
-        statusCode: 404,
-        message: 'Organization not found',
-      };
-    }
-
-    this.logger.debug('Edit ContactUs Organization...');
     const now: Date = new Date();
-    editNonProfitAppearancePageDto.updatedAt = now.toISOString();
-    const appearanceEditContactUs =
-      await this.appearancePageModel.findOneAndUpdate(
-        { organizationId },
-        editNonProfitAppearancePageDto,
-        { new: true },
+
+    try {
+      this.logger.debug(`Get Organization ${organizationId}...`);
+      const getOrgsId = await this.getOrganization(organizationId);
+
+      if (getOrgsId.statusCode === 404) {
+        return {
+          statusCode: 404,
+          message: 'Organization not found',
+        };
+      }
+
+      this.logger.debug('Edit ContactUs Organization...');
+      editNonProfitAppearancePageDto.updatedAt = now.toISOString();
+
+      const appearanceEditContactUs =
+        await this.appearancePageModel.findOneAndUpdate(
+          { organizationId },
+          editNonProfitAppearancePageDto,
+          { new: true },
+        );
+
+      if (!appearanceEditContactUs) {
+        const appearanceCreateContactUs = await this.appearancePageModel.create(
+          {
+            ...editNonProfitAppearancePageDto,
+          },
+        );
+
+        const updateOrganization =
+          await this.organizationModel.findOneAndUpdate(
+            { _id: getOrgsId.organization?._id },
+            {
+              contactEmail: editNonProfitAppearancePageDto.contactUsCsEmail,
+              longitude: editNonProfitAppearancePageDto.longitude,
+              latitude: editNonProfitAppearancePageDto.latitude,
+            },
+            { new: true },
+          );
+
+        if (!updateOrganization) {
+          throw new HttpException(
+            'Error when update organization',
+            HttpStatus.NOT_IMPLEMENTED,
+          );
+        }
+
+        return {
+          statusCode: 200,
+          appearancecontactus: appearanceCreateContactUs,
+        };
+      } else {
+        return {
+          statusCode: 200,
+          appearancecontactus: appearanceEditContactUs,
+        };
+      }
+    } catch (error) {
+      throw new HttpException(
+        'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
-
-    if (!appearanceEditContactUs) {
-      return {
-        statusCode: 400,
-        message: 'Failed',
-      };
     }
-
-    return {
-      statusCode: 200,
-      appearancecontactus: appearanceEditContactUs,
-    };
   }
 
   async getContactUs(organizationId: string) {
@@ -3169,7 +3222,7 @@ export class OrganizationService {
       };
     }
     this.logger.debug('Get ContactUs Organization...');
-    return await this.appearancePageModel.find({
+    return await this.appearancePageModel.findOne({
       organizationId: new Types.ObjectId(organizationId),
     });
   }

@@ -4,7 +4,7 @@ import Check from '@mui/icons-material/Check';
 import { useSnackbar } from 'notistack';
 import { LoadingButton } from '@mui/lab';
 import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
-import React from 'react';
+import React, { useMemo } from 'react';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
 import useAuth from 'hooks/useAuth';
@@ -71,18 +71,51 @@ function PaymentsTable() {
     }
   };
 
-  // useEffect(() => {
-  //   const payments = [...proposal.payments].sort(
-  //     (a: any, b: any) => parseInt(a.order) - parseInt(b.order)
-  //   );
-  //   console.log({ payments });
-  // for (var i = 0; i < payments.length; i++) {
-  //   if (payments[i].status === 'set_by_supervisor') {
-  //     setCurrentIssuedPayament(i);
-  //     break;
-  //   }
-  // }
-  // }, [proposal]);
+  const payments = useMemo(() => {
+    const paymentsHistory = proposal.payments.map((v) => ({
+      ...v,
+      order: Number(v.order),
+    }));
+
+    return paymentsHistory.sort((a, b) => a.order - b.order);
+  }, [proposal]);
+
+  const stepBeforeComplete = payments.findIndex(
+    (item) => item.status === 'issued_by_supervisor' || item.status === 'set_by_supervisor'
+  );
+  const alreadyExist =
+    proposal.proposal_logs.findIndex((item) => {
+      if (item.action === 'set_by_supervisor' && item.user_role === 'PROJECT_MANAGER') {
+        return true;
+      } else {
+        return false;
+      }
+    }) !== -1
+      ? true
+      : false;
+
+  const currentSelectedIndex = useMemo(() => {
+    let currIndex = 0;
+    if (payments.length > 0) {
+      for (var i = 0; i < payments.length; i++) {
+        // if (payments[i].status === 'issued_by_supervisor') {
+        //   currIndex = i;
+        //   break;
+        // }
+        if (
+          payments[i].status === 'issued_by_supervisor' ||
+          payments[i].status === 'set_by_supervisor'
+        ) {
+          currIndex = i;
+          break;
+        }
+      }
+    }
+    return currIndex;
+  }, [payments]);
+
+  console.log({ proposal, payments });
+
   React.useEffect(() => {
     // const
     const neWvalue: any = proposal.payments;
@@ -143,6 +176,7 @@ function PaymentsTable() {
                 </Stack>
               </Grid>
               {item.status !== 'set_by_supervisor' &&
+              item.status !== 'issued_by_supervisor' &&
               item.status !== 'accepted_by_project_manager' ? (
                 <Grid item md={2}>
                   <Typography
@@ -156,7 +190,15 @@ function PaymentsTable() {
                   </Typography>
                 </Grid>
               ) : null}
-              {item.status === 'accepted_by_project_manager' && (
+              {item.status === 'issued_by_supervisor' && (
+                <Grid item md={2}>
+                  <Typography data-cy="review.review_by_project_manager">
+                    {translate('review.review_by_project_manager')}
+                  </Typography>
+                </Grid>
+              )}
+
+              {item.status === 'accepted_by_project_manager' ? (
                 <Grid item>
                   <LoadingButton
                     variant="contained"
@@ -176,7 +218,20 @@ function PaymentsTable() {
                     )}
                   </LoadingButton>
                 </Grid>
-              )}
+              ) : currentSelectedIndex === stepBeforeComplete &&
+                item.status === 'set_by_supervisor' ? (
+                <Grid item md={2}>
+                  <Typography
+                    data-cy="content.administrative.project_details.payment.table.btn.exchange_permit_reject_by_pm"
+                    color="error"
+                    variant="h6"
+                  >
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_reject_by_pm'
+                    )}
+                  </Typography>
+                </Grid>
+              ) : null}
 
               {item.status === 'done' && (
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>

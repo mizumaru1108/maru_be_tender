@@ -62,6 +62,7 @@ const ICONS = {
       'incoming-exchange-permission-requests'
     ),
     requests_in_process: getIcon('requests-in-process'),
+    requests_in_process_with_vat: getIcon('requests-in-process'),
     previous_funding_requests: getIcon('previous-request'),
     portal_reports: getIcon('portal-reports'),
     messages: getIcon('message-bar'),
@@ -258,15 +259,20 @@ const navConfig = {
           path: PATH_FINANCE.incoming_exchange_permission_requests,
           icon: ICONS.tender_finance.incoming_exchange_permission_requests,
         },
-        {
-          title: 'incoming_exchange_permission_requests_with_vat',
-          path: PATH_FINANCE.incoming_exchange_permission_requests_with_vat,
-          icon: ICONS.tender_finance.incoming_exchange_permission_requests,
-        },
+        // {
+        //   title: 'incoming_exchange_permission_requests_with_vat',
+        //   path: PATH_FINANCE.incoming_exchange_permission_requests_with_vat,
+        //   icon: ICONS.tender_finance.incoming_exchange_permission_requests,
+        // },
         {
           title: 'requests_in_process',
           path: PATH_FINANCE.requests_in_process,
           icon: ICONS.tender_finance.requests_in_process,
+        },
+        {
+          title: 'requests_in_process_with_vat',
+          path: PATH_FINANCE.requests_in_process_with_vat,
+          icon: ICONS.tender_finance.requests_in_process_with_vat,
         },
         {
           title: 'previous_funding_requests',

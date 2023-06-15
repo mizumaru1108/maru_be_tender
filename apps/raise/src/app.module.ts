@@ -31,8 +31,6 @@ import { TicketModule } from './ticket/ticket.module';
 import { UsersModule } from './user/user.module';
 import { WidgetsModule } from './widgets/widgets.module';
 import { ZakatModule } from './zakat/zakat.module';
-// import { OpenTelemetryModule } from 'nestjs-otel';
-// import { OpenTelemetryModule } from '@metinseylan/nestjs-opentelemetry';
 import { CommentsModule } from './comments/comments.module';
 import { envLoadErrorHelper } from './commons/helpers/env-loaderror-helper';
 import { DonationModule } from './donation/donation.module';
@@ -48,7 +46,7 @@ import { TenderTrackModule } from './tender-track/tender-track.module';
 import { TenderUserModule } from './tender-user/tender-user.module';
 import { TenderModule } from './tender/tender.module';
 import { WidgetBackendModule } from './widget-backend/widget-backend.module';
-/* Environtment Config */
+/* Environment Config */
 import { bunnyConfig } from './commons/configs/bunny-config';
 import { fusionAuthConfig } from './commons/configs/fusion-auth-config';
 import { nodeMailerConfig } from './commons/configs/nodemailer-config';
@@ -66,6 +64,7 @@ import { tenderAppConfig } from './commons/configs/tender-app-config';
 import { mseGatConfig } from './commons/configs/msegat-config';
 import { PaymentPaytabsModule } from './payment-paytabs/payment-paytabs.module';
 import { LoggerModule } from 'nestjs-pino';
+import { DatadogTraceModule } from 'nestjs-ddtrace';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -98,17 +97,15 @@ import { LoggerModule } from 'nestjs-pino';
                   colorize: true,
                   levelFirst: true,
                   translateTime: 'SYS:standard',
-                  ignore: 'req,res,responseTime',
+                  ignore:
+                    'req,res,responseTime,trace_id,span_id,trace_flags,dd',
                 },
               }
             : undefined,
       },
     }),
+    DatadogTraceModule.forRoot(),
 
-    // OpenTelemetryModuleConfig,
-    // OpenTelemetryModule.forRoot({
-    //   applicationName: 'tmra-raise',
-    // }),
     ScheduleModule.forRoot(),
 
     ConfigModule.forRoot({

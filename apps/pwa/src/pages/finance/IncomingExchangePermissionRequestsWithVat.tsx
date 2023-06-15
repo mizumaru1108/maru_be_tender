@@ -19,7 +19,7 @@ function IncomingExchangePermissionRequestsWithVat() {
       <Container>
         <ContentStyle>
           <CardTableByBE
-            title={translate('previous_support_requests')}
+            title={translate('incoming_support_requests')}
             endPoint="tender-proposal/payment-adjustment"
             destination="incoming-exchange-permission-requests"
             limitShowCard={6}

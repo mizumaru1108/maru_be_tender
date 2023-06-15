@@ -178,7 +178,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
 
   const onSubmitform5 = async (data: any) => {
     // console.log('data form 5', data.project_timeline);
-
+    setIsLoading(true);
     let newValue: any = {};
     newValue = {
       ...newValue,
@@ -201,14 +201,13 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
       proposal_id: tmpValues?.data.id,
     };
 
-    if (filteredValue.hasOwnProperty('amount_required_fsupport')) {
+    if (tmpValues?.revised.hasOwnProperty('amount_required_fsupport')) {
       filteredValue = {
         ...filteredValue,
         detail_project_budgets: requestState.form4.detail_project_budgets,
       };
     }
-
-    if (filteredValue.hasOwnProperty('timelines')) {
+    if (tmpValues?.revised.hasOwnProperty('timelines')) {
       delete filteredValue.timelines;
       filteredValue = {
         ...filteredValue,

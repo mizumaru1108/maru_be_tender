@@ -81,7 +81,7 @@ sonarqube-check:
     - cd apps/raise
     - yarn --immutable
     # ensure Dockerfile COPY not failed: https://stackoverflow.com/a/70097693/122441
-    - mkdir -vp apps/raise/node_modules
+    - mkdir -vp node_modules
     - yarn build
     # - ls -F dist/
     - '[ -f "dist/main.js" ] || { ls -F dist/; echo "Error: Build was invalid. apps/raise/dist/main.js must exist after build! Hint: Make sure you only use src/ folder."; exit 1; }'
@@ -123,7 +123,7 @@ sonarqube-check:
     # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
     - cd apps/pwa
     - yarn --immutable
-    - yarn build
+    - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="$APP_VERSION" yarn build
     - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
   artifacts:
     paths:
@@ -166,7 +166,7 @@ sonarqube-check:
     # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
     - cd apps/pwa
     - yarn --immutable
-    - yarn build
+    - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="$APP_VERSION" yarn build
     - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
   artifacts:
     paths:
@@ -206,7 +206,7 @@ sonarqube-check:
     # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
     - cd apps/pwa
     - yarn --immutable
-    - yarn build
+    - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="$APP_VERSION" yarn build
     - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
   artifacts:
     paths:
@@ -246,7 +246,7 @@ sonarqube-check:
     # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
     - cd apps/pwa
     - yarn --immutable
-    - yarn build
+    - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="$APP_VERSION" yarn build
     - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
   artifacts:
     paths:
@@ -607,7 +607,11 @@ sonarqube-check:
 
 "trigger deploy tmra-pwa to dev":
   stage: deploy
-  needs: ["prepare version", "build tmra-pwa dev", "publish tmra-pwa to dev"]
+  needs:
+    - job: prepare version
+    - job: build tmra-pwa dev
+      artifacts: false
+    - job: publish tmra-pwa to dev
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: dev
@@ -634,7 +638,11 @@ sonarqube-check:
 
 "trigger deploy tmra-pwa to qc":
   stage: deploy
-  needs: ["prepare version", "build tmra-pwa qc", "publish tmra-pwa to qc"]
+  needs:
+    - job: prepare version
+    - job: build tmra-pwa qc
+      artifacts: false
+    - job: publish tmra-pwa to qc
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: qc
@@ -662,7 +670,10 @@ sonarqube-check:
 "trigger deploy tmra-pwa to staging":
   stage: deploy
   needs:
-    ["prepare version", "build tmra-pwa staging", "publish tmra-pwa to staging"]
+    - job: prepare version
+    - job: build tmra-pwa staging
+      artifacts: false
+    - job: publish tmra-pwa to staging
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: staging
@@ -689,7 +700,11 @@ sonarqube-check:
 
 "trigger deploy tmra-pwa to prod":
   stage: deploy
-  needs: ["prepare version", "build tmra-pwa prod", "publish tmra-pwa to prod"]
+  needs:
+    - job: prepare version
+    - job: build tmra-pwa prod
+      artifacts: false
+    - job: publish tmra-pwa to prod
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: prod

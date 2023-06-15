@@ -31,17 +31,16 @@ CardTablePropsByBE) {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
   // const [filterSorting, setFilterSorting] = useState('');
+  const tmpTypeRequest = `&type=${typeRequest}`;
+  const endPointOrigin = `${endPoint}?limit=${limit}&page=${page}${addCustomFilter || ''}${
+    (typeRequest && tmpTypeRequest) || ''
+  }`;
 
   const fetchingPrevious = React.useCallback(async () => {
     setIsLoading(true);
-    let url = '';
-    if (!typeRequest) {
-      url = `${endPoint}?limit=${limit}&page=${page}`;
-    } else {
-      url = `${endPoint}?limit=${limit}&page=${page}&type=${typeRequest}`;
-    }
+    const url = endPointOrigin;
     try {
-      const rest = await axiosInstance.get(`${url}${addCustomFilter || ''}`, {
+      const rest = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
       });
       if (rest) {
@@ -55,17 +54,6 @@ CardTablePropsByBE) {
         );
       }
     } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
-      // handle error fetching
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       if (message && statusCode !== 0) {
@@ -129,6 +117,7 @@ CardTablePropsByBE) {
           typeRequest={typeRequest}
           // api={!typeRequest ? `${endPoint}` : `${endPoint}`}
           api={endPoint ? endPoint : ''}
+          addCustomFilter={addCustomFilter}
           returnData={setCardData}
           loadingState={setIsLoading}
         />

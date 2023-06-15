@@ -28,10 +28,8 @@ export default function BeneficiariesTable() {
   const { themeStretch } = useSettings();
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
-  const [loading, setLoading] = useState<boolean>(false);
   const [refetch, setRefetch] = useState<boolean>(false);
   // const [bankValue, setBankValue] = useState<AuthorityInterface[] | []>([]);
-  const [beneficiaries, setBeneficiaries] = useState<any[] | []>([]);
   const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
@@ -45,24 +43,19 @@ export default function BeneficiariesTable() {
     setOpen(false);
   };
 
+  const [beneficiaries, setBeneficiaries] = useState<any[] | []>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const getBeneficiaries = async () => {
     setLoading(true);
-    // console.log('test masuk');
     try {
       const rest = await axiosInstance.get(`/tender/proposal/beneficiaries/find-all?limit=0`, {
         headers: { 'x-hasura-role': activeRole! },
       });
       if (rest) {
-        // console.log('test data', rest.data.data);
         const test = rest.data.data
           .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
           .map((bank: any) => bank);
-        // console.log({ test });
-        // // console.log(rest.data.data);
         setBeneficiaries(test);
-        // setBankValue(test);
-        // dispatch(setBankList(test));
-        // setLoading(false);
       }
     } catch (error) {
       // console.error(error.message);
