@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
+import { FusionAuthService } from 'src/libs/fusionauth/services/fusion-auth.service';
+
 import { Donor } from 'src/donor/schema/donor.schema';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterFromFusionAuthDto } from './dtos/register-from-fusion-auth.dto';
@@ -17,6 +19,7 @@ export class UserService {
     private configService: ConfigService,
     @InjectModel('Donor') private readonly donorModel: Model<Donor>,
     private prisma: PrismaService,
+    private readonly fusionAuthService: FusionAuthService,
   ) {}
 
   async registerFromFusion(request: RegisterFromFusionAuthDto): Promise<User> {
@@ -57,8 +60,12 @@ export class UserService {
     });
 
     if (existingUser) {
+      if (existingUser.type === RoleEnum.DONOR) {
+        await this.fusionAuthService.fusionAuthDeleteUser(request._id);
+      }
+
       throw new ConflictException(
-        'A user account with that email already exists',
+        `A user account with that email already exists with role ${existingUser.type}`,
       );
     }
 
