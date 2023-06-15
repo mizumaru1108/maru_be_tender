@@ -5,9 +5,9 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
+  - pre-publish
   - build
   - test
-  - pre-publish
   - publish
   - post-publish
   - deploy
