@@ -44,7 +44,7 @@ model client_data {
   phone                    String?      @db.VarChar
   website                  String?      @db.VarChar
   password                 String?      @db.VarChar
-  license_number           String       @db.VarChar
+  license_number           String?       @db.VarChar
   license_expired          DateTime?    @db.Date
   license_issue_date       DateTime?    @db.Date
   ceo_mobile               String?      @db.VarChar
@@ -204,10 +204,11 @@ model proposal {
   accreditation_type_id               String?
   execution_time                      Decimal?                         @db.Decimal
   oid                                 Int?
-  project_number                      String?                          @unique(map: "idx_project_number") @default(dbgenerated("(nextval('proposal_project_number_seq'::regclass))::text"))
+  project_number                      Int?                             @unique(map: "idx_project_number") @default(autoincrement())
+  project_numbers1                    Int                              @default(autoincrement())
   notification                        notification[]
   payments                            payment[]
-  timelines                           project_timeline[]
+  project_timeline                    project_timeline[]
   accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   proposal_beneficiaries              proposal_beneficiaries?          @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
@@ -296,6 +297,7 @@ model user {
   google_session                                                              Json?
   is_online                                                                   Boolean?
   track_id                                                                    String?
+  uid                                                                         Int?
   appointment_appointment_employee_idTouser                                   appointment[]                 @relation("appointment_employee_idTouser")
   appointment_appointment_user_idTouser                                       appointment[]                 @relation("appointment_user_idTouser")
   bank_information                                                            bank_information[]
@@ -707,7 +709,8 @@ model client_data2 {
   password                 String?   @db.VarChar
   license_number           String?   @db.VarChar
   license_expired          DateTime? @db.Date
-  license_issue_date       DateTime? @db.Date
+//   license_issue_date       DateTime? @db.Date
+  license_issue_date       String?
   ceo_mobile               String?   @db.VarChar
   ceo_name                 String?   @db.VarChar
   data_entry_mobile        String?   @db.VarChar
@@ -777,6 +780,7 @@ model user3 {
   created_at     DateTime? @db.Date
   employee_path  String?   @db.VarChar
   last_login     DateTime? @db.Date
+  uid            Int?
   status_id      String
   address        String?
   google_session String?
@@ -989,64 +993,6 @@ model user_role2 {
   id           String @id @db.Uuid
   user_id      String
   user_type_id String
-}
-
-model file_manager4 {
-  id                  String   @id
-  name                String   @db.VarChar
-  size                Decimal  @db.Decimal
-  mimetype            String   @db.VarChar
-  url                 String?  @db.VarChar
-  table_name          String?  @db.VarChar
-  column_name         String?  @db.VarChar
-  user_id             String?
-  is_deleted          Boolean  @default(false)
-  created_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
-  updated_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
-  proposal_id         String?
-  bank_information_id String?
-  fid                 String?
-  source              String?
-}
-
-model file_manager5 {
-  id                  String   @id
-  name                String   @db.VarChar
-  size                Decimal  @db.Decimal
-  mimetype            String   @db.VarChar
-  url                 String?  @db.VarChar
-  table_name          String?  @db.VarChar
-  column_name         String?  @db.VarChar
-  user_id             String?
-  is_deleted          Boolean  @default(false)
-  created_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
-  updated_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
-  proposal_id         String?
-  bank_information_id String?
-  fid                 Int?
-  source              String?
-}
-
-model file_manager6 {
-  id                  String   @id
-  name                String   @db.VarChar
-  size                Decimal  @db.Decimal
-  mimetype            String   @db.VarChar
-  url                 String?  @db.VarChar
-  table_name          String?  @db.VarChar
-  column_name         String?  @db.VarChar
-  user_id             String?
-  is_deleted          Boolean  @default(false)
-  created_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
-  updated_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
-  proposal_id         String?
-  bank_information_id String?
-  fid                 Int?
-  source              String?
-  path1               String?
-  path2               String?
-  path3               String?
-  path4               String?
 }
 
 model dept_1 {
@@ -1275,8 +1221,8 @@ model file_manager2 {
   column_name         String?  @db.VarChar
   user_id             String?
   is_deleted          Boolean  @default(false)
-  created_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
-  updated_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  created_at          DateTime @default(dbgenerated("'2023-04-05 05:38:31.694309+07'::timestamp with time zone")) @db.Timestamptz(6)
+  updated_at          DateTime @default(dbgenerated("'2023-04-05 05:38:31.694309+07'::timestamp with time zone")) @db.Timestamptz(6)
   proposal_id         String?
   bank_information_id String?
   fid                 String?
@@ -1292,11 +1238,69 @@ model file_manager3 {
   column_name         String?  @db.VarChar
   user_id             String?
   is_deleted          Boolean  @default(false)
-  created_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
-  updated_at          DateTime @default(dbgenerated("'2023-04-04 22:38:31.694309+00'::timestamp with time zone")) @db.Timestamptz(6)
+  created_at          DateTime @default(dbgenerated("'2023-04-05 05:38:31.694309+07'::timestamp with time zone")) @db.Timestamptz(6)
+  updated_at          DateTime @default(dbgenerated("'2023-04-05 05:38:31.694309+07'::timestamp with time zone")) @db.Timestamptz(6)
   proposal_id         String?
   bank_information_id String?
   fid                 String?
+}
+
+model file_manager4 {
+  id                  String   @id
+  name                String   @db.VarChar
+  size                Decimal  @db.Decimal
+  mimetype            String   @db.VarChar
+  url                 String?  @db.VarChar
+  table_name          String?  @db.VarChar
+  column_name         String?  @db.VarChar
+  user_id             String?
+  is_deleted          Boolean  @default(false)
+  created_at          DateTime @default(dbgenerated("'2023-04-05 05:38:31.694309+07'::timestamp with time zone")) @db.Timestamptz(6)
+  updated_at          DateTime @default(dbgenerated("'2023-04-05 05:38:31.694309+07'::timestamp with time zone")) @db.Timestamptz(6)
+  proposal_id         String?
+  bank_information_id String?
+  fid                 String?
+  source              String?
+}
+
+model file_manager5 {
+  id                  String   @id
+  name                String   @db.VarChar
+  size                Decimal  @db.Decimal
+  mimetype            String   @db.VarChar
+  url                 String?  @db.VarChar
+  table_name          String?  @db.VarChar
+  column_name         String?  @db.VarChar
+  user_id             String?
+  is_deleted          Boolean  @default(false)
+  created_at          DateTime @default(dbgenerated("'2023-04-05 05:38:31.694309+07'::timestamp with time zone")) @db.Timestamptz(6)
+  updated_at          DateTime @default(dbgenerated("'2023-04-05 05:38:31.694309+07'::timestamp with time zone")) @db.Timestamptz(6)
+  proposal_id         String?
+  bank_information_id String?
+  fid                 Int?
+  source              String?
+}
+
+model file_manager6 {
+  id                  String   @id
+  name                String   @db.VarChar
+  size                Decimal  @db.Decimal
+  mimetype            String   @db.VarChar
+  url                 String?  @db.VarChar
+  table_name          String?  @db.VarChar
+  column_name         String?  @db.VarChar
+  user_id             String?
+  is_deleted          Boolean  @default(false)
+  created_at          DateTime @default(dbgenerated("'2023-04-05 05:38:31.694309+07'::timestamp with time zone")) @db.Timestamptz(6)
+  updated_at          DateTime @default(dbgenerated("'2023-04-05 05:38:31.694309+07'::timestamp with time zone")) @db.Timestamptz(6)
+  proposal_id         String?
+  bank_information_id String?
+  fid                 Int?
+  source              String?
+  path1               String?
+  path2               String?
+  path3               String?
+  path4               String?
 }
 
 model files {
@@ -1465,11 +1469,11 @@ model proposal3 {
   support_goal_id                     String?
   accreditation_type_id               String?
   execution_time                      String?
-  project_number                      Int?
+  project_number                      Int  @default(autoincrement())
   oid                                 Int?
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model type_reg {
   nid              Int?
   cont_mang_name   String? @db.VarChar
@@ -1521,4 +1525,39 @@ model user4 {
   is_online      String?
   fusionauth_id  String?
   entity         String?
+}
+
+model backup_client_data_latest {
+  id                       String    @id
+  entity                   String?   @db.VarChar
+  authority                String?   @db.VarChar
+  headquarters             String?   @db.VarChar
+  date_of_esthablistmen    DateTime? @db.Date
+  num_of_beneficiaries     Int?
+  num_of_employed_facility Int?
+  governorate              String?
+  region                   String?   @db.VarChar
+  entity_mobile            String?   @db.VarChar
+  center_administration    String?   @db.VarChar
+  twitter_acount           String?   @db.VarChar
+  phone                    String?   @db.VarChar
+  website                  String?   @db.VarChar
+  password                 String?   @db.VarChar
+  license_number           String?   @db.VarChar
+  license_expired          DateTime? @db.Date
+  license_issue_date       DateTime? @db.Date
+  ceo_mobile               String?   @db.VarChar
+  ceo_name                 String?   @db.VarChar
+  data_entry_mobile        String?   @db.VarChar
+  data_entry_name          String?   @db.VarChar
+  data_entry_mail          String?   @db.VarChar
+  created_at               DateTime? @db.Timestamp(6)
+  updated_at               DateTime? @db.Timestamp(6)
+  client_field             String?   @db.VarChar
+  user_id                  String?
+  license_file             Json?
+  board_ofdec_file         Json?
+  chairman_name            String?   @db.VarChar
+  chairman_mobile          String?   @db.VarChar
+  qid                      Int?
 }

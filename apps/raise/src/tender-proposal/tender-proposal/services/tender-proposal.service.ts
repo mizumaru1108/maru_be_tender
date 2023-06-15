@@ -96,10 +96,6 @@ export class TenderProposalService {
     this.appEnv = environment;
   }
 
-  // async seq() {
-  //   return await this.proposalRepo.findMany();
-  // }
-
   async uploadProposalFile(
     userId: string,
     proposalId: string,

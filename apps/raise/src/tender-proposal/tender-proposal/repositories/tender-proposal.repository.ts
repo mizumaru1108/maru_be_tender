@@ -707,6 +707,7 @@ export class TenderProposalRepository {
               region: true,
               governorate: true,
               proposal_item_budgets: true,
+              project_timeline: true,
             },
           },
         },
@@ -995,14 +996,15 @@ export class TenderProposalRepository {
         };
       }
 
-      if (project_number) {
-        orClauses.push({
-          project_number: {
-            contains: project_number.toString(),
-            mode: 'insensitive',
-          },
-        });
-      }
+      // commented for a while untill merge data between staging ad prod done
+      // if (project_number) {
+      //   orClauses.push({
+      //     project_number: {
+      //       contains: project_number.toString(),
+      //       mode: 'insensitive',
+      //     },
+      //   });
+      // }
 
       // console.log(logUtil(orClauses));
       // console.log(logUtil(whereClause));
@@ -2144,7 +2146,7 @@ export class TenderProposalRepository {
             },
           },
           bank_information: true,
-          timelines: true,
+          project_timeline: true,
         },
       });
       return proposal;
