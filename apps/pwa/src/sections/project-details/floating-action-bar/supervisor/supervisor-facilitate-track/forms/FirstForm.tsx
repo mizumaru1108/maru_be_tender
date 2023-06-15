@@ -43,11 +43,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
         }`,
         (val) => {
           const number_of_payment = Number(val);
-          // console.log(
-          //   'check number (number_of_payment, prop.length)',
-          //   number_of_payment,
-          //   proposal.proposal_item_budgets.length
-          // );
           return !(number_of_payment < proposal.proposal_item_budgets.length);
         }
       ),
@@ -195,7 +190,8 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
               }
               // console.log('e.target.value', e.target.value);
             }}
-            label="هل يشمل المشروع ضريبة القيمة المضافة"
+            // label="هل يشمل المشروع ضريبة القيمة المضافة"
+            label="هل مبلغ السداد شامل لضريبة القيمة المضافة"
             options={[
               { label: 'نعم', value: true },
               { label: 'لا', value: false },

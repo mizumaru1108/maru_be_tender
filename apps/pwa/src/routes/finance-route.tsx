@@ -13,6 +13,9 @@ const IncomingExchangePermissionRequestsFinanceWithVat = Loadable(
   lazy(() => import('pages/finance/IncomingExchangePermissionRequestsWithVat'))
 );
 const RequestsInProcessFinance = Loadable(lazy(() => import('pages/finance/RequestsInProcess')));
+const RequestsInProcessFinanceWithVat = Loadable(
+  lazy(() => import('pages/finance/RequestsInProcessWithVat'))
+);
 const PortalReportsFinance = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesFinance = Loadable(lazy(() => import('pages/finance/Messages')));
 const OldProposal = Loadable(lazy(() => import('pages/finance/OldProposal')));
@@ -93,10 +96,24 @@ export const financeRoute = {
             },
           ],
         },
+        // {
+        //   path: 'incoming-exchange-permission-requests-with-vat',
+        //   children: [
+        //     { path: '', element: <IncomingExchangePermissionRequestsFinanceWithVat /> },
+        //     {
+        //       path: ':id/:actionType',
+        //       element: <ProjectDetails />,
+        //     },
+        //   ],
+        // },
         {
-          path: 'incoming-exchange-permission-requests-with-vat',
+          path: 'requests-in-process',
           children: [
-            { path: '', element: <IncomingExchangePermissionRequestsFinanceWithVat /> },
+            { path: '', element: <RequestsInProcessFinance /> },
+            {
+              path: ':id/amandementRequest',
+              element: <AmandementRequest />,
+            },
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,
@@ -104,9 +121,9 @@ export const financeRoute = {
           ],
         },
         {
-          path: 'requests-in-process',
+          path: 'requests-in-process-with-vat',
           children: [
-            { path: '', element: <RequestsInProcessFinance /> },
+            { path: '', element: <RequestsInProcessFinanceWithVat /> },
             {
               path: ':id/amandementRequest',
               element: <AmandementRequest />,

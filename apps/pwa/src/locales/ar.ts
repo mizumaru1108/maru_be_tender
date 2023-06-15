@@ -937,7 +937,8 @@ const ar = {
     },
     center: {
       label: 'المركز الإداري ( ترجمة)',
-      placeholder: 'الرجاء اختيار المركز',
+      // placeholder: 'الرجاء اختيار المركز',
+      placholder: 'الرجاء ادخال المركز الإداري',
       options: {},
     },
     mobile_number: {
@@ -1265,6 +1266,7 @@ const ar = {
   incoming_exchange_permission_requests: 'طلبات إذن الصرف الواردة',
   incoming_exchange_permission_requests_with_vat: 'طلبات إذن الصرف الواردة مع ضريبة القيمة المضافة',
   requests_in_process: 'طلبات قيد الاجراء',
+  requests_in_process_with_vat: 'طلبات قيد الاجراء مع ضريبة القيمة المضافة',
   incoming_funding_requests_project_supervisor: 'طلبات الدعم الواردة',
   amandement_requests_project_supervisor: 'طلبات التعديل',
   incoming_amandement_requests: 'طلبات التعديل الواردة',
@@ -1364,7 +1366,8 @@ const ar = {
   // TENDER_CEO PAGES
   rejection_list: 'قائمة الرفض', //navigation
   client_list: 'قائمة العملاء', // navigation
-  project_management: 'إدارة المشروع', //navigation
+  // project_management: 'إدارة المشروع', //navigation
+  project_management: 'ادارة المشاريع',
   project_management_table: {
     headline: 'ادارة المشاريع',
   },
@@ -1874,7 +1877,8 @@ const ar = {
     closing_agreement: 'اتفاق ختامي',
     vat_in_project: 'ضريبة القيمة المضافة في المشروع',
     vat: 'ضريبة القيمة المضافة٪',
-    inclu_or_exclu: 'هل يشمل المشروع ضريبة القيمة المضافة',
+    // inclu_or_exclu: 'هل يشمل المشروع ضريبة القيمة المضافة',
+    inclu_or_exclu: 'هل مبلغ السداد شامل لضريبة القيمة المضافة',
     number_of_payment: 'عدد الدفعات',
     payment_support: 'مبلغ الدعم',
     support_amount_inclu: 'هل مبلغ السداد شامل لضريبة القيمة المضافة',
@@ -2149,7 +2153,7 @@ const ar = {
     btn_next_save_as_draft: 'التالي',
     confirm: 'تأكيد',
     cancel: 'إلغاء',
-    re_edit: 'إعادة التحرير',
+    re_edit: 'تعديل',
     save: 'يحفظ',
     amandement: 'تعديل',
     review: 'استعراض',

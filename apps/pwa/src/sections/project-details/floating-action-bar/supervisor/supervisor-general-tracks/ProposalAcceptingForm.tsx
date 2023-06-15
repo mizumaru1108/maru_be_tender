@@ -82,11 +82,31 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     notes: Yup.string(),
     support_outputs: Yup.string().required('Procedures is required!'),
     vat: Yup.boolean().required('Procedures is required!'),
-    vat_percentage: Yup.number()
-      .integer()
-      .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
+    // vat_percentage: Yup.number(translate('errors.cre_proposal.vat_percentage.greater_than_0'))
+    //   .integer(translate('errors.cre_proposal.vat_percentage.greater_than_0'))
+    //   .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
+    vat_percentage: Yup.mixed().test(
+      'vat_percentage',
+      translate('errors.cre_proposal.vat_percentage.greater_than_0'),
+      (value) => {
+        const validation = value !== null && value !== undefined && typeof value === 'number';
+        return validation;
+      }
+    ),
     inclu_or_exclu: Yup.boolean(),
     support_goal_id: Yup.string().required('Procedures is required!'),
+    payment_number: Yup.string()
+      .required(translate('errors.cre_proposal.payment_number.required'))
+      .test(
+        'len',
+        `${translate('errors.cre_proposal.payment_number.greater_than')} ${
+          proposal.proposal_item_budgets.length
+        }`,
+        (val) => {
+          const number_of_payment = Number(val);
+          return !(number_of_payment < proposal.proposal_item_budgets.length);
+        }
+      ),
   });
 
   const defaultValues = {
@@ -163,7 +183,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         checkPassAmount = false;
       }
     } else {
-      if (totalAmount < totalSupportProposal) {
+      if (totalAmount <= totalSupportProposal) {
         checkPassAmount = true;
       } else {
         checkPassAmount = false;
@@ -207,22 +227,16 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       if (newData.payment_number) {
         delete newData.payment_number;
       }
-      // console.log({ newData });
 
       if (checkPassAmount) {
         onSubmit(newData);
       } else {
         // console.log('false');
-        enqueueSnackbar(
-          `${translate('notification.error_exceeds_amount')}: ${
-            data.support_type ? totalSupportProposal : totalSupportProposal - 1
-          }`,
-          {
-            variant: 'error',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-          }
-        );
+        enqueueSnackbar(`${translate('notification.error_exceeds_amount')}: ${data.support_type}`, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
       }
     } else {
       enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {
@@ -234,52 +248,6 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       resetField('detail_project_budgets');
     }
   };
-
-  const fetchingIncoming = React.useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const rest = await axiosInstance.get(`/tender-proposal/fetch-by-id?id=${pid}`, {
-        headers: { 'x-hasura-role': activeRole! },
-      });
-      if (rest) {
-        // console.log('rest total :', rest.data.data);
-        // setProposal(rest.data.data);
-        setBasedBudget(rest.data.data.proposal_item_budgets);
-        setValue('detail_project_budgets', rest.data.data.proposal_item_budgets);
-      }
-    } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
-      const statusCode = (err && err.statusCode) || 0;
-      const message = (err && err.message) || null;
-      enqueueSnackbar(
-        `${
-          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
-        }`,
-        {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        }
-      );
-      resetField('detail_project_budgets');
-    } finally {
-      setIsLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, pid, setValue, resetField]);
 
   const handleLoop = (loopNumber: number) => {
     for (let i = 0; i < loopNumber; i++) {
@@ -411,7 +379,8 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                   <RHFRadioGroup
                     type="radioGroup"
                     name="vat"
-                    label="هل يشمل المشروع ضريبة القيمة المضافة"
+                    // label="هل يشمل المشروع ضريبة القيمة المضافة"
+                    label="هل مبلغ السداد شامل لضريبة القيمة المضافة"
                     options={[
                       { label: 'نعم', value: true },
                       { label: 'لا', value: false },
@@ -468,7 +437,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     size={'small'}
                     name="payment_number"
                     placeholder="عدد المدفوعات"
-                    label="عدد المدفوعات"
+                    label="عدد المدفوعات*"
                   />
                 </Grid>
                 {vat === 'true' && (
@@ -628,7 +597,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                       </Grid>
                     </Grid>
                   ))}
-                  <Button
+                  {/* <Button
                     type="button"
                     variant="contained"
                     color="inherit"
@@ -645,7 +614,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     disabled={support_type === 'false' || support_type === undefined ? false : true}
                   >
                     {translate('add_new_line')}
-                  </Button>
+                  </Button> */}
                 </Grid>
                 <Grid item md={12} xs={12}>
                   <RHFTextField

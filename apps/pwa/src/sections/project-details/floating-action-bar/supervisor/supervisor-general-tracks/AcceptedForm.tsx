@@ -83,6 +83,18 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
       .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
     inclu_or_exclu: Yup.boolean(),
     support_goal_id: Yup.string().required('Procedures is required!'),
+    payment_number: Yup.string()
+      .required(translate('errors.cre_proposal.payment_number.required'))
+      .test(
+        'len',
+        `${translate('errors.cre_proposal.payment_number.greater_than')} ${
+          proposal.proposal_item_budgets.length
+        }`,
+        (val) => {
+          const number_of_payment = Number(val);
+          return !(number_of_payment < proposal.proposal_item_budgets.length);
+        }
+      ),
   });
 
   const defaultValues = {
@@ -125,6 +137,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
 
   const vat = watch('vat');
   const support_type = watch('support_type');
+  const item_budgets = watch('detail_project_budgets');
 
   const {
     fields: itemBudgets,
@@ -134,10 +147,11 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
     control,
     name: 'detail_project_budgets',
   });
-
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
     setIsLoading(true);
-    // console.log('data.support_type', data.support_type);
+    // get total from fsupport_by_supervisor
+    const limitSupport = proposal.fsupport_by_supervisor;
+    // get total from item budgets in proposal
     let totalSupportProposal: number | undefined = undefined;
     if (proposal.proposal_item_budgets) {
       totalSupportProposal = proposal
@@ -152,13 +166,13 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
     }
     let checkPassAmount = false;
     if (data.support_type) {
-      if (totalAmount <= totalSupportProposal) {
+      if (totalAmount <= limitSupport) {
         checkPassAmount = true;
       } else {
         checkPassAmount = false;
       }
     } else {
-      if (totalAmount < totalSupportProposal) {
+      if (totalAmount <= limitSupport) {
         checkPassAmount = true;
       } else {
         checkPassAmount = false;
@@ -268,16 +282,11 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         onEdit(false);
       } else {
         console.log(' masuk false');
-        enqueueSnackbar(
-          `${translate('notification.error_exceeds_amount')}: ${
-            data.support_type ? totalSupportProposal : totalSupportProposal - 1
-          }`,
-          {
-            variant: 'error',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-          }
-        );
+        enqueueSnackbar(`${translate('notification.error_exceeds_amount')}: ${data.support_type}`, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
       }
     } else {
       enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {
@@ -290,16 +299,6 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
     }
   };
 
-  // useEffect(() => {
-  //   if (!fetchingProposal && proposalData && proposalData.proposal.proposal_item_budgets.length) {
-  //     // console.log('data', proposalData.proposal);
-  //     setBasedBudget(proposalData.proposal.proposal_item_budgets);
-  //     setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
-  //   } else {
-  //     resetField('detail_project_budgets');
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [proposalData, fetchingProposal, setValue, resetField, reset, proposal]);
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
     try {
@@ -307,22 +306,12 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         headers: { 'x-hasura-role': activeRole! },
       });
       if (rest) {
-        console.log('rest total :', rest.data.data);
         setOneProposal(rest.data.data);
         setBasedBudget(rest.data.data.proposal_item_budgets);
         setValue('detail_project_budgets', rest.data.data.proposal_item_budgets);
       }
     } catch (err) {
       console.log('err', err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(
@@ -347,15 +336,42 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRole, enqueueSnackbar, pid, setValue, resetField]);
 
-  // useEffect(() => {
-  //   if (!fetchingProposal && proposalData && proposalData.proposal.proposal_item_budgets.length) {
-  //     setBasedBudget(proposalData.proposal.proposal_item_budgets);
-  //     setValue('detail_project_budgets', proposalData.proposal.proposal_item_budgets);
-  //   } else {
-  //     resetField('detail_project_budgets');
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [proposalData, fetchingProposal, setValue, resetField]);
+  const handleLoop = (loopNumber: number) => {
+    for (let i = 0; i < loopNumber; i++) {
+      append({
+        amount: undefined,
+        clause: '',
+        explanation: '',
+        id: uuidv4(),
+      });
+    }
+  };
+
+  const handleRemoveLoop = (loopNumber: number) => {
+    for (let i = 0; i < loopNumber; i++) {
+      remove(item_budgets.length - 1 - i);
+    }
+  };
+
+  React.useEffect(() => {
+    let loopNumber = -1;
+
+    if (paymentNumber > item_budgets.length) {
+      loopNumber = Number(paymentNumber) - item_budgets.length;
+      if (loopNumber > 0) {
+        handleLoop(loopNumber);
+      }
+    }
+    if (paymentNumber < item_budgets.length) {
+      loopNumber = Number(paymentNumber);
+      // console.log('masuk else', loopNumber);
+      if (loopNumber >= proposal.proposal_item_budgets.length) {
+        handleRemoveLoop(loopNumber);
+      }
+    }
+    // console.log({ paymentNumber, loopNumber });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentNumber, handleLoop, handleRemoveLoop]);
 
   React.useEffect(() => {
     fetchingIncoming();
@@ -368,7 +384,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
 
   if (errorProposal) return <>Something when wrong on get proposal details</>;
 
-  console.log({ support_type });
+  // console.log({ support_type });
 
   return (
     <FormProvider methods={methods}>
@@ -437,7 +453,8 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                 }
                 console.log('e.target.value', e.target.value);
               }}
-              label="هل يشمل المشروع ضريبة القيمة المضافة"
+              // label="هل يشمل المشروع ضريبة القيمة المضافة"
+              laabel="هل مبلغ السداد شامل لضريبة القيمة المضافة"
               options={[
                 { label: 'نعم', value: true },
                 { label: 'لا', value: false },
@@ -466,6 +483,15 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                 </MenuItem>
               ))}
             </RHFSelect>
+          </Grid>
+          <Grid item md={6} xs={12}>
+            <RHFTextField
+              type={'number'}
+              size={'small'}
+              name="payment_number"
+              placeholder="عدد المدفوعات"
+              label="عدد المدفوعات*"
+            />
           </Grid>
           {isVat && (
             <Grid item md={6} xs={12}>
@@ -605,7 +631,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                 </Grid>
               </Grid>
             ))}
-            <Button
+            {/* <Button
               type="button"
               variant="contained"
               color="inherit"
@@ -626,7 +652,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
               }
             >
               {translate('add_new_line')}
-            </Button>
+            </Button> */}
           </Grid>
           <Grid item md={12} xs={12}>
             <RHFTextField

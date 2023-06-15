@@ -114,7 +114,9 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Typography>
-                    {proposal.vat ? `${translate('review.yes')}` : `${translate('review.no')}`}
+                    {proposal.inclu_or_exclu
+                      ? `${translate('review.yes')}`
+                      : `${translate('review.no')}`}
                   </Typography>
                 </Stack>
               </Stack>

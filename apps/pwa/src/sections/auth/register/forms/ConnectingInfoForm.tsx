@@ -176,7 +176,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
           <RHFTextField
             name="center_administration"
             label={translate('register_form2.center.label')}
-            placeholder={translate('register_form2.region.placeholder')}
+            placeholder={translate('register_form2.center.placeholder')}
           />
         </Grid>
         <Grid item md={6} xs={12}>

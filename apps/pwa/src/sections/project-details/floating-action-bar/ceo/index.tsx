@@ -414,6 +414,7 @@ function FloatingActionBar() {
       }
     );
   };
+  // console.log(proposal.proposal_item_budgets.length)
 
   React.useEffect(() => {
     dispatch(setStepsData(proposal));

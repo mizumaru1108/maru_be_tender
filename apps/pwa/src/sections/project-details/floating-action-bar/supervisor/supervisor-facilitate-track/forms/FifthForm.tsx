@@ -108,13 +108,11 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
         if (step1.support_type && totalAmount <= step1.fsupport_by_supervisor!) {
           onSubmit(data);
         } else {
-          if (totalAmount < step1.fsupport_by_supervisor!) {
+          if (totalAmount <= step1.fsupport_by_supervisor!) {
             onSubmit(data);
           } else {
             enqueueSnackbar(
-              `${translate('notification.error_exceeds_amount')}: ${
-                step1.support_type ? step1.fsupport_by_supervisor : step1.fsupport_by_supervisor - 1
-              }`,
+              `${translate('notification.error_exceeds_amount')}: ${step1.fsupport_by_supervisor}`,
               {
                 variant: 'error',
                 preventDuplicate: true,
@@ -294,7 +292,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
               </Grid>
             </Grid>
           ))}
-          <Button
+          {/* <Button
             type="button"
             variant="contained"
             color="inherit"
@@ -310,7 +308,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
             }}
           >
             {translate('add_new_line')}
-          </Button>
+          </Button> */}
         </Grid>
         <Grid item xs={12}>
           {children}

@@ -82,6 +82,7 @@ export const PATH_FINANCE = {
     '/dashboard/incoming-exchange-permission-requests-with-vat'
   ),
   requests_in_process: path(ROOTS_FINANCE, '/dashboard/requests-in-process'),
+  requests_in_process_with_vat: path(ROOTS_FINANCE, '/dashboard/requests-in-process-with-vat'),
   previous_funding_requests: path(ROOTS_FINANCE, '/dashboard/previous-funding-requests'),
   portal_reports: path(ROOTS_FINANCE, '/dashboard/portal-reports'),
   messages: path(ROOTS_FINANCE, '/dashboard/messages'),

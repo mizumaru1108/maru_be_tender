@@ -15,6 +15,7 @@ type SortingCardTableProps = {
   type?: 'incoming' | 'inprocess';
   page?: number;
   typeRequest?: string;
+  addCustomFilter?: '&vat=false' | '&vat=true' | undefined;
 };
 
 export default function SortingCardTable({
@@ -27,6 +28,7 @@ export default function SortingCardTable({
   typeRequest,
   loadingState,
   returnData,
+  addCustomFilter,
 }: SortingCardTableProps) {
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
@@ -37,6 +39,7 @@ export default function SortingCardTable({
     type || typeRequest ? `&type=${type ?? typeRequest}` : ''
   );
   const [pageFilter, setPageFilter] = React.useState(page ? `&page=${page}` : '');
+  const [tmpAddCustomFilter, setTmpAddCustomFilter] = React.useState(addCustomFilter || '');
   // const [isLoading, setIsLoading] = React.useState(false);
 
   const handleSortingFilter = (event: any) => {
@@ -68,7 +71,7 @@ export default function SortingCardTable({
 
     try {
       const rest = await axiosInstance.get(
-        `${api}${limitPage}${typeFilter}${filterSorting}${pageFilter}`,
+        `${api}${limitPage}${typeFilter}${filterSorting}${pageFilter}${tmpAddCustomFilter}`,
         {
           headers: { 'x-hasura-role': activeRole! },
         }

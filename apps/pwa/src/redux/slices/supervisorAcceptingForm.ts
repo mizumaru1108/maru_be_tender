@@ -45,6 +45,7 @@ const initialState: SupervisorAcceptingForm = {
     inclu_or_exclu: undefined,
     support_goal_id: '',
     accreditation_type_id: '',
+    payment_number: 0,
   },
   step2: {
     organizationName: '',
@@ -122,6 +123,7 @@ const slice = createSlice({
       state.step1.inclu_or_exclu = action.payload.inclu_or_exclu ?? undefined;
       state.step1.support_goal_id = action.payload.support_goal_id ?? '';
       state.step1.accreditation_type_id = action.payload.accreditation_type_id ?? '';
+      state.step1.payment_number = action.payload.proposal_item_budgets.length ?? 0;
       //step 2
       state.step2.organizationName = action.payload.user.employee_name ?? '';
       state.step2.region = action.payload.user.client_data.region ?? '';
