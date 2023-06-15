@@ -289,11 +289,15 @@ export class PaymentPaytabsService {
         ? donor?.firstname
           ? donor?.firstname
           : donor?.firstName
+          ? donor?.firstName
+          : ''
         : '';
       const lastName = donor
         ? donor?.lastname
           ? donor?.lastname
           : donor?.lastName
+          ? donor?.lastName
+          : ''
         : '';
       const name = `${firstName} ${lastName}`;
       const now: Date = new Date();
@@ -822,6 +826,8 @@ export class PaymentPaytabsService {
                 name: true,
                 firstname: true,
                 lastname: true,
+                firstName: true,
+                lastName: true,
                 type: true,
               },
             )
@@ -906,11 +912,15 @@ export class PaymentPaytabsService {
         ? donor?.firstname
           ? donor?.firstname
           : donor?.firstName
+          ? donor?.firstName
+          : ''
         : '';
       const lastName = donor
         ? donor?.lastname
           ? donor?.lastname
           : donor?.lastName
+          ? donor?.lastName
+          : ''
         : '';
       const name = `${firstName} ${lastName}`;
       const now: Date = new Date();

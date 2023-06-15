@@ -76,6 +76,7 @@ export class CampaignService {
   ): Promise<CampaignCreateResponse> {
     const baseCampaignScheme = new this.campaignModel();
     const campaignScheme = Campaign.mapFromRequest(baseCampaignScheme, request);
+
     campaignScheme.creatorUserId = creatorId;
     campaignScheme.createdAt = dayjs().toISOString();
     campaignScheme.contentLanguage = request.contentLanguage;

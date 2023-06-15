@@ -176,6 +176,11 @@ export class Campaign {
     description: string;
   }[];
 
+  @Prop()
+  purposeDonation: string;
+
+  @Prop({ default: false })
+  quickDonateEnabled: boolean;
   /**
    * Map from create request to campaign document,
    * Progress should be 0 by default (not from request) later on updated by webhook,
@@ -202,6 +207,9 @@ export class Campaign {
     scheme.campaignType = request.campaignType;
     scheme.isMoney = request.isMoney; // if defined then set else use default
     scheme.methods = request.methods;
+    scheme.quickDonateEnabled = request.quickDonateEnabled
+      ? request.quickDonateEnabled
+      : false;
 
     // if there's no currency code, match by organization
     if (!request.currencyCode) {
@@ -242,6 +250,10 @@ export class Campaign {
       }
       scheme.milestone = milestones;
     }
+
+    if (request.purposeDonation)
+      scheme.purposeDonation = request.purposeDonation;
+
     return scheme;
   }
 }
