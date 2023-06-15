@@ -112,7 +112,7 @@ sonarqube-check:
 
 "build tmra-pwa dev":
   stage: build
-  needs: []
+  needs: ["prepare version"]
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: dev
@@ -155,7 +155,7 @@ sonarqube-check:
 
 "build tmra-pwa qc":
   stage: build
-  needs: []
+  needs: ["prepare version"]
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: qc
@@ -195,7 +195,7 @@ sonarqube-check:
 
 "build tmra-pwa staging":
   stage: build
-  needs: []
+  needs: ["prepare version"]
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: staging
@@ -235,7 +235,7 @@ sonarqube-check:
 
 "build tmra-pwa prod":
   stage: build
-  needs: []
+  needs: ["prepare version"]
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: prod
