@@ -13,7 +13,7 @@ import { contentParser } from 'fastify-multer';
 import pino from 'pino';
 // import { WsAdapter } from '@nestjs/platform-ws';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
+import { Logger as PinoLogger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 async function bootstrap() {
   // bootstrap NestJS
@@ -32,7 +32,7 @@ async function bootstrap() {
       bufferLogs: true,
     },
   );
-  app.useLogger(app.get(Logger));
+  app.useLogger(app.get(PinoLogger));
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   app.enableCors({
