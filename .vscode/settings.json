@@ -11,5 +11,7 @@
   "files.autoSave": "onFocusChange",
   "editor.tabSize": 2,
   "editor.fontLigatures": true,
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "git.autofetch": true,
+  "eslint.workingDirectories": ["apps/raise", "apps/pwa"]
 }
