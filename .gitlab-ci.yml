@@ -607,7 +607,11 @@ sonarqube-check:
 
 "trigger deploy tmra-pwa to dev":
   stage: deploy
-  needs: ["prepare version", "build tmra-pwa dev", "publish tmra-pwa to dev"]
+  needs:
+    - job: prepare version
+    - job: build tmra-pwa dev
+      artifacts: false
+    - job: publish tmra-pwa to dev
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: dev
@@ -634,7 +638,11 @@ sonarqube-check:
 
 "trigger deploy tmra-pwa to qc":
   stage: deploy
-  needs: ["prepare version", "build tmra-pwa qc", "publish tmra-pwa to qc"]
+  needs:
+    - job: prepare version
+    - job: build tmra-pwa qc
+      artifacts: false
+    - job: publish tmra-pwa to qc
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: qc
@@ -662,7 +670,10 @@ sonarqube-check:
 "trigger deploy tmra-pwa to staging":
   stage: deploy
   needs:
-    ["prepare version", "build tmra-pwa staging", "publish tmra-pwa to staging"]
+    - job: prepare version
+    - job: build tmra-pwa staging
+      artifacts: false
+    - job: publish tmra-pwa to staging
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: staging
@@ -689,7 +700,11 @@ sonarqube-check:
 
 "trigger deploy tmra-pwa to prod":
   stage: deploy
-  needs: ["prepare version", "build tmra-pwa prod", "publish tmra-pwa to prod"]
+  needs:
+    - job: prepare version
+    - job: build tmra-pwa prod
+      artifacts: false
+    - job: publish tmra-pwa to prod
   variables:
     APP_NAME: tmra-pwa
     APP_ENV: prod
