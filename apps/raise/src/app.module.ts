@@ -102,6 +102,16 @@ import { DatadogTraceModule } from 'nestjs-ddtrace';
                 },
               }
             : undefined,
+        formatters:
+          process.env.LOG_FORMAT === 'pretty'
+            ? {}
+            : {
+                level: (label) => {
+                  return {
+                    level: label,
+                  };
+                },
+              },
       },
     }),
     DatadogTraceModule.forRoot(),
