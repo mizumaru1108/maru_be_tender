@@ -1284,8 +1284,8 @@ export class TenderProposalRepository {
         if (currentUser.choosenRole === 'tender_cashier') {
           whereClause = {
             ...whereClause,
-            inner_status:
-              InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
+            // inner_status:
+            //   InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
             payments: {
               some: {
                 status: {
@@ -1306,7 +1306,7 @@ export class TenderProposalRepository {
                 },
               },
             },
-            outter_status: { in: ['ONGOING', 'PENDING', 'ON_REVISION'] },
+            // outter_status: { in: ['ONGOING', 'PENDING', 'ON_REVISION'] },
           };
         }
 
@@ -1913,13 +1913,14 @@ export class TenderProposalRepository {
         whereClause = {
           ...whereClause,
           supervisor_id: currentUser.id,
-          OR: [
-            {
-              inner_status:
-                InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
-            },
-            { payments: { some: { status: { in: ['set_by_supervisor'] } } } },
-          ],
+          payments: { some: { status: { in: ['set_by_supervisor'] } } },
+          // OR: [
+          // {
+          //   inner_status:
+          //     InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
+          // },
+          // { payments: { some: { status: { in: ['set_by_supervisor'] } } } },
+          // ],
         };
       }
 
@@ -1933,7 +1934,7 @@ export class TenderProposalRepository {
           payments: {
             some: {
               status: {
-                in: ['issued_by_supervisor', 'set_by_supervisor'],
+                in: ['issued_by_supervisor'],
               },
             },
           },
