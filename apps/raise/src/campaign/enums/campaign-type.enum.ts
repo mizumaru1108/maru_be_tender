@@ -7,4 +7,6 @@ export enum CampaignType {
   DAWAH = 'dawah',
   WAQF = 'waqf',
   ZAKAT = 'zakat',
+  CAMPAIGN = 'campaign',
+  QUICK_DONATE = 'quick-donate',
 }

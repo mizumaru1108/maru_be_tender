@@ -48,6 +48,7 @@ import { UpdateCampaignStatusDto } from '../dto/update-campaign-status.dto';
 import { CampaignSortByEnum } from '../enums/campaign-sortby-enum';
 import { CampaignStatus } from '../enums/campaign-status.enum';
 import { Campaign, CampaignDocument } from '../schema/campaign.schema';
+import { CampaignType } from '../enums/campaign-type.enum';
 @Injectable()
 export class CampaignService {
   private readonly logger = ROOT_LOGGER.child({
@@ -460,12 +461,30 @@ export class CampaignService {
     organizationId: string,
     request: GetAllMyCampaignFilterDto,
   ): Promise<AggregatePaginateResult<CampaignDocument>> {
-    const { limit = 10, page = 1, sortBy, sortMethod, isPublished } = request;
+    const {
+      limit = 10,
+      page = 1,
+      sortBy,
+      sortMethod,
+      isPublished,
+      showQuickDonate,
+    } = request;
     const filter: FilterQuery<CampaignDocument> = {
       organizationId: organizationId,
     };
 
-    if (isPublished) filter.isPublished = isPublished;
+    if (isPublished && isPublished === 'Y') {
+      filter.isPublished = isPublished;
+      filter.campaignType = {
+        $in: [CampaignType.CAMPAIGN],
+      };
+    }
+
+    if (showQuickDonate && showQuickDonate === 'Y') {
+      filter.campaignType = {
+        $in: [CampaignType.CAMPAIGN, CampaignType.QUICK_DONATE],
+      };
+    }
 
     filter.isDeleted = { $regex: 'n', $options: 'i' };
     filter.organizationId = new Types.ObjectId(request.organizationId);
@@ -508,6 +527,7 @@ export class CampaignService {
           status: 1,
           currencyCode: 1,
           organizationId: 1,
+          quickDonateEnabled: 1,
           milestoneCount: { $size: '$milestone' },
         },
       },
@@ -544,6 +564,7 @@ export class CampaignService {
           status: { $first: '$campaignVendorLog.status' },
           currencyCode: { $first: '$currencyCode' },
           organizationId: { $first: '$organizationId' },
+          quickDonateEnabled: { $first: '$quickDonateEnabled' },
           milestoneCount: { $first: '$milestoneCount' },
         },
       },

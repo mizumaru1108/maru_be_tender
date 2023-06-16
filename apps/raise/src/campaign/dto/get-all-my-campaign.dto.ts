@@ -20,6 +20,12 @@ export class GetAllMyCampaignFilterDto extends BaseFilterRequest {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  showQuickDonate: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   @ValidateObjectIdDecorator()
   campaignId: string;
 
