@@ -6,6 +6,7 @@ import {
   IsString,
   IsOptional,
   IsBoolean,
+  IsUUID,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
@@ -18,6 +19,13 @@ export class RequestInProcessFilterRequest extends BaseFilterRequest {
     message: 'type should be incoming / inprocess',
   })
   type?: 'incoming' | 'inprocess';
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID(4, { message: 'invalid id!' })
+  track_id?: string;
 
   @ApiPropertyOptional()
   @IsBoolean()

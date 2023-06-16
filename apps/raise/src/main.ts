@@ -45,15 +45,22 @@ async function bootstrap() {
       'Content-Type',
       'Authorization',
       'x-hasura-role',
+      'sec-ch-ua',
+      'sec-ch-ua-mobile',
+      'sec-ch-ua-platform',
+      'x-datadog-origin',
+      'x-datadog-parent-id',
+      'x-datadog-sampling-priority',
+      'x-datadog-trace-id',
     ],
     exposedHeaders: ['x-hasura-role', 'Authorization'],
     credentials: true,
     origin: [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://localhost:3002',
-      'http://localhost:8081',
-      'http://localhost:4040',
+      // 'http://localhost:3000',
+      // 'http://localhost:3001',
+      // 'http://localhost:3002',
+      // 'http://localhost:8081',
+      // 'http://localhost:4040',
 
       // HTTP
       'http://dev.tmra.io', // TMRA Dev
@@ -76,7 +83,6 @@ async function bootstrap() {
       'https://app-dev.tmra.io', // Tender Dev
       'https://app-staging.tmra.io', // Tender Staging
       'https://gaith.hcharity.org', // Tender Staging
-      'https://11a2-2001-448a-2082-475e-7287-8f41-1ef8-9d47.ap.ngrok.io',
     ],
     preflightContinue: true,
   });

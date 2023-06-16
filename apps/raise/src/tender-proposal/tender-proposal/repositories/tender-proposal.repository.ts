@@ -1182,6 +1182,7 @@ export class TenderProposalRepository {
         sorting_field,
         type = 'incoming',
         vat,
+        track_id,
       } = filter;
 
       const offset = (page - 1) * limit;
@@ -1258,6 +1259,13 @@ export class TenderProposalRepository {
             whereClause = {
               ...whereClause,
               track_id: reviewer.track.id,
+            };
+          }
+        } else {
+          if (track_id) {
+            whereClause = {
+              ...whereClause,
+              track_id,
             };
           }
         }
@@ -1932,11 +1940,14 @@ export class TenderProposalRepository {
             { project_manager_id: null },
           ],
           payments: {
-            some: {
-              status: {
-                in: ['issued_by_supervisor'],
-              },
-            },
+            // some: {
+            //   // first array should be accbypm
+            //   // second array
+            //   status: {
+            //     in: ['issued_by_supervisor'],
+            //   },
+            // },
+            //
           },
         };
       }

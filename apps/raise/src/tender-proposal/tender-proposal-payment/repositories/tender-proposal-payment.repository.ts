@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { cheque, payment, Prisma } from '@prisma/client';
 import { nanoid } from 'nanoid';
@@ -353,6 +353,7 @@ export class TenderProposalPaymentRepository {
             });
           }
 
+          throw new BadRequestException('func on debugging');
           return {
             payment,
             cheque,
