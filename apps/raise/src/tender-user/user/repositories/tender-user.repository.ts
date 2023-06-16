@@ -70,8 +70,12 @@ export class TenderUserRepository {
       });
       // console.log(result);
       return result;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
+
   /**
    * validate if the track exist on the database
    */

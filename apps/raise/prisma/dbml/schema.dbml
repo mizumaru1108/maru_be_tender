@@ -1127,8 +1127,8 @@ Table file_manager2 {
   column_name String
   user_id String
   is_deleted Boolean [not null, default: false]
-  created_at DateTime [not null]
-  updated_at DateTime [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
   proposal_id String
   bank_information_id String
   fid String
@@ -1144,8 +1144,8 @@ Table file_manager3 {
   column_name String
   user_id String
   is_deleted Boolean [not null, default: false]
-  created_at DateTime [not null]
-  updated_at DateTime [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
   proposal_id String
   bank_information_id String
   fid String
@@ -1161,8 +1161,8 @@ Table file_manager4 {
   column_name String
   user_id String
   is_deleted Boolean [not null, default: false]
-  created_at DateTime [not null]
-  updated_at DateTime [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
   proposal_id String
   bank_information_id String
   fid String
@@ -1179,8 +1179,8 @@ Table file_manager5 {
   column_name String
   user_id String
   is_deleted Boolean [not null, default: false]
-  created_at DateTime [not null]
-  updated_at DateTime [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
   proposal_id String
   bank_information_id String
   fid Int
@@ -1197,8 +1197,8 @@ Table file_manager6 {
   column_name String
   user_id String
   is_deleted Boolean [not null, default: false]
-  created_at DateTime [not null]
-  updated_at DateTime [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
   proposal_id String
   bank_information_id String
   fid Int
