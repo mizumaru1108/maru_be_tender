@@ -17,7 +17,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   constructor(
     private configService: ConfigService,
-    @InjectPinoLogger()
+    @InjectPinoLogger('PrismaService')
     private readonly logger: PinoLogger,
   ) {
     //REF: https://www.npmjs.com/package/lru-cache
