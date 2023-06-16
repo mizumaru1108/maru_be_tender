@@ -1,7 +1,14 @@
 import { datadogRum } from '@datadog/browser-rum';
 import { HASURA_GRAPHQL_URL, TMRA_RAISE_URL } from '../config';
 
-console.debug('Datadog RUM:', process.env.REACT_APP_DATADOG_RUM ? true : false);
+console.debug(
+  'Datadog RUM:',
+  process.env.REACT_APP_DATADOG_RUM ? true : false,
+  'env:',
+  process.env.REACT_APP_SERVICE_ENV,
+  'version:',
+  process.env.REACT_APP_SERVICE_VERSION
+);
 if (process.env.REACT_APP_DATADOG_RUM) {
   if (!process.env.REACT_APP_SERVICE_ENV) {
     throw new Error('REACT_APP_SERVICE_ENV is required');
