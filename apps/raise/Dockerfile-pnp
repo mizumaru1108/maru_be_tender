@@ -17,10 +17,10 @@
 # COPY .yarn/ /home/node/.yarn/
 # COPY apps/ /home/node/apps/
 
-# RUN yarn --immutable
+# RUN yarn workspaces focus --production
 
 # WORKDIR /home/node/apps/raise
-# # RUN yarn --immutable
+# # RUN yarn workspaces focus --production
 # RUN yarn build
 
 # --- Runtime ---
