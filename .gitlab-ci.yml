@@ -397,6 +397,37 @@ sonarqube-check:
 
 # ------------------------------------- trigger-deploy ------------------------------------------
 
+"trigger deploy tmra-tender-pwa to dev":
+  stage: deploy
+  needs:
+    - job: prepare version
+    - job: build tmra-tender-pwa dev
+      artifacts: false
+    - job: publish tmra-tender-pwa to dev
+  variables:
+    APP_NAME: tmra-tender-pwa
+    APP_ENV: dev
+  cache: []
+  image: node:lts
+  script:
+    - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
+    - >-
+      curl --fail --request POST
+      --form token=$CI_JOB_TOKEN
+      --form ref=main
+      --form "variables[APP_NAMES]=$APP_NAME"
+      --form "variables[APP_ENV]=$APP_ENV"
+      --form "variables[APP_VERSION]=$APP_VERSION"
+      "https://gitlab.com/api/v4/projects/$DEVSECOPS_PROJECT_ID/trigger/pipeline"
+  environment:
+    name: $APP_NAME-$APP_ENV
+    url: https://app-${APP_ENV}.tmra.io/
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stack/dev" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+      changes:
+        - "apps/pwa/**/*"
+    - if: '$CI_COMMIT_BRANCH == "stack/dev" && $APP_NAMES =~ /\b${APP_NAME}\b/'
+
 "trigger deploy tmra-tender-pwa to qc":
   stage: deploy
   needs:
