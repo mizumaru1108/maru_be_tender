@@ -5,6 +5,7 @@ import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 import { FUSIONAUTH_API } from 'config';
 import { fusionAuthClient } from 'utils/fusionAuth';
 import { FusionAuthRoles } from '../@types/commons';
+import { datadogRum } from '@datadog/browser-rum';
 
 enum Types {
   Initial = 'INITIALIZE',
@@ -115,16 +116,35 @@ function AuthProvider({ children }: AuthProviderProps) {
         const activeRoleIndex = Number(localStorage.getItem('activeRoleIndex'));
         if (accessToken && isValidToken(accessToken, 15)) {
           setSession(accessToken, refreshToken);
-          const user = (await fusionAuthClient.retrieveUserUsingJWT(accessToken)) as {
-            response: { user: { registrations: Array<{ roles: Array<FusionAuthRoles> }> } };
-          };
+          const { user } = (await fusionAuthClient.retrieveUserUsingJWT(accessToken)).response;
+
+          if (!user) {
+            throw new Error(`Error getting currently active user`);
+          }
+          if (!user.registrations) {
+            throw new Error(`User ${user?.id} does not have registrations`);
+          }
+          const userRegistration = user.registrations?.[0];
+          const activeRole = userRegistration.roles?.[activeRoleIndex];
+          if (!activeRole) {
+            throw new Error(`User ${user?.id} must have valid activeRole`);
+          }
+
+          // Datadog RUM
+          datadogRum.setUser({
+            id: user?.id,
+            name: user?.fullName,
+            email: user?.email,
+            role: activeRole,
+            roles: userRegistration.roles,
+          });
 
           dispatch({
             type: Types.Initial,
             payload: {
               isAuthenticated: true,
-              user: user.response.user,
-              activeRole: user.response.user.registrations[0].roles[activeRoleIndex],
+              user,
+              activeRole: activeRole as FusionAuthRoles,
               token: accessToken,
               refreshToken: refreshToken!,
             },
@@ -140,17 +160,36 @@ function AuthProvider({ children }: AuthProviderProps) {
           if (result.response?.refreshToken && result.response?.token) {
             localStorage.setItem('accessToken', result.response.token);
             localStorage.setItem('refreshToken', result.response.refreshToken);
-            const user = (await fusionAuthClient.retrieveUserUsingJWT(result.response.token)) as {
-              response: { user: { registrations: Array<{ roles: Array<FusionAuthRoles> }> } };
-            };
+            const { user } = (await fusionAuthClient.retrieveUserUsingJWT(result.response.token))
+              .response;
+            if (!user) {
+              throw new Error(`Error getting currently active user`);
+            }
+            if (!user.registrations) {
+              throw new Error(`User ${user?.id} does not have registrations`);
+            }
+            const userRegistration = user.registrations?.[0];
+            const activeRole = userRegistration.roles?.[activeRoleIndex];
+            if (!activeRole) {
+              throw new Error(`User ${user?.id} must have valid activeRole`);
+            }
+
+            // Datadog RUM
+            datadogRum.setUser({
+              id: user?.id,
+              name: user?.fullName,
+              email: user?.email,
+              role: activeRole,
+              roles: userRegistration.roles,
+            });
 
             window.location.reload();
             dispatch({
               type: Types.Initial,
               payload: {
                 isAuthenticated: true,
-                user: user.response.user,
-                activeRole: user.response.user.registrations[0].roles[activeRoleIndex],
+                user,
+                activeRole: activeRole as FusionAuthRoles,
                 token: result.response.token,
                 refreshToken: result.response.refreshToken,
               },
@@ -158,6 +197,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
             // dispatchState(setAuthenticated(true));
           } else {
+            datadogRum.clearUser();
             dispatch({
               type: Types.Initial,
               payload: {
@@ -169,6 +209,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             // dispatchState(setAuthenticated(false));
           }
         } else {
+          datadogRum.clearUser();
           dispatch({
             type: Types.Initial,
             payload: {
@@ -178,6 +219,8 @@ function AuthProvider({ children }: AuthProviderProps) {
           });
         }
       } catch (err) {
+        console.error('Error initializing from localStorage', err);
+        datadogRum.clearUser();
         dispatch({
           type: Types.Initial,
           payload: {
@@ -192,30 +235,46 @@ function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = (await fusionAuthClient.login({
+    const response = await fusionAuthClient.login({
       loginId: email,
       password: password,
       applicationId: FUSIONAUTH_API.appId,
-    })) as {
-      response: {
-        user: { registrations: Array<{ roles: Array<FusionAuthRoles> }> };
-        refreshToken: string;
-        token: string;
-      };
-    };
+    });
     const { token: accessToken, user, refreshToken } = response.response;
+    const activeRoleIndex = 0;
+    localStorage.setItem('activeRoleIndex', activeRoleIndex.toString());
+    if (!user) {
+      throw new Error(`Error getting currently active user`);
+    }
+    if (!user.registrations) {
+      throw new Error(`User ${user?.id} does not have registrations`);
+    }
+    const userRegistration = user.registrations?.[0];
+    const activeRole = userRegistration.roles?.[activeRoleIndex];
+    if (!activeRole) {
+      throw new Error(`User ${user?.id} must have valid activeRole`);
+    }
 
     setSession(accessToken!, refreshToken!);
+
+    // Datadog RUM
+    datadogRum.setUser({
+      id: user?.id,
+      name: user?.fullName,
+      email: user?.email,
+      role: activeRole,
+      roles: userRegistration.roles,
+    });
+
     dispatch({
       type: Types.Login,
       payload: {
         user,
-        activeRole: response.response.user.registrations[0].roles[0],
+        activeRole: activeRole as FusionAuthRoles,
         token: accessToken,
         refreshToken: refreshToken,
       },
     });
-    localStorage.setItem('activeRoleIndex', '0');
     // dispatchState(setAuthenticated(true));
   };
 
@@ -231,6 +290,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('i18nextLng');
     localStorage.removeItem('activeRoleIndex');
+    datadogRum.clearUser();
     dispatch({
       type: Types.Logout,
       payload: {
@@ -240,6 +300,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const changeActiveRole = (role: FusionAuthRoles) => {
+    datadogRum.setUserProperty('role', role);
     dispatch({
       type: Types.Switch_Active_Role,
       payload: {

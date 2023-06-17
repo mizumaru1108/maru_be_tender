@@ -3123,6 +3123,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fusionauth/typescript-client@npm:^1.45.0":
+  version: 1.45.0
+  resolution: "@fusionauth/typescript-client@npm:1.45.0"
+  dependencies:
+    node-fetch: ^2.6.1
+  checksum: 4471e4830c70d9ec096c959d1569bac9733b3c0259915853520feef24bb7e060ccab216f2bcf344d180cd0a2d75f08a6531a70a8e2b1a8b17d609e38dea5fc8a
+  languageName: node
+  linkType: hard
+
 "@gar/promisify@npm:^1.0.1, @gar/promisify@npm:^1.1.3":
   version: 1.1.3
   resolution: "@gar/promisify@npm:1.1.3"
@@ -6962,6 +6971,7 @@ __metadata:
     "@fullcalendar/react": ^5.11.1
     "@fullcalendar/timegrid": ^5.11.0
     "@fullcalendar/timeline": ^5.11.0
+    "@fusionauth/typescript-client": ^1.45.0
     "@hookform/resolvers": ^2.9.3
     "@iconify/react": ^3.2.2
     "@material-ui/core": ^4.12.4
