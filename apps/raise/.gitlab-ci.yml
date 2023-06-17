@@ -1,3 +1,6 @@
+variables:
+  DEVSECOPS_PROJECT_ID: 26870237
+
 # ------------------------------------- build ------------------------------------------
 
 'build tmra-raise':
@@ -131,7 +134,7 @@
       --form "variables[APP_NAMES]=$APP_NAME"
       --form "variables[APP_ENV]=$APP_ENV"
       --form "variables[APP_VERSION]=$APP_VERSION"
-      "https://gitlab.com/api/v4/projects/26870237/trigger/pipeline"
+      "https://gitlab.com/api/v4/projects/$DEVSECOPS_PROJECT_ID/trigger/pipeline"
   environment:
     name: $APP_NAME-$APP_ENV
     url: https://api-${APP_ENV}.tmra.io/v2/raise
@@ -162,7 +165,7 @@
       --form "variables[APP_NAMES]=$APP_NAME"
       --form "variables[APP_ENV]=$APP_ENV"
       --form "variables[APP_VERSION]=$APP_VERSION"
-      "https://gitlab.com/api/v4/projects/26870237/trigger/pipeline"
+      "https://gitlab.com/api/v4/projects/$DEVSECOPS_PROJECT_ID/trigger/pipeline"
   environment:
     name: $APP_NAME-$APP_ENV
     url: https://api-${APP_ENV}.tmra.io/v2/raise
@@ -193,7 +196,7 @@
       --form "variables[APP_NAMES]=$APP_NAME"
       --form "variables[APP_ENV]=$APP_ENV"
       --form "variables[APP_VERSION]=$APP_VERSION"
-      "https://gitlab.com/api/v4/projects/26870237/trigger/pipeline"
+      "https://gitlab.com/api/v4/projects/$DEVSECOPS_PROJECT_ID/trigger/pipeline"
   environment:
     name: $APP_NAME-$APP_ENV
     url: https://api-${APP_ENV}.tmra.io/v2/raise
@@ -224,7 +227,7 @@
       --form "variables[APP_NAMES]=$APP_NAME"
       --form "variables[APP_ENV]=$APP_ENV"
       --form "variables[APP_VERSION]=$APP_VERSION"
-      "https://gitlab.com/api/v4/projects/26870237/trigger/pipeline"
+      "https://gitlab.com/api/v4/projects/$DEVSECOPS_PROJECT_ID/trigger/pipeline"
   environment:
     name: $APP_NAME-$APP_ENV
     url: https://api.tmra.io/v2/raise
@@ -255,7 +258,7 @@
       --form "variables[APP_NAMES]=$APP_NAME"
       --form "variables[APP_ENV]=$APP_ENV"
       --form "variables[APP_VERSION]=$APP_VERSION"
-      "https://gitlab.com/api/v4/projects/26870237/trigger/pipeline"
+      "https://gitlab.com/api/v4/projects/$DEVSECOPS_PROJECT_ID/trigger/pipeline"
   environment:
     name: $APP_NAME-$APP_ENV
     url: https://app-${APP_ENV}.tmra.io/
