@@ -1,6 +1,6 @@
 # Tmra Raise
 
-....
+...
 The API service backend for Tmra Organization, serving both OpenAPI and GraphQL protocols.
 
 This mono-repo contain:\
