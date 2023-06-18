@@ -184,7 +184,7 @@
   },
   "private": true,
   "scripts": {
-    "build": "cross-env GENERATE_SOURCEMAP=false react-app-rewired build",
+    "build": "GENERATE_SOURCEMAP=false react-app-rewired build",
     "clear-all": "rm -rf build node_modules",
     "eject": "cross-env GENERATE_SOURCEMAP=false react-scripts eject",
     "lint": "eslint --ext .ts,.tsx ./src",
