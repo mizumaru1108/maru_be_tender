@@ -10,12 +10,15 @@ variables:
     # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
     - cd apps/raise
     - npm pkg set installConfig.hoistingLimits=workspaces
-    - yarn workspaces focus --production
+    - yarn workspaces focus
     # skip dbml for faster build
-    - yarn dlx prisma generate --generator client
-    - yarn dlx @nestjs/cli build
+    - yarn prisma generate --generator client
+    - yarn nest build
+    # ensure Dockerfile COPY not failed: https://stackoverflow.com/a/70097693/122441
+    # - mkdir -vp node_modules
     # - ls -F dist/
-    - '[ -f "dist/main.js" ] || { ls -F dist/; echo "Error: Build was invalid. apps/raise/dist/main.js must exist after build! Hint: Make sure you only use src/ folder."; exit 1; }'
+    - '[ -f "dist/main.js" ] || { ls -F dist/; echo "Error: Build was invalid. apps/caring/dist/main.js must exist after build! Hint: Make sure you only use src/ folder."; exit 1; }'
+    - yarn workspaces focus --production
   artifacts:
     paths:
       # - package.json
