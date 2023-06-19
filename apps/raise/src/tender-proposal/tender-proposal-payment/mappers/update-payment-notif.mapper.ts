@@ -13,7 +13,13 @@ import { createManyNotificationMapper } from '../../../tender-notification/mappe
 export const UpdatePaymentNotifMapper = (
   payment: payment,
   logs: CommonProposalLogNotifResponse['data'],
-  action: 'accept' | 'reject' | 'edit' | 'upload_receipt' | 'issue',
+  action:
+    | 'accept'
+    | 'reject'
+    | 'edit'
+    | 'upload_receipt'
+    | 'issue'
+    | 'confirm_payment',
   choosenRole: TenderAppRole,
   cheque: cheque | null,
   selectLang?: 'ar' | 'en',

@@ -225,7 +225,13 @@ export class TenderProposalPaymentRepository {
   async updatePayment(
     paymentId: string,
     status: string | null,
-    action: 'accept' | 'reject' | 'edit' | 'upload_receipt' | 'issue',
+    action:
+      | 'accept'
+      | 'reject'
+      | 'edit'
+      | 'upload_receipt'
+      | 'issue'
+      | 'confirm_payment',
     reviewerId: string,
     choosenRole: TenderAppRole,
     chequeCreatePayload: Prisma.chequeUncheckedCreateInput | undefined,
