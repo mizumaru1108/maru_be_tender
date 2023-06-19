@@ -62,6 +62,7 @@
     "dayjs": "^1.11.8",
     "deck.gl": "^8.8.2",
     "emoji-mart": "^5.1.0",
+    "firebase": "^9.22.2",
     "formik": "^2.2.9",
     "framer-motion": "^6.3.16",
     "geojson": "^0.5.0",

@@ -397,6 +397,7 @@ export const getProposal = (id: string, role: string) => async () => {
 export const getTrackList = (isGeneral: number, role: string) => async () => {
   try {
     dispatch(slice.actions.startLoading);
+    dispatch(slice.actions.setLoadingCount(true));
     let url = '';
     if (isGeneral) {
       url = '/tender/track/fetch-all?include_general=1';
@@ -413,10 +414,11 @@ export const getTrackList = (isGeneral: number, role: string) => async () => {
     } catch (error) {
       console.log(error);
     }
-
-    dispatch(slice.actions.endLoading);
   } catch (error) {
     dispatch(slice.actions.hasError(error));
+  } finally {
+    dispatch(slice.actions.endLoading);
+    dispatch(slice.actions.setLoadingCount(false));
   }
 };
 
@@ -521,6 +523,7 @@ export const updatePaymentBySupervisorAndManagerAndFinance = (data: any) => asyn
     const variables = {
       payment_id: data.id,
       action: data.action,
+      notes: data.note,
     };
 
     const res = await axiosInstance.patch('/tender/proposal/payment/update-payment', variables, {

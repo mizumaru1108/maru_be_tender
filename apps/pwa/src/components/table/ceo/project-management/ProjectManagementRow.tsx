@@ -17,6 +17,7 @@ export default function ProjectManagementTableRow({
   selected,
   onSelectRow,
   destination,
+  needSelection = true,
 }: ProjectManagementTableColumn) {
   const navigate = useNavigate();
 
@@ -54,9 +55,11 @@ export default function ProjectManagementTableRow({
 
   return (
     <TableRow hover selected={selected}>
-      <TableCell padding="checkbox">
-        <Checkbox checked={selected} onClick={onSelectRow} />
-      </TableCell>
+      {needSelection && (
+        <TableCell data-cy="table-checkbox" padding="checkbox">
+          <Checkbox checked={selected} onClick={onSelectRow} />
+        </TableCell>
+      )}
       {/* <TableCell sx={{ display: 'flex', alignItems: 'center' }}> */}
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>

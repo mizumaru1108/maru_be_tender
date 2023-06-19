@@ -53,7 +53,8 @@ export default function InfoClosingReport({ data }: IPropsInfoClosing) {
               {translate('pages.common.close_report.text.details.target_beneficiaries.label')}:
             </Typography>
             <Typography variant="body1">
-              {translate(`pages.common.close_report.text.option.${data?.target_beneficiaries}`)}
+              {/* {translate(`pages.common.close_report.text.option.${data?.target_beneficiaries}`)} */}
+              {data?.target_beneficiaries}
             </Typography>
           </Grid>
           <Grid item xs={3}>
