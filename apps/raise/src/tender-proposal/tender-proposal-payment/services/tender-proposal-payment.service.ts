@@ -277,6 +277,7 @@ export class TenderProposalPaymentService {
       const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
         [];
       const proposalUpdateInput: Prisma.proposalUncheckedUpdateInput = {};
+      let deletedFileManagerUrl: string = '';
 
       if (choosenRole === 'tender_project_manager') {
         if (proposal.project_manager_id !== userId) ownershipErrorThrow();
@@ -290,14 +291,26 @@ export class TenderProposalPaymentService {
               'Notes are required when rejecting payment',
             );
           }
+          if (!request.last_payment_receipt_url) {
+            throw new BadRequestException(
+              'please send the last rejected file url',
+            );
+          }
+          deletedFileManagerUrl = request.last_payment_receipt_url;
         }
       }
 
       if (choosenRole === 'tender_finance') {
-        actionValidator(['accept', 'confirm_payment'], action);
+        actionValidator(
+          ['accept', 'confirm_payment', 'reject_payment'],
+          action,
+        );
         proposalUpdateInput.finance_id = userId;
         if (action === 'accept') status = ProposalAction.ACCEPTED_BY_FINANCE;
         if (action === 'confirm_payment') status = ProposalAction.DONE;
+        if (action === 'reject_payment') {
+          status = ProposalAction.ACCEPTED_BY_FINANCE;
+        }
         // !TODO: if (action is edit) do something, still abmigous, need to discuss.
       }
 
@@ -358,6 +371,7 @@ export class TenderProposalPaymentService {
         lastLog,
         proposalUpdateInput,
         request.notes,
+        deletedFileManagerUrl,
       );
 
       await this.notificationService.sendSmsAndEmailBatch(response.updateNotif);

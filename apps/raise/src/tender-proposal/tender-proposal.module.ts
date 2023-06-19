@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Provider } from '@nestjs/common';
 
 import { TenderProposalFollowUpController } from './tender-proposal-follow-up/controllers/tender-proposal-follow-up.controller';
 import { TenderProposalFollowUpRepository } from './tender-proposal-follow-up/repositories/tender-proposal-follow-up.repository';
@@ -14,34 +14,40 @@ import { TenderProposalService } from './tender-proposal/services/tender-proposa
 import { TenderProposalBeneficiariesController } from './tender-proposal-beneficiaries/controllers/tender-proposal-beneficiaries.controller';
 import { TenderProposalBeneficiaresService } from './tender-proposal-beneficiaries/services/tender-proposal-beneficiaries.service';
 import { TenderProposalBeneficiariesRepository } from './tender-proposal-beneficiaries/repositories/tender-proposal-beneficiaries.repository';
+import { CqrsModule } from '@nestjs/cqrs';
+
+const controllers = [
+  /* Proposal */
+  TenderProposalController,
+  /* Payments */
+  TenderProposalPaymentController,
+  /* Follow Ups */
+  TenderProposalFollowUpController,
+  /* Beneficiaries */
+  TenderProposalBeneficiariesController,
+];
+
+const services: Provider[] = [
+  /* Proposal */
+  TenderProposalService,
+  TenderProposalRepository,
+  /* payments */
+  TenderProposalPaymentService,
+  TenderProposalPaymentRepository,
+  /* Logs */
+  TenderProposalLogService,
+  TenderProposalLogRepository,
+  /* Follow Ups */
+  TenderProposalFollowUpService,
+  TenderProposalFollowUpRepository,
+  /* Beneficiaries */
+  TenderProposalBeneficiaresService,
+  TenderProposalBeneficiariesRepository,
+];
 
 @Module({
-  controllers: [
-    /* Proposal */
-    TenderProposalController,
-    /* Payments */
-    TenderProposalPaymentController,
-    /* Follow Ups */
-    TenderProposalFollowUpController,
-    /* Beneficiaries */
-    TenderProposalBeneficiariesController,
-  ],
-  providers: [
-    /* Proposal */
-    TenderProposalService,
-    TenderProposalRepository,
-    /* payments */
-    TenderProposalPaymentService,
-    TenderProposalPaymentRepository,
-    /* Logs */
-    TenderProposalLogService,
-    TenderProposalLogRepository,
-    /* Follow Ups */
-    TenderProposalFollowUpService,
-    TenderProposalFollowUpRepository,
-    /* Beneficiaries */
-    TenderProposalBeneficiaresService,
-    TenderProposalBeneficiariesRepository,
-  ],
+  imports: [CqrsModule],
+  controllers: [...controllers],
+  providers: [...services],
 })
 export class TenderProposalModule {}

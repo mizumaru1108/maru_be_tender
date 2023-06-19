@@ -30,6 +30,13 @@ import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-i
 import { UpdateMyProposalResponseDto } from '../dtos/responses/update-my-proposal-response.dto';
 import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
 import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
+import { ProposalEntity } from '../entities/proposal.entity';
+import { Builder } from 'builder-pattern';
+export interface FetchProposalByIdProps {
+  id: string;
+  includes_relation?: string[];
+}
+
 @Injectable()
 export class TenderProposalRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -1310,7 +1317,7 @@ export class TenderProposalRepository {
             payments: {
               some: {
                 status: {
-                  in: ['accepted_by_project_manager'],
+                  in: ['accepted_by_project_manager', 'uploaded_by_cashier'],
                 },
               },
             },
@@ -1954,11 +1961,7 @@ export class TenderProposalRepository {
           ...whereClause,
           OR: [{ finance_id: currentUser.id }, { finance_id: null }],
           payments: {
-            some: {
-              status: {
-                in: ['accepted_by_project_manager', 'uploaded_by_cashier'],
-              },
-            },
+            some: { status: { in: ['accepted_by_project_manager'] } },
           },
         };
       }
@@ -2173,6 +2176,59 @@ export class TenderProposalRepository {
         'Changing proposal state!',
       );
       throw theError;
+    }
+  }
+
+  async fetchById(
+    props: FetchProposalByIdProps,
+    session?: PrismaService,
+  ): Promise<ProposalEntity | null> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawProposal = await prisma.proposal.findUnique({
+        where: { id: props.id },
+      });
+
+      if (!rawProposal) return null;
+
+      const proposalByIdEntity = Builder(ProposalEntity, {
+        ...rawProposal,
+        amount_required_fsupport:
+          rawProposal.amount_required_fsupport !== null
+            ? parseFloat(rawProposal.amount_required_fsupport.toString())
+            : null,
+        whole_budget:
+          rawProposal.whole_budget !== null
+            ? parseFloat(rawProposal.whole_budget.toString())
+            : null,
+        number_of_payments:
+          rawProposal.number_of_payments !== null
+            ? parseFloat(rawProposal.number_of_payments.toString())
+            : null,
+        partial_support_amount:
+          rawProposal.partial_support_amount !== null
+            ? parseFloat(rawProposal.partial_support_amount.toString())
+            : null,
+        fsupport_by_supervisor:
+          rawProposal.fsupport_by_supervisor !== null
+            ? parseFloat(rawProposal.fsupport_by_supervisor.toString())
+            : null,
+        number_of_payments_by_supervisor:
+          rawProposal.number_of_payments_by_supervisor !== null
+            ? parseFloat(
+                rawProposal.number_of_payments_by_supervisor.toString(),
+              )
+            : null,
+        execution_time:
+          rawProposal.execution_time !== null
+            ? parseFloat(rawProposal.execution_time.toString())
+            : null,
+      }).build();
+
+      return proposalByIdEntity;
+    } catch (error) {
+      throw error;
     }
   }
 

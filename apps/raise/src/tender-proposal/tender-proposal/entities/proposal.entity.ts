@@ -1,82 +1,86 @@
 import { BeneficiaryEntity } from '../../tender-proposal-beneficiaries/entity/beneficiary.entity';
+import { ProposalLogEntity } from '../../tender-proposal-log/entities/proposal-log.entity';
 import { ProposalPaymentEntity } from '../../tender-proposal-payment/entities/proposal-payment.entity';
 import { ProjectTimelineEntity } from '../../tender-proposal-timeline/entities/project-timeline.entity';
+import { ProposalTrackEntity } from '../../tender-proposal-track/entities/proposal-track.entity';
 
 export class ProposalEntity {
   id: string;
   project_name: string;
   submitter_user_id: string;
-  created_at: Date;
-  project_track?: string;
-  project_idea?: string;
-  project_implement_date: Date;
-  project_location?: string;
-  num_ofproject_binicficiaries?: number;
-  project_goals?: string;
-  project_outputs?: string;
-  project_strengths?: string;
-  project_risks?: string;
-  pm_name?: string;
-  pm_email?: string;
-  pm_mobile?: string;
-  governorate?: string;
-  region?: string;
-  amount_required_fsupport?: number;
-  need_consultant: boolean = false;
-  step: string = 'ZERO';
-  whole_budget?: number;
-  state: string = 'MODERATOR';
-  inner_status?: string = 'CREATED_BY_CLIENT';
+  project_track?: string | null; // deprecated, use track_id and refer to track entity
+  project_idea?: string | null;
+  project_implement_date?: Date | null;
+  project_location?: string | null;
+  num_ofproject_binicficiaries?: number | null;
+  project_goals?: string | null;
+  project_outputs?: string | null;
+  project_strengths?: string | null;
+  project_risks?: string | null;
+  pm_name?: string | null;
+  pm_email?: string | null;
+  pm_mobile?: string | null;
+  governorate?: string | null;
+  region?: string | null;
+  amount_required_fsupport?: number | null;
+  need_consultant?: boolean | null;
+  step?: string | null;
+  whole_budget?: number | null;
+  state?: string | null = 'MODERATOR';
+  inner_status?: string | null = 'CREATED_BY_CLIENT';
   previously_add_bank: string[];
-  outter_status: string = 'ONGOING';
-  project_beneficiaries?: string;
-  number_of_payments?: number;
-  finance_id?: string;
-  cashier_id?: string;
-  project_manager_id?: string;
-  supervisor_id?: string;
+  outter_status?: string | null = 'ONGOING';
+  project_beneficiaries?: string | null;
+  number_of_payments?: number | null;
+  finance_id?: string | null;
+  cashier_id?: string | null;
+  project_manager_id?: string | null;
+  supervisor_id?: string | null;
   project_attachments: any; //Json?
   letter_ofsupport_req: any; //Json?
-  on_revision: boolean = false;
-  on_consulting: boolean = false;
-  proposal_bank_id?: string;
-  partial_support_amount?: number;
-  project_beneficiaries_specific_type?: string;
-  track_id?: string;
-  updated_at: Date;
-  clasification_field?: string;
-  closing_report?: boolean;
-  support_type?: boolean;
-  does_an_agreement?: boolean;
-  need_picture?: boolean;
-  support_outputs?: string;
-  clause?: string;
-  vat?: boolean;
-  vat_percentage?: number;
-  inclu_or_exclu?: boolean;
-  fsupport_by_supervisor?: number;
-  number_of_payments_by_supervisor?: number;
-  chairman_of_board_of_directors?: string;
-  been_supported_before?: boolean;
-  most_clents_projects?: string;
-  added_value?: string;
-  reasons_to_accept?: string;
-  target_group_num?: number;
-  target_group_type?: string;
-  target_group_age?: string;
-  been_made_before?: boolean;
-  remote_or_insite?: string;
-  old_inner_status?: string;
-  support_goal_id?: string;
-  accreditation_type_id?: string;
-  execution_time?: number;
-  oid?: number;
-  project_number: number;
+  on_revision?: boolean | null = false;
+  on_consulting?: boolean | null = false;
+  proposal_bank_id?: string | null;
+  partial_support_amount?: number | null;
+  project_beneficiaries_specific_type?: string | null;
+  track_id?: string | null;
+  clasification_field?: string | null;
+  closing_report?: boolean | null = false;
+  support_type?: boolean | null = false;
+  does_an_agreement?: boolean | null = false;
+  need_picture?: boolean | null = false;
+  support_outputs?: string | null;
+  clause?: string | null;
+  vat?: boolean | null = false;
+  vat_percentage?: number | null;
+  inclu_or_exclu?: boolean | null = false;
+  fsupport_by_supervisor?: number | null;
+  number_of_payments_by_supervisor?: number | null;
+  chairman_of_board_of_directors?: string | null;
+  been_supported_before?: boolean | null = false;
+  most_clents_projects?: string | null;
+  added_value?: string | null;
+  reasons_to_accept?: string | null;
+  target_group_num?: number | null;
+  target_group_type?: string | null;
+  target_group_age?: string | null;
+  been_made_before?: boolean | null = false;
+  remote_or_insite?: string | null;
+  old_inner_status?: string | null;
+  support_goal_id?: string | null;
+  accreditation_type_id?: string | null;
+  execution_time?: number | null;
+  oid?: number | null;
+  project_number?: number | null;
   project_numbers1: number;
   // notification                        notification[]
   payments?: ProposalPaymentEntity[];
   project_timeline?: ProjectTimelineEntity[];
   proposal_beneficiaries: BeneficiaryEntity[];
+  track?: ProposalTrackEntity;
+  created_at?: Date = new Date();
+  updated_at?: Date | null = new Date();
+  proposal_log?: ProposalLogEntity[];
   // accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   // project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   // project_manager                     user?                            @relation("proposal_project_manager_idTouser", fields: [project_manager_id], references: [id], onDelete: Cascade)
@@ -88,7 +92,6 @@ export class ProposalEntity {
   // user                                user                             @relation(fields: [submitter_user_id], references: [id], onDelete: Cascade)
   // supervisor                          user?                            @relation("proposal_supervisor_idTouser", fields: [supervisor_id], references: [id], onDelete: Cascade)
   // support_goal                        support_goal?                    @relation(fields: [support_goal_id], references: [id])
-  // track                               track?                           @relation(fields: [track_id], references: [id], onUpdate: NoAction)
   // proposal_asked_edit_request         proposal_asked_edit_request[]
   // proposal_assign                     proposal_assign[]
   // proposal_closing_report             proposal_closing_report[]
@@ -96,7 +99,6 @@ export class ProposalEntity {
   // proposal_edit_request               proposal_edit_request?
   // follow_ups                          proposal_follow_up[]
   // proposal_item_budgets               proposal_item_budget[]
-  // proposal_logs                       proposal_log[]
   // recommended_support_consultant      recommended_support_consultant[]
   // payment_configuration               supervisor[]
 }
