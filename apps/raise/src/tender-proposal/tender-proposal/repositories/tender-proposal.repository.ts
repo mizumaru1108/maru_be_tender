@@ -1954,7 +1954,11 @@ export class TenderProposalRepository {
           ...whereClause,
           OR: [{ finance_id: currentUser.id }, { finance_id: null }],
           payments: {
-            some: { status: { in: ['accepted_by_project_manager'] } },
+            some: {
+              status: {
+                in: ['accepted_by_project_manager', 'uploaded_by_cashier'],
+              },
+            },
           },
         };
       }
