@@ -267,6 +267,7 @@ export class TenderProposalPaymentService {
         | ProposalAction.ISSUED_BY_SUPERVISOR
         | ProposalAction.ACCEPTED_BY_PROJECT_MANAGER
         | ProposalAction.ACCEPTED_BY_FINANCE
+        | ProposalAction.UPLOADED_BY_CASHIER
         | ProposalAction.DONE
         | null = null;
 
@@ -282,13 +283,21 @@ export class TenderProposalPaymentService {
         actionValidator(['accept', 'reject'], action);
         if (action === 'accept')
           status = ProposalAction.ACCEPTED_BY_PROJECT_MANAGER;
-        if (action === 'reject') status = ProposalAction.SET_BY_SUPERVISOR;
+        if (action === 'reject') {
+          status = ProposalAction.SET_BY_SUPERVISOR;
+          if (!request.notes) {
+            throw new BadRequestException(
+              'Notes are required when rejecting payment',
+            );
+          }
+        }
       }
 
       if (choosenRole === 'tender_finance') {
-        actionValidator(['accept'], action);
+        actionValidator(['accept', 'confirm_payment'], action);
         proposalUpdateInput.finance_id = userId;
         if (action === 'accept') status = ProposalAction.ACCEPTED_BY_FINANCE;
+        if (action === 'confirm_payment') status = ProposalAction.DONE;
         // !TODO: if (action is edit) do something, still abmigous, need to discuss.
       }
 
@@ -303,7 +312,8 @@ export class TenderProposalPaymentService {
         actionValidator(['upload_receipt'], action);
         if (!cheque) throw new BadRequestException('Cheque data is required!');
         proposalUpdateInput.cashier_id = userId;
-        if (action === 'upload_receipt') status = ProposalAction.DONE;
+        if (action === 'upload_receipt')
+          status = ProposalAction.UPLOADED_BY_CASHIER;
         const uploadResult = await this.uploadPaymentFileFile(
           proposal.id,
           `Uploading cheque for payment ${payment_id}`,
@@ -347,6 +357,7 @@ export class TenderProposalPaymentService {
         fileManagerCreateManyPayload,
         lastLog,
         proposalUpdateInput,
+        request.notes,
       );
 
       await this.notificationService.sendSmsAndEmailBatch(response.updateNotif);

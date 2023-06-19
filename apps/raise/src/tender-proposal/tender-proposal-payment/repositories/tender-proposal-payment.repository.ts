@@ -1,6 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { cheque, payment, Prisma } from '@prisma/client';
+import { Prisma, cheque, payment } from '@prisma/client';
+import { Sql } from '@prisma/client/runtime';
 import { nanoid } from 'nanoid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
@@ -24,7 +25,6 @@ import {
 } from '../dtos/requests';
 import { CloseReportNotifMapper } from '../mappers';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
-import { Sql } from '@prisma/client/runtime';
 
 @Injectable()
 export class TenderProposalPaymentRepository {
@@ -225,7 +225,13 @@ export class TenderProposalPaymentRepository {
   async updatePayment(
     paymentId: string,
     status: string | null,
-    action: 'accept' | 'reject' | 'edit' | 'upload_receipt' | 'issue',
+    action:
+      | 'accept'
+      | 'reject'
+      | 'edit'
+      | 'upload_receipt'
+      | 'issue'
+      | 'confirm_payment',
     reviewerId: string,
     choosenRole: TenderAppRole,
     chequeCreatePayload: Prisma.chequeUncheckedCreateInput | undefined,
@@ -234,6 +240,7 @@ export class TenderProposalPaymentRepository {
       created_at: Date;
     } | null,
     proposalUpdateInput: Prisma.proposalUpdateInput,
+    notes?: string,
   ) {
     try {
       return await this.prismaService.$transaction(
@@ -291,6 +298,12 @@ export class TenderProposalPaymentRepository {
                       60000,
                   )
                 : null,
+              notes:
+                choosenRole === 'PROJECT_MANAGER' && // if it pm
+                status === ProposalAction.SET_BY_SUPERVISOR && // if it rejected
+                notes // if notes exist
+                  ? notes
+                  : '',
             },
             select: {
               action: true,
@@ -353,7 +366,7 @@ export class TenderProposalPaymentRepository {
             });
           }
 
-          throw new BadRequestException('func on debugging');
+          // throw new BadRequestException('func on debugging');
           return {
             payment,
             cheque,

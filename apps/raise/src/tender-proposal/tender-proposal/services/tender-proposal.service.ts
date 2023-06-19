@@ -1349,7 +1349,7 @@ export class TenderProposalService {
       proposalLogCreateInput.action = ProposalAction.REJECT;
       proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
-      proposalLogCreateInput.notes = request.notes;
+      // proposalLogCreateInput.notes = request.notes;
     }
 
     if (request.action === ProposalAction.STEP_BACK) {

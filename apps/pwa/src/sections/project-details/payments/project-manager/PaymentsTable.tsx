@@ -130,9 +130,15 @@ function PaymentsTable() {
   };
 
   const handleRejectPayment = async (id: string, note?: string) => {
+    // console.log({ note });
     try {
       await dispatch(
-        updatePaymentBySupervisorAndManagerAndFinance({ id, role: activeRole!, action: 'reject' })
+        updatePaymentBySupervisorAndManagerAndFinance({
+          id,
+          role: activeRole!,
+          action: 'reject',
+          note: note,
+        })
       ).then((res) => {
         if (res.data.statusCode === 200) {
           enqueueSnackbar('تم رفض أذن الصرف بنجاح', {

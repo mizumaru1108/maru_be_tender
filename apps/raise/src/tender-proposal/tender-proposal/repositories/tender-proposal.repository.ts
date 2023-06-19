@@ -1940,14 +1940,11 @@ export class TenderProposalRepository {
             { project_manager_id: null },
           ],
           payments: {
-            // some: {
-            //   // first array should be accbypm
-            //   // second array
-            //   status: {
-            //     in: ['issued_by_supervisor'],
-            //   },
-            // },
-            //
+            some: {
+              status: {
+                in: ['issued_by_supervisor'],
+              },
+            },
           },
         };
       }
@@ -1957,7 +1954,11 @@ export class TenderProposalRepository {
           ...whereClause,
           OR: [{ finance_id: currentUser.id }, { finance_id: null }],
           payments: {
-            some: { status: { in: ['accepted_by_project_manager'] } },
+            some: {
+              status: {
+                in: ['accepted_by_project_manager', 'uploaded_by_cashier'],
+              },
+            },
           },
         };
       }
@@ -1966,7 +1967,9 @@ export class TenderProposalRepository {
         whereClause = {
           ...whereClause,
           OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
-          payments: { some: { status: { in: ['accepted_by_finance'] } } },
+          payments: {
+            some: { status: { in: ['accepted_by_finance', 'done'] } },
+          },
         };
       }
 
