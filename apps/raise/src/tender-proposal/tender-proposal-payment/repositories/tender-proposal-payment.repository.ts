@@ -1,6 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { cheque, payment, Prisma } from '@prisma/client';
+import { Prisma, cheque, payment } from '@prisma/client';
+import { Sql } from '@prisma/client/runtime';
 import { nanoid } from 'nanoid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
@@ -24,7 +25,6 @@ import {
 } from '../dtos/requests';
 import { CloseReportNotifMapper } from '../mappers';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
-import { Sql } from '@prisma/client/runtime';
 
 @Injectable()
 export class TenderProposalPaymentRepository {
@@ -353,7 +353,7 @@ export class TenderProposalPaymentRepository {
             });
           }
 
-          throw new BadRequestException('func on debugging');
+          // throw new BadRequestException('func on debugging');
           return {
             payment,
             cheque,
