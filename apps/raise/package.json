@@ -136,15 +136,14 @@
     "push:prod": "git push origin main:stack/prod",
     "push:qc": "git push origin main:stack/qc",
     "push:staging": "git push origin main:stack/staging",
-    "start": "nest start",
-    "start:debug": "nest start --debug --watch",
-    "start:dev": "nest start --watch",
+    "start": "concurrently -c auto -n prisma,nest 'prisma generate' 'nest start'",
+    "start:debug": "concurrently -c auto -n prisma,nest 'prisma generate --watch' 'next start--debug --watch'",
+    "start:dev": "concurrently -c auto -n prisma,nest 'prisma generate --watch' 'nest start --watch'",
     "start:prod": "node dist/main",
     "test": "jest",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:watch": "jest --watch",
-    "postinstall": "prisma generate"
+    "test:watch": "jest --watch"
   }
 }
