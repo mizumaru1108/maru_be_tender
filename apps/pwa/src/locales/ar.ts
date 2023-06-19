@@ -940,7 +940,7 @@ const ar = {
     center: {
       label: 'المركز الإداري ( ترجمة)',
       // placeholder: 'الرجاء اختيار المركز',
-      placholder: 'الرجاء ادخال المركز الإداري',
+      placeholder: 'الرجاء ادخال المركز الإداري',
       options: {},
     },
     mobile_number: {
