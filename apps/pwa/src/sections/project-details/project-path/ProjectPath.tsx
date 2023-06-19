@@ -362,7 +362,7 @@ function ProjectPath() {
                   logs
                     .filter(
                       (item: Log, index: number) =>
-                        item.action !== 'set_by_supervisor' &&
+                        // item.action !== 'set_by_supervisor' &&
                         // item.action !== 'accepted_by_project_manager' &&
                         index === activeStep
                     )

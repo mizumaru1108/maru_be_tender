@@ -36,6 +36,7 @@ export type PaymentStatus =
   | 'issued_by_supervisor'
   | 'accepted_by_project_manager'
   | 'accepted_by_finance'
+  | 'uploaded_by_cashier'
   | 'done';
 
 export type AccreditationTypeId = 'PLAIN' | 'INCOMING';

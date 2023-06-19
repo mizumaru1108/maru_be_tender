@@ -8,7 +8,7 @@ import useLocales from 'hooks/useLocales';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
-import { insertChequeByCashier } from 'redux/slices/proposal';
+import { getProposalCount, insertChequeByCashier } from 'redux/slices/proposal';
 import { useDispatch } from 'redux/store';
 import * as Yup from 'yup';
 import { UploadReceiptFormFields } from './form-data';
@@ -82,7 +82,7 @@ function UploadingForm({ paymentId, onClose }: any) {
             horizontal: 'right',
           },
         });
-
+        dispatch(getProposalCount(activeRole ?? 'test'));
         onClose();
         // window.location.reload();
       });

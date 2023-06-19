@@ -2,7 +2,11 @@ import { Box, Button, Grid, Link, Stack, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'redux/store';
-import { getProposal, updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
+import {
+  getProposal,
+  getProposalCount,
+  updatePaymentBySupervisorAndManagerAndFinance,
+} from 'redux/slices/proposal';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useQuery } from 'urql';
@@ -62,7 +66,7 @@ function PaymentsTable() {
               horizontal: 'right',
             },
           });
-
+          dispatch(getProposalCount(activeRole ?? 'test'));
           // window.location.reload();
         }
       });

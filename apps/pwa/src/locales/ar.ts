@@ -426,6 +426,8 @@ const ar = {
               exchange_permit_refuse: 'رفض إذن الصرف',
               exchange_permit_reject_by_pm: 'تم رفض هذه الدفعة من قبل مدير الإدارة',
               exchange_permit_approve: 'اعتماد إذن الصرف',
+              exchange_upload_approve: 'اعتماد إيصال الصرف',
+              exchange_upload_refuse: 'رفض إيصال الصرف',
               exchange_permit_accept_finance: 'قبول إذن الصرف',
               exchange_permit_generate_finance: 'توليد بيانات إذن الصرف',
               view_transfer_receipt: 'استلام عرض',
@@ -1970,6 +1972,7 @@ const ar = {
       project_completed: 'تم المشروع',
       send_revised_version: 'إرسال النسخة المنقحة',
       proposal_created: 'تم انشاء المشروع',
+      uploaded_by_cashier: 'دفعة تم تحميلها بواسطة كاشير',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'من 1 سنة إلى 13',
