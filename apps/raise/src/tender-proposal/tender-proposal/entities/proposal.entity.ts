@@ -1,3 +1,4 @@
+import { BeneficiaryEntity } from '../../tender-proposal-beneficiaries/entity/beneficiary.entity';
 import { ProposalPaymentEntity } from '../../tender-proposal-payment/entities/proposal-payment.entity';
 import { ProjectTimelineEntity } from '../../tender-proposal-timeline/entities/project-timeline.entity';
 
@@ -73,10 +74,10 @@ export class ProposalEntity {
   project_number: number;
   project_numbers1: number;
   // notification                        notification[]
-  payments: ProposalPaymentEntity[];
-  project_timeline: ProjectTimelineEntity[];
+  payments?: ProposalPaymentEntity[];
+  project_timeline?: ProjectTimelineEntity[];
+  proposal_beneficiaries: BeneficiaryEntity[];
   // accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
-  // proposal_beneficiaries              proposal_beneficiaries?          @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   // project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   // project_manager                     user?                            @relation("proposal_project_manager_idTouser", fields: [project_manager_id], references: [id], onDelete: Cascade)
   // bank_information                    bank_information?                @relation("bank_informationToproposal_proposal_bank_id", fields: [proposal_bank_id], references: [id], onDelete: Cascade)

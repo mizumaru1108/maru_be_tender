@@ -49,4 +49,10 @@ export class UpdatePaymentDto {
   @ValidateNested()
   @Type(() => CreateChequeDto)
   cheque: CreateChequeDto;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  notes?: string;
 }

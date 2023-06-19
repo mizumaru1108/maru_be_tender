@@ -234,6 +234,7 @@ export class TenderProposalPaymentRepository {
       created_at: Date;
     } | null,
     proposalUpdateInput: Prisma.proposalUpdateInput,
+    notes?: string,
   ) {
     try {
       return await this.prismaService.$transaction(
@@ -291,6 +292,12 @@ export class TenderProposalPaymentRepository {
                       60000,
                   )
                 : null,
+              notes:
+                choosenRole === 'PROJECT_MANAGER' && // if it pm
+                status === ProposalAction.SET_BY_SUPERVISOR && // if it rejected
+                notes // if notes exist
+                  ? notes
+                  : '',
             },
             select: {
               action: true,

@@ -282,7 +282,14 @@ export class TenderProposalPaymentService {
         actionValidator(['accept', 'reject'], action);
         if (action === 'accept')
           status = ProposalAction.ACCEPTED_BY_PROJECT_MANAGER;
-        if (action === 'reject') status = ProposalAction.SET_BY_SUPERVISOR;
+        if (action === 'reject') {
+          status = ProposalAction.SET_BY_SUPERVISOR;
+          if (!request.notes) {
+            throw new BadRequestException(
+              'Notes are required when rejecting payment',
+            );
+          }
+        }
       }
 
       if (choosenRole === 'tender_finance') {
@@ -347,6 +354,7 @@ export class TenderProposalPaymentService {
         fileManagerCreateManyPayload,
         lastLog,
         proposalUpdateInput,
+        request.notes,
       );
 
       await this.notificationService.sendSmsAndEmailBatch(response.updateNotif);
