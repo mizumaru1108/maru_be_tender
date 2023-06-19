@@ -51,11 +51,12 @@ COPY yarn.lock ./
 # COPY postman/schemas/ ./postman/schemas/
 
 # node-linker only:
-COPY node_modules/ ./node_modules/
+# not needed, because for NestJS, we don't allow hoisting to root workspace
+# COPY node_modules/ ./node_modules/
 
 # package.json ONLY from all other packages, yarn monorepo needs them to ensure immutability
 # BUT will still need depended packages' dist/
-COPY apps/pwa/package.json ./apps/pwa/
+# COPY apps/pwa/package.json ./apps/pwa/
 # COPY apps/notion-api/dist/ ./apps/notion-api/dist/
 # This package
 COPY apps/raise/package.json ./apps/raise/
@@ -67,4 +68,5 @@ COPY apps/raise/dist/ ./apps/raise/dist/
 USER node
 WORKDIR /app/apps/raise
 EXPOSE 3000
-CMD ["yarn", "start:prod"]
+# CMD ["yarn", "start:prod"]
+CMD ["node", "dist/main.js"]
