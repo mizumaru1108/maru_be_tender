@@ -1195,10 +1195,6 @@ export class TenderProposalService {
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
       proposalUpdatePayload.supervisor_id = currentUser.id;
 
-      /* custom logic if there's special logic for regular track */
-      // if (proposal?.track?.name !== 'CONCESSIONAL_GRANTS') {
-      // }
-
       /* custom logic if the track is CONCESSIONAL_GRANTS */
       if (proposal?.track?.with_consultation === true) {
         proposalUpdatePayload = SupervisorGrantTrackAccMapper(
@@ -1211,6 +1207,12 @@ export class TenderProposalService {
       proposalLogCreateInput.action = ProposalAction.ACCEPT;
       proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalLogCreateInput.new_values = {
+        ...proposalUpdatePayload,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
+      } as Prisma.InputJsonValue;
     }
 
     /* reject (same for grants and not grants) DONE */
@@ -1335,6 +1337,13 @@ export class TenderProposalService {
         proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
         proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
       }
+
+      proposalLogCreateInput.new_values = {
+        ...proposalUpdatePayload,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
+      } as Prisma.InputJsonValue;
     }
 
     if (request.action === ProposalAction.REJECT) {

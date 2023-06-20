@@ -56,11 +56,7 @@ async function bootstrap() {
     exposedHeaders: ['x-hasura-role', 'Authorization'],
     credentials: true,
     origin: [
-      // 'http://localhost:3000',
-      // 'http://localhost:3001',
-      // 'http://localhost:3002',
-      // 'http://localhost:8081',
-      // 'http://localhost:4040',
+      'http://localhost:3000', // for local dev fetch to staging
 
       // HTTP
       'http://dev.tmra.io', // TMRA Dev

@@ -44,7 +44,7 @@ model client_data {
   phone                    String?      @db.VarChar
   website                  String?      @db.VarChar
   password                 String?      @db.VarChar
-  license_number           String?       @db.VarChar
+  license_number           String?      @db.VarChar
   license_expired          DateTime?    @db.Date
   license_issue_date       DateTime?    @db.Date
   ceo_mobile               String?      @db.VarChar
@@ -206,6 +206,8 @@ model proposal {
   oid                                 Int?
   project_number                      Int?                             @unique(map: "idx_project_number") @default(autoincrement())
   project_numbers1                    Int                              @default(autoincrement())
+  beneficiary_id                      String?
+  beneficiary_details                 beneficiaries?                    @relation(fields: [beneficiary_id], references: [id])
   notification                        notification[]
   payments                            payment[]
   project_timeline                    project_timeline[]
@@ -268,6 +270,8 @@ model proposal_log {
   user_role     String?        @db.VarChar
   response_time Int?
   reject_reason String?        @db.VarChar
+  old_values    Json?
+  new_values    Json?
   notification  notification[]
   user_type     user_type      @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
   proposal      proposal       @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
@@ -535,9 +539,10 @@ model banks {
 }
 
 model beneficiaries {
-  id         String   @id
-  name       String   @db.VarChar
-  is_deleted Boolean? @default(false)
+  id         String     @id
+  name       String     @db.VarChar
+  is_deleted Boolean?   @default(false)
+  proposals   proposal[]
 }
 
 model recommended_support_consultant {
@@ -709,7 +714,7 @@ model client_data2 {
   password                 String?   @db.VarChar
   license_number           String?   @db.VarChar
   license_expired          DateTime? @db.Date
-//   license_issue_date       DateTime? @db.Date
+  //   license_issue_date       DateTime? @db.Date
   license_issue_date       String?
   ceo_mobile               String?   @db.VarChar
   ceo_name                 String?   @db.VarChar
@@ -1469,7 +1474,7 @@ model proposal3 {
   support_goal_id                     String?
   accreditation_type_id               String?
   execution_time                      String?
-  project_number                      Int  @default(autoincrement())
+  project_number                      Int     @default(autoincrement())
   oid                                 Int?
 }
 

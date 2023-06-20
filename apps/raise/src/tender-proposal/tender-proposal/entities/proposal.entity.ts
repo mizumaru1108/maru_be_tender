@@ -81,6 +81,8 @@ export class ProposalEntity {
   created_at?: Date = new Date();
   updated_at?: Date | null = new Date();
   proposal_log?: ProposalLogEntity[];
+  beneficiary_id?: string | null;
+  beneficiary_detail?: BeneficiaryEntity;
   // accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   // project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   // project_manager                     user?                            @relation("proposal_project_manager_idTouser", fields: [project_manager_id], references: [id], onDelete: Cascade)
