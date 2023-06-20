@@ -14,7 +14,6 @@ import { TenderProposalService } from './tender-proposal/services/tender-proposa
 import { TenderProposalBeneficiariesController } from './tender-proposal-beneficiaries/controllers/tender-proposal-beneficiaries.controller';
 import { TenderProposalBeneficiaresService } from './tender-proposal-beneficiaries/services/tender-proposal-beneficiaries.service';
 import { TenderProposalBeneficiariesRepository } from './tender-proposal-beneficiaries/repositories/tender-proposal-beneficiaries.repository';
-// import { CqrsModule } from '@nestjs/cqrs';
 
 const controllers = [
   /* Proposal */

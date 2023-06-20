@@ -1927,8 +1927,22 @@ export class TenderProposalRepository {
       if (currentUser.choosenRole === 'tender_project_supervisor') {
         whereClause = {
           ...whereClause,
-          supervisor_id: currentUser.id,
-          payments: { some: { status: { in: ['set_by_supervisor'] } } },
+          AND: [
+            { supervisor_id: currentUser.id },
+            {
+              OR: [
+                {
+                  inner_status:
+                    InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
+                },
+                {
+                  payments: { some: { status: { in: ['set_by_supervisor'] } } },
+                },
+              ],
+            },
+          ],
+          // supervisor_id: currentUser.id,
+          // payments: { some: { status: { in: ['set_by_supervisor'] } } },
           // OR: [
           // {
           //   inner_status:
@@ -1942,17 +1956,25 @@ export class TenderProposalRepository {
       if (currentUser.choosenRole === 'tender_project_manager') {
         whereClause = {
           ...whereClause,
-          OR: [
-            { project_manager_id: currentUser.id },
-            { project_manager_id: null },
-          ],
-          payments: {
-            some: {
-              status: {
-                in: ['issued_by_supervisor'],
-              },
+          // OR: [
+          //   { project_manager_id: currentUser.id },
+          //   { project_manager_id: null },
+          // ],
+          // payments: {
+          //   some: {
+          //     status: {
+          //       in: ['issued_by_supervisor'],
+          //     },
+          //   },
+          // },
+          AND: [
+            {
+              project_manager_id: currentUser.id,
             },
-          },
+            {
+              payments: { some: { status: { in: ['issued_by_supervisor'] } } },
+            },
+          ],
         };
       }
 
