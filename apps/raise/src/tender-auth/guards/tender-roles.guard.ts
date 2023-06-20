@@ -5,6 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 /**
  * @author RDananag (iyoy)
@@ -17,7 +18,10 @@ export class TenderRolesGuard implements CanActivate {
    * RolesGuard constructor.
    * @param reflector The reflector service.
    */
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    @InjectPinoLogger(TenderRolesGuard.name) private logger: PinoLogger,
+  ) {}
 
   /**
    * Set the roles for the route.
@@ -53,6 +57,11 @@ export class TenderRolesGuard implements CanActivate {
     if (allowedRoles.indexOf(request.user.choosenRole) > -1) {
       return true;
     } else {
+      this.logger.info(
+        "You don't have the required permissions to access this route. allowedRoles=%j but chosen role=%j",
+        allowedRoles,
+        request.user.choosenRole,
+      );
       throw new ForbiddenException(
         "You don't have the required permissions to access this route",
       );
