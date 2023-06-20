@@ -2164,6 +2164,7 @@ export class TenderProposalRepository {
               bank_information: true,
             },
           },
+          beneficiary_details: true,
           follow_ups: {
             include: {
               user: {
