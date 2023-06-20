@@ -54,6 +54,19 @@ export class GsAuthService {
       fusionRes.response.user.id,
     );
 
+    if (loginRequest.organizationId) {
+      const organizationData = await this.organizationModel.findOne({
+        ownerUserId: user._id,
+      });
+
+      if (loginRequest.organizationId !== organizationData?._id.toString()) {
+        throw new HttpException(
+          `Your account can't access this organization`,
+          HttpStatus.FORBIDDEN,
+        );
+      }
+    }
+
     return {
       fusionAuthRes: fusionRes,
       user: user,
