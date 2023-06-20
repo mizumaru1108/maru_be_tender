@@ -32,7 +32,12 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
     vat: Yup.boolean().required('Procedures is required!'),
     vat_percentage: Yup.number()
       .integer()
-      .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
+      // .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
+      .nullable()
+      .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
+        if (!val) return true;
+        return Number(val) > 0;
+      }),
     inclu_or_exclu: Yup.boolean(),
     payment_number: Yup.string()
       .required(translate('errors.cre_proposal.payment_number.required'))

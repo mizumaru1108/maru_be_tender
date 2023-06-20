@@ -292,8 +292,8 @@ const AmandementForms = ({
               md={12}
               sx={{ display: 'flex', flexDirection: 'row', paddingLeft: 2 }}
             >
-              {defaultValues && defaultValues?.timelines?.length > 0 ? (
-                defaultValues?.timelines.map((item, index) => (
+              {defaultValues && defaultValues?.project_timeline?.length > 0 ? (
+                defaultValues?.project_timeline.map((item, index) => (
                   <React.Fragment key={index}>
                     <Grid item xs={12} md={6} sx={{ margin: '0 4px' }}>
                       <RHFTextField

@@ -57,7 +57,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
     execution_time: Yup.number()
       .required(translate('errors.cre_proposal.execution_time.required'))
       .min(1, translate('errors.cre_proposal.execution_time.greater_than_0')),
-    project_beneficiaries: Yup.string().required(
+    beneficiary_id: Yup.string().required(
       translate('errors.cre_proposal.project_beneficiaries.required')
     ),
     letter_ofsupport_req: Yup.mixed()
@@ -274,7 +274,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
                 ? false
                 : !!revised && true
             }
-            name="project_beneficiaries"
+            name="beneficiary_id"
             label={translate('funding_project_request_form1.target_group_type.label')}
             placeholder={translate('funding_project_request_form1.target_group_type.placeholder')}
           >
@@ -303,7 +303,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
                 <option
                   data-cy={`funding_project_request_form1.target_group_type${index}`}
                   key={index}
-                  value={item?.name}
+                  value={item?.id}
                   style={{ backgroundColor: '#fff' }}
                 >
                   {item?.name}

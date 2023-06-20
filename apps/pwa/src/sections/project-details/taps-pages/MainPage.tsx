@@ -167,11 +167,12 @@ function MainPage() {
             {translate('target_group_type')}
           </Typography>
           <Typography>
-            {(proposal.project_beneficiaries &&
+            {/* {(proposal.project_beneficiaries &&
               translate(
                 `section_portal_reports.heading.gender.${proposal.project_beneficiaries.toLowerCase()}`
               )) ??
-              '- No Data -'}
+              '- No Data -'} */}
+            {proposal.beneficiary_details?.name || proposal.project_beneficiaries}
           </Typography>
         </Stack>
         <Stack direction="column">
