@@ -53,7 +53,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
 
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
-  const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
+  // const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
   const methods = useForm<SupervisorStep1>({
     resolver: yupResolver(validationSchema),
     defaultValues: useMemo(() => step1, [step1]),
@@ -64,7 +64,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   const vat = watch('vat');
   const support_type = watch('support_type');
   const paymentNum = watch('payment_number');
-  // console.log({ paymentNum });
+  // console.log({ support_type });
   // const inclu_or_exclu = watch('inclu_or_exclu');
 
   const onSubmitForm = async (data: SupervisorStep1) => {
@@ -74,7 +74,12 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   useEffect(() => {
     setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
     if (proposal) {
-      setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
+      if (proposal.fsupport_by_supervisor) {
+        setValue('fsupport_by_supervisor', proposal.fsupport_by_supervisor);
+      } else {
+        setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
+      }
+      // console.log('proposal.amount_required_fsupport', proposal.amount_required_fsupport);
     }
   }, [proposal, setValue, reset]);
 
@@ -204,7 +209,10 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             name="fsupport_by_supervisor"
             label="مبلغ الدعم*"
             placeholder="مبلغ الدعم"
-            disabled={isSupport ? false : true}
+            // disabled={isSupport ? false : true}
+            disabled={
+              support_type === 'false' || !support_type || support_type === undefined ? false : true
+            }
           />
         </Grid>
 

@@ -89,20 +89,21 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       'vat_percentage',
       translate('errors.cre_proposal.vat_percentage.greater_than_0'),
       (value) => {
-        const validation = value !== null && value !== undefined && typeof value === 'number';
-        return validation;
+        if (!value) return true;
+        return Number(value) > 0;
       }
     ),
     inclu_or_exclu: Yup.boolean(),
     support_goal_id: Yup.string().required('Procedures is required!'),
     payment_number: Yup.string()
-      .required(translate('errors.cre_proposal.payment_number.required'))
+      // .required(translate('errors.cre_proposal.payment_number.required'))
       .test(
         'len',
         `${translate('errors.cre_proposal.payment_number.greater_than')} ${
           proposal.proposal_item_budgets.length
         }`,
         (val) => {
+          if (!val) return true;
           const number_of_payment = Number(val);
           return !(number_of_payment < proposal.proposal_item_budgets.length);
         }
@@ -435,6 +436,11 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                   <RHFTextField
                     type={'number'}
                     size={'small'}
+                    disabled={
+                      support_type === 'false' || !support_type || support_type === undefined
+                        ? false
+                        : true
+                    }
                     name="payment_number"
                     placeholder="عدد المدفوعات"
                     label="عدد المدفوعات*"

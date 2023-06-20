@@ -80,17 +80,23 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
     vat: Yup.boolean().required('Procedures is required!'),
     vat_percentage: Yup.number()
       .integer()
-      .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
+      .nullable()
+      .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
+        if (!val) return true;
+        return Number(val) > 0;
+      }),
+    // .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0'))
     inclu_or_exclu: Yup.boolean(),
     support_goal_id: Yup.string().required('Procedures is required!'),
     payment_number: Yup.string()
-      .required(translate('errors.cre_proposal.payment_number.required'))
+      // .required(translate('errors.cre_proposal.payment_number.required'))
       .test(
         'len',
         `${translate('errors.cre_proposal.payment_number.greater_than')} ${
           proposal.proposal_item_budgets.length
         }`,
         (val) => {
+          if (!val) return true;
           const number_of_payment = Number(val);
           return !(number_of_payment < proposal.proposal_item_budgets.length);
         }
@@ -136,6 +142,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
   } = methods;
 
   const vat = watch('vat');
+  const paymentNumber = watch('payment_number');
   const support_type = watch('support_type');
   const item_budgets = watch('detail_project_budgets');
 
@@ -488,6 +495,11 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
             <RHFTextField
               type={'number'}
               size={'small'}
+              disabled={
+                support_type === 'false' || !support_type || support_type === undefined
+                  ? false
+                  : true
+              }
               name="payment_number"
               placeholder="عدد المدفوعات"
               label="عدد المدفوعات*"
