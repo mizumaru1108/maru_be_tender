@@ -63,7 +63,8 @@ const FundingProjectRequestForm = () => {
       project_location: '',
       project_implement_date: '',
       execution_time: '',
-      project_beneficiaries: '',
+      // project_beneficiaries: '',
+      beneficiary_id: '',
       letter_ofsupport_req: {
         url: '',
         size: undefined,
@@ -129,7 +130,7 @@ const FundingProjectRequestForm = () => {
   // on submit for the first step
   const onSubmitform1 = (data: any) => {
     // console.log('data form 1', data);
-    setIsLoading(false);
+    // setIsLoading(false);
     const newData = { ...data };
     const newExTime = Number(data.execution_time);
     newData.execution_time = newExTime * 60;
@@ -889,7 +890,7 @@ const FundingProjectRequestForm = () => {
             project_location,
             project_implement_date,
             execution_time,
-            project_beneficiaries,
+            // project_beneficiaries,
             letter_ofsupport_req,
             project_attachments,
             num_ofproject_binicficiaries,
@@ -904,12 +905,13 @@ const FundingProjectRequestForm = () => {
             governorate,
             amount_required_fsupport,
             proposal_item_budgets,
-            timelines,
+            project_timeline,
             step,
+            beneficiary_details,
           } = data.proposal_by_pk;
           setRequestState((prevRegisterState: any) => ({
             ...prevRegisterState,
-            project_timeline: timelines || [],
+            project_timeline: project_timeline || [],
             form1: {
               ...prevRegisterState.form1,
               ...{
@@ -918,7 +920,8 @@ const FundingProjectRequestForm = () => {
                 project_location,
                 project_implement_date,
                 execution_time: execution_time,
-                project_beneficiaries,
+                // project_beneficiaries,
+                beneficiary_id: (beneficiary_details && beneficiary_details.id) || '',
                 letter_ofsupport_req: {
                   // size: undefined,
                   // url: letter_ofsupport_req,
@@ -975,7 +978,8 @@ const FundingProjectRequestForm = () => {
               project_location,
               project_implement_date,
               execution_time: execution_time,
-              project_beneficiaries,
+              // project_beneficiaries,
+              beneficiary_id: (beneficiary_details && beneficiary_details.id) || '',
               letter_ofsupport_req: {
                 // size: undefined,
                 // url: letter_ofsupport_req,

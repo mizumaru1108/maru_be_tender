@@ -38,7 +38,7 @@ function ProjectPath() {
   const [stepOn, setStepOn] = React.useState(1);
   const [stepUserRole, setStepUserRole] = React.useState('');
   const [stepActionType, setStepActionType] = React.useState('');
-  const [stepProposal, setStepProposal] = React.useState<PropsalLog | null>(null);
+  // const [stepProposal, setStepProposal] = React.useState<PropsalLog | null>(null);
   const [stepGransLog, setGransLog] = React.useState<PropsalLogGrants | null>();
   const [stepGeneralLog, setGeneralLog] = React.useState<Log | null>(null);
   const [isPayments, setIsPayments] = React.useState(false);
@@ -71,7 +71,7 @@ function ProjectPath() {
       setGeneralLog(item);
       if (item && isConsultation) {
         if (!fetchingGrants && !errorGrants) {
-          setGransLog(logGrantsData);
+          // setGransLog(logGrantsData);
           setGransLog({
             ...logGrantsData,
             notes: item?.notes || '',
@@ -145,14 +145,6 @@ function ProjectPath() {
     });
   }, [followUps, proposal]);
 
-  // React.useEffect(() => {
-  //   // dispatch(getProposal(proposal_id as string, activeRole! as string));
-  //   dispatch(getTrackBudget(proposal.track_id as string, activeRole! as string));
-  //   // if (!isLoading) {
-  //   // }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [activeRole, isLoading]);
-
   const formattedDateTime = (getDate: Date) => {
     const formattedDate = `${new Date(getDate).getDate()}.${
       new Date(getDate).getMonth() + 1
@@ -164,17 +156,6 @@ function ProjectPath() {
   };
   if (fetching || fetchingTracks || fetchingGrants || isLoading) return <>Loading...</>;
   if (error || errorTracks || errorGrants || (logs && logs.length === 0 && !fetching)) {
-    // return (
-    //   <Page500
-    //     error={
-    //       error.message
-    //         ? error.message
-    //         : errorGrants.message
-    //         ? errorGrants.message
-    //         : errorTracks.message
-    //     }
-    //   />
-    // );
     if (error && error.message) {
       return <Page500 error={error.message} />;
     }

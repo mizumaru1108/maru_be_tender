@@ -54,7 +54,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
   const { state } = location as any;
 
   const defaultValues = {
-    timelines: [
+    project_timeline: [
       {
         name: '',
         start_date: '',
@@ -207,8 +207,8 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         detail_project_budgets: requestState.form4.detail_project_budgets,
       };
     }
-    if (tmpValues?.revised.hasOwnProperty('timelines')) {
-      delete filteredValue.timelines;
+    if (tmpValues?.revised.hasOwnProperty('project_timeline')) {
+      delete filteredValue.project_timeline;
       filteredValue = {
         ...filteredValue,
         project_timeline: data.project_timeline,
@@ -281,7 +281,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         if (tmpValues.data) {
           setRequestState((prevRegisterState: any) => ({
             ...prevRegisterState,
-            timelines: tmpValues?.data?.timelines || [],
+            project_timeline: tmpValues?.data?.project_timeline || [],
             form1: {
               ...prevRegisterState.form1,
               ...{
@@ -416,7 +416,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
           </ProjectBudgetForm>
         )}
         {step === 4 && (
-          <ProjectTimeLine onSubmit={onSubmitform5} defaultValues={requestState?.timelines}>
+          <ProjectTimeLine onSubmit={onSubmitform5} defaultValues={requestState?.project_timeline}>
             <AmandementActionBox step={step} onReturn={onReturn} isLoad={isLoading} />
           </ProjectTimeLine>
         )}

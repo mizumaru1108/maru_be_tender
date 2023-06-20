@@ -78,6 +78,12 @@ export interface TrackBudget {
   remaining_budget: number;
 }
 
+export interface BeneficiaryDetail {
+  id: string;
+  name: string;
+  is_deleted: boolean;
+}
+
 export interface Proposal {
   id: string;
   project_name: string;
@@ -96,7 +102,8 @@ export interface Proposal {
   support_outputs: string;
   track_id: string;
   accreditation_type_id: AccreditationTypeId;
-  timelines: timeline[];
+  project_timeline: timeline[];
+  beneficiary_details: BeneficiaryDetail | null;
   governorate: string;
   track_budget: TrackBudget;
   // proposal_logs: {

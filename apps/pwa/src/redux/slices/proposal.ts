@@ -63,6 +63,11 @@ const initialState: ProposalItme = {
     governorate: 'test',
     track_id: 'test',
     clasification_field: 'test',
+    beneficiary_details: {
+      id: '-1',
+      name: 'test',
+      is_deleted: false,
+    },
     track_budget: {
       id: '-1',
       name: 'test',
@@ -70,7 +75,7 @@ const initialState: ProposalItme = {
       remaining_budget: 0,
       total_budget_used: 0,
     },
-    timelines: [
+    project_timeline: [
       {
         id: '-1',
         name: 'test',

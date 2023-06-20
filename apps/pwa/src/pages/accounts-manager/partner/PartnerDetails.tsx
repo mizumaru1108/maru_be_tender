@@ -924,7 +924,7 @@ function AccountPartnerDetails() {
                       {translate('account_manager.partner_details.send_messages')}
                     </Button>
                   </Grid>
-                  <Grid item>
+                  {/* <Grid item>
                     <Button
                       variant="contained"
                       color="info"
@@ -937,7 +937,7 @@ function AccountPartnerDetails() {
                     >
                       {translate('account_manager.partner_details.submit_amendment_request')}
                     </Button>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </Box>
             </>
