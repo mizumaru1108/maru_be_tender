@@ -3,7 +3,10 @@ import { useDispatch, useSelector } from 'redux/store';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
-import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
+import {
+  getProposalCount,
+  updatePaymentBySupervisorAndManagerAndFinance,
+} from 'redux/slices/proposal';
 import React, { useMemo } from 'react';
 import useLocales from 'hooks/useLocales';
 import { fCurrencyNumber } from 'utils/formatNumber';
@@ -98,6 +101,7 @@ function PaymentsTable() {
               horizontal: 'right',
             },
           });
+          dispatch(getProposalCount(activeRole ?? 'test'));
         }
       });
     } catch (error) {
@@ -150,6 +154,7 @@ function PaymentsTable() {
               horizontal: 'right',
             },
           });
+          dispatch(getProposalCount(activeRole ?? 'test'));
         }
       });
     } catch (error) {
@@ -246,15 +251,6 @@ function PaymentsTable() {
               <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                 {item.cheques.length ? (
                   <Button
-                    // component={Link}
-                    // href={
-                    //   typeof item.cheques[0].transfer_receipt === 'string'
-                    //     ? item.cheques[0].transfer_receipt
-                    //     : item.cheques[0].transfer_receipt.url
-                    // }
-                    // target="_blank"
-                    // rel="noopener noreferrer"
-                    // download="صورة الشيك"
                     onClick={() => {
                       localStorage.setItem('receipt_type', 'receipt');
                       navigate(
@@ -298,7 +294,6 @@ function PaymentsTable() {
                     onClick={() => {
                       setSelectedPaymentId(item.id);
                       setOpenModalReject(true);
-                      // handleRejectPayment(item.id);
                     }}
                   >
                     {translate(

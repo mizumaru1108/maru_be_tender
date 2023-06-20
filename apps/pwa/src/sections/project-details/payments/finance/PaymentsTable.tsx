@@ -1,9 +1,14 @@
 import { Button, Grid, Stack, Typography, Link } from '@mui/material';
 import { useDispatch, useSelector } from 'redux/store';
-import Check from '@mui/icons-material/Check';
+// import Check from '@mui/icons-material/Check';
 import { useSnackbar } from 'notistack';
 import { LoadingButton } from '@mui/lab';
-import { updatePaymentBySupervisorAndManagerAndFinance } from 'redux/slices/proposal';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import {
+  getProposalCount,
+  updatePaymentBySupervisorAndManagerAndFinance,
+} from 'redux/slices/proposal';
 import React, { useMemo } from 'react';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
@@ -24,11 +29,20 @@ function PaymentsTable() {
   // console.log('test', proposal?.payments);
   const [sortingData, setSortingData] = React.useState<any[]>([]);
   const [currentIssuedPayament, setCurrentIssuedPayament] = React.useState(0);
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  const handleApprovalPayment = async (id: string) => {
+  const handleApprovalPayment = async (
+    id: string,
+    payment_action: 'accept' | 'confirm_payment'
+  ) => {
     try {
+      setIsLoading(true);
       await dispatch(
-        updatePaymentBySupervisorAndManagerAndFinance({ id, role: activeRole!, action: 'accept' })
+        updatePaymentBySupervisorAndManagerAndFinance({
+          id,
+          role: activeRole!,
+          action: payment_action,
+        })
       ).then((res) => {
         if (res.statusCode === 200) {
           enqueueSnackbar('تم قبول أذن الصرف بنجاح', {
@@ -40,6 +54,7 @@ function PaymentsTable() {
               horizontal: 'right',
             },
           });
+          dispatch(getProposalCount(activeRole ?? 'test'));
         }
       });
     } catch (error) {
@@ -52,6 +67,58 @@ function PaymentsTable() {
       //     horizontal: 'right',
       //   },
       // });
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRejectPayment = async (
+    id: string,
+    payment_action: 'accept' | 'reject_payment',
+    url?: string
+  ) => {
+    // console.log({ note });
+    // console.log({ url });
+
+    try {
+      await dispatch(
+        updatePaymentBySupervisorAndManagerAndFinance({
+          id,
+          role: activeRole!,
+          action: payment_action,
+          url: url,
+        })
+      ).then((res) => {
+        if (res.data.statusCode === 200) {
+          enqueueSnackbar('تم رفض أذن الصرف بنجاح', {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'right',
+            },
+          });
+          dispatch(getProposalCount(activeRole ?? 'test'));
+        }
+      });
+    } catch (error) {
       const statusCode = (error && error.statusCode) || 0;
       const message = (error && error.message) || null;
       enqueueSnackbar(
@@ -114,7 +181,7 @@ function PaymentsTable() {
     return currIndex;
   }, [payments]);
 
-  console.log({ proposal, payments });
+  // console.log({ proposal, payments });
 
   React.useEffect(() => {
     // const
@@ -177,6 +244,7 @@ function PaymentsTable() {
               </Grid>
               {item.status !== 'set_by_supervisor' &&
               item.status !== 'issued_by_supervisor' &&
+              item.status !== 'uploaded_by_cashier' &&
               item.status !== 'accepted_by_project_manager' ? (
                 <Grid item md={2}>
                   <Typography
@@ -202,7 +270,8 @@ function PaymentsTable() {
                 <Grid item>
                   <LoadingButton
                     variant="contained"
-                    endIcon={<Check />}
+                    loading={isLoading}
+                    endIcon={<CheckIcon />}
                     sx={{
                       backgroundColor: currentIssuedPayament !== index ? '#93A3B03D' : '#0E8478',
                       color: index !== currentIssuedPayament ? '#1E1E1E' : '#fff',
@@ -210,7 +279,7 @@ function PaymentsTable() {
                     }}
                     disabled={index !== currentIssuedPayament}
                     onClick={() => {
-                      handleApprovalPayment(item.id);
+                      handleApprovalPayment(item.id, 'accept');
                     }}
                   >
                     {translate(
@@ -233,7 +302,56 @@ function PaymentsTable() {
                 </Grid>
               ) : null}
 
-              {item.status === 'done' && (
+              {item.status === 'uploaded_by_cashier' ? (
+                <>
+                  <Grid item md={2}>
+                    <LoadingButton
+                      data-cy="content.administrative.project_details.payment.table.btn.exchange_upload_refuse"
+                      sx={{
+                        backgroundColor: '#FF4842',
+                        color: '#fff',
+                        ':hover': { backgroundColor: '#FF170F' },
+                      }}
+                      loading={isLoading}
+                      startIcon={<CloseIcon />}
+                      onClick={() => {
+                        const url =
+                          (item &&
+                            item.cheques.length > 0 &&
+                            item.cheques[item.cheques.length - 1].transfer_receipt.url) ||
+                          '#';
+                        // console.log('test', item.cheques.length);
+                        handleRejectPayment(item.id, 'reject_payment', url);
+                      }}
+                    >
+                      {translate(
+                        'content.administrative.project_details.payment.table.btn.exchange_upload_refuse'
+                      )}
+                    </LoadingButton>
+                  </Grid>
+                  <Grid item md={2}>
+                    <LoadingButton
+                      data-cy="content.administrative.project_details.payment.table.btn.exchange_upload_approve"
+                      sx={{
+                        backgroundColor: '#0E8478',
+                        color: '#fff',
+                      }}
+                      loading={isLoading}
+                      startIcon={<CheckIcon />}
+                      // disabled={currentSelectedIndex !== index}
+                      onClick={() => {
+                        handleApprovalPayment(item.id, 'confirm_payment');
+                      }}
+                    >
+                      {translate(
+                        'content.administrative.project_details.payment.table.btn.exchange_upload_approve'
+                      )}
+                    </LoadingButton>
+                  </Grid>
+                </>
+              ) : null}
+
+              {/* {item.status === 'done' && (
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                   <Button
                     onClick={() => {
@@ -255,7 +373,7 @@ function PaymentsTable() {
                     )}
                   </Button>
                 </Grid>
-              )}
+              )} */}
               {(item.status === 'done' || item.status === 'accepted_by_finance') && (
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                   <Button
@@ -278,7 +396,7 @@ function PaymentsTable() {
                 </Grid>
               )}
               {item &&
-                item.status === 'done' &&
+                (item.status === 'done' || item.status === 'uploaded_by_cashier') &&
                 item.cheques.length > 0 &&
                 item.cheques.map((item: any, index: number) => (
                   <Grid item key={index} md={2} sx={{ textAlign: '-webkit-center' }}>

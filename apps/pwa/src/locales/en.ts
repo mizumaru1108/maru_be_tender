@@ -426,6 +426,8 @@ const en = {
               exchange_permit_refuse: 'Refuse permission to exchange',
               exchange_permit_reject_by_pm: 'Refuse permission to exchange by Project Manager',
               exchange_permit_approve: 'Approval of the exchange authorization',
+              exchange_upload_approve: 'Approval of the exchange receipt',
+              exchange_upload_refuse: 'Refuse of the exchange receipt',
               exchange_permit_accept_finance: 'Acceptance of exchange authorization',
               exchange_permit_generate_finance: 'Generate exchange permission data',
               view_transfer_receipt: 'View Receipt',
@@ -1951,6 +1953,7 @@ const en = {
       project_completed: 'PROJECT COMPLETED',
       send_revised_version: 'SEND REVISED VERSION',
       proposal_created: 'PROPOSAL CREATED',
+      uploaded_by_cashier: 'PAYMENT UPLOADED BY CASHIER',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'Age 1 to 13',

@@ -532,8 +532,7 @@ export class CampaignController {
   }
 
   @ApiOperation({ summary: 'update campaign' })
-  @Permissions(Permission.OE)
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch('campaignUpdate/:campaignId')
   async campaignUpdate(
     @CurrentUser() user: ICurrentUser,

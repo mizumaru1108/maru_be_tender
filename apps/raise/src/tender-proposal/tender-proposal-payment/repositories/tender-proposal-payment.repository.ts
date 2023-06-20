@@ -231,7 +231,8 @@ export class TenderProposalPaymentRepository {
       | 'edit'
       | 'upload_receipt'
       | 'issue'
-      | 'confirm_payment',
+      | 'confirm_payment'
+      | 'reject_payment',
     reviewerId: string,
     choosenRole: TenderAppRole,
     chequeCreatePayload: Prisma.chequeUncheckedCreateInput | undefined,
@@ -241,6 +242,7 @@ export class TenderProposalPaymentRepository {
     } | null,
     proposalUpdateInput: Prisma.proposalUpdateInput,
     notes?: string,
+    deletedFileManagerUrl?: string,
   ) {
     try {
       return await this.prismaService.$transaction(
@@ -366,6 +368,12 @@ export class TenderProposalPaymentRepository {
             });
           }
 
+          if (deletedFileManagerUrl && deletedFileManagerUrl !== '') {
+            await prisma.file_manager.update({
+              where: { url: deletedFileManagerUrl },
+              data: { is_deleted: true },
+            });
+          }
           // throw new BadRequestException('func on debugging');
           return {
             payment,

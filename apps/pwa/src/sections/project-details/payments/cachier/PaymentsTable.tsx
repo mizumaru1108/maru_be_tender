@@ -102,7 +102,9 @@ function PaymentsTable() {
                   </Typography>
                 </Grid>
               )}
-              {(item.status === 'done' || item.status === 'accepted_by_finance') &&
+              {(item.status === 'done' ||
+                item.status === 'uploaded_by_cashier' ||
+                item.status === 'accepted_by_finance') &&
                 activeRole !== 'tender_client' && (
                   <>
                     <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>

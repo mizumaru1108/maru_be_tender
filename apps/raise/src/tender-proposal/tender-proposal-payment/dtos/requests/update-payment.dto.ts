@@ -39,9 +39,17 @@ export class UpdatePaymentDto {
   @ApiProperty()
   @IsString()
   @IsIn(
-    ['accept', 'reject', 'edit', 'upload_receipt', 'issue', 'confirm_payment'],
+    [
+      'accept',
+      'reject',
+      'edit',
+      'upload_receipt',
+      'issue',
+      'confirm_payment',
+      'reject_payment',
+    ],
     {
-      message: 'action must be accept, reject, issue, edit or upload_receipt',
+      message: 'invalid action',
     },
   )
   action:
@@ -50,7 +58,8 @@ export class UpdatePaymentDto {
     | 'edit'
     | 'upload_receipt'
     | 'issue'
-    | 'confirm_payment';
+    | 'confirm_payment'
+    | 'reject_payment';
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -64,4 +73,10 @@ export class UpdatePaymentDto {
   @IsString()
   @IsNotEmpty()
   notes?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  last_payment_receipt_url?: string;
 }

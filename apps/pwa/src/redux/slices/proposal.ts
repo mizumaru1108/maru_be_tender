@@ -524,6 +524,7 @@ export const updatePaymentBySupervisorAndManagerAndFinance = (data: any) => asyn
       payment_id: data.id,
       action: data.action,
       notes: data.note,
+      last_payment_receipt_url: data.url,
     };
 
     const res = await axiosInstance.patch('/tender/proposal/payment/update-payment', variables, {

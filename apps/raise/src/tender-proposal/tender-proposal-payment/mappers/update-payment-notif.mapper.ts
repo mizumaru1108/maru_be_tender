@@ -19,7 +19,8 @@ export const UpdatePaymentNotifMapper = (
     | 'edit'
     | 'upload_receipt'
     | 'issue'
-    | 'confirm_payment',
+    | 'confirm_payment'
+    | 'reject_payment',
   choosenRole: TenderAppRole,
   cheque: cheque | null,
   selectLang?: 'ar' | 'en',
