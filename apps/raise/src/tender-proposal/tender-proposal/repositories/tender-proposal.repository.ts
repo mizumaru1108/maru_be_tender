@@ -2530,8 +2530,8 @@ export class TenderProposalRepository {
           }
           /* Crud recommend support payload ------------------------------------------------------------ */
 
-          console.log(logUtil(proposal_logs));
-          throw new BadRequestException('debug!');
+          // console.log(logUtil(proposal_logs));
+          // throw new BadRequestException('debug!');
 
           return {
             proposal,
