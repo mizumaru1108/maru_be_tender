@@ -14,6 +14,8 @@ import { TenderProposalService } from './tender-proposal/services/tender-proposa
 import { TenderProposalBeneficiariesController } from './tender-proposal-beneficiaries/controllers/tender-proposal-beneficiaries.controller';
 import { TenderProposalBeneficiaresService } from './tender-proposal-beneficiaries/services/tender-proposal-beneficiaries.service';
 import { TenderProposalBeneficiariesRepository } from './tender-proposal-beneficiaries/repositories/tender-proposal-beneficiaries.repository';
+import { CqrsModule } from '@nestjs/cqrs';
+import { ChangeStateCommandHandler } from './tender-proposal/commands/change-state/change.state.command';
 
 const controllers = [
   /* Proposal */
@@ -25,6 +27,15 @@ const controllers = [
   /* Beneficiaries */
   TenderProposalBeneficiariesController,
 ];
+
+const commands = [ChangeStateCommandHandler];
+
+// const repositories = [
+//   {
+//     provide: TenderProposalRepository.name,
+//     useClass: TenderProposalRepository,
+//   },
+// ];
 
 const services: Provider[] = [
   /* Proposal */
@@ -45,8 +56,8 @@ const services: Provider[] = [
 ];
 
 @Module({
-  // imports: [CqrsModule],
+  imports: [CqrsModule],
   controllers: [...controllers],
-  providers: [...services],
+  providers: [...services, ...commands],
 })
 export class TenderProposalModule {}

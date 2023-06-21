@@ -12,7 +12,7 @@ export class ProposalPaymentEntity {
   order?: number;
   created_at?: Date = new Date();
   updated_at?: Date = new Date();
-  cheques: ChequeEntity[];
-  proposal: ProposalEntity;
-  payment_status: PaymentStatusEntity;
+  cheques?: ChequeEntity[];
+  proposal?: ProposalEntity;
+  payment_status?: PaymentStatusEntity;
 }

@@ -5381,6 +5381,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/cqrs@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "@nestjs/cqrs@npm:10.0.0"
+  dependencies:
+    uuid: 9.0.0
+  peerDependencies:
+    "@nestjs/common": ^9.0.0 || ^10.0.0
+    "@nestjs/core": ^9.0.0 || ^10.0.0
+    reflect-metadata: 0.1.13
+    rxjs: ^7.2.0
+  checksum: fdf25959739529d2f5562af5623dd0a883f88a31a533abf4c084585f9e38421950cc5bc88120c5a72e87925aa89ea867aa28c903cfd53b6bd001353243ac3d1b
+  languageName: node
+  linkType: hard
+
 "@nestjs/jwt@npm:^9.0.0":
   version: 9.0.0
   resolution: "@nestjs/jwt@npm:9.0.0"
@@ -7090,6 +7104,7 @@ __metadata:
     "@nestjs/common": ^9.0.8
     "@nestjs/config": ^2.2.0
     "@nestjs/core": ^9.0.8
+    "@nestjs/cqrs": ^10.0.0
     "@nestjs/jwt": ^9.0.0
     "@nestjs/mongoose": ^9.2.0
     "@nestjs/passport": ^9.0.0
@@ -27478,21 +27493,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:9.0.0, uuid@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "uuid@npm:9.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
+  languageName: node
+  linkType: hard
+
 "uuid@npm:^3.3.2":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
   bin:
     uuid: ./bin/uuid
   checksum: 58de2feed61c59060b40f8203c0e4ed7fd6f99d42534a499f1741218a1dd0c129f4aa1de797bcf822c8ea5da7e4137aa3673431a96dae729047f7aca7b27866f
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "uuid@npm:9.0.0"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
   languageName: node
   linkType: hard
 

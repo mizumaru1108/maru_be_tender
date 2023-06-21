@@ -1437,6 +1437,13 @@ export class TenderProposalService {
       proposalLogCreateInput.action = ProposalAction.ACCEPT;
       proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
+
+      proposalLogCreateInput.new_values = {
+        ...proposalUpdatePayload,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
+      } as Prisma.InputJsonValue;
     }
 
     if (request.action === ProposalAction.REJECT) {
@@ -1486,6 +1493,13 @@ export class TenderProposalService {
         proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
         proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
       }
+
+      proposalLogCreateInput.new_values = {
+        ...proposalUpdatePayload,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
+      } as Prisma.InputJsonValue;
     }
 
     if (request.action === ProposalAction.STEP_BACK) {

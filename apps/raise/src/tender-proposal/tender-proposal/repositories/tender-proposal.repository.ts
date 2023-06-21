@@ -48,6 +48,13 @@ export class TenderProposalRepository {
     private readonly configService: ConfigService,
   ) {}
 
+  async findByIdFilter(props: FetchProposalByIdProps) {
+    // const [includes_relation] = props;
+    let findByIdFilter: Prisma.proposalFindFirstArgs = {
+      where: { id: props.id },
+    };
+  }
+
   async validateOwnBankAccount(user_id: string, bank_id: string) {
     try {
       const bankAccount = await this.prismaService.bank_information.findFirst({
@@ -2209,8 +2216,26 @@ export class TenderProposalRepository {
     let prisma = this.prismaService;
     if (session) prisma = session;
     try {
-      const rawProposal = await prisma.proposal.findUnique({
+      const rawProposal = await prisma.proposal.findFirst({
         where: { id: props.id },
+        include: {
+          user: true,
+          beneficiary_details: true,
+          proposal_item_budgets: true,
+          proposal_logs: {
+            include: {
+              reviewer: true,
+            },
+          },
+          // track: true,
+          // payments: {
+          //   include: {
+          //     cheques: true,
+          //   },
+          // },
+          bank_information: true,
+          project_timeline: true,
+        },
       });
 
       if (!rawProposal) return null;

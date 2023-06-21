@@ -41,9 +41,15 @@ import {
   SendRevisionDto,
 } from '../dtos/requests';
 import { TenderProposalService } from '../services/tender-proposal.service';
+import { CommandBus } from '@nestjs/cqrs';
+import { Builder } from 'builder-pattern';
+import { ChangeStateCommand } from '../commands/change-state/change.state.command';
 @Controller('tender-proposal')
 export class TenderProposalController {
-  constructor(private readonly proposalService: TenderProposalService) {}
+  constructor(
+    private readonly proposalService: TenderProposalService,
+    private readonly commandBus: CommandBus,
+  ) {}
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
@@ -440,6 +446,33 @@ export class TenderProposalController {
       HttpStatus.OK,
       `Proposal change state success!, current state: ${proposal.outter_status}, details: ${proposal.inner_status}`,
     );
+  }
+
+  /* experimental */
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_accounts_manager',
+    'tender_admin',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_consultant',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  ) // only internal users
+  @Patch('apply-change-state')
+  async applyChangeProposalState(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: ChangeProposalStateDto,
+  ) {
+    const proposalCommand = Builder<ChangeStateCommand>(ChangeStateCommand, {
+      currentUser,
+      request,
+    }).build();
+
+    const result = await this.commandBus.execute(proposalCommand);
+    return baseResponseHelper(result, HttpStatus.OK);
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
