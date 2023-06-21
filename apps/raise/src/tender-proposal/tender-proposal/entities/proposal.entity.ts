@@ -1,4 +1,5 @@
 import { BeneficiaryEntity } from '../../tender-proposal-beneficiaries/entity/beneficiary.entity';
+import { ProposalFollowUpEntity } from '../../tender-proposal-follow-up/entities/proposal-follow-up.entity';
 import { ProposalLogEntity } from '../../tender-proposal-log/entities/proposal-log.entity';
 import { ProposalPaymentEntity } from '../../tender-proposal-payment/entities/proposal-payment.entity';
 import { ProjectTimelineEntity } from '../../tender-proposal-timeline/entities/project-timeline.entity';
@@ -78,11 +79,12 @@ export class ProposalEntity {
   project_timeline?: ProjectTimelineEntity[];
   proposal_beneficiaries: BeneficiaryEntity[];
   track?: ProposalTrackEntity | null;
-  created_at?: Date = new Date();
+  created_at?: Date | null = new Date();
   updated_at?: Date | null = new Date();
   proposal_log?: ProposalLogEntity[];
   beneficiary_id?: string | null;
   beneficiary_detail?: BeneficiaryEntity;
+  follow_ups?: ProposalFollowUpEntity[];
   // accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   // project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   // project_manager                     user?                            @relation("proposal_project_manager_idTouser", fields: [project_manager_id], references: [id], onDelete: Cascade)
@@ -99,7 +101,6 @@ export class ProposalEntity {
   // proposal_closing_report             proposal_closing_report[]
   // proposal_comment                    proposal_comment[]
   // proposal_edit_request               proposal_edit_request?
-  // follow_ups                          proposal_follow_up[]
   // proposal_item_budgets               proposal_item_budget[]
   // recommended_support_consultant      recommended_support_consultant[]
   // payment_configuration               supervisor[]

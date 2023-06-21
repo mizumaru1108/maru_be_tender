@@ -32,6 +32,7 @@ import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper
 import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
 import { ProposalEntity } from '../entities/proposal.entity';
 import { Builder } from 'builder-pattern';
+import { ProposalPaymentEntity } from '../../tender-proposal-payment/entities/proposal-payment.entity';
 export interface FetchProposalByIdProps {
   id: string;
   includes_relation?: string[];
@@ -2219,20 +2220,39 @@ export class TenderProposalRepository {
       const rawProposal = await prisma.proposal.findFirst({
         where: { id: props.id },
         include: {
-          user: true,
+          user: {
+            select: {
+              id: true,
+              email: true,
+              mobile_number: true,
+              employee_name: true,
+              client_data: true,
+              roles: true,
+              bank_information: true,
+            },
+          },
           beneficiary_details: true,
+          follow_ups: {
+            include: {
+              user: {
+                include: {
+                  roles: true,
+                },
+              },
+            },
+          },
+          track: true,
           proposal_item_budgets: true,
           proposal_logs: {
             include: {
               reviewer: true,
             },
           },
-          track: true,
-          // payments: {
-          //   include: {
-          //     cheques: true,
-          //   },
-          // },
+          payments: {
+            include: {
+              cheques: true,
+            },
+          },
           bank_information: true,
           project_timeline: true,
         },
@@ -2240,7 +2260,7 @@ export class TenderProposalRepository {
 
       if (!rawProposal) return null;
 
-      const proposalByIdEntity = Builder(ProposalEntity, {
+      const proposalByIdEntity = Builder<ProposalEntity>(ProposalEntity, {
         ...rawProposal,
         amount_required_fsupport:
           rawProposal.amount_required_fsupport !== null
@@ -2272,6 +2292,22 @@ export class TenderProposalRepository {
           rawProposal.execution_time !== null
             ? parseFloat(rawProposal.execution_time.toString())
             : null,
+        payments: rawProposal.payments.map((payment) =>
+          Builder<ProposalPaymentEntity>(ProposalPaymentEntity, {
+            payment_amount:
+              payment.payment_amount !== null
+                ? parseFloat(payment.payment_amount.toString())
+                : null,
+            order:
+              payment.order !== null
+                ? parseInt(payment.order.toString())
+                : null,
+            number_of_payments:
+              payment.number_of_payments !== null
+                ? parseInt(payment.number_of_payments.toString())
+                : null,
+          }).build(),
+        ),
       }).build();
 
       return proposalByIdEntity;

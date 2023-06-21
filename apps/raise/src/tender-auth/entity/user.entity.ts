@@ -1,18 +1,18 @@
 export class UserEntity {
   id: string;
-  employee_name: string;
-  mobile_number: string;
+  employee_name?: string | null;
+  mobile_number?: string | null;
   email: string;
-  created_at: Date = new Date();
-  updated_at: Date = new Date();
-  employee_path: string;
-  last_login?: Date;
+  created_at?: Date | null = new Date();
+  updated_at?: Date | null = new Date();
+  employee_path?: string | null;
+  last_login?: Date | null = null;
   status_id: string;
-  address: string;
+  address?: string | null = null;
   google_session: any; // jsonb
-  is_online: boolean;
-  track_id?: string;
-  uid?: number;
+  is_online?: boolean | null = null;
+  track_id?: string | null = null;
+  uid?: number | null = null;
   // appointment_appointment_employee_idTouser                                   appointment[]                 @relation("appointment_employee_idTouser")
   // appointment_appointment_user_idTouser                                       appointment[]                 @relation("appointment_user_idTouser")
   // bank_information                                                            bank_information[]
