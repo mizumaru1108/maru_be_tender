@@ -2227,7 +2227,7 @@ export class TenderProposalRepository {
               reviewer: true,
             },
           },
-          // track: true,
+          track: true,
           // payments: {
           //   include: {
           //     cheques: true,

@@ -77,7 +77,7 @@ export class ProposalEntity {
   payments?: ProposalPaymentEntity[];
   project_timeline?: ProjectTimelineEntity[];
   proposal_beneficiaries: BeneficiaryEntity[];
-  track?: ProposalTrackEntity;
+  track?: ProposalTrackEntity | null;
   created_at?: Date = new Date();
   updated_at?: Date | null = new Date();
   proposal_log?: ProposalLogEntity[];

@@ -1338,12 +1338,28 @@ export class TenderProposalService {
         proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
       }
 
+      // saving old and new values as a log (either grant or not grants)
       proposalLogCreateInput.new_values = {
         ...proposalUpdatePayload,
         createdItemBudgetPayload,
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
       } as Prisma.InputJsonValue;
+
+      const keys = Object.keys(proposalUpdatePayload);
+
+      proposalLogCreateInput.old_values = {
+        proposal_item_budgets: proposal?.proposal_item_budgets,
+      } as Prisma.InputJsonValue;
+
+      // get all changed old values
+      if (proposalLogCreateInput.old_values) {
+        keys.forEach((key) => {
+          (proposalLogCreateInput.old_values as { [key: string]: unknown })[
+            key
+          ] = (proposal as { [key: string]: unknown })?.[key];
+        });
+      }
     }
 
     if (request.action === ProposalAction.REJECT) {
