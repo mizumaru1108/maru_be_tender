@@ -12,6 +12,7 @@ import axiosInstance from 'utils/axios';
 import { useSelector, useDispatch } from 'redux/store';
 import { useSnackbar } from 'notistack';
 import { getProposalCount } from '../../../redux/slices/proposal';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 // ------------------------------------------------------------------------------------------
 
@@ -53,7 +54,10 @@ export default function FloatingSpv() {
         });
 
         // for re count total proposal
-        dispatch(getProposalCount(activeRole ?? 'test'));
+        // dispatch(getProposalCount(activeRole ?? 'test'));
+        if (FEATURE_PROPOSAL_COUNTING) {
+          dispatch(getProposalCount(activeRole ?? 'test'));
+        }
         //
         navigate('/project-supervisor/dashboard/project-report');
       }

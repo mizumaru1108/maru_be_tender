@@ -17,6 +17,7 @@ import { borderColor } from '@mui/system';
 import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import { useSnackbar } from 'notistack';
+import { useSelector } from 'redux/store';
 
 type FormValuesProps = {
   project_name: string;
@@ -132,48 +133,49 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
   const [loading, setLoading] = React.useState<boolean>(false);
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
-  const getBeneficiaries = async () => {
-    setLoading(true);
-    try {
-      const rest = await axiosInstance.get(`/tender/proposal/beneficiaries/find-all?limit=0`, {
-        headers: { 'x-hasura-role': activeRole! },
-      });
-      if (rest) {
-        const test = rest.data.data
-          .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
-          .map((bank: any) => bank);
-        setBeneficiaries(test);
-      }
-    } catch (error) {
-      // console.error(error.message);
-      setBeneficiaries([]);
-      const statusCode = (error && error.statusCode) || 0;
-      const message = (error && error.message) || null;
-      if (message && statusCode !== 0) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      } else {
-        enqueueSnackbar(translate('pages.common.internal_server_error'), {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { beneficiaries_list } = useSelector((state) => state.proposal);
+  // const getBeneficiaries = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const rest = await axiosInstance.get(`/tender/proposal/beneficiaries/find-all?limit=0`, {
+  //       headers: { 'x-hasura-role': activeRole! },
+  //     });
+  //     if (rest) {
+  //       const test = rest.data.data
+  //         .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
+  //         .map((bank: any) => bank);
+  //       setBeneficiaries(test);
+  //     }
+  //   } catch (error) {
+  //     // console.error(error.message);
+  //     setBeneficiaries([]);
+  //     const statusCode = (error && error.statusCode) || 0;
+  //     const message = (error && error.message) || null;
+  //     if (message && statusCode !== 0) {
+  //       enqueueSnackbar(error.message, {
+  //         variant: 'error',
+  //         preventDuplicate: true,
+  //         autoHideDuration: 3000,
+  //         anchorOrigin: {
+  //           vertical: 'bottom',
+  //           horizontal: 'center',
+  //         },
+  //       });
+  //     } else {
+  //       enqueueSnackbar(translate('pages.common.internal_server_error'), {
+  //         variant: 'error',
+  //         preventDuplicate: true,
+  //         autoHideDuration: 3000,
+  //         anchorOrigin: {
+  //           vertical: 'bottom',
+  //           horizontal: 'center',
+  //         },
+  //       });
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -185,7 +187,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
     } else {
       reset(newValue);
     }
-    getBeneficiaries();
+    // getBeneficiaries();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
 
@@ -278,28 +280,8 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
             label={translate('funding_project_request_form1.target_group_type.label')}
             placeholder={translate('funding_project_request_form1.target_group_type.placeholder')}
           >
-            {/* <>
-              <option value="GENERAL" style={{ backgroundColor: '#fff' }}>
-                أخرى
-              </option>
-              <option value="MIDDLE_AGED" style={{ backgroundColor: '#fff' }}>
-                شباب
-              </option>
-              <option value="KIDS" style={{ backgroundColor: '#fff' }}>
-                أشبال
-              </option>
-              <option value="MEN" style={{ backgroundColor: '#fff' }}>
-                رجال
-              </option>
-              <option value="WOMEN" style={{ backgroundColor: '#fff' }}>
-                فتيات
-              </option>
-              <option value="ELDERLY" style={{ backgroundColor: '#fff' }}>
-                كبار السن
-              </option>
-            </> */}
-            {beneficiaries.length > 0 &&
-              beneficiaries.map((item, index) => (
+            {beneficiaries_list.length > 0 &&
+              beneficiaries_list.map((item, index) => (
                 <option
                   data-cy={`funding_project_request_form1.target_group_type${index}`}
                   key={index}

@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import { Container } from '@mui/material';
 import { AppointmentsPage } from 'sections/client/appointments';
 import useLocales from '../../hooks/useLocales';
+import { FEATURE_APPOINTMENT } from 'config';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -20,7 +21,8 @@ function Appointments() {
     <Page title={translate('pages.client.appointments_with')}>
       <Container>
         <ContentStyle>
-          <AppointmentsPage />
+          {/* <AppointmentsPage /> */}
+          {FEATURE_APPOINTMENT ? <AppointmentsPage /> : <>Under Constuction</>}
         </ContentStyle>
       </Container>
     </Page>

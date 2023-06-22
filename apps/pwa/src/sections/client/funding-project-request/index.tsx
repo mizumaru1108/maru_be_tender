@@ -9,6 +9,8 @@ import { getDraftProposal } from 'queries/client/getDraftProposal';
 import { updateDraftProposal } from 'queries/client/updateDraftProposal';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { getBeneficiariesList } from 'redux/slices/proposal';
+import { dispatch, useSelector } from 'redux/store';
 import { useMutation, useQuery } from 'urql';
 import axiosInstance from 'utils/axios';
 import Toast from '../../../components/toast';
@@ -40,6 +42,7 @@ const FundingProjectRequestForm = () => {
   const navigate = useNavigate();
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
+  const { loadingCount } = useSelector((state) => state.proposal);
 
   // getting the proposal id if it is exist
   const { state } = location as any;
@@ -877,9 +880,35 @@ const FundingProjectRequestForm = () => {
     }
   };
 
+  const BeneficiariesList = async () => {
+    await dispatch(getBeneficiariesList(activeRole!))
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log({ err });
+        const statusCode = (err && err.statusCode) || 0;
+        const message = (err && err.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
+      });
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
-
+    BeneficiariesList();
     if (id) {
       const tuningTheState = () => {
         if (data?.proposal_by_pk) {
@@ -1024,7 +1053,9 @@ const FundingProjectRequestForm = () => {
       };
       tuningTheState();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, id]);
+  if (loadingCount) return <>{translate('pages.common.loading')}</>;
   return (
     <>
       <Box

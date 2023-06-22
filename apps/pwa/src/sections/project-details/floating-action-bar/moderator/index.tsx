@@ -18,6 +18,7 @@ import { dispatch, useDispatch, useSelector } from 'redux/store';
 import moment from 'moment';
 import { Conversation } from '../../../../@types/wschat';
 import { getProposalCount, getTrackList } from 'redux/slices/proposal';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 function ModeratorActionBar() {
   const { user, activeRole } = useAuth();
@@ -75,7 +76,10 @@ function ModeratorActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmitting(false);
           navigate(`/moderator/dashboard/app`);
@@ -171,7 +175,10 @@ function ModeratorActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmittingRejected(false);
           navigate(`/moderator/dashboard/app`);
@@ -311,9 +318,9 @@ function ModeratorActionBar() {
     );
   };
 
-  useEffect(() => {
-    dispatch(getTrackList(0, activeRole!));
-  }, [activeRole]);
+  // useEffect(() => {
+  //   dispatch(getTrackList(0, activeRole!));
+  // }, [activeRole]);
 
   if (isLoading) return null;
 

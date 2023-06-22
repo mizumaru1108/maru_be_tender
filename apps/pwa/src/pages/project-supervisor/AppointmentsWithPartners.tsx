@@ -3,6 +3,7 @@ import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
 import Appointments from 'sections/project-supervisor/appintments-with-partner';
 import useLocales from '../../hooks/useLocales';
+import { FEATURE_APPOINTMENT } from 'config';
 
 function AppointmentsWithPartners() {
   const { translate } = useLocales();
@@ -19,7 +20,8 @@ function AppointmentsWithPartners() {
     <Page title={translate('pages.project_manager.appointments')}>
       <Container>
         <ContentStyle>
-          <Appointments />
+          {FEATURE_APPOINTMENT ? <Appointments /> : <>Under Constuction</>}
+          {/* <Appointments /> */}
         </ContentStyle>
       </Container>
     </Page>

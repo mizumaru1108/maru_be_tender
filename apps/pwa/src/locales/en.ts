@@ -867,6 +867,11 @@ const en = {
     'Please enter new password for your account associated with this application',
   login: 'Login',
   create_new_account: 'Create a new account',
+  send_email: 'Send email',
+  send_verify_email: 'Send verification email',
+  headline_verify_email: "You're about to star!",
+  content_verify_email:
+    'To complete your registration kindly click button bellow, we will send you an email forverification and active your account.',
   the_login_message: 'Please enter your email address to login.',
   dont_have_account: "You don't have an account?",
   register_one: 'register from here',

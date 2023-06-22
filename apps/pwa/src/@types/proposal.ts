@@ -360,6 +360,7 @@ export type PropsalLogGrants = {
   action: string;
   message: string;
   user_role: string;
+  new_value?: any;
   proposal?: {
     accreditation_type_id: string;
     added_value: string;
@@ -423,4 +424,5 @@ export type Log = {
   reject_reason?: string;
   reviewer_id?: string;
   employee_name: string;
+  new_value?: any;
 };

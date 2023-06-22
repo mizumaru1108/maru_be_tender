@@ -19,6 +19,7 @@ import { dispatch, useSelector } from 'redux/store';
 import moment from 'moment';
 import { Conversation } from '../../../../@types/wschat';
 import { getProposalCount } from '../../../../redux/slices/proposal';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 function ConsultantFloatingActionBar() {
   const { enqueueSnackbar } = useSnackbar();
@@ -87,7 +88,10 @@ function ConsultantFloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmitting(false);
           navigate(`/consultant/dashboard/app`);
@@ -181,7 +185,10 @@ function ConsultantFloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmitting(false);
           navigate(`/consultant/dashboard/app`);
@@ -275,7 +282,10 @@ function ConsultantFloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmittingStepback(false);
           navigate(`/consultant/dashboard/app`);

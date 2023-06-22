@@ -98,30 +98,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
-        {/* <Grid item md={6} xs={12}>
-          <RHFSelect
-            name="clause"
-            size="small"
-            label="البند حسب التصنيف*"
-            placeholder="الرجاء اختيار البند"
-          >
-            <MenuItem value="مشروع يخص المساجد">مشروع يخص المساجد</MenuItem>
-            <MenuItem value="مشروع يخص المنح الميسر">مشروع يخص المنح الميسر</MenuItem>
-            <MenuItem value="مشروع يخص المبادرات">مشروع يخص المبادرات</MenuItem>
-            <MenuItem value="مشروع يخص تعميدات">مشروع يخص تعميدات</MenuItem>
-          </RHFSelect>
-        </Grid> */}
-        {/* <Grid item md={6} xs={12}>
-          <RHFSelect
-            name="clasification_field"
-            label="مجال التصنيف*"
-            placeholder="الرجاء اختيار مجال التصنيف"
-            size="small"
-          >
-            <MenuItem value="عام">عام</MenuItem>
-          </RHFSelect>
-        </Grid> */}
-
         <Grid item md={6} xs={12}>
           <BaseField
             type="radioGroup"
@@ -259,51 +235,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             label="عدد المدفوعات*"
           />
         </Grid>
-        {/* <Grid item md={6} xs={12}>
-          <BaseField
-            type="textField"
-            name="fsupport_by_supervisor"
-            label="مبلغ الدعم*"
-            placeholder="مبلغ الدعم"
-            disabled={support_type === 'true' ? false : true}
-          />
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <BaseField
-            type="textField"
-            name="number_of_payments_by_supervisor"
-            label="عدد الدفعات*"
-            placeholder="1"
-          />
-        </Grid> */}
-        {/* <Grid item md={6} xs={12}>
-          <RHFSelect
-            name="accreditation_type_id"
-            label="نوع الاعتماد*"
-            placeholder="الرجاء اختيار نوع الاعتماد"
-            size="small"
-          >
-            <MenuItem value="PLAN">خطة</MenuItem>
-            <MenuItem value="INCOMING">وارد</MenuItem>
-          </RHFSelect>
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <RHFSelect
-            type="select"
-            size="small"
-            name="support_goal_id"
-            placeholder="الرجاء اختيار أهداف الدعم"
-            label="اهداف الدعم*"
-          >
-            {_supportGoals[`${proposal.project_track as keyof typeof _supportGoals}`].map(
-              (item) => (
-                <MenuItem value={item.value} key={item.value}>
-                  {item.title}
-                </MenuItem>
-              )
-            )}
-          </RHFSelect>
-        </Grid> */}
         <Grid item md={12} xs={12}>
           <BaseField
             type="textArea"

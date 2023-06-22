@@ -3,7 +3,14 @@ import { getOneProposal } from 'queries/commons/getOneProposal';
 import { insertPayments } from 'queries/project-supervisor/insertPayments';
 import { dispatch } from 'redux/store';
 import graphQlAxiosInstance from 'utils/axisoGraphQlInstance';
-import { ActiveTap, Proposal, ProposalCount, tracks, UpdateStatus } from '../../@types/proposal';
+import {
+  ActiveTap,
+  BeneficiaryDetail,
+  Proposal,
+  ProposalCount,
+  tracks,
+  UpdateStatus,
+} from '../../@types/proposal';
 import { updatePayment } from 'queries/project-supervisor/updatePayment';
 import { insertChequeUpdatePayment } from 'queries/Cashier/insertChequeUpdatePayment';
 import { createNewFollowUp } from 'queries/commons/createNewFollowUp';
@@ -24,6 +31,7 @@ interface ProposalItme {
   proposalCount: ProposalCount;
   updateStatus: UpdateStatus;
   track_list: tracks[];
+  beneficiaries_list: BeneficiaryDetail[];
 }
 
 const initialState: ProposalItme = {
@@ -36,6 +44,13 @@ const initialState: ProposalItme = {
   employeeOnly: false,
   updateStatus: 'no-change',
   track_list: [],
+  beneficiaries_list: [
+    {
+      id: '-1',
+      name: 'test',
+      is_deleted: false,
+    },
+  ],
   proposalCount: {
     incoming: 0,
     inprocess: 0,
@@ -65,12 +80,12 @@ const initialState: ProposalItme = {
     clasification_field: 'test',
     beneficiary_details: {
       id: '-1',
-      name: 'test',
+      name: 'no-data',
       is_deleted: false,
     },
     track_budget: {
       id: '-1',
-      name: 'test',
+      name: 'no-data',
       budget: 0,
       remaining_budget: 0,
       total_budget_used: 0,
@@ -280,6 +295,9 @@ const slice = createSlice({
     setTrackList(state, action) {
       state.track_list = action.payload;
     },
+    setBeneficiariesList(state, action) {
+      state.beneficiaries_list = action.payload;
+    },
     setTrackBudget(state, action) {
       state.proposal.track_budget = action.payload;
     },
@@ -423,6 +441,28 @@ export const getTrackList = (isGeneral: number, role: string) => async () => {
     dispatch(slice.actions.hasError(error));
   } finally {
     dispatch(slice.actions.endLoading);
+    dispatch(slice.actions.setLoadingCount(false));
+  }
+};
+export const getBeneficiariesList = (role: string) => async () => {
+  try {
+    // dispatch(slice.actions.startLoading);
+    dispatch(slice.actions.setLoadingCount(true));
+    const url = '/tender/proposal/beneficiaries/find-all?limit=0';
+    try {
+      const response = await axiosInstance.get(url, {
+        headers: { 'x-hasura-role': role },
+      });
+      if (response.data.statusCode === 200) {
+        dispatch(slice.actions.setBeneficiariesList(response.data.data));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  } catch (error) {
+    dispatch(slice.actions.hasError(error));
+  } finally {
+    // dispatch(slice.actions.endLoading);
     dispatch(slice.actions.setLoadingCount(false));
   }
 };

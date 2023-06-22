@@ -879,6 +879,11 @@ const ar = {
   register_one: 'قم بإنشاء حساب من هنا',
   add_new_line: 'إنشاء سطر جديد',
   create_new_account: 'إنشاء حساب جديد',
+  headline_verify_email: 'أنت على وشك أن تصبح نجمة!',
+  content_verify_email:
+    'لإكمال تسجيلك ، يرجى النقر فوق الزر أدناه ، وسوف نرسل لك بريدًا إلكترونيًا للتحقق وتفعيل حسابك.',
+  send_verify_email: 'ارسل البريد الإلكتروني لإعادة تعيين كلمة المرور',
+  send_email: 'ارسل البريد الإلكتروني',
   show_details: 'دراسة المشروع',
   revision_the_project: 'مراجعة المشروع',
   show_project: 'استعراض المشروع',

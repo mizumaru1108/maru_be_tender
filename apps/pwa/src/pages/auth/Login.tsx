@@ -75,7 +75,7 @@ export default function Login() {
               <Link
                 variant="subtitle2"
                 component={RouterLink}
-                to={FEATURE_SIGNUP ? PATH_AUTH.register : '#'}
+                to={PATH_AUTH.register}
                 sx={{ textDecorationLine: 'underline' }}
               >
                 {translate('register_one')}
