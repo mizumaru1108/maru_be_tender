@@ -204,7 +204,7 @@ model proposal {
   accreditation_type_id               String?
   execution_time                      Decimal?                         @db.Decimal
   oid                                 Int?
-  project_number                      Int?                             @unique(map: "idx_project_number") @default(autoincrement())
+  project_number                      Int?                             @unique @default(autoincrement())
   project_numbers1                    Int                              @default(autoincrement())
   beneficiary_id                      String?
   beneficiary_details                 beneficiaries?                    @relation(fields: [beneficiary_id], references: [id])

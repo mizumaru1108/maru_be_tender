@@ -1,4 +1,4 @@
-import { ProposalTrackEntity } from '../../tender-proposal-track/entities/proposal-track.entity';
+import { TrackEntity } from '../../track/entities/track.entity';
 
 export class ProposalTrackSectionEntity {
   id: string;
@@ -10,5 +10,5 @@ export class ProposalTrackSectionEntity {
   is_deleted: boolean = false;
   track_section?: ProposalTrackSectionEntity;
   other_track_section?: ProposalTrackSectionEntity[];
-  track: ProposalTrackEntity;
+  track: TrackEntity;
 }

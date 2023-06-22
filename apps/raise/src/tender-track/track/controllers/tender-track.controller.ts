@@ -8,17 +8,17 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
+import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
 import { TenderTrackService } from '../services/tender-track.service';
 import {
   CreateTrackDto,
   FetchTrackFilterRequest,
   UpdateTrackDto,
 } from '../dto/requests';
-import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator';
-import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
-import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
-import { manualPaginationHelper } from '../../tender-commons/helpers/manual-pagination-helper';
+import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
+import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
+import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
+import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 
 @Controller('tender/track')
 export class TenderTrackController {

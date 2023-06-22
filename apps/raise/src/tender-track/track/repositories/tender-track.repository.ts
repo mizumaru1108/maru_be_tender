@@ -1,9 +1,16 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ROOT_LOGGER } from '../../libs/root-logger';
-import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { logUtil } from '../../commons/utils/log-util';
+import { logUtil } from '../../../commons/utils/log-util';
+import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { FetchTrackFilterRequest } from '../dto/requests';
+import { Builder } from 'builder-pattern';
+import { TrackEntity } from '../entities/track.entity';
+
+export class FetchTrackByIdProps {
+  id: string;
+  include_relations?: string[];
+}
 
 @Injectable()
 export class TenderTrackRepository {
@@ -14,15 +21,32 @@ export class TenderTrackRepository {
 
   async findById(id: string) {
     try {
-      this.logger.log('info', `finding track with id of ${id}`);
       return await this.prismaService.track.findUnique({
         where: { id },
       });
     } catch (err) {
-      console.trace(err);
-      throw new InternalServerErrorException(
-        'Something went wrong when finding track by id!',
-      );
+      this.logger.error(`error when finding track by id ${err}`);
+      throw err;
+    }
+  }
+
+  async fetchById(
+    props: FetchTrackByIdProps,
+    session?: PrismaService,
+  ): Promise<TrackEntity | null> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawTrack = await prisma.track.findUnique({
+        where: { id: props.id },
+      });
+
+      if (!rawTrack) return null;
+
+      return Builder<TrackEntity>(TrackEntity, rawTrack).build();
+    } catch (err) {
+      this.logger.error(`error when finding track by id ${err}`);
+      throw err;
     }
   }
 

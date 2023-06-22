@@ -1516,6 +1516,21 @@ export class TenderProposalService {
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
       } as Prisma.InputJsonValue;
+
+      const keys = Object.keys(proposalUpdatePayload);
+
+      proposalLogCreateInput.old_values = {
+        proposal_item_budgets: proposal?.proposal_item_budgets,
+      } as Prisma.InputJsonValue;
+
+      // get all changed old values
+      if (proposalLogCreateInput.old_values) {
+        keys.forEach((key) => {
+          (proposalLogCreateInput.old_values as { [key: string]: unknown })[
+            key
+          ] = (proposal as { [key: string]: unknown })?.[key];
+        });
+      }
     }
 
     if (request.action === ProposalAction.STEP_BACK) {
@@ -1656,13 +1671,23 @@ export class TenderProposalService {
         ? log.data.action
         : 'review';
 
-    const subject = `Proposal ${actions}ed Notification`;
+    let translatedAction = '';
+    if (actions === 'accept') {
+      translatedAction = 'قبلت';
+    }
+    if (actions === 'reject') {
+      translatedAction = 'مرفوض';
+    }
+    if (actions === 'review') {
+      translatedAction = 'استعرض';
+    }
+    const subject = `عرض ${translatedAction} إشعار`;
     // let clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} at (${log.data.created_at})`;
     let clientContent = `مرحبًا ${log.data.proposal.user.employee_name}، نود إخبارك أن المشروع "${log.data.proposal.project_name}" تم ${actions}ه. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات أو النقر هنا.`;
     if (log.data.reviewer) {
       clientContent = `مرحبًا ${log.data.proposal.user.employee_name}، نود إخبارك أن المشروع "${log.data.proposal.project_name}" تم ${actions}ه. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات أو النقر هنا.`;
     }
-    const employeeContent = `Your review has been submitted for proposal (${log.data.proposal.project_name}) at (${log.data.created_at}), and already been notified to the user ${log.data.proposal.user.employee_name} (${log.data.proposal.user.email})`;
+    // const employeeContent = `Your review has been submitted for proposal (${log.data.proposal.project_name}) at (${log.data.created_at}), and already been notified to the user ${log.data.proposal.user.employee_name} (${log.data.proposal.user.email})`;
 
     /* EMAIL NOTIF */
     if (log.data.reviewer) {

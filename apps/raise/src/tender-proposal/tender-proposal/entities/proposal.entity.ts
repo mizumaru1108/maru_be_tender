@@ -1,9 +1,9 @@
+import { TrackEntity } from '../../../tender-track/track/entities/track.entity';
 import { BeneficiaryEntity } from '../../tender-proposal-beneficiaries/entity/beneficiary.entity';
 import { ProposalFollowUpEntity } from '../../tender-proposal-follow-up/entities/proposal-follow-up.entity';
 import { ProposalLogEntity } from '../../tender-proposal-log/entities/proposal-log.entity';
 import { ProposalPaymentEntity } from '../../tender-proposal-payment/entities/proposal-payment.entity';
 import { ProjectTimelineEntity } from '../../tender-proposal-timeline/entities/project-timeline.entity';
-import { ProposalTrackEntity } from '../../tender-proposal-track/entities/proposal-track.entity';
 
 export class ProposalEntity {
   id: string;
@@ -78,7 +78,7 @@ export class ProposalEntity {
   payments?: ProposalPaymentEntity[];
   project_timeline?: ProjectTimelineEntity[];
   proposal_beneficiaries: BeneficiaryEntity[];
-  track?: ProposalTrackEntity | null;
+  track?: TrackEntity | null;
   created_at?: Date | null = new Date();
   updated_at?: Date | null = new Date();
   proposal_log?: ProposalLogEntity[];
