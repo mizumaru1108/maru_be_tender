@@ -230,7 +230,9 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       }
 
       if (checkPassAmount) {
+        newData.vat_percentage = Number(data.vat_percentage);
         onSubmit(newData);
+        // console.log({ newData });
       } else {
         // console.log('false');
         enqueueSnackbar(`${translate('notification.error_exceeds_amount')}: ${data.support_type}`, {

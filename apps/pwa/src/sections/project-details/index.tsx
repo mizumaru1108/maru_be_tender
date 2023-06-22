@@ -7,7 +7,7 @@ import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
 import ProjectStatus from './ProjectStatus';
 import FloatinActonBar from './floating-action-bar/FloatinActonBar';
-import { getProposal, getTrackList } from 'redux/slices/proposal';
+import { getBeneficiariesList, getProposal, getTrackList } from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
 //
 import { FEATURE_PROJECT_DETAILS } from 'config';
@@ -26,7 +26,7 @@ function ProjectDetailsMainPage() {
 
   const { translate, currentLang } = useLocales();
 
-  const { proposal, isLoading, error } = useSelector((state) => state.proposal);
+  const { proposal, isLoading, error, loadingCount } = useSelector((state) => state.proposal);
 
   const navigate = useNavigate();
 
@@ -46,10 +46,11 @@ function ProjectDetailsMainPage() {
     // dispatch(getProposal(id as string, role as string));
     handleFetching();
     // getTrackList
+    dispatch(getBeneficiariesList(role!));
     dispatch(getTrackList(0, role as string));
   }, [dispatch, id, role, handleFetching]);
 
-  if (isLoading) return <>... Loading</>;
+  if (isLoading || loadingCount) return <>... Loading</>;
 
   if (error) return <>{error}</>;
 

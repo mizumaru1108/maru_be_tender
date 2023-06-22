@@ -14,6 +14,7 @@ import useLocales from 'hooks/useLocales';
 import axiosInstance from 'utils/axios';
 import { getProposalCount } from '../../../../redux/slices/proposal';
 import { useDispatch } from '../../../../redux/store';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 function RejectProject() {
   const [action, setAction] = React.useState('');
@@ -61,7 +62,10 @@ function RejectProject() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmitting(false);
           navigate(

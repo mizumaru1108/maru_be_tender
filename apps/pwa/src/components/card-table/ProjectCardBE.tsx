@@ -20,7 +20,7 @@ import { useMutation } from 'urql';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
 import axiosInstance from '../../utils/axios';
 import { LoadingButton } from '@mui/lab';
-import { FEATURE_PROJECT_SAVE_DRAFT } from '../../config';
+import { FEATURE_PROJECT_SAVE_DRAFT, FEATURE_PROPOSAL_COUNTING } from '../../config';
 import { generateHeader } from '../../utils/generateProposalNumber';
 import { useSnackbar } from 'notistack';
 import { getProposalCount } from 'redux/slices/proposal';
@@ -217,7 +217,10 @@ const ProjectCardBE = ({
         },
       });
     }
-    getProposalCount(activeRole ?? 'test');
+    // getProposalCount(activeRole ?? 'test');
+    if (FEATURE_PROPOSAL_COUNTING) {
+      getProposalCount(activeRole ?? 'test');
+    }
     if (destination) {
       const x = location.pathname.split('/');
       // console.log(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);

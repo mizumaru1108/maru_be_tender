@@ -15,6 +15,7 @@ import { UploadReceiptFormFields } from './form-data';
 import { UploadReceiptPayload } from './type';
 import useAuth from 'hooks/useAuth';
 import { errorExchange } from 'urql';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 function UploadingForm({ paymentId, onClose }: any) {
   const { activeRole } = useAuth();
@@ -82,7 +83,10 @@ function UploadingForm({ paymentId, onClose }: any) {
             horizontal: 'right',
           },
         });
-        dispatch(getProposalCount(activeRole ?? 'test'));
+        // dispatch(getProposalCount(activeRole ?? 'test'));
+        if (FEATURE_PROPOSAL_COUNTING) {
+          dispatch(getProposalCount(activeRole ?? 'test'));
+        }
         onClose();
         // window.location.reload();
       });

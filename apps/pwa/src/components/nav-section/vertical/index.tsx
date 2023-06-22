@@ -10,6 +10,7 @@ import useAuth from 'hooks/useAuth';
 import { useDispatch, useSelector } from 'redux/store';
 import React from 'react';
 import { getProposalCount } from 'redux/slices/proposal';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 // ----------------------------------------------------------------------
 
@@ -20,7 +21,9 @@ export default function NavSectionVertical({ navConfig, isCollapse, ...other }: 
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    dispatch(getProposalCount(activeRole ?? 'test'));
+    if (FEATURE_PROPOSAL_COUNTING) {
+      dispatch(getProposalCount(activeRole ?? 'test'));
+    }
   }, [dispatch, activeRole]);
 
   // console.log({ loadingCount, proposalCount });
@@ -36,7 +39,7 @@ export default function NavSectionVertical({ navConfig, isCollapse, ...other }: 
               depth={1}
               hasChildren={!!list.children}
               isCollapse={isCollapse}
-              count={proposalCount}
+              count={FEATURE_PROPOSAL_COUNTING ? proposalCount : undefined}
             />
           ))}
         </List>

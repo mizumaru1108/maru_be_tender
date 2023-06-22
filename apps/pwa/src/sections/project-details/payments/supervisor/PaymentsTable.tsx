@@ -14,6 +14,7 @@ import { getOnePayments } from '../../../../queries/commons/getOnePayments';
 import { useNavigate, useParams } from 'react-router';
 import { role_url_map } from '../../../../@types/commons';
 import { LoadingButton } from '@mui/lab';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 function PaymentsTable() {
   const { activeRole } = useAuth();
@@ -66,7 +67,10 @@ function PaymentsTable() {
               horizontal: 'right',
             },
           });
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           // window.location.reload();
         }
       });

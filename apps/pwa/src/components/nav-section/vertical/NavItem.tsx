@@ -28,15 +28,25 @@ export default function NavItem({ item, depth, active, open, isCollapse, count, 
       title === 'incoming_funding_requests' ||
       title === 'incoming_exchange_permission_requests'
     ) {
-      tmpTitle = `( ${count?.incoming || 0} ) ${translate(title)}`;
+      tmpTitle = count?.incoming
+        ? `( ${count?.incoming || 0} ) ${translate(title)}`
+        : translate(title);
     } else if (title === 'requests_in_process') {
-      tmpTitle = `( ${count?.inprocess || 0} ) ${translate(title)}`;
+      tmpTitle = count?.inprocess
+        ? `( ${count?.inprocess || 0} ) ${translate(title)}`
+        : translate(title);
     } else if (title === 'previous_funding_requests') {
-      tmpTitle = `( ${count?.previous || 0} ) ${translate(title)}`;
+      tmpTitle = count?.previous
+        ? `( ${count?.previous || 0} ) ${translate(title)}`
+        : translate(title);
     } else if (title === 'payment_adjustment' || title === 'exchange_permission') {
-      tmpTitle = `( ${count?.payment_adjustment || 0} ) ${translate(title)}`;
+      tmpTitle = count?.payment_adjustment
+        ? `( ${count?.payment_adjustment || 0} ) ${translate(title)}`
+        : translate(title);
     } else if (title === 'pages.common.close_report.text.project_report') {
-      tmpTitle = `( ${count?.close_report || 0} ) ${translate(title)}`;
+      tmpTitle = count?.close_report
+        ? `( ${count?.close_report || 0} ) ${translate(title)}`
+        : translate(title);
     } else {
       tmpTitle = translate(title);
     }

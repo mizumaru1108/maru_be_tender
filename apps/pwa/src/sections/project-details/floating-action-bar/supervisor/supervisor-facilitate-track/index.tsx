@@ -17,7 +17,7 @@ import FacilitateSupervisorAcceptingForm from './forms';
 import { useDispatch, useSelector } from 'redux/store';
 import { setStepsData, stepResetActive } from 'redux/slices/supervisorAcceptingForm';
 import PendingProposalRequestSending from '../PendingProposalRequestSending';
-import { FEATURE_AMANDEMENT_PROPOSAL } from '../../../../../config';
+import { FEATURE_AMANDEMENT_PROPOSAL, FEATURE_PROPOSAL_COUNTING } from '../../../../../config';
 import axiosInstance from 'utils/axios';
 import uuidv4 from 'utils/uuidv4';
 import { addConversation, setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
@@ -133,7 +133,10 @@ function FloatinActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmittingStepback(false);
           navigate(`/project-supervisor/dashboard/app`);
@@ -258,7 +261,10 @@ function FloatinActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmittingRejected(false);
           navigate(`/project-supervisor/dashboard/app`);

@@ -191,3 +191,27 @@ export const FEATURE_AMANDEMENT_PROPOSAL: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_AMANDEMENT_PROPOSAL === 'true'
     ? true
     : false;
+
+export const FEATURE_PROPOSAL_COUNTING: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_PROPOSAL_COUNTING &&
+  process.env.REACT_APP_CONFIG_FEATURE_PROPOSAL_COUNTING === 'true'
+    ? true
+    : false;
+
+export const FEATURE_APPOINTMENT: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_APPOINTMENT &&
+  process.env.REACT_APP_CONFIG_FEATURE_APPOINTMENT === 'true'
+    ? true
+    : false;
+
+export const FEATURE_VERIFICATION_SIGN_UP: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_VERIFICATION_SIGN_UP &&
+  process.env.REACT_APP_CONFIG_FEATURE_VERIFICATION_SIGN_UP === 'true'
+    ? true
+    : false;
+
+export const FEATURE_PROJECT_PATH_NEW: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_PROJECT_PATH_NEW &&
+  process.env.REACT_APP_CONFIG_FEATURE_PROJECT_PATH_NEW === 'true'
+    ? true
+    : false;

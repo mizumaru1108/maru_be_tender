@@ -26,7 +26,7 @@ import uuidv4 from 'utils/uuidv4';
 import moment from 'moment';
 import axiosInstance from 'utils/axios';
 import PendingProposalRequestSending from '../PendingProposalRequestSending';
-import { FEATURE_AMANDEMENT_PROPOSAL } from '../../../../../config';
+import { FEATURE_AMANDEMENT_PROPOSAL, FEATURE_PROPOSAL_COUNTING } from '../../../../../config';
 import { getProposalCount } from '../../../../../redux/slices/proposal';
 
 function FloatingActionBar() {
@@ -101,7 +101,10 @@ function FloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmitting(false);
           navigate(`/project-supervisor/dashboard/app`);
@@ -196,7 +199,10 @@ function FloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmittingRejected(false);
           navigate(`/project-supervisor/dashboard/app`);
@@ -325,7 +331,10 @@ function FloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmittingStepback(false);
           navigate(`/project-supervisor/dashboard/app`);

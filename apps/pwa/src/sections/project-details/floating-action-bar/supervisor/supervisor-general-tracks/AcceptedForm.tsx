@@ -220,7 +220,9 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         deleted_proposal_budget,
         ...data,
       };
+      newData.vat_percentage = Number(data.vat_percentage);
       const editedBy = location.pathname.split('/')[1];
+
       let payload = {
         proposal_id: pid,
         action: 'update',
