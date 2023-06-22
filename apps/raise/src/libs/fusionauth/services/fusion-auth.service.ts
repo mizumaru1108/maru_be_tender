@@ -336,10 +336,13 @@ export class FusionAuthService {
       const { data, status } = await axios(options);
 
       if (status === 200) {
-        return 'The user has been verified!';
-      }
+        this.logger.info('FusionAuth Success:', data);
 
-      this.logger.info('FusionAuth Success:', data);
+        return {
+          verified: true,
+          message: 'The user has been verified!',
+        };
+      }
     } catch (error) {
       this.logger.error('FusionAuth Error:', error.response?.data);
       throw new Error('Something went wrong!');
