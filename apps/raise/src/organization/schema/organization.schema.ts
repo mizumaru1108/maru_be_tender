@@ -1,5 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import dayjs from 'dayjs';
+import mongoose, { Document } from 'mongoose';
+import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
+import paginate from 'mongoose-paginate-v2';
 
 export type OrganizationDocument = Organization & Document;
 
@@ -71,6 +74,19 @@ export class Organization {
   organizationName?: string;
   @Prop()
   organizationType?: string;
+  @Prop({
+    type: mongoose.Schema.Types.Date,
+    default: dayjs().toISOString(),
+  })
+  createdAt?: string;
+
+  @Prop({
+    type: mongoose.Schema.Types.Date,
+    default: dayjs().toISOString(),
+  })
+  updatedAt?: string;
 }
 
-export const OrganizationSchema = SchemaFactory.createForClass(Organization);
+export const OrganizationSchema = SchemaFactory.createForClass(Organization)
+  .plugin(paginate)
+  .plugin(aggregatePaginate);
