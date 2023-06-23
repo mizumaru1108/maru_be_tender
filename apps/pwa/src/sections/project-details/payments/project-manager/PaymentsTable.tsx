@@ -15,6 +15,7 @@ import { role_url_map } from '../../../../@types/commons';
 import { useNavigate } from 'react-router';
 import RejectionModal from 'components/modal-dialog/RejectionModal';
 import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { TransferReceipt } from '../../../../@types/proposal';
 
 function PaymentsTable() {
   const { activeRole } = useAuth();
@@ -254,37 +255,29 @@ function PaymentsTable() {
                 </Typography>
               </Grid>
             ) : null}
-            {item.status === 'done' ? (
+            {(item.status === 'done' ||
+              item.status === 'accepted_by_finance' ||
+              item.status === 'uploaded_by_cashier') && (
               <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                {item.cheques.length ? (
-                  <Button
-                    onClick={() => {
-                      localStorage.setItem('receipt_type', 'receipt');
-                      navigate(
-                        `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
-                          proposal.id
-                        }/payments/${item.id}`
-                      );
-                    }}
-                    sx={{
-                      backgroundColor: 'transparent',
-                      color: '#000',
-                      textDecorationLine: 'underline',
-                    }}
-                  >
-                    {translate(
-                      'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
-                    )}
-                  </Button>
-                ) : (
-                  <Typography color="error" sx={{ textAlign: 'start' }}>
-                    {translate(
-                      'content.administrative.project_details.payment.table.btn.not_found_cheques'
-                    )}
-                  </Typography>
-                )}
+                <Button
+                  variant="text"
+                  color="inherit"
+                  sx={{ '&:hover': { textDecorationLine: 'underline' } }}
+                  onClick={() => {
+                    localStorage.setItem('receipt_type', 'generate');
+                    navigate(
+                      `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                        proposal.id
+                      }/payments/${item.id}`
+                    );
+                  }}
+                >
+                  {translate(
+                    'content.administrative.project_details.payment.table.btn.exchange_permit_generate_finance'
+                  )}
+                </Button>
               </Grid>
-            ) : null}
+            )}
             {item.status === 'issued_by_supervisor' ? (
               <>
                 <Grid item md={2}>
@@ -342,7 +335,7 @@ function PaymentsTable() {
                 </Typography>
               </Grid>
             ) : null}
-            {item &&
+            {/* {item &&
               item.status === 'done' &&
               item.cheques.length > 0 &&
               item.cheques.map((item: any, index: number) => (
@@ -362,7 +355,28 @@ function PaymentsTable() {
                     )}
                   </Button>
                 </Grid>
-              ))}
+              ))} */}
+            {item && item.status === 'done' && item.cheques.length > 0 && (
+              <Grid item key={index} md={2} sx={{ textAlign: '-webkit-center' }}>
+                <Button
+                  data-cy="btn.view_transfer_receipt"
+                  variant="text"
+                  color="inherit"
+                  sx={{
+                    '&:hover': { textDecorationLine: 'underline' },
+                  }}
+                  href={
+                    (item.cheques[item.cheques.length - 1]?.transfer_receipt as TransferReceipt)
+                      ?.url ?? '#'
+                  }
+                  target="_blank"
+                >
+                  {translate(
+                    'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
+                  )}
+                </Button>
+              </Grid>
+            )}
             {item.status === 'done' ? (
               <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                 {item.cheques.length ? (

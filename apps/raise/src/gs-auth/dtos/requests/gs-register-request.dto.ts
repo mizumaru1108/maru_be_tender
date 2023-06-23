@@ -25,15 +25,13 @@ export class GSRegisterRequestDto {
   password: string;
 
   @ApiPropertyOptional()
-  @IsString()
   @IsOptional()
-  @ValidateObjectIdDecorator()
+  @IsString()
   organizationId?: string | null;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   organizationEmail?: string | null;
 
   @ApiPropertyOptional()
@@ -73,15 +71,21 @@ export class GSVerifyUser {
   @IsNotEmpty()
   token: string;
 
-  // @ApiProperty()
-  // @IsString()
-  // @IsNotEmpty()
-  // domain_url: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  organization_id?: string | null;
 
-  // @ApiProperty()
-  // @IsString()
-  // @IsNotEmpty()
-  // organization_id: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  donor_name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  donor_email?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  domain_url?: string;
 }
 
 export class GSResetPassword {

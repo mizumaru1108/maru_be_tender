@@ -123,9 +123,30 @@ export class GsAuthService {
           verifyPayload.token,
         );
 
-      if (verifResponse) {
-        return verifResponse;
-      }
+        if (verifResponse && verifResponse?.verified) {
+          const notifPayload: CommonNotificationMapperResponse = {
+            logTime: moment(new Date().getTime()).format('llll'),
+            generalHostEmail: 'tmra',
+            clientSubject: 'Welcome to TMRA',
+            clientId: [],
+            clientEmail: [verifyPayload.donor_email!],
+            clientMobileNumber: [],
+            clientEmailTemplatePath: 'tmra/en/register/success_donor_verify_tmra',
+            clientEmailTemplateContext: [
+              {
+                donor_name: verifyPayload.donor_name,
+                donor_redirect_link: `${verifyPayload.domain_url}/user/login`,
+              },
+            ],
+            clientContent: `We're excited to welcome you to TMRA.`,
+            reviewerId: [],
+            createManyWebNotifPayload: [],
+          };
+  
+          await this.notificationService.sendSmsAndEmailBatch(notifPayload);
+  
+          return verifResponse;
+        }
     } catch (error) {
       throw new HttpException(`User can't verified`, HttpStatus.FORBIDDEN);
     }
