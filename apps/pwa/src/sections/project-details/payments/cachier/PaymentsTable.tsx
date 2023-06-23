@@ -6,6 +6,7 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useNavigate } from 'react-router';
 import { role_url_map } from '../../../../@types/commons';
+import { TransferReceipt } from '../../../../@types/proposal';
 
 function PaymentsTable() {
   const { proposal } = useSelector((state) => state.proposal);
@@ -42,7 +43,7 @@ function PaymentsTable() {
       }
     }
 
-    console.log({ proposal });
+    // console.log({ proposal });
   }, [proposal]);
   // console.log('proposal.payments.', proposal.payments);
 
@@ -127,7 +128,7 @@ function PaymentsTable() {
                       </Button>
                     </Grid>
 
-                    {item &&
+                    {/* {item &&
                       item.cheques.length > 0 &&
                       item.cheques.map((item: any, index: number) => (
                         <Grid item key={index} md={2} sx={{ textAlign: '-webkit-center' }}>
@@ -145,7 +146,30 @@ function PaymentsTable() {
                             )}
                           </Button>
                         </Grid>
-                      ))}
+                      ))} */}
+                    {item && item.status === 'done' && item.cheques.length > 0 && (
+                      <Grid item key={index} md={2} sx={{ textAlign: '-webkit-center' }}>
+                        <Button
+                          data-cy="btn.view_transfer_receipt"
+                          variant="text"
+                          color="inherit"
+                          sx={{
+                            '&:hover': { textDecorationLine: 'underline' },
+                          }}
+                          href={
+                            (
+                              item.cheques[item.cheques.length - 1]
+                                ?.transfer_receipt as TransferReceipt
+                            )?.url ?? '#'
+                          }
+                          target="_blank"
+                        >
+                          {translate(
+                            'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
+                          )}
+                        </Button>
+                      </Grid>
+                    )}
                   </>
                 )}
               {item.status === 'done' ? (

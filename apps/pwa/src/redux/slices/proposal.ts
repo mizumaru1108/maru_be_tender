@@ -22,6 +22,7 @@ import { useQuery } from 'urql';
 interface ProposalItme {
   isLoading: boolean;
   loadingCount: boolean;
+  loadingPayment: boolean;
   error: Error | string | null;
   activeTap: ActiveTap;
   checkedItems: any;
@@ -37,6 +38,7 @@ interface ProposalItme {
 const initialState: ProposalItme = {
   isLoading: false,
   loadingCount: false,
+  loadingPayment: false,
   error: null,
   activeTap: 'main',
   checkedItems: [],
@@ -266,6 +268,9 @@ const slice = createSlice({
     setLoadingCount(state, action) {
       state.loadingCount = action.payload;
     },
+    setLoadingPayment(state, action) {
+      state.loadingPayment = action.payload;
+    },
     // END LOADING COUNT
     endLoadingCount(state) {
       state.loadingCount = false;
@@ -357,12 +362,14 @@ export const {
   setTrackBudget,
   setProposalCount,
   setUpdatedStatus,
+  setLoadingPayment,
 } = slice.actions;
 
 export const getProposal = (id: string, role: string) => async () => {
   // console.log('masuk sini', id, role);
   try {
     dispatch(slice.actions.startLoading);
+    dispatch(slice.actions.setLoadingPayment(true));
     if (
       role === 'tender_admin' ||
       role === 'tender_ceo' ||
@@ -415,6 +422,8 @@ export const getProposal = (id: string, role: string) => async () => {
     dispatch(slice.actions.endLoading);
   } catch (error) {
     dispatch(slice.actions.hasError(error));
+  } finally {
+    dispatch(slice.actions.setLoadingPayment(false));
   }
 };
 export const getTrackList = (isGeneral: number, role: string) => async () => {

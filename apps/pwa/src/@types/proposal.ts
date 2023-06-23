@@ -8,17 +8,17 @@ export interface BankInformation {
   card_image: { url: string; size: number | undefined; type: string; border_color?: string };
 }
 
+export interface TransferReceipt {
+  size: number;
+  type: string;
+  url: string;
+}
+
 export interface Cheques {
   id: string;
   number: number;
   payment_id: number;
-  transfer_receipt:
-    | string
-    | {
-        size: number;
-        type: string;
-        url: string;
-      };
+  transfer_receipt: string | TransferReceipt;
   deposit_date: Date;
 }
 

@@ -17,6 +17,7 @@ import useLocales from 'hooks/useLocales';
 import { useNavigate } from 'react-router';
 import { role_url_map } from '../../../../@types/commons';
 import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { TransferReceipt } from '../../../../@types/proposal';
 
 function PaymentsTable() {
   const { activeRole } = useAuth();
@@ -402,7 +403,7 @@ function PaymentsTable() {
                   </Button>
                 </Grid>
               )}
-              {item &&
+              {/* {item &&
                 (item.status === 'done' || item.status === 'uploaded_by_cashier') &&
                 item.cheques.length > 0 &&
                 item.cheques.map((item: any, index: number) => (
@@ -422,7 +423,30 @@ function PaymentsTable() {
                       )}
                     </Button>
                   </Grid>
-                ))}
+                ))} */}
+              {item &&
+                (item.status === 'done' || item.status === 'uploaded_by_cashier') &&
+                item.cheques.length > 0 && (
+                  <Grid item key={index} md={2} sx={{ textAlign: '-webkit-center' }}>
+                    <Button
+                      data-cy="btn.view_transfer_receipt"
+                      variant="text"
+                      color="inherit"
+                      sx={{
+                        '&:hover': { textDecorationLine: 'underline' },
+                      }}
+                      href={
+                        (item.cheques[item.cheques.length - 1]?.transfer_receipt as TransferReceipt)
+                          ?.url ?? '#'
+                      }
+                      target="_blank"
+                    >
+                      {translate(
+                        'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
+                      )}
+                    </Button>
+                  </Grid>
+                )}
               {item.status === 'done' && (
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                   {item.cheques.length ? (

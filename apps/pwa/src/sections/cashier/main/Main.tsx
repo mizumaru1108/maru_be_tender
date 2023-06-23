@@ -28,10 +28,10 @@ function Main() {
         <TrackBudget path={data.data.employee_path} track_id={data.data.track_id} />
       </Grid> */}
       <Grid item md={12} xs={12}>
-        <RequestsInProcess />
+        <IncomingExchangePermissionRequests />
       </Grid>
       <Grid item md={12} xs={12}>
-        <IncomingExchangePermissionRequests />
+        <RequestsInProcess />
       </Grid>
     </Grid>
   );
