@@ -38,13 +38,26 @@ export interface FetchProposalByIdProps {
   includes_relation?: string[];
 }
 
-export interface UpdateProposalProps {
+export class UpdateProposalProps {
   id: string;
   inner_status?: string;
   outter_status?: string;
   state?: string;
   track_id?: string;
   supervisor_id?: string;
+  inclu_or_exclu?: boolean;
+  vat_percentage?: number;
+  support_goal_id?: string;
+  vat?: boolean | null;
+  support_outputs?: string;
+  number_of_payments_by_supervisor?: number;
+  fsupport_by_supervisor?: number;
+  does_an_agreement?: boolean | null;
+  need_picture?: boolean | null;
+  closing_report?: boolean | null;
+  support_type?: boolean | null;
+  clause?: string;
+  clasification_field?: string;
 }
 
 @Injectable()
@@ -237,12 +250,15 @@ export class TenderProposalRepository {
   }
 
   /* Latest, already able to do passing session, and return entity instead of prisma model*/
-  async update(props: UpdateProposalProps, session?: PrismaService) {
+  async update(
+    props: UpdateProposalProps,
+    session?: PrismaService,
+  ): Promise<ProposalEntity> {
     let prisma = this.prismaService;
     if (session) prisma = session;
 
     try {
-      return await prisma.proposal.update({
+      const rawUpdatedProposal = await prisma.proposal.update({
         where: { id: props.id },
         data: {
           inner_status: props.inner_status,
@@ -250,8 +266,58 @@ export class TenderProposalRepository {
           state: props.state,
           track_id: props.track_id,
           supervisor_id: props.supervisor_id,
+          inclu_or_exclu: props.inclu_or_exclu,
+          vat_percentage: props.vat_percentage,
+          support_goal_id: props.support_goal_id,
+          vat: props.vat,
+          support_outputs: props.support_outputs,
+          number_of_payments_by_supervisor:
+            props.number_of_payments_by_supervisor,
+          fsupport_by_supervisor: props.fsupport_by_supervisor,
+          does_an_agreement: props.does_an_agreement,
+          need_picture: props.need_picture,
+          closing_report: props.closing_report,
+          support_type: props.support_type,
+          clause: props.clause,
+          clasification_field: props.clasification_field,
         },
       });
+
+      const updatedProposalEntity = Builder<ProposalEntity>(ProposalEntity, {
+        ...rawUpdatedProposal,
+        amount_required_fsupport:
+          rawUpdatedProposal.amount_required_fsupport !== null
+            ? parseFloat(rawUpdatedProposal.amount_required_fsupport.toString())
+            : null,
+        whole_budget:
+          rawUpdatedProposal.whole_budget !== null
+            ? parseFloat(rawUpdatedProposal.whole_budget.toString())
+            : null,
+        number_of_payments:
+          rawUpdatedProposal.number_of_payments !== null
+            ? parseFloat(rawUpdatedProposal.number_of_payments.toString())
+            : null,
+        partial_support_amount:
+          rawUpdatedProposal.partial_support_amount !== null
+            ? parseFloat(rawUpdatedProposal.partial_support_amount.toString())
+            : null,
+        fsupport_by_supervisor:
+          rawUpdatedProposal.fsupport_by_supervisor !== null
+            ? parseFloat(rawUpdatedProposal.fsupport_by_supervisor.toString())
+            : null,
+        number_of_payments_by_supervisor:
+          rawUpdatedProposal.number_of_payments_by_supervisor !== null
+            ? parseFloat(
+                rawUpdatedProposal.number_of_payments_by_supervisor.toString(),
+              )
+            : null,
+        execution_time:
+          rawUpdatedProposal.execution_time !== null
+            ? parseFloat(rawUpdatedProposal.execution_time.toString())
+            : null,
+      }).build();
+
+      return updatedProposalEntity;
     } catch (error) {
       this.logger.error('Error on updating proposal =%j', error);
       throw error;
@@ -1486,7 +1552,11 @@ export class TenderProposalRepository {
             payments: {
               some: {
                 status: {
-                  in: ['accepted_by_project_manager', 'done'],
+                  in: [
+                    'accepted_by_project_manager',
+                    'done',
+                    'accepted_by_finance',
+                  ],
                 },
               },
             },

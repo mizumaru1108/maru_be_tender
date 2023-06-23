@@ -1333,10 +1333,14 @@ export class TenderProposalService {
         proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
         proposalUpdatePayload.project_manager_id = currentUser.id;
 
-        proposalLogCreateInput.action = ProposalAction.ACCEPT;
-        proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
-        proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
+        proposalLogCreateInput.action = ProposalAction.UPDATE;
+      } else {
+        // non grants
+        proposalLogCreateInput.action = ProposalAction.UPDATE;
       }
+
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
 
       // saving old and new values as a log (either grant or not grants)
       proposalLogCreateInput.new_values = {

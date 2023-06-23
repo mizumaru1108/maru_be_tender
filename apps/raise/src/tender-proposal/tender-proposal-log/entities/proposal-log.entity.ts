@@ -10,6 +10,8 @@ export class ProposalLogEntity {
   updated_at: Date = new Date();
   reviewer_id?: string | null;
   state: string;
+  new_values?: any; // jsonb
+  old_values?: any; // jsonb
   notes?: string | null;
   action?: string | null;
   message?: string | null;

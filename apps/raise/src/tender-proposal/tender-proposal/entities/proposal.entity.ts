@@ -29,7 +29,7 @@ export class ProposalEntity {
   whole_budget?: number | null;
   state?: string | null = 'MODERATOR';
   inner_status?: string | null = 'CREATED_BY_CLIENT';
-  previously_add_bank: string[];
+  previously_add_bank?: string[] | null;
   outter_status?: string | null = 'ONGOING';
   project_beneficiaries?: string | null;
   number_of_payments?: number | null;
