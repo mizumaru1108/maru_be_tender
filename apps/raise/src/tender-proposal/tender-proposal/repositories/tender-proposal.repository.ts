@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma, proposal_item_budget } from '@prisma/client';
+import { Builder } from 'builder-pattern';
 import { nanoid } from 'nanoid';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
-import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
   TenderAppRoleEnum,
@@ -17,6 +18,7 @@ import {
 } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { ProposalPaymentEntity } from '../../tender-proposal-payment/entities/proposal-payment.entity';
 import {
   FetchClosingReportListFilterRequest,
   FetchRejectionListFilterRequest,
@@ -28,18 +30,233 @@ import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-
 import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
 import { UpdateMyProposalResponseDto } from '../dtos/responses/update-my-proposal-response.dto';
+import { ProposalEntity } from '../entities/proposal.entity';
 import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
 import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
+export interface FetchProposalByIdProps {
+  id: string;
+  includes_relation?: string[];
+}
+
+export interface UpdateProposalProps {
+  id: string;
+  inner_status?: string;
+  outter_status?: string;
+  state?: string;
+  track_id?: string;
+  supervisor_id?: string;
+}
+
 @Injectable()
 export class TenderProposalRepository {
-  private readonly logger = ROOT_LOGGER.child({
-    logger: TenderProposalRepository.name,
-  });
   constructor(
     private readonly prismaService: PrismaService,
     private readonly bunnyService: BunnyService,
     private readonly configService: ConfigService,
+    @InjectPinoLogger(TenderProposalRepository.name) private logger: PinoLogger,
   ) {}
+
+  async findByIdFilter(
+    props: FetchProposalByIdProps,
+  ): Promise<Prisma.proposalFindFirstArgs> {
+    const { includes_relation } = props;
+
+    let findByIdFilter: Prisma.proposalFindFirstArgs = {
+      where: { id: props.id },
+    };
+
+    if (includes_relation && includes_relation.length > 0) {
+      let include: Prisma.proposalInclude = {};
+
+      for (const relation of includes_relation) {
+        if (relation === 'user') {
+          include = {
+            ...include,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                mobile_number: true,
+                employee_name: true,
+                client_data: true,
+                roles: true,
+                bank_information: true,
+              },
+            },
+          };
+        }
+
+        if (relation === 'beneficiary_details') {
+          include = {
+            ...include,
+            beneficiary_details: true,
+          };
+        }
+
+        if (relation === 'follow_ups') {
+          include = {
+            ...include,
+            follow_ups: {
+              include: {
+                user: {
+                  include: {
+                    roles: true,
+                  },
+                },
+              },
+            },
+          };
+        }
+
+        if (relation === 'track') {
+          include = {
+            ...include,
+            track: true,
+          };
+        }
+
+        if (relation === 'proposal_item_budgets') {
+          include = {
+            ...include,
+            proposal_item_budgets: true,
+          };
+        }
+
+        if (relation === 'proposal_logs') {
+          include = {
+            ...include,
+            proposal_logs: {
+              include: {
+                reviewer: true,
+              },
+            },
+          };
+        }
+
+        if (relation === 'payments') {
+          include = {
+            ...include,
+            payments: {
+              include: {
+                cheques: true,
+              },
+            },
+          };
+        }
+
+        if (relation === 'bank_information') {
+          include = {
+            ...include,
+            bank_information: true,
+          };
+        }
+
+        if (relation === 'project_timeline') {
+          include = {
+            ...include,
+            project_timeline: true,
+          };
+        }
+      }
+
+      findByIdFilter.include = include;
+    }
+
+    return findByIdFilter;
+  }
+
+  /* Latest, already able to do passing session, and return entity instead of prisma model*/
+  async fetchById(
+    props: FetchProposalByIdProps,
+    session?: PrismaService,
+  ): Promise<ProposalEntity | null> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      const filterQuery = await this.findByIdFilter(props);
+      const rawProposal = await prisma.proposal.findFirst(filterQuery);
+
+      if (!rawProposal) return null;
+
+      const tmpProposal = rawProposal as any;
+      const proposalByIdEntity = Builder<ProposalEntity>(ProposalEntity, {
+        ...rawProposal,
+        amount_required_fsupport:
+          rawProposal.amount_required_fsupport !== null
+            ? parseFloat(rawProposal.amount_required_fsupport.toString())
+            : null,
+        whole_budget:
+          rawProposal.whole_budget !== null
+            ? parseFloat(rawProposal.whole_budget.toString())
+            : null,
+        number_of_payments:
+          rawProposal.number_of_payments !== null
+            ? parseFloat(rawProposal.number_of_payments.toString())
+            : null,
+        partial_support_amount:
+          rawProposal.partial_support_amount !== null
+            ? parseFloat(rawProposal.partial_support_amount.toString())
+            : null,
+        fsupport_by_supervisor:
+          rawProposal.fsupport_by_supervisor !== null
+            ? parseFloat(rawProposal.fsupport_by_supervisor.toString())
+            : null,
+        number_of_payments_by_supervisor:
+          rawProposal.number_of_payments_by_supervisor !== null
+            ? parseFloat(
+                rawProposal.number_of_payments_by_supervisor.toString(),
+              )
+            : null,
+        execution_time:
+          rawProposal.execution_time !== null
+            ? parseFloat(rawProposal.execution_time.toString())
+            : null,
+        payments:
+          tmpProposal.payments && tmpProposal.payments.length > 0
+            ? tmpProposal.payments.map((payment: ProposalPaymentEntity) =>
+                Builder<ProposalPaymentEntity>(ProposalPaymentEntity, {
+                  payment_amount: !!payment.payment_amount
+                    ? parseFloat(payment.payment_amount.toString())
+                    : null,
+                  order: !!payment.order
+                    ? parseInt(payment.order.toString())
+                    : null,
+                  number_of_payments: !!payment.number_of_payments
+                    ? parseInt(payment.number_of_payments.toString())
+                    : null,
+                }).build(),
+              )
+            : undefined,
+      }).build();
+
+      return proposalByIdEntity;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /* Latest, already able to do passing session, and return entity instead of prisma model*/
+  async update(props: UpdateProposalProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      return await prisma.proposal.update({
+        where: { id: props.id },
+        data: {
+          inner_status: props.inner_status,
+          outter_status: props.outter_status,
+          state: props.state,
+          track_id: props.track_id,
+          supervisor_id: props.supervisor_id,
+        },
+      });
+    } catch (error) {
+      this.logger.error('Error on updating proposal =%j', error);
+      throw error;
+    }
+  }
 
   async validateOwnBankAccount(user_id: string, bank_id: string) {
     try {
@@ -70,14 +287,13 @@ export class TenderProposalRepository {
     fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
     uploadedFilePath: string[],
   ) {
-    this.logger.log(
-      'info',
+    this.logger.info(
       `Creating proposal with payload: \n ${logUtil(createProposalPayload)}`,
     );
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          this.logger.log('info', 'creating proposal...');
+          this.logger.info('creating proposal...');
           const proposal = await prisma.proposal.create({
             data: {
               ...createProposalPayload,
@@ -85,8 +301,7 @@ export class TenderProposalRepository {
           });
 
           if (proposal_item_budgets) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `Creating item budget with payload: \n ${logUtil(
                 proposal_item_budgets,
               )}`,
@@ -100,8 +315,7 @@ export class TenderProposalRepository {
             proposalTimelinesPayloads &&
             proposalTimelinesPayloads.length > 0
           ) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `Creating timeline with payload: \n ${logUtil(
                 proposalTimelinesPayloads,
               )}`,
@@ -116,8 +330,7 @@ export class TenderProposalRepository {
             fileManagerCreateManyPayload &&
             fileManagerCreateManyPayload.length > 0
           ) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `Creating file manager history with payload: \n ${logUtil(
                 fileManagerCreateManyPayload,
               )}`,
@@ -128,7 +341,7 @@ export class TenderProposalRepository {
             });
           }
 
-          this.logger.log('info', `Creating proposal log`);
+          this.logger.info(`Creating proposal log`);
           await prisma.proposal_log.create({
             data: {
               id: nanoid(),
@@ -145,10 +358,7 @@ export class TenderProposalRepository {
         { maxWait: 50000, timeout: 150000 },
       );
     } catch (error) {
-      this.logger.log(
-        'info',
-        `error on prisma occured deleting all uploaded files`,
-      );
+      this.logger.error(`error on prisma occured deleting all uploaded files`);
       if (uploadedFilePath && uploadedFilePath.length > 0) {
         uploadedFilePath.forEach(async (path) => {
           await this.bunnyService.deleteMedia(path, true);
@@ -180,8 +390,7 @@ export class TenderProposalRepository {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          this.logger.log(
-            'info',
+          this.logger.info(
             `updating proposal ${proposal_id} with payload of: \n ${logUtil(
               updateProposalPayload,
             )}`,
@@ -196,15 +405,14 @@ export class TenderProposalRepository {
           });
 
           if (proposal_item_budgets && proposal_item_budgets.length > 0) {
-            this.logger.log('info', `deleteing previous item budget`);
+            this.logger.info('info', `deleteing previous item budget`);
             await prisma.proposal_item_budget.deleteMany({
               where: {
                 proposal_id: proposal.id,
               },
             });
 
-            this.logger.log(
-              'info',
+            this.logger.info(
               `creating new item budgets with payload of: \n ${logUtil(
                 proposal_item_budgets,
               )}`,
@@ -218,8 +426,7 @@ export class TenderProposalRepository {
             fileManagerCreateManyPayload &&
             fileManagerCreateManyPayload.length > 0
           ) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `Creating file manager history with payload: \n ${logUtil(
                 fileManagerCreateManyPayload,
               )}`,
@@ -231,8 +438,7 @@ export class TenderProposalRepository {
           }
 
           if (deletedFileManagerUrls && deletedFileManagerUrls.length > 0) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `There's a file that unused / deleted, setting flags delete to: \n${logUtil(
                 deletedFileManagerUrls,
               )}`,
@@ -259,8 +465,7 @@ export class TenderProposalRepository {
 
           // save draft not a revision
           if (proposalTimelinePayloads && proposalTimelinePayloads.length > 0) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `deleting all timeline on proposal ${proposal.id}`,
             );
 
@@ -268,8 +473,7 @@ export class TenderProposalRepository {
               where: { proposal_id: proposal.id },
             });
 
-            this.logger.log(
-              'info',
+            this.logger.info(
               `creating new timeline on proposal ${proposal.id}`,
             );
 
@@ -329,8 +533,7 @@ export class TenderProposalRepository {
               sendRevisionNotif.createManyWebNotifPayload &&
               sendRevisionNotif.createManyWebNotifPayload.length > 0
             ) {
-              this.logger.log(
-                'info',
+              this.logger.info(
                 `Creating new notification for revision sent, with payload of \n${sendRevisionNotif.createManyWebNotifPayload}`,
               );
               await prisma.notification.createMany({
@@ -338,8 +541,7 @@ export class TenderProposalRepository {
               });
             }
 
-            this.logger.log(
-              'info',
+            this.logger.info(
               `deleting proposal edit request for proposal ${proposal_id}`,
             );
 
@@ -361,8 +563,7 @@ export class TenderProposalRepository {
         { maxWait: 50000, timeout: 150000 },
       );
     } catch (error) {
-      this.logger.log(
-        'info',
+      this.logger.error(
         'saving data on db failed, deleting all uploaded files for this proposal',
       );
       if (uploadedFilePath.length > 0) {
@@ -384,8 +585,7 @@ export class TenderProposalRepository {
     try {
       return await this.prismaService.$transaction(async (prisma) => {
         if (deletedFileManagerUrls && deletedFileManagerUrls.length > 0) {
-          this.logger.log(
-            'info',
+          this.logger.error(
             `There's a file that unused / deleted, setting flags delete to: \n${logUtil(
               deletedFileManagerUrls,
             )}`,
@@ -404,7 +604,7 @@ export class TenderProposalRepository {
           }
         }
 
-        this.logger.log('info', `deleting proposal ${proposal_id}`);
+        this.logger.info(`deleting proposal ${proposal_id}`);
         const deletedProposal = await prisma.proposal.delete({
           where: { id: proposal_id },
         });
@@ -431,8 +631,7 @@ export class TenderProposalRepository {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          this.logger.log(
-            'info',
+          this.logger.info(
             `Updating proposal ${id}, with payload of\n${logUtil(
               proposalUpdatePayload,
             )}`,
@@ -442,8 +641,7 @@ export class TenderProposalRepository {
             data: proposalUpdatePayload,
           });
 
-          this.logger.log(
-            'info',
+          this.logger.info(
             `Creating new proposal asked edit request with payload of \n${logUtil(
               createAskEditRequestPayload,
             )}`,
@@ -535,8 +733,7 @@ export class TenderProposalRepository {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          this.logger.log(
-            'info',
+          this.logger.info(
             `Updating proposal ${id}, with payload of\n${logUtil(
               proposalUpdatePayload,
             )}`,
@@ -546,23 +743,20 @@ export class TenderProposalRepository {
             data: proposalUpdatePayload,
           });
 
-          this.logger.log(
-            'info',
+          this.logger.info(
             `Creating new proposal edit request with payload of \n${logUtil(
               createProposalEditRequestPayload,
             )}`,
           );
 
-          this.logger.log(
-            'info',
+          this.logger.info(
             `Find existing edit request by proposal id of ${id}`,
           );
           const oldData = await prisma.proposal_edit_request.findFirst({
             where: { proposal_id: id },
           });
           if (oldData) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `deleting old proposal edit request with porposal id of ${id}`,
             );
             await prisma.proposal_edit_request.delete({
@@ -570,8 +764,7 @@ export class TenderProposalRepository {
             });
           }
 
-          this.logger.log(
-            'info',
+          this.logger.info(
             `creating new proposal edit request with payload of ${createProposalEditRequestPayload}`,
           );
           await prisma.proposal_edit_request.create({
@@ -642,8 +835,7 @@ export class TenderProposalRepository {
             sendAmandementNotif.createManyWebNotifPayload &&
             sendAmandementNotif.createManyWebNotifPayload.length > 0
           ) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `Creating new notification with payload of \n${logUtil(
                 sendAmandementNotif.createManyWebNotifPayload,
               )}`,
@@ -673,7 +865,7 @@ export class TenderProposalRepository {
 
   async findAmandementByProposalId(proposal_id: string): Promise<any> {
     try {
-      this.logger.log(
+      this.logger.info(
         'info',
         `Finding amandement with proposal_id of ${proposal_id}`,
       );
@@ -727,10 +919,7 @@ export class TenderProposalRepository {
     proposalId: string,
   ): Promise<{ detail: string } | null> {
     try {
-      this.logger.log(
-        'info',
-        `Finding amandement with proposal id of ${proposalId}`,
-      );
+      this.logger.info(`Finding amandement with proposal id of ${proposalId}`);
       const raw = await this.prismaService.$queryRaw<
         { detail: string }[]
       >`SELECT detail FROM proposal_edit_request WHERE proposal_id = ${proposalId}`;
@@ -1310,7 +1499,7 @@ export class TenderProposalRepository {
             payments: {
               some: {
                 status: {
-                  in: ['accepted_by_project_manager'],
+                  in: ['accepted_by_project_manager', 'uploaded_by_cashier'],
                 },
               },
             },
@@ -1920,8 +2109,22 @@ export class TenderProposalRepository {
       if (currentUser.choosenRole === 'tender_project_supervisor') {
         whereClause = {
           ...whereClause,
-          supervisor_id: currentUser.id,
-          payments: { some: { status: { in: ['set_by_supervisor'] } } },
+          AND: [
+            { supervisor_id: currentUser.id },
+            {
+              OR: [
+                {
+                  inner_status:
+                    InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
+                },
+                {
+                  payments: { some: { status: { in: ['set_by_supervisor'] } } },
+                },
+              ],
+            },
+          ],
+          // supervisor_id: currentUser.id,
+          // payments: { some: { status: { in: ['set_by_supervisor'] } } },
           // OR: [
           // {
           //   inner_status:
@@ -1935,20 +2138,25 @@ export class TenderProposalRepository {
       if (currentUser.choosenRole === 'tender_project_manager') {
         whereClause = {
           ...whereClause,
-          OR: [
-            { project_manager_id: currentUser.id },
-            { project_manager_id: null },
+          // OR: [
+          //   { project_manager_id: currentUser.id },
+          //   { project_manager_id: null },
+          // ],
+          // payments: {
+          //   some: {
+          //     status: {
+          //       in: ['issued_by_supervisor'],
+          //     },
+          //   },
+          // },
+          AND: [
+            {
+              project_manager_id: currentUser.id,
+            },
+            {
+              payments: { some: { status: { in: ['issued_by_supervisor'] } } },
+            },
           ],
-          payments: {
-            // some: {
-            //   // first array should be accbypm
-            //   // second array
-            //   status: {
-            //     in: ['issued_by_supervisor'],
-            //   },
-            // },
-            //
-          },
         };
       }
 
@@ -1966,7 +2174,9 @@ export class TenderProposalRepository {
         whereClause = {
           ...whereClause,
           OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
-          payments: { some: { status: { in: ['accepted_by_finance'] } } },
+          payments: {
+            some: { status: { in: ['accepted_by_finance', 'done'] } },
+          },
         };
       }
 
@@ -2119,7 +2329,7 @@ export class TenderProposalRepository {
     proposalId: string,
   ): Promise<FetchProposalByIdResponse['response']> {
     try {
-      this.logger.log('info', `fetching proposal ${proposalId}`);
+      this.logger.info(`fetching proposal ${proposalId}`);
       const proposal = await this.prismaService.proposal.findFirst({
         where: {
           id: proposalId,
@@ -2136,6 +2346,7 @@ export class TenderProposalRepository {
               bank_information: true,
             },
           },
+          beneficiary_details: true,
           follow_ups: {
             include: {
               user: {
@@ -2235,12 +2446,12 @@ export class TenderProposalRepository {
     try {
       return await this.prismaService.$transaction(
         async (prismaTrans) => {
-          this.logger.log(
-            'info',
-            `updating proposal ${proposalId}, with payload of \n${logUtil(
-              proposalUpdatePayload,
-            )}`,
-          );
+          // this.logger.log(
+          //   'info',
+          //   `updating proposal ${proposalId}, with payload of \n${logUtil(
+          //     proposalUpdatePayload,
+          //   )}`,
+          // );
           const proposal = await prismaTrans.proposal.update({
             where: {
               id: proposalId,
@@ -2248,8 +2459,7 @@ export class TenderProposalRepository {
             data: proposalUpdatePayload,
           });
 
-          this.logger.log(
-            'info',
+          this.logger.info(
             `creating proposal log, with payload of \n${logUtil(
               proposalLogCreateInput,
             )}`,
@@ -2292,12 +2502,12 @@ export class TenderProposalRepository {
 
           /* Crud item budget -------------------------------------------------------------------------- */
           if (createdItemBudgetPayload && createdItemBudgetPayload.length > 0) {
-            this.logger.log(
-              'info',
-              `creating item budget, with payload of \n${logUtil(
-                createdItemBudgetPayload,
-              )}`,
-            );
+            // this.logger.log(
+            //   'info',
+            //   `creating item budget, with payload of \n${logUtil(
+            //     createdItemBudgetPayload,
+            //   )}`,
+            // );
             await prismaTrans.proposal_item_budget.createMany({
               data: createdItemBudgetPayload,
             });
@@ -2305,12 +2515,12 @@ export class TenderProposalRepository {
 
           if (updatedItemBudgetPayload && updatedItemBudgetPayload.length > 0) {
             for (let i = 0; i < updatedItemBudgetPayload.length; i++) {
-              this.logger.log(
-                'info',
-                `updating item budget ${
-                  updatedItemBudgetPayload[i].id
-                }, with payload of \n${logUtil(updatedItemBudgetPayload[i])}`,
-              );
+              // this.logger.log(
+              //   'info',
+              //   `updating item budget ${
+              //     updatedItemBudgetPayload[i].id
+              //   }, with payload of \n${logUtil(updatedItemBudgetPayload[i])}`,
+              // );
               const itemBudgetToUpdate =
                 await prismaTrans.proposal_item_budget.findUnique({
                   where: {
@@ -2335,12 +2545,12 @@ export class TenderProposalRepository {
           }
 
           if (deletedItemBudgetIds && deletedItemBudgetIds.length > 0) {
-            this.logger.log(
-              'info',
-              `deleting item budget with id of \n${logUtil(
-                deletedItemBudgetIds,
-              )}`,
-            );
+            // this.logger.log(
+            //   'info',
+            //   `deleting item budget with id of \n${logUtil(
+            //     deletedItemBudgetIds,
+            //   )}`,
+            // );
             await prismaTrans.proposal_item_budget.deleteMany({
               where: {
                 id: {
@@ -2356,12 +2566,12 @@ export class TenderProposalRepository {
             createdRecommendedSupportPayload &&
             createdRecommendedSupportPayload.length > 0
           ) {
-            this.logger.log(
-              'info',
-              `creating recommended support with payload of \n${logUtil(
-                createdRecommendedSupportPayload,
-              )}`,
-            );
+            // this.logger.log(
+            //   'info',
+            //   `creating recommended support with payload of \n${logUtil(
+            //     createdRecommendedSupportPayload,
+            //   )}`,
+            // );
             await prismaTrans.recommended_support_consultant.createMany({
               data: createdRecommendedSupportPayload,
             });
@@ -2372,14 +2582,14 @@ export class TenderProposalRepository {
             updatedRecommendedSupportPayload.length > 0
           ) {
             for (let i = 0; i < updatedRecommendedSupportPayload.length; i++) {
-              this.logger.log(
-                'info',
-                `updating item budget ${
-                  updatedRecommendedSupportPayload[i].id
-                }, with payload of \n${logUtil(
-                  updatedRecommendedSupportPayload[i],
-                )}`,
-              );
+              // this.logger.log(
+              //   'info',
+              //   `updating item budget ${
+              //     updatedRecommendedSupportPayload[i].id
+              //   }, with payload of \n${logUtil(
+              //     updatedRecommendedSupportPayload[i],
+              //   )}`,
+              // );
               const itemBudgetToUpdate =
                 await prismaTrans.recommended_support_consultant.findUnique({
                   where: {
@@ -2407,12 +2617,12 @@ export class TenderProposalRepository {
             deletedRecommendedSupportIds &&
             deletedRecommendedSupportIds.length > 0
           ) {
-            this.logger.log(
-              'info',
-              `deleting recommend support with id of \n${logUtil(
-                deletedRecommendedSupportIds,
-              )}`,
-            );
+            // this.logger.log(
+            //   'info',
+            //   `deleting recommend support with id of \n${logUtil(
+            //     deletedRecommendedSupportIds,
+            //   )}`,
+            // );
             await prismaTrans.recommended_support_consultant.deleteMany({
               where: {
                 id: {
@@ -2423,6 +2633,7 @@ export class TenderProposalRepository {
           }
           /* Crud recommend support payload ------------------------------------------------------------ */
 
+          // console.log(logUtil(proposal_logs));
           // throw new BadRequestException('debug!');
 
           return {

@@ -1195,10 +1195,6 @@ export class TenderProposalService {
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
       proposalUpdatePayload.supervisor_id = currentUser.id;
 
-      /* custom logic if there's special logic for regular track */
-      // if (proposal?.track?.name !== 'CONCESSIONAL_GRANTS') {
-      // }
-
       /* custom logic if the track is CONCESSIONAL_GRANTS */
       if (proposal?.track?.with_consultation === true) {
         proposalUpdatePayload = SupervisorGrantTrackAccMapper(
@@ -1211,6 +1207,12 @@ export class TenderProposalService {
       proposalLogCreateInput.action = ProposalAction.ACCEPT;
       proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalLogCreateInput.new_values = {
+        ...proposalUpdatePayload,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
+      } as Prisma.InputJsonValue;
     }
 
     /* reject (same for grants and not grants) DONE */
@@ -1335,6 +1337,29 @@ export class TenderProposalService {
         proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
         proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
       }
+
+      // saving old and new values as a log (either grant or not grants)
+      proposalLogCreateInput.new_values = {
+        ...proposalUpdatePayload,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
+      } as Prisma.InputJsonValue;
+
+      const keys = Object.keys(proposalUpdatePayload);
+
+      proposalLogCreateInput.old_values = {
+        proposal_item_budgets: proposal?.proposal_item_budgets,
+      } as Prisma.InputJsonValue;
+
+      // get all changed old values
+      if (proposalLogCreateInput.old_values) {
+        keys.forEach((key) => {
+          (proposalLogCreateInput.old_values as { [key: string]: unknown })[
+            key
+          ] = (proposal as { [key: string]: unknown })?.[key];
+        });
+      }
     }
 
     if (request.action === ProposalAction.REJECT) {
@@ -1349,7 +1374,7 @@ export class TenderProposalService {
       proposalLogCreateInput.action = ProposalAction.REJECT;
       proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
-      proposalLogCreateInput.notes = request.notes;
+      // proposalLogCreateInput.notes = request.notes;
     }
 
     if (request.action === ProposalAction.STEP_BACK) {
@@ -1428,6 +1453,13 @@ export class TenderProposalService {
       proposalLogCreateInput.action = ProposalAction.ACCEPT;
       proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
+
+      proposalLogCreateInput.new_values = {
+        ...proposalUpdatePayload,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
+      } as Prisma.InputJsonValue;
     }
 
     if (request.action === ProposalAction.REJECT) {
@@ -1476,6 +1508,28 @@ export class TenderProposalService {
         proposalLogCreateInput.action = ProposalAction.ACCEPT;
         proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
         proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
+      }
+
+      proposalLogCreateInput.new_values = {
+        ...proposalUpdatePayload,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
+      } as Prisma.InputJsonValue;
+
+      const keys = Object.keys(proposalUpdatePayload);
+
+      proposalLogCreateInput.old_values = {
+        proposal_item_budgets: proposal?.proposal_item_budgets,
+      } as Prisma.InputJsonValue;
+
+      // get all changed old values
+      if (proposalLogCreateInput.old_values) {
+        keys.forEach((key) => {
+          (proposalLogCreateInput.old_values as { [key: string]: unknown })[
+            key
+          ] = (proposal as { [key: string]: unknown })?.[key];
+        });
       }
     }
 
@@ -1617,13 +1671,23 @@ export class TenderProposalService {
         ? log.data.action
         : 'review';
 
-    const subject = `Proposal ${actions}ed Notification`;
+    let translatedAction = '';
+    if (actions === 'accept') {
+      translatedAction = 'قبلت';
+    }
+    if (actions === 'reject') {
+      translatedAction = 'مرفوض';
+    }
+    if (actions === 'review') {
+      translatedAction = 'استعرض';
+    }
+    const subject = `عرض ${translatedAction} إشعار`;
     // let clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} at (${log.data.created_at})`;
     let clientContent = `مرحبًا ${log.data.proposal.user.employee_name}، نود إخبارك أن المشروع "${log.data.proposal.project_name}" تم ${actions}ه. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات أو النقر هنا.`;
     if (log.data.reviewer) {
       clientContent = `مرحبًا ${log.data.proposal.user.employee_name}، نود إخبارك أن المشروع "${log.data.proposal.project_name}" تم ${actions}ه. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات أو النقر هنا.`;
     }
-    const employeeContent = `Your review has been submitted for proposal (${log.data.proposal.project_name}) at (${log.data.created_at}), and already been notified to the user ${log.data.proposal.user.employee_name} (${log.data.proposal.user.email})`;
+    // const employeeContent = `Your review has been submitted for proposal (${log.data.proposal.project_name}) at (${log.data.created_at}), and already been notified to the user ${log.data.proposal.user.employee_name} (${log.data.proposal.user.email})`;
 
     /* EMAIL NOTIF */
     if (log.data.reviewer) {

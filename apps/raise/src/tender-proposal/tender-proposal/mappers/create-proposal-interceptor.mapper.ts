@@ -13,7 +13,7 @@ export const CreateProposalInterceptorMapper = (
     project_location,
     project_implement_date,
     execution_time,
-    project_beneficiaries,
+    beneficiary_id,
     // letter_ofsupport_req // will handled from service (files)
     // project_attachments // will handled from service (files)
     /* from (step 2) */
@@ -46,13 +46,13 @@ export const CreateProposalInterceptorMapper = (
   createPayload.project_location = project_location;
   createPayload.project_implement_date = new Date(project_implement_date);
   createPayload.execution_time = execution_time;
-  createPayload.project_beneficiaries = project_beneficiaries;
+  createPayload.beneficiary_id = beneficiary_id;
   if (
     !!project_idea &&
     !!project_location &&
     !!project_implement_date &&
     !!execution_time &&
-    !!project_beneficiaries
+    !!beneficiary_id
   ) {
     createPayload.step = 'FIRST';
   }
@@ -70,7 +70,7 @@ export const CreateProposalInterceptorMapper = (
     !!project_location &&
     !!project_implement_date &&
     !!execution_time &&
-    !!project_beneficiaries &&
+    !!beneficiary_id &&
     !!num_ofproject_binicficiaries &&
     !!project_goals &&
     !!project_outputs &&
@@ -91,7 +91,7 @@ export const CreateProposalInterceptorMapper = (
     !!project_location &&
     !!project_implement_date &&
     !!execution_time &&
-    !!project_beneficiaries &&
+    !!beneficiary_id &&
     !!num_ofproject_binicficiaries &&
     !!project_goals &&
     !!project_outputs &&
@@ -116,7 +116,7 @@ export const CreateProposalInterceptorMapper = (
     !!project_location &&
     !!project_implement_date &&
     !!execution_time &&
-    !!project_beneficiaries &&
+    !!beneficiary_id &&
     !!num_ofproject_binicficiaries &&
     !!project_goals &&
     !!project_outputs &&
@@ -139,7 +139,7 @@ export const CreateProposalInterceptorMapper = (
     !!project_location &&
     !!project_implement_date &&
     !!execution_time &&
-    !!project_beneficiaries &&
+    !!beneficiary_id &&
     !!num_ofproject_binicficiaries &&
     !!project_goals &&
     !!project_outputs &&

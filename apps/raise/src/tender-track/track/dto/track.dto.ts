@@ -6,7 +6,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { BaseFilterRequest } from '../../commons/dtos/base-filter-request.dto';
+import { BaseFilterRequest } from '../../../commons/dtos/base-filter-request.dto';
 
 export class TracSectionkDto extends BaseFilterRequest {
   @ApiPropertyOptional()

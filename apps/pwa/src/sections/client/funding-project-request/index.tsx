@@ -9,6 +9,8 @@ import { getDraftProposal } from 'queries/client/getDraftProposal';
 import { updateDraftProposal } from 'queries/client/updateDraftProposal';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { getBeneficiariesList } from 'redux/slices/proposal';
+import { dispatch, useSelector } from 'redux/store';
 import { useMutation, useQuery } from 'urql';
 import axiosInstance from 'utils/axios';
 import Toast from '../../../components/toast';
@@ -40,6 +42,7 @@ const FundingProjectRequestForm = () => {
   const navigate = useNavigate();
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
+  const { loadingCount } = useSelector((state) => state.proposal);
 
   // getting the proposal id if it is exist
   const { state } = location as any;
@@ -63,7 +66,8 @@ const FundingProjectRequestForm = () => {
       project_location: '',
       project_implement_date: '',
       execution_time: '',
-      project_beneficiaries: '',
+      // project_beneficiaries: '',
+      beneficiary_id: '',
       letter_ofsupport_req: {
         url: '',
         size: undefined,
@@ -129,7 +133,7 @@ const FundingProjectRequestForm = () => {
   // on submit for the first step
   const onSubmitform1 = (data: any) => {
     // console.log('data form 1', data);
-    setIsLoading(false);
+    // setIsLoading(false);
     const newData = { ...data };
     const newExTime = Number(data.execution_time);
     newData.execution_time = newExTime * 60;
@@ -876,9 +880,35 @@ const FundingProjectRequestForm = () => {
     }
   };
 
+  const BeneficiariesList = async () => {
+    await dispatch(getBeneficiariesList(activeRole!))
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log({ err });
+        const statusCode = (err && err.statusCode) || 0;
+        const message = (err && err.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
+      });
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
-
+    BeneficiariesList();
     if (id) {
       const tuningTheState = () => {
         if (data?.proposal_by_pk) {
@@ -889,7 +919,7 @@ const FundingProjectRequestForm = () => {
             project_location,
             project_implement_date,
             execution_time,
-            project_beneficiaries,
+            // project_beneficiaries,
             letter_ofsupport_req,
             project_attachments,
             num_ofproject_binicficiaries,
@@ -904,12 +934,13 @@ const FundingProjectRequestForm = () => {
             governorate,
             amount_required_fsupport,
             proposal_item_budgets,
-            timelines,
+            project_timeline,
             step,
+            beneficiary_details,
           } = data.proposal_by_pk;
           setRequestState((prevRegisterState: any) => ({
             ...prevRegisterState,
-            project_timeline: timelines || [],
+            project_timeline: project_timeline || [],
             form1: {
               ...prevRegisterState.form1,
               ...{
@@ -918,7 +949,8 @@ const FundingProjectRequestForm = () => {
                 project_location,
                 project_implement_date,
                 execution_time: execution_time,
-                project_beneficiaries,
+                // project_beneficiaries,
+                beneficiary_id: (beneficiary_details && beneficiary_details.id) || '',
                 letter_ofsupport_req: {
                   // size: undefined,
                   // url: letter_ofsupport_req,
@@ -975,7 +1007,8 @@ const FundingProjectRequestForm = () => {
               project_location,
               project_implement_date,
               execution_time: execution_time,
-              project_beneficiaries,
+              // project_beneficiaries,
+              beneficiary_id: (beneficiary_details && beneficiary_details.id) || '',
               letter_ofsupport_req: {
                 // size: undefined,
                 // url: letter_ofsupport_req,
@@ -1020,7 +1053,9 @@ const FundingProjectRequestForm = () => {
       };
       tuningTheState();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, id]);
+  if (loadingCount) return <>{translate('pages.common.loading')}</>;
   return (
     <>
       <Box

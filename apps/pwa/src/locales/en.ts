@@ -426,6 +426,8 @@ const en = {
               exchange_permit_refuse: 'Refuse permission to exchange',
               exchange_permit_reject_by_pm: 'Refuse permission to exchange by Project Manager',
               exchange_permit_approve: 'Approval of the exchange authorization',
+              exchange_upload_approve: 'Approval of the exchange receipt',
+              exchange_upload_refuse: 'Refuse of the exchange receipt',
               exchange_permit_accept_finance: 'Acceptance of exchange authorization',
               exchange_permit_generate_finance: 'Generate exchange permission data',
               view_transfer_receipt: 'View Receipt',
@@ -865,6 +867,11 @@ const en = {
     'Please enter new password for your account associated with this application',
   login: 'Login',
   create_new_account: 'Create a new account',
+  send_email: 'Send email',
+  send_verify_email: 'Send verification email',
+  headline_verify_email: "You're about to star!",
+  content_verify_email:
+    'To complete your registration kindly click button bellow, we will send you an email forverification and active your account.',
   the_login_message: 'Please enter your email address to login.',
   dont_have_account: "You don't have an account?",
   register_one: 'register from here',
@@ -1951,6 +1958,7 @@ const en = {
       project_completed: 'PROJECT COMPLETED',
       send_revised_version: 'SEND REVISED VERSION',
       proposal_created: 'PROPOSAL CREATED',
+      uploaded_by_cashier: 'PAYMENT UPLOADED BY CASHIER',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'Age 1 to 13',

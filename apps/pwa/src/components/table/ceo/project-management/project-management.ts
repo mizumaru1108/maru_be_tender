@@ -23,6 +23,7 @@ export interface ProjectManagementTableColumn {
   onSelectRow?: VoidFunction;
   destination?: string;
   destinationRole?: string;
+  needSelection?: boolean;
 }
 
 export interface ProjectManagementTableProps {
@@ -35,4 +36,16 @@ export interface ProjectManagementTableProps {
   onFilterChange?: (filter: any) => void;
   onSortChange?: (sort: any) => void;
   onSortMethodChange?: (sortMethod: any) => void;
+}
+
+type filter = 'track_id' | 'none' | 'project_number' | 'project_name' | 'project_section';
+export interface ProjectManagementTableBEProps {
+  data: ProjectManagement[];
+  headerCell: ProjectManagementTableHeader[];
+  headline?: string;
+  isLoading?: boolean;
+  total: number;
+  onPageChange: (page: number) => void;
+  onChangeRowsPage: (rowsPerPage: number) => void;
+  onFilterChange: (filter: filter, value: string) => void;
 }

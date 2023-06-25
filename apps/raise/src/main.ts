@@ -56,22 +56,19 @@ async function bootstrap() {
     exposedHeaders: ['x-hasura-role', 'Authorization'],
     credentials: true,
     origin: [
-      // 'http://localhost:3000',
-      // 'http://localhost:3001',
-      // 'http://localhost:3002',
-      // 'http://localhost:8081',
-      // 'http://localhost:4040',
+      'http://localhost:3000', // for local dev fetch to staging
 
       // HTTP
-      'http://dev.tmra.io', // TMRA Dev
-      'http://staging.tmra.io', // TMRA staging
-      'http://www.tmra.io', // TMRA production
-      'http://givingsadaqah-dev.tmra.io', // GS Dev
-      'http://givingsadaqah-staging.tmra.io', // GS Staging
-      'http://dev.ommar.net', // Ommar Dev
-      'http://staging.ommar.net', // Ommar Staging
-      'http://app-dev.tmra.io', // Tender Dev
-      'http://app-staging.tmra.io', // Tender Staging
+      // Hendy's note: we *never* use plain HTTP on server
+      // 'http://dev.tmra.io', // TMRA Dev
+      // 'http://staging.tmra.io', // TMRA staging
+      // 'http://www.tmra.io', // TMRA production
+      // 'http://givingsadaqah-dev.tmra.io', // GS Dev
+      // 'http://givingsadaqah-staging.tmra.io', // GS Staging
+      // 'http://dev.ommar.net', // Ommar Dev
+      // 'http://staging.ommar.net', // Ommar Staging
+      // 'http://app-dev.tmra.io', // Tender Dev
+      // 'http://app-staging.tmra.io', // Tender Staging
       // HTTPS
       'https://dev.tmra.io', // TMRA Dev
       'https://staging.tmra.io', // TMRA staging
@@ -80,8 +77,9 @@ async function bootstrap() {
       'https://givingsadaqah-staging.tmra.io', // GS Staging
       'https://dev.ommar.net', // Ommar Dev
       'https://staging.ommar.net', // Ommar Staging
-      'https://app-dev.tmra.io', // Tender Dev
-      'https://app-staging.tmra.io', // Tender Staging
+      'https://tender-app-dev.tmra.io', // Tender Dev
+      'https://tender-app-qc.tmra.io', // Tender QC
+      'https://tender-app-staging.tmra.io', // Tender Staging
       'https://gaith.hcharity.org', // Tender Staging
     ],
     preflightContinue: true,

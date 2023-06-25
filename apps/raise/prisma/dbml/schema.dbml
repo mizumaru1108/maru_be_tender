@@ -196,6 +196,8 @@ Table proposal {
   oid Int
   project_number Int [increment, unique]
   project_numbers1 Int [increment, not null]
+  beneficiary_id String
+  beneficiary_details beneficiaries
   notification notification [not null]
   payments payment [not null]
   project_timeline project_timeline [not null]
@@ -258,6 +260,8 @@ Table proposal_log {
   user_role String
   response_time Int
   reject_reason String
+  old_values Json
+  new_values Json
   notification notification [not null]
   user_type user_type [not null]
   proposal proposal [not null]
@@ -528,6 +532,7 @@ Table beneficiaries {
   id String [pk]
   name String [not null]
   is_deleted Boolean [default: false]
+  proposals proposal [not null]
 }
 
 Table recommended_support_consultant {
@@ -1465,6 +1470,8 @@ Ref: message.room_id > room_chat.id [delete: Cascade]
 Ref: payment.proposal_id > proposal.id [delete: Cascade]
 
 Ref: payment.status > payment_status.id [delete: Cascade]
+
+Ref: proposal.beneficiary_id > beneficiaries.id
 
 Ref: proposal.accreditation_type_id > accreditation_type.id
 

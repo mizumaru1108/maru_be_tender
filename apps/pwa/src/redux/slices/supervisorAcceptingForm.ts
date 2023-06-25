@@ -141,7 +141,10 @@ const slice = createSlice({
       state.step3.project_idea = action.payload.project_idea;
       state.step3.project_goals = action.payload.project_goals;
       state.step3.amount_required_fsupport = action.payload.amount_required_fsupport;
+      // state.step3.project_beneficiaries =
+      //   project_beneficiaries_map[action.payload.project_beneficiaries as keyof BeneficiariesMap];
       state.step3.project_beneficiaries =
+        action.payload.beneficiary_details.name ||
         project_beneficiaries_map[action.payload.project_beneficiaries as keyof BeneficiariesMap];
       state.step3.project_implement_date = action.payload.project_implement_date;
       state.step3.execution_time = action.payload.execution_time;

@@ -51,7 +51,8 @@ export class CreateProposalInterceptorDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  project_beneficiaries: string;
+  @IsUUID('4', { message: 'Invalid Beneficiary Id!' })
+  beneficiary_id: string;
   /* first form ---------------------------------------------------- */
 
   /* second form ---------------------------------------------------- */

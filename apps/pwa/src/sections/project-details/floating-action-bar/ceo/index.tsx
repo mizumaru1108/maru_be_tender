@@ -21,6 +21,7 @@ import { Conversation } from '../../../../@types/wschat';
 import FacilitateSupervisorAcceptingForm from '../supervisor/supervisor-facilitate-track/forms';
 import { setStepsData } from '../../../../redux/slices/supervisorAcceptingForm';
 import { getProposalCount } from '../../../../redux/slices/proposal';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 function FloatingActionBar() {
   const { user, activeRole } = useAuth();
@@ -89,7 +90,10 @@ function FloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
+          // dispatch(getProposalCount(activeRole ?? 'test'));
           //
           setIsSubmitting(false);
           navigate(`/ceo/dashboard/app`);
@@ -183,7 +187,10 @@ function FloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmittingRejected(false);
           navigate(`/ceo/dashboard/app`);
@@ -272,7 +279,10 @@ function FloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmittingStepback(false);
           navigate(`/ceo/dashboard/app`);

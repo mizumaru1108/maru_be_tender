@@ -107,6 +107,7 @@ export enum ProposalAction {
   ISSUED_BY_SUPERVISOR = 'issued_by_supervisor',
   ACCEPTED_BY_FINANCE = 'accepted_by_finance',
   ACCEPTED_BY_PROJECT_MANAGER = 'accepted_by_project_manager',
+  UPLOADED_BY_CASHIER = 'uploaded_by_cashier',
   SET_BY_SUPERVISOR = 'set_by_supervisor',
   DONE = 'done',
 }

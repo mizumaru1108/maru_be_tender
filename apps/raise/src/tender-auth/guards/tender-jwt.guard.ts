@@ -8,6 +8,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 /**
  * @author RDananag (iyoy)
@@ -18,7 +19,10 @@ import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-use
  */
 @Injectable()
 export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
-  constructor(private fusionAuthService: FusionAuthService) {
+  constructor(
+    private fusionAuthService: FusionAuthService,
+    @InjectPinoLogger(TenderJwtGuard.name) private logger: PinoLogger,
+  ) {
     super();
   }
   async canActivate(context: ExecutionContext) {
@@ -55,13 +59,10 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
         throw new UnauthorizedException('Invalid token!');
       }
 
-      if (
-        validToken.response.jwt.roles.indexOf(
-          request.headers['x-hasura-role'],
-        ) === -1
-      ) {
+      const xHasuraRole = request.headers['x-hasura-role'];
+      if (validToken.response.jwt.roles.indexOf(xHasuraRole) === -1) {
         throw new UnauthorizedException(
-          "Current user doesn't have the required role to access this resource!",
+          `Current user roles doesn't have the required role to access this resource!`,
         );
       }
 

@@ -21,6 +21,7 @@ import { FusionAuthRoles } from '../../@types/commons';
 import React from 'react';
 import { dispatch } from 'redux/store';
 import { getProposalCount } from 'redux/slices/proposal';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 /**
  *
@@ -128,7 +129,10 @@ const ProjectCard = ({
         },
       });
     }
-    dispatch(getProposalCount(activeRole ?? 'test'));
+    // dispatch(getProposalCount(activeRole ?? 'test'));
+    if (FEATURE_PROPOSAL_COUNTING) {
+      dispatch(getProposalCount(activeRole ?? 'test'));
+    }
     if (destination) {
       const x = location.pathname.split('/');
       navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`);

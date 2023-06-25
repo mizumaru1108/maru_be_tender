@@ -426,6 +426,8 @@ const ar = {
               exchange_permit_refuse: 'رفض إذن الصرف',
               exchange_permit_reject_by_pm: 'تم رفض هذه الدفعة من قبل مدير الإدارة',
               exchange_permit_approve: 'اعتماد إذن الصرف',
+              exchange_upload_approve: 'اعتماد إيصال الصرف',
+              exchange_upload_refuse: 'رفض إيصال الصرف',
               exchange_permit_accept_finance: 'قبول إذن الصرف',
               exchange_permit_generate_finance: 'توليد بيانات إذن الصرف',
               view_transfer_receipt: 'استلام عرض',
@@ -877,6 +879,11 @@ const ar = {
   register_one: 'قم بإنشاء حساب من هنا',
   add_new_line: 'إنشاء سطر جديد',
   create_new_account: 'إنشاء حساب جديد',
+  headline_verify_email: 'أنت على وشك أن تصبح نجمة!',
+  content_verify_email:
+    'لإكمال تسجيلك ، يرجى النقر فوق الزر أدناه ، وسوف نرسل لك بريدًا إلكترونيًا للتحقق وتفعيل حسابك.',
+  send_verify_email: 'ارسل البريد الإلكتروني لإعادة تعيين كلمة المرور',
+  send_email: 'ارسل البريد الإلكتروني',
   show_details: 'دراسة المشروع',
   revision_the_project: 'مراجعة المشروع',
   show_project: 'استعراض المشروع',
@@ -938,7 +945,7 @@ const ar = {
     center: {
       label: 'المركز الإداري ( ترجمة)',
       // placeholder: 'الرجاء اختيار المركز',
-      placholder: 'الرجاء ادخال المركز الإداري',
+      placeholder: 'الرجاء ادخال المركز الإداري',
       options: {},
     },
     mobile_number: {
@@ -1970,6 +1977,7 @@ const ar = {
       project_completed: 'تم المشروع',
       send_revised_version: 'إرسال النسخة المنقحة',
       proposal_created: 'تم انشاء المشروع',
+      uploaded_by_cashier: 'دفعة تم تحميلها بواسطة كاشير',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'من 1 سنة إلى 13',

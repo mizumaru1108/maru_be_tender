@@ -267,6 +267,7 @@ export class TenderProposalPaymentService {
         | ProposalAction.ISSUED_BY_SUPERVISOR
         | ProposalAction.ACCEPTED_BY_PROJECT_MANAGER
         | ProposalAction.ACCEPTED_BY_FINANCE
+        | ProposalAction.UPLOADED_BY_CASHIER
         | ProposalAction.DONE
         | null = null;
 
@@ -276,19 +277,40 @@ export class TenderProposalPaymentService {
       const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
         [];
       const proposalUpdateInput: Prisma.proposalUncheckedUpdateInput = {};
+      let deletedFileManagerUrl: string = '';
 
       if (choosenRole === 'tender_project_manager') {
         if (proposal.project_manager_id !== userId) ownershipErrorThrow();
         actionValidator(['accept', 'reject'], action);
         if (action === 'accept')
           status = ProposalAction.ACCEPTED_BY_PROJECT_MANAGER;
-        if (action === 'reject') status = ProposalAction.SET_BY_SUPERVISOR;
+        if (action === 'reject') {
+          status = ProposalAction.SET_BY_SUPERVISOR;
+          if (!request.notes) {
+            throw new BadRequestException(
+              'Notes are required when rejecting payment',
+            );
+          }
+          if (!request.last_payment_receipt_url) {
+            throw new BadRequestException(
+              'please send the last rejected file url',
+            );
+          }
+          deletedFileManagerUrl = request.last_payment_receipt_url;
+        }
       }
 
       if (choosenRole === 'tender_finance') {
-        actionValidator(['accept'], action);
+        actionValidator(
+          ['accept', 'confirm_payment', 'reject_payment'],
+          action,
+        );
         proposalUpdateInput.finance_id = userId;
         if (action === 'accept') status = ProposalAction.ACCEPTED_BY_FINANCE;
+        if (action === 'confirm_payment') status = ProposalAction.DONE;
+        if (action === 'reject_payment') {
+          status = ProposalAction.ACCEPTED_BY_FINANCE;
+        }
         // !TODO: if (action is edit) do something, still abmigous, need to discuss.
       }
 
@@ -303,7 +325,8 @@ export class TenderProposalPaymentService {
         actionValidator(['upload_receipt'], action);
         if (!cheque) throw new BadRequestException('Cheque data is required!');
         proposalUpdateInput.cashier_id = userId;
-        if (action === 'upload_receipt') status = ProposalAction.DONE;
+        if (action === 'upload_receipt')
+          status = ProposalAction.UPLOADED_BY_CASHIER;
         const uploadResult = await this.uploadPaymentFileFile(
           proposal.id,
           `Uploading cheque for payment ${payment_id}`,
@@ -347,6 +370,8 @@ export class TenderProposalPaymentService {
         fileManagerCreateManyPayload,
         lastLog,
         proposalUpdateInput,
+        request.notes,
+        deletedFileManagerUrl,
       );
 
       await this.notificationService.sendSmsAndEmailBatch(response.updateNotif);

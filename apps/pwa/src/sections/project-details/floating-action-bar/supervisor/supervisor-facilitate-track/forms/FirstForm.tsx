@@ -32,7 +32,12 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
     vat: Yup.boolean().required('Procedures is required!'),
     vat_percentage: Yup.number()
       .integer()
-      .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
+      // .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
+      .nullable()
+      .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
+        if (!val) return true;
+        return Number(val) > 0;
+      }),
     inclu_or_exclu: Yup.boolean(),
     payment_number: Yup.string()
       .required(translate('errors.cre_proposal.payment_number.required'))
@@ -53,7 +58,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
 
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
-  const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
+  // const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
   const methods = useForm<SupervisorStep1>({
     resolver: yupResolver(validationSchema),
     defaultValues: useMemo(() => step1, [step1]),
@@ -64,7 +69,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   const vat = watch('vat');
   const support_type = watch('support_type');
   const paymentNum = watch('payment_number');
-  // console.log({ paymentNum });
+  // console.log({ support_type });
   // const inclu_or_exclu = watch('inclu_or_exclu');
 
   const onSubmitForm = async (data: SupervisorStep1) => {
@@ -74,7 +79,12 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   useEffect(() => {
     setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
     if (proposal) {
-      setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
+      if (proposal.fsupport_by_supervisor) {
+        setValue('fsupport_by_supervisor', proposal.fsupport_by_supervisor);
+      } else {
+        setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
+      }
+      // console.log('proposal.amount_required_fsupport', proposal.amount_required_fsupport);
     }
   }, [proposal, setValue, reset]);
 
@@ -88,30 +98,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
-        {/* <Grid item md={6} xs={12}>
-          <RHFSelect
-            name="clause"
-            size="small"
-            label="البند حسب التصنيف*"
-            placeholder="الرجاء اختيار البند"
-          >
-            <MenuItem value="مشروع يخص المساجد">مشروع يخص المساجد</MenuItem>
-            <MenuItem value="مشروع يخص المنح الميسر">مشروع يخص المنح الميسر</MenuItem>
-            <MenuItem value="مشروع يخص المبادرات">مشروع يخص المبادرات</MenuItem>
-            <MenuItem value="مشروع يخص تعميدات">مشروع يخص تعميدات</MenuItem>
-          </RHFSelect>
-        </Grid> */}
-        {/* <Grid item md={6} xs={12}>
-          <RHFSelect
-            name="clasification_field"
-            label="مجال التصنيف*"
-            placeholder="الرجاء اختيار مجال التصنيف"
-            size="small"
-          >
-            <MenuItem value="عام">عام</MenuItem>
-          </RHFSelect>
-        </Grid> */}
-
         <Grid item md={6} xs={12}>
           <BaseField
             type="radioGroup"
@@ -204,7 +190,10 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             name="fsupport_by_supervisor"
             label="مبلغ الدعم*"
             placeholder="مبلغ الدعم"
-            disabled={isSupport ? false : true}
+            // disabled={isSupport ? false : true}
+            disabled={
+              support_type === 'false' || !support_type || support_type === undefined ? false : true
+            }
           />
         </Grid>
 
@@ -246,51 +235,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             label="عدد المدفوعات*"
           />
         </Grid>
-        {/* <Grid item md={6} xs={12}>
-          <BaseField
-            type="textField"
-            name="fsupport_by_supervisor"
-            label="مبلغ الدعم*"
-            placeholder="مبلغ الدعم"
-            disabled={support_type === 'true' ? false : true}
-          />
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <BaseField
-            type="textField"
-            name="number_of_payments_by_supervisor"
-            label="عدد الدفعات*"
-            placeholder="1"
-          />
-        </Grid> */}
-        {/* <Grid item md={6} xs={12}>
-          <RHFSelect
-            name="accreditation_type_id"
-            label="نوع الاعتماد*"
-            placeholder="الرجاء اختيار نوع الاعتماد"
-            size="small"
-          >
-            <MenuItem value="PLAN">خطة</MenuItem>
-            <MenuItem value="INCOMING">وارد</MenuItem>
-          </RHFSelect>
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <RHFSelect
-            type="select"
-            size="small"
-            name="support_goal_id"
-            placeholder="الرجاء اختيار أهداف الدعم"
-            label="اهداف الدعم*"
-          >
-            {_supportGoals[`${proposal.project_track as keyof typeof _supportGoals}`].map(
-              (item) => (
-                <MenuItem value={item.value} key={item.value}>
-                  {item.title}
-                </MenuItem>
-              )
-            )}
-          </RHFSelect>
-        </Grid> */}
         <Grid item md={12} xs={12}>
           <BaseField
             type="textArea"

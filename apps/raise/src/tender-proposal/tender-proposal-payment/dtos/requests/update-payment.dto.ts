@@ -38,10 +38,28 @@ export class UpdatePaymentDto {
 
   @ApiProperty()
   @IsString()
-  @IsIn(['accept', 'reject', 'edit', 'upload_receipt', 'issue'], {
-    message: 'action must be accept, reject, issue, edit or upload_receipt',
-  })
-  action: 'accept' | 'reject' | 'edit' | 'upload_receipt' | 'issue';
+  @IsIn(
+    [
+      'accept',
+      'reject',
+      'edit',
+      'upload_receipt',
+      'issue',
+      'confirm_payment',
+      'reject_payment',
+    ],
+    {
+      message: 'invalid action',
+    },
+  )
+  action:
+    | 'accept'
+    | 'reject'
+    | 'edit'
+    | 'upload_receipt'
+    | 'issue'
+    | 'confirm_payment'
+    | 'reject_payment';
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -49,4 +67,16 @@ export class UpdatePaymentDto {
   @ValidateNested()
   @Type(() => CreateChequeDto)
   cheque: CreateChequeDto;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  notes?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  last_payment_receipt_url?: string;
 }

@@ -31,35 +31,11 @@ const ChartWrapperStyle = styled('div')(({ theme }) => ({
 function TimeLine() {
   const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
-  console.log('test', proposal.timelines);
+  // console.log('test', proposal);
   const state = {
     series: [
-      // {
-      //   data: [
-      //     {
-      //       x: 'البند الأول',
-      //       y: [new Date('2019-03-20').getTime(), new Date('2019-03-23').getTime()],
-      //     },
-      //     {
-      //       x: 'البند الثاني',
-      //       y: [new Date('2019-03-24').getTime(), new Date('2019-03-27').getTime()],
-      //     },
-      //     {
-      //       x: 'البند الثالث',
-      //       y: [new Date('2019-03-24').getTime(), new Date('2019-03-27').getTime()],
-      //     },
-      //     {
-      //       x: 'البند الرابع',
-      //       y: [new Date('2019-03-27').getTime(), new Date('2019-04-03').getTime()],
-      //     },
-      //     {
-      //       x: 'البند الخامس',
-      //       y: [new Date('2019-04-03').getTime(), new Date('2019-04-09').getTime()],
-      //     },
-      //   ],
-      // },
       {
-        data: [...proposal.timelines].map((item) => ({
+        data: [...proposal.project_timeline].map((item) => ({
           x: item.name,
           y: [new Date(item.start_date).getTime(), new Date(item.end_date).getTime()],
           fillColor: '#0E8478',
@@ -146,7 +122,7 @@ function TimeLine() {
       },
     } as ApexOptions,
   };
-  if (proposal && (proposal.timelines.length === 0 || !proposal.timelines))
+  if (proposal && (proposal.project_timeline.length === 0 || !proposal.project_timeline))
     return <>{translate('pages.common.no_project_timelines')}</>;
 
   return (

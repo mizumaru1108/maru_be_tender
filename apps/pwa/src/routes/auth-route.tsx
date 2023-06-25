@@ -5,6 +5,7 @@ import { Navigate } from 'react-router-dom';
 
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));
+const SendMail = Loadable(lazy(() => import('../pages/auth/SendMail')));
 const ResetPassword = Loadable(lazy(() => import('../pages/auth/ResetPassword')));
 const ForgotPassword = Loadable(lazy(() => import('../pages/auth/ForgotPassword')));
 const NewResetPassword = Loadable(lazy(() => import('../pages/auth/NewResetPassword')));
@@ -26,6 +27,14 @@ export const authRoute = {
       element: (
         <GuestGuard>
           <Register />
+        </GuestGuard>
+      ),
+    },
+    {
+      path: 'send-email',
+      element: (
+        <GuestGuard>
+          <SendMail />
         </GuestGuard>
       ),
     },

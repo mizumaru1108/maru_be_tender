@@ -4,15 +4,15 @@ import { PaymentStatusEntity } from './payment-status.entity';
 
 export class ProposalPaymentEntity {
   id: string;
-  payment_amount: number;
+  payment_amount?: number | null;
   proposal_id: string;
   payment_date?: Date;
   status: string = 'SET_BY_SUPERVISOR';
-  number_of_payments?: number;
-  order?: number;
+  number_of_payments?: number | null;
+  order?: number | null;
   created_at?: Date = new Date();
   updated_at?: Date = new Date();
-  cheques: ChequeEntity[];
-  proposal: ProposalEntity;
-  payment_status: PaymentStatusEntity;
+  cheques?: ChequeEntity[];
+  proposal?: ProposalEntity;
+  payment_status?: PaymentStatusEntity;
 }

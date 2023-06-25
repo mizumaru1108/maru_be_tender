@@ -26,7 +26,7 @@ type Props = {
 const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const { translate } = useLocales();
   const [budgetError, setBudgetError] = useState(false);
-  const isDisabled = !!revised && revised.hasOwnProperty('timelines') ? false : true;
+  const isDisabled = !!revised && revised.hasOwnProperty('project_timeline') ? false : true;
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

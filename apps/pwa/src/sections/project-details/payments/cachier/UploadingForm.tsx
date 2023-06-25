@@ -8,18 +8,21 @@ import useLocales from 'hooks/useLocales';
 import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
-import { insertChequeByCashier } from 'redux/slices/proposal';
+import { getProposal, getProposalCount, insertChequeByCashier } from 'redux/slices/proposal';
 import { useDispatch } from 'redux/store';
 import * as Yup from 'yup';
 import { UploadReceiptFormFields } from './form-data';
 import { UploadReceiptPayload } from './type';
 import useAuth from 'hooks/useAuth';
 import { errorExchange } from 'urql';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { useParams } from 'react-router';
 
 function UploadingForm({ paymentId, onClose }: any) {
   const { activeRole } = useAuth();
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
+  const { id } = useParams();
 
   const dispatch = useDispatch();
 
@@ -82,7 +85,12 @@ function UploadingForm({ paymentId, onClose }: any) {
             horizontal: 'right',
           },
         });
+        dispatch(getProposal(id as string, activeRole as string));
 
+        // dispatch(getProposalCount(activeRole ?? 'test'));
+        if (FEATURE_PROPOSAL_COUNTING) {
+          dispatch(getProposalCount(activeRole ?? 'test'));
+        }
         onClose();
         // window.location.reload();
       });

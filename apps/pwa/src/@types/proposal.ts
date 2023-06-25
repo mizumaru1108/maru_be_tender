@@ -8,17 +8,17 @@ export interface BankInformation {
   card_image: { url: string; size: number | undefined; type: string; border_color?: string };
 }
 
+export interface TransferReceipt {
+  size: number;
+  type: string;
+  url: string;
+}
+
 export interface Cheques {
   id: string;
   number: number;
   payment_id: number;
-  transfer_receipt:
-    | string
-    | {
-        size: number;
-        type: string;
-        url: string;
-      };
+  transfer_receipt: string | TransferReceipt;
   deposit_date: Date;
 }
 
@@ -36,6 +36,7 @@ export type PaymentStatus =
   | 'issued_by_supervisor'
   | 'accepted_by_project_manager'
   | 'accepted_by_finance'
+  | 'uploaded_by_cashier'
   | 'done';
 
 export type AccreditationTypeId = 'PLAIN' | 'INCOMING';
@@ -77,6 +78,12 @@ export interface TrackBudget {
   remaining_budget: number;
 }
 
+export interface BeneficiaryDetail {
+  id: string;
+  name: string;
+  is_deleted: boolean;
+}
+
 export interface Proposal {
   id: string;
   project_name: string;
@@ -95,7 +102,8 @@ export interface Proposal {
   support_outputs: string;
   track_id: string;
   accreditation_type_id: AccreditationTypeId;
-  timelines: timeline[];
+  project_timeline: timeline[];
+  beneficiary_details: BeneficiaryDetail | null;
   governorate: string;
   track_budget: TrackBudget;
   // proposal_logs: {
@@ -352,6 +360,7 @@ export type PropsalLogGrants = {
   action: string;
   message: string;
   user_role: string;
+  new_value?: any;
   proposal?: {
     accreditation_type_id: string;
     added_value: string;
@@ -415,4 +424,5 @@ export type Log = {
   reject_reason?: string;
   reviewer_id?: string;
   employee_name: string;
+  new_value?: any;
 };

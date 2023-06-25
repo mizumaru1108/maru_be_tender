@@ -34,6 +34,12 @@ query MyQuery($id: String = "") {
       id
     }
     step
+    beneficiary_details {
+      name
+      id
+      is_deleted
+    }
   }
 }
+
 `;

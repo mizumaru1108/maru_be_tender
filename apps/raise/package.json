@@ -14,6 +14,7 @@
     "@nestjs/common": "^9.0.8",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.8",
+    "@nestjs/cqrs": "^10.0.0",
     "@nestjs/jwt": "^9.0.0",
     "@nestjs/mongoose": "^9.2.0",
     "@nestjs/passport": "^9.0.0",
@@ -87,6 +88,7 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.30.3",
     "@typescript-eslint/parser": "^5.30.3",
+    "concurrently": "^8.2.0",
     "eslint": "^8.19.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -136,15 +138,14 @@
     "push:prod": "git push origin main:stack/prod",
     "push:qc": "git push origin main:stack/qc",
     "push:staging": "git push origin main:stack/staging",
-    "start": "nest start",
-    "start:debug": "nest start --debug --watch",
-    "start:dev": "nest start --watch",
+    "start": "concurrently -c auto -n prisma,nest 'prisma generate' 'nest start'",
+    "start:debug": "concurrently -c auto -n prisma,nest 'prisma generate --watch' 'next start--debug --watch'",
+    "start:dev": "concurrently -c auto -n prisma,nest 'prisma generate --watch' 'nest start --watch'",
     "start:prod": "node dist/main",
     "test": "jest",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:watch": "jest --watch",
-    "postinstall": "prisma generate"
+    "test:watch": "jest --watch"
   }
 }

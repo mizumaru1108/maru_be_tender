@@ -10,35 +10,43 @@ import { useEffect, useState } from 'react';
 function CashierPaymentsPage() {
   const { translate } = useLocales();
   const theme = useTheme();
-  const { proposal } = useSelector((state) => state.proposal);
+  const { proposal, loadingPayment } = useSelector((state) => state.proposal);
 
   const [paymentDone, setPayementDone] = useState<boolean>(false);
 
   const [valueSpending, setValueSpending] = useState<number>(0);
 
   useEffect(() => {
-    // paymnent done
-    const paymentList = proposal.payments
-      .filter((el) => el.status === 'done')
-      .map((el) => Number(el.payment_amount));
-    const totalPayments = paymentList.reduce((a, b) => a + b, 0);
+    if (!loadingPayment) {
+      // paymnent done
+      const paymentList = proposal.payments
+        .filter((el) => el.status === 'done')
+        .map((el) => Number(el.payment_amount));
+      const totalPayments = paymentList.reduce((a, b) => a + b, 0);
 
-    setValueSpending(totalPayments);
+      setValueSpending(totalPayments);
 
-    // Closing Report
-    const acc_payments = proposal.number_of_payments_by_supervisor;
-    const payment_actual_done = proposal.payments.filter(
-      (el: { status: string }) => el.status === 'done'
-    ).length;
-    if (
-      payment_actual_done === Number(acc_payments) &&
-      proposal.inner_status !== 'DONE_BY_CASHIER'
-    ) {
-      setPayementDone(true);
-    } else {
-      setPayementDone(false);
+      // Closing Report
+      const acc_payments = proposal.number_of_payments_by_supervisor;
+      const payment_actual_done = proposal.payments.filter(
+        (el: { status: string }) => el.status === 'done'
+      ).length;
+      console.log('payment_actual_done', payment_actual_done);
+      console.log('Number(acc_payments)', Number(acc_payments));
+      if (
+        payment_actual_done === Number(acc_payments) &&
+        proposal.inner_status !== 'DONE_BY_CASHIER'
+      ) {
+        setPayementDone(true);
+      } else {
+        setPayementDone(false);
+      }
     }
-  }, [proposal]);
+  }, [proposal, loadingPayment]);
+
+  if (loadingPayment) {
+    return <div>{translate('pages.common.loading')}</div>;
+  }
 
   return (
     <>

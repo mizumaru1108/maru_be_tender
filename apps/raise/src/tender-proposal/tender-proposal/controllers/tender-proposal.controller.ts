@@ -2,8 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpStatus,
+  NotFoundException,
   Patch,
   Post,
   Query,
@@ -22,8 +24,11 @@ import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 
+import { CommandBus } from '@nestjs/cqrs';
 import { FileFieldsInterceptor } from '@webundsoehne/nest-fastify-file-upload';
+import { Builder } from 'builder-pattern';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
+import { ChangeStateCommand } from '../commands/change-state/change.state.command';
 import {
   AskAmandementRequestDto,
   ChangeProposalStateDto,
@@ -40,10 +45,17 @@ import {
   SendAmandementDto,
   SendRevisionDto,
 } from '../dtos/requests';
+import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
 import { TenderProposalService } from '../services/tender-proposal.service';
+import { PayloadRequiredException } from '../../../tender-commons/exceptions/payload-required.exception';
+import { InvalidTrackIdException } from '../../../tender-track/track/exceptions/invalid-track-id.excception';
+import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 @Controller('tender-proposal')
 export class TenderProposalController {
-  constructor(private readonly proposalService: TenderProposalService) {}
+  constructor(
+    private readonly proposalService: TenderProposalService,
+    private readonly commandBus: CommandBus,
+  ) {}
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
@@ -440,6 +452,49 @@ export class TenderProposalController {
       HttpStatus.OK,
       `Proposal change state success!, current state: ${proposal.outter_status}, details: ${proposal.inner_status}`,
     );
+  }
+
+  /* experimental */
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_accounts_manager',
+    'tender_admin',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_consultant',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  ) // only internal users
+  @Patch('change-state-cqrs')
+  async applyChangeProposalState(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: ChangeProposalStateDto,
+  ) {
+    try {
+      const proposalCommand = Builder<ChangeStateCommand>(ChangeStateCommand, {
+        currentUser,
+        request,
+      }).build();
+
+      const result = await this.commandBus.execute(proposalCommand);
+      return baseResponseHelper(result, HttpStatus.OK);
+    } catch (error) {
+      if (error instanceof ProposalNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      if (
+        error instanceof PayloadRequiredException ||
+        error instanceof InvalidTrackIdException
+      ) {
+        throw new BadRequestException(error.message);
+      }
+      if (error instanceof ForbiddenChangeStateActionException) {
+        throw new ForbiddenException(error.message);
+      }
+      throw error;
+    }
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)

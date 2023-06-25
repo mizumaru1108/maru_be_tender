@@ -26,6 +26,7 @@ import { Conversation } from '../../../../@types/wschat';
 import FacilitateSupervisorAcceptingForm from '../supervisor/supervisor-facilitate-track/forms';
 import { setStepsData, stepResetActive } from '../../../../redux/slices/supervisorAcceptingForm';
 import { getProposalCount } from '../../../../redux/slices/proposal';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 function FloatingActionBar() {
   const { id: proposal_id } = useParams();
@@ -122,7 +123,10 @@ function FloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmitting(false);
           navigate(`/project-manager/dashboard/app`);
@@ -216,7 +220,10 @@ function FloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmitting(false);
           navigate(`/project-manager/dashboard/app`);
@@ -311,7 +318,10 @@ function FloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmittingRejected(false);
           navigate(`/project-manager/dashboard/app`);
@@ -405,7 +415,10 @@ function FloatingActionBar() {
             });
           }
           // for re count total proposal
-          dispatch(getProposalCount(activeRole ?? 'test'));
+          // dispatch(getProposalCount(activeRole ?? 'test'));
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           //
           setIsSubmittingStepback(false);
           navigate(`/project-manager/dashboard/app`);
