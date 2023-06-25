@@ -26,6 +26,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     //   ttl: 1000 * 60 * 60 * 24 * 3, // time (in ms) until an item is considered stale, current value is 1 days
     // });
 
+    // Datadog: https://docs.datadoghq.com/logs/log_configuration/attributes_naming_convention/#database
     super({
       // log is handled by listeners below which uses PinoLogger
       log: [
