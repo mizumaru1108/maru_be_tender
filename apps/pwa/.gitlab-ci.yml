@@ -166,7 +166,7 @@
     # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
     - cd apps/pwa
     - npm pkg set installConfig.hoistingLimits=workspaces
-    - yarn workspaces focus --production
+    - yarn workspaces focus
     - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="$APP_VERSION" yarn build
     - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
   artifacts:
