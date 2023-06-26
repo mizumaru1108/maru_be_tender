@@ -21,7 +21,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({
-      logger: process.env.LOG_FORMAT === 'ecs' ? pinoLogger : true,
+      logger: process.env.LOG_FORMAT === 'pretty' ? true : pinoLogger,
       // in express we can use json and urlencoded. u can see in code that i define below
       bodyLimit: 52428800, // prevent 413 Payload Too Large (fastify)
       // how to limit json and urlencoded (form submit) in express
