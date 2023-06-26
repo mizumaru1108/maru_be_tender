@@ -47,7 +47,7 @@ import {
 } from '../dtos/requests';
 import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
 import { TenderProposalService } from '../services/tender-proposal.service';
-import { PayloadRequiredException } from '../../../tender-commons/exceptions/payload-required.exception';
+import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
 import { InvalidTrackIdException } from '../../../tender-track/track/exceptions/invalid-track-id.excception';
 import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 @Controller('tender-proposal')
@@ -485,7 +485,7 @@ export class TenderProposalController {
         throw new NotFoundException(error.message);
       }
       if (
-        error instanceof PayloadRequiredException ||
+        error instanceof PayloadErrorException ||
         error instanceof InvalidTrackIdException
       ) {
         throw new BadRequestException(error.message);

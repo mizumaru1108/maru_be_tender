@@ -22,13 +22,15 @@ export interface FindManyLogProps {
   sort_by?: string;
 }
 
-export interface CreateProposalLogProps {
+export class CreateProposalLogProps {
   proposal_id: string;
   state: string;
   id?: string; // in case that it is predefined, otherwise we can use the default nanoid();
-  user_role?: string;
-  action?: string;
-  reject_reason?: string;
+  reviewer_id?: string | null;
+  user_role?: string | null;
+  action?: string | null;
+  response_time?: number | null;
+  reject_reason?: string | null;
 }
 
 @Injectable()
@@ -174,6 +176,8 @@ export class TenderProposalLogRepository {
         data: {
           id: props.id || nanoid(),
           proposal_id: props.proposal_id,
+          reviewer_id: props.reviewer_id,
+          response_time: props.response_time,
           action: props.action,
           state: props.state,
           user_role: props.user_role,
@@ -184,6 +188,36 @@ export class TenderProposalLogRepository {
       return Builder<ProposalLogEntity>(ProposalLogEntity, rawResult).build();
     } catch (error) {
       this.logger.info(`error on creating proposal logs ${error}`);
+      throw error;
+    }
+  }
+
+  async createMany(
+    props: CreateProposalLogProps[],
+    session?: PrismaService,
+  ): Promise<number> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      const rawResults = await prisma.proposal_log.createMany({
+        data: props.map((prop: CreateProposalLogProps) => {
+          return {
+            id: prop.id || nanoid(),
+            proposal_id: prop.proposal_id,
+            action: prop.action,
+            reviewer_id: prop.reviewer_id,
+            response_time: prop.response_time,
+            state: prop.state,
+            user_role: prop.user_role,
+            reject_reason: prop.reject_reason,
+          } as Prisma.proposal_logUncheckedCreateInput;
+        }),
+      });
+
+      return rawResults.count;
+    } catch (error) {
+      this.logger.info(`error on create many proposal logs ${error}`);
       throw error;
     }
   }

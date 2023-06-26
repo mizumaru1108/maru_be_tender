@@ -6,6 +6,8 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
+  Max,
+  Min,
   ValidateNested,
 } from 'class-validator';
 
@@ -16,8 +18,9 @@ export class ProposalPaymentCreateDto {
   order: number;
 
   @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.01)
+  @Max(999999999999999999.99)
   payment_amount: number;
 
   @ApiProperty()

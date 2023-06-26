@@ -1,8 +1,11 @@
 import {
+  BadRequestException,
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpStatus,
+  NotFoundException,
   Patch,
   Post,
   Query,
@@ -33,10 +36,65 @@ import {
 } from '../dtos/requests';
 import { UpdatePaymentResponseDto } from '../dtos/responses';
 import { TenderProposalPaymentService } from '../services/tender-proposal-payment.service';
+import { DataNotFoundException } from '../../../tender-commons/exceptions/data-not-found.exception';
+import { ForbiddenPermissionException } from '../../../tender-commons/exceptions/forbidden-permission-exception';
+import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
+import { CommandBus } from '@nestjs/cqrs';
+import { Builder } from 'builder-pattern';
+import { ProposalInsertPaymentCommand } from '../commands/proposal.insert.payments.command.ts/proposal.insert.payments.command';
+import { InvalidNumberofPaymentsException } from '../exceptions/invalid.number.of.payments.exception';
+import { InvalidAmountOfSupportException } from '../exceptions/invalid.amount.of.support.exception';
 
 @Controller('tender/proposal/payment')
 export class TenderProposalPaymentController {
-  constructor(private readonly paymentService: TenderProposalPaymentService) {}
+  constructor(
+    private readonly paymentService: TenderProposalPaymentService,
+    private readonly commandBus: CommandBus,
+  ) {}
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_project_supervisor')
+  @Post('insert-payments')
+  async insertPayments(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: CreateProposalPaymentDto,
+  ): Promise<BaseResponse<any>> {
+    try {
+      const insertPaymentCommand = Builder<ProposalInsertPaymentCommand>(
+        ProposalInsertPaymentCommand,
+        {
+          currentUserId: currentUser.id,
+          proposal_id: request.proposal_id,
+          payments: request.payments,
+        },
+      ).build();
+
+      const createdPayment = await this.commandBus.execute(
+        insertPaymentCommand,
+      );
+
+      return baseResponseHelper(
+        createdPayment,
+        HttpStatus.CREATED,
+        'Payment created successfully',
+      );
+    } catch (error) {
+      if (error instanceof DataNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      if (error instanceof ForbiddenPermissionException) {
+        throw new ForbiddenException(error.message);
+      }
+      if (
+        error instanceof PayloadErrorException ||
+        error instanceof InvalidNumberofPaymentsException ||
+        error instanceof InvalidAmountOfSupportException
+      ) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
+  }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')

@@ -1,25 +1,19 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { v4 as uuidv4 } from 'uuid';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { Builder } from 'builder-pattern';
+import { PrismaService } from '../../prisma/prisma.service';
+import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
+import { PreviousProposalFilterRequest } from '../../tender-proposal/tender-proposal/dtos/requests';
+import { TenderProposalRepository } from '../../tender-proposal/tender-proposal/repositories/tender-proposal.repository';
+import { BeneficiaryEntity } from '../entity/beneficiary.entity';
 import {
   CreateBeneficiaryProps,
   UpdateBeneficiaryProps,
 } from '../types/beneficiary.type';
-import { BeneficiaryEntity } from '../entity/beneficiary.entity';
-import { Builder } from 'builder-pattern';
-import { Prisma } from '@prisma/client';
-import { logUtil } from '../../../commons/utils/log-util';
-import {
-  InnerStatusEnum,
-  ProposalAction,
-} from '../../../tender-commons/types/proposal';
-import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
-import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
-import { PreviousProposalFilterRequest } from '../../tender-proposal/dtos/requests';
-import { TenderProposalRepository } from '../../tender-proposal/repositories/tender-proposal.repository';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export class TenderProposalBeneficiariesRepository {
+export class BeneficiariesRepository {
   constructor(private prismaService: PrismaService) {}
 
   async findById(

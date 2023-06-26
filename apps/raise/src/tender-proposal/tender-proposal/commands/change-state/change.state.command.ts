@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { nanoid } from 'nanoid';
 import { PrismaService } from '../../../../prisma/prisma.service';
-import { PayloadRequiredException } from '../../../../tender-commons/exceptions/payload-required.exception';
+import { PayloadErrorException } from '../../../../tender-commons/exceptions/payload-error.exception';
 import { TenderAppRoleEnum } from '../../../../tender-commons/types';
 import {
   InnerStatusEnum,
@@ -17,12 +17,10 @@ import {
 import { ChangeProposalStateDto } from '../../dtos/requests';
 import { ForbiddenChangeStateActionException } from '../../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../../exceptions/proposal-not-found.exception';
-import {
-  TenderProposalRepository,
-  UpdateProposalProps,
-} from '../../repositories/tender-proposal.repository';
+import { TenderProposalRepository } from '../../repositories/tender-proposal.repository';
 import { TenderTrackRepository } from '../../../../tender-track/track/repositories/tender-track.repository';
 import { Builder } from 'builder-pattern';
+import { UpdateProposalProps } from '../../types';
 /* Command is specific for doing business logic, please dont do query here, you are only allowed to use prisma to start and end a sessions */
 export class ChangeStateCommand {
   currentUser: TenderCurrentUser;
@@ -90,7 +88,7 @@ export class ChangeStateCommandHandler
       // handle accept action for moderator
       if (request.action === ProposalAction.ACCEPT) {
         if (!request.moderator_payload) {
-          throw new PayloadRequiredException(`Moderator Payload`);
+          throw new PayloadErrorException(`Moderator Payload is Required!`);
         }
 
         /* validating track */
@@ -125,7 +123,7 @@ export class ChangeStateCommandHandler
 
       if (request.action === ProposalAction.REJECT) {
         if (!request.reject_reason) {
-          throw new PayloadRequiredException('reject reason');
+          throw new PayloadErrorException('reject reason is required');
         }
         /* proposal */
         proposalUpdateProps.inner_status =
@@ -184,7 +182,7 @@ export class ChangeStateCommandHandler
     /* acc */
     if (request.action === ProposalAction.ACCEPT) {
       if (!request.supervisor_payload) {
-        throw new PayloadRequiredException(
+        throw new PayloadErrorException(
           'Supervisor accept payload is required!',
         );
       }

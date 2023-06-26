@@ -14,6 +14,7 @@ import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helpe
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
+import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
@@ -54,8 +55,6 @@ import { CreateChequeMapper, CreateClosingReportMapper } from '../mappers';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
 import { CreateTrackBudgetMapper } from '../mappers/create-track-section-budget-mapper';
 import { TenderProposalPaymentRepository } from '../repositories/tender-proposal-payment.repository';
-import { logUtil } from '../../../commons/utils/log-util';
-import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
 
 @Injectable()
 export class TenderProposalPaymentService {

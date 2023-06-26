@@ -36,7 +36,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   app.enableCors({
-    methods: ['OPTIONS', 'POST', 'GET', 'PATCH'],
+    methods: ['OPTIONS', 'POST', 'GET', 'PATCH', 'DELETE'],
     allowedHeaders: [
       'Access-Control-Allow-Origin',
       'Origin',

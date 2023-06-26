@@ -7,6 +7,7 @@ import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { DataNotFoundException } from '../../../tender-commons/exceptions/data-not-found.exception';
 import {
   TenderAppRoleEnum,
   appRoleMappers,
@@ -18,6 +19,7 @@ import {
 } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { ProposalItemBudgetEntity } from '../../item-budget/entities/proposal_item_budget.entity';
 import { ProposalPaymentEntity } from '../../tender-proposal-payment/entities/proposal-payment.entity';
 import {
   FetchClosingReportListFilterRequest,
@@ -33,32 +35,12 @@ import { UpdateMyProposalResponseDto } from '../dtos/responses/update-my-proposa
 import { ProposalEntity } from '../entities/proposal.entity';
 import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
 import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
-export interface FetchProposalByIdProps {
-  id: string;
-  includes_relation?: string[];
-}
-
-export class UpdateProposalProps {
-  id: string;
-  inner_status?: string;
-  outter_status?: string;
-  state?: string;
-  track_id?: string;
-  supervisor_id?: string;
-  inclu_or_exclu?: boolean;
-  vat_percentage?: number;
-  support_goal_id?: string;
-  vat?: boolean | null;
-  support_outputs?: string;
-  number_of_payments_by_supervisor?: number;
-  fsupport_by_supervisor?: number;
-  does_an_agreement?: boolean | null;
-  need_picture?: boolean | null;
-  closing_report?: boolean | null;
-  support_type?: boolean | null;
-  clause?: string;
-  clasification_field?: string;
-}
+import {
+  CreateProposalProps,
+  DeleteProposalProps,
+  FetchProposalByIdProps,
+  UpdateProposalProps,
+} from '../types';
 
 @Injectable()
 export class TenderProposalRepository {
@@ -241,6 +223,21 @@ export class TenderProposalRepository {
                 }).build(),
               )
             : undefined,
+        proposal_item_budgets:
+          tmpProposal.proposal_item_budgets &&
+          tmpProposal.proposal_item_budgets.length > 0
+            ? tmpProposal.proposal_item_budgets.map(
+                (rawBudget: ProposalItemBudgetEntity) => {
+                  return Builder<ProposalItemBudgetEntity>(
+                    ProposalItemBudgetEntity,
+                    {
+                      ...rawBudget,
+                      amount: parseFloat(rawBudget.amount.toString()),
+                    },
+                  ).build();
+                },
+              )
+            : undefined,
       }).build();
 
       return proposalByIdEntity;
@@ -261,25 +258,74 @@ export class TenderProposalRepository {
       const rawUpdatedProposal = await prisma.proposal.update({
         where: { id: props.id },
         data: {
-          inner_status: props.inner_status,
-          outter_status: props.outter_status,
-          state: props.state,
-          track_id: props.track_id,
-          supervisor_id: props.supervisor_id,
+          accreditation_type_id: props.accreditation_type_id,
+          added_value: props.added_value,
+          amount_required_fsupport: props.amount_required_fsupport,
+          been_made_before: props.been_made_before,
+          been_supported_before: props.been_supported_before,
+          beneficiary_id: props.beneficiary_id,
+          cashier_id: props.cashier_id,
+          chairman_of_board_of_directors: props.chairman_of_board_of_directors,
+          clasification_field: props.clasification_field,
+          clause: props.clause,
+          closing_report: props.closing_report,
+          does_an_agreement: props.does_an_agreement,
+          execution_time: props.execution_time,
+          finance_id: props.finance_id,
+          fsupport_by_supervisor: props.fsupport_by_supervisor,
+          governorate: props.governorate,
+          id: props.id || nanoid(),
           inclu_or_exclu: props.inclu_or_exclu,
-          vat_percentage: props.vat_percentage,
-          support_goal_id: props.support_goal_id,
-          vat: props.vat,
-          support_outputs: props.support_outputs,
+          inner_status: props.inner_status,
+          letter_ofsupport_req: props.letter_ofsupport_req,
+          most_clents_projects: props.most_clents_projects,
+          need_consultant: props.need_consultant,
+          need_picture: props.need_picture,
+          num_ofproject_binicficiaries: props.num_ofproject_binicficiaries,
+          number_of_payments: props.number_of_payments,
           number_of_payments_by_supervisor:
             props.number_of_payments_by_supervisor,
-          fsupport_by_supervisor: props.fsupport_by_supervisor,
-          does_an_agreement: props.does_an_agreement,
-          need_picture: props.need_picture,
-          closing_report: props.closing_report,
+          oid: props.oid,
+          old_inner_status: props.old_inner_status,
+          on_consulting: props.on_consulting,
+          on_revision: props.on_revision,
+          outter_status: props.outter_status,
+          partial_support_amount: props.partial_support_amount,
+          pm_email: props.pm_email,
+          pm_mobile: props.pm_mobile,
+          pm_name: props.pm_name,
+          project_attachments: props.project_attachments,
+          project_beneficiaries: props.project_beneficiaries,
+          project_beneficiaries_specific_type:
+            props.project_beneficiaries_specific_type,
+          project_goals: props.project_goals,
+          project_idea: props.project_idea,
+          project_implement_date: props.project_implement_date,
+          project_location: props.project_location,
+          project_manager_id: props.project_manager_id,
+          project_name: props.project_name,
+          project_outputs: props.project_outputs,
+          project_risks: props.project_risks,
+          project_strengths: props.project_strengths,
+          project_track: props.project_track,
+          proposal_bank_id: props.proposal_bank_id,
+          reasons_to_accept: props.reasons_to_accept,
+          region: props.region,
+          remote_or_insite: props.remote_or_insite,
+          state: props.state,
+          step: props.step,
+          submitter_user_id: props.submitter_user_id,
+          supervisor_id: props.supervisor_id,
+          support_goal_id: props.support_goal_id,
+          support_outputs: props.support_outputs,
           support_type: props.support_type,
-          clause: props.clause,
-          clasification_field: props.clasification_field,
+          target_group_age: props.target_group_age,
+          target_group_num: props.target_group_num,
+          target_group_type: props.target_group_type,
+          track_id: props.track_id,
+          vat: props.vat,
+          vat_percentage: props.vat_percentage,
+          whole_budget: props.whole_budget,
         },
       });
 
@@ -324,6 +370,185 @@ export class TenderProposalRepository {
     }
   }
 
+  /* Latest, already able to do passing session, and return entity instead of prisma model*/
+  async create(
+    props: CreateProposalProps,
+    session?: PrismaService,
+  ): Promise<ProposalEntity> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      const rawCreatedProposal = await prisma.proposal.create({
+        data: {
+          accreditation_type_id: props.accreditation_type_id,
+          added_value: props.added_value,
+          amount_required_fsupport: props.amount_required_fsupport,
+          been_made_before: props.been_made_before,
+          been_supported_before: props.been_supported_before,
+          beneficiary_id: props.beneficiary_id,
+          cashier_id: props.cashier_id,
+          chairman_of_board_of_directors: props.chairman_of_board_of_directors,
+          clasification_field: props.clasification_field,
+          clause: props.clause,
+          closing_report: props.closing_report,
+          does_an_agreement: props.does_an_agreement,
+          execution_time: props.execution_time,
+          finance_id: props.finance_id,
+          fsupport_by_supervisor: props.fsupport_by_supervisor,
+          governorate: props.governorate,
+          id: props.id || nanoid(),
+          inclu_or_exclu: props.inclu_or_exclu,
+          inner_status: props.inner_status,
+          letter_ofsupport_req: props.letter_ofsupport_req,
+          most_clents_projects: props.most_clents_projects,
+          need_consultant: props.need_consultant,
+          need_picture: props.need_picture,
+          num_ofproject_binicficiaries: props.num_ofproject_binicficiaries,
+          number_of_payments: props.number_of_payments,
+          number_of_payments_by_supervisor:
+            props.number_of_payments_by_supervisor,
+          oid: props.oid,
+          old_inner_status: props.old_inner_status,
+          on_consulting: props.on_consulting,
+          on_revision: props.on_revision,
+          outter_status: props.outter_status,
+          partial_support_amount: props.partial_support_amount,
+          pm_email: props.pm_email,
+          pm_mobile: props.pm_mobile,
+          pm_name: props.pm_name,
+          project_attachments: props.project_attachments,
+          project_beneficiaries: props.project_beneficiaries,
+          project_beneficiaries_specific_type:
+            props.project_beneficiaries_specific_type,
+          project_goals: props.project_goals,
+          project_idea: props.project_idea,
+          project_implement_date: props.project_implement_date,
+          project_location: props.project_location,
+          project_manager_id: props.project_manager_id,
+          project_name: props.project_name,
+          project_outputs: props.project_outputs,
+          project_risks: props.project_risks,
+          project_strengths: props.project_strengths,
+          project_track: props.project_track,
+          proposal_bank_id: props.proposal_bank_id,
+          reasons_to_accept: props.reasons_to_accept,
+          region: props.region,
+          remote_or_insite: props.remote_or_insite,
+          state: props.state,
+          step: props.step,
+          submitter_user_id: props.submitter_user_id,
+          supervisor_id: props.supervisor_id,
+          support_goal_id: props.support_goal_id,
+          support_outputs: props.support_outputs,
+          support_type: props.support_type,
+          target_group_age: props.target_group_age,
+          target_group_num: props.target_group_num,
+          target_group_type: props.target_group_type,
+          track_id: props.track_id,
+          vat: props.vat,
+          vat_percentage: props.vat_percentage,
+          whole_budget: props.whole_budget,
+        },
+      });
+
+      const createdProposalEntity = Builder<ProposalEntity>(ProposalEntity, {
+        ...rawCreatedProposal,
+        amount_required_fsupport:
+          rawCreatedProposal.amount_required_fsupport !== null
+            ? parseFloat(rawCreatedProposal.amount_required_fsupport.toString())
+            : null,
+        whole_budget:
+          rawCreatedProposal.whole_budget !== null
+            ? parseFloat(rawCreatedProposal.whole_budget.toString())
+            : null,
+        number_of_payments:
+          rawCreatedProposal.number_of_payments !== null
+            ? parseFloat(rawCreatedProposal.number_of_payments.toString())
+            : null,
+        partial_support_amount:
+          rawCreatedProposal.partial_support_amount !== null
+            ? parseFloat(rawCreatedProposal.partial_support_amount.toString())
+            : null,
+        fsupport_by_supervisor:
+          rawCreatedProposal.fsupport_by_supervisor !== null
+            ? parseFloat(rawCreatedProposal.fsupport_by_supervisor.toString())
+            : null,
+        number_of_payments_by_supervisor:
+          rawCreatedProposal.number_of_payments_by_supervisor !== null
+            ? parseFloat(
+                rawCreatedProposal.number_of_payments_by_supervisor.toString(),
+              )
+            : null,
+        execution_time:
+          rawCreatedProposal.execution_time !== null
+            ? parseFloat(rawCreatedProposal.execution_time.toString())
+            : null,
+      }).build();
+
+      return createdProposalEntity;
+    } catch (error) {
+      this.logger.error('Error on updating proposal =%j', error);
+      throw error;
+    }
+  }
+
+  async delete(props: DeleteProposalProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawDeleteRes = await prisma.proposal.delete({
+        where: { id: props.id },
+      });
+
+      const deletedProposalEntity = Builder<ProposalEntity>(ProposalEntity, {
+        ...rawDeleteRes,
+        amount_required_fsupport:
+          rawDeleteRes.amount_required_fsupport !== null
+            ? parseFloat(rawDeleteRes.amount_required_fsupport.toString())
+            : null,
+        whole_budget:
+          rawDeleteRes.whole_budget !== null
+            ? parseFloat(rawDeleteRes.whole_budget.toString())
+            : null,
+        number_of_payments:
+          rawDeleteRes.number_of_payments !== null
+            ? parseFloat(rawDeleteRes.number_of_payments.toString())
+            : null,
+        partial_support_amount:
+          rawDeleteRes.partial_support_amount !== null
+            ? parseFloat(rawDeleteRes.partial_support_amount.toString())
+            : null,
+        fsupport_by_supervisor:
+          rawDeleteRes.fsupport_by_supervisor !== null
+            ? parseFloat(rawDeleteRes.fsupport_by_supervisor.toString())
+            : null,
+        number_of_payments_by_supervisor:
+          rawDeleteRes.number_of_payments_by_supervisor !== null
+            ? parseFloat(
+                rawDeleteRes.number_of_payments_by_supervisor.toString(),
+              )
+            : null,
+        execution_time:
+          rawDeleteRes.execution_time !== null
+            ? parseFloat(rawDeleteRes.execution_time.toString())
+            : null,
+      }).build();
+
+      return deletedProposalEntity;
+    } catch (error) {
+      this.logger.info(`Delete Proposal Error details ${error}`);
+      if (error.code !== undefined && error.code === 'P2025') {
+        throw new DataNotFoundException(
+          `Code ${error.code}${
+            error.meta.cause ? `, ${error.meta.cause}` : ''
+          }`,
+        );
+      }
+      throw error;
+    }
+  }
+
   async validateOwnBankAccount(user_id: string, bank_id: string) {
     try {
       const bankAccount = await this.prismaService.bank_information.findFirst({
@@ -344,7 +569,7 @@ export class TenderProposalRepository {
     }
   }
 
-  async create(
+  async createProposal(
     createProposalPayload: Prisma.proposalUncheckedCreateInput,
     proposal_item_budgets:
       | Prisma.proposal_item_budgetCreateManyInput[]

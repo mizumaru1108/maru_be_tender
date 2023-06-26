@@ -15,7 +15,7 @@ import {
 } from 'class-validator';
 import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
 import { ExistingProjectBudgetDto } from './existing-proposal-item-budget.dto';
-import { TargetGroupAgeEnum } from '../../types';
+import { TargetGroupAgeEnum } from '../../enums/target-group-age.enum';
 
 export class SupervisorChangeStatePayload {
   /* exist on regular track but can be exist on GRANT Track */

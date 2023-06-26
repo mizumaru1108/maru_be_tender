@@ -1,30 +1,28 @@
 import {
-  Body,
   Controller,
-  Get,
+  UseGuards,
+  Post,
+  Body,
   HttpStatus,
   Patch,
-  Post,
+  Get,
   Query,
-  UseGuards,
 } from '@nestjs/common';
-import { GetByUUIDQueryParamDto } from '../../../commons/dtos/get-by-uuid-query-param.dto';
-import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
-import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
+import { CurrentUser } from '../../commons/decorators/current-user.decorator';
+import { GetByUUIDQueryParamDto } from '../../commons/dtos/get-by-uuid-query-param.dto';
+import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
+import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator';
+import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
+import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
+import { manualPaginationHelper } from '../../tender-commons/helpers/manual-pagination-helper';
 import { CreateBeneficiariesDto } from '../dtos/requests/create-beneficiaries.dto';
 import { FindBeneficiariesFilterRequest } from '../dtos/requests/find-beneficiaries.dto';
 import { UpdateBeneficiaryDto } from '../dtos/requests/update-beneficiaries.dto';
-import { TenderProposalBeneficiaresService } from '../services/tender-proposal-beneficiaries.service';
-import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
-import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
-import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
-import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
+import { BeneficiaresService } from '../services/beneficiaries.service';
 
 @Controller('tender/proposal/beneficiaries')
-export class TenderProposalBeneficiariesController {
-  constructor(
-    private readonly beneficiariesService: TenderProposalBeneficiaresService,
-  ) {}
+export class BeneficiariesController {
+  constructor(private readonly beneficiariesService: BeneficiaresService) {}
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')

@@ -65,6 +65,8 @@ import { mseGatConfig } from './commons/configs/msegat-config';
 import { PaymentPaytabsModule } from './payment-paytabs/payment-paytabs.module';
 import { LoggerModule } from 'nestjs-pino';
 import { DatadogTraceModule } from 'nestjs-ddtrace';
+import { QaHelperModule } from './qa-helper/qa-helper.module';
+import { BeneficiaryModule } from './beneficiary/beneficiary.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -184,6 +186,7 @@ import { DatadogTraceModule } from 'nestjs-ddtrace';
     GsAuthModule,
     GsUserModule,
     /* Tender */
+    BeneficiaryModule,
     TenderModule,
     TenderProposalModule,
     TenderAppointmentModule,
@@ -198,6 +201,7 @@ import { DatadogTraceModule } from 'nestjs-ddtrace';
     TenderNotificationModule,
     TenderFileManagerModule,
     PaymentPaytabsModule,
+    QaHelperModule,
   ],
   controllers: [],
 })

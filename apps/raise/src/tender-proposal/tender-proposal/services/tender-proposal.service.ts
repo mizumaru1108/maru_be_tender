@@ -360,7 +360,7 @@ export class TenderProposalService {
     }
 
     // create proposal and the logs
-    const createdProposal = await this.proposalRepo.create(
+    const createdProposal = await this.proposalRepo.createProposal(
       proposalCreatePayload,
       proposal_item_budgets,
       proposalTimelinesPayloads,

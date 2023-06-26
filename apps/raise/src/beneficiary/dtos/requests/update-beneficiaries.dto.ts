@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { GetByUUIDQueryParamDto } from '../../../../commons/dtos/get-by-uuid-query-param.dto';
 import { IsNotEmpty, IsString, IsOptional, IsBoolean } from 'class-validator';
+import { GetByUUIDQueryParamDto } from '../../../commons/dtos/get-by-uuid-query-param.dto';
 
 export class UpdateBeneficiaryDto extends GetByUUIDQueryParamDto {
   @ApiPropertyOptional()

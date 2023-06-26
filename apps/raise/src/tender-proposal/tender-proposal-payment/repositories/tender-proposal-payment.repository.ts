@@ -25,6 +25,26 @@ import {
 } from '../dtos/requests';
 import { CloseReportNotifMapper } from '../mappers';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
+import { Builder } from 'builder-pattern';
+import { ProposalPaymentEntity } from '../entities/proposal-payment.entity';
+
+export class CreatePaymentProps {
+  id?: string;
+  proposal_id: string;
+  status?: string;
+  order?: string;
+  payment_amount?: string;
+  payment_date?: Date;
+}
+
+export class UpdatePaymentProps {
+  id: string;
+  proposal_id?: string;
+  status?: string;
+  order?: string;
+  payment_amount?: string;
+  payment_date?: Date;
+}
 
 @Injectable()
 export class TenderProposalPaymentRepository {
@@ -36,6 +56,158 @@ export class TenderProposalPaymentRepository {
     private readonly bunnyService: BunnyService,
     private readonly configService: ConfigService,
   ) {}
+
+  async findById(
+    id: string,
+    session?: PrismaService,
+  ): Promise<ProposalPaymentEntity | null> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      const rawPayment = await prisma.payment.findUnique({
+        where: { id },
+      });
+
+      if (!rawPayment) return null;
+
+      const paymentEntity = Builder<ProposalPaymentEntity>(
+        ProposalPaymentEntity,
+        {
+          ...rawPayment,
+          payment_amount:
+            rawPayment.payment_amount !== null
+              ? parseFloat(rawPayment.payment_amount.toString())
+              : null,
+          number_of_payments:
+            rawPayment.number_of_payments !== null
+              ? parseFloat(rawPayment.number_of_payments.toString())
+              : null,
+          order:
+            rawPayment.order !== null
+              ? parseFloat(rawPayment.order.toString())
+              : null,
+        },
+      ).build();
+
+      return paymentEntity;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async create(props: CreatePaymentProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      const rawCreatedPayment = await prisma.payment.create({
+        data: {
+          id: props.id || nanoid(),
+          status: props.status,
+          order: props.order,
+          proposal_id: props.proposal_id,
+          payment_amount: props.payment_amount,
+          payment_date: props.payment_date,
+        },
+      });
+
+      const createdPaymentEntity = Builder<ProposalPaymentEntity>(
+        ProposalPaymentEntity,
+        {
+          ...rawCreatedPayment,
+          payment_amount:
+            rawCreatedPayment.payment_amount !== null
+              ? parseFloat(rawCreatedPayment.payment_amount.toString())
+              : null,
+          number_of_payments:
+            rawCreatedPayment.number_of_payments !== null
+              ? parseFloat(rawCreatedPayment.number_of_payments.toString())
+              : null,
+          order:
+            rawCreatedPayment.order !== null
+              ? parseFloat(rawCreatedPayment.order.toString())
+              : null,
+        },
+      ).build();
+
+      return createdPaymentEntity;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
+  async createMany(
+    props: CreatePaymentProps[],
+    session?: PrismaService,
+  ): Promise<number> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      const rawCreatedPayment = await prisma.payment.createMany({
+        data: props.map((prop) => {
+          return {
+            id: prop.id || nanoid(),
+            status: prop.status,
+            order: prop.order,
+            proposal_id: prop.proposal_id,
+            payment_amount: prop.payment_amount,
+            payment_date: prop.payment_date,
+          };
+        }),
+      });
+
+      return rawCreatedPayment.count;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
+  async update(props: UpdatePaymentProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      const rawCreatedPayment = await prisma.payment.update({
+        where: { id: props.id },
+        data: {
+          id: props.id || nanoid(),
+          status: props.status,
+          order: props.order,
+          proposal_id: props.proposal_id,
+          payment_amount: props.payment_amount,
+          payment_date: props.payment_date,
+        },
+      });
+
+      const createdPaymentEntity = Builder<ProposalPaymentEntity>(
+        ProposalPaymentEntity,
+        {
+          ...rawCreatedPayment,
+          payment_amount:
+            rawCreatedPayment.payment_amount !== null
+              ? parseFloat(rawCreatedPayment.payment_amount.toString())
+              : null,
+          number_of_payments:
+            rawCreatedPayment.number_of_payments !== null
+              ? parseFloat(rawCreatedPayment.number_of_payments.toString())
+              : null,
+          order:
+            rawCreatedPayment.order !== null
+              ? parseFloat(rawCreatedPayment.order.toString())
+              : null,
+        },
+      ).build();
+
+      return createdPaymentEntity;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
 
   async findPaymentById(id: string): Promise<payment | null> {
     this.logger.debug(`finding payment by id of ${id}... `);
