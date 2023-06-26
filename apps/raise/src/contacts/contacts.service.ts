@@ -36,24 +36,21 @@ export class ContactsService {
     const ObjectId = require('mongoose').Types.ObjectId;
     const organization_id = message.organizationId;
 
-    if (!organization_id) {
-      throw new HttpException(
-        'Request rejected organizationId is required!',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
     try {
       this.logger.debug('find organization...');
-      const getOrganization = await this.organizationModel.findOne({
-        _id: ObjectId(organization_id),
-      });
+      let getOrganization;
 
-      if (!getOrganization) {
-        throw new HttpException(
-          'Organization not found!',
-          HttpStatus.BAD_REQUEST,
-        );
+      if (organization_id) {
+        getOrganization = await this.organizationModel.findOne({
+          _id: ObjectId(organization_id),
+        });
+
+        if (!getOrganization) {
+          throw new HttpException(
+            'Organization not found!',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
       }
 
       const notifPayload: CommonNotificationMapperResponse = {
@@ -63,7 +60,9 @@ export class ContactsService {
         clientId: [],
         clientEmail: [message.email],
         clientMobileNumber: [],
-        clientEmailTemplatePath: `gs/en/contact/submiter_contact_us`,
+        clientEmailTemplatePath: organization_id
+          ? 'gs/en/contact/submiter_contact_us'
+          : 'tmra/en/contact/submitter_contact_us_tmra',
         clientEmailTemplateContext: [
           {
             donor_email: message.email,
@@ -72,8 +71,15 @@ export class ContactsService {
         ],
         clientContent: 'Thanks for letting us know',
         reviewerId: [],
-        reviewerEmail: [getOrganization.contactEmail],
-        reviewerEmailTemplatePath: `gs/en/contact/receiver_contact_us`,
+        reviewerEmail: [
+          organization_id && getOrganization
+            ? getOrganization.contactEmail
+            : 'hello@tmra.io',
+        ],
+        reviewerEmailTemplatePath:
+          organization_id && getOrganization
+            ? 'gs/en/contact/receiver_contact_us'
+            : 'tmra/en/contact/receiver_contact_us_tmra',
         reviewerEmailTemplateContext: [
           {
             fullName: message.name,
@@ -82,20 +88,22 @@ export class ContactsService {
             emailHost: 'hello@tmra.io',
           },
         ],
-        reviewerContent: 'Donor has sent you an Email',
+        reviewerContent: 'Someone has sent you an Email!',
         reviewerMobileNumber: [],
         reviwerSubject:
-          'Donor has sent you an Email! Please check your inbox...`',
+          'Someone has sent you an Email! Please check your inbox...`',
         createManyWebNotifPayload: [],
       };
 
       await this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
       const createNotif = await this.notificationsModel.create({
-        organizationId: new Types.ObjectId(organization_id),
+        organizationId: organization_id
+          ? new Types.ObjectId(organization_id)
+          : null,
         type: 'general',
         createdAt: new Date().toISOString(),
-        title: 'Donor has sent you an Email!',
+        title: 'Someone has sent you an email!',
         body: `Please check your inbox...`,
         icon: 'message',
         markAsRead: false,
@@ -109,7 +117,7 @@ export class ContactsService {
       }
 
       return {
-        organization_id: getOrganization._id,
+        organization_id: getOrganization ? getOrganization._id : null,
         submiter_email: message.email,
         receiver_email: notifPayload.reviewerEmail,
       };

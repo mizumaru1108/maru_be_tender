@@ -94,6 +94,7 @@ import { envLoadErrorHelper } from 'src/commons/helpers/env-loaderror-helper';
 import { CreateNewOrganizationMappers } from './mappers/organization.mappers';
 import { CreateNewAppearance } from './mappers/apperance.mappers';
 import { CreateNewPaymentGateway } from './mappers/payment-gateway.mappers';
+import { BaseFilterRequest } from 'src/commons/dtos/base-filter-request.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -119,6 +120,8 @@ export class OrganizationService {
     private notifSettingsModel: Model<NotificationSettingsDocument>,
     @InjectModel(Organization.name)
     private organizationModel: Model<OrganizationDocument>,
+    @InjectModel(Organization.name)
+    private organizationAggregatePaginateModel: AggregatePaginateModel<OrganizationDocument>,
     @InjectModel(PaymentGateway.name)
     private paymentGatewayModel: Model<PaymentGatewayDocument>,
     private configService: ConfigService,
@@ -155,6 +158,37 @@ export class OrganizationService {
       },
       { sort: { name: 1 } },
     );
+  }
+
+  async findAllOrgByAdmin(
+    request: BaseFilterRequest,
+  ): Promise<AggregatePaginateResult<OrganizationDocument>> {
+    const { limit = 10, page = 1 } = request;
+    const aggregateQuerry = this.organizationModel.aggregate([
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          campaignName: 1,
+          organizationEmail: 1,
+          contactEmail: 1,
+          organizationType: 1,
+          favicon: 1,
+        },
+      },
+      { $sort: { name: 1 } },
+    ]);
+
+    const organizationList =
+      await this.organizationAggregatePaginateModel.aggregatePaginate(
+        aggregateQuerry,
+        {
+          page,
+          limit,
+        },
+      );
+
+    return organizationList;
   }
 
   async getOrganization(organizationId: string) {

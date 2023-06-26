@@ -23,4 +23,8 @@ export enum Permission {
    * Used for Giving Sadakah user (Organization)
    */
   NF = 'nonprofit_only',
+  /**
+   * Used for Super Admin user (Organization)
+   */
+  SA = 'super_admin',
 }

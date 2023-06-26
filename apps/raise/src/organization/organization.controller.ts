@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { ROOT_LOGGER } from '../libs/root-logger';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrganizationDto } from './dto/organization.dto';
 import { AppearancenDto } from './dto/appearance.dto';
 import { NotificationSettingsDto } from './dto/notification_settings.dto';
@@ -42,6 +42,13 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { DonationLogsDocument } from '../donation/schema/donation_log.schema';
 import { DonationLogDocument } from '../donation/schema/donation-log.schema';
 
+// permission
+import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
+import { Permissions } from 'src/auth/decorator/permissions.decorator';
+import { Permission } from 'src/libs/authzed/enums/permission.enum';
+import { OrganizationDocument } from './schema/organization.schema';
+import { BaseFilterRequest } from 'src/commons/dtos/base-filter-request.dto';
+
 @ApiTags('orgs')
 @Controller('orgs')
 export class OrganizationController {
@@ -55,6 +62,44 @@ export class OrganizationController {
   async findAll() {
     this.logger.debug('findAll...');
     return await this.organizationService.findAll();
+  }
+
+  @ApiOperation({
+    summary: 'Get all organization overview (superadmin)',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: `Successfully fetch all organization request by Super Admin`,
+  })
+  // @Permissions(Permission.SA)
+  // @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(JwtAuthGuard)
+  @Get('getAllOrgAdmin')
+  async getAllOrgAdmin(
+    @Query() request: BaseFilterRequest,
+  ): Promise<PaginatedResponse<OrganizationDocument[]>> {
+    this.logger.info(`Find organization list ...`);
+
+    const organizationList = await this.organizationService.findAllOrgByAdmin(
+      request,
+    );
+
+    const response = paginationHelper(
+      organizationList.docs,
+      organizationList.totalDocs,
+      organizationList.limit,
+      organizationList.page,
+      organizationList.totalPages,
+      organizationList.pagingCounter,
+      organizationList.hasPrevPage,
+      organizationList.hasNextPage,
+      organizationList.prevPage,
+      organizationList.nextPage,
+      HttpStatus.OK,
+      `Successfully fetch all organization request by Super Admin`,
+    );
+
+    return response;
   }
 
   @Get(':organizationId')

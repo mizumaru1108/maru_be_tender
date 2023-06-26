@@ -9,7 +9,7 @@ interface Props {
   stepGransLog: PropsalLogGrants;
 }
 
-function SupervisorGrants({ stepGransLog }: Props) {
+function SupervisorGrantsRev({ stepGransLog }: Props) {
   const { proposal } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
   const [newProposal, setNewProposal] = React.useState<any>();
@@ -510,4 +510,4 @@ function SupervisorGrants({ stepGransLog }: Props) {
   );
 }
 
-export default SupervisorGrants;
+export default SupervisorGrantsRev;

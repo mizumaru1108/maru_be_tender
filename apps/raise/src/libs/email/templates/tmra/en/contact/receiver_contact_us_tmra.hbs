@@ -26,14 +26,14 @@
       font-size: 1.2em;
       text-align: left;
       list-style: none;
-      margin: 0 !important;
+      margin-right: 20px;
+      margin-left: 0px;
     }
 
     .nav .navbar li a {
       display: block;
       color: inherit;
       text-decoration: none;
-      margin-right: 30px !important;
     }
 
     .nav .navbar li a:hover {
@@ -42,7 +42,7 @@
     }
 
     .wrapper-content {
-      background: #fff;
+      background: #f1f0f0;
       padding: 20px 40px;
       line-height: 0px;
       border-radius: 5px;
@@ -52,34 +52,6 @@
     .icon {
       margin-right: 5px;
       margin-left: 5px;
-    }
-
-    .link {
-      cursor: pointer;
-      color: #00aa55;
-    }
-
-    .link:hover {
-      color: #038544;
-    }
-
-    .buttonLgn {
-      background-color: #af046e;
-      color: white;
-      font-weight: 500;
-      font-size: medium;
-      border: none;
-      border-radius: 7px;
-      margin: 10px 0;
-      padding: 15px 20px;
-      cursor: pointer;
-      display: block;
-      text-decoration: none;
-      text-align: center;
-    }
-
-    .buttonLgn:hover {
-      background-color: #850052;
     }
   </style>
   <style type="text/css">
@@ -143,43 +115,6 @@
                               margin-bottom: 15px;
                             " />
                       </div>
-                      <!-- <nav
-                          class="nav"
-                          style="width: 100%; display: block; margin-top: 30px"
-                        >
-                          <ul class="navbar" style="display: flex">
-                            <li><a href="#">Home</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Tutorials</a></li>
-                            <li><a href="#">Support</a></li>
-                          </ul>
-                        </nav> -->
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div style="
-                          font-family: Inter, Helvetica, sans-serif;
-                          font-size: 16px;
-                          line-height: 1;
-                          text-align: left;
-                          display: relative;
-                          background-color: #fff;
-                          padding-top: 20px;
-                          padding-left: 40px;
-                          padding-right: 40px;
-                          padding-bottom: 10px;
-                          line-height: 1;
-                        ">
-                      <h1 style="font-size: 1.6em; padding-right: 50px">
-                        Welcome to TMRA
-                      </h1>
-                      <!-- <img
-                          style="width: 90%"
-                          src="https://tmra-media-shared.b-cdn.net/tmra/staging/organization/tmra-logo.png"
-                          alt="Thumbnail Email"
-                        /> -->
                     </div>
                   </td>
                 </tr>
@@ -200,32 +135,21 @@
                           padding-left: 40px;
                           padding-right: 40px;
                           padding-bottom: 40px;
-                          line-height: 1;
-                          color: #222;
                         ">
-                      <p>Hi {{donor_name}},</p>
-                      <br />
-                      <p style="line-height: 1.5">
-                        We're excited to welcome you to TMRA and we're even
-                        more excited about what we've got planned.
-                      </p>
-                      <p style="line-height: 1.5">
-                        We've made great progress through pioneering research
-                        that your donations have helped fund.
-                      </p>
-                      <br />
-                      <a href="{{donor_redirect_link}}" target="_blank" class="buttonLgn" style="width: 100px">
-                        Get Started
-                      </a>
-                      <div style="margin-top: 32px; line-height: 1.4">
-                        <p>
-                          Thanks for signing up. If you have any questions,
-                          send us message at our contact center. We'd love to
-                          hear from you.
-                        </p>
+                      <p>Hi,</p>
+                      <p>Someone just sent you an email!</p>
+
+                      <div class="wrapper-content">
+                        <p>Full Name : {{fullName}}</p>
+                        <br />
+                        <p>Email : {{email}}</p>
+                        <br />
+                        <p>Message : {{message}}</p>
+                        <br />
+                        <p style="margin-top: 70px">Thank you,</p>
+                        <br />
+                        <p>{{emailHost}}</p>
                       </div>
-                      <br />
-                      <p>Your friend,<br /><br />Team TMRA</p>
                     </div>
                   </td>
                 </tr>
@@ -237,7 +161,11 @@
                         <td style="text-align: justify; padding-bottom: 30px">
                           <div style="display: relative; text-align: left">
                             <img src="https://tmra-media-shared.b-cdn.net/tmra/staging/organization/tmra-logo.png"
-                              alt="Logo Tmra Giving Sadaqah" style="margin-left: 45px; width: 100px" />
+                              alt="Logo Tmra Global" style="
+                                  margin-left: 40px;
+                                  width: 100px;
+                                  margin-bottom: 15px;
+                                " />
                           </div>
                         </td>
                         <td style="text-align: right">

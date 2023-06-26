@@ -7,8 +7,11 @@ export type NotificationsDocument = Notifications & Document;
 export class Notifications {
   @Prop()
   id: string;
-  @Prop()
-  organizationId: Types.ObjectId;
+  @Prop({
+    type: Types.ObjectId,
+    default: null,
+  })
+  organizationId: Types.ObjectId | null;
   @Prop()
   type: string;
   @Prop()

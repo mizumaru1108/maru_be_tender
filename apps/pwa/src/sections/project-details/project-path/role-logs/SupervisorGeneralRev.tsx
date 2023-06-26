@@ -9,7 +9,7 @@ interface Props {
   stepGeneralLog: Log;
 }
 
-function SupervisorGeneral({ stepGeneralLog }: Props) {
+function SupervisorGeneralRev({ stepGeneralLog }: Props) {
   const { proposal } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
   let batch: number = 0;
@@ -225,4 +225,4 @@ function SupervisorGeneral({ stepGeneralLog }: Props) {
   );
 }
 
-export default SupervisorGeneral;
+export default SupervisorGeneralRev;

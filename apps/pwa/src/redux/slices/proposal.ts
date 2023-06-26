@@ -80,6 +80,7 @@ const initialState: ProposalItme = {
     governorate: 'test',
     track_id: 'test',
     clasification_field: 'test',
+    notes: 'test',
     beneficiary_details: {
       id: '-1',
       name: 'no-data',
