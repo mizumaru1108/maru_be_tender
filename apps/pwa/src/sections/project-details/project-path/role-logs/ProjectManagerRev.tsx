@@ -12,7 +12,7 @@ interface Props {
   isConsultation: boolean;
 }
 
-function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
+function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
   const { proposal } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
   const [dataGrants, setDataGrants] = React.useState<any>();
@@ -618,4 +618,4 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
   );
 }
 
-export default ProjectManager;
+export default ProjectManagerRev;

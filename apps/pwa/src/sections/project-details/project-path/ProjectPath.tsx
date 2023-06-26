@@ -1,28 +1,28 @@
+import CircleIcon from '@mui/icons-material/Circle';
+import PanoramaFishEyeTwoToneIcon from '@mui/icons-material/PanoramaFishEyeTwoTone';
+import { Box, Button, Divider, Grid, Stack, Step, Stepper, Typography } from '@mui/material';
+import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
+import Page500 from 'pages/Page500';
+import { getProposalLog } from 'queries/commons/getPrposalLog';
 import * as React from 'react';
-import { Grid, Stack, Typography, Box, Stepper, Step, Button, Divider } from '@mui/material';
 import { useParams } from 'react-router';
 import { useQuery } from 'urql';
-import useLocales from 'hooks/useLocales';
-import CircleIcon from '@mui/icons-material/Circle';
-import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
-import { getProposalLog, getProposalLogGrants } from 'queries/commons/getPrposalLog';
-import Page500 from 'pages/Page500';
-import { Link } from 'react-router-dom';
-import { getProposals } from 'queries/commons/getProposal';
-import moment from 'moment';
-import useAuth from 'hooks/useAuth';
 import { Log, PropsalLog, PropsalLogGrants } from '../../../@types/proposal';
-import SupervisorGrants from './role-logs/SupervisorGrants';
+import { useSelector } from '../../../redux/store';
 import SupervisorGeneral from './role-logs/SupervisorGeneral';
-import PanoramaFishEyeTwoToneIcon from '@mui/icons-material/PanoramaFishEyeTwoTone';
-import { dispatch, useSelector } from '../../../redux/store';
+import SupervisorGrants from './role-logs/SupervisorGrants';
 // import { getProposal, getTrackBudget } from '../../../redux/slices/proposal';
-import FinancePaymentLog from './role-logs/FinancePaymentLog';
+import { getTracks } from 'queries/commons/getTracks';
+import { FEATURE_PROJECT_PATH_NEW } from '../../../config';
 import CashierPaymentLog from './role-logs/CashierPaymentLog';
 import ClientClosingReport from './role-logs/ClientClosingReport';
-import { getTracks } from 'queries/commons/getTracks';
-import ProjectManagerGeneral from './role-logs/ProjectManager';
 import ClientProposalLog from './role-logs/ClientProposalLog';
+import FinancePaymentLog from './role-logs/FinancePaymentLog';
+import ProjectManager from './role-logs/ProjectManager';
+import ProjectManagerRev from './role-logs/ProjectManagerRev';
+import SupervisorGeneralRev from './role-logs/SupervisorGeneralRev';
+import SupervisorGrantsRev from './role-logs/SupervisorGrantsRev';
 
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
@@ -40,7 +40,7 @@ function ProjectPath() {
   const [stepActionType, setStepActionType] = React.useState('');
   // const [stepProposal, setStepProposal] = React.useState<PropsalLog | null>(null);
   const [stepGransLog, setGransLog] = React.useState<PropsalLogGrants | null>();
-  const [stepGeneralLog, setGeneralLog] = React.useState<Log | null>(null);
+  const [stepGeneralLog, setGeneralLog] = React.useState<PropsalLog | null>(null);
   const [isPayments, setIsPayments] = React.useState(false);
 
   const isConsultation = (proposal && proposal.track && proposal.track.with_consultation) ?? false;
@@ -51,36 +51,27 @@ function ProjectPath() {
     query: getProposalLog,
     variables: { proposal_id },
   });
-  const [logGrants] = useQuery({
-    query: getProposalLogGrants,
-    variables: { proposal_id },
-  });
+  // const [logGrants] = useQuery({
+  //   query: getProposalLogGrants,
+  //   variables: { proposal_id },
+  // });
   const [tracks] = useQuery({
     query: getTracks,
     variables: {},
   });
 
   const { data: followUps, fetching, error } = result;
-  const { data: logGrantsData, fetching: fetchingGrants, error: errorGrants } = logGrants;
+  // const { data: logGrantsData, fetching: fetchingGrants, error: errorGrants } = logGrants;
   const { data: listTracks, fetching: fetchingTracks, error: errorTracks } = tracks;
   const handleStep = (step: number, item: Log) => () => {
+    // console.log({ item });
     window.scrollTo(115, 115);
     setStepOn(step);
     setActiveStep(step);
     if (item !== undefined) {
       setGeneralLog(item);
       if (item && isConsultation) {
-        if (!fetchingGrants && !errorGrants) {
-          // setGransLog(logGrantsData);
-          setGransLog({
-            ...logGrantsData,
-            notes: item?.notes || '',
-            updated_at: item?.updated_at || '',
-            action: item?.action || '',
-            message: item?.message || '',
-            user_role: item?.user_role || '',
-          });
-        }
+        setGransLog(item);
       }
     } else {
       setStepUserRole('');
@@ -116,6 +107,13 @@ function ProjectPath() {
       const tmpData = { ...current };
       return {
         ...current,
+        new_values: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.new_values || null,
+        created_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.created_at || '',
+        state: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.state || '',
+        reviewer: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.reviewer || '',
+        employee_name:
+          proposal.proposal_logs[proposal.proposal_logs.length - 1]?.employee_name || '',
+        user_role_id: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.user_role_id || '',
         action: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.action || '',
         message: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.message || '',
         notes: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.notes || '',
@@ -127,6 +125,8 @@ function ProjectPath() {
       const tmpData = { ...current };
       return {
         ...current,
+        new_values: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.new_values || null,
+        // proposal_log: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.new_values || null,
         action: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.action || '',
         message: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.message || '',
         notes: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.notes || '',
@@ -154,13 +154,10 @@ function ProjectPath() {
 
     return formattedDate;
   };
-  if (fetching || fetchingTracks || fetchingGrants || isLoading) return <>Loading...</>;
-  if (error || errorTracks || errorGrants || (logs && logs.length === 0 && !fetching)) {
+  if (fetching || fetchingTracks || isLoading) return <>Loading...</>;
+  if (error || errorTracks || (logs && logs.length === 0 && !fetching)) {
     if (error && error.message) {
       return <Page500 error={error.message} />;
-    }
-    if (errorGrants && errorGrants.message) {
-      return <Page500 error={errorGrants.message} />;
     }
     if (errorTracks && errorTracks.message) {
       return <Page500 error={errorTracks.message} />;
@@ -320,7 +317,7 @@ function ProjectPath() {
                         ? translate(`review.action.${item.action}`)
                         : item?.user_role === 'CLIENT'
                         ? translate(`review.action.proposal_created`)
-                        : '-'}
+                        : null}
                     </Typography>
                   </Stack>
                 ))
@@ -336,9 +333,27 @@ function ProjectPath() {
               'PROJECT_SUPERVISOR' && (
               <React.Fragment>
                 {(isCompleted && activeStep === -1) ||
-                (activeStep + 1 === logs.length && stepGeneralLog?.state === 'CLIENT') ? null : (
-                  <Typography variant="h6">{translate(`review.notes`)}</Typography>
-                )}
+                (activeStep + 1 === logs.length && stepGeneralLog?.state === 'CLIENT')
+                  ? null
+                  : // <Typography variant="h6">{translate(`review.notes`)}</Typography>
+                    logs
+                      .filter((item: Log, index: number) => index === activeStep && item.notes)
+                      .map((item: Log, index: number) => (
+                        <Stack key={index} direction="column" gap={2}>
+                          {/* <Typography>
+                        {item?.user_role === 'PROJECT_MANAGER' && item?.action === 'set_by_supervisor'
+                          ? translate(`review.action.payment_rejected_by_pm`)
+                          : item.action
+                          ? translate(`review.action.${item.action}`)
+                          : item?.user_role === 'CLIENT'
+                          ? translate(`review.action.proposal_created`)
+                          : null}
+                      </Typography> */}
+                          <Typography variant="h6">
+                            {item.notes ? translate(`review.notes`) : null}
+                          </Typography>
+                        </Stack>
+                      ))}
                 {activeStep !== -1 && logs.length !== activeStep ? (
                   logs
                     .filter(
@@ -353,7 +368,7 @@ function ProjectPath() {
                           <Typography>
                             {item.notes === 'Proposal has been revised'
                               ? translate('proposal_has_been_revised')
-                              : item.notes ?? '-'}
+                              : item.notes ?? null}
                           </Typography>
                         </Stack>
                       </React.Fragment>
@@ -418,13 +433,24 @@ function ProjectPath() {
                 item.action !== 'send_back_for_revision' &&
                 item.action !== 'step_back' &&
                 item.action !== 'sending_closing_report' &&
-                (item.action === 'accepted_by_project_manager' || item.action === 'accept')
+                (item.action === 'accepted_by_project_manager' ||
+                  item.action === 'accept' ||
+                  item.action === 'update')
             ).length > 0 &&
             (stepGeneralLog || stepGransLog) ? (
-              <ProjectManagerGeneral
-                isConsultation={isConsultation}
-                stepGeneralLog={stepGeneralLog ?? stepGransLog}
-              />
+              <>
+                {FEATURE_PROJECT_PATH_NEW ? (
+                  <ProjectManagerRev
+                    isConsultation={isConsultation}
+                    stepGeneralLog={stepGeneralLog ?? stepGransLog}
+                  />
+                ) : (
+                  <ProjectManager
+                    isConsultation={isConsultation}
+                    stepGeneralLog={stepGeneralLog ?? stepGransLog}
+                  />
+                )}
+              </>
             ) : null}
             {/*  */}
             {/*  */}
@@ -441,7 +467,14 @@ function ProjectPath() {
             ).length > 0 &&
             isConsultation === false &&
             stepGeneralLog ? (
-              <SupervisorGeneral stepGeneralLog={stepGeneralLog} />
+              // <SupervisorGeneral stepGeneralLog={stepGeneralLog} />
+              <>
+                {FEATURE_PROJECT_PATH_NEW ? (
+                  <SupervisorGeneralRev stepGeneralLog={stepGeneralLog} />
+                ) : (
+                  <SupervisorGeneral stepGeneralLog={stepGeneralLog} />
+                )}
+              </>
             ) : null}
             {/*  */}
             {/*  */}
@@ -458,7 +491,14 @@ function ProjectPath() {
             ).length > 0 &&
             isConsultation &&
             stepGransLog ? (
-              <SupervisorGrants stepGransLog={stepGransLog} />
+              // <SupervisorGrants stepGransLog={stepGransLog} />
+              <>
+                {FEATURE_PROJECT_PATH_NEW ? (
+                  <SupervisorGrantsRev stepGransLog={stepGransLog} />
+                ) : (
+                  <SupervisorGrants stepGransLog={stepGransLog} />
+                )}
+              </>
             ) : null}
             {/*  */}
             {/*  */}

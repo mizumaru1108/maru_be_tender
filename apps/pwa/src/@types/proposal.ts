@@ -106,6 +106,7 @@ export interface Proposal {
   beneficiary_details: BeneficiaryDetail | null;
   governorate: string;
   track_budget: TrackBudget;
+  notes: string;
   // proposal_logs: {
   //   id: string;
   //   proposal_id: string;
@@ -324,26 +325,28 @@ type Role =
   | 'FINANCE'
   | 'CASHIER';
 
-export type PropsalLog = {
-  clasification_field: string;
-  clause: string;
-  closing_report: boolean;
-  does_an_agreement: boolean;
-  inclu_or_exclu: boolean;
-  number_of_payments_by_supervisor: number;
-  fsupport_by_supervisor: string;
-  support_outputs: string;
-  support_type: boolean;
-  support_goal_id: string;
-  need_picture: boolean;
-  vat: boolean;
-  vat_percentage: number;
-  created_at: any;
-  updated_at: any;
-  state: string;
-  project_track: string;
-  track_id: string;
-};
+export interface PropsalLog extends Log {
+  proposal_log?: {
+    clasification_field: string;
+    clause: string;
+    closing_report: boolean;
+    does_an_agreement: boolean;
+    inclu_or_exclu: boolean;
+    number_of_payments_by_supervisor: number;
+    fsupport_by_supervisor: string;
+    support_outputs: string;
+    support_type: boolean;
+    support_goal_id: string;
+    need_picture: boolean;
+    vat: boolean;
+    vat_percentage: number;
+    created_at: any;
+    updated_at: any;
+    state: string;
+    project_track: string;
+    track_id: string;
+  };
+}
 
 export type ProposalCount = {
   incoming: number;
@@ -354,14 +357,8 @@ export type ProposalCount = {
   close_report: number;
 };
 
-export type PropsalLogGrants = {
-  notes: string;
-  updated_at: any;
-  action: string;
-  message: string;
-  user_role: string;
-  new_value?: any;
-  proposal?: {
+export interface PropsalLogGrants extends Log {
+  proposal_grant_log?: {
     accreditation_type_id: string;
     added_value: string;
     been_made_before: boolean;
@@ -387,7 +384,7 @@ export type PropsalLogGrants = {
     vat: boolean;
     vat_percentage: number;
   };
-};
+}
 
 export type Log = {
   id?: string;
@@ -398,6 +395,7 @@ export type Log = {
   action:
     | 'accept'
     | 'reject'
+    | 'update'
     | 'pending'
     | 'accept_and_need_consultant'
     | 'one_step_back'
@@ -420,9 +418,9 @@ export type Log = {
     employee_name: string;
   };
   user_role_id: string;
-  proposal?: PropsalLog;
+  // log_non_grants?: PropsalLog;
   reject_reason?: string;
   reviewer_id?: string;
   employee_name: string;
-  new_value?: any;
+  new_values?: any;
 };
