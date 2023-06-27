@@ -16,12 +16,12 @@ import { CreateManyNotificationDto } from '../../../tender-notification/dtos/req
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
-import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
 import { AppointmentFilterRequest } from '../dtos/requests/appointment-filter-request.dto';
 import { CreateAppointmentDto } from '../dtos/requests/create-appointment.dto';
 import { InvitationResponseDto } from '../dtos/requests/response-invitation.dto';
 import { TenderAppointmentRepository } from '../repositories/tender-appointment.repository';
 import { Credentials } from 'google-auth-library';
+import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
 
 @Injectable()
 export class TenderAppointmentService {

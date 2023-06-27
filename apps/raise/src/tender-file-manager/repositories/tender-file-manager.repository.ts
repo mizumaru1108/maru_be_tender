@@ -6,7 +6,21 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 import { FetchFileManagerFilter } from '../dtos/requests';
+import { Builder } from 'builder-pattern';
+import { FileManagerEntity } from '../entities/file-manager.entity';
+export class FileManagerFetchByUrlProps {
+  url: string;
+}
 
+export interface FindManyFileManagerProps {
+  proposal_id?: string;
+  includes_relation?: string[];
+  page?: number;
+  limit?: number;
+  filter?: string;
+  sort_direction?: string;
+  sort_by?: string;
+}
 @Injectable()
 export class TenderFileManagerRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -14,6 +28,102 @@ export class TenderFileManagerRepository {
   });
 
   constructor(private readonly prismaService: PrismaService) {}
+
+  /* refactored with pass session */
+  async findManyItemBudgetFilter(props: FindManyFileManagerProps) {
+    const { proposal_id } = props;
+    let args: Prisma.file_managerFindManyArgs = {};
+    let whereClause: Prisma.file_managerWhereInput = {};
+
+    if (proposal_id) {
+      whereClause = {
+        ...whereClause,
+        proposal_id,
+      };
+    }
+    args.where = whereClause;
+
+    return args;
+  }
+
+  async findMany(
+    props: FindManyFileManagerProps,
+    session?: PrismaService,
+  ): Promise<FileManagerEntity[]> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      const args = await this.findManyItemBudgetFilter(props);
+      const { limit = 0, page = 0, sort_by, sort_direction } = props;
+      const offset = (page - 1) * limit;
+      const getSortBy = sort_by ? sort_by : 'created_at';
+      const getSortDirection = sort_direction ? sort_direction : 'desc';
+
+      let queryOptions: Prisma.file_managerFindManyArgs = {
+        ...args,
+        orderBy: {
+          [getSortBy]: getSortDirection,
+        },
+      };
+
+      if (limit > 0) {
+        queryOptions = {
+          ...queryOptions,
+          skip: offset,
+          take: limit,
+        };
+      }
+
+      // console.log(logUtil(queryOptions));
+      const rawFiles = await prisma.file_manager.findMany(queryOptions);
+
+      return rawFiles.map((rawFile) => {
+        return Builder<FileManagerEntity>(FileManagerEntity, {
+          ...rawFile,
+          size:
+            rawFile.size !== null
+              ? parseFloat(rawFile.size.toString())
+              : undefined,
+        }).build();
+      });
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
+  async fetchByUrl(
+    url: string,
+    session?: PrismaService,
+  ): Promise<FileManagerEntity | null> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawRes = await this.prismaService.file_manager.findUnique({
+        where: {
+          url,
+        },
+      });
+      if (!rawRes) return null;
+
+      const entity = Builder<FileManagerEntity>(FileManagerEntity, {
+        ...rawRes,
+        size:
+          rawRes.size !== null ? parseFloat(rawRes.size.toString()) : undefined,
+      }).build();
+
+      return entity;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderFileManagerRepository.name,
+        'fetchByUrl error details: ',
+        'finding file!',
+      );
+      throw theError;
+    }
+  }
 
   async create(
     payload: Prisma.file_managerUncheckedCreateInput,

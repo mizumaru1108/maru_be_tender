@@ -1,9 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
+  Prisma,
   bank_information,
   banks,
   client_data,
-  Prisma,
   user_status,
 } from '@prisma/client';
 import { Sql } from '@prisma/client/runtime';
@@ -12,10 +12,8 @@ import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
-import { UploadFilesDto } from '../../../tender-commons/dto/upload-files.dto';
 import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
-import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
 import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
@@ -360,7 +358,7 @@ export class TenderClientRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderClientRepository.name,
         'findUsers Error:',
         `finding users!`,
       );
@@ -413,7 +411,7 @@ export class TenderClientRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderClientRepository.name,
         'findClientProposals Error:',
         `findClientProposals users!`,
       );
@@ -506,7 +504,7 @@ export class TenderClientRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderClientRepository.name,
         'findUsers Error:',
         `finding users!`,
       );

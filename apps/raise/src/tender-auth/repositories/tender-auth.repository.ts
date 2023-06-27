@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, project_tracks, track, user_type, user } from '@prisma/client';
-import { logUtil } from '../../../commons/utils/log-util';
-import { BunnyService } from '../../../libs/bunny/services/bunny.service';
-import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
-import { ROOT_LOGGER } from '../../../libs/root-logger';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { TenderAppRole } from '../../../tender-commons/types';
-import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
-import { SearchUserFilterRequest } from '../dtos/requests';
-import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
-import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
-import { UserStatus } from '../types/user_status';
+import { logUtil } from '../../commons/utils/log-util';
+import { BunnyService } from '../../libs/bunny/services/bunny.service';
+import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
+import { ROOT_LOGGER } from '../../libs/root-logger';
+import { PrismaService } from '../../prisma/prisma.service';
+import { TenderAppRole } from '../../tender-commons/types';
+import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
+import { SearchUserFilterRequest } from '../../tender-user/user/dtos/requests';
+import { FindUserResponse } from '../../tender-user/user/dtos/responses/find-user-response.dto';
+import { UpdateUserPayload } from '../../tender-user/user/interfaces/update-user-payload.interface';
+import { UserStatus } from '../../tender-user/user/types/user_status';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export class TenderUserRepository {
+export class TenderAuthRepository {
   private readonly logger = ROOT_LOGGER.child({
-    'log.logger': TenderUserRepository.name,
+    'log.logger': TenderAuthRepository.name,
   });
   constructor(
     private readonly prismaService: PrismaService,
@@ -87,7 +87,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'validateTrack Error:',
         `validating track!`,
       );
@@ -106,7 +106,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'validateTrack Error:',
         `validating track!`,
       );
@@ -122,7 +122,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'validateRoles Error:',
         `validating roles!`,
       );
@@ -138,7 +138,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'Finding User by Email Error:',
         `Finding User by Email!`,
       );
@@ -171,7 +171,7 @@ export class TenderUserRepository {
     } catch (err) {
       const theError = prismaErrorThrower(
         err,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'Finding ongoing proposal on user Error:',
         `Finding ongoing proposal on this user!`,
       );
@@ -196,7 +196,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'validateRoles Error:',
         `validating roles!`,
       );
@@ -230,7 +230,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'findUserById Error:',
         `finding user!`,
       );
@@ -250,7 +250,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'findUser Error:',
         `finding user!`,
       );
@@ -498,7 +498,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'findUsers Error:',
         `finding users!`,
       );
@@ -523,7 +523,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'findUserByTrack Error:',
         `finding user by track!`,
       );
@@ -585,7 +585,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'changeUserStatus Error:',
         `changing user status!`,
       );
@@ -681,7 +681,7 @@ export class TenderUserRepository {
       }
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'createUser error:',
         `creating user!`,
       );
@@ -713,7 +713,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'updateUser error:',
         `updating user!`,
       );
@@ -737,7 +737,7 @@ export class TenderUserRepository {
       } else {
         const theError = prismaErrorThrower(
           error,
-          TenderUserRepository.name,
+          TenderAuthRepository.name,
           'deleteUser Error:',
           `deleting user!`,
         );
@@ -760,7 +760,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'deleteUserWFusionAuth Error:',
         `deleting user!`,
       );
@@ -804,7 +804,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'updateUserFieldByKeyValuePair error details: ',
         'updating client field!',
       );
@@ -885,7 +885,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'updateUserWFusionAuth Error:',
         `updating user!`,
       );
@@ -921,7 +921,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'createManyUserBankAccounts Error:',
         `creating many bank accounts for user!`,
       );
@@ -965,7 +965,7 @@ export class TenderUserRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderUserRepository.name,
+        TenderAuthRepository.name,
         'updateBankAccount error details: ',
         'updating bank account field!',
       );

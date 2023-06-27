@@ -2,44 +2,27 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TenderProposalRepository } from '../../../tender-proposal/tender-proposal/repositories/tender-proposal.repository';
-import { BunnyService } from '../../../libs/bunny/services/bunny.service';
-import { TenderFileManagerRepository } from '../../../tender-file-manager/repositories/tender-file-manager.repository';
-import { BadRequestException } from '@nestjs/common';
 
-export class QaProposalDeleteCommand {
+export class QaProposalDeleteGeneratedCommand {
   id: string;
 }
 
-@CommandHandler(QaProposalDeleteCommand)
-export class QaProposalDeleteCommandHandler
-  implements ICommandHandler<QaProposalDeleteCommand>
+@CommandHandler(QaProposalDeleteGeneratedCommand)
+export class QaProposalDeleteGeneratedCommandHandler
+  implements ICommandHandler<QaProposalDeleteGeneratedCommand>
 {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly proposalRepo: TenderProposalRepository,
-    private readonly bunnyService: BunnyService,
-    private readonly fileManagerRepo: TenderFileManagerRepository,
     @InjectPinoLogger(TenderProposalRepository.name) private logger: PinoLogger,
   ) {}
-
-  async execute(command: QaProposalDeleteCommand): Promise<any> {
+  async execute(command: QaProposalDeleteGeneratedCommand): Promise<any> {
     try {
       return await this.prismaService.$transaction(async (prismaSession) => {
         const session =
           prismaSession instanceof PrismaService
             ? prismaSession
             : this.prismaService;
-
-        const fileManagers = await this.fileManagerRepo.findMany({
-          proposal_id: command.id,
-        });
-
-        if (fileManagers) {
-          for (const fileManager of fileManagers) {
-            this.logger.info(`deleting ${fileManager.url}`);
-            await this.bunnyService.deleteMedia(fileManager.url, true);
-          }
-        }
 
         const deletedProposal = await this.proposalRepo.delete(
           {

@@ -18,8 +18,9 @@ import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
 import { QaProposalCreateDto } from '../dto/requests/qa-proposal-create.dto';
 import { QaProposalCreateNewCommand } from '../commands/qa.proposal.create.new/qa.proposal.create.new.command';
 import { QaProposalDeleteDto } from '../dto/requests/qa-proposal.delete.dto';
-import { QaProposalDeleteCommand } from '../commands/qa.proposal.delete/qa.proposal.delete.command';
+import { QaProposalDeleteGeneratedCommand } from '../commands/qa.proposal.delete.generated/qa.proposal.delete.generated.command';
 import { DataNotFoundException } from '../../tender-commons/exceptions/data-not-found.exception';
+import { QaProposalDeleteCommand } from '../commands/qa.proposal.delete/qa.proposal.delete.command';
 
 @ApiTags('qa-helper')
 @Controller('qa-helper')
@@ -54,6 +55,28 @@ export class QaHelperControllers {
     try {
       const createProposalCommand = Builder<QaProposalDeleteCommand>(
         QaProposalDeleteCommand,
+        {
+          id: request.id,
+        },
+      ).build();
+
+      const result = await this.commandBus.execute(createProposalCommand);
+      return baseResponseHelper(result, HttpStatus.OK);
+    } catch (error) {
+      if (error instanceof DataNotFoundException) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Delete('proposal/delete-generated/:id')
+  async deleteGeneratedProposal(@Param() request: QaProposalDeleteDto) {
+    try {
+      const createProposalCommand = Builder<QaProposalDeleteGeneratedCommand>(
+        QaProposalDeleteGeneratedCommand,
         {
           id: request.id,
         },

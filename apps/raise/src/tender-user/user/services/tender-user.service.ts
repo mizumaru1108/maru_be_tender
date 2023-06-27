@@ -33,8 +33,8 @@ import { TenderCurrentUser } from '../interfaces/current-user.interface';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 import { UpdateProfileMapper, UpdateUserMapper } from '../mappers';
 
-import { TenderUserRepository } from '../repositories/tender-user.repository';
 import { UserStatusEnum } from '../types/user_status';
+import { TenderUserRepository } from '../repositories/tender-user.repository';
 
 @Injectable()
 export class TenderUserService {

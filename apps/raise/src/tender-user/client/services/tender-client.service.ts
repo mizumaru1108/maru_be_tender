@@ -31,7 +31,6 @@ import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
 import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
-import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { UserStatusEnum } from '../../user/types/user_status';
 import { ClientEditRequestFieldDto } from '../dtos/requests/client-edit-request-field.dto';
 import { ExistingClientBankInformation } from '../dtos/requests/existing-bank-information.dto';
@@ -52,6 +51,7 @@ import { TenderNotificationRepository } from '../../../tender-notification/repos
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
 import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
+import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;

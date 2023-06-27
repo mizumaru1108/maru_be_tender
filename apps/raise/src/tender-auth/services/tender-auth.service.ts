@@ -10,11 +10,11 @@ import { EmailService } from '../../libs/email/email.service';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { TenderClientRepository } from '../../tender-user/client/repositories/tender-client.repository';
 import { TenderClientService } from '../../tender-user/client/services/tender-client.service';
-import { TenderUserRepository } from '../../tender-user/user/repositories/tender-user.repository';
 import { RegisterTenderDto } from '../dtos/requests/register-tender.dto';
 import { SubmitChangePasswordDto } from '../dtos/requests/submit-change-password.dto';
 import { TenderLoginResponseDto } from '../dtos/responses/tender-login-response.dto';
 import { ROOT_LOGGER } from '../../libs/root-logger';
+import { TenderUserRepository } from '../../tender-user/user/repositories/tender-user.repository';
 
 @Injectable()
 export class TenderAuthService {

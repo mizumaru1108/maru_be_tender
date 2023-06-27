@@ -493,6 +493,7 @@ export class TenderProposalRepository {
     }
   }
 
+  /* Latest, already able to do passing session, and return entity instead of prisma model*/
   async delete(props: DeleteProposalProps, session?: PrismaService) {
     let prisma = this.prismaService;
     if (session) prisma = session;

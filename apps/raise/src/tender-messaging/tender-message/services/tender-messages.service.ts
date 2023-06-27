@@ -19,7 +19,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { TenderNotificationRepository } from '../../../tender-notification/repository/tender-notification.repository';
 import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 
-import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
 import { TenderRoomChatRepository } from '../../tender-room-chat/repositories/tender-room-chat.repository';
 import { CreateMessageDto } from '../dtos/requests/create-message.dto';
 import { SearchMessageFilterRequest } from '../dtos/requests/search-message-filter-request.dto';
@@ -27,6 +26,7 @@ import { IIncomingMessageSummary } from '../interfaces/incomming-message';
 import { createMessageMapper } from '../mappers/create-message.mapper';
 import { TenderMessagesRepository } from '../repositories/tender-messages.repository';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
+import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
 
 @Injectable()
 export class TenderMessagesService {

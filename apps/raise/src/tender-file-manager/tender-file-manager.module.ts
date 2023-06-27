@@ -7,6 +7,6 @@ import { TenderFileManagerRepository } from './repositories/tender-file-manager.
 @Module({
   controllers: [TenderFileManagerController],
   providers: [TenderFileManagerService, TenderFileManagerRepository],
-  exports: [TenderFileManagerService],
+  exports: [TenderFileManagerService, TenderFileManagerRepository],
 })
 export class TenderFileManagerModule {}
