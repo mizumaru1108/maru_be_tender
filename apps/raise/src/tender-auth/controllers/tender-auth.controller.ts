@@ -1,11 +1,13 @@
 import {
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   Get,
   HttpStatus,
   Param,
   Post,
+  RequestTimeoutException,
   UseGuards,
 } from '@nestjs/common';
 import { LoginRequestDto } from '../../auth/dtos';
@@ -25,6 +27,11 @@ import { Builder } from 'builder-pattern';
 import { CommandBus } from '@nestjs/cqrs';
 import { RegisterClientCommand } from '../commands/register/register.command';
 import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
+import { UserAlreadyExistException } from '../../tender-user/user/exceptions/user-already-exist-exception.exception';
+import { FusionAuthRegisterError } from '../../libs/fusionauth/exceptions/fusion.auth.register.error.exception';
+import { InvalidFileExtensionException } from '../../tender-commons/exceptions/invalid-file-extension.exception';
+import { InvalidFileSizeException } from '../../tender-commons/exceptions/invalid-file-size.exception';
+import { FileUploadErrorException } from '../../libs/bunny/exception/file-upload-error.exception';
 
 @Controller('tender-auth')
 export class TenderAuthController {
@@ -110,8 +117,19 @@ export class TenderAuthController {
         'Client has been registered successfully!',
       );
     } catch (error) {
-      if (error instanceof PayloadErrorException) {
+      if (error instanceof UserAlreadyExistException) {
+        throw new ConflictException(error.message);
+      }
+      if (
+        error instanceof FusionAuthRegisterError ||
+        error instanceof PayloadErrorException ||
+        error instanceof InvalidFileExtensionException ||
+        error instanceof InvalidFileSizeException
+      ) {
         throw new BadRequestException(error.message);
+      }
+      if (error instanceof FileUploadErrorException) {
+        throw new RequestTimeoutException(error.message);
       }
       throw error;
     }

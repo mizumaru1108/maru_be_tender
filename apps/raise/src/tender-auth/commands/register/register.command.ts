@@ -1,17 +1,22 @@
-import { BadRequestException, ConflictException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  BankInformationCreateProps,
+  BankInformationRepository,
+} from '../../../bank/repositories/bank-information.repository';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { validateFileExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
+import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
+import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
 import {
   CreateFileManagerProps,
@@ -21,18 +26,18 @@ import {
   CreateClientDataProps,
   TenderClientRepository,
 } from '../../../tender-user/client/repositories/tender-client.repository';
+import { UserAlreadyExistException } from '../../../tender-user/user/exceptions/user-already-exist-exception.exception';
 import { TenderUserRoleRepository } from '../../../tender-user/user/repositories/tender-user-role.repository';
+import {
+  CreateUserStatusLogProps,
+  TenderUserStatusLogRepository,
+} from '../../../tender-user/user/repositories/tender-user-status-log.repository';
 import {
   CreateUserProps,
   TenderUserRepository,
 } from '../../../tender-user/user/repositories/tender-user.repository';
 import { RegisterTenderDto } from '../../dtos/requests/register-tender.dto';
 import { TenderAuthRepository } from '../../repositories/tender-auth.repository';
-import {
-  BankInformationCreateProps,
-  BankInformationRepository,
-} from '../../../bank/repositories/bank-information.repository';
-import { ROOT_LOGGER } from '../../../libs/root-logger';
 
 export class RegisterClientCommand {
   request: RegisterTenderDto;
@@ -55,6 +60,7 @@ export class RegisterClientCommandHandler
     private readonly authRepo: TenderAuthRepository,
     private readonly userRepo: TenderUserRepository,
     private readonly userRoleRepo: TenderUserRoleRepository,
+    private readonly userStatusLogRepo: TenderUserStatusLogRepository,
     private readonly clientRepo: TenderClientRepository,
     private readonly bankInfoRepo: BankInformationRepository,
     private readonly fileManagerRepo: TenderFileManagerRepository,
@@ -126,13 +132,13 @@ export class RegisterClientCommandHandler
       } = request;
 
       if (dataEntryMobile === clientPhone) {
-        throw new BadRequestException(
+        throw new PayloadErrorException(
           'Data Entry Mobile cannot be same as Client Mobile!',
         );
       }
 
       if (clientPhone === ceoMobile) {
-        throw new BadRequestException(
+        throw new PayloadErrorException(
           'Phone number and CEO mobile number cannot be the same!',
         );
       }
@@ -140,13 +146,13 @@ export class RegisterClientCommandHandler
       //  validate the track id
       if (employee_path) {
         const pathExist = await this.authRepo.validateTrack(employee_path);
-        if (!pathExist) throw new BadRequestException('Invalid Employee Path!');
+        if (!pathExist) throw new PayloadErrorException('Invalid Track Id!');
       }
 
       if (status) {
         const statusExist = await this.authRepo.validateStatus(status);
         if (!statusExist) {
-          throw new BadRequestException('Invalid client status!');
+          throw new PayloadErrorException('Invalid Status Id!');
         }
       }
 
@@ -160,9 +166,11 @@ export class RegisterClientCommandHandler
       // data exist, and email same as the requested email
       if (emailExist && emailExist.email === email) {
         if (selectLang === 'en') {
-          throw new ConflictException('Email already exist in our app!');
+          throw new UserAlreadyExistException(
+            'Email already exist in our app!',
+          );
         } else {
-          throw new ConflictException(
+          throw new UserAlreadyExistException(
             'البريد الإلكتروني مُسجل بالفعل في تطبيقنا!',
           );
         }
@@ -171,15 +179,15 @@ export class RegisterClientCommandHandler
       // data exist and phone number same as data entry mobile
       if (emailExist && emailExist.mobile_number === dataEntryMobile) {
         if (selectLang === 'en') {
-          throw new ConflictException('Data Entry Mobile in our app!');
+          throw new UserAlreadyExistException('Data Entry Mobile in our app!');
         } else {
-          throw new ConflictException(
+          throw new UserAlreadyExistException(
             'البريد الإلكتروني مُسجل بالفعل في تطبيقنا!',
           );
         }
       }
 
-      // creating user password
+      // creating user on fusion auth
       const registerFusionAuth =
         await this.fusionAuthService.fusionAuthTenderRegisterUser({
           email,
@@ -192,6 +200,7 @@ export class RegisterClientCommandHandler
       createdFusionAuthId = registerFusionAuth.user.id;
 
       const bankInfoId = uuidv4();
+
       const createUserPayload = Builder<CreateUserProps>(CreateUserProps, {
         id: registerFusionAuth.user.id,
         employee_name,
@@ -200,11 +209,48 @@ export class RegisterClientCommandHandler
         status_id: 'WAITING_FOR_ACTIVATION',
       }).build();
 
+      const createUserStatusLogPayload = Builder<CreateUserStatusLogProps>(
+        CreateUserStatusLogProps,
+        {
+          id: uuidv4(),
+          user_id: registerFusionAuth.user.id,
+          status_id: 'WAITING_FOR_ACTIVATION',
+        },
+      ).build();
+
       const createClientPayload = Builder<CreateClientDataProps>(
         CreateClientDataProps,
         {
           id: uuidv4(),
           user_id: registerFusionAuth.user.id,
+          license_number: request.data.license_number,
+          authority: request.data.authority,
+          // board_ofdec_file: ofdecObj && (ofdecObj as any),
+          center_administration: request.data.center_administration || null,
+          ceo_mobile: request.data.ceo_mobile,
+          chairman_name: request.data.chairman_name,
+          chairman_mobile: request.data.chairman_mobile,
+          data_entry_mail: request.data.data_entry_mail,
+          data_entry_name: request.data.data_entry_name,
+          data_entry_mobile: request.data.data_entry_mobile,
+          ceo_name: request.data.ceo_name,
+          entity_mobile: request.data.entity_mobile,
+          governorate: request.data.governorate,
+          region: request.data.region,
+          headquarters: request.data.headquarters,
+          entity: request.data.entity,
+          // license_file: lisceneFileObj && {
+          //   ...lisceneFileObj,
+          // },
+          date_of_esthablistmen: request.data.date_of_esthablistmen,
+          license_expired: request.data.license_expired,
+          license_issue_date: request.data.license_issue_date,
+          num_of_beneficiaries: request.data.num_of_beneficiaries,
+          website: request.data.website,
+          twitter_acount: request.data.twitter_acount,
+          num_of_employed_facility: request.data.num_of_employed_facility,
+          phone: request.data.phone,
+          client_field: request.data.client_field,
         },
       ).build();
 
@@ -228,6 +274,12 @@ export class RegisterClientCommandHandler
           column_name: 'license_file',
           table_name: 'client_data',
         });
+
+        createClientPayload.license_file = {
+          url: uploadRes.url,
+          size: uploadRes.size,
+          type: uploadRes.type,
+        };
       }
 
       if (request.data.board_ofdec_file) {
@@ -248,6 +300,12 @@ export class RegisterClientCommandHandler
           column_name: 'board_ofdec_file',
           table_name: 'client_data',
         });
+
+        createClientPayload.board_ofdec_file = {
+          url: uploadRes.url,
+          size: uploadRes.size,
+          type: uploadRes.type,
+        };
       }
 
       const bankInfoPayload = Builder<BankInformationCreateProps>({
@@ -295,16 +353,21 @@ export class RegisterClientCommandHandler
           session,
         );
 
-        const createdClient = await this.clientRepo.create(
-          createClientPayload,
-          session,
-        );
-
         const createdRole = await this.userRoleRepo.create(
           {
             user_id: registerFusionAuth.user.id,
             user_type_id: 'CLIENT',
           },
+          session,
+        );
+
+        const createdUserStatusLog = await this.userStatusLogRepo.create(
+          createUserStatusLogPayload,
+          session,
+        );
+
+        const createdClient = await this.clientRepo.create(
+          createClientPayload,
           session,
         );
 
@@ -321,8 +384,9 @@ export class RegisterClientCommandHandler
 
         return {
           created_user: createdUser,
-          created_client: createdClient,
           created_role: createdRole,
+          created_user_status_log: createdUserStatusLog,
+          created_client: createdClient,
           created_files: uploadedFiles,
           created_bank_info: createdBankInfo,
         };
