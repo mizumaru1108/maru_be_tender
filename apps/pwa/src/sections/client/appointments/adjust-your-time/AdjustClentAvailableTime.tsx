@@ -7,7 +7,7 @@ import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import * as Yup from 'yup';
 import Iconify from '../../../../components/Iconify';
 import axiosInstance from '../../../../utils/axios';
@@ -23,30 +23,6 @@ const DAYS = {
   Saturday: 'Saturday',
   Sunday: 'Sunday',
 };
-
-// const DAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-// export const PERMISSIONS = [
-//   'CEO',
-//   'PROJECT_MANAGER',
-//   'PROJECT_SUPERVISOR',
-//   'CONSULTANT',
-//   'FINANCE',
-//   'CASHIER',
-//   'MODERATOR',
-//   'ACCOUNTS_MANAGER',
-//   'ADMIN',
-// ];
-
-// const AVAILABLETIME = [
-//   '08:00 صباحاً',
-//   '08:15 صباحاً',
-//   '08:30 صباحاً',
-//   '08:45 صباحاً',
-//   '09:00 صباحاً',
-//   '09:15 صباحاً',
-//   '09:30 صباحاً',
-//   '09:45 صباحاً',
-// ];
 
 const AVAILABLETIME = [
   '08:00 AM',
@@ -70,16 +46,15 @@ type ResponseMySchedule = [
     time_gap: string[];
   }
 ];
-
+type AvailableTime = { day: boolean; start_time: string; end_time: string };
 type FormValuesProps = {
-  availableTime: { day: boolean; start_time: string; end_time: string }[];
+  availableTime: AvailableTime[];
 };
 function AdjustClentAvailableTime() {
   // const location = useLocation();
   // const { state: schedule } = location as any;
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  // const [_, insertAvailableTime] = useMutation(setAvailableTime);
   const { user, activeRole } = useAuth();
   // const id = user?.id;
   const { translate, currentLang } = useLocales();
@@ -102,17 +77,6 @@ function AdjustClentAvailableTime() {
   });
 
   const defaultValues = {
-    // availableTime: schedule
-    //   ? schedule.map((item: any, index: any) => ({
-    //       day: item.start_time === '' ? false : true,
-    //       start_time: item.start_time,
-    //       end_time: item.end_time,
-    //     }))
-    //   : Object.keys(DAYS).map((item, index) => ({
-    //       day: false,
-    //       start_time: '',
-    //       end_time: '',
-    //     })),
     availableTime: Object.keys(DAYS).map((item, index) => ({
       day: false,
       start_time: '',
@@ -128,14 +92,19 @@ function AdjustClentAvailableTime() {
   const {
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { isSubmitting },
   } = methods;
 
+  const availableTimes = watch('availableTime');
+  // console.log({ availableTimes });
+
   const onSubmit = async (data: FormValuesProps) => {
     setIsLoading(true);
+    // console.log({ data });
     // when the schedule exists so we should use another end-point for editing the whole schedule
     // now updating the schedule waits for the BE's end-point
-    // console.log('data : ', data);
     let setAvailableTimePayload: any = data.availableTime.map((item, index) => {
       const { start_time, end_time } = item;
       return {
@@ -239,14 +208,6 @@ function AdjustClentAvailableTime() {
     } catch (err) {
       // setIsFetching(false);
       console.log({ err });
-      // enqueueSnackbar(
-      //   `${err.statusCode < 500 && err.message ? err.message : 'something went wrong!'}`,
-      //   {
-      //     variant: 'error',
-      //     preventDuplicate: true,
-      //     autoHideDuration: 3000,
-      //   }
-      // );
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(
@@ -269,23 +230,13 @@ function AdjustClentAvailableTime() {
     fetching();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // const [value, handleDateChange] = useState(new Date());
-  // const handleChange = (data: any) => {
-  //   console.log(data);
-  //   handleDateChange(data);
-  // };
-  // const { pickerProps, wrapperProps } = useStaticState({
-  //   value,
-  //   onChange: handleChange,
-  // });
-  // console.log(pickerProps);
-  // console.log(wrapperProps);
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '8px' }}>
         <Grid item md={12} xs={12}>
           <Stack direction={'row'} alignItems={'center'}>
             <Button
+              data-cy="button_back"
               color="inherit"
               variant="contained"
               onClick={() => navigate(-1)}
@@ -301,47 +252,13 @@ function AdjustClentAvailableTime() {
                 height={25}
               />
             </Button>
-            <Typography variant="h4">{translate('pick_your_availabe_time')}</Typography>
+            <Typography data-cy="pick_your_availabe_time" variant="h4">
+              {translate('pick_your_availabe_time')}
+            </Typography>
           </Stack>
-          {/* <StaticDatePicker
-            displayStaticWrapperAs="desktop"
-            label="Week picker"
-            value={value}
-            onChange={(newValue) => {
-              console.log('asdklmasdlkaklsd');
-            }}
-            renderDay={renderWeekPickerDay}
-            renderInput={(params) => <TextField {...params} />}
-            inputFormat="'Week of' MMM d"
-          /> */}
-          {/* <Box
-            sx={{
-              py: '10px',
-              overflow: 'hidden',
-
-              '& .MuiPickersCalendarHeader-daysHeader': {
-                justifyContent: 'space-evenly',
-              },
-              '& .MuiPickersCalendar-week': {
-                justifyContent: 'space-evenly',
-              },
-              '& .MuiPickersDay-day': {
-                backgroundColor: '#878',
-              },
-              '& .MuiPickersDay-daySelected': {
-                backgroundColor: '#000',
-              },
-              '& .MuiButtonBase-root': {
-                color: '#000',
-              },
-              backgroundColor: '#fff !important',
-            }}
-          >
-            <Calendar {...pickerProps} />
-          </Box> */}
         </Grid>
         <Grid item md={12} xs={12}>
-          <Typography sx={{ fontSize: '16px', fontWeight: '500' }}>
+          <Typography data-cy="choose_your_week_hours" sx={{ fontSize: '16px', fontWeight: '500' }}>
             {translate('choose_your_week_hours')}
           </Typography>
         </Grid>
@@ -349,21 +266,43 @@ function AdjustClentAvailableTime() {
           <Grid container item md={12} xs={12} key={index} spacing={1}>
             <Grid item md={2} xs={12} sx={{ display: 'flex', alignItems: 'center' }}>
               <RHFCheckbox
-                name={`availableTime[${index}].day`}
-                // checked={formState.values.availableTime[index].day === true ? true : false}
-                label={`${translate('day')} ${translate(DAYS[`${item as WeekDays}`])}`}
+                data-cy={`availableTime.${index}.day`}
+                name={`availableTime.${index}.day`}
+                // checked={availableTimes[index]?.day === true ? true : false}
+                // label={`${translate('day')} ${translate(DAYS[`${item as WeekDays}`])}`}
+                label={``}
+                onClick={() => {
+                  if (availableTimes[index].day) {
+                    console.log('mask sini');
+                    setValue(`availableTime.${index}`, {
+                      day: false,
+                      start_time: '',
+                      end_time: '',
+                    });
+                  }
+                }}
               />
+              <Typography data-cy={`title_availableTime.${index}.day`}>
+                {translate(DAYS[`${item as WeekDays}`])}
+              </Typography>
             </Grid>
             <Grid item md={3} xs={12}>
               <Stack direction="column" gap={1}>
                 <Typography>{translate('from')}</Typography>
                 <RHFSelect
-                  name={`availableTime[${index}].start_time`}
+                  data-cy={`availableTime.${index}.start_time`}
+                  name={`availableTime.${index}.start_time`}
                   placeholder={translate('choose_suitable_time')}
+                  disabled={!availableTimes[index].day}
                   children={
                     <>
                       {AVAILABLETIME.map((item, idx) => (
-                        <option key={idx} value={item} style={{ backgroundColor: '#fff' }}>
+                        <option
+                          data-cy={`option_availableTime.${index}.start_time`}
+                          key={idx}
+                          value={item}
+                          style={{ backgroundColor: '#fff' }}
+                        >
                           {item}
                         </option>
                       ))}
@@ -376,12 +315,19 @@ function AdjustClentAvailableTime() {
               <Stack direction="column" gap={1}>
                 <Typography>{translate('to')}</Typography>
                 <RHFSelect
-                  name={`availableTime[${index}].end_time`}
+                  data-cy={`availableTime.${index}.end_time`}
+                  name={`availableTime.${index}.end_time`}
                   placeholder={translate('choose_suitable_time')}
+                  disabled={!availableTimes[index].day}
                   children={
                     <>
                       {AVAILABLETIME.map((item, idx) => (
-                        <option key={idx} value={item} style={{ backgroundColor: '#fff' }}>
+                        <option
+                          data-cy={`option_availableTime.${index}.end_time`}
+                          key={idx}
+                          value={item}
+                          style={{ backgroundColor: '#fff' }}
+                        >
                           {item}
                         </option>
                       ))}
@@ -411,6 +357,7 @@ function AdjustClentAvailableTime() {
             }}
           >
             <Button
+              data-cy="button_cancel"
               disabled={isLoading}
               sx={{
                 color: '#000',
@@ -421,6 +368,7 @@ function AdjustClentAvailableTime() {
               رجوع
             </Button>
             <Button
+              data-cy="button_save"
               disabled={isLoading}
               sx={{
                 color: '#fff',

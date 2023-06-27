@@ -1,6 +1,4 @@
 import { styled } from '@mui/material';
-import React from 'react';
-import MessagesPage from '../../components/message';
 import Page from '../../components/Page';
 import useLocales from '../../hooks/useLocales';
 import GetAuthCode from '../../sections/project-supervisor/appintments-with-partner/GetAuthCode';

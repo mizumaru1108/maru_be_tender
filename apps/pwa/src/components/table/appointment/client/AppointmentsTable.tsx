@@ -2,34 +2,24 @@ import { useEffect, useState } from 'react';
 // material
 import {
   Box,
-  Button,
   CircularProgress,
-  Dialog,
-  DialogContent,
-  IconButton,
-  MenuItem,
-  Select,
-  Stack,
   Table,
   TableBody,
   TableContainer,
   TablePagination,
-  Tooltip,
   Typography,
 } from '@mui/material';
 // components
-import Iconify from 'components/Iconify';
-import { TableHeadCustom, TableSelectedActions } from 'components/table';
+import { TableHeadCustom } from 'components/table';
 // hooks
 import useLocales from 'hooks/useLocales';
 import useTable, { getComparator } from 'hooks/useTable';
 
-import { setTracks } from 'redux/slices/proposal';
-import { useDispatch, useSelector } from 'redux/store';
 import Scrollbar from 'components/Scrollbar';
+import { useDispatch } from 'redux/store';
+import EmptyContent from '../../../EmptyContent';
 import { Appointments, AppointmentsManagementTableProps } from './appointments';
 import AppointmentsTableRow from './AppointmentsRow';
-import EmptyContent from '../../../EmptyContent';
 
 export default function AppointmentsTable({
   data,
@@ -125,14 +115,26 @@ export default function AppointmentsTable({
   return (
     <>
       {headline && (
-        <Typography variant="h5" sx={{ color: 'text.secondary', mr: 2, mb: 2 }}>
+        <Typography
+          data-cy="table_appointments_table_head"
+          variant="h5"
+          sx={{ color: 'text.secondary', mr: 2, mb: 2 }}
+        >
           {translate(`${headline}`)}
         </Typography>
       )}
       {isLoading && (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <CircularProgress size={20} sx={{ color: 'white' }} thickness={4} />
-          <Typography sx={{ color: 'white', fontSize: '1em', ml: 1 }}>
+          <CircularProgress
+            data-cy="table_appointments_circular_loading"
+            size={20}
+            sx={{ color: 'white' }}
+            thickness={4}
+          />
+          <Typography
+            data-cy="table_appointments_text_loading"
+            sx={{ color: 'white', fontSize: '1em', ml: 1 }}
+          >
             Fetching Table Datas...
           </Typography>
         </Box>
@@ -140,6 +142,7 @@ export default function AppointmentsTable({
 
       {!isLoading && tableData.length === 0 && (
         <EmptyContent
+          data-cy="table_no_appointments"
           title={translate('appointment.no_appointment')}
           sx={{
             '& span.MuiBox-root': { height: 100 },
@@ -148,12 +151,17 @@ export default function AppointmentsTable({
       )}
       {!isLoading && tableData.length > 0 && (
         <Scrollbar>
-          <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
+          <TableContainer
+            data-cy="table_appointments_table_container"
+            sx={{ minWidth: 800, position: 'relative' }}
+          >
             <Table
+              data-cy="table_appointments_table"
               size="medium"
               sx={{ bgcolor: '#FFFFFF', borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
             >
               <TableHeadCustom
+                data-cy="table_appointments_table_head_custom"
                 order={order}
                 orderBy={orderBy}
                 headLabel={headerCell}
@@ -170,12 +178,13 @@ export default function AppointmentsTable({
                   },
                 }}
               />
-              <TableBody>
+              <TableBody data-cy="table_appointments_table_body">
                 {data.length > 0 &&
                   data
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((appointment, key) => (
                       <AppointmentsTableRow
+                        data-cy={`table_appointments_table_row_${key}`}
                         key={appointment.id}
                         row={appointment}
                         isRequest={isRequest}
@@ -194,6 +203,7 @@ export default function AppointmentsTable({
               </TableBody>
             </Table>
             <TablePagination
+              data-cy="table_appointments_table_pagination"
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={dataFiltered.length}

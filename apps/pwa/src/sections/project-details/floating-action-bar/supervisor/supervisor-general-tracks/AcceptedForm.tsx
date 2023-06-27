@@ -25,6 +25,7 @@ import {
 import useAuth from '../../../../../hooks/useAuth';
 import { _supportGoalsArr } from '../../../../../_mock/_supportGoalsArr';
 import axiosInstance from '../../../../../utils/axios';
+import { REOPEN_TMRA_S568 } from 'config';
 
 function AcceptedForm({ onEdit }: EditAccModalForm) {
   const { translate, currentLang } = useLocales();
@@ -318,6 +319,10 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         setOneProposal(rest.data.data);
         setBasedBudget(rest.data.data.proposal_item_budgets);
         setValue('detail_project_budgets', rest.data.data.proposal_item_budgets);
+        // console.log('test', rest.data.data.proposal_item_budgets.length);
+        if (REOPEN_TMRA_S568) {
+          setValue('payment_number', rest.data.data.proposal_item_budgets.length);
+        }
       }
     } catch (err) {
       console.log('err', err);
@@ -383,6 +388,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
   }, [paymentNumber, handleLoop, handleRemoveLoop]);
 
   React.useEffect(() => {
+    // console.log('masuk sini');
     fetchingIncoming();
     // fetchingPrevious();
   }, [fetchingIncoming]);
@@ -690,7 +696,8 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                 onClick={handleSubmit(onSubmitForm)}
                 variant="outlined"
               >
-                Save
+                {/* Save */}
+                {REOPEN_TMRA_S568 ? translate('button.save') : 'Save'}
               </LoadingButton>
             ) : (
               <LoadingButton

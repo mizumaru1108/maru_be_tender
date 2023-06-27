@@ -444,18 +444,25 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
   // };
 
   const handleSubmit = React.useCallback(async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
     localStorage.setItem('partnerMeetingId', userId);
     const start_moment = moment(selectedTime, 'hh:mm A');
     const end_moment = start_moment.add(1, 'hours');
     const end_time = end_moment.format('hh:mm A');
-    const tmpValues = {
-      authCode: localStorage.getItem('authCodeMeeting') as string,
+    const authCode = localStorage.getItem('authCodeMeeting') as string;
+    let tmpValues = {
+      authCode: '',
       client_id: userId,
       start_time: moment(selectedTime, 'hh:mm A').format('hh:mm A'),
       end_time,
       date: selectedDate.date,
     };
+    if (authCode) {
+      tmpValues.authCode = authCode;
+      // localStorage.setItem('createAppoitmentPayload', JSON.stringify(tmpValues));
+    }
+    localStorage.setItem('createAppoitmentPayload', JSON.stringify(tmpValues));
+    // console.log({ tmpValues });
     try {
       const rest = await axiosInstance.post(
         'tender/appointments/create-appointment',
@@ -473,24 +480,26 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
           autoHideDuration: 3000,
         });
         navigate('/dashboard/appointments-with-partners');
-        localStorage.removeItem('authCodeMeeting');
+        // localStorage.removeItem('authCodeMeeting');
         localStorage.removeItem('partnerMeetingId');
         // setReSubmit(false);
       }
     } catch (err) {
-      if (err.statusCode === 401) {
+      if (err.statusCode === 401 || err.statusCode === 400) {
         const messages = err.message;
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         const url = messages.match(urlRegex)[0];
+        localStorage.removeItem('authCodeMeeting');
         if (url) {
           window.open(url, '_self');
         }
       }
-      if (err.statusCode !== 401) {
-        localStorage.removeItem('authCodeMeeting');
+      if (err.statusCode !== 401 && err.statusCode !== 400) {
+        // localStorage.removeItem('authCodeMeeting');
         setReSubmit(true);
       }
     } finally {
+      // localStorage.removeItem('authCodeMeeting');
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

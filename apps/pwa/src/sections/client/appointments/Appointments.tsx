@@ -69,16 +69,6 @@ function Appointments() {
         setAppointments(rest.data.data);
       }
     } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(
@@ -98,7 +88,8 @@ function Appointments() {
     } finally {
       setIsLoading(false);
     }
-  }, [activeRole, enqueueSnackbar, translate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRole, enqueueSnackbar]);
 
   useEffect(() => {
     fetchingSchedule();
@@ -111,8 +102,11 @@ function Appointments() {
     <Grid container spacing={5}>
       <Grid item md={12} xs={12}>
         <Stack direction="row" justifyContent="space-between">
-          <Typography variant="h4">{translate('appointments_with_organization')}</Typography>
+          <Typography data-cy="appointments_with_organization" variant="h4">
+            {translate('appointments_with_organization')}
+          </Typography>
           <Button
+            data-cy="adding_the_available_time"
             sx={{ color: '#fff', backgroundColor: 'background.paper', py: '15px', px: '25px' }}
             onClick={() => {
               // console.log('asdlkasmdlk');
@@ -121,32 +115,12 @@ function Appointments() {
           >
             {translate('adding_the_available_time')}
           </Button>
-          {/* {value === 0 && (
-            
-          )}
-          {value === 1 && data && data.schedule && data.schedule?.length !== 0 && (
-            <Button
-              sx={{
-                color: '#fff',
-                backgroundColor: '#0169DE',
-                py: '15px',
-                px: '25px',
-                ':hover': { backgroundColor: '#1482FE' },
-              }}
-              onClick={() => {
-                navigate('/client/dashboard/appointments/adjust-your-time', {
-                  state: data.schedule,
-                });
-              }}
-            >
-              {translate('edeting_the_available_time')}
-            </Button>
-          )} */}
         </Stack>
       </Grid>
       <Grid item md={12} xs={12}>
         <Stack direction="row" justifyContent="center">
           <Tabs
+            data-cy="tabs_appointments_with_organization"
             value={value}
             onChange={handleChange}
             indicatorColor="primary"
@@ -158,24 +132,12 @@ function Appointments() {
             }}
           >
             <Tab
+              data-cy="tabs_appointments"
               label={
                 <Grid container>
                   <Grid item md={10} xs={12}>
                     <Typography>{translate('appointments')} </Typography>
                   </Grid>
-                  {/* <Grid item md={2} xs={12}>
-                    <Box
-                      sx={{
-                        ...(value === 0 && {
-                          backgroundColor: 'background.default',
-                          color: 'text.tertiary',
-                        }),
-                        borderRadius: '10px',
-                      }}
-                    >
-                      3
-                    </Box>
-                  </Grid> */}
                 </Grid>
               }
               sx={{
@@ -192,6 +154,7 @@ function Appointments() {
               }}
             />
             <Tab
+              data-cy="tabs_appointments_requests"
               label={
                 <Grid container>
                   <Grid item md={10} xs={12}>
@@ -204,19 +167,6 @@ function Appointments() {
                         })`}
                     </Typography>
                   </Grid>
-                  {/* <Grid item md={2} xs={12}>
-                    <Box
-                      sx={{
-                        ...(value === 1 && {
-                          backgroundColor: 'background.default',
-                          color: 'text.tertiary',
-                        }),
-                        borderRadius: 1,
-                      }}
-                    >
-                      4
-                    </Box>
-                  </Grid> */}
                 </Grid>
               }
               sx={{
@@ -235,7 +185,7 @@ function Appointments() {
           </Tabs>
         </Stack>
         <Grid item md={12} xs={12}>
-          <TabPanel value={value} index={0} dir={theme.direction}>
+          <TabPanel data-cy="tab_panel_appointments" value={value} index={0} dir={theme.direction}>
             <ContentStyle sx={{ mt: 3 }}>
               <Typography variant="h4">
                 {!isLoading ? (
@@ -248,7 +198,12 @@ function Appointments() {
           </TabPanel>
         </Grid>
         <Grid item md={12} xs={12}>
-          <TabPanel value={value} index={1} dir={theme.direction}>
+          <TabPanel
+            data-cy="tab_panel_appointments_requests"
+            value={value}
+            index={1}
+            dir={theme.direction}
+          >
             <ContentStyle sx={{ mt: 3 }}>
               <Typography variant="h4">
                 {!isLoading ? (

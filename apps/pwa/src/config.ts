@@ -215,3 +215,15 @@ export const FEATURE_PROJECT_PATH_NEW: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_PROJECT_PATH_NEW === 'true'
     ? true
     : false;
+
+export const REOPEN_TMRA_S568: boolean =
+  process.env.REACT_APP_CONFIG_REOPEN_TMRA_S568 &&
+  process.env.REACT_APP_CONFIG_REOPEN_TMRA_S568 === 'true'
+    ? true
+    : false;
+
+export const REOPEN_TMRA_S480: boolean =
+  process.env.REACT_APP_CONFIG_REOPEN_TMRA_S480 &&
+  process.env.REACT_APP_CONFIG_REOPEN_TMRA_S480 === 'true'
+    ? true
+    : false;

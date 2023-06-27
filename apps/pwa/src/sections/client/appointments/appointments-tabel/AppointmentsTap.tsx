@@ -92,6 +92,7 @@ function AppointmentsTap({ defaultValues }: Props) {
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Stack direction={'column'} gap={2}>
         <AppointmentsTable
+          data-cy="table_today_appointments"
           headline={translate('appointment_table.today_headline')}
           isLoading={isLoading}
           headerCell={headerCells}
@@ -99,6 +100,7 @@ function AppointmentsTap({ defaultValues }: Props) {
           isRequest={false}
         />
         <AppointmentsTable
+          data-cy="table_upcoming_appointments"
           headline={translate('appointment_table.upcoming_headline')}
           isLoading={isLoading}
           headerCell={headerCells}

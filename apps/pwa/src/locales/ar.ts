@@ -2165,7 +2165,7 @@ const ar = {
     confirm: 'تأكيد',
     cancel: 'إلغاء',
     re_edit: 'تعديل',
-    save: 'يحفظ',
+    save: 'حفظ',
     amandement: 'تعديل',
     review: 'استعراض',
   },

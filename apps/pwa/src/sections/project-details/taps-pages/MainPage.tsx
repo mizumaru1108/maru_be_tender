@@ -6,7 +6,7 @@ import BankImageComp from 'sections/shared/BankImageComp';
 import useLocales from '../../../hooks/useLocales';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
-import { FEATURE_PROJECT_DETAILS } from '../../../config';
+import { FEATURE_PROJECT_DETAILS, REOPEN_TMRA_S480 } from '../../../config';
 import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
 import useAuth from '../../../hooks/useAuth';
 import { AmandementFields, AmandmentRequestForm } from '../../../@types/proposal';
@@ -141,7 +141,12 @@ function MainPage() {
             {translate('implementation_period')}
           </Typography>
           <Typography>
-            {(proposal.execution_time && proposal.execution_time) ?? '-No Data-'}
+            {(REOPEN_TMRA_S480
+              ? proposal.execution_time &&
+                `${Math.floor(Number(proposal.execution_time) / 60)} ${translate(
+                  'pages.common.close_report.text.option.months'
+                )}`
+              : proposal.execution_time && proposal.execution_time) ?? '-No Data-'}
           </Typography>
         </Stack>
         <Stack direction="column">
