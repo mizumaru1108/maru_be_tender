@@ -1,10 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { TenderProposalRepository } from '../../../tender-proposal/tender-proposal/repositories/tender-proposal.repository';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { TenderFileManagerRepository } from '../../../tender-file-manager/repositories/tender-file-manager.repository';
-import { BadRequestException } from '@nestjs/common';
+import { TenderProposalRepository } from '../../../tender-proposal/tender-proposal/repositories/tender-proposal.repository';
 
 export class QaProposalDeleteCommand {
   id: string;
@@ -30,14 +29,20 @@ export class QaProposalDeleteCommandHandler
             ? prismaSession
             : this.prismaService;
 
-        const fileManagers = await this.fileManagerRepo.findMany({
-          proposal_id: command.id,
-        });
+        const fileManagers = await this.fileManagerRepo.findMany(
+          {
+            proposal_id: command.id,
+          },
+          session,
+        );
 
         if (fileManagers) {
           for (const fileManager of fileManagers) {
-            this.logger.info(`deleting ${fileManager.url}`);
             await this.bunnyService.deleteMedia(fileManager.url, true);
+            await this.fileManagerRepo.delete(
+              { url: fileManager.url },
+              session,
+            );
           }
         }
 

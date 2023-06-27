@@ -8,6 +8,7 @@ import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-use
 import { FetchFileManagerFilter } from '../dtos/requests';
 import { Builder } from 'builder-pattern';
 import { FileManagerEntity } from '../entities/file-manager.entity';
+import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
 export class FileManagerFetchByUrlProps {
   url: string;
 }
@@ -20,6 +21,10 @@ export interface FindManyFileManagerProps {
   filter?: string;
   sort_direction?: string;
   sort_by?: string;
+}
+export class DeleteFileManagerProps {
+  id?: string;
+  url?: string;
 }
 @Injectable()
 export class TenderFileManagerRepository {
@@ -46,6 +51,7 @@ export class TenderFileManagerRepository {
     return args;
   }
 
+  /* refactored with pass session */
   async findMany(
     props: FindManyFileManagerProps,
     session?: PrismaService,
@@ -93,6 +99,7 @@ export class TenderFileManagerRepository {
     }
   }
 
+  /* refactored with pass session */
   async fetchByUrl(
     url: string,
     session?: PrismaService,
@@ -122,6 +129,41 @@ export class TenderFileManagerRepository {
         'finding file!',
       );
       throw theError;
+    }
+  }
+
+  async delete(props: DeleteFileManagerProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    if (!props.id && !props.url) {
+      throw new PayloadErrorException(`You must define atleast id or url`);
+    }
+
+    let whereArgs: Prisma.file_managerWhereUniqueInput = {};
+
+    if (props.id) {
+      whereArgs = {
+        ...whereArgs,
+        id: props.id,
+      };
+    }
+
+    if (props.url) {
+      whereArgs = {
+        ...whereArgs,
+        url: props.url,
+      };
+    }
+
+    try {
+      const res = await prisma.file_manager.delete({
+        where: whereArgs,
+      });
+
+      return res;
+    } catch (error) {
+      throw error;
     }
   }
 

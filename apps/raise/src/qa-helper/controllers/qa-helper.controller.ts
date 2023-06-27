@@ -21,6 +21,7 @@ import { QaProposalDeleteDto } from '../dto/requests/qa-proposal.delete.dto';
 import { QaProposalDeleteGeneratedCommand } from '../commands/qa.proposal.delete.generated/qa.proposal.delete.generated.command';
 import { DataNotFoundException } from '../../tender-commons/exceptions/data-not-found.exception';
 import { QaProposalDeleteCommand } from '../commands/qa.proposal.delete/qa.proposal.delete.command';
+import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
 
 @ApiTags('qa-helper')
 @Controller('qa-helper')
@@ -64,6 +65,9 @@ export class QaHelperControllers {
       return baseResponseHelper(result, HttpStatus.OK);
     } catch (error) {
       if (error instanceof DataNotFoundException) {
+        throw new BadRequestException(error.message);
+      }
+      if (error instanceof PayloadErrorException) {
         throw new BadRequestException(error.message);
       }
       throw error;
