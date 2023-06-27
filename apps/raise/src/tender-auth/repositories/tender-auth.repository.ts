@@ -4,7 +4,7 @@ import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TrackEntity } from '../../tender-track/track/entities/track.entity';
 import { Builder } from 'builder-pattern';
-import { UserStatusEntity } from '../entity/user-status.entity';
+import { UserStatusEntity } from '../../tender-user/user/entities/user-status.entity';
 
 @Injectable()
 export class TenderAuthRepository {

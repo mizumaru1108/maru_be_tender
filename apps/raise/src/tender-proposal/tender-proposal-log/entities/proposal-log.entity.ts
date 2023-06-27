@@ -1,6 +1,6 @@
-import { UserTypeEntity } from '../../../tender-auth/entity/user-type.entity';
-import { UserEntity } from '../../../tender-auth/entity/user.entity';
 import { NotificationEntity } from '../../../tender-notification/entities/notification.entity';
+import { UserTypeEntity } from '../../../tender-user/user/entities/user-type.entity';
+import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 import { ProposalEntity } from '../../tender-proposal/entities/proposal.entity';
 
 export class ProposalLogEntity {

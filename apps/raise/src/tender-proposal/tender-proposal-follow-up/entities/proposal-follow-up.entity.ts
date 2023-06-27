@@ -1,4 +1,4 @@
-import { UserEntity } from '../../../tender-auth/entity/user.entity';
+import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 import { ProposalEntity } from '../../tender-proposal/entities/proposal.entity';
 
 export class ProposalFollowUpEntity {

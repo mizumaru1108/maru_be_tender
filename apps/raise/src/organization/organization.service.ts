@@ -88,7 +88,7 @@ import { ZakatLog, ZakatLogDocument } from 'src/zakat/schemas/zakat_log.schema';
 import { FileMimeTypeEnum } from 'src/commons/enums/file-mimetype.enum';
 import { generateFileName } from 'src/tender-commons/utils/generate-filename';
 import { validateAllowedExtension } from 'src/commons/utils/validate-allowed-extension';
-import { validateFileSize } from 'src/commons/utils/validate-file-size';
+import { validateFileUploadSize } from 'src/commons/utils/validate-file-size';
 import { RegisterFileUpload } from 'src/auth/dtos';
 import { envLoadErrorHelper } from 'src/commons/helpers/env-loaderror-helper';
 import { CreateNewOrganizationMappers } from './mappers/organization.mappers';
@@ -3735,7 +3735,7 @@ export class OrganizationService {
       );
 
       validateAllowedExtension(file.imageExtension, AllowedFileTypes);
-      validateFileSize(file.size, maxSize);
+      validateFileUploadSize(file.size, maxSize);
 
       const imageUrl = await this.bunnyService.uploadFileBase64(
         file.fullName,

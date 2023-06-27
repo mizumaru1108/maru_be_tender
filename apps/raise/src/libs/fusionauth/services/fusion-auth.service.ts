@@ -43,6 +43,7 @@ import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-
 import moment from 'moment';
 import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
 import { RoleEnum } from 'src/user/enums/role-enum';
+import { FusionAuthRegisterError } from '../exceptions/fusion.auth.register.error.exception';
 
 /**
  * Nest Fusion Auth Service
@@ -474,7 +475,7 @@ export class FusionAuthService {
         error.response.status < 500
       ) {
         this.logger.error('FusionAuth Error:', error.response.data);
-        throw new BadRequestException(
+        throw new FusionAuthRegisterError(
           `Field error (${[
             Object.keys(error.response.data.fieldErrors)[0],
           ]}) : ${
@@ -483,10 +484,9 @@ export class FusionAuthService {
             ][0].message
           }`,
         );
-      } else {
-        this.logger.error('FusionAuth Error:', error);
-        throw new Error('Something went wrong!');
       }
+      this.logger.error('FusionAuth Error:', error);
+      throw new Error('Something went wrong!');
     }
   }
 

@@ -16,7 +16,7 @@
 //   user                user?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 // }
 
-import { UserEntity } from '../../tender-auth/entity/user.entity';
+import { UserEntity } from '../../tender-user/user/entities/user.entity';
 
 export class FileManagerEntity {
   id: string;

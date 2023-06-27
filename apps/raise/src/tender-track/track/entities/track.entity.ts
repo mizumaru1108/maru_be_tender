@@ -1,6 +1,6 @@
-import { UserEntity } from '../../../tender-auth/entity/user.entity';
 import { ProposalTrackSectionEntity } from '../../section/entities/proposal-track-section.entity';
 import { ProposalEntity } from '../../../tender-proposal/tender-proposal/entities/proposal.entity';
+import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 
 export class TrackEntity {
   id: string;

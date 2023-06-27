@@ -12,7 +12,16 @@ import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 import { UserStatus } from '../types/user_status';
 import { v4 as uuidv4 } from 'uuid';
-
+import { Builder } from 'builder-pattern';
+import { UserEntity } from '../entities/user.entity';
+export class CreateUserProps {
+  id?: string;
+  employee_name: string;
+  mobile_number: string;
+  email: string;
+  status_id: string;
+  address?: string;
+}
 @Injectable()
 export class TenderUserRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -76,6 +85,30 @@ export class TenderUserRepository {
     }
   }
 
+  async create(props: CreateUserProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawCreatedUser = await prisma.user.create({
+        data: {
+          id: props.id || uuidv4(),
+          employee_name: props.employee_name,
+          mobile_number: props.mobile_number,
+          email: props.email,
+          status_id: props.status_id,
+          address: props.address,
+        },
+      });
+
+      const createdUserEntity = Builder<UserEntity>(UserEntity, {
+        ...rawCreatedUser,
+      }).build();
+
+      return createdUserEntity;
+    } catch (error) {
+      throw error;
+    }
+  }
   /**
    * validate if the track exist on the database
    */

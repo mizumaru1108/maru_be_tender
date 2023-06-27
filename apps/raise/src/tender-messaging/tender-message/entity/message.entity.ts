@@ -18,8 +18,8 @@
 // room_chat        room_chat?     @relation(fields: [room_id], references: [id], onDelete: Cascade)
 // notification     notification[]
 
-import { UserEntity } from '../../../tender-auth/entity/user.entity';
 import { NotificationEntity } from '../../../tender-notification/entities/notification.entity';
+import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 
 export class MessageEntity {
   id: string;

@@ -5,7 +5,7 @@ import moment from 'moment';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
-import { validateFileSize } from '../../../commons/utils/validate-file-size';
+import { validateFileUploadSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
 import {
@@ -207,7 +207,7 @@ export class TenderMessagesService {
       const path = `tmra/${this.appEnv}/organization/tender-management/room-chat-attachment/${roomChat.id}/${fileName}`;
 
       validateAllowedExtension(attachment.fileExtension, allowedType);
-      validateFileSize(attachment.base64Data.length, maxSize);
+      validateFileUploadSize(attachment.base64Data.length, maxSize);
 
       const buffer = Buffer.from(
         attachment.base64Data.replace(/^data:.*;base64,/, ''),

@@ -9,7 +9,7 @@ import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
-import { validateFileSize } from '../../../commons/utils/validate-file-size';
+import { validateFileUploadSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
 import { EmailService } from '../../../libs/email/email.service';
@@ -132,7 +132,7 @@ export class TenderProposalFollowUpService {
             FileMimeTypeEnum.XLS,
             FileMimeTypeEnum.XLSX,
           ]);
-          validateFileSize(follow_up_attachment[i].size, maxSize);
+          validateFileUploadSize(follow_up_attachment[i].size, maxSize);
 
           const imageUrl = await this.bunnyService.uploadFileBase64(
             follow_up_attachment[i].fullName,

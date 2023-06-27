@@ -9,8 +9,22 @@ import { FetchFileManagerFilter } from '../dtos/requests';
 import { Builder } from 'builder-pattern';
 import { FileManagerEntity } from '../entities/file-manager.entity';
 import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
+import { v4 as uuidv4 } from 'uuid';
 export class FileManagerFetchByUrlProps {
   url: string;
+}
+
+export class CreateFileManagerProps {
+  id?: string; // incase of predefined
+  url: string;
+  name: string;
+  size: number;
+  mimetype: string;
+  table_name?: string | null;
+  column_name?: string | null;
+  user_id?: string | null;
+  proposal_id?: string | null;
+  bank_information_id?: string | null;
 }
 
 export interface FindManyFileManagerProps {
@@ -132,6 +146,52 @@ export class TenderFileManagerRepository {
     }
   }
 
+  /* refactored with pass session */
+  async create(
+    props: CreateFileManagerProps,
+    session?: PrismaService,
+  ): Promise<FileManagerEntity> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawCreatedFile = await prisma.file_manager.create({
+        data: {
+          id: props.id || uuidv4(),
+          name: props.name,
+          url: props.url,
+          size: props.size,
+          mimetype: props.mimetype,
+          table_name: props.table_name,
+          column_name: props.column_name,
+          user_id: props.user_id,
+          proposal_id: props.proposal_id,
+          bank_information_id: props.bank_information_id,
+        },
+      });
+
+      const createdFileManagerEntity = Builder<FileManagerEntity>(
+        FileManagerEntity,
+        {
+          ...rawCreatedFile,
+          size:
+            rawCreatedFile.size !== null
+              ? parseFloat(rawCreatedFile.size.toString())
+              : undefined,
+        },
+      ).build();
+
+      return createdFileManagerEntity;
+    } catch (error) {
+      const theError = prismaErrorThrower(
+        error,
+        TenderFileManagerRepository.name,
+        'Creating new file manager Error:',
+        `validating roles!`,
+      );
+      throw theError;
+    }
+  }
+
   async delete(props: DeleteFileManagerProps, session?: PrismaService) {
     let prisma = this.prismaService;
     if (session) prisma = session;
@@ -167,7 +227,7 @@ export class TenderFileManagerRepository {
     }
   }
 
-  async create(
+  async createFileManager(
     payload: Prisma.file_managerUncheckedCreateInput,
   ): Promise<file_manager> {
     this.logger.log(
@@ -195,7 +255,7 @@ export class TenderFileManagerRepository {
     }
   }
 
-  async createMany(
+  async createManyFileManager(
     payload: Prisma.file_managerCreateManyInput[],
   ): Promise<any> {
     this.logger.log(

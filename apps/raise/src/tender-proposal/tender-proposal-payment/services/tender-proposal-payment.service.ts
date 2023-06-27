@@ -12,7 +12,7 @@ import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
-import { validateFileSize } from '../../../commons/utils/validate-file-size';
+import { validateFileUploadSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
@@ -412,7 +412,7 @@ export class TenderProposalPaymentService {
       );
 
       validateAllowedExtension(file.fileExtension, AllowedFileTypes);
-      validateFileSize(file.size, maxSize);
+      validateFileUploadSize(file.size, maxSize);
 
       const imageUrl = await this.bunnyService.uploadFileBase64(
         file.fullName,

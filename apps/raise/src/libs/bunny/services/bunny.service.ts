@@ -15,8 +15,9 @@ import {
 import { sanitizeString } from '../../../commons/utils/sanitize-string';
 import { uploadFileNameParser } from '../../../commons/utils/upload-filename-parser';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
-import { validateFileSize } from '../../../commons/utils/validate-file-size';
+import { validateFileUploadSize } from '../../../commons/utils/validate-file-size';
 import { logUtil } from '../../../commons/utils/log-util';
+import { FileUploadErrorException } from '../exception/file-upload-error.exception';
 
 /**
  * Nest Bunny Module
@@ -184,7 +185,7 @@ export class BunnyService {
     path?: string,
   ): Promise<string> {
     validateAllowedExtension(file, allowedFileType);
-    validateFileSize(file, maxFileSize);
+    validateFileUploadSize(file, maxFileSize);
 
     let fileName = parseFileName
       ? uploadFileNameParser(file.originalname)
@@ -326,6 +327,52 @@ export class BunnyService {
       );
       throw new InternalServerErrorException(
         `Error uploading image file to Bunny ${storageUrlMedia} (${fileBuffer.length} bytes) while creating ${serviceName}`,
+      );
+    }
+  }
+
+  public async uploadBase64(
+    fileName: string,
+    fileBuffer: Buffer,
+    path: string,
+  ): Promise<string> {
+    const storageUrlMedia = this.storageUrlMedia + '/' + path;
+    const cdnUrl = this.cdnUrl + '/' + path;
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        AccessKey: this.storageAccessKey,
+      },
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
+      data: fileBuffer,
+      url: storageUrlMedia,
+    };
+
+    try {
+      this.logger.log(
+        'info',
+        `Uploading [${fileName}] (${fileBuffer.length} bytes) to Bunny ${this.storageUrlMedia} ...`,
+      );
+      const response = await axios(options);
+      this.logger.log(
+        'info',
+        `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}, ${JSON.stringify(
+          response.data,
+          null,
+          2,
+        )}`,
+      );
+      return cdnUrl; // TODO: change only to use path on next iteration.
+    } catch (error) {
+      this.logger.error(
+        `Error while uploading base64 image to ${storageUrlMedia} more detail: ${error}`,
+      );
+
+      throw new FileUploadErrorException(
+        `Error uploading image file to Bunny ${storageUrlMedia} (${fileBuffer.length} bytes)`,
       );
     }
   }

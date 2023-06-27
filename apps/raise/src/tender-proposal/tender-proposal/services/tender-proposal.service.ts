@@ -31,7 +31,7 @@ import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helpe
 import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
 import { logUtil } from '../../../commons/utils/log-util';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
-import { validateFileSize } from '../../../commons/utils/validate-file-size';
+import { validateFileUploadSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { MsegatService } from '../../../libs/msegat/services/msegat.service';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
@@ -120,7 +120,7 @@ export class TenderProposalService {
       );
 
       validateAllowedExtension(file.fileExtension, AllowedFileTypes);
-      validateFileSize(file.size, maxSize);
+      validateFileUploadSize(file.size, maxSize);
 
       const imageUrl = await this.bunnyService.uploadFileBase64(
         file.fullName,
@@ -179,7 +179,7 @@ export class TenderProposalService {
       const filePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalId}/${userId}/${folderName}/${fileName}`;
 
       validateAllowedExtension(file.mimetype, AllowedFileTypes);
-      validateFileSize(file.size, maxSize);
+      validateFileUploadSize(file.size, maxSize);
 
       const imageUrl = await this.bunnyService.uploadFileMulter(
         file,

@@ -67,6 +67,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { DatadogTraceModule } from 'nestjs-ddtrace';
 import { QaHelperModule } from './qa-helper/qa-helper.module';
 import { BeneficiaryModule } from './beneficiary/beneficiary.module';
+import { BankModule } from './bank/bank.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -201,6 +202,7 @@ import { BeneficiaryModule } from './beneficiary/beneficiary.module';
     TenderNotificationModule,
     TenderFileManagerModule,
     PaymentPaytabsModule,
+    BankModule,
     QaHelperModule,
   ],
   controllers: [],

@@ -1,4 +1,4 @@
-import { UserEntity } from '../../../tender-auth/entity/user.entity';
+import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 import { CorrespondanceCategoryEntity } from '../../tender-message/entity/correspondance-category.entity';
 import { MessageEntity } from '../../tender-message/entity/message.entity';
 

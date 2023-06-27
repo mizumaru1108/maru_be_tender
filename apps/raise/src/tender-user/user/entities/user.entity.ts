@@ -1,3 +1,11 @@
+import { BankInformationEntity } from '../../../bank/entities/bank-information.entity';
+import { FileManagerEntity } from '../../../tender-file-manager/entities/file-manager.entity';
+import { ProposalEntity } from '../../../tender-proposal/tender-proposal/entities/proposal.entity';
+import { TrackEntity } from '../../../tender-track/track/entities/track.entity';
+import { ClientDataEntity } from '../../client/entities/client-data.entity';
+import { UserRoleEntity } from './user-role.entity';
+import { UserStatusEntity } from './user-status.entity';
+
 export class UserEntity {
   id: string;
   employee_name?: string | null;
@@ -13,10 +21,17 @@ export class UserEntity {
   is_online?: boolean | null = null;
   track_id?: string | null = null;
   uid?: number | null = null;
+  bank_information?: BankInformationEntity[];
+  roles: UserRoleEntity[];
+  file_manager?: FileManagerEntity[];
+  track?: TrackEntity;
+  proposal_proposal_project_manager_idTouser?: ProposalEntity[];
+  proposals?: ProposalEntity[];
+  proposal_proposal_supervisor_idTouser?: ProposalEntity[];
+  client_data?: ClientDataEntity;
+  status: UserStatusEntity;
   // appointment_appointment_employee_idTouser                                   appointment[]                 @relation("appointment_employee_idTouser")
   // appointment_appointment_user_idTouser                                       appointment[]                 @relation("appointment_user_idTouser")
-  // bank_information                                                            bank_information[]
-  // client_data                                                                 client_data?                  @relation("client_data_user_idTouser")
   // client_log                                                                  client_log[]
   // contact_us_contact_us_receiver_idTouser                                     contact_us[]                  @relation("contact_us_receiver_idTouser")
   // contact_us_contact_us_sender_idTouser                                       contact_us[]                  @relation("contact_us_sender_idTouser")
@@ -25,13 +40,9 @@ export class UserEntity {
   // email_record_email_record_receiver_idTouser                                 email_record[]                @relation("email_record_receiver_idTouser")
   // email_record_email_record_sender_idTouser                                   email_record[]                @relation("email_record_sender_idTouser")
   // employees_permissions_employees_permissionsTouser                           employees_permissions[]
-  // file_manager                                                                file_manager[]
   // message_messageTouser                                                       message[]
   // message_message_receiver_idTouser                                           message[]                     @relation("message_receiver_idTouser")
   // notifications                                                               notification[]                @relation("notification_user_idTouser")
-  // proposal_proposal_project_manager_idTouser                                  proposal[]                    @relation("proposal_project_manager_idTouser")
-  // proposals                                                                   proposal[]
-  // proposal_proposal_supervisor_idTouser                                       proposal[]                    @relation("proposal_supervisor_idTouser")
   // proposal_asked_edit_request_proposal_asked_edit_request_sender_idTouser     proposal_asked_edit_request[] @relation("proposal_asked_edit_request_sender_idTouser")
   // proposal_asked_edit_request_proposal_asked_edit_request_supervisor_idTouser proposal_asked_edit_request[] @relation("proposal_asked_edit_request_supervisor_idTouser")
   // proposal_edit_request_proposal_edit_request_reviewer_idTouser               proposal_edit_request[]       @relation("proposal_edit_request_reviewer_idTouser")
@@ -42,9 +53,6 @@ export class UserEntity {
   // room_chat_as_participant2                                                   room_chat[]                   @relation("room_chat_participant2_user_idTouser")
   // schedule                                                                    schedule[]
   // employee_track                                                              project_tracks?               @relation(fields: [employee_path], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  // track                                                                       track?                        @relation(fields: [track_id], references: [id], onDelete: Cascade)
-  // status                                                                      user_status                   @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_status_id_fkey")
-  // roles                                                                       user_role[]
   // user_status_log_userTouser_status_log_account_manager_id                    user_status_log[]             @relation("userTouser_status_log_account_manager_id")
   // user_status_log_userTouser_status_log_user_id                               user_status_log[]             @relation("userTouser_status_log_user_id")
 }

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -20,10 +21,17 @@ import { TenderRolesGuard } from '../guards/tender-roles.guard';
 import { TenderAuthService } from '../services/tender-auth.service';
 import { SubmitChangePasswordDto } from '../dtos/requests/submit-change-password.dto';
 import { SendEmailVerifDto } from '../dtos/requests/send-email-verif.dto';
+import { Builder } from 'builder-pattern';
+import { CommandBus } from '@nestjs/cqrs';
+import { RegisterClientCommand } from '../commands/register/register.command';
+import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
 
 @Controller('tender-auth')
 export class TenderAuthController {
-  constructor(private readonly tenderAuthService: TenderAuthService) {}
+  constructor(
+    private readonly tenderAuthService: TenderAuthService,
+    private readonly commandBus: CommandBus,
+  ) {}
 
   @Post('old/login')
   async oldLogin(
@@ -80,6 +88,33 @@ export class TenderAuthController {
       HttpStatus.CREATED,
       'Client has been registered successfully!',
     );
+  }
+
+  @Post('register-client')
+  async registerClient(
+    @Body() registerRequest: RegisterTenderDto,
+  ): Promise<BaseResponse<CreateUserResponseDto>> {
+    try {
+      const registerCommand = Builder<RegisterClientCommand>(
+        RegisterClientCommand,
+        {
+          request: registerRequest,
+        },
+      ).build();
+
+      const result = await this.commandBus.execute(registerCommand);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'Client has been registered successfully!',
+      );
+    } catch (error) {
+      if (error instanceof PayloadErrorException) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
