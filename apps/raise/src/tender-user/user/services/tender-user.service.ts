@@ -380,14 +380,14 @@ export class TenderUserService {
       include_schedule,
       association_name,
       client_field,
-      employee_path,
+      track_id,
       single_role,
     } = filter;
     if (
       sorting_field &&
       [
         'employee_name',
-        'employee_path',
+        'track_id',
         'email',
         'created_at',
         'updated_at',
@@ -410,9 +410,9 @@ export class TenderUserService {
       );
     }
 
-    if (hide_internal === '1' && employee_path) {
+    if (hide_internal === '1' && track_id) {
       throw new BadRequestException(
-        "You can't use employee_path when hide the internal user!",
+        "You can't use track_id when hide the internal user!",
       );
     }
 

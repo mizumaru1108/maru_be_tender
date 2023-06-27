@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { BaseFilterRequest } from '../../../../commons/dtos/base-filter-request.dto';
+import { Transform } from 'class-transformer';
 
 export class SearchUserFilterRequest extends BaseFilterRequest {
   @ApiPropertyOptional()
@@ -14,6 +15,26 @@ export class SearchUserFilterRequest extends BaseFilterRequest {
   @IsString()
   @IsNotEmpty()
   association_name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  track_id?: string;
+
+  @ApiPropertyOptional({
+    examples: ['SUPERVISOR', 'MODERATOR'],
+  })
+  @IsOptional()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  @Transform(({ value }) => {
+    if (value && typeof value === 'string') {
+      return value.toUpperCase().split(',');
+    }
+    return value;
+  })
+  user_type_id?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()

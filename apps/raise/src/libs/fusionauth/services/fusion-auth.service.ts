@@ -463,6 +463,7 @@ export class FusionAuthService {
       'info',
       `trying to register user (${registerRequest.email}) to fusion auth`,
     );
+
     try {
       const data = await axios(options);
       return data.data;

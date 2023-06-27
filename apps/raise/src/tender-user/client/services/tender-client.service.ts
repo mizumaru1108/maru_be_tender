@@ -45,13 +45,12 @@ import { UserClientDataMapper } from '../mappers/user-client-data.mapper';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
 
 import { logUtil } from '../../../commons/utils/log-util';
-import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
+import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
 import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-file-jsonb.dto';
 import { TenderNotificationRepository } from '../../../tender-notification/repository/tender-notification.repository';
+import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
-import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
-import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;

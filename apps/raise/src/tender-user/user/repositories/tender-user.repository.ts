@@ -264,11 +264,12 @@ export class TenderUserRepository {
   ): Promise<FindUserResponse> {
     const {
       employee_name,
-      employee_path,
+      track_id,
       email,
       page = 1,
       limit = 10,
       sort = 'desc',
+      user_type_id,
       sorting_field,
       association_name,
       client_field,
@@ -303,12 +304,12 @@ export class TenderUserRepository {
       };
     }
 
-    if (employee_path) {
+    if (track_id) {
       query = {
         ...query,
         // why ? because GENERAL will show, on what ever the path is
-        employee_path: {
-          in: [employee_path, 'GENERAL'],
+        track_id: {
+          in: [track_id],
         },
       };
     }
@@ -331,6 +332,25 @@ export class TenderUserRepository {
           every: {
             user_type_id: {
               not: 'CLIENT',
+            },
+          },
+        },
+      };
+    }
+
+    if (
+      hide_external &&
+      hide_external === '1' &&
+      user_type_id &&
+      user_type_id.length > 0
+    ) {
+      query = {
+        ...query,
+        // only show roles.user_type_id[] should be not contain "tender_client"
+        roles: {
+          every: {
+            user_type_id: {
+              in: [...user_type_id],
             },
           },
         },
