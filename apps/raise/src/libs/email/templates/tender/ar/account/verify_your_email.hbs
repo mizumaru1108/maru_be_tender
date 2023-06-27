@@ -26,6 +26,7 @@
         padding-top: 20px;
         background-color: #fff;
         width: 100%;
+        direction: rtl;
       }
       .cardHeader p {
         color: #931267;
@@ -41,9 +42,9 @@
         font-weight: 700;
         font-size: 1em;
         text-align: left;
-        margin: 0;
         list-style: none;
         cursor: pointer;
+        margin-right: 20px;
       }
 
       .cardHeader li:hover {
@@ -56,7 +57,7 @@
 
       .navbar {
         display: flex;
-        gap: 30px;
+        /* gap: 10px; */
       }
       .cardBody {
         background-color: #fff;
@@ -74,7 +75,15 @@
         font-family: Inter, Helvetica, sans-serif;
         display: flex;
         flex-direction: column;
-        padding: 30px;
+        padding: 30px 60px;
+        direction: rtl;
+      }
+      .wrapper {
+        font-family: Inter, Helvetica, sans-serif;
+        display: flex;
+        flex-direction: column;
+        padding: 30px 60px;
+        direction: rtl;
       }
       .wrapper span {
         cursor: pointer;
@@ -92,6 +101,12 @@
         padding: 30px;
         justify-content: space-between;
         align-items: center;
+        direction: rtl;
+      }
+      .menuItemContainer {
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
       }
       .cardBody p {
         font-weight: 450;
@@ -99,7 +114,7 @@
         text-align: justify;
         margin-block-end: 10px;
         margin-block-start: 10px;
-        padding-right: 50px;
+        padding-left: 50px;
       }
       .cardBody img {
         width: 80%;
@@ -115,7 +130,7 @@
         border-radius: 7px;
         margin: 10px 0;
         padding: 15px 20px;
-        width: 35%;
+        width: 27%;
         cursor: pointer;
       }
       .cardBody button:hover {
@@ -126,6 +141,7 @@
         align-items: center;
         background-color: #fff;
         height: 100px;
+        padding: 0 20px;
       }
       .cardFooter img {
         height: 3.3vh;
@@ -159,41 +175,47 @@
       <div class="card">
         <div class="cardHeader">
           <img
-            src="https://media.tmra.io/tender-assets/tender-logo.png"
+            src="https://media.tmra.io/tender-assets/tender-newlogo.png"
             alt="Logo Tmra Tender"
-            style="margin-left: 36px"
+            style="margin-right: 60px"
           />
-          <nav>
+          <!-- <nav>
             <ul class="navbar">
-              <li>Home</li>
-              <li>Support</li>
+              <li>الدعم</li>
+              <li>مسكن</li>
             </ul>
-          </nav>
+          </nav> -->
         </div>
         <div class="cardBody">
           <div class="wrapper">
-            <h1 style="font-size: 1.6em; padding-right: 50px">
-              Please verify your email
-            </h1>
-            <p>Hi {{user_email}}, welcome aboard,</p>
-            <p>You are almost ready to go!</p>
-            <br>
-            <br>
-            <p>please click the button below to verify your email</p>
-            <a href="{{verify_url}}" target="_blank">
-                <button type="button">Verify</button>
+            <!-- <h1 style="font-size: 1.6em">مرحبا بكم في تندر</h1> -->
+            <div class="menuItemContainer">
+              <h4 style="padding: 0 0 0 10px">بيت</h4>
+              <h4 style="padding: 0 0 0 10px">يدعم</h4>
+            </div>
+
+            <!-- <img
+              src="https://tmra-media-shared.b-cdn.net/tmra/dev/organization/undefined/young-arabic-woman-drinking-coffee-and-working-onl-2022-02-02-03-49-39-utc.jpg"
+              alt="Thumbnail Email"
+            /> -->
+            <p>مرحبًا {{name}}،</p>
+            <p>
+              مرحبًا بك في Tender ، نحن متحمسون لانضمامك إلينا! لقد تلقينا
+              بالفعل معلوماتك.
+            </p>
+            <p>
+              على استعداد للبدء؟ أولاً ، تحقق من عنوان بريدك الإلكتروني. صديقك،
+              مناقصة الفريق
+            </p>
+
+            <!-- <button>تسجيل الدخول</button> -->
+            <a target="_blank" href="{{verify_url}}">
+              <button style="width: 200px" type="button">تسجيل الدخول</button>
             </a>
-            <p>click <a href="{{verify_url}}" target="_blank">here</a> if the button does not work</p>
 
             <div style="margin-top: 32px">
-              <p>
-                This email was sent to
-                <span>olivia@gs.com</span>. If you'd rather not receive this
-                kind of email, you can <span>unsubscribe</span> or
-                <span>manage your email preferences</span>.
-              </p>
               <p style="color: gray">
-                © 2077 Tender , 100 Smith Street, Melbourne VIC 3000
+                © 2077 Tender، 100 Smith Street، Melbourne VIC 3000
               </p>
             </div>
           </div>
@@ -201,9 +223,9 @@
         <div class="cardFooter">
           <div class="wrapperFooter">
             <img
-              src="https://media.tmra.io/tender-assets/tender-logo.png"
+              src="https://media.tmra.io/tender-assets/tender-newlogo.png"
               alt="Logo Tmra Tender"
-              style="height: 6.3vh"
+              style="height: 4.3vh"
             />
             <div>
               <img

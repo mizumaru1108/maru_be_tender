@@ -256,7 +256,7 @@ export class TenderClientService {
         ofdecObj,
       );
 
-      const createManyWebNotif: Prisma.notificationCreateManyInput[] = [];
+      // const createManyWebNotif: Prisma.notificationCreateManyInput[] = [];
 
       const createUserResult = await this.tenderUserRepository.createUser(
         userCreatePayload,
@@ -272,14 +272,14 @@ export class TenderClientService {
           ? createUserResult[0]
           : createUserResult;
 
-      createManyWebNotif.push({
-        id: uuidv4(),
-        user_id: createdUser.id,
-        content: 'Account Successfully Registered!',
-        subject: 'Account Registered Successfully!',
-        type: 'ACCOUNT',
-        specific_type: 'NEW_ACCOUNT_CREATED',
-      });
+      // createManyWebNotif.push({
+      //   id: uuidv4(),
+      //   user_id: createdUser.id,
+      //   content: 'Account Successfully Registered!',
+      //   subject: 'Account Registered Successfully!',
+      //   type: 'ACCOUNT',
+      //   specific_type: 'NEW_ACCOUNT_CREATED',
+      // });
 
       // const accountsManager = await this.tenderUserRepository.findByRole(
       //   'ACCOUNTS_MANAGER',
@@ -307,39 +307,39 @@ export class TenderClientService {
       //   });
       // }
 
-      const notifPayload: CommonNotificationMapperResponse = {
-        logTime: moment(new Date().getTime()).format('llll'),
-        clientSubject: 'Account Created Successfully!',
-        clientId:
-          createdUser instanceof Array ? [createdUser[0].id] : [createdUser.id],
-        clientEmail:
-          createdUser instanceof Array
-            ? [createdUser[0].email]
-            : [createdUser.email],
-        clientMobileNumber:
-          createdUser instanceof Array
-            ? [createdUser[0].mobile_number]
-            : [createdUser.mobile_number],
-        clientEmailTemplatePath: `tender/${
-          request.data.selectLang || 'ar'
-        }/account/account_created`,
-        clientEmailTemplateContext: [
-          {
-            name: createdUser.employee_name,
-          },
-        ],
-        clientContent: 'Your account has registered successfully!',
-        reviewerId: [],
-        reviewerEmail: [],
-        reviewerContent: '',
-        reviewerMobileNumber: [],
-        reviwerSubject: '',
-        createManyWebNotifPayload: createManyWebNotif,
-      };
+      // const notifPayload: CommonNotificationMapperResponse = {
+      //   logTime: moment(new Date().getTime()).format('llll'),
+      //   clientSubject: 'Account Created Successfully!',
+      //   clientId:
+      //     createdUser instanceof Array ? [createdUser[0].id] : [createdUser.id],
+      //   clientEmail:
+      //     createdUser instanceof Array
+      //       ? [createdUser[0].email]
+      //       : [createdUser.email],
+      //   clientMobileNumber:
+      //     createdUser instanceof Array
+      //       ? [createdUser[0].mobile_number]
+      //       : [createdUser.mobile_number],
+      //   clientEmailTemplatePath: `tender/${
+      //     request.data.selectLang || 'ar'
+      //   }/account/account_created`,
+      //   clientEmailTemplateContext: [
+      //     {
+      //       name: createdUser.employee_name,
+      //     },
+      //   ],
+      //   clientContent: 'Your account has registered successfully!',
+      //   reviewerId: [],
+      //   reviewerEmail: [],
+      //   reviewerContent: '',
+      //   reviewerMobileNumber: [],
+      //   reviwerSubject: '',
+      //   createManyWebNotifPayload: createManyWebNotif,
+      // };
 
-      await this.tenderNotifRepo.createMany(createManyWebNotif);
+      // await this.tenderNotifRepo.createMany(createManyWebNotif);
 
-      await this.notificationService.sendSmsAndEmailBatch(notifPayload);
+      // await this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
       return {
         createdUser,

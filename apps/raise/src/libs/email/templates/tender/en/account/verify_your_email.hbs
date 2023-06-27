@@ -93,6 +93,11 @@
         justify-content: space-between;
         align-items: center;
       }
+      .menuItemContainer {
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+      }
       .cardBody p {
         font-weight: 450;
         line-height: 1.25;
@@ -159,41 +164,43 @@
       <div class="card">
         <div class="cardHeader">
           <img
-            src="https://media.tmra.io/tender-assets/tender-logo.png"
+            src="https://media.tmra.io/tender-assets/tender-newlogo.png"
             alt="Logo Tmra Tender"
             style="margin-left: 36px"
           />
-          <nav>
+          <!-- <nav>
             <ul class="navbar">
               <li>Home</li>
               <li>Support</li>
             </ul>
-          </nav>
+          </nav> -->
         </div>
         <div class="cardBody">
           <div class="wrapper">
-            <h1 style="font-size: 1.6em; padding-right: 50px">
-              Please verify your email
-            </h1>
-            <p>Hi {{user_email}}, welcome aboard,</p>
-            <p>You are almost ready to go!</p>
-            <br>
-            <br>
-            <p>please click the button below to verify your email</p>
-            <a href="{{verify_url}}" target="_blank">
-                <button type="button">Verify</button>
+            <!-- <h1 style="font-size: 1.6em; padding-right: 50px">
+              Reset your password
+            </h1> -->
+            <div class="menuItemContainer">
+              <h4 style="padding: 0 10px 0 0">Home</h4>
+              <h4 style="padding: 0 10px 0 0">Support</h4>
+            </div>
+
+            <p>Hi {{name}}, thanks for joiung us out</p>
+            <p>You're almost ready to start using Tender</p>
+            <p>
+              Complete your registration kindly click the button bellow to
+              verify your email and you will never be follow up leads again.
+            </p>
+            <p>Your friend,<br />Team Tender</p>
+
+            <!-- <button>Verify Me</button> -->
+            <a target="_blank" href="{{verify_url}}">
+              <button style="width: 200px" type="button">تسجيل الدخول</button>
             </a>
-            <p>click <a href="{{verify_url}}" target="_blank">here</a> if the button does not work</p>
 
             <div style="margin-top: 32px">
-              <p>
-                This email was sent to
-                <span>olivia@gs.com</span>. If you'd rather not receive this
-                kind of email, you can <span>unsubscribe</span> or
-                <span>manage your email preferences</span>.
-              </p>
               <p style="color: gray">
-                © 2077 Tender , 100 Smith Street, Melbourne VIC 3000
+                © 2077 Tender، 100 Smith Street، Melbourne VIC 3000
               </p>
             </div>
           </div>
@@ -201,7 +208,7 @@
         <div class="cardFooter">
           <div class="wrapperFooter">
             <img
-              src="https://media.tmra.io/tender-assets/tender-logo.png"
+              src="https://media.tmra.io/tender-assets/tender-newlogo.png"
               alt="Logo Tmra Tender"
               style="height: 6.3vh"
             />

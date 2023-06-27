@@ -150,10 +150,10 @@ export class TenderAuthService {
         from: 'no-reply@hcharity.org',
         subject: 'Verrify Your Email',
         templateContext: {
-          user_email: email,
+          name: `${email}`,
           verify_url: `${this.configService.get<string>(
             'tenderAppConfig.baseUrl',
-          )}/verify-email/${emailVerifiedToken}`,
+          )}/auth/verify/${emailVerifiedToken}`,
         },
         templatePath: `tender/${selectLang || 'ar'}/account/verify_your_email`,
       });
