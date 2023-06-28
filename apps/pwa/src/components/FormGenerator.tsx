@@ -61,7 +61,7 @@ const FormGenerator = ({ data }: Props) => (
         <React.Fragment key={i}>
           {element.type !== 'repeater' && element.type !== 'repeaterCustom' && (
             <Grid item md={element.md} xs={element.xs}>
-              <BaseField {...element} />
+              <BaseField data-cy={`form_field_${element.name}`} {...element} />
             </Grid>
           )}
           {element.type === 'repeater' && <BaseField {...element} />}

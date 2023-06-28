@@ -100,6 +100,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
         <Grid item md={6} xs={12}>
           <BaseField
+            data-cy="acc_form_consulation_support_type"
             type="radioGroup"
             name="support_type"
             label="نوع الدعم"
@@ -120,6 +121,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            data-cy="acc_form_consulation_closing_report"
             type="radioGroup"
             name="closing_report"
             label="تقرير الإغلاق"
@@ -132,6 +134,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
 
         <Grid item md={6} xs={12}>
           <BaseField
+            data-cy="acc_form_consulation_need_picture"
             type="radioGroup"
             name="need_picture"
             label="هل يحتاج إلى صور"
@@ -143,6 +146,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            data-cy="acc_form_consulation_does_an_agreement"
             type="radioGroup"
             name="does_an_agreement"
             label="هل يحتاج اتفاقية"
@@ -164,6 +168,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             ]}
           /> */}
           <RHFRadioGroup
+            data-cy="acc_form_consulation_vat"
             type="radioGroup"
             name="vat"
             onClick={(e) => {
@@ -186,6 +191,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            data-cy="acc_form_consulation_fsupport_by_supervisor"
             type="textField"
             name="fsupport_by_supervisor"
             label="مبلغ الدعم*"
@@ -200,6 +206,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
         {isVat && (
           <Grid item md={6} xs={12}>
             <BaseField
+              data-cy="acc_form_consulation_vat_percentage"
               type="numberField"
               name="vat_percentage"
               label="النسبة المئوية من الضريبة"
@@ -210,6 +217,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
         {isVat && (
           <Grid item md={6} xs={12}>
             <BaseField
+              data-cy="acc_form_consulation_inclu_or_exclu"
               type="radioGroup"
               name="inclu_or_exclu"
               label={translate('review.support_amount_inclu')}
@@ -229,6 +237,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             label="عدد المدفوعات"
           /> */}
           <BaseField
+            data-cy="acc_form_consulation_payment_number"
             type="numberField"
             name="payment_number"
             placeholder="عدد المدفوعات"
@@ -237,6 +246,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
+            data-cy="acc_form_consulation_notes"
             type="textArea"
             name="notes"
             label="ملاحظات على المشروع"
@@ -245,6 +255,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
+            data-cy="acc_form_consulation_support_outputs"
             type="textArea"
             name="support_outputs"
             label="مخرجات الدعم (لصالح)*"

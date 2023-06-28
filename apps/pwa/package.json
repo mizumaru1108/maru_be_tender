@@ -195,9 +195,6 @@
     "re-build": "rm -rf build node_modules && yarn install && yarn build",
     "re-start": "rm -rf build node_modules && yarn install && yarn start",
     "start": "cross-env GENERATE_SOURCEMAP=false react-app-rewired start",
-    "push:dev": "git push origin main:stack/dev",
-    "push:qc": "git push origin main:stack/qc",
-    "push:staging": "git push origin main:stack/staging",
-    "push:prod": "git push origin main:stack/prod"
+    "push:dev": "git push origin main:stack/dev"
   }
 }
