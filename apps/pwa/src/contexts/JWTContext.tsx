@@ -240,6 +240,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       password: password,
       applicationId: FUSIONAUTH_API.appId,
     });
+    // console.log('status code = ', response.statusCode);
     const { token: accessToken, user, refreshToken } = response.response;
     const activeRoleIndex = 0;
     localStorage.setItem('activeRoleIndex', activeRoleIndex.toString());
@@ -249,6 +250,9 @@ function AuthProvider({ children }: AuthProviderProps) {
     if (!user.registrations) {
       throw new Error(`User ${user?.id} does not have registrations`);
     }
+    // if (response.statusCode === 213 || response.statusCode === 212) {
+    //   throw new Error(`User ${email} does not have verified`);
+    // }
     const userRegistration = user.registrations?.[0];
     const activeRole = userRegistration.roles?.[activeRoleIndex];
     if (!activeRole) {

@@ -35,12 +35,21 @@ interface ProposalModeratorApprovePayload {
   notes: string;
 }
 
+interface IEmployeeByTrack {
+  id: string;
+  employee_name: string;
+}
+
 function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
-  const { track_list, isLoading } = useSelector((state) => state.proposal);
+  const { track_list } = useSelector((state) => state.proposal);
   const { enqueueSnackbar } = useSnackbar();
-  const [tracksData, setTracksData] = React.useState<tracks[]>([]);
+  const [employeeByPath, setEmployeeByPath] = React.useState<IEmployeeByTrack[]>([]);
+  // console.log({ employeeByPath });
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  // const;
 
   const validationSchema = Yup.object().shape({
     path: Yup.string().required('Path is required!'),
@@ -77,58 +86,67 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
     onSubmit(newData);
   };
   const path = watch('path');
+  // console.log({ path });
   // const path = track_list.find((item) => item.id === watch('path'))?.name ?? '';
 
-  const shouldPause = path === '';
+  // const shouldPause = path === '';
 
   // const [result, mutate] = useQuery({
   //   query: getAllSupervisorsForSpecificTrack,
   //   variables: { employee_path: path },
   //   pause: shouldPause,
   // });
-  const [result, mutate] = useQuery({
-    query: getAllSupervisorsForSpecificTrack,
-    variables: { track_id: path },
-    pause: shouldPause,
-  });
 
-  const { data, fetching, error } = result;
-  // const fetchingTracks = React.useCallback(async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const rest = await axiosInstance.get(`/tender/track/fetch-all?include_general=0`, {
-  //       headers: { 'x-hasura-role': activeRole! },
-  //     });
-  //     // console.log(rest.data.data);
-  //     if (rest) {
-  //       setTracksData(
-  //         rest.data.data.map((item: tracks) => ({
-  //           id: item.id ?? '-',
-  //           name: item.name ?? 'No Record',
-  //           with_consultant: item.with_consultation ?? 'No Record',
-  //         }))
-  //       );
-  //     }
-  //     // console.log('rest', rest.data.data);
-  //   } catch (err) {
-  //     console.log('err', err);
-  //     enqueueSnackbar(err.message, {
-  //       variant: 'error',
-  //       preventDuplicate: true,
-  //       autoHideDuration: 3000,
-  //       anchorOrigin: {
-  //         vertical: 'bottom',
-  //         horizontal: 'center',
-  //       },
-  //     });
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }, [activeRole, enqueueSnackbar]);
+  // const [result, mutate] = useQuery({
+  //   query: getAllSupervisorsForSpecificTrack,
+  //   variables: { track_id: path },
+  //   pause: shouldPause,
+  // });
+
+  // const { data, fetching, error } = result;
+  const handleChangeTrack = React.useCallback(
+    async (track_id: string) => {
+      setIsLoading(true);
+      try {
+        const rest = await axiosInstance.get(
+          `/tender-user/find-users?hide_external=1&track_id=${track_id}&user_type_id=PROJECT_SUPERVISOR`,
+          {
+            headers: { 'x-hasura-role': activeRole! },
+          }
+        );
+        // console.log(rest.data.data);
+        if (rest) {
+          setEmployeeByPath(rest.data.data);
+        }
+        // console.log('rest', rest.data.data);
+      } catch (err) {
+        const statusCode = (err && err.statusCode) || 0;
+        const message = (err && err.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeRole, enqueueSnackbar, path, translate]
+  );
 
   // React.useEffect(() => {
-  //   fetchingTracks();
-  // }, [fetchingTracks]);
+  //   handleChangeTrack();
+  // }, [handleChangeTrack]);
   // useEffect(() => {
   //   resetField('supervisors');
   // }, [resetField]);
@@ -153,6 +171,10 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
                 placeholder={translate('path')}
                 disabled={isLoading}
                 size="small"
+                onChange={(e) => {
+                  handleChangeTrack(e.target.value);
+                  // console.log('test on select data:', e.target.value);
+                }}
               >
                 {/* <MenuItem value="MOSQUES">{translate('MOSQUES')}</MenuItem>
                 <MenuItem value="CONCESSIONAL_GRANTS">{translate('CONCESSIONAL_GRANTS')}</MenuItem>
@@ -173,13 +195,19 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
                 label={translate('supervisors')}
                 placeholder={translate('select_supervisor')}
                 size="small"
-                disabled={fetching}
+                disabled={isLoading}
               >
                 <MenuItem value="all">{translate('all_supervisor')}</MenuItem>
-                {data?.users &&
+                {/* {data?.users &&
                   data.users.map((item: any, index: any) => (
                     <MenuItem key={index} value={item?.id}>
                       {item.name}
+                    </MenuItem>
+                  ))} */}
+                {employeeByPath.length > 0 &&
+                  [...employeeByPath].map((item: IEmployeeByTrack, index: any) => (
+                    <MenuItem key={index} value={item?.id}>
+                      {item?.employee_name}
                     </MenuItem>
                   ))}
               </RHFSelect>
