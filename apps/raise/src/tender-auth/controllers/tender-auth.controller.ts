@@ -32,6 +32,7 @@ import { FusionAuthRegisterError } from '../../libs/fusionauth/exceptions/fusion
 import { InvalidFileExtensionException } from '../../tender-commons/exceptions/invalid-file-extension.exception';
 import { InvalidFileSizeException } from '../../tender-commons/exceptions/invalid-file-size.exception';
 import { FileUploadErrorException } from '../../libs/bunny/exception/file-upload-error.exception';
+import { PrismaTransactionExpiredException } from '../../tender-commons/exceptions/prisma-transaction-expired.exception';
 
 @Controller('tender-auth')
 export class TenderAuthController {
@@ -128,7 +129,10 @@ export class TenderAuthController {
       ) {
         throw new BadRequestException(error.message);
       }
-      if (error instanceof FileUploadErrorException) {
+      if (
+        error instanceof FileUploadErrorException ||
+        error instanceof PrismaTransactionExpiredException
+      ) {
         throw new RequestTimeoutException(error.message);
       }
       throw error;

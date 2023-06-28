@@ -38,6 +38,8 @@ import {
 } from '../../../tender-user/user/repositories/tender-user.repository';
 import { RegisterTenderDto } from '../../dtos/requests/register-tender.dto';
 import { TenderAuthRepository } from '../../repositories/tender-auth.repository';
+import { logUtil } from '../../../commons/utils/log-util';
+import { PrismaTransactionExpiredException } from '../../../tender-commons/exceptions/prisma-transaction-expired.exception';
 
 export class RegisterClientCommand {
   request: RegisterTenderDto;
@@ -77,6 +79,7 @@ export class RegisterClientCommandHandler
     maxSize: number = 1024 * 1024 * 10, // 10 mb by default
   ) {
     try {
+      console.log(file.fullName);
       const fileName = generateFileName(
         file.fullName,
         file.fileExtension as FileMimeTypeEnum,
@@ -87,8 +90,12 @@ export class RegisterClientCommandHandler
         'base64',
       );
 
-      validateFileExtension(file.fileExtension, AllowedFileTypes);
-      validateFileSize(file.size, maxSize);
+      validateFileExtension(
+        file.fileExtension,
+        AllowedFileTypes,
+        file.fullName,
+      );
+      validateFileSize(file.size, maxSize, file.fullName);
 
       const imageUrl = await this.bunnyService.uploadBase64(
         fileName,
@@ -223,34 +230,31 @@ export class RegisterClientCommandHandler
         {
           id: uuidv4(),
           user_id: registerFusionAuth.user.id,
-          license_number: request.data.license_number,
+          entity: request.data.entity,
           authority: request.data.authority,
-          // board_ofdec_file: ofdecObj && (ofdecObj as any),
-          center_administration: request.data.center_administration || null,
-          ceo_mobile: request.data.ceo_mobile,
-          chairman_name: request.data.chairman_name,
-          chairman_mobile: request.data.chairman_mobile,
-          data_entry_mail: request.data.data_entry_mail,
-          data_entry_name: request.data.data_entry_name,
-          data_entry_mobile: request.data.data_entry_mobile,
-          ceo_name: request.data.ceo_name,
-          entity_mobile: request.data.entity_mobile,
+          headquarters: request.data.headquarters,
+          date_of_esthablistmen: request.data.date_of_esthablistmen,
+          num_of_beneficiaries: request.data.num_of_beneficiaries,
+          num_of_employed_facility: request.data.num_of_employed_facility,
           governorate: request.data.governorate,
           region: request.data.region,
-          headquarters: request.data.headquarters,
-          entity: request.data.entity,
-          // license_file: lisceneFileObj && {
-          //   ...lisceneFileObj,
-          // },
-          date_of_esthablistmen: request.data.date_of_esthablistmen,
+          entity_mobile: request.data.entity_mobile,
+          center_administration: request.data.center_administration,
+          twitter_acount: request.data.twitter_acount,
+          phone: request.data.phone,
+          website: request.data.website,
+          password: request.data.password,
+          license_number: request.data.license_number,
           license_expired: request.data.license_expired,
           license_issue_date: request.data.license_issue_date,
-          num_of_beneficiaries: request.data.num_of_beneficiaries,
-          website: request.data.website,
-          twitter_acount: request.data.twitter_acount,
-          num_of_employed_facility: request.data.num_of_employed_facility,
-          phone: request.data.phone,
+          ceo_mobile: request.data.ceo_mobile,
+          ceo_name: request.data.ceo_name,
+          data_entry_mobile: request.data.data_entry_mobile,
+          data_entry_name: request.data.data_entry_name,
+          data_entry_mail: request.data.data_entry_mail,
           client_field: request.data.client_field,
+          chairman_name: request.data.chairman_name,
+          chairman_mobile: request.data.chairman_mobile,
         },
       ).build();
 
@@ -313,11 +317,12 @@ export class RegisterClientCommandHandler
         bank_account_name: request.data.bank_informations.bank_account_name,
         bank_account_number: request.data.bank_informations.bank_account_number,
         bank_id: request.data.bank_informations.bank_id,
+        user_id: registerFusionAuth.user.id,
       }).build();
 
       if (request.data.bank_informations) {
         const uploadRes = await this.uploadClientFile(
-          request.data.board_ofdec_file,
+          request.data.bank_informations.card_image,
           `tmra/${this.appEnv}/organization/tender-management/client-data/${registerFusionAuth.user.id}/bank-info`,
           [FileMimeTypeEnum.JPEG, FileMimeTypeEnum.JPG, FileMimeTypeEnum.PNG],
           maxSize,
@@ -342,55 +347,60 @@ export class RegisterClientCommandHandler
         };
       }
 
-      return await this.prismaService.$transaction(async (prismaSession) => {
-        const session =
-          prismaSession instanceof PrismaService
-            ? prismaSession
-            : this.prismaService;
+      return await this.prismaService.$transaction(
+        async (prismaSession) => {
+          const session =
+            prismaSession instanceof PrismaService
+              ? prismaSession
+              : this.prismaService;
 
-        const createdUser = await this.userRepo.create(
-          createUserPayload,
-          session,
-        );
+          const createdUser = await this.userRepo.create(
+            createUserPayload,
+            session,
+          );
 
-        const createdRole = await this.userRoleRepo.create(
-          {
-            user_id: registerFusionAuth.user.id,
-            user_type_id: 'CLIENT',
-          },
-          session,
-        );
+          const createdRole = await this.userRoleRepo.create(
+            {
+              user_id: registerFusionAuth.user.id,
+              user_type_id: 'CLIENT',
+            },
+            session,
+          );
 
-        const createdUserStatusLog = await this.userStatusLogRepo.create(
-          createUserStatusLogPayload,
-          session,
-        );
+          const createdUserStatusLog = await this.userStatusLogRepo.create(
+            createUserStatusLogPayload,
+            session,
+          );
 
-        const createdClient = await this.clientRepo.create(
-          createClientPayload,
-          session,
-        );
+          const createdClient = await this.clientRepo.create(
+            createClientPayload,
+            session,
+          );
 
-        if (uploadedFiles.length > 0) {
-          for (const file of uploadedFiles) {
-            await this.fileManagerRepo.create(file, session);
+          if (uploadedFiles.length > 0) {
+            for (const file of uploadedFiles) {
+              await this.fileManagerRepo.create(file, session);
+            }
           }
-        }
 
-        const createdBankInfo = await this.bankInfoRepo.create(
-          bankInfoPayload,
-          session,
-        );
+          const createdBankInfo = await this.bankInfoRepo.create(
+            bankInfoPayload,
+            session,
+          );
 
-        return {
-          created_user: createdUser,
-          created_role: createdRole,
-          created_user_status_log: createdUserStatusLog,
-          created_client: createdClient,
-          created_files: uploadedFiles,
-          created_bank_info: createdBankInfo,
-        };
-      });
+          return {
+            created_user: createdUser,
+            created_role: createdRole,
+            created_user_status_log: createdUserStatusLog,
+            created_client: createdClient,
+            created_files: uploadedFiles,
+            created_bank_info: createdBankInfo,
+          };
+        },
+        {
+          timeout: 20000,
+        },
+      );
     } catch (error) {
       if (uploadedFiles.length > 0) {
         this.logger.log(
@@ -407,6 +417,13 @@ export class RegisterClientCommandHandler
           `error occured on creating client, the user from fusion auth`,
         );
         await this.fusionAuthService.fusionAuthDeleteUser(createdFusionAuthId);
+      }
+      if (error.code !== undefined && error.code === 'P2025') {
+        throw new PrismaTransactionExpiredException(
+          `Code ${error.code}${
+            error.meta.cause ? `, ${error.meta.cause}` : ''
+          }`,
+        );
       }
       throw error;
     }

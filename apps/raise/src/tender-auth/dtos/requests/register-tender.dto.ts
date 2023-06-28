@@ -52,7 +52,7 @@ export class bankData {
 }
 
 // for registering
-class registerClient {
+export class registerClient {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()

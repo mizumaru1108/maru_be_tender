@@ -30,6 +30,7 @@ export function validateAllowedExtension(
 export function validateFileExtension(
   fileOrMimeType: MulterFile | string,
   allowed: FileMimeTypeEnum[],
+  fileName?: string,
 ): boolean {
   try {
     const fileExtension =
@@ -39,7 +40,9 @@ export function validateFileExtension(
 
     if (!allowed.includes(fileExtension as FileMimeTypeEnum)) {
       throw new InvalidFileExtensionException(
-        `File extension ${fileExtension} is not allowed, allowed extensions are: ${allowed}`,
+        `File${
+          fileName ? `(${fileName})` : ''
+        } extension ${fileExtension} is not allowed, allowed extensions are: ${allowed}`,
       );
     }
     return true;

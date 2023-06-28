@@ -32,6 +32,7 @@ export function validateFileUploadSize(
 export function validateFileSize(
   fileOrFileSize: MulterFile | number,
   maxSize?: number,
+  fileName?: string,
 ): boolean {
   try {
     const max = maxSize ? maxSize : 1024 * 1024 * 3; // default is 3MB
@@ -41,7 +42,7 @@ export function validateFileSize(
 
     if (fileSize > max) {
       throw new InvalidFileSizeException(
-        `File size ${convertBytesToMB(
+        `File${fileName ? `(${fileName})` : ''} size ${convertBytesToMB(
           fileSize,
         )} is larger than ${convertBytesToMB(max)} bytes`,
       );
