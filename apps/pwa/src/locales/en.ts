@@ -27,7 +27,6 @@ const en = {
       client_list: 'Client List',
       exchange_permission: 'Exchange Permission Requests',
       payment_adjustment: 'Payment Adjustment',
-      //
       comming_soon: 'Comming Soon',
       maintenance: 'Maintenance',
       forbidden: '403 Forbidden',
@@ -35,6 +34,8 @@ const en = {
       internal_server_error: '500 Internal Server Error',
       search: 'Search',
       no_data: 'No Data',
+      verify_register_code: 'Verify Register Code',
+      resend_verify_email: 'Resend Verify Email',
       close_report: {
         text: {
           sidebar: 'Closing Report',
@@ -2317,6 +2318,16 @@ const en = {
   snackbar: {
     supervisor: {
       sent_success_amandement: 'The amandement request has been sent successfully',
+    },
+    auth: {
+      register: {
+        send_verify_email: {
+          success: 'The verification email has been sent successfully',
+        },
+        verify_register_code: {
+          success: 'The verification code has been verified successfully',
+        },
+      },
     },
   },
 };

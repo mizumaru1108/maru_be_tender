@@ -15,6 +15,7 @@ import AdministrativeInfo from './AdministrativeInfo';
 import BankInformation from './BankInformation';
 import { TMRA_RAISE_URL } from 'config';
 import useLocales from 'hooks/useLocales';
+import { SendMailForm } from 'sections/auth/send-email';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -33,6 +34,7 @@ function FinalPage({
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [isRegister, setIsRegister] = useState(false);
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -45,26 +47,6 @@ function FinalPage({
     const { form1, form2, form3, form4, form5 } = registerState;
     const { phone, center_administration, ...restForm2 } = form2;
     const newVal: any = {
-      // employee_name: registerState.form1.entity,
-      // employee_path: ,
-      // bank_informations: [
-      //   {
-      //     bank_account_number: form5.bank_account_number,
-      //     bank_account_name: form5.bank_account_name,
-      //     bank_name: form5.bank_name,
-      //     card_image: form5.card_image,
-      //   },
-      // ],
-      // ...form1,
-      // ...restForm2,
-      // ...(phone !== '' && { phone }),
-      // ...(center_administration !== '' && { center_administration }),
-      // license_number: form3.license_number,
-      // license_issue_date: form3.license_issue_date,
-      // license_expired: form3.license_expired,
-      // license_file: form3.license_file,
-      // board_ofdec_file: form3.board_ofdec_file,
-      // ...form4,
       employee_name: registerState.form1.entity,
       bank_informations: {
         bank_account_number: form5.bank_account_number,
@@ -94,8 +76,9 @@ function FinalPage({
         })
         .then(async (res) => {
           if (res.data.statusCode <= 300) {
-            await login(registerState.form2.email, registerState.form2.password);
-            navigate('/');
+            // await login(registerState.form2.email, registerState.form2.password);
+            navigate(`/auth/send-email/${registerState.form2.email}`);
+            // setIsRegister(true);
           }
         })
         .catch((err) => {
@@ -111,52 +94,59 @@ function FinalPage({
   };
   return (
     <Container sx={{ py: '20px' }}>
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert severity="error">{errors}</Alert>
-      </Snackbar>
-      <Stack direction="column" gap={4}>
-        <Typography variant="h4">إنشاء حساب جديد - التفاصيل كاملة</Typography>
-        <MainInfo data={registerState.form1} setStep={setStep} />
-        <ConnectionInfo data={registerState.form2} setStep={setStep} />
-        <LicenseInfo data={registerState.form3} setStep={setStep} />
-        <AdministrativeInfo data={registerState.form4} setStep={setStep} />
-        <BankInformation data={registerState.form5} setStep={setStep} />
-        <Stack justifyContent="center" direction="row" gap={2} sx={{ height: '40px' }}>
-          <Button
-            sx={{
-              color: '#000',
-              size: 'large',
-              width: { xs: '100%', sm: '200px' },
-              hieght: { xs: '100%', sm: '50px' },
-            }}
-            onClick={() => {
-              setStep(4);
-            }}
-          >
-            {translate('going_back_one_step')}
-          </Button>
-          <LoadingButton
-            fullWidth
-            size="large"
-            variant="contained"
-            loading={isSending}
-            onClick={hanelSubmit}
-            sx={{
-              backgroundColor: 'background.paper',
-              color: '#fff',
-              width: { xs: '100%', sm: '200px' },
-              hieght: { xs: '100%', sm: '50px' },
-            }}
-          >
-            {translate('create_new_account')}
-          </LoadingButton>
+      <React.Fragment>
+        <Snackbar
+          data-cy="snackbar_error_register_response"
+          open={open}
+          autoHideDuration={6000}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert data-cy="snackbar_error_register_response" severity="error">
+            {errors}
+          </Alert>
+        </Snackbar>
+        <Stack direction="column" gap={4}>
+          <Typography variant="h4">إنشاء حساب جديد - التفاصيل كاملة</Typography>
+          <MainInfo data={registerState.form1} setStep={setStep} />
+          <ConnectionInfo data={registerState.form2} setStep={setStep} />
+          <LicenseInfo data={registerState.form3} setStep={setStep} />
+          <AdministrativeInfo data={registerState.form4} setStep={setStep} />
+          <BankInformation data={registerState.form5} setStep={setStep} />
+          <Stack justifyContent="center" direction="row" gap={2} sx={{ height: '40px' }}>
+            <Button
+              data-cy="going_back_one_step"
+              sx={{
+                color: '#000',
+                size: 'large',
+                width: { xs: '100%', sm: '200px' },
+                hieght: { xs: '100%', sm: '50px' },
+              }}
+              onClick={() => {
+                setStep(4);
+              }}
+            >
+              {translate('going_back_one_step')}
+            </Button>
+            <LoadingButton
+              data-cy="create_new_account"
+              fullWidth
+              size="large"
+              variant="contained"
+              loading={isSending}
+              onClick={hanelSubmit}
+              sx={{
+                backgroundColor: 'background.paper',
+                color: '#fff',
+                width: { xs: '100%', sm: '200px' },
+                hieght: { xs: '100%', sm: '50px' },
+              }}
+            >
+              {translate('create_new_account')}
+            </LoadingButton>
+          </Stack>
         </Stack>
-      </Stack>
+      </React.Fragment>
     </Container>
   );
 }

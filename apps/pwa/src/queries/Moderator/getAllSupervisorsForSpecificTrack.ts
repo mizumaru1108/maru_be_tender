@@ -15,6 +15,14 @@ query getAllSupervisors($track_id: String = "") {
     name: employee_name
   }
 }
-
-
 `;
+
+// export const getAllSupervisorsForSpecificTrack = `
+// query getAllSupervisors($track_id: String = "") {
+//   users: user(where: {status_id: {_eq: ACTIVE_ACCOUNT}, _and: {track_id: {_eq: $track_id}}}) {
+//     id
+//     name: employee_name
+//   }
+// }
+
+// `;

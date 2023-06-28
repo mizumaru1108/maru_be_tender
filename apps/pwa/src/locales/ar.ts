@@ -34,6 +34,8 @@ const ar = {
       internal_server_error: '500 خطأ في الخادم الداخلي',
       search: 'بحث',
       no_data: 'لايوجد بيانات',
+      verify_register_code: 'تحقق من رمز التسجيل',
+      resend_verify_email: 'إعادة إرسال التحقق من البريد الإلكتروني',
       close_report: {
         text: {
           sidebar: 'تقرير ختامي',
@@ -2333,6 +2335,16 @@ const ar = {
   snackbar: {
     supervisor: {
       sent_success_amandement: 'تم قبول طلب التعديل',
+    },
+    auth: {
+      register: {
+        send_verify_email: {
+          success: 'تم إرسال البريد الإلكتروني للتحقق بنجاح',
+        },
+        verify_register_code: {
+          success: 'تم التحقق من رمز التحقق بنجاح',
+        },
+      },
     },
   },
 };

@@ -124,11 +124,6 @@ export default function BeneficiariesTable() {
           });
         });
       } else {
-        // enqueueSnackbar(err.message, {
-        //   variant: 'error',
-        //   preventDuplicate: true,
-        //   autoHideDuration: 3000,
-        // });
         const statusCode = (err && err.statusCode) || 0;
         const message = (err && err.message) || null;
         enqueueSnackbar(

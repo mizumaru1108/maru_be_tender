@@ -5,10 +5,15 @@ function MainInfo({ data, setStep }: { data: MainValuesProps; setStep: (val: num
   return (
     <Stack direction="column" gap={2}>
       <Stack direction="row" justifyContent="space-between">
-        <Typography color="#93A3B0" sx={{ fontSize: '18px', fontWeight: 700 }}>
+        <Typography
+          data-cy="main_info_header_title"
+          color="#93A3B0"
+          sx={{ fontSize: '18px', fontWeight: 700 }}
+        >
           المعلومات الرئيسية
         </Typography>
         <IconButton
+          data-cy="button_go_back"
           sx={{
             backgroundColor: '#0169DE',
             borderRadius: '10px !important',
@@ -19,6 +24,7 @@ function MainInfo({ data, setStep }: { data: MainValuesProps; setStep: (val: num
           }}
         >
           <svg
+            data-cy="svg_button_go_back"
             width="16"
             height="16"
             viewBox="0 0 16 16"
@@ -42,11 +48,15 @@ function MainInfo({ data, setStep }: { data: MainValuesProps; setStep: (val: num
       <Stack direction="row" justifyContent="space-between">
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>مجال الجهة:</Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.entity}</Typography>
+          <Typography data-cy="data_entity" sx={{ fontSize: '18px' }}>
+            {data.entity}
+          </Typography>
         </Stack>
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>الجهة المشرفة:</Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.authority}</Typography>
+          <Typography data-cy="data_authority" sx={{ fontSize: '18px' }}>
+            {data.authority}
+          </Typography>
         </Stack>
       </Stack>
       <Stack direction="row" justifyContent="space-between">
@@ -54,13 +64,15 @@ function MainInfo({ data, setStep }: { data: MainValuesProps; setStep: (val: num
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>تاريخ التأسيس:</Typography>
           {/* license_issue_date: moment().format('YYYY-MM-DD'), */}
 
-          <Typography sx={{ fontSize: '20px' }}>
+          <Typography data-cy="data_date_of_esthablistmen" sx={{ fontSize: '20px' }}>
             {moment(data.date_of_esthablistmen).format('YYYY-MM-DD')}
           </Typography>
         </Stack>
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>المقر:</Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.headquarters}</Typography>
+          <Typography data-cy="data_headquarters" sx={{ fontSize: '18px' }}>
+            {data.headquarters}
+          </Typography>
         </Stack>
       </Stack>
       <Stack direction="row" justifyContent="space-between">
@@ -68,13 +80,17 @@ function MainInfo({ data, setStep }: { data: MainValuesProps; setStep: (val: num
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>
             عدد موظفين بدوام كلي للمنشأة:
           </Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.num_of_employed_facility}</Typography>
+          <Typography data-cy="data_num_of_employed_facility" sx={{ fontSize: '18px' }}>
+            {data.num_of_employed_facility}
+          </Typography>
         </Stack>
         <Stack direction="column" flex={1}>
           <Typography sx={{ color: '#93A3B0', fontSize: '15px' }}>
             عدد المستفيدين من خدمات الجهة:
           </Typography>
-          <Typography sx={{ fontSize: '18px' }}>{data.num_of_beneficiaries}</Typography>
+          <Typography data-cy="data_num_of_beneficiaries" sx={{ fontSize: '18px' }}>
+            {data.num_of_beneficiaries}
+          </Typography>
         </Stack>
       </Stack>
     </Stack>

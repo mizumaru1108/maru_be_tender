@@ -5,7 +5,6 @@ import { styled } from '@mui/material/styles';
 // components
 import Page from '../../components/Page';
 // sections
-import { FEATURE_VERIFICATION_SIGN_UP } from 'config';
 import useLocales from 'hooks/useLocales';
 import { SendMailForm } from 'sections/auth/send-email';
 import Image from './background.jpg';
@@ -30,10 +29,10 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function SendMail() {
+export default function ResendMail() {
   const { translate } = useLocales();
   return (
-    <Page title={translate('send_verify_email')}>
+    <Page title={translate('pages.common.resend_verify_email')}>
       <RootStyle>
         <Box
           data-cy="side-background-image"
@@ -50,7 +49,7 @@ export default function SendMail() {
         />
         <Container maxWidth="md">
           <ContentStyle>
-            <SendMailForm />
+            <SendMailForm isResend />
           </ContentStyle>
         </Container>
       </RootStyle>

@@ -6,6 +6,8 @@ import { Navigate } from 'react-router-dom';
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));
 const SendMail = Loadable(lazy(() => import('../pages/auth/SendMail')));
+const ResendMail = Loadable(lazy(() => import('../pages/auth/ResendMail')));
+const VerifyCode = Loadable(lazy(() => import('../pages/auth/VerifyRegisterCode')));
 const ResetPassword = Loadable(lazy(() => import('../pages/auth/ResetPassword')));
 const ForgotPassword = Loadable(lazy(() => import('../pages/auth/ForgotPassword')));
 const NewResetPassword = Loadable(lazy(() => import('../pages/auth/NewResetPassword')));
@@ -31,12 +33,33 @@ export const authRoute = {
       ),
     },
     {
-      path: 'send-email',
+      path: 'verify/:code',
       element: (
         <GuestGuard>
-          <SendMail />
+          <VerifyCode />
         </GuestGuard>
       ),
+    },
+    {
+      path: 'send-email',
+      children: [
+        {
+          path: 'resend',
+          element: (
+            <GuestGuard>
+              <ResendMail />
+            </GuestGuard>
+          ),
+        },
+        {
+          path: ':email',
+          element: (
+            <GuestGuard>
+              <SendMail />
+            </GuestGuard>
+          ),
+        },
+      ],
     },
     { path: 'login-unprotected', element: <Login /> },
     { path: 'register-unprotected', element: <Register /> },
