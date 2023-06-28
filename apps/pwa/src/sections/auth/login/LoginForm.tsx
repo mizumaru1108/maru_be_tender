@@ -56,6 +56,7 @@ export default function LoginForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = methods;
+  // console.log({ errors });
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -71,8 +72,10 @@ export default function LoginForm() {
       dispatch(setConversation([]));
       dispatch(setMessageGrouped([]));
     } catch (error) {
+      // console.log('cek error: ', { message: error.message });
       reset();
-      setError('afterSubmit', { ...error, message: translate('login_message_error') });
+      setError('afterSubmit', { message: error.message || translate('login_message_error') });
+      // setError('afterSubmit', { ...error, message: translate('login_message_error') });
     }
   };
 

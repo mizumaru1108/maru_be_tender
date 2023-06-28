@@ -197,7 +197,7 @@ export default function SendMailForm({ isResend = false }: Props) {
                 size="large"
                 type="submit"
                 variant="contained"
-                loading={isSubmitting}
+                loading={isSubmitting || isLoading}
                 sx={{ my: 2 }}
                 disabled={open}
               >

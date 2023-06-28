@@ -34,22 +34,14 @@ export const authRoute = {
     },
     {
       path: 'verify/:code',
-      element: (
-        <GuestGuard>
-          <VerifyCode />
-        </GuestGuard>
-      ),
+      element: <VerifyCode />,
     },
     {
       path: 'send-email',
       children: [
         {
           path: 'resend',
-          element: (
-            <GuestGuard>
-              <ResendMail />
-            </GuestGuard>
-          ),
+          element: <ResendMail />,
         },
         {
           path: ':email',
