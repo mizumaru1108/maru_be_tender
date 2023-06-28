@@ -16,6 +16,7 @@ import { TenderProposalBeneficiaresService } from './tender-proposal-beneficiari
 import { TenderProposalBeneficiariesRepository } from './tender-proposal-beneficiaries/repositories/tender-proposal-beneficiaries.repository';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ChangeStateCommandHandler } from './tender-proposal/commands/change-state/change.state.command';
+import { TenderTrackRepository } from '../tender-track/track/repositories/tender-track.repository';
 
 const controllers = [
   /* Proposal */
@@ -53,6 +54,7 @@ const services: Provider[] = [
   /* Beneficiaries */
   TenderProposalBeneficiaresService,
   TenderProposalBeneficiariesRepository,
+  TenderTrackRepository,
 ];
 
 @Module({
