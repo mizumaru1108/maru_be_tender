@@ -71,7 +71,7 @@ function FinalPage({
     // console.log({ newVal });
     try {
       await axios
-        .post(`${TMRA_RAISE_URL}/tender-auth/register`, {
+        .post(`${TMRA_RAISE_URL}/tender-auth/register-client`, {
           data: newVal,
         })
         .then(async (res) => {

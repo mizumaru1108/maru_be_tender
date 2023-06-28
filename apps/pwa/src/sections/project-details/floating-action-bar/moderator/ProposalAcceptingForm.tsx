@@ -15,6 +15,7 @@ import useAuth from '../../../../hooks/useAuth';
 import axiosInstance from '../../../../utils/axios';
 import { useSelector } from 'redux/store';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
+import { REOPEN_TMRA_45c1040caab9450dbdf64cb94c50bb7d } from 'config';
 
 interface FormProps {
   onSubmit: (data: any) => void;
@@ -89,21 +90,15 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
   // console.log({ path });
   // const path = track_list.find((item) => item.id === watch('path'))?.name ?? '';
 
-  // const shouldPause = path === '';
+  const shouldPause = path === '';
 
-  // const [result, mutate] = useQuery({
-  //   query: getAllSupervisorsForSpecificTrack,
-  //   variables: { employee_path: path },
-  //   pause: shouldPause,
-  // });
+  const [result, mutate] = useQuery({
+    query: getAllSupervisorsForSpecificTrack,
+    variables: { track_id: path },
+    pause: shouldPause,
+  });
 
-  // const [result, mutate] = useQuery({
-  //   query: getAllSupervisorsForSpecificTrack,
-  //   variables: { track_id: path },
-  //   pause: shouldPause,
-  // });
-
-  // const { data, fetching, error } = result;
+  const { data, fetching, error } = result;
   const handleChangeTrack = React.useCallback(
     async (track_id: string) => {
       setIsLoading(true);
@@ -172,7 +167,9 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
                 disabled={isLoading}
                 size="small"
                 onChange={(e) => {
-                  handleChangeTrack(e.target.value);
+                  if (REOPEN_TMRA_45c1040caab9450dbdf64cb94c50bb7d) {
+                    handleChangeTrack(e.target.value);
+                  }
                   // console.log('test on select data:', e.target.value);
                 }}
               >
@@ -198,13 +195,15 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
                 disabled={isLoading}
               >
                 <MenuItem value="all">{translate('all_supervisor')}</MenuItem>
-                {/* {data?.users &&
+                {!REOPEN_TMRA_45c1040caab9450dbdf64cb94c50bb7d &&
+                  data?.users &&
                   data.users.map((item: any, index: any) => (
                     <MenuItem key={index} value={item?.id}>
                       {item.name}
                     </MenuItem>
-                  ))} */}
-                {employeeByPath.length > 0 &&
+                  ))}
+                {REOPEN_TMRA_45c1040caab9450dbdf64cb94c50bb7d &&
+                  employeeByPath.length > 0 &&
                   [...employeeByPath].map((item: IEmployeeByTrack, index: any) => (
                     <MenuItem key={index} value={item?.id}>
                       {item?.employee_name}

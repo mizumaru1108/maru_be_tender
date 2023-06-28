@@ -227,3 +227,9 @@ export const REOPEN_TMRA_S480: boolean =
   process.env.REACT_APP_CONFIG_REOPEN_TMRA_S480 === 'true'
     ? true
     : false;
+
+export const REOPEN_TMRA_45c1040caab9450dbdf64cb94c50bb7d: boolean =
+  process.env.REACT_APP_CONFIG_REOPEN_TMRA_45c1040caab9450dbdf64cb94c50bb7d &&
+  process.env.REACT_APP_CONFIG_REOPEN_TMRA_45c1040caab9450dbdf64cb94c50bb7d === 'true'
+    ? true
+    : false;
