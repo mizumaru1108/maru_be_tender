@@ -190,6 +190,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
+                      data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].clause`}
                       {...field}
                       InputLabelProps={{ shrink: true }}
                       fullWidth
@@ -215,6 +216,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
                   render={({ field, fieldState: { error } }) => (
                     <TextField
                       {...field}
+                      data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].explanation`}
                       InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
@@ -241,6 +243,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
                   render={({ field, fieldState: { error } }) => (
                     <TextField
                       {...field}
+                      data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].amount`}
                       InputLabelProps={{ shrink: true }}
                       fullWidth
                       size="small"
@@ -261,6 +264,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
               </Grid>
               <Grid item xs={2}>
                 <IconButton
+                  data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].delete`}
                   color="error"
                   onClick={() => {
                     const idGetValues = getValues(`proposal_item_budgets.${i}.id`);

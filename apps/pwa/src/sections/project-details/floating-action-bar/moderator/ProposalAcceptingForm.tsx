@@ -73,6 +73,7 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
     handleSubmit,
     formState: { isSubmitting },
     watch,
+    setValue,
     resetField,
   } = methods;
 
@@ -170,6 +171,7 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
                   if (REOPEN_TMRA_45c1040caab9450dbdf64cb94c50bb7d) {
                     handleChangeTrack(e.target.value);
                   }
+                  setValue('path', e.target.value);
                   // console.log('test on select data:', e.target.value);
                 }}
               >

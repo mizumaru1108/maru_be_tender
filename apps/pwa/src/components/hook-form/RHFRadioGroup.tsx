@@ -48,6 +48,7 @@ export default function RHFRadioGroup({ name, options, label, ...other }: Props)
           <RadioGroup {...field} row {...other}>
             {options.map((option) => (
               <FormControlLabel
+                data-cy={`${name}.${option.label}.${option.value}`}
                 key={option.value}
                 value={option.value}
                 control={<Radio />}

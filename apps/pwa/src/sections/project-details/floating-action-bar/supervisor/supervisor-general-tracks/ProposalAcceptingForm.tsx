@@ -336,6 +336,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 </Grid> */}
                 <Grid item md={6} xs={12}>
                   <RHFRadioGroup
+                    data-cy="acc_form_non_consulation_support_type"
                     type="radioGroup"
                     name="support_type"
                     label="نوع الدعم"
@@ -347,6 +348,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <RHFRadioGroup
+                    data-cy="acc_form_non_consulation_closing_report"
                     type="radioGroup"
                     name="closing_report"
                     label="تقرير الإغلاق"
@@ -358,6 +360,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <RHFRadioGroup
+                    data-cy="acc_form_non_consulation_need_picture"
                     type="radioGroup"
                     name="need_picture"
                     label="هل يحتاج إلى صور"
@@ -369,6 +372,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <RHFRadioGroup
+                    data-cy="acc_form_non_consulation_agreement"
                     type="radioGroup"
                     name="does_an_agreement"
                     label="هل يحتاج اتفاقية"
@@ -380,6 +384,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <RHFRadioGroup
+                    data-cy="acc_form_non_consulation_vat"
                     type="radioGroup"
                     name="vat"
                     // label="هل يشمل المشروع ضريبة القيمة المضافة"
@@ -411,6 +416,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 </Grid> */}
                 <Grid item md={6} xs={12}>
                   <RHFSelect
+                    data-cy="acc_form_non_consulation_support_goal_id"
                     type="select"
                     size="small"
                     name="support_goal_id"
@@ -427,8 +433,12 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                           </MenuItem>
                         ))} */}
 
-                    {_supportGoalsArr.map((item) => (
-                      <MenuItem value={item.value} key={item.value}>
+                    {_supportGoalsArr.map((item, index) => (
+                      <MenuItem
+                        data-cy={`acc_form_non_consulation_support_goal_id_${item.index}`}
+                        value={item.value}
+                        key={item.value}
+                      >
                         {item.title}
                       </MenuItem>
                     ))}
@@ -436,6 +446,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <RHFTextField
+                    data-cy="acc_form_non_consulation_payment_number"
                     type={'number'}
                     size={'small'}
                     disabled={
@@ -451,6 +462,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 {vat === 'true' && (
                   <Grid item md={6} xs={12}>
                     <RHFTextField
+                      data-cy="acc_form_non_consulation_vat_percentage"
                       type="number"
                       size="small"
                       name="vat_percentage"
@@ -463,6 +475,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 {vat === 'true' && (
                   <Grid item md={6} xs={12}>
                     <RHFRadioGroup
+                      data-cy="acc_form_non_consulation_vat"
                       type="radioGroup"
                       name="inclu_or_exclu"
                       label="هل مبلغ السداد شامل أو غير شامل لضريبة القيمة المضافة"
@@ -505,6 +518,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                           render={({ field, fieldState: { error } }) => (
                             <TextField
                               {...field}
+                              data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].clause`}
                               InputLabelProps={{ shrink: true }}
                               fullWidth
                               size="small"
@@ -531,6 +545,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                           render={({ field, fieldState: { error } }) => (
                             <TextField
                               {...field}
+                              data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].explanation`}
                               InputLabelProps={{ shrink: true }}
                               fullWidth
                               size="small"
@@ -557,6 +572,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                           render={({ field, fieldState: { error } }) => (
                             <TextField
                               {...field}
+                              data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].amount`}
                               InputLabelProps={{ shrink: true }}
                               fullWidth
                               size="small"
@@ -580,6 +596,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                       <Grid item xs={2}>
                         <IconButton
                           color="error"
+                          data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].delete`}
                           onClick={() => {
                             const idGetValues = getValues(`detail_project_budgets.${i}.id`);
                             const deleteValues = basedBudget.filter(
@@ -626,6 +643,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 </Grid>
                 <Grid item md={12} xs={12}>
                   <RHFTextField
+                    data-cy="acc_form_non_consulation_notes"
                     name="notes"
                     multiline
                     minRows={3}
@@ -635,6 +653,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                 </Grid>
                 <Grid item md={12} xs={12}>
                   <RHFTextField
+                    data-cy="acc_form_non_consulation_support_outputs"
                     name="support_outputs"
                     multiline
                     minRows={3}
@@ -653,6 +672,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         actionBtn={
           <Stack justifyContent="center" direction="row" gap={2}>
             <Button
+              data-cy="acc_form_non_consulation_cancel"
               onClick={onClose}
               sx={{
                 color: '#000',
@@ -665,6 +685,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
               إغلاق
             </Button>
             <LoadingButton
+              data-cy="acc_form_non_consulation_submit"
               loading={loading}
               onClick={handleSubmit(onSubmitForm)}
               variant="contained"

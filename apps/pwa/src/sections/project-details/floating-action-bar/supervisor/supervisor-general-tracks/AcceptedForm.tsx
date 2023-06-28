@@ -407,6 +407,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         <Grid container rowSpacing={4} columnSpacing={4}>
           <Grid item md={6} xs={12}>
             <RHFRadioGroup
+              data-cy="acc_form_non_consulation_support_type"
               disabled={save}
               type="radioGroup"
               name="support_type"
@@ -419,6 +420,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           </Grid>
           <Grid item md={6} xs={12}>
             <RHFRadioGroup
+              data-cy="acc_form_non_consulation_closing_report"
               disabled={save}
               type="radioGroup"
               name="closing_report"
@@ -431,6 +433,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           </Grid>
           <Grid item md={6} xs={12}>
             <RHFRadioGroup
+              data-cy="acc_form_non_consulation_need_picture"
               disabled={save}
               type="radioGroup"
               name="need_picture"
@@ -443,6 +446,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           </Grid>
           <Grid item md={6} xs={12}>
             <RHFRadioGroup
+              data-cy="acc_form_non_consulation_agreement"
               disabled={save}
               type="radioGroup"
               name="does_an_agreement"
@@ -455,6 +459,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           </Grid>
           <Grid item md={6} xs={12}>
             <RHFRadioGroup
+              data-cy="acc_form_non_consulation_vat"
               disabled={save}
               type="radioGroup"
               name="vat"
@@ -478,6 +483,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           </Grid>
           <Grid item md={6} xs={12}>
             <RHFSelect
+              data-cy="acc_form_non_consulation_support_goal"
               disabled={save}
               type="select"
               size="small"
@@ -493,7 +499,11 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                 </MenuItem>
               ))} */}
               {_supportGoalsArr.map((item) => (
-                <MenuItem value={item.value} key={item.value}>
+                <MenuItem
+                  data-cy={`acc_form_non_consulation_support_goal_id_${item.index}`}
+                  value={item.value}
+                  key={item.value}
+                >
                   {item.title}
                 </MenuItem>
               ))}
@@ -501,6 +511,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           </Grid>
           <Grid item md={6} xs={12}>
             <RHFTextField
+              data-cy="acc_form_non_consulation_payment_number"
               type={'number'}
               size={'small'}
               disabled={
@@ -516,6 +527,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           {isVat && (
             <Grid item md={6} xs={12}>
               <RHFTextField
+                data-cy="acc_form_non_consulation_vat_percentage"
                 disabled={save}
                 type="number"
                 size="small"
@@ -529,6 +541,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           {isVat && (
             <Grid item md={6} xs={12}>
               <RHFRadioGroup
+                data-cy="acc_form_non_consulation_inclu_or_exclu"
                 disabled={save}
                 type="radioGroup"
                 name="inclu_or_exclu"
@@ -551,6 +564,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                     render={({ field, fieldState: { error } }) => (
                       <TextField
                         {...field}
+                        data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].explanation`}
                         InputLabelProps={{ shrink: true }}
                         fullWidth
                         size="small"
@@ -577,6 +591,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                     render={({ field, fieldState: { error } }) => (
                       <TextField
                         {...field}
+                        data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].explanation`}
                         InputLabelProps={{ shrink: true }}
                         fullWidth
                         size="small"
@@ -603,6 +618,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                     render={({ field, fieldState: { error } }) => (
                       <TextField
                         {...field}
+                        data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].amount`}
                         InputLabelProps={{ shrink: true }}
                         fullWidth
                         size="small"
@@ -625,6 +641,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                 </Grid>
                 <Grid item xs={2}>
                   <IconButton
+                    data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].delete`}
                     color="error"
                     onClick={() => {
                       const idGetValues = getValues(`detail_project_budgets.${i}.id`);
@@ -676,6 +693,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           </Grid>
           <Grid item md={12} xs={12}>
             <RHFTextField
+              data-cy="acc_form_non_consulation_support_outputs"
               disabled={save}
               name="support_outputs"
               multiline
@@ -692,6 +710,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           >
             {!save ? (
               <LoadingButton
+                data-cy="acc_form_non_consulation_support_save_button"
                 loading={isLoading}
                 onClick={handleSubmit(onSubmitForm)}
                 variant="outlined"
@@ -701,6 +720,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
               </LoadingButton>
             ) : (
               <LoadingButton
+                data-cy="acc_form_non_consulation_support_edit_button"
                 loading={isLoading}
                 onClick={() => {
                   onEdit(true);
