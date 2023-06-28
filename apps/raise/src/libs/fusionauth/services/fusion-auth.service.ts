@@ -44,6 +44,9 @@ import moment from 'moment';
 import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
 import { RoleEnum } from 'src/user/enums/role-enum';
 import { FusionAuthRegisterError } from '../exceptions/fusion.auth.register.error.exception';
+import { FusionAuthPasswordlessStartError } from '../exceptions/fusion.auth.passwordless.start.error.exception';
+import { FusionAuthPasswordlessLoginErrorException } from '../exceptions/fusion.auth.passwordless.login.error.exception';
+import { FusionAuthVerifyEmailErrorException } from '../exceptions/fusion.auth.verify.email.error.exception';
 
 /**
  * Nest Fusion Auth Service
@@ -192,6 +195,37 @@ export class FusionAuthService {
     }
   }
 
+  async passwordlessLoginStart(loginId: string): Promise<string> {
+    const baseUrl = this.fusionAuthUrl;
+    const passwordlessCredsCheckUrl = baseUrl + '/api/passwordless/start';
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+      },
+      data: {
+        applicationId: this.fusionAuthAppId,
+        loginId,
+      },
+      url: passwordlessCredsCheckUrl,
+    };
+
+    // console.log('passwordless login start options', options);
+
+    try {
+      const data = await axios(options);
+      return data.data.code;
+    } catch (error) {
+      this.logger.error(
+        `Error when start fusionauth passwordless login detail ${error}`,
+      );
+      throw new FusionAuthPasswordlessStartError(`${error}`);
+    }
+  }
+
   /**
    * Fusion Auth Passwordless
    * https://fusionauth.io/docs/v1/tech/apis/passwordless#complete-a-passwordless-login
@@ -225,6 +259,37 @@ export class FusionAuthService {
     }
   }
 
+  async passwordlessLogin(loginCode: string) {
+    const baseUrl = this.fusionAuthUrl;
+    const passwordlessLoginUrl = baseUrl + '/api/passwordless/login';
+
+    const options: AxiosRequestConfig<any> = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.fusionAuthAdminKey,
+        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+      },
+      data: {
+        code: loginCode,
+      },
+      url: passwordlessLoginUrl,
+    };
+
+    // console.log('passworldess login options', options);
+
+    try {
+      const data = await axios(options);
+      // this.logger.log('info', `passwordless login ${logUtil(data.data)}`);
+      return data.data;
+    } catch (error) {
+      this.logger.error(
+        `Error when start fusionauth passwordless login detail ${error}`,
+      );
+      throw new FusionAuthPasswordlessLoginErrorException(`${error}`);
+    }
+  }
+
   async verifyEmail(loginId: string) {
     const baseUrl = this.fusionAuthUrl;
     const verifyEmailUrl = baseUrl + '/api/user/verify-email';
@@ -237,21 +302,19 @@ export class FusionAuthService {
         'X-FusionAuth-TenantId': this.fusionAuthTenantId,
       },
       data: {
-        loginId,
+        userId: loginId,
       },
       url: verifyEmailUrl,
     };
 
+    // console.log(`verify email options ${logUtil(options)}`);
     try {
       const data = await axios(options);
+      // this.logger.log('info', `verify email ${logUtil(data.data)}`);
       return data.data.code;
     } catch (error) {
-      if (error.response.status < 500) {
-        return error.response.status;
-      }
-      console.log('error', error.response.status);
-      this.logger.error("Can't start verify email!", error.response.status);
-      return 500;
+      this.logger.error(`Error verifying email ${error}`);
+      throw new FusionAuthVerifyEmailErrorException(`${error}`);
     }
   }
 

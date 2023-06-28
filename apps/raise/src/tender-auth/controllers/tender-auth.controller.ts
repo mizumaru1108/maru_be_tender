@@ -3,36 +3,44 @@ import {
   Body,
   ConflictException,
   Controller,
-  Get,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
-  RequestTimeoutException,
+  UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+import { Builder } from 'builder-pattern';
 import { LoginRequestDto } from '../../auth/dtos';
 import { BaseResponse } from '../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
+import { FileUploadErrorException } from '../../libs/bunny/exception/file-upload-error.exception';
+import { FusionAuthPasswordlessStartError } from '../../libs/fusionauth/exceptions/fusion.auth.passwordless.start.error.exception';
+import { FusionAuthRegisterError } from '../../libs/fusionauth/exceptions/fusion.auth.register.error.exception';
+import { InvalidFileExtensionException } from '../../tender-commons/exceptions/invalid-file-extension.exception';
+import { InvalidFileSizeException } from '../../tender-commons/exceptions/invalid-file-size.exception';
+import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
+import { PrismaTransactionExpiredException } from '../../tender-commons/exceptions/prisma-transaction-expired.exception';
 import { CreateUserResponseDto } from '../../tender-user/user/dtos/responses/create-user-response.dto';
+import { UserAlreadyExistException } from '../../tender-user/user/exceptions/user-already-exist-exception.exception';
+import { RegisterClientCommand } from '../commands/register/register.command';
+import { SendEmailVerificationClassCommand } from '../commands/send.email.verification/send.email.verification.command';
 import { TenderRoles } from '../decorators/tender-roles.decorator';
-import { RegisterTenderDto } from '../dtos/requests/register-tender.dto';
 import { ForgotPasswordRequestDto } from '../dtos/requests/forgot-password-request.dto';
+import { RegisterTenderDto } from '../dtos/requests/register-tender.dto';
+import { SendEmailVerifDto } from '../dtos/requests/send-email-verif.dto';
+import { SubmitChangePasswordDto } from '../dtos/requests/submit-change-password.dto';
 import { TenderLoginResponseDto } from '../dtos/responses/tender-login-response.dto';
 import { TenderJwtGuard } from '../guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../guards/tender-roles.guard';
 import { TenderAuthService } from '../services/tender-auth.service';
-import { SubmitChangePasswordDto } from '../dtos/requests/submit-change-password.dto';
-import { SendEmailVerifDto } from '../dtos/requests/send-email-verif.dto';
-import { Builder } from 'builder-pattern';
-import { CommandBus } from '@nestjs/cqrs';
-import { RegisterClientCommand } from '../commands/register/register.command';
-import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
-import { UserAlreadyExistException } from '../../tender-user/user/exceptions/user-already-exist-exception.exception';
-import { FusionAuthRegisterError } from '../../libs/fusionauth/exceptions/fusion.auth.register.error.exception';
-import { InvalidFileExtensionException } from '../../tender-commons/exceptions/invalid-file-extension.exception';
-import { InvalidFileSizeException } from '../../tender-commons/exceptions/invalid-file-size.exception';
-import { FileUploadErrorException } from '../../libs/bunny/exception/file-upload-error.exception';
-import { PrismaTransactionExpiredException } from '../../tender-commons/exceptions/prisma-transaction-expired.exception';
+import { VerifyEmailCommand } from '../commands/verify.email/verify.email.command';
+import { TokenExpiredException } from '../exceptions/token-expire.exception';
+import { EmailAlreadyVerifiedException } from '../../tender-user/user/exceptions/email-already-verified.exception';
+import { FusionAuthPasswordlessLoginErrorException } from '../../libs/fusionauth/exceptions/fusion.auth.passwordless.login.error.exception';
+import { DataNotFoundException } from '../../tender-commons/exceptions/data-not-found.exception';
+import { FusionAuthVerifyEmailErrorException } from '../../libs/fusionauth/exceptions/fusion.auth.verify.email.error.exception';
 
 @Controller('tender-auth')
 export class TenderAuthController {
@@ -67,23 +75,69 @@ export class TenderAuthController {
 
   @Post('send-email-verif')
   async sendEmailVerif(@Body() request: SendEmailVerifDto) {
-    const res = await this.tenderAuthService.sendEmailVerif(
-      request.email,
-      request.selectLang || 'ar',
-    );
-    return baseResponseHelper(
-      res,
-      HttpStatus.CREATED,
-      'Send email verif success!',
-    );
+    try {
+      const sendEmailVerifCommand = Builder<SendEmailVerificationClassCommand>(
+        SendEmailVerificationClassCommand,
+        {
+          email: request.email,
+          selectLang: request.selectLang,
+        },
+      ).build();
+
+      const result = await this.commandBus.execute(sendEmailVerifCommand);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'Send email verif success!',
+      );
+    } catch (error) {
+      if (error instanceof FusionAuthPasswordlessStartError) {
+        throw new UnprocessableEntityException(error.message);
+      }
+      throw error;
+    }
   }
 
   @Post('verify-email/:token')
   async verifyEmail(@Param('token') token: string) {
-    const res = await this.tenderAuthService.verifyEmail(token);
-    return baseResponseHelper(res, HttpStatus.CREATED, 'Verify email success!');
+    try {
+      const verifyEmailCommand = Builder<VerifyEmailCommand>(
+        VerifyEmailCommand,
+        {
+          token: token,
+          selectLang: 'ar',
+        },
+      ).build();
+
+      const result = await this.commandBus.execute(verifyEmailCommand);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'Verify email success!',
+      );
+    } catch (error) {
+      if (
+        error instanceof FusionAuthPasswordlessLoginErrorException ||
+        error instanceof FusionAuthVerifyEmailErrorException
+      ) {
+        throw new UnprocessableEntityException(error.message);
+      }
+      if (error instanceof TokenExpiredException) {
+        throw new UnprocessableEntityException(error.message);
+      }
+      if (error instanceof EmailAlreadyVerifiedException) {
+        throw new ConflictException(error.message);
+      }
+      if (error instanceof DataNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      throw error;
+    }
   }
 
+  // DEPRECATED
   @Post('register')
   async register(
     @Body() registerRequest: RegisterTenderDto,
@@ -133,7 +187,7 @@ export class TenderAuthController {
         error instanceof FileUploadErrorException ||
         error instanceof PrismaTransactionExpiredException
       ) {
-        throw new RequestTimeoutException(error.message);
+        throw new UnprocessableEntityException(error.message);
       }
       throw error;
     }

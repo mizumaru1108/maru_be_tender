@@ -7,8 +7,14 @@ import { RegisterClientCommandHandler } from './commands/register/register.comma
 import { TenderAuthRepository } from './repositories/tender-auth.repository';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BankModule } from '../bank/bank.module';
+import { SendEmailVerificationClassCommandHandler } from './commands/send.email.verification/send.email.verification.command';
+import { VerifyEmailCommandHandler } from './commands/verify.email/verify.email.command';
 
-const commands = [RegisterClientCommandHandler];
+const commands = [
+  RegisterClientCommandHandler,
+  SendEmailVerificationClassCommandHandler,
+  VerifyEmailCommandHandler,
+];
 
 const importedModules = [CqrsModule, TenderUserModule, BankModule];
 @Module({
