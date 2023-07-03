@@ -20,12 +20,13 @@ import uuidv4 from 'utils/uuidv4';
 import { dispatch, useSelector } from '../../../../../redux/store';
 import {
   getProposal,
+  getProposalCount,
   updateAcceptedDataProposalNonGrants,
 } from '../../../../../redux/slices/proposal';
 import useAuth from '../../../../../hooks/useAuth';
 import { _supportGoalsArr } from '../../../../../_mock/_supportGoalsArr';
 import axiosInstance from '../../../../../utils/axios';
-import { REOPEN_TMRA_S568 } from 'config';
+import { FEATURE_PROPOSAL_COUNTING, REOPEN_TMRA_S568 } from 'config';
 
 function AcceptedForm({ onEdit }: EditAccModalForm) {
   const { translate, currentLang } = useLocales();
@@ -252,6 +253,9 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         // console.log('masuk true');
         try {
           await dispatch(updateAcceptedDataProposalNonGrants(payload, activeRole!)).then(() => {
+            if (FEATURE_PROPOSAL_COUNTING) {
+              dispatch(getProposalCount(activeRole ?? 'test'));
+            }
             setSave(true);
             onEdit(false);
             dispatch(getProposal(pid as string, activeRole! as string));

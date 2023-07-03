@@ -8,8 +8,10 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import axiosInstance from 'utils/axios';
 //
-import { useSelector, useDispatch } from 'redux/store';
+import { useSelector, useDispatch, dispatch } from 'redux/store';
 import { useSnackbar } from 'notistack';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { getProposalCount } from 'redux/slices/proposal';
 
 // ------------------------------------------------------------------------------------------
 
@@ -39,13 +41,14 @@ export default function FloatingCloseReport() {
       );
 
       if (status === 200) {
+        if (FEATURE_PROPOSAL_COUNTING) {
+          dispatch(getProposalCount(activeRole ?? 'test'));
+        }
         setIsSubmitting(false);
-
         enqueueSnackbar(
           translate('pages.common.close_report.notification.success_accept_exchange'),
           { variant: 'success', preventDuplicate: true, autoHideDuration: 3000 }
         );
-
         window.location.reload();
       }
     } catch (err) {

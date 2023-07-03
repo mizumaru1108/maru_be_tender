@@ -70,7 +70,7 @@ export default function SendMailForm({ isResend = false }: Props) {
 
       if (status) {
         if (params.email || isResend) {
-          navigate(`/auth/login`);
+          // navigate(`/auth/login`);
         }
         // if (email) {
         //   setOpen(true);
