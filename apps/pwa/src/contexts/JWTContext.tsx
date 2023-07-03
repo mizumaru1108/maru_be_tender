@@ -243,11 +243,15 @@ function AuthProvider({ children }: AuthProviderProps) {
     const { token: accessToken, user, refreshToken } = response.response;
     const activeRoleIndex = 0;
     localStorage.setItem('activeRoleIndex', activeRoleIndex.toString());
+    console.log('cek response:', response?.response);
     if (!user) {
       throw new Error(`Error getting currently active user`);
     }
     if (!user.registrations) {
       throw new Error(`User ${user?.id} does not have registrations`);
+    }
+    if (response?.response?.user?.verified === false) {
+      throw new Error(`User ${email} does not have verified`);
     }
     const userRegistration = user.registrations?.[0];
     const activeRole = userRegistration.roles?.[activeRoleIndex];
