@@ -44,6 +44,7 @@ function GetAuthCode() {
           preventDuplicate: true,
           autoHideDuration: 3000,
         });
+        // navigate(`/${role_url_map[activeRole!]}/dashboard/appointments-with-partners/booking`);
         // setReSubmit(false);
       }
     } catch (err) {

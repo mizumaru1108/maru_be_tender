@@ -25,6 +25,7 @@ import {
   IAvailableTime,
   ISelectedDate,
 } from '../../../@types/appointment';
+import { role_url_map } from '../../../@types/commons';
 import EmptyContent from '../../../components/EmptyContent';
 import useAuth from '../../../hooks/useAuth';
 import useLocales from '../../../hooks/useLocales';
@@ -444,7 +445,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
   // };
 
   const handleSubmit = React.useCallback(async () => {
-    // setIsLoading(true);
+    setIsLoading(true);
     localStorage.setItem('partnerMeetingId', userId);
     const start_moment = moment(selectedTime, 'hh:mm A');
     const end_moment = start_moment.add(1, 'hours');
@@ -479,7 +480,8 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
           preventDuplicate: true,
           autoHideDuration: 3000,
         });
-        navigate('/dashboard/appointments-with-partners');
+        // navigate('/dashboard/appointments-with-partners');
+        navigate(`/${role_url_map[activeRole!]}/dashboard/appointments-with-partners`);
         // localStorage.removeItem('authCodeMeeting');
         localStorage.removeItem('partnerMeetingId');
         // setReSubmit(false);
@@ -664,10 +666,16 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                       appointments?.time!.findIndex((item) => item.day === selectedDay) ?? -1;
                     // console.log('time_gap', time_gap);
                     // console.log(
-                    //   'appointments.date: ',
-                    //   appointments?.time![idxMeetingDay].date,
-                    //   'selectedDate date: ',
-                    //   selectedDate.date
+                    //   // 'appointments.date: ',
+                    //   // appointments?.time![idxMeetingDay].date,
+                    //   // 'selectedDate date: ',
+                    //   // selectedDate.date
+                    //   'idxMeetingDay',
+                    //   idxMeetingDay,
+                    //   'selectedDay',
+                    //   selectedDay,
+                    //   'appointments',
+                    //   appointments?.time
                     // );
                     return time_gap.map((gap, idx) => (
                       <Button
@@ -676,7 +684,10 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
                         disabled={
                           idxMeetingDay > -1 &&
                           appointments?.time![idxMeetingDay].date === selectedDate.date &&
-                          appointments?.time![idxMeetingDay].start_time.includes(gap)
+                          // appointments?.time![idxMeetingDay].start_time.includes(gap)
+                          appointments?.time
+                            ?.filter((item) => item.day === selectedDay)
+                            .find((item) => item.start_time.includes(gap))
                             ? true
                             : false ||
                               (!moment(todayDate, 'YYYY-MM-DD').isBefore(

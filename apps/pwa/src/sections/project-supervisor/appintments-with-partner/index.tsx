@@ -4,6 +4,7 @@ import moment from 'moment';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useNavigate } from 'react-router';
+import { isDateAbove } from 'utils/checkIsAboveDate';
 import { IArrayAppointments } from '../../../@types/appointment';
 import {
   Appointments,
@@ -97,11 +98,13 @@ function AppointmentsEmployee() {
   React.useEffect(() => {
     if (appointments) {
       const todayDate = moment().format('DD-MM-YYYY');
+      // console.log({ todayDate });
       const tmpTodayValues = appointments
         .filter(
           (item: IArrayAppointments) =>
-            item.status === 'confirmed' &&
-            moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate))
+            (item.status === 'confirmed' || item.status === 'tentative') &&
+            // moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate))
+            isDateAbove(moment(item.date).format('DD-MM-YYYY'), todayDate, 'same')
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
@@ -112,11 +115,14 @@ function AppointmentsEmployee() {
           employee: item.employee_name ?? 'Un Provide',
           appointmentLink: item.meeting_url,
         }));
+
       const tmpUpcomingValues = appointments
         .filter(
           (item: IArrayAppointments) =>
-            item.status === 'confirmed' &&
-            moment(moment(item.date).format('DD-MM-YYYY')).isBefore(moment(todayDate))
+            (item.status === 'confirmed' || item.status === 'tentative') &&
+            // moment(item.date, 'DD-MM-YYYY').isAfter(moment(todayDate, 'DD-MM-YYYY'))
+            isDateAbove(moment(item.date).format('DD-MM-YYYY'), todayDate, 'above')
+          // && moment(item.date, 'DD-MM-YYYY').isSameOrAfter(moment(todayDate, 'DD-MM-YYYY'))
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
@@ -127,7 +133,8 @@ function AppointmentsEmployee() {
           employee: item.employee_name ?? 'Un Provide',
           appointmentLink: item.meeting_url,
         }));
-      console.log({ tmpTodayValues, tmpUpcomingValues });
+
+      // console.log({ tmpTodayValues, tmpUpcomingValues, cek });
       setTodayAppointments(tmpTodayValues);
       setUpcomingAppointments(tmpUpcomingValues);
     }

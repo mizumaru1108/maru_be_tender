@@ -1,6 +1,7 @@
 import { Box, Stack } from '@mui/material';
 import moment from 'moment';
 import React from 'react';
+import { isDateAbove } from 'utils/checkIsAboveDate';
 import { IArrayAppointments } from '../../../../@types/appointment';
 import {
   Appointments,
@@ -37,7 +38,8 @@ function AppointmentsTap({ defaultValues }: Props) {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate))
+            // moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate))
+            isDateAbove(moment(item.date).format('DD-MM-YYYY'), todayDate, 'same')
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
@@ -52,7 +54,8 @@ function AppointmentsTap({ defaultValues }: Props) {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            moment(moment(item.date).format('DD-MM-YYYY')).isBefore(moment(todayDate))
+            // moment(item.date, 'DD-MM-YYYY').isSameOrAfter(moment(todayDate, 'DD-MM-YYYY'))
+            isDateAbove(moment(item.date).format('DD-MM-YYYY'), todayDate, 'above')
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
