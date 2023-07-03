@@ -10,7 +10,7 @@ import { useParams } from 'react-router';
 import Iconify from 'components/Iconify';
 import CheckIcon from '@mui/icons-material/Check';
 import { LoadingButton } from '@mui/lab';
-import { insertPaymentsBySupervisor } from 'redux/slices/proposal';
+import { getProposalCount, insertPaymentsBySupervisor } from 'redux/slices/proposal';
 import { useSnackbar } from 'notistack';
 //
 import uuidv4 from 'utils/uuidv4';
@@ -18,6 +18,7 @@ import useAuth from 'hooks/useAuth';
 import { useState, useEffect } from 'react';
 import moment from 'moment';
 import useLocales from 'hooks/useLocales';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 type FormValuesProps = {
   payments: {
@@ -130,6 +131,9 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
           setIsSubmitting(false);
           enqueueSnackbar('تم إنشاء الدفعات بنجاح', { variant: 'success' });
           refetch();
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
           // window.location.reload();
         }
       });
