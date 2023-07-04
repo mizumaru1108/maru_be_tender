@@ -531,8 +531,9 @@ export const insertPaymentsBySupervisor = (data: any) => async () => {
       payments: data.payments,
       proposal_id: data.proposal_id,
     };
-
-    const res = await axiosInstance.post('/tender/proposal/payment/insert-payment', variables, {
+    // const url = '/tender/proposal/payment/insert-payment'
+    const url = '/tender/proposal/payment/insert-payment-cqrs';
+    const res = await axiosInstance.post(url, variables, {
       headers: { 'x-hasura-role': data.role },
     });
     // const res = await graphQlAxiosInstance.post('', {
@@ -581,8 +582,9 @@ export const updatePaymentBySupervisorAndManagerAndFinance = (data: any) => asyn
       notes: data.note,
       last_payment_receipt_url: data.url,
     };
-
-    const res = await axiosInstance.patch('/tender/proposal/payment/update-payment', variables, {
+    // const url = '/tender/proposal/payment/update-payment';
+    const url = '/tender/proposal/payment/update-payment-cqrs';
+    const res = await axiosInstance.patch(url, variables, {
       headers: { 'x-hasura-role': data.role },
     });
     // const res = await graphQlAxiosInstance.post('', {

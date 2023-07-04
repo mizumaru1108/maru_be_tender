@@ -477,8 +477,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                 }
                 console.log('e.target.value', e.target.value);
               }}
-              // label="هل يشمل المشروع ضريبة القيمة المضافة"
-              laabel="هل مبلغ السداد شامل لضريبة القيمة المضافة"
+              label="هل مبلغ السداد شامل لضريبة القيمة المضافة"
               options={[
                 { label: 'نعم', value: true },
                 { label: 'لا', value: false },

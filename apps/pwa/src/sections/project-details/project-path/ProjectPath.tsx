@@ -14,7 +14,10 @@ import SupervisorGeneral from './role-logs/SupervisorGeneral';
 import SupervisorGrants from './role-logs/SupervisorGrants';
 // import { getProposal, getTrackBudget } from '../../../redux/slices/proposal';
 import { getTracks } from 'queries/commons/getTracks';
-import { FEATURE_PROJECT_PATH_NEW } from '../../../config';
+import {
+  FEATURE_PROJECT_PATH_NEW,
+  REOPEN_TMRA_f92ada8c1019457c874d79fc6d592d2c,
+} from '../../../config';
 import CashierPaymentLog from './role-logs/CashierPaymentLog';
 import ClientClosingReport from './role-logs/ClientClosingReport';
 import ClientProposalLog from './role-logs/ClientProposalLog';
@@ -225,43 +228,15 @@ function ProjectPath() {
                     </Stack>
                   </Step>
                 ))}
-              {(activeRole! === 'tender_moderator' || hasNonRejectAction) && !isCompleted && (
-                <>
-                  {logs && logs.length > 0 ? (
-                    <Step>
-                      <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
-                        <Button
-                          sx={{
-                            padding: '0px',
-                            justifyContent: 'start',
-                            ':hover': { backgroundColor: '#fff' },
-                          }}
-                          onClick={handleStep(logs!.length, logs![logs!.length])}
-                        >
-                          {proposal && !isPayments && (
-                            <Stack direction="row" gap={2} sx={{ mt: 1 }}>
-                              <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
-                              <Typography
-                                sx={{
-                                  fontSize: logs && logs.length === activeStep ? '17px' : '12px',
-                                  fontWeight: logs && logs.length === activeStep ? 800 : 400,
-                                  color: '#000',
-                                  alignSelf: 'center',
-                                }}
-                              >
-                                {proposal.outter_status !== 'ASKED_FOR_AMANDEMENT'
-                                  ? translate(`permissions.${proposal.state}`)
-                                  : translate(`permissions.PROJECT_SUPERVISOR`)}
-                              </Typography>
-                            </Stack>
-                          )}
-                        </Button>
-                      </Stack>
-                    </Step>
-                  ) : (
-                    <Step>
-                      <Stack direction="row" gap={2} sx={{ mt: 1 }}>
-                        <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+              {REOPEN_TMRA_f92ada8c1019457c874d79fc6d592d2c &&
+                logs &&
+                logs[logs.length - 1].action !== 'reject' &&
+                logs[logs.length - 1].user_role !== 'MODERATOR' &&
+                (activeRole! === 'tender_moderator' || hasNonRejectAction) &&
+                !isCompleted && (
+                  <>
+                    {logs && logs.length > 0 ? (
+                      <Step>
                         <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
                           <Button
                             sx={{
@@ -269,24 +244,57 @@ function ProjectPath() {
                               justifyContent: 'start',
                               ':hover': { backgroundColor: '#fff' },
                             }}
+                            onClick={handleStep(logs!.length, logs![logs!.length])}
                           >
-                            <Typography
-                              sx={{
-                                fontSize: '17px',
-                                fontWeight: 800,
-                                color: '#000',
-                                alignSelf: 'center',
-                              }}
-                            >
-                              {translate(`permissions.MODERATOR`)}
-                            </Typography>
+                            {proposal && !isPayments && (
+                              <Stack direction="row" gap={2} sx={{ mt: 1 }}>
+                                <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+                                <Typography
+                                  sx={{
+                                    fontSize: logs && logs.length === activeStep ? '17px' : '12px',
+                                    fontWeight: logs && logs.length === activeStep ? 800 : 400,
+                                    color: '#000',
+                                    alignSelf: 'center',
+                                  }}
+                                >
+                                  {proposal.outter_status !== 'ASKED_FOR_AMANDEMENT'
+                                    ? translate(`permissions.${proposal.state}`)
+                                    : translate(`permissions.PROJECT_SUPERVISOR`)}
+                                </Typography>
+                              </Stack>
+                            )}
                           </Button>
                         </Stack>
-                      </Stack>
-                    </Step>
-                  )}
-                </>
-              )}
+                      </Step>
+                    ) : (
+                      <Step>
+                        <Stack direction="row" gap={2} sx={{ mt: 1 }}>
+                          <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+                          <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                            <Button
+                              sx={{
+                                padding: '0px',
+                                justifyContent: 'start',
+                                ':hover': { backgroundColor: '#fff' },
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: '17px',
+                                  fontWeight: 800,
+                                  color: '#000',
+                                  alignSelf: 'center',
+                                }}
+                              >
+                                {translate(`permissions.MODERATOR`)}
+                              </Typography>
+                            </Button>
+                          </Stack>
+                        </Stack>
+                      </Step>
+                    )}
+                  </>
+                )}
             </Stepper>
           </Box>
         </Stack>
