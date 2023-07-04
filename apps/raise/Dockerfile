@@ -25,8 +25,8 @@
 
 # --- Runtime ---
 
-# FIXME: try to workaround - https://github.com/prisma/prisma/issues/10649#issuecomment-1297171736
-FROM node:16
+# Thank you Prisma! :) - https://github.com/prisma/prisma/issues/10649#issuecomment-1297171736
+FROM node:lts
 
 ENV NO_COLOR=1
 ENV FORCE_COLOR=0
