@@ -1,4 +1,5 @@
 export const isExistAndValidPhone = (phone: any) => {
+  console.log(`validating ${phone}`);
   if (
     phone &&
     phone !== '' &&

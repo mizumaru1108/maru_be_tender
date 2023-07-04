@@ -87,7 +87,6 @@ export class ProposalUpdatePaymentCommandHandler
     maxSize: number = 1024 * 1024 * 10, // 10 mb by default
   ) {
     try {
-      console.log(file.fullName);
       const fileName = generateFileName(
         file.fullName,
         file.fileExtension as FileMimeTypeEnum,
@@ -342,6 +341,7 @@ export class ProposalUpdatePaymentCommandHandler
               : this.prismaService;
 
           // update the payment
+          // this.logger.log('info', 'updating payment');
           updatedPayment = await this.paymentRepo.update(
             {
               id: command.request.payment_id,
@@ -353,9 +353,11 @@ export class ProposalUpdatePaymentCommandHandler
           // create the cheques and file manager
           if (
             createChequePayload.id &&
-            createChequePayload.transfer_receipt.url &&
+            createChequePayload.transfer_receipt !== undefined &&
+            createChequePayload.transfer_receipt.url !== undefined &&
             fileManagerPayload.length > 0
           ) {
+            // this.logger.log('info', `creating cheque`);
             createdCheque = await this.chequeRepo.create(
               {
                 id: createChequePayload.id,
@@ -381,12 +383,14 @@ export class ProposalUpdatePaymentCommandHandler
           }
 
           // update proposal
+          // this.logger.log('info', `updating proposal`);
           updatedProposal = await this.proposalRepo.update(
             updateProposalPayloads,
             session,
           );
 
           // create proposal logs
+          // this.logger.log('info', `updating payment`);
           createdLogs = await this.logRepo.create(
             createProposalLogPayloads,
             session,
@@ -394,6 +398,7 @@ export class ProposalUpdatePaymentCommandHandler
 
           // if there's a deleted file
           if (deletedFileManagerUrl.length > 0) {
+            // this.logger.log('info', 'deleting file manager');
             for (const url of deletedFileManagerUrl) {
               await this.fileManagerRepo.delete({ url }, session);
             }
@@ -402,6 +407,7 @@ export class ProposalUpdatePaymentCommandHandler
           // create web notif
           if (notifPayload.length > 0) {
             for (const notif of notifPayload) {
+              // this.logger.log('info', `creating notif`);
               await this.notifRepo.create(notif, session);
             }
           }
@@ -443,10 +449,18 @@ export class ProposalUpdatePaymentCommandHandler
         });
 
         // validate client phone
+        this.logger.log(
+          'info',
+          `validating client phone ${proposal.user.mobile_number}`,
+        );
         const clientPhone = isExistAndValidPhone(proposal.user.mobile_number);
 
         // sms notif for payment release
         if (clientPhone) {
+          this.logger.log(
+            'info',
+            `valid phone number, trying to sending sms to ${clientPhone}`,
+          );
           await this.msegatService.sendSMSAsync({
             numbers: clientPhone.includes('+')
               ? clientPhone.substring(1)

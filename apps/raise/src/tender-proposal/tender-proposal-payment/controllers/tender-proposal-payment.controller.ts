@@ -216,7 +216,7 @@ export class TenderProposalPaymentController {
     'tender_project_manager',
     'tender_project_supervisor',
   )
-  @Post('update-payment-cqrs')
+  @Patch('update-payment-cqrs')
   async updatePayments(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: UpdatePaymentDto,

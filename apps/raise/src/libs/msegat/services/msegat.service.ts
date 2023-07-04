@@ -4,6 +4,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { SendSmsDto } from '../dtos/requests';
 import { MsegatSendSmsDto } from '../dtos/requests/msegat-send-sms.dto';
 import { MsegatSendingMessageError } from '../exceptions/send.message.error.exceptions';
+import { ROOT_LOGGER } from '../../root-logger';
 
 /**
  * Nest Msegat Module
@@ -12,7 +13,9 @@ import { MsegatSendingMessageError } from '../exceptions/send.message.error.exce
  */
 @Injectable()
 export class MsegatService {
-  private readonly logger = new Logger(MsegatService.name);
+  private readonly logger = ROOT_LOGGER.child({
+    'log.logger': MsegatService.name,
+  });
 
   constructor(private configService: ConfigService) {}
 
