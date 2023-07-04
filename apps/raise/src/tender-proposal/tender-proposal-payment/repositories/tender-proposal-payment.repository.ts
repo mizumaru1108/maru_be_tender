@@ -40,7 +40,7 @@ export class CreatePaymentProps {
 export class UpdatePaymentProps {
   id: string;
   proposal_id?: string;
-  status?: string;
+  status?: string | null;
   order?: string;
   payment_amount?: string;
   payment_date?: Date;

@@ -381,7 +381,7 @@ export class TenderUserRepository {
         ...query,
         // only show roles.user_type_id[] should be not contain "tender_client"
         roles: {
-          every: {
+          some: {
             user_type_id: {
               in: [...user_type_id],
             },
@@ -524,19 +524,22 @@ export class TenderUserRepository {
           orderBy: order_by,
         });
 
-      const mappedUserSingleRole: FindUserResponse['data'] = [];
+      // console.log({ users });
+      // const mappedUserSingleRole: FindUserResponse['data'] = [];
 
-      if (single_role) {
-        for (const user of users) {
-          for (const role of user.roles) {
-            const data = {
-              ...user,
-              roles: [role],
-            };
-            mappedUserSingleRole.push(data);
-          }
-        }
-      }
+      // console.log({ mappedUserSingleRole });
+
+      // if (single_role) {
+      //   for (const user of users) {
+      //     for (const role of user.roles) {
+      //       const data = {
+      //         ...user,
+      //         roles: [role],
+      //       };
+      //       mappedUserSingleRole.push(data);
+      //     }
+      //   }
+      // }
 
       const count = await this.prismaService.user.count({
         where: {
@@ -545,7 +548,8 @@ export class TenderUserRepository {
       });
 
       return {
-        data: single_role ? mappedUserSingleRole : users,
+        // data: single_role ? mappedUserSingleRole : users,
+        data: users,
         total: count,
       };
     } catch (error) {

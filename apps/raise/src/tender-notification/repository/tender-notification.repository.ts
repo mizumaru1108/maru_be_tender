@@ -3,6 +3,21 @@ import { notification, Prisma } from '@prisma/client';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
+import { v4 as uuidv4 } from 'uuid';
+import { Builder } from 'builder-pattern';
+import { NotificationEntity } from '../entities/notification.entity';
+
+export class CreateNotificaitonProps {
+  id?: string;
+  user_id: string;
+  subject: string;
+  content: string;
+  type: string;
+  message_id?: string | null;
+  appointment_id?: string | null;
+  specific_type?: string | null;
+  read_status?: boolean | null;
+}
 
 @Injectable()
 export class TenderNotificationRepository {
@@ -11,7 +26,35 @@ export class TenderNotificationRepository {
   });
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(notification: Prisma.notificationCreateInput) {
+  async create(props: CreateNotificaitonProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawNotif = await prisma.notification.create({
+        data: {
+          id: props.id || uuidv4(),
+          user_id: props.user_id,
+          subject: props.subject,
+          content: props.content,
+          type: props.type,
+          message_id: props.message_id,
+          appointment_id: props.appointment_id,
+          specific_type: props.specific_type,
+          read_status: props.read_status,
+        },
+      });
+
+      const notifEntity = Builder<NotificationEntity>(NotificationEntity, {
+        ...rawNotif,
+      }).build();
+
+      return notifEntity;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+  async createNotification(notification: Prisma.notificationCreateInput) {
     try {
       return await this.prismaService.$transaction(async (prisma) => {
         await prisma.notification.create({
@@ -29,7 +72,9 @@ export class TenderNotificationRepository {
     }
   }
 
-  async createMany(notifications: Prisma.notificationCreateManyInput[]) {
+  async createManyNotification(
+    notifications: Prisma.notificationCreateManyInput[],
+  ) {
     try {
       return await this.prismaService.$transaction(async (prisma) => {
         await prisma.notification.createMany({

@@ -288,7 +288,7 @@ export class TenderMessagesService {
       specific_type: 'NEW_MESSAGE',
     });
 
-    await this.tenderNotifRepo.createMany(createManyWebNotif);
+    await this.tenderNotifRepo.createManyNotification(createManyWebNotif);
 
     await this.notificationService.sendSmsAndEmailBatch(notifPayload);
 

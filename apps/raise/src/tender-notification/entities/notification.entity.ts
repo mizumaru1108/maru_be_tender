@@ -12,7 +12,7 @@ export class NotificationEntity {
   type: string;
   created_at?: Date | null = new Date();
   updated_at?: Date | null = new Date();
-  read_status?: boolean = false;
+  read_status?: boolean | null = false;
   subject: string;
   shown: boolean = true;
   specific_type?: string | null;

@@ -17,6 +17,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
+import { PrismaTransactionExpiredException } from '../../../tender-commons/exceptions/prisma-transaction-expired.exception';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
 import {
   CreateFileManagerProps,
@@ -38,8 +39,6 @@ import {
 } from '../../../tender-user/user/repositories/tender-user.repository';
 import { RegisterTenderDto } from '../../dtos/requests/register-tender.dto';
 import { TenderAuthRepository } from '../../repositories/tender-auth.repository';
-import { logUtil } from '../../../commons/utils/log-util';
-import { PrismaTransactionExpiredException } from '../../../tender-commons/exceptions/prisma-transaction-expired.exception';
 
 export class RegisterClientCommand {
   request: RegisterTenderDto;

@@ -8,15 +8,17 @@ import { TenderProposalFollowUpRepository } from './tender-proposal-follow-up/re
 import { TenderProposalFollowUpService } from './tender-proposal-follow-up/services/tender-proposal-follow-up.service';
 import { TenderProposalLogRepository } from './tender-proposal-log/repositories/tender-proposal-log.repository';
 import { TenderProposalLogService } from './tender-proposal-log/services/tender-proposal-log.service';
+import { ProposalInsertPaymentCommandHandler } from './tender-proposal-payment/commands/proposal.insert.payments.command.ts/proposal.insert.payments.command';
+import { ProposalUpdatePaymentCommandHandler } from './tender-proposal-payment/commands/proposal.update.payments.command.ts/proposal.update.payments.command';
 import { TenderProposalPaymentController } from './tender-proposal-payment/controllers/tender-proposal-payment.controller';
+import { TenderProposalChequeRepository } from './tender-proposal-payment/repositories/tender-proposal-cheque.repository';
 import { TenderProposalPaymentRepository } from './tender-proposal-payment/repositories/tender-proposal-payment.repository';
 import { TenderProposalPaymentService } from './tender-proposal-payment/services/tender-proposal-payment.service';
+import { TenderProposalTimelineRepository } from './tender-proposal-timeline/repositories/tender-proposal-timeline.repository';
 import { ChangeStateCommandHandler } from './tender-proposal/commands/change-state/change.state.command';
 import { TenderProposalController } from './tender-proposal/controllers/tender-proposal.controller';
 import { TenderProposalRepository } from './tender-proposal/repositories/tender-proposal.repository';
 import { TenderProposalService } from './tender-proposal/services/tender-proposal.service';
-import { TenderProposalTimelineRepository } from './tender-proposal-timeline/repositories/tender-proposal-timeline.repository';
-import { ProposalInsertPaymentCommandHandler } from './tender-proposal-payment/commands/proposal.insert.payments.command.ts/proposal.insert.payments.command';
 
 const importedModules = [CqrsModule, TenderTrackModule];
 
@@ -33,6 +35,7 @@ const commands = [
   ChangeStateCommandHandler,
   /* Payments module */
   ProposalInsertPaymentCommandHandler,
+  ProposalUpdatePaymentCommandHandler,
 ];
 
 const services: Provider[] = [
@@ -52,6 +55,8 @@ const services: Provider[] = [
   TenderProposalItemBudgetRepository,
   /* Timeline */
   TenderProposalTimelineRepository,
+  /* Cheque */
+  TenderProposalChequeRepository,
 ];
 
 const exportedServices: Provider[] = [
@@ -59,6 +64,7 @@ const exportedServices: Provider[] = [
   TenderProposalLogRepository,
   TenderProposalItemBudgetRepository,
   TenderProposalTimelineRepository,
+  TenderProposalChequeRepository,
 ];
 
 @Module({

@@ -5,6 +5,7 @@ import { ProposalLogEntity } from '../../tender-proposal-log/entities/proposal-l
 import { ProposalPaymentEntity } from '../../tender-proposal-payment/entities/proposal-payment.entity';
 import { ProjectTimelineEntity } from '../../tender-proposal-timeline/entities/project-timeline.entity';
 import { ProposalItemBudgetEntity } from '../../item-budget/entities/proposal_item_budget.entity';
+import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 
 export class ProposalEntity {
   // notification                        notification[]
@@ -87,6 +88,7 @@ export class ProposalEntity {
   vat?: boolean | null = false;
   vat_percentage?: number | null;
   whole_budget?: number | null;
+  user?: UserEntity;
   // accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   // project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   // project_manager                     user?                            @relation("proposal_project_manager_idTouser", fields: [project_manager_id], references: [id], onDelete: Cascade)
@@ -95,7 +97,6 @@ export class ProposalEntity {
   // user_type                           user_type?                       @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction)
   // proposal_status                     proposal_status?                 @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_status_fkey")
   // proposal_step                       proposal_step?                   @relation(fields: [step], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  // user                                user                             @relation(fields: [submitter_user_id], references: [id], onDelete: Cascade)
   // supervisor                          user?                            @relation("proposal_supervisor_idTouser", fields: [supervisor_id], references: [id], onDelete: Cascade)
   // support_goal                        support_goal?                    @relation(fields: [support_goal_id], references: [id])
   // proposal_asked_edit_request         proposal_asked_edit_request[]

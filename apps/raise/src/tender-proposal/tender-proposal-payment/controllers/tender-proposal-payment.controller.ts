@@ -44,6 +44,7 @@ import { Builder } from 'builder-pattern';
 import { ProposalInsertPaymentCommand } from '../commands/proposal.insert.payments.command.ts/proposal.insert.payments.command';
 import { InvalidNumberofPaymentsException } from '../exceptions/invalid.number.of.payments.exception';
 import { InvalidAmountOfSupportException } from '../exceptions/invalid.amount.of.support.exception';
+import { ProposalUpdatePaymentCommand } from '../commands/proposal.update.payments.command.ts/proposal.update.payments.command';
 
 @Controller('tender/proposal/payment')
 export class TenderProposalPaymentController {
@@ -54,7 +55,7 @@ export class TenderProposalPaymentController {
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
-  @Post('insert-payments')
+  @Post('insert-payment-cqrs')
   async insertPayments(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: CreateProposalPaymentDto,
@@ -207,6 +208,54 @@ export class TenderProposalPaymentController {
   //     'Success',
   //   );
   // }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_cashier',
+    'tender_finance',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  )
+  @Post('update-payment-cqrs')
+  async updatePayments(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: UpdatePaymentDto,
+  ): Promise<BaseResponse<any>> {
+    try {
+      const updatePaymentCommand = Builder<ProposalUpdatePaymentCommand>(
+        ProposalUpdatePaymentCommand,
+        {
+          currentUser,
+          request,
+        },
+      ).build();
+
+      const updatedPayment = await this.commandBus.execute(
+        updatePaymentCommand,
+      );
+
+      return baseResponseHelper(
+        updatedPayment,
+        HttpStatus.CREATED,
+        'Payment updated successfully',
+      );
+    } catch (error) {
+      if (error instanceof DataNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      if (error instanceof ForbiddenPermissionException) {
+        throw new ForbiddenException(error.message);
+      }
+      if (
+        error instanceof PayloadErrorException ||
+        error instanceof InvalidNumberofPaymentsException ||
+        error instanceof InvalidAmountOfSupportException
+      ) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
+  }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(

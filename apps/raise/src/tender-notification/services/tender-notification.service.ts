@@ -1,14 +1,13 @@
 import {
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { isExistAndValidPhone } from '../../commons/utils/is-exist-and-valid-phone';
 import { SendEmailDto } from '../../libs/email/dtos/requests/send-email.dto';
 import { EmailService } from '../../libs/email/email.service';
-import { TwilioService } from '../../libs/twilio/services/twilio.service';
+import { MsegatService } from '../../libs/msegat/services/msegat.service';
 import { CommonNotifMapperResponse } from '../../tender-commons/dto/common-notif-mapper-response.dto';
 import { CommonNotificationMapperResponse } from '../../tender-commons/dto/common-notification-mapper-response.dto';
 import { CreateManyNotificationDto } from '../dtos/requests/create-many-notification.dto';
@@ -16,9 +15,6 @@ import { CreateNotificationDto } from '../dtos/requests/create-notification.dto'
 import { createManyNotificationMapper } from '../mappers/create-many-notification.mapper';
 import { createNotificationMapper } from '../mappers/create-notification.mapper';
 import { TenderNotificationRepository } from '../repository/tender-notification.repository';
-import { MsegatService } from '../../libs/msegat/services/msegat.service';
-import { logUtil } from '../../commons/utils/log-util';
-import { MsegatSendingMessageError } from '../../libs/msegat/exceptions/send.message.error.exceptions';
 
 @Injectable()
 export class TenderNotificationService {
@@ -30,7 +26,7 @@ export class TenderNotificationService {
 
   async create(payload: CreateNotificationDto) {
     const notification = createNotificationMapper(payload);
-    await this.tenderNotificationRepository.create(notification);
+    await this.tenderNotificationRepository.createNotification(notification);
     return {
       createdNotification: payload,
     };
@@ -39,7 +35,7 @@ export class TenderNotificationService {
   async createMany(payload: CreateManyNotificationDto) {
     const createNotificationPayloads: Prisma.notificationCreateManyInput[] =
       createManyNotificationMapper(payload);
-    await this.tenderNotificationRepository.createMany(
+    await this.tenderNotificationRepository.createManyNotification(
       createNotificationPayloads,
     );
     return {

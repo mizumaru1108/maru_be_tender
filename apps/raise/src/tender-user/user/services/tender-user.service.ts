@@ -382,6 +382,7 @@ export class TenderUserService {
       client_field,
       track_id,
       single_role,
+      user_type_id,
     } = filter;
     if (
       sorting_field &&
@@ -492,6 +493,8 @@ export class TenderUserService {
     } else {
       finalResult = response.data;
     }
+
+    console.log({ finalResult });
 
     return {
       data: finalResult,

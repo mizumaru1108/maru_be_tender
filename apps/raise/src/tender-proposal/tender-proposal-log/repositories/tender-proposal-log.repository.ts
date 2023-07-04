@@ -31,6 +31,8 @@ export class CreateProposalLogProps {
   action?: string | null;
   response_time?: number | null;
   reject_reason?: string | null;
+  message?: string | null;
+  notes?: string | null;
 }
 
 @Injectable()
@@ -182,6 +184,8 @@ export class TenderProposalLogRepository {
           state: props.state,
           user_role: props.user_role,
           reject_reason: props.reject_reason,
+          message: props.message,
+          notes: props.notes,
         },
       });
 
