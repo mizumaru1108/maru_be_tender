@@ -19,6 +19,7 @@ import { ChangeStateCommandHandler } from './tender-proposal/commands/change-sta
 import { TenderProposalController } from './tender-proposal/controllers/tender-proposal.controller';
 import { TenderProposalRepository } from './tender-proposal/repositories/tender-proposal.repository';
 import { TenderProposalService } from './tender-proposal/services/tender-proposal.service';
+import { ProposalPaymentSendCloseReportCommandHandler } from './tender-proposal-payment/commands/proposal.send.close.report.command/proposal.send.close.report.command';
 
 const importedModules = [CqrsModule, TenderTrackModule];
 
@@ -36,6 +37,7 @@ const commands = [
   /* Payments module */
   ProposalInsertPaymentCommandHandler,
   ProposalUpdatePaymentCommandHandler,
+  ProposalPaymentSendCloseReportCommandHandler,
 ];
 
 const services: Provider[] = [

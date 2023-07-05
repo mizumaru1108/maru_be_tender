@@ -5,7 +5,7 @@ import { baseJoiRequiredUrl } from '../utils/joi-required-url';
  * Bunny Config (.env loader)
  * @author RDanang(iyoy)
  */
-interface ITenderAppConfig {
+export interface ITenderAppConfig {
   baseUrl: string;
   apiUrl: string;
 }

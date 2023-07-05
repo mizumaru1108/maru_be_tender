@@ -15,4 +15,10 @@ export class PreviousProposalFilterRequest extends BaseFilterRequest {
     return value;
   })
   outter_status?: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  project_name?: string;
 }

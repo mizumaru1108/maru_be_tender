@@ -40,4 +40,10 @@ export class RequestInProcessFilterRequest extends BaseFilterRequest {
     return undefined;
   })
   vat?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  project_name?: string;
 }

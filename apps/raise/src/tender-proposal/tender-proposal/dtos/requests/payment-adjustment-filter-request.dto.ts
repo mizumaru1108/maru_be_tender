@@ -11,4 +11,10 @@ export class PaymentAdjustmentFilterRequest extends BaseFilterRequest {
     message: 'type should be incoming / inprocess',
   })
   type?: 'incoming' | 'inprocess';
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  project_name?: string;
 }

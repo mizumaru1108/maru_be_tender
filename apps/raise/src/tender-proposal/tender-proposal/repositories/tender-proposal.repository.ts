@@ -1664,6 +1664,7 @@ export class TenderProposalRepository {
         type = 'incoming',
         vat,
         track_id,
+        project_name,
       } = filter;
 
       const offset = (page - 1) * limit;
@@ -1684,6 +1685,13 @@ export class TenderProposalRepository {
             vat: false,
           };
         }
+      }
+
+      if (project_name) {
+        whereClause = {
+          ...whereClause,
+          project_name,
+        };
       }
 
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
@@ -1906,6 +1914,7 @@ export class TenderProposalRepository {
         sort = 'desc',
         sorting_field,
         outter_status,
+        project_name,
       } = filter;
 
       const offset = (page - 1) * limit;
@@ -1913,6 +1922,13 @@ export class TenderProposalRepository {
       let whereClause: Prisma.proposalWhereInput = {
         oid: null,
       };
+
+      if (project_name) {
+        whereClause = {
+          ...whereClause,
+          project_name,
+        };
+      }
 
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
       const field =
@@ -2138,7 +2154,13 @@ export class TenderProposalRepository {
     filter: FetchRejectionListFilterRequest,
   ) {
     try {
-      const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
+      const {
+        page = 1,
+        limit = 10,
+        sort = 'desc',
+        sorting_field,
+        track_id,
+      } = filter;
 
       const offset = (page - 1) * limit;
 
@@ -2173,6 +2195,13 @@ export class TenderProposalRepository {
           whereClause = {
             ...whereClause,
             track_id: reviewer.track.id,
+          };
+        }
+      } else {
+        if (track_id) {
+          whereClause = {
+            ...whereClause,
+            track_id,
           };
         }
       }
@@ -2353,6 +2382,7 @@ export class TenderProposalRepository {
         sort = 'desc',
         sorting_field,
         type = 'incoming',
+        project_name,
       } = filter;
 
       const offset = (page - 1) * limit;
@@ -2360,6 +2390,13 @@ export class TenderProposalRepository {
       let whereClause: Prisma.proposalWhereInput = {
         oid: null,
       };
+
+      if (project_name) {
+        whereClause = {
+          ...whereClause,
+          project_name,
+        };
+      }
 
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
       const field =

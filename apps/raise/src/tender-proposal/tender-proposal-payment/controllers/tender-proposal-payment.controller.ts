@@ -45,6 +45,7 @@ import { ProposalInsertPaymentCommand } from '../commands/proposal.insert.paymen
 import { InvalidNumberofPaymentsException } from '../exceptions/invalid.number.of.payments.exception';
 import { InvalidAmountOfSupportException } from '../exceptions/invalid.amount.of.support.exception';
 import { ProposalUpdatePaymentCommand } from '../commands/proposal.update.payments.command.ts/proposal.update.payments.command';
+import { ProposalPaymentSendCloseReportCommand } from '../commands/proposal.send.close.report.command/proposal.send.close.report.command';
 
 @Controller('tender/proposal/payment')
 export class TenderProposalPaymentController {
@@ -316,6 +317,43 @@ export class TenderProposalPaymentController {
       HttpStatus.OK,
       'Closing report successfully done',
     );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_cashier',
+    'tender_finance',
+    'tender_project_manager',
+    'tender_project_supervisor',
+  )
+  @Patch('send-closing-report-cqrs')
+  async sendCloseReport(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: SendClosingReportDto,
+  ): Promise<BaseResponse<any>> {
+    try {
+      const sendCloseReportCommand =
+        Builder<ProposalPaymentSendCloseReportCommand>(
+          ProposalPaymentSendCloseReportCommand,
+          {
+            currentUser,
+            request,
+          },
+        ).build();
+
+      const response = await this.commandBus.execute(sendCloseReportCommand);
+
+      return baseResponseHelper(
+        response,
+        HttpStatus.CREATED,
+        'Payment updated successfully',
+      );
+    } catch (error) {
+      if (error instanceof DataNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      throw error;
+    }
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)

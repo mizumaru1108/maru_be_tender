@@ -14,6 +14,7 @@ export class CreateNotificaitonProps {
   content: string;
   type: string;
   message_id?: string | null;
+  proposal_id?: string | null;
   appointment_id?: string | null;
   specific_type?: string | null;
   read_status?: boolean | null;
@@ -37,6 +38,7 @@ export class TenderNotificationRepository {
           subject: props.subject,
           content: props.content,
           type: props.type,
+          proposal_id: props.proposal_id,
           message_id: props.message_id,
           appointment_id: props.appointment_id,
           specific_type: props.specific_type,

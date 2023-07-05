@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { BaseFilterRequest } from '../../../../commons/dtos/base-filter-request.dto';
 
 export class FetchRejectionListFilterRequest extends BaseFilterRequest {
@@ -8,4 +8,11 @@ export class FetchRejectionListFilterRequest extends BaseFilterRequest {
   @IsString()
   @IsNotEmpty()
   project_name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID(4, { message: 'invalid id!' })
+  track_id?: string;
 }
