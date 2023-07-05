@@ -13,6 +13,7 @@ import useLocales from '../../../hooks/useLocales';
 import axiosInstance from '../../../utils/axios';
 import { generateHeader } from '../../../utils/generateProposalNumber';
 import { getDelayProjects } from '../../../utils/get-delay-projects';
+import { REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 } from 'config';
 
 export interface tracks {
   id: string;
@@ -30,6 +31,7 @@ function DashboardProjectManagement() {
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
   // const [cardData, setCardData] = React.useState([]);
+  const [searchName, setSearchName] = useState('');
 
   // pagination
   const [page, setPage] = useState(1);
@@ -46,6 +48,9 @@ function DashboardProjectManagement() {
     } else {
       url = `tender-proposal/request-in-process?limit=${limit}&page=${page}`;
     }
+    if (searchName && REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006) {
+      url = `${url}&project_name=${searchName}`;
+    }
     // console.log('rest', url);
     try {
       const rest = await axiosInstance.get(url, {
@@ -55,11 +60,9 @@ function DashboardProjectManagement() {
       // setTotal(rest.data.total);
       if (rest) {
         setTotal(rest.data.total);
-        const tmpDatas = rest.data.data
-          // .filter((item: any) => item.state === 'CEO')
-          .map((item: any) => ({
-            ...item,
-          }));
+        const tmpDatas = rest.data.data.map((item: any) => ({
+          ...item,
+        }));
         if (tmpDatas) {
           setProjectManagementData(
             tmpDatas.map((project: any) => ({
@@ -105,7 +108,7 @@ function DashboardProjectManagement() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, currentLang, limit, page, filter, filterValue]);
+  }, [activeRole, enqueueSnackbar, currentLang, limit, page, filter, filterValue, searchName]);
 
   React.useEffect(() => {
     fetchingIncoming();
@@ -171,6 +174,13 @@ function DashboardProjectManagement() {
         }}
         onPageChange={(page: number) => {
           setPage(page);
+        }}
+        onSearch={(value) => {
+          setSearchName(value);
+        }}
+        reFetch={() => {
+          setSearchName('');
+          // fetchingIncoming();
         }}
       />
       {/* {!loadingCount && (

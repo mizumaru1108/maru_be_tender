@@ -239,3 +239,9 @@ export const REOPEN_TMRA_f92ada8c1019457c874d79fc6d592d2c: boolean =
   process.env.REACT_APP_CONFIG_REOPEN_TMRA_f92ada8c1019457c874d79fc6d592d2c === 'true'
     ? true
     : false;
+
+export const REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 &&
+  process.env.REACT_APP_CONFIG_FEATURE_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 === 'true'
+    ? true
+    : false;

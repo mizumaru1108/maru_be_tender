@@ -16,6 +16,7 @@ import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 import { getDelayProjects } from '../../../utils/get-delay-projects';
 import ProjectManagementTableBE from 'components/table/ceo/project-management/ProjectManagementTableBE';
+import { REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 } from 'config';
 
 export interface tracks {
   id: string;
@@ -35,6 +36,7 @@ function CeoProjectManagement() {
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
   // const [cardData, setCardData] = React.useState([]);
+  const [searchName, setSearchName] = useState('');
 
   // pagination
   const [page, setPage] = useState(1);
@@ -50,6 +52,9 @@ function CeoProjectManagement() {
       url = `tender-proposal/request-in-process?limit=${limit}&page=${page}&${filter}=${filterValue}`;
     } else {
       url = `tender-proposal/request-in-process?limit=${limit}&page=${page}`;
+    }
+    if (searchName && REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006) {
+      url = `${url}&project_name=${searchName}`;
     }
     // console.log('rest', url);
     try {
@@ -110,7 +115,7 @@ function CeoProjectManagement() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, currentLang, limit, page, filter, filterValue]);
+  }, [activeRole, enqueueSnackbar, currentLang, limit, page, filter, filterValue, searchName]);
 
   React.useEffect(() => {
     fetchingIncoming();
@@ -173,6 +178,12 @@ function CeoProjectManagement() {
         }}
         onPageChange={(page: number) => {
           setPage(page);
+        }}
+        onSearch={(value) => {
+          setSearchName(value);
+        }}
+        reFetch={() => {
+          setSearchName('');
         }}
       />
     </React.Fragment>

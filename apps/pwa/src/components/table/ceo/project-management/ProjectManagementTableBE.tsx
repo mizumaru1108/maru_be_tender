@@ -6,6 +6,7 @@ import {
   CircularProgress,
   Dialog,
   DialogContent,
+  Grid,
   IconButton,
   MenuItem,
   Select,
@@ -30,6 +31,8 @@ import { useSelector } from 'redux/store';
 import { ProjectManagement, ProjectManagementTableBEProps } from './project-management';
 import ProjectManagementTableRow from './ProjectManagementRow';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
+import SearchField from 'components/sorting/searchField';
+import { REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 } from 'config';
 
 export default function ProjectManagementTableBE({
   data,
@@ -40,6 +43,8 @@ export default function ProjectManagementTableBE({
   onPageChange,
   onFilterChange,
   onChangeRowsPage,
+  onSearch,
+  reFetch,
 }: ProjectManagementTableBEProps) {
   const { translate } = useLocales();
   const { track_list } = useSelector((state) => state.proposal);
@@ -89,15 +94,46 @@ export default function ProjectManagementTableBE({
         </Typography>
       )}
 
-      <Stack
+      {/* <Stack
         data-cy="select-option-track-list"
         direction="row"
         alignItems="center"
         justifyContent="space-between"
         sx={{ mb: 2 }}
       >
-        <Box>
+        <Select
+          value={selectedTrack}
+          disabled={isLoading}
+          onChange={(e) => {
+            setSelectedTrack(e.target.value as string);
+            onFilterChange('track_id', e.target.value as string);
+          }}
+          size="small"
+          sx={{ fontSize: '12px', width: 200 }}
+        >
+          <MenuItem value={'all'}>{'All'}</MenuItem>
+          {track_list.map((item) => (
+            <MenuItem data-cy={`select-option-track-${item.id}`} key={item.id} value={item.id}>
+              {formatCapitalizeText(item.name)}
+            </MenuItem>
+          ))}
+        </Select>
+        <SearchField
+          onReturnSearch={(value) => {
+            console.log({ value });
+          }}
+        />
+      </Stack> */}
+      <Grid
+        container
+        data-cy="select-option-track-list"
+        display={'flex'}
+        justifyContent={'space-between'}
+        alignItems={'center'}
+      >
+        <Grid item md={2} xs={12}>
           <Select
+            data-cy="select-option-track-list"
             value={selectedTrack}
             disabled={isLoading}
             onChange={(e) => {
@@ -114,8 +150,24 @@ export default function ProjectManagementTableBE({
               </MenuItem>
             ))}
           </Select>
-        </Box>
-      </Stack>
+        </Grid>
+        {REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 && (
+          <Grid item md={4} xs={12}>
+            <SearchField
+              data-cy="search_field"
+              isLoading={isLoading}
+              onReturnSearch={(value) => {
+                if (onSearch) {
+                  onSearch(value);
+                }
+              }}
+              reFetch={() => {
+                if (reFetch) reFetch();
+              }}
+            />
+          </Grid>
+        )}
+      </Grid>
 
       {isLoading && (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>

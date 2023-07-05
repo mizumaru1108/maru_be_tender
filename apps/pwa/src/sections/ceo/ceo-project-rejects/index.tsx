@@ -15,6 +15,8 @@ import { useSnackbar } from 'notistack';
 import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 import { getDelayProjects } from '../../../utils/get-delay-projects';
+import ProjectManagementTableBE from 'components/table/ceo/project-management/ProjectManagementTableBE';
+import { REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 } from 'config';
 
 export interface tracks {
   id: string;
@@ -27,19 +29,19 @@ function CeoProjectRejects() {
   const dispatch = useDispatch();
   const { tracks, isLoading, track_list } = useSelector((state) => state.proposal);
   const [projectManagementData, setProjectManagementData] = useState<ProjectManagement[]>([]);
-  const [filteredTrack, setFilteredTrack] = useState([
-    'MOSQUES',
-    'CONCESSIONAL_GRANTS',
-    'INITIATIVES',
-    'BAPTISMS',
-  ]);
+  // const [filteredTrack, setFilteredTrack] = useState([
+  //   'MOSQUES',
+  //   'CONCESSIONAL_GRANTS',
+  //   'INITIATIVES',
+  //   'BAPTISMS',
+  // ]);
 
-  const [projectList, fetchProject] = useQuery({
-    query: GetProjectList,
-    variables: { track: tracks },
-  });
+  // const [projectList, fetchProject] = useQuery({
+  //   query: GetProjectList,
+  //   variables: { track: tracks },
+  // });
 
-  const { data: projectDatas, fetching, error } = projectList;
+  // const { data: projectDatas, fetching, error } = projectList;
 
   //fetching using API
 
@@ -48,10 +50,28 @@ function CeoProjectRejects() {
   const { activeRole } = useAuth();
   // const [cardData, setCardData] = React.useState([]);
 
+  const [searchName, setSearchName] = useState('');
+
+  // pagination
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+  const [total, setTotal] = useState<number | null>(null);
+  const [filter, setFilter] = useState('');
+  const [filterValue, setFilterValue] = useState('');
+
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
+    let url = '';
+    if (filter && filterValue && filterValue !== 'all') {
+      url = `tender-proposal/rejection-list?limit=${limit}&page=${page}&${filter}=${filterValue}`;
+    } else {
+      url = `tender-proposal/rejection-list?limit=${limit}&page=${page}`;
+    }
+    if (searchName && REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006) {
+      url = `${url}&project_name=${searchName}`;
+    }
     try {
-      const rest = await axiosInstance.get(`tender-proposal/rejection-list?limit=0`, {
+      const rest = await axiosInstance.get(url, {
         headers: { 'x-hasura-role': activeRole! },
       });
       if (rest) {
@@ -60,6 +80,7 @@ function CeoProjectRejects() {
         }));
         if (tmpDatas) {
           // console.log('track_list', track_list);
+          setTotal(rest.data.total);
           setProjectManagementData(
             tmpDatas.map((project: any) => ({
               id: (project.id as string) || '',
@@ -85,16 +106,6 @@ function CeoProjectRejects() {
         }
       }
     } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(
@@ -115,63 +126,11 @@ function CeoProjectRejects() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, currentLang, track_list]);
+  }, [activeRole, enqueueSnackbar, currentLang, limit, page, filter, filterValue, searchName]);
 
-  if (error) {
-    console.log(error);
-  }
-
-  // dispatch(setTracks(['MOSQUES', 'CONCESSIONAL_GRANTS', 'INITIATIVES', 'BAPTISMS']));
-
-  // function getDelayProjects(getDate: any) {
-  //   const ignoredUnits = ['second', 'seconds', 'minute', 'minutes', 'hour', 'hours'];
-  //   const createdAt = new Date(getDate);
-  //   const formatter = new Intl.RelativeTimeFormat(currentLang.value);
-  //   const formattedCreatedAt = formatDistance(createdAt, new Date(), {
-  //     addSuffix: true,
-  //   });
-
-  //   const [value, unit] = formattedCreatedAt.split(' ');
-
-  //   if (ignoredUnits.includes(unit)) {
-  //     return null;
-  //   }
-
-  //   const parsedValue = parseInt(value);
-
-  //   if (isNaN(parsedValue)) {
-  //     return null;
-  //   }
-
-  //   const changeLangCreatedAt = formatter.format(-parsedValue, unit as Intl.RelativeTimeFormatUnit);
-  //   const formattedCreatedAtLate = changeLangCreatedAt.replace(' ago', ' late');
-
-  //   return formattedCreatedAtLate;
+  // if (error) {
+  //   console.log(error);
   // }
-
-  // useEffect(() => {
-  //   if (projectDatas) {
-  //     setProjectManagementData(
-  //       projectDatas.proposal.map((project: any) => ({
-  //         id: (project.projectId as string) || '',
-  //         // projectNumber: (project.projectNumber as string) || '',
-  //         projectNumber:
-  //           generateHeader(
-  //             project && project.projectNumber && project.projectNumber
-  //               ? project.projectNumber
-  //               : project.projectId
-  //           ) || '',
-  //         projectName: (project.projectName as string) || '',
-  //         projectSection: project.projectSection || '',
-  //         associationName: (project.associationName.client_data.entity as string) || '',
-  //         createdAt: (project.createdAt as string) || '',
-  //         projectDelay: getDelayProjects(project.createdAt) || '',
-  //         userId: project.associationName.client_data.user_id || '',
-  //       }))
-  //     );
-  //   }
-  //   // eslint-disable-next-line
-  // }, [projectDatas, currentLang]);
 
   React.useEffect(() => {
     if (track_list && !isLoading) {
@@ -180,10 +139,10 @@ function CeoProjectRejects() {
     // fetchingPrevious();
   }, [fetchingIncoming, isLoading, track_list]);
 
-  useEffect(() => {
-    dispatch(setTracks(filteredTrack));
-    dispatch(getTrackList(0, activeRole! as string));
-  }, [dispatch, filteredTrack, activeRole]);
+  // useEffect(() => {
+  //   // dispatch(setTracks(filteredTrack));
+  //   dispatch(getTrackList(0, activeRole! as string));
+  // }, [dispatch, filteredTrack, activeRole]);
 
   const headerCells: ProjectManagementTableHeader[] = [
     { id: 'projectNumber', label: translate('project_management_headercell.project_number') },
@@ -214,12 +173,36 @@ function CeoProjectRejects() {
   if (isFetching && isLoading) return <>Loading</>;
 
   return (
-    <ProjectManagementTable
+    // <ProjectManagementTable
+    //   headline={translate('rejection_list_table.headline')}
+    //   isLoading={fetching || isLoading}
+    //   headerCell={headerCells}
+    //   data={projectManagementData ?? []}
+    //   destination={'reject-project'}
+    // />
+    <ProjectManagementTableBE
+      data-cy="rejection-list-table"
       headline={translate('rejection_list_table.headline')}
-      isLoading={fetching || isLoading}
-      headerCell={headerCells}
+      isLoading={isFetching}
       data={projectManagementData ?? []}
-      destination={'reject-project'}
+      headerCell={headerCells}
+      total={total || 0}
+      onChangeRowsPage={(rowPage: number) => {
+        setLimit(rowPage);
+      }}
+      onFilterChange={(filter, value) => {
+        setFilter(filter);
+        setFilterValue(value);
+      }}
+      onPageChange={(page: number) => {
+        setPage(page);
+      }}
+      onSearch={(value) => {
+        setSearchName(value);
+      }}
+      reFetch={() => {
+        setSearchName('');
+      }}
     />
   );
 }

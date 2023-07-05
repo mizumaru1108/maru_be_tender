@@ -48,4 +48,6 @@ export interface ProjectManagementTableBEProps {
   onPageChange: (page: number) => void;
   onChangeRowsPage: (rowsPerPage: number) => void;
   onFilterChange: (filter: filter, value: string) => void;
+  onSearch?: (value: string) => void;
+  reFetch?: () => void;
 }
