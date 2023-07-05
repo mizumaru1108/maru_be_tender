@@ -1697,7 +1697,10 @@ export class TenderProposalRepository {
       if (project_name) {
         whereClause = {
           ...whereClause,
-          project_name,
+          project_name: {
+            contains: project_name,
+            mode: 'insensitive',
+          },
         };
       }
 
@@ -1933,7 +1936,10 @@ export class TenderProposalRepository {
       if (project_name) {
         whereClause = {
           ...whereClause,
-          project_name,
+          project_name: {
+            contains: project_name,
+            mode: 'insensitive',
+          },
         };
       }
 
@@ -2401,7 +2407,10 @@ export class TenderProposalRepository {
       if (project_name) {
         whereClause = {
           ...whereClause,
-          project_name,
+          project_name: {
+            contains: project_name,
+            mode: 'insensitive',
+          },
         };
       }
 
