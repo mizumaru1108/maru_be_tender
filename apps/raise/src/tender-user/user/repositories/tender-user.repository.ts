@@ -22,6 +22,11 @@ export class CreateUserProps {
   status_id: string;
   address?: string;
 }
+
+export class FetchByIdProps {
+  id: string;
+  includes_relation?: string[];
+}
 @Injectable()
 export class TenderUserRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -105,6 +110,54 @@ export class TenderUserRepository {
       }).build();
 
       return createdUserEntity;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async fetchByIdFilter(
+    props: FetchByIdProps,
+  ): Promise<Prisma.userFindFirstArgs> {
+    const { includes_relation } = props;
+
+    let findByIdFilter: Prisma.userFindFirstArgs = {
+      where: { id: props.id },
+    };
+
+    if (includes_relation && includes_relation.length > 0) {
+      let include: Prisma.userInclude = {};
+
+      for (const relation of includes_relation) {
+        if (relation === 'track') {
+          include = {
+            ...include,
+            track: true,
+          };
+        }
+      }
+
+      findByIdFilter.include = include;
+    }
+
+    return findByIdFilter;
+  }
+
+  async fetchById(
+    props: FetchByIdProps,
+    session?: PrismaService,
+  ): Promise<UserEntity | null> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawRes = await prisma.user.findUnique({
+        where: { id: props.id },
+      });
+
+      const foundedEntity = Builder<UserEntity>(UserEntity, {
+        ...rawRes,
+      }).build();
+
+      return foundedEntity;
     } catch (error) {
       throw error;
     }

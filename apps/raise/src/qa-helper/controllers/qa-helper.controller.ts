@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   UseGuards,
@@ -11,17 +12,18 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
-import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
-import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
-import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
-import { QaProposalCreateDto } from '../dto/requests/qa-proposal-create.dto';
-import { QaProposalCreateNewCommand } from '../commands/qa.proposal.create.new/qa.proposal.create.new.command';
-import { QaProposalDeleteDto } from '../dto/requests/qa-proposal.delete.dto';
-import { QaProposalDeleteGeneratedCommand } from '../commands/qa.proposal.delete.generated/qa.proposal.delete.generated.command';
+import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator';
+import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
+import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
 import { DataNotFoundException } from '../../tender-commons/exceptions/data-not-found.exception';
-import { QaProposalDeleteCommand } from '../commands/qa.proposal.delete/qa.proposal.delete.command';
 import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
+import { QaProposalCreateNewModeratorStateCommand } from '../commands/qa.proposal.create.new.moderator/qa.proposal.create.new.moderator.command';
+import { QaProposalCreateNewSupervisorCommand } from '../commands/qa.proposal.create.new.supervisor/qa.proposal.create.new.supervisor.command';
+import { QaProposalDeleteCommand } from '../commands/qa.proposal.delete/qa.proposal.delete.command';
+import { QaProposalCreateSupervisorDto } from '../dto/requests/qa-proposal-create-supervisor.dto';
+import { QaProposalCreateDto } from '../dto/requests/qa-proposal-create.dto';
+import { QaProposalDeleteDto } from '../dto/requests/qa-proposal.delete.dto';
 
 @ApiTags('qa-helper')
 @Controller('qa-helper')
@@ -30,23 +32,54 @@ export class QaHelperControllers {
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
-  @Post('proposal/create')
+  @Post('proposal/create-moderator')
   async createProposal(@Body() request: QaProposalCreateDto) {
     console.log({ request });
     try {
-      const createProposalCommand = Builder<QaProposalCreateNewCommand>(
-        QaProposalCreateNewCommand,
-        {
-          project_name: request.name,
-          submitter_user_id: request.client_user_id,
-        },
-      ).build();
+      const createProposalCommand =
+        Builder<QaProposalCreateNewModeratorStateCommand>(
+          QaProposalCreateNewModeratorStateCommand,
+          {
+            project_name: request.name,
+            submitter_user_id: request.client_user_id,
+          },
+        ).build();
 
       const result = await this.commandBus.execute(createProposalCommand);
       return baseResponseHelper(result, HttpStatus.OK);
     } catch (error) {
       throw error;
-    } /*  */
+    }
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Post('proposal/create-supervisor')
+  async createProposalSupervisor(
+    @Body() request: QaProposalCreateSupervisorDto,
+  ) {
+    try {
+      const createProposalCommand =
+        Builder<QaProposalCreateNewSupervisorCommand>(
+          QaProposalCreateNewSupervisorCommand,
+          {
+            ...request,
+            project_name: request.name,
+            submitter_user_id: request.client_user_id,
+          },
+        ).build();
+
+      const result = await this.commandBus.execute(createProposalCommand);
+      return baseResponseHelper(result, HttpStatus.OK);
+    } catch (error) {
+      if (error instanceof DataNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      if (error instanceof PayloadErrorException) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
@@ -68,28 +101,6 @@ export class QaHelperControllers {
         throw new BadRequestException(error.message);
       }
       if (error instanceof PayloadErrorException) {
-        throw new BadRequestException(error.message);
-      }
-      throw error;
-    }
-  }
-
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_admin')
-  @Delete('proposal/delete-generated/:id')
-  async deleteGeneratedProposal(@Param() request: QaProposalDeleteDto) {
-    try {
-      const createProposalCommand = Builder<QaProposalDeleteGeneratedCommand>(
-        QaProposalDeleteGeneratedCommand,
-        {
-          id: request.id,
-        },
-      ).build();
-
-      const result = await this.commandBus.execute(createProposalCommand);
-      return baseResponseHelper(result, HttpStatus.OK);
-    } catch (error) {
-      if (error instanceof DataNotFoundException) {
         throw new BadRequestException(error.message);
       }
       throw error;

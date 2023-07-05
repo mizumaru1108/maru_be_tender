@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
-export class QaProposalCreateDto {
+export class QaProposalCreateSupervisorDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
@@ -20,4 +20,11 @@ export class QaProposalCreateDto {
   @IsNotEmpty()
   @IsUUID(4, { message: ' invalid uuid' })
   supervisor_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID(4, { message: ' invalid uuid' })
+  track_id?: string;
 }

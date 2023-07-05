@@ -1,5 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { nanoid } from 'nanoid';
+import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { TenderProposalItemBudgetRepository } from '../../../tender-proposal/item-budget/repositories/proposal-item-budget.repository';
+import { TenderProposalLogRepository } from '../../../tender-proposal/tender-proposal-log/repositories/tender-proposal-log.repository';
+import { TenderProposalTimelineRepository } from '../../../tender-proposal/tender-proposal-timeline/repositories/tender-proposal-timeline.repository';
 import { TenderProposalRepository } from '../../../tender-proposal/tender-proposal/repositories/tender-proposal.repository';
 import {
   baseProposalMock,
@@ -7,18 +12,14 @@ import {
   projectTimelineMock,
   proposalLogModeratorMock,
 } from '../../mock/mock-data';
-import { TenderProposalLogRepository } from '../../../tender-proposal/tender-proposal-log/repositories/tender-proposal-log.repository';
-import { TenderProposalItemBudgetRepository } from '../../../tender-proposal/item-budget/repositories/proposal-item-budget.repository';
-import { TenderProposalTimelineRepository } from '../../../tender-proposal/tender-proposal-timeline/repositories/tender-proposal-timeline.repository';
-
-export class QaProposalCreateNewCommand {
+export class QaProposalCreateNewModeratorStateCommand {
   project_name: string;
   submitter_user_id: string;
 }
 
-@CommandHandler(QaProposalCreateNewCommand)
-export class QaProposalCreateNewCommandHandler
-  implements ICommandHandler<QaProposalCreateNewCommand>
+@CommandHandler(QaProposalCreateNewModeratorStateCommand)
+export class QaProposalCreateNewModeratorStateCommandHandler
+  implements ICommandHandler<QaProposalCreateNewModeratorStateCommand>
 {
   constructor(
     private readonly prismaService: PrismaService,
@@ -28,7 +29,9 @@ export class QaProposalCreateNewCommandHandler
     private readonly timelineRepo: TenderProposalTimelineRepository,
   ) {}
 
-  async execute(command: QaProposalCreateNewCommand): Promise<any> {
+  async execute(
+    command: QaProposalCreateNewModeratorStateCommand,
+  ): Promise<any> {
     try {
       return await this.prismaService.$transaction(async (prismaSession) => {
         const session =
@@ -97,14 +100,12 @@ export class QaProposalCreateNewCommandHandler
             step: baseProposalMock.step,
             submitter_user_id:
               command.submitter_user_id || baseProposalMock.submitter_user_id,
-            supervisor_id: baseProposalMock.supervisor_id,
             support_goal_id: baseProposalMock.support_goal_id,
             support_outputs: baseProposalMock.support_outputs,
             support_type: baseProposalMock.support_type,
             target_group_age: baseProposalMock.target_group_age,
             target_group_num: baseProposalMock.target_group_num,
             target_group_type: baseProposalMock.target_group_type,
-            track_id: baseProposalMock.track_id,
             vat: baseProposalMock.vat,
             vat_percentage: baseProposalMock.vat_percentage,
             whole_budget: baseProposalMock.whole_budget,
@@ -116,6 +117,7 @@ export class QaProposalCreateNewCommandHandler
           proposalLogModeratorMock.map((log) => {
             return {
               ...log,
+              id: nanoid(),
               proposal_id: createdProposal.id,
             };
           }),
@@ -126,6 +128,7 @@ export class QaProposalCreateNewCommandHandler
           itemBudgetMock.map((budget) => {
             return {
               ...budget,
+              id: uuidv4(),
               proposal_id: createdProposal.id,
             };
           }),
@@ -136,6 +139,7 @@ export class QaProposalCreateNewCommandHandler
           projectTimelineMock.map((timeline) => {
             return {
               ...timeline,
+              id: uuidv4(),
               proposal_id: createdProposal.id,
             };
           }),
@@ -146,6 +150,7 @@ export class QaProposalCreateNewCommandHandler
           {
             id: createdProposal.id,
             includes_relation: [
+              'user',
               'proposal_logs',
               'proposal_item_budgets',
               'project_timeline',

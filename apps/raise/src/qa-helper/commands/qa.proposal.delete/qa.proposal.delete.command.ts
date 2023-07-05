@@ -38,11 +38,17 @@ export class QaProposalDeleteCommandHandler
 
         if (fileManagers) {
           for (const fileManager of fileManagers) {
-            await this.bunnyService.deleteMedia(fileManager.url, true);
-            await this.fileManagerRepo.delete(
-              { url: fileManager.url },
-              session,
-            );
+            if (
+              ['https://media.tmra.io/mocking-test/mock-data.pdf'].indexOf(
+                fileManager.url,
+              ) < 0
+            ) {
+              await this.bunnyService.deleteMedia(fileManager.url, true);
+              await this.fileManagerRepo.delete(
+                { url: fileManager.url },
+                session,
+              );
+            }
           }
         }
 

@@ -89,6 +89,7 @@ export class ProposalEntity {
   vat_percentage?: number | null;
   whole_budget?: number | null;
   user?: UserEntity;
+  supervisor?: UserEntity;
   // accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   // project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   // project_manager                     user?                            @relation("proposal_project_manager_idTouser", fields: [project_manager_id], references: [id], onDelete: Cascade)
@@ -97,7 +98,6 @@ export class ProposalEntity {
   // user_type                           user_type?                       @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction)
   // proposal_status                     proposal_status?                 @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_status_fkey")
   // proposal_step                       proposal_step?                   @relation(fields: [step], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  // supervisor                          user?                            @relation("proposal_supervisor_idTouser", fields: [supervisor_id], references: [id], onDelete: Cascade)
   // support_goal                        support_goal?                    @relation(fields: [support_goal_id], references: [id])
   // proposal_asked_edit_request         proposal_asked_edit_request[]
   // proposal_assign                     proposal_assign[]

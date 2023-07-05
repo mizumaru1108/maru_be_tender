@@ -1,15 +1,15 @@
 import { Module, Provider } from '@nestjs/common';
 import { QaHelperControllers } from './controllers/qa-helper.controller';
-import { QaProposalCreateNewCommandHandler } from './commands/qa.proposal.create.new/qa.proposal.create.new.command';
+import { QaProposalCreateNewModeratorStateCommandHandler } from './commands/qa.proposal.create.new.moderator/qa.proposal.create.new.moderator.command';
 import { TenderProposalModule } from '../tender-proposal/tender-proposal.module';
-import { QaProposalDeleteGeneratedCommandHandler } from './commands/qa.proposal.delete.generated/qa.proposal.delete.generated.command';
 import { CqrsModule } from '@nestjs/cqrs';
 import { QaProposalDeleteCommandHandler } from './commands/qa.proposal.delete/qa.proposal.delete.command';
+import { QaProposalCreateNewSupervisorCommandHandler } from './commands/qa.proposal.create.new.supervisor/qa.proposal.create.new.supervisor.command';
 
 const commands: Provider[] = [
-  QaProposalCreateNewCommandHandler,
+  QaProposalCreateNewModeratorStateCommandHandler,
   QaProposalDeleteCommandHandler,
-  QaProposalDeleteGeneratedCommandHandler,
+  QaProposalCreateNewSupervisorCommandHandler,
 ];
 
 const importedModules = [CqrsModule, TenderProposalModule];

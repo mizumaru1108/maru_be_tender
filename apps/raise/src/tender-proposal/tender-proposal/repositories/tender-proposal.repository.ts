@@ -117,6 +117,13 @@ export class TenderProposalRepository {
           };
         }
 
+        if (relation === 'supervisor') {
+          include = {
+            ...include,
+            supervisor: true,
+          };
+        }
+
         if (relation === 'proposal_logs') {
           include = {
             ...include,
