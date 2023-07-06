@@ -1,6 +1,6 @@
 import { AppointmentEntity } from '../../tender-appointment/entity/appointment.entity';
-import { ProposalLogEntity } from '../../tender-proposal/tender-proposal-log/entities/proposal-log.entity';
-import { ProposalEntity } from '../../tender-proposal/tender-proposal/entities/proposal.entity';
+import { ProposalLogEntity } from '../../proposal-management/proposal-log/entities/proposal-log.entity';
+import { ProposalEntity } from '../../proposal-management/proposal/entities/proposal.entity';
 
 export class NotificationEntity {
   id: string;

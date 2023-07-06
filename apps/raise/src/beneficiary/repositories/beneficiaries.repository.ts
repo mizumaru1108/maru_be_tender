@@ -3,8 +3,7 @@ import { Prisma } from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { PrismaService } from '../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
-import { PreviousProposalFilterRequest } from '../../tender-proposal/tender-proposal/dtos/requests';
-import { TenderProposalRepository } from '../../tender-proposal/tender-proposal/repositories/tender-proposal.repository';
+import { PreviousProposalFilterRequest } from '../../proposal-management/proposal/dtos/requests';
 import { BeneficiaryEntity } from '../entity/beneficiary.entity';
 import {
   CreateBeneficiaryProps,
@@ -108,7 +107,7 @@ export class BeneficiariesRepository {
     } catch (error) {
       const theError = prismaErrorThrower(
         error,
-        TenderProposalRepository.name,
+        BeneficiariesRepository.name,
         'find beneficiary error details: ',
         'finding beneficiary!',
       );
@@ -182,7 +181,7 @@ export class BeneficiariesRepository {
     } catch (err) {
       const theError = prismaErrorThrower(
         err,
-        TenderProposalRepository.name,
+        BeneficiariesRepository.name,
         'find many beneficiary error details: ',
         'find many beneficiary!',
       );

@@ -2,10 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { nanoid } from 'nanoid';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { TenderProposalItemBudgetRepository } from '../../../tender-proposal/item-budget/repositories/proposal-item-budget.repository';
-import { TenderProposalLogRepository } from '../../../tender-proposal/tender-proposal-log/repositories/tender-proposal-log.repository';
-import { TenderProposalTimelineRepository } from '../../../tender-proposal/tender-proposal-timeline/repositories/tender-proposal-timeline.repository';
-import { TenderProposalRepository } from '../../../tender-proposal/tender-proposal/repositories/tender-proposal.repository';
+import { ProposalItemBudgetRepository } from '../../../proposal-management/item-budget/repositories/proposal.item.budget.repository';
+import { ProposalLogRepository } from '../../../proposal-management/proposal-log/repositories/proposal.log.repository';
+import { ProposalTimelinePostgresRepository } from '../../../proposal-management/poject-timelines/repositories/proposal.project.timeline.repository';
+import { ProposalRepository } from '../../../proposal-management/proposal/repositories/proposal.repository';
 import {
   baseProposalMock,
   itemBudgetMock,
@@ -23,10 +23,10 @@ export class QaProposalCreateNewModeratorStateCommandHandler
 {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly proposalRepo: TenderProposalRepository,
-    private readonly logRepo: TenderProposalLogRepository,
-    private readonly itemBudgetRepo: TenderProposalItemBudgetRepository,
-    private readonly timelineRepo: TenderProposalTimelineRepository,
+    private readonly proposalRepo: ProposalRepository,
+    private readonly logRepo: ProposalLogRepository,
+    private readonly itemBudgetRepo: ProposalItemBudgetRepository,
+    private readonly timelineRepo: ProposalTimelinePostgresRepository,
   ) {}
 
   async execute(

@@ -41,8 +41,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { TenderAppointmentModule } from './tender-appointment/tender-appointment.module';
 import { TenderAuthModule } from './tender-auth/tender-auth.module';
 import { TenderEmailModule } from './tender-email/tender-email.module';
-import { TenderProposalModule } from './tender-proposal/tender-proposal.module';
-import { TenderTrackModule } from './tender-track/tender-track.module';
+import { ProposalManagementModule } from './proposal-management/proposal.management.module';
+import { TenderTrackModule } from './tender-track/track.module';
 import { TenderUserModule } from './tender-user/tender-user.module';
 import { TenderModule } from './tender/tender.module';
 import { WidgetBackendModule } from './widget-backend/widget-backend.module';
@@ -189,7 +189,7 @@ import { BankModule } from './bank/bank.module';
     /* Tender */
     BeneficiaryModule,
     TenderModule,
-    TenderProposalModule,
+    ProposalManagementModule,
     TenderAppointmentModule,
     TenderAuthModule,
     TenderUserModule,

@@ -10,7 +10,7 @@ import { ROOT_LOGGER } from '../../libs/root-logger';
 import { TenderFilePayload } from '../../tender-commons/dto/tender-file-payload.dto';
 import { generateFileName } from '../../tender-commons/utils/generate-filename';
 import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
-import { TenderProposalService } from '../../tender-proposal/tender-proposal/services/tender-proposal.service';
+import { ProposalService } from '../../proposal-management/proposal/services/proposal.service';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 import { FetchFileManagerFilter } from '../dtos/requests';
 import { CreateNewFileHistoryDto } from '../dtos/requests/create-new-file-history.dto';
@@ -248,7 +248,7 @@ export class TenderFileManagerService {
       }
       const theError = prismaErrorThrower(
         error,
-        TenderProposalService.name,
+        ProposalService.name,
         `${uploadMessage}, error:`,
         `${uploadMessage}`,
       );

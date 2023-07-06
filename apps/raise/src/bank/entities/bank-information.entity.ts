@@ -11,7 +11,7 @@
 // updated_at                                           DateTime?  @default(now()) @db.Timestamptz(6)
 // user                                                 user       @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-import { ProposalEntity } from '../../tender-proposal/tender-proposal/entities/proposal.entity';
+import { ProposalEntity } from '../../proposal-management/proposal/entities/proposal.entity';
 import { UserEntity } from '../../tender-user/user/entities/user.entity';
 
 export class BankInformationEntity {

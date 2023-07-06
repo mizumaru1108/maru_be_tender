@@ -2,10 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { nanoid } from 'nanoid';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { TenderProposalItemBudgetRepository } from '../../../tender-proposal/item-budget/repositories/proposal-item-budget.repository';
-import { TenderProposalLogRepository } from '../../../tender-proposal/tender-proposal-log/repositories/tender-proposal-log.repository';
-import { TenderProposalTimelineRepository } from '../../../tender-proposal/tender-proposal-timeline/repositories/tender-proposal-timeline.repository';
-import { TenderProposalRepository } from '../../../tender-proposal/tender-proposal/repositories/tender-proposal.repository';
+import { ProposalItemBudgetRepository } from '../../../proposal-management/item-budget/repositories/proposal.item.budget.repository';
+import { ProposalLogRepository } from '../../../proposal-management/proposal-log/repositories/proposal.log.repository';
+import { ProposalTimelinePostgresRepository } from '../../../proposal-management/poject-timelines/repositories/proposal.project.timeline.repository';
+import { ProposalRepository } from '../../../proposal-management/proposal/repositories/proposal.repository';
 import {
   baseProposalMock,
   itemBudgetMock,
@@ -14,7 +14,7 @@ import {
 } from '../../mock/mock-data';
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
 import { DataNotFoundException } from '../../../tender-commons/exceptions/data-not-found.exception';
-import { TenderTrackRepository } from '../../../tender-track/track/repositories/tender-track.repository';
+import { TrackRepository } from '../../../tender-track/track/repositories/track.repository';
 import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
 
 export class QaProposalCreateNewSupervisorCommand {
@@ -30,12 +30,12 @@ export class QaProposalCreateNewSupervisorCommandHandler
 {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly proposalRepo: TenderProposalRepository,
+    private readonly proposalRepo: ProposalRepository,
     private readonly userRepo: TenderUserRepository,
-    private readonly logRepo: TenderProposalLogRepository,
-    private readonly itemBudgetRepo: TenderProposalItemBudgetRepository,
-    private readonly timelineRepo: TenderProposalTimelineRepository,
-    private readonly trackRepo: TenderTrackRepository,
+    private readonly logRepo: ProposalLogRepository,
+    private readonly itemBudgetRepo: ProposalItemBudgetRepository,
+    private readonly timelineRepo: ProposalTimelinePostgresRepository,
+    private readonly trackRepo: TrackRepository,
   ) {}
 
   async execute(command: QaProposalCreateNewSupervisorCommand): Promise<any> {

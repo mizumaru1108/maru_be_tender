@@ -1,9 +1,9 @@
 import { nanoid } from 'nanoid';
 import { BeneficiaryEntity } from '../../beneficiary/entity/beneficiary.entity';
-import { ProposalItemBudgetEntity } from '../../tender-proposal/item-budget/entities/proposal_item_budget.entity';
-import { ProposalLogEntity } from '../../tender-proposal/tender-proposal-log/entities/proposal-log.entity';
-import { ProjectTimelineEntity } from '../../tender-proposal/tender-proposal-timeline/entities/project-timeline.entity';
-import { ProposalEntity } from '../../tender-proposal/tender-proposal/entities/proposal.entity';
+import { ProposalItemBudgetEntity } from '../../proposal-management/item-budget/entities/proposal.item.budget.entity';
+import { ProposalLogEntity } from '../../proposal-management/proposal-log/entities/proposal-log.entity';
+import { ProposalProjectTimelineEntity } from '../../proposal-management/poject-timelines/entities/proposal.project.timeline.entity';
+import { ProposalEntity } from '../../proposal-management/proposal/entities/proposal.entity';
 
 export class MockProposal {
   proposal: {
@@ -16,12 +16,12 @@ export class MockProposal {
     moderator: ProposalLogEntity[];
   };
   project_timeline: {
-    moderator: ProjectTimelineEntity[];
+    moderator: ProposalProjectTimelineEntity[];
   };
 }
 
 export const projectTimelineMock: Omit<
-  ProjectTimelineEntity,
+  ProposalProjectTimelineEntity,
   'id' | 'proposal_id'
 >[] = [
   {

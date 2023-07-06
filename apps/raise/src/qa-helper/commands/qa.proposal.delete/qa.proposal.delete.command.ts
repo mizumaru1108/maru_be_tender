@@ -3,7 +3,7 @@ import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TenderFileManagerRepository } from '../../../tender-file-manager/repositories/tender-file-manager.repository';
-import { TenderProposalRepository } from '../../../tender-proposal/tender-proposal/repositories/tender-proposal.repository';
+import { ProposalRepository } from '../../../proposal-management/proposal/repositories/proposal.repository';
 
 export class QaProposalDeleteCommand {
   id: string;
@@ -15,10 +15,10 @@ export class QaProposalDeleteCommandHandler
 {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly proposalRepo: TenderProposalRepository,
+    private readonly proposalRepo: ProposalRepository,
     private readonly bunnyService: BunnyService,
     private readonly fileManagerRepo: TenderFileManagerRepository,
-    @InjectPinoLogger(TenderProposalRepository.name) private logger: PinoLogger,
+    @InjectPinoLogger(ProposalRepository.name) private logger: PinoLogger,
   ) {}
 
   async execute(command: QaProposalDeleteCommand): Promise<any> {
