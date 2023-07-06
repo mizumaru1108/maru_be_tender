@@ -34,15 +34,12 @@ export default function FloatingSpv() {
     };
 
     setIsSubmitting(true);
-
+    const url = '/tender/proposal/payment/send-closing-report-cqrs';
+    // const url = '/tender/proposal/payment/send-closing-report'
     try {
-      const { status, data } = await axiosInstance.patch(
-        '/tender/proposal/payment/send-closing-report',
-        payload,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-        }
-      );
+      const { status, data } = await axiosInstance.patch(url, payload, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
 
       if (status === 200) {
         setIsSubmitting(false);

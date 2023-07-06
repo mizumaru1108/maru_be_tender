@@ -672,7 +672,7 @@ export const insertChequeByCashier = (data: any) => async () => {
       cheque: data.cheque,
     };
     // const url = /tender/proposal/payment/update-payment
-    const url = '/tender/proposal/payment/update-payment-cqrs/as';
+    const url = '/tender/proposal/payment/update-payment-cqrs';
 
     const res = await axiosInstance.patch(url, variables, {
       headers: { 'x-hasura-role': data.role },
