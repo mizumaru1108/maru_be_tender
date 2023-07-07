@@ -9,10 +9,12 @@ import { ProposalLogModule } from '../proposal-log/proposal.log.module';
 import { ProposalItemBudgetModule } from '../item-budget/proposal.item.budget.module';
 import { ProposalService } from './services/proposal.service';
 import { ProposalPaymentModule } from '../payment/proposal.payment.module';
+import { ProposalEditRequestModule } from '../edit-requests/proposal.edit.request.module';
 
 const importedModule = [
   CqrsModule,
   forwardRef(() => ProposalPaymentModule),
+  ProposalEditRequestModule,
   TenderTrackModule,
   ProposalLogModule,
   ProposalItemBudgetModule,

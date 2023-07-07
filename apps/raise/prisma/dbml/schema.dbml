@@ -629,6 +629,17 @@ Table notification {
   user user [not null]
 }
 
+Table notification_failed_logs {
+  id String [pk]
+  error_log String [not null]
+  content String [not null]
+  subject String [not null]
+  type String [not null]
+  user_id String [not null]
+  email String
+  phone String
+}
+
 Table user_status_log {
   id String [pk]
   user_id String [not null]

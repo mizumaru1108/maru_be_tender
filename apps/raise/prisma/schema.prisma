@@ -640,6 +640,19 @@ model notification {
   user            user          @relation("notification_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 }
 
+model NotificationFailedLogs {
+    id String @id
+    error_log String
+    content String
+    subject String
+    type String
+    user_id String
+    email String?
+    phone String?
+    
+    @@map("notification_failed_logs")
+}
+
 model user_status_log {
   id                     String      @id
   user_id                String

@@ -1,9 +1,9 @@
 import moment from 'moment';
 import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
 import { CommonProposalLogNotifResponse } from '../../../tender-commons/dto/common-proposal-log-notif-response.dto';
-import { CreateManyNotificationDto } from '../../../tender-notification/dtos/requests/create-many-notification.dto';
-import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
-import { createManyNotificationMapper } from '../../../tender-notification/mappers/create-many-notification.mapper';
+import { CreateManyNotificationDto } from '../../../notification-management/notification/dtos/requests/create-many-notification.dto';
+import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
+import { createManyNotificationMapper } from '../../../notification-management/notification/mappers/create-many-notification.mapper';
 
 export const CloseReportNotifMapper = (
   logs: CommonProposalLogNotifResponse['data'],

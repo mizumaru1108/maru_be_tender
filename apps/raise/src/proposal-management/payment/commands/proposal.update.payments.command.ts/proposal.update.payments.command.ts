@@ -41,12 +41,12 @@ import { FileManagerEntity } from '../../../../tender-file-manager/entities/file
 import { ProposalLogEntity } from '../../../proposal-log/entities/proposal-log.entity';
 import { MsegatService } from '../../../../libs/msegat/services/msegat.service';
 import { EmailService } from '../../../../libs/email/email.service';
-import {
-  CreateNotificaitonProps,
-  TenderNotificationRepository,
-} from '../../../../tender-notification/repository/tender-notification.repository';
 import { isExistAndValidPhone } from '../../../../commons/utils/is-exist-and-valid-phone';
 import { ROOT_LOGGER } from '../../../../libs/root-logger';
+import {
+  TenderNotificationRepository,
+  CreateNotificaitonProps,
+} from '../../../../notification-management/notification/repository/tender-notification.repository';
 
 export class ProposalUpdatePaymentCommand {
   currentUser: TenderCurrentUser;

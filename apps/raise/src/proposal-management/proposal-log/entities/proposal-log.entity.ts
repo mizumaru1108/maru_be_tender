@@ -1,4 +1,4 @@
-import { NotificationEntity } from '../../../tender-notification/entities/notification.entity';
+import { NotificationEntity } from '../../../notification-management/notification/entities/notification.entity';
 import { UserTypeEntity } from '../../../tender-user/user/entities/user-type.entity';
 import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 import { ProposalEntity } from '../../proposal/entities/proposal.entity';

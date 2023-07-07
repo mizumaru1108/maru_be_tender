@@ -6,9 +6,9 @@ import {
   TenderAppRole,
   appRoleToReadable,
 } from '../../../tender-commons/types';
-import { CreateManyNotificationDto } from '../../../tender-notification/dtos/requests/create-many-notification.dto';
-import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
-import { createManyNotificationMapper } from '../../../tender-notification/mappers/create-many-notification.mapper';
+import { CreateManyNotificationDto } from '../../../notification-management/notification/dtos/requests/create-many-notification.dto';
+import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
+import { createManyNotificationMapper } from '../../../notification-management/notification/mappers/create-many-notification.mapper';
 
 export const UpdatePaymentNotifMapper = (
   payment: payment,

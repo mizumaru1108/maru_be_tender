@@ -16,8 +16,6 @@ import {
   TenderFusionAuthRoles,
 } from '../../../tender-commons/types';
 import { v4 as uuidv4 } from 'uuid';
-import { TenderNotificationRepository } from '../../../tender-notification/repository/tender-notification.repository';
-import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 
 import { TenderRoomChatRepository } from '../../tender-room-chat/repositories/tender-room-chat.repository';
 import { CreateMessageDto } from '../dtos/requests/create-message.dto';
@@ -27,6 +25,8 @@ import { createMessageMapper } from '../mappers/create-message.mapper';
 import { TenderMessagesRepository } from '../repositories/tender-messages.repository';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
+import { TenderNotificationRepository } from '../../../notification-management/notification/repository/tender-notification.repository';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class TenderMessagesService {

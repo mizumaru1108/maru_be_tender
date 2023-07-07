@@ -4,6 +4,7 @@ import { ProposalItemBudgetEntity } from '../../proposal-management/item-budget/
 import { ProposalLogEntity } from '../../proposal-management/proposal-log/entities/proposal-log.entity';
 import { ProposalProjectTimelineEntity } from '../../proposal-management/poject-timelines/entities/proposal.project.timeline.entity';
 import { ProposalEntity } from '../../proposal-management/proposal/entities/proposal.entity';
+import { Builder } from 'builder-pattern';
 
 export class MockProposal {
   proposal: {
@@ -95,7 +96,7 @@ export const beneficiariesMock: Omit<BeneficiaryEntity, 'id'> = {
   is_deleted: false,
 };
 
-export const baseProposalMock: ProposalEntity = {
+export const baseProposalMock = Builder<ProposalEntity>(ProposalEntity, {
   accreditation_type_id: null,
   added_value: null,
   amount_required_fsupport: 100,
@@ -175,4 +176,4 @@ export const baseProposalMock: ProposalEntity = {
   vat: null,
   vat_percentage: null,
   whole_budget: null,
-};
+}).build();

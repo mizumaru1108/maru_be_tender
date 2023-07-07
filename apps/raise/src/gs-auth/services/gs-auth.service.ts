@@ -15,13 +15,13 @@ import {
   GSVerifyUser,
   GSResetPassword,
 } from '../dtos/requests/gs-register-request.dto';
-import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
 import {
   Organization,
   OrganizationDocument,
 } from 'src/organization/schema/organization.schema';
 import { Model, Types } from 'mongoose';
 import { SubmitChangePasswordDto } from 'src/tender-auth/dtos/requests/submit-change-password.dto';
+import { TenderNotificationService } from '../../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class GsAuthService {
@@ -123,30 +123,30 @@ export class GsAuthService {
           verifyPayload.token,
         );
 
-        if (verifResponse && verifResponse?.verified) {
-          const notifPayload: CommonNotificationMapperResponse = {
-            logTime: moment(new Date().getTime()).format('llll'),
-            generalHostEmail: 'tmra',
-            clientSubject: 'Welcome to TMRA',
-            clientId: [],
-            clientEmail: [verifyPayload.donor_email!],
-            clientMobileNumber: [],
-            clientEmailTemplatePath: 'tmra/en/register/success_donor_verify_tmra',
-            clientEmailTemplateContext: [
-              {
-                donor_name: verifyPayload.donor_name,
-                donor_redirect_link: `${verifyPayload.domain_url}/user/login`,
-              },
-            ],
-            clientContent: `We're excited to welcome you to TMRA.`,
-            reviewerId: [],
-            createManyWebNotifPayload: [],
-          };
-  
-          await this.notificationService.sendSmsAndEmailBatch(notifPayload);
-  
-          return verifResponse;
-        }
+      if (verifResponse && verifResponse?.verified) {
+        const notifPayload: CommonNotificationMapperResponse = {
+          logTime: moment(new Date().getTime()).format('llll'),
+          generalHostEmail: 'tmra',
+          clientSubject: 'Welcome to TMRA',
+          clientId: [],
+          clientEmail: [verifyPayload.donor_email!],
+          clientMobileNumber: [],
+          clientEmailTemplatePath: 'tmra/en/register/success_donor_verify_tmra',
+          clientEmailTemplateContext: [
+            {
+              donor_name: verifyPayload.donor_name,
+              donor_redirect_link: `${verifyPayload.domain_url}/user/login`,
+            },
+          ],
+          clientContent: `We're excited to welcome you to TMRA.`,
+          reviewerId: [],
+          createManyWebNotifPayload: [],
+        };
+
+        await this.notificationService.sendSmsAndEmailBatch(notifPayload);
+
+        return verifResponse;
+      }
     } catch (error) {
       throw new HttpException(`User can't verified`, HttpStatus.FORBIDDEN);
     }

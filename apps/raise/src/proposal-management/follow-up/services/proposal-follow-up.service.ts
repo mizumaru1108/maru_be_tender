@@ -19,13 +19,13 @@ import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-js
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
 import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
 import { TenderFileManagerService } from '../../../tender-file-manager/services/tender-file-manager.service';
-import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { CreateProposalFollowUpDto } from '../dtos/requests/create-follow-up.dto';
 import { DeleteProposalFollowUpDto } from '../dtos/requests/delete-follow-up.dto';
 import { CreateFollowUpMapper } from '../mappers/create-follow-up.mapper';
 import { ProposalFollowUpRepository } from '../repositories/proposal.follow.up.repository';
 import { ProposalRepository } from '../../proposal/repositories/proposal.repository';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class ProposalFollowUpService {

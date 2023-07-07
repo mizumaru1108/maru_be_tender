@@ -55,9 +55,9 @@ import { SendEmailDto } from '../libs/email/dtos/requests/send-email.dto';
 
 import { StripeService } from '../libs/stripe/services/stripe.service';
 import Stripe from 'stripe';
-import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
 import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
 import moment from 'moment';
+import { TenderNotificationService } from '../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class PaymentStripeService {

@@ -56,7 +56,7 @@ import { TenderCommentsModule } from './tender-comments/tender-comments.module';
 import { TenderEventsModule } from './tender-events-gateway/tender-events.module';
 import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
 import { TenderStatisticsModule } from './tender-statistics/tender-statistics.module';
-import { TenderNotificationModule } from './tender-notification/tender-notification.module';
+import { NotificationManagementModule } from './notification-management/notification.management.module';
 import { gapiConfig } from './commons/configs/gapi-config';
 import { twilioConfig } from './commons/configs/twilio-config';
 import { TenderFileManagerModule } from './tender-file-manager/tender-file-manager.module';
@@ -199,7 +199,7 @@ import { BankModule } from './bank/bank.module';
     TenderMessagesModule,
     TenderStatisticsModule,
     TenderEventsModule,
-    TenderNotificationModule,
+    NotificationManagementModule,
     TenderFileManagerModule,
     PaymentPaytabsModule,
     BankModule,

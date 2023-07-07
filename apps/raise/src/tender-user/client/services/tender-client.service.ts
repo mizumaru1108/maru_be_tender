@@ -29,8 +29,6 @@ import { generateFileName } from '../../../tender-commons/utils/generate-filenam
 import { isTenderFilePayload } from '../../../tender-commons/utils/is-tender-file-payload';
 import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
-import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
-import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { UserStatusEnum } from '../../user/types/user_status';
 import { ClientEditRequestFieldDto } from '../dtos/requests/client-edit-request-field.dto';
 import { ExistingClientBankInformation } from '../dtos/requests/existing-bank-information.dto';
@@ -47,10 +45,12 @@ import { TenderClientRepository } from '../repositories/tender-client.repository
 import { logUtil } from '../../../commons/utils/log-util';
 import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
 import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-file-jsonb.dto';
-import { TenderNotificationRepository } from '../../../tender-notification/repository/tender-notification.repository';
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
+import { TenderNotificationRepository } from '../../../notification-management/notification/repository/tender-notification.repository';
+import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;

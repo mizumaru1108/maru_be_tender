@@ -21,8 +21,6 @@ import { ProposalRepository } from '../repositories/proposal.repository';
 import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
 import { EmailService } from '../../../libs/email/email.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
-import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
-import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
@@ -73,6 +71,8 @@ import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-t
 import { UpdateProposalTrackInfoMapper } from '../mappers/update-proposal-track-info.mapper';
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
 import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
+import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class ProposalService {

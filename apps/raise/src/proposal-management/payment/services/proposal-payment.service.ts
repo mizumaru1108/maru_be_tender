@@ -34,7 +34,6 @@ import { isTenderFilePayload } from '../../../tender-commons/utils/is-tender-fil
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { ownershipErrorThrow } from '../../../tender-commons/utils/proposal-ownership-error-thrower';
 import { TenderFileManagerService } from '../../../tender-file-manager/services/tender-file-manager.service';
-import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { ProposalLogRepository } from '../../proposal-log/repositories/proposal.log.repository';
 import { ProposalRepository } from '../../proposal/repositories/proposal.repository';
@@ -55,6 +54,7 @@ import { CreateChequeMapper, CreateClosingReportMapper } from '../mappers';
 import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
 import { CreateTrackBudgetMapper } from '../mappers/create-track-section-budget-mapper';
 import { ProposalPaymentRepository } from '../repositories/proposal-payment.repository';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class ProposalPaymentService {

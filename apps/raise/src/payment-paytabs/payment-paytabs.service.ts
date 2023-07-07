@@ -63,10 +63,10 @@ import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-
  * * Others
  */
 import { PaytabsService } from '../libs/paytabs/services/paytabs.service';
-import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
 import { PaytabsPaymentRequestPayloadModel } from 'src/libs/paytabs/models/paytabs-payment-request-payload.model';
 import moment from 'moment';
 import { Types } from 'mongoose';
+import { TenderNotificationService } from '../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class PaymentPaytabsService {

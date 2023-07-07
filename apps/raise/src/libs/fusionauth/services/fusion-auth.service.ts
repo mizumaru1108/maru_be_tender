@@ -41,12 +41,12 @@ import {
 
 import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
 import moment from 'moment';
-import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
 import { RoleEnum } from 'src/user/enums/role-enum';
 import { FusionAuthRegisterError } from '../exceptions/fusion.auth.register.error.exception';
 import { FusionAuthPasswordlessStartError } from '../exceptions/fusion.auth.passwordless.start.error.exception';
 import { FusionAuthPasswordlessLoginErrorException } from '../exceptions/fusion.auth.passwordless.login.error.exception';
 import { FusionAuthVerifyEmailErrorException } from '../exceptions/fusion.auth.verify.email.error.exception';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 
 /**
  * Nest Fusion Auth Service

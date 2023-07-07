@@ -6,8 +6,11 @@ import { ProposalPaymentEntity } from '../../payment/entities/proposal-payment.e
 import { ProposalProjectTimelineEntity } from '../../poject-timelines/entities/proposal.project.timeline.entity';
 import { ProposalItemBudgetEntity } from '../../item-budget/entities/proposal.item.budget.entity';
 import { UserEntity } from '../../../tender-user/user/entities/user.entity';
+import { AggregateRoot } from '@nestjs/cqrs';
+import { Builder } from 'builder-pattern';
+import { CreateNotificationEvent } from '../../../notification-management/notification/event/create.notification.event';
 
-export class ProposalEntity {
+export class ProposalEntity extends AggregateRoot {
   // notification                        notification[]
   accreditation_type_id?: string | null;
   added_value?: string | null;
@@ -106,4 +109,24 @@ export class ProposalEntity {
   // proposal_edit_request               proposal_edit_request?
   // recommended_support_consultant      recommended_support_consultant[]
   // payment_configuration               supervisor[]
+
+  /**
+   * emit event to create a customer after creating a user.
+   */
+  sendNotificaitonEvent(
+    user_id: string,
+    user_email: string,
+    user_phone: string,
+    subject: string,
+    content: string,
+  ) {
+    // organization_id: string, // payload: RegisterMerchantCommand,
+    const eventBuilder = Builder<CreateNotificationEvent>(
+      CreateNotificationEvent,
+      {
+        user_id: '',
+      },
+    );
+    this.apply(eventBuilder.build());
+  }
 }

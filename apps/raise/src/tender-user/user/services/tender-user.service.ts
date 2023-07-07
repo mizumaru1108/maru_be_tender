@@ -17,8 +17,6 @@ import {
   TenderFusionAuthRolesEnum,
 } from '../../../tender-commons/types';
 import { getTimeGap } from '../../../tender-commons/utils/get-time-gap';
-import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
-import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import {
   TenderCreateUserDto,
   UpdateProfileDto,
@@ -35,6 +33,8 @@ import { UpdateProfileMapper, UpdateUserMapper } from '../mappers';
 
 import { UserStatusEnum } from '../types/user_status';
 import { TenderUserRepository } from '../repositories/tender-user.repository';
+import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class TenderUserService {

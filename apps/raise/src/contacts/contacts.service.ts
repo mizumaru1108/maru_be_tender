@@ -15,7 +15,7 @@ import {
 } from 'src/organization/schema/notifications.schema';
 import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
 import moment from 'moment';
-import { TenderNotificationService } from 'src/tender-notification/services/tender-notification.service';
+import { TenderNotificationService } from '../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class ContactsService {

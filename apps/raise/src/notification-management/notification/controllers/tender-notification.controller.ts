@@ -6,10 +6,10 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { CurrentUser } from '../../commons/decorators/current-user.decorator';
-import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
-import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
-import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
+import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
+import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
+import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
+import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { BaseNotificationDto } from '../dtos/requests/base-notification.dto';
 
 import { TenderNotificationService } from '../services/tender-notification.service';

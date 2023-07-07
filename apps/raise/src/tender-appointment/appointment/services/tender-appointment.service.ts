@@ -12,9 +12,6 @@ import { EmailService } from '../../../libs/email/email.service';
 import { GoogleCalendarService } from '../../../libs/google-calendar/google-calendar.service';
 import { TwilioService } from '../../../libs/twilio/services/twilio.service';
 import { compareTime } from '../../../tender-commons/utils/time-compare';
-import { CreateManyNotificationDto } from '../../../tender-notification/dtos/requests/create-many-notification.dto';
-import { CreateNotificationDto } from '../../../tender-notification/dtos/requests/create-notification.dto';
-import { TenderNotificationService } from '../../../tender-notification/services/tender-notification.service';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { AppointmentFilterRequest } from '../dtos/requests/appointment-filter-request.dto';
 import { CreateAppointmentDto } from '../dtos/requests/create-appointment.dto';
@@ -22,6 +19,9 @@ import { InvitationResponseDto } from '../dtos/requests/response-invitation.dto'
 import { TenderAppointmentRepository } from '../repositories/tender-appointment.repository';
 import { Credentials } from 'google-auth-library';
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
+import { CreateManyNotificationDto } from '../../../notification-management/notification/dtos/requests/create-many-notification.dto';
+import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class TenderAppointmentService {

@@ -17,10 +17,7 @@ import {
   OutterStatusEnum,
   ProposalAction,
 } from '../../../../tender-commons/types/proposal';
-import {
-  CreateNotificaitonProps,
-  TenderNotificationRepository,
-} from '../../../../tender-notification/repository/tender-notification.repository';
+
 import { TenderCurrentUser } from '../../../../tender-user/user/interfaces/current-user.interface';
 import {
   CreateProposalLogProps,
@@ -29,6 +26,10 @@ import {
 import { ProposalRepository } from '../../../proposal/repositories/proposal.repository';
 import { UpdateProposalProps } from '../../../proposal/types';
 import { SendClosingReportDto } from '../../dtos/requests';
+import {
+  CreateNotificaitonProps,
+  TenderNotificationRepository,
+} from '../../../../notification-management/notification/repository/tender-notification.repository';
 
 export class ProposalPaymentSendCloseReportCommand {
   currentUser: TenderCurrentUser;

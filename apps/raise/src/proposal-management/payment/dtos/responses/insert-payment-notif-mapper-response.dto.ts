@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
-import { CreateNotificationDto } from '../../../../tender-notification/dtos/requests/create-notification.dto';
 
 export class InsertPaymentNotifMapperResponse {
   @ApiProperty()

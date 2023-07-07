@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { notification, Prisma } from '@prisma/client';
-import { ROOT_LOGGER } from '../../libs/root-logger';
-import { PrismaService } from '../../prisma/prisma.service';
-import { prismaErrorThrower } from '../../tender-commons/utils/prisma-error-thrower';
 import { v4 as uuidv4 } from 'uuid';
 import { Builder } from 'builder-pattern';
 import { NotificationEntity } from '../entities/notification.entity';
+import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 
 export class CreateNotificaitonProps {
   id?: string;
