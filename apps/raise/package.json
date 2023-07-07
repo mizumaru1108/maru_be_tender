@@ -134,7 +134,6 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "prebuild": "rimraf dist",
-    "push:dev": "git push origin main:stack/dev",
     "start": "concurrently -c auto -n prisma,nest 'prisma generate' 'nest start'",
     "start:debug": "concurrently -c auto -n prisma,nest 'prisma generate --watch' 'next start--debug --watch'",
     "start:dev": "concurrently -c auto -n prisma,nest 'prisma generate --watch' 'nest start --watch'",

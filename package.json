@@ -19,5 +19,10 @@
   "workspaces": [
     "apps/*",
     "libs/*"
-  ]
+  ],
+  "scripts": {
+    "deploy:dev": "git push origin main:stack/dev",
+    "deploy:staging-from-dev": "git fetch --all && git push origin origin/stack/dev:stack/staging",
+    "deploy:prod-from-staging": "git fetch --all && git push origin origin/stack/staging:stack/prod"
+  }
 }

@@ -31,30 +31,17 @@ You will need to install the following extensions: (should be prompted automatic
 
 First, you **must** push your work to `main` branch first!
 
-Then choose, dev or qc or staging or prod?
+Then choose, dev or staging or prod?
 
-To trigger CI for `dev`:
-
-```bash
-git push origin main:stack/dev
-```
-
-To trigger CI for `qc`:
+Depending on the target environment:
 
 ```bash
-git push origin main:stack/qc
-```
-
-To trigger CI for `staging`:
-
-```bash
-git push origin main:stack/staging
-```
-
-To trigger CI for `prod`:
-
-```bash
-git push origin main:stack/prod
+# Deploy to dev based on latest main branch
+yarn deploy:dev
+# Deplay staging based on dev (should already be tested)
+yarn deploy:staging-from-dev
+# Deplay prod based on staging (should already be stable)
+yarn deploy:prod-from-staging
 ```
 
 # DB Schema
