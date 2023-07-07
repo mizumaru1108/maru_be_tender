@@ -1,10 +1,10 @@
 import { Container, styled } from '@mui/material';
-import React from 'react';
+import { FEATURE_BANNER } from 'config';
+import SystemMessages from 'sections/admin/system-messges';
 import Page from '../../components/Page';
 import useLocales from '../../hooks/useLocales';
 
-function SystemMessages() {
-  // return <div>SystemMessages</div>;
+function SystemMessagesPage() {
   const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -19,10 +19,10 @@ function SystemMessages() {
     // <Page title="System Messages">
     <Page title={translate('pages.admin.system_messages')}>
       <Container>
-        <ContentStyle>SystemMessages</ContentStyle>
+        <ContentStyle>{FEATURE_BANNER && <SystemMessages />}</ContentStyle>
       </Container>
     </Page>
   );
 }
 
-export default SystemMessages;
+export default SystemMessagesPage;

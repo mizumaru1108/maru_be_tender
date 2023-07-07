@@ -1289,7 +1289,7 @@ const ar = {
   gregorian_year: 'السنة الميلادية',
   application_and_admission_settings: 'إعدادات التقديم و القبول',
   mobile_settings: 'إعدادات الجوال',
-  system_messages: 'رسائل النظام',
+  system_messages_menu: 'رسائل النظام',
   system_configuration: 'إعدادات النظام',
   users_and_permissions: 'المستخدمين والصلاحيات',
   customization_for_dropdown: 'تخصيص القوائم المنسدلة',
@@ -1474,6 +1474,8 @@ const ar = {
       email_za: 'بريد إلكتروني (ي-أ)',
       governorate_az: 'محافظة (أ-ي)',
       governorate_za: 'محافظة (ي-أ)',
+      track_az: 'المسار (أ-ي)',
+      track_za: 'المسار (ي-أ)',
     },
   },
 
@@ -2346,6 +2348,30 @@ const ar = {
         },
       },
     },
+  },
+  system_messages: {
+    tab: {
+      options: {
+        internal_messages: 'الرسائل الداخلية',
+        advertising_tape: 'الرسائل التفاعلية',
+      },
+      panel: {
+        internal_messages: 'الرسائل الداخلية',
+        advertising_tape: 'الرسائل التفاعلية',
+      },
+    },
+    button: {
+      add_new_slide: 'اضافة صفحة جديدة',
+    },
+    headercell: {
+      image: 'صورة',
+      title: 'عنوان',
+      message_content: 'محتوى',
+      track: 'مسار',
+      construction: 'مشروع',
+      the_show_lenght: 'عدد العناصر',
+    },
+    current_slides: 'الصفحات الحالية',
   },
 };
 
