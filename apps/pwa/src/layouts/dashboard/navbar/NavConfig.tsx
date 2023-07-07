@@ -653,7 +653,7 @@ const navConfig = {
         //   icon: ICONS.tender_admin.mobile_settings,
         // },
         {
-          title: 'system_messages',
+          title: 'system_messages_menu',
           path: PATH_ADMIN.system_messages,
           icon: ICONS.tender_admin.system_messages,
         },

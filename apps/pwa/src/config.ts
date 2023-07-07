@@ -245,3 +245,9 @@ export const REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 === 'true'
     ? true
     : false;
+
+export const FEATURE_BANNER: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_BANNER &&
+  process.env.REACT_APP_CONFIG_FEATURE_BANNER === 'true'
+    ? true
+    : false;

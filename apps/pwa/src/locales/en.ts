@@ -1282,7 +1282,7 @@ const en = {
   gregorian_year: 'Gregorian Year',
   application_and_admission_settings: 'Application and Admission Settings',
   mobile_settings: 'Mobile Settings',
-  system_messages: 'System Messages',
+  system_messages_menu: 'System Messages',
   system_configuration: 'System Configuration',
   users_and_permissions: 'Users and Permissions',
   customization_for_dropdown: 'Customization for Dropdowns',
@@ -1458,6 +1458,8 @@ const en = {
       email_za: 'Email (Z-A)',
       governorate_az: 'Governorate (A-Z)',
       governorate_za: 'Governorate (Z-A)',
+      track_az: 'Track (A-Z)',
+      track_za: 'Track (Z-A)',
     },
   },
 
@@ -2329,6 +2331,30 @@ const en = {
         },
       },
     },
+  },
+  system_messages: {
+    tab: {
+      options: {
+        internal_messages: 'Internal Messages',
+        advertising_tape: 'Advertising Tape',
+      },
+      panel: {
+        internal_messages: 'Internal Messages',
+        advertising_tape: 'Advertising Tape',
+      },
+    },
+    button: {
+      add_new_slide: 'Add New Slide',
+    },
+    headercell: {
+      image: 'Image',
+      title: 'Title',
+      message_content: 'Message Content',
+      track: 'Track',
+      construction: 'Construction',
+      the_show_lenght: 'The show length',
+    },
+    current_slides: 'Current slides',
   },
 };
 

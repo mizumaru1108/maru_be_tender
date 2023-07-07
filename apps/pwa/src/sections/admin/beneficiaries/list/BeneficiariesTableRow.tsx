@@ -185,7 +185,6 @@ export default function BeneficiariesTableRow({ row, selected, onSelectRow, onTr
               })
             }
             disabled={isSubmitting}
-            // disabled
           >
             {translate('pages.admin.settings.label.table.delete')}
           </Button>
