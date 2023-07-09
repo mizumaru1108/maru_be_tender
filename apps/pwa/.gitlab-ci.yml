@@ -44,6 +44,7 @@
       - .yarn/install-state.gz
       - apps/pwa/node_modules
   variables:
+    APP_ENV: dev
     APP_NAME: tmra-tender-pwa
   script:
     - cd apps/pwa
