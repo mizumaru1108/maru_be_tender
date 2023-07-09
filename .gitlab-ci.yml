@@ -58,6 +58,7 @@ cache:
   stage: pre-publish
   needs: []
   cache: []
+  image: alpine
   script:
     - export APP_ENV=${CI_COMMIT_BRANCH/stack\//}
     - export APP_VERSION=$(date +%Y.%m.%d)-${APP_ENV}_${CI_COMMIT_SHORT_SHA}
