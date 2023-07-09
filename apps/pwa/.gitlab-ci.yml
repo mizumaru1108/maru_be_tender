@@ -33,7 +33,7 @@
 
 'build tmra-tender-pwa without deploy':
   stage: build
-  needs: []
+  needs: ['prepare version']
   cache:
     key:
       prefix: tmra-tender-pwa
@@ -45,10 +45,6 @@
       - apps/pwa/node_modules
   variables:
     APP_NAME: tmra-tender-pwa
-    APP_ENV: dev
-  environment:
-    name: ${APP_NAME}-${APP_ENV}
-    url: https://app-${APP_ENV}.daysofiman.com/
   script:
     - cd apps/pwa
     - npm pkg set installConfig.hoistingLimits=workspaces
@@ -72,7 +68,6 @@
       - apps/pwa/node_modules
   variables:
     APP_NAME: tmra-tender-pwa
-    APP_ENV: dev
   environment:
     name: ${APP_NAME}-${APP_ENV}
     url: https://tender-app-${APP_ENV}.tmra.io/
@@ -101,7 +96,6 @@
       - apps/pwa/node_modules
   variables:
     APP_NAME: tmra-tender-pwa
-    APP_ENV: staging
   environment:
     name: ${APP_NAME}-${APP_ENV}
     url: https://tender-app-${APP_ENV}.tmra.io/
@@ -130,7 +124,6 @@
       - apps/pwa/node_modules
   variables:
     APP_NAME: tmra-tender-pwa
-    APP_ENV: dev
   environment:
     name: ${APP_NAME}-${APP_ENV}
     # url: https://app.tmra.io/
