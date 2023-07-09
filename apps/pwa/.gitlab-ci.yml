@@ -83,7 +83,7 @@
     - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="$APP_VERSION" yarn build
     - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
     # Cloudflare Pages insists on `main` branch as Production for some reason
-    - yarn dlx wrangler pages deploy build/ --project-name="${APP_NAME}" --branch=dev --commit-hash="$CI_COMMIT_SHORT_SHA" --commit-message="${CI_COMMIT_DESCRIPTION}" --commit-dirty=true
+    - yarn dlx wrangler pages deploy build/ --project-name="${APP_NAME}" --branch="$CI_COMMIT_BRANCH" --commit-hash="$CI_COMMIT_SHORT_SHA" --commit-message="${CI_COMMIT_DESCRIPTION}" --commit-dirty=true
   rules:
     - if: '$CI_COMMIT_BRANCH == "stack/dev" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
 
@@ -112,7 +112,7 @@
     - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="$APP_VERSION" yarn build
     - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
     # Cloudflare Pages insists on `main` branch as Production for some reason
-    - yarn dlx wrangler pages deploy build/ --project-name="${APP_NAME}" --branch=staging --commit-hash="$CI_COMMIT_SHORT_SHA" --commit-message="${CI_COMMIT_DESCRIPTION}" --commit-dirty=true
+    - yarn dlx wrangler pages deploy build/ --project-name="${APP_NAME}" --branch="$CI_COMMIT_BRANCH" --commit-hash="$CI_COMMIT_SHORT_SHA" --commit-message="${CI_COMMIT_DESCRIPTION}" --commit-dirty=true
   rules:
     - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
 
