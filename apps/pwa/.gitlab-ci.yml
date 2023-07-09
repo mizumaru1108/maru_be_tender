@@ -29,9 +29,47 @@
 
 # ------------------------------------- build ------------------------------------------
 
-'build tmra-tender-pwa dev':
+# Directly deploy to Cloudflare Pages, which saves time (and money) instead of dealing with artifacts
+
+'build tmra-tender-pwa without deploy':
+  stage: build
+  needs: []
+  cache:
+    key:
+      prefix: tmra-tender-pwa
+      files:
+        - yarn.lock
+    paths:
+      - .yarn/cache
+      - .yarn/install-state.gz
+      - apps/pwa/node_modules
+  variables:
+    APP_NAME: tmra-tender-pwa
+    APP_ENV: dev
+  environment:
+    name: ${APP_NAME}-${APP_ENV}
+    url: https://app-${APP_ENV}.daysofiman.com/
+  script:
+    - cd apps/pwa
+    - npm pkg set installConfig.hoistingLimits=workspaces
+    - yarn workspaces focus
+    - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="${CI_COMMIT_BRANCH}_${CI_COMMIT_SHORT_SHA}" yarn build
+    - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+
+'build tmra-tender-pwa then deploy to dev':
   stage: build
   needs: ['prepare version']
+  cache:
+    key:
+      prefix: tmra-tender-pwa
+      files:
+        - yarn.lock
+    paths:
+      - .yarn/cache
+      - .yarn/install-state.gz
+      - apps/pwa/node_modules
   variables:
     APP_NAME: tmra-tender-pwa
     APP_ENV: dev
@@ -39,82 +77,28 @@
     name: ${APP_NAME}-${APP_ENV}
     url: https://tender-app-${APP_ENV}.tmra.io/
   script:
-    # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
     - cd apps/pwa
     - npm pkg set installConfig.hoistingLimits=workspaces
     - yarn workspaces focus
     - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="$APP_VERSION" yarn build
     - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
-  artifacts:
-    paths:
-      # - package.json
-      # - .pnp.*
-      # - .yarnrc.yml
-      # - .yarn/cache/
-      # - .yarn/unplugged/
-      # - node_modules/
-      - apps/pwa/build/
-      # - apps/pwa/node_modules/
-      # - next-i18next.config.js
-      # - next.config.js
-      # - public/
-      # - .next/
-    expire_in: 1 week
-  # environment:
-  #   name: review/$CI_COMMIT_REF_SLUG
+    # Cloudflare Pages insists on `main` branch as Production for some reason
+    - yarn dlx wrangler pages deploy build/ --project-name="${APP_NAME}" --branch=dev --commit-hash="$CI_COMMIT_SHORT_SHA" --commit-message="${CI_COMMIT_DESCRIPTION}" --commit-dirty=true
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
     - if: '$CI_COMMIT_BRANCH == "stack/dev" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
-    # You can manually trigger the pipeline with APP_NAMES=tmra-raise
-    - if: '$CI_COMMIT_BRANCH == "stack/dev" && $APP_NAMES =~ /\btmra-raise\b/'
 
-'build tmra-tender-pwa qc':
+'build tmra-tender-pwa then deploy to staging':
   stage: build
   needs: ['prepare version']
-  variables:
-    APP_NAME: tmra-tender-pwa
-    APP_ENV: qc
-  environment:
-    name: ${APP_NAME}-${APP_ENV}
-    url: https://tender-app-${APP_ENV}.tmra.io/
-  script:
-    # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
-    - cd apps/pwa
-    - npm pkg set installConfig.hoistingLimits=workspaces
-    - yarn workspaces focus
-    - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="$APP_VERSION" yarn build
-    - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
-  artifacts:
+  cache:
+    key:
+      prefix: tmra-tender-pwa
+      files:
+        - yarn.lock
     paths:
-      # - package.json
-      # - .pnp.*
-      # - .yarnrc.yml
-      # - .yarn/cache/
-      # - .yarn/unplugged/
-      # - node_modules/
-      - apps/pwa/build/
-      # - apps/pwa/node_modules/
-      # - next-i18next.config.js
-      # - next.config.js
-      # - public/
-      # - .next/
-    expire_in: 1 week
-  # environment:
-  #   name: review/$CI_COMMIT_REF_SLUG
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/qc" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
-    # You can manually trigger the pipeline with APP_NAMES=tmra-tender-pwa
-    - if: '$CI_COMMIT_BRANCH == "stack/qc" && $APP_NAMES =~ /\btmra-tender-pwa\b/'
-
-'build tmra-tender-pwa staging':
-  stage: build
-  needs: ['prepare version']
+      - .yarn/cache
+      - .yarn/install-state.gz
+      - apps/pwa/node_modules
   variables:
     APP_NAME: tmra-tender-pwa
     APP_ENV: staging
@@ -122,322 +106,42 @@
     name: ${APP_NAME}-${APP_ENV}
     url: https://tender-app-${APP_ENV}.tmra.io/
   script:
-    # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
     - cd apps/pwa
     - npm pkg set installConfig.hoistingLimits=workspaces
     - yarn workspaces focus
     - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="$APP_VERSION" yarn build
     - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
-  artifacts:
-    paths:
-      # - package.json
-      # - .pnp.*
-      # - .yarnrc.yml
-      # - .yarn/cache/
-      # - .yarn/unplugged/
-      # - node_modules/
-      - apps/pwa/build/
-      # - apps/pwa/node_modules/
-      # - next-i18next.config.js
-      # - next.config.js
-      # - public/
-      # - .next/
-    expire_in: 1 week
-  # environment:
-  #   name: review/$CI_COMMIT_REF_SLUG
+    # Cloudflare Pages insists on `main` branch as Production for some reason
+    - yarn dlx wrangler pages deploy build/ --project-name="${APP_NAME}" --branch=staging --commit-hash="$CI_COMMIT_SHORT_SHA" --commit-message="${CI_COMMIT_DESCRIPTION}" --commit-dirty=true
   rules:
     - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
-    # You can manually trigger the pipeline with APP_NAMES=tmra-tender-pwa
-    - if: '$CI_COMMIT_BRANCH == "stack/staging" && $APP_NAMES =~ /\btmra-tender-pwa\b/'
 
-'build tmra-tender-pwa prod':
+'build tmra-tender-pwa then deploy to prod':
   stage: build
   needs: ['prepare version']
+  cache:
+    key:
+      prefix: tmra-tender-pwa
+      files:
+        - yarn.lock
+    paths:
+      - .yarn/cache
+      - .yarn/install-state.gz
+      - apps/pwa/node_modules
   variables:
     APP_NAME: tmra-tender-pwa
-    APP_ENV: prod
+    APP_ENV: dev
   environment:
     name: ${APP_NAME}-${APP_ENV}
     # url: https://app.tmra.io/
     url: https://gaith.hcharity.org/
   script:
-    # - cp src/configuration.${APP_ENV}.ts src/configuration.ts
     - cd apps/pwa
     - npm pkg set installConfig.hoistingLimits=workspaces
     - yarn workspaces focus
     - REACT_APP_SERVICE_ENV="$APP_ENV" REACT_APP_SERVICE_VERSION="$APP_VERSION" yarn build
     - '[ -f "build/index.html" ] || { ls -F build/; echo "Error: Build was invalid. apps/pwa/build/index.html must exist after build!"; exit 1; }'
-  artifacts:
-    paths:
-      # - package.json
-      # - .pnp.*
-      # - .yarnrc.yml
-      # - .yarn/cache/
-      # - .yarn/unplugged/
-      # - node_modules/
-      - apps/pwa/build/
-      # - apps/pwa/node_modules/
-      # - next-i18next.config.js
-      # - next.config.js
-      # - public/
-      # - .next/
-    expire_in: 1 week
-  # environment:
-  #   name: review/$CI_COMMIT_REF_SLUG
+    # Cloudflare Pages insists on `main` branch as Production for some reason
+    - yarn dlx wrangler pages deploy build/ --project-name="${APP_NAME}" --branch=main --commit-hash="$CI_COMMIT_SHORT_SHA" --commit-message="${CI_COMMIT_DESCRIPTION}" --commit-dirty=true
   rules:
     - if: '$CI_COMMIT_BRANCH == "stack/prod" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
-    # You can manually trigger the pipeline with APP_NAMES=tmra-tender-pwa
-    - if: '$CI_COMMIT_BRANCH == "stack/prod" && $APP_NAMES =~ /\btmra-tender-pwa\b/'
-
-# ------------------------------------- publish ------------------------------------------
-
-'publish tmra-tender-pwa to dev':
-  stage: publish
-  needs: ['prepare version', 'build tmra-tender-pwa dev']
-  variables:
-    APP_NAME: tmra-tender-pwa
-  cache: []
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: ['']
-  script:
-    # see https://github.com/GoogleContainerTools/kaniko/issues/1227
-    # https://docs.gitlab.com/ee/ci/docker/using_kaniko.html
-    - mkdir -p /kaniko/.docker
-    # Requires AWS_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY in https://gitlab.com/lovia/lovia-billing/-/settings/ci_cd > Variables
-    # - echo "{\"credHelpers\":{\"${DOCKER_REGISTRY}\":\"ecr-login\"}, \"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - >-
-      /kaniko/executor
-      --cache=true --cache-repo="${CI_REGISTRY_IMAGE}"
-      --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/apps/pwa/Dockerfile"
-      --build-arg=APP_VERSION="${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}:${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}:${APP_ENV}"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/dev" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
-    - if: '$CI_COMMIT_BRANCH == "stack/dev" && $APP_NAMES =~ /\btmra-tender-pwa\b/'
-
-'publish tmra-tender-pwa to qc':
-  stage: publish
-  needs: ['prepare version', 'build tmra-tender-pwa qc']
-  variables:
-    APP_NAME: tmra-tender-pwa
-  cache: []
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: ['']
-  script:
-    # see https://github.com/GoogleContainerTools/kaniko/issues/1227
-    # https://docs.gitlab.com/ee/ci/docker/using_kaniko.html
-    - mkdir -p /kaniko/.docker
-    # Requires AWS_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY in https://gitlab.com/lovia/lovia-billing/-/settings/ci_cd > Variables
-    # - echo "{\"credHelpers\":{\"${DOCKER_REGISTRY}\":\"ecr-login\"}, \"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - >-
-      /kaniko/executor
-      --cache=true --cache-repo="${CI_REGISTRY_IMAGE}"
-      --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/apps/pwa/Dockerfile"
-      --build-arg=APP_VERSION="${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}:${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}:${APP_ENV}"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/qc" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
-    - if: '$CI_COMMIT_BRANCH == "stack/qc" && $APP_NAMES =~ /\btmra-tender-pwa\b/'
-
-'publish tmra-tender-pwa to staging':
-  stage: publish
-  needs: ['prepare version', 'build tmra-tender-pwa staging']
-  variables:
-    APP_NAME: tmra-tender-pwa
-  cache: []
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: ['']
-  script:
-    # see https://github.com/GoogleContainerTools/kaniko/issues/1227
-    # https://docs.gitlab.com/ee/ci/docker/using_kaniko.html
-    - mkdir -p /kaniko/.docker
-    # Requires AWS_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY in https://gitlab.com/lovia/lovia-billing/-/settings/ci_cd > Variables
-    # - echo "{\"credHelpers\":{\"${DOCKER_REGISTRY}\":\"ecr-login\"}, \"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - >-
-      /kaniko/executor
-      --cache=true --cache-repo="${CI_REGISTRY_IMAGE}"
-      --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/apps/pwa/Dockerfile"
-      --build-arg=APP_VERSION="${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}:${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}:${APP_ENV}"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
-    - if: '$CI_COMMIT_BRANCH == "stack/staging" && $APP_NAMES =~ /\btmra-tender-pwa\b/'
-
-'publish tmra-tender-pwa to prod':
-  stage: publish
-  needs: ['prepare version', 'build tmra-tender-pwa prod']
-  variables:
-    APP_NAME: tmra-tender-pwa
-  cache: []
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: ['']
-  script:
-    # see https://github.com/GoogleContainerTools/kaniko/issues/1227
-    # https://docs.gitlab.com/ee/ci/docker/using_kaniko.html
-    - mkdir -p /kaniko/.docker
-    # Requires AWS_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY in https://gitlab.com/lovia/lovia-billing/-/settings/ci_cd > Variables
-    # - echo "{\"credHelpers\":{\"${DOCKER_REGISTRY}\":\"ecr-login\"}, \"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - >-
-      /kaniko/executor
-      --cache=true --cache-repo="${CI_REGISTRY_IMAGE}"
-      --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/apps/pwa/Dockerfile"
-      --build-arg=APP_VERSION="${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}:${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}:${APP_ENV}"
-      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}:latest"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/prod" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
-    - if: '$CI_COMMIT_BRANCH == "stack/prod" && $APP_NAMES =~ /\btmra-tender-pwa\b/'
-
-# ------------------------------------- trigger-deploy ------------------------------------------
-
-'trigger deploy tmra-tender-pwa to dev':
-  stage: deploy
-  needs:
-    - job: prepare version
-    - job: build tmra-tender-pwa dev
-      artifacts: false
-    - job: publish tmra-tender-pwa to dev
-  variables:
-    APP_NAME: tmra-tender-pwa
-    APP_ENV: dev
-  cache: []
-  image: node:lts
-  script:
-    - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
-    - >-
-      curl --fail --request POST
-      --form token=$CI_JOB_TOKEN
-      --form ref=main
-      --form "variables[APP_NAMES]=$APP_NAME"
-      --form "variables[APP_ENV]=$APP_ENV"
-      --form "variables[APP_VERSION]=$APP_VERSION"
-      "https://gitlab.com/api/v4/projects/$DEVSECOPS_PROJECT_ID/trigger/pipeline"
-  environment:
-    name: $APP_NAME-$APP_ENV
-    url: https://app-${APP_ENV}.tmra.io/
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/dev" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
-    - if: '$CI_COMMIT_BRANCH == "stack/dev" && $APP_NAMES =~ /\b${APP_NAME}\b/'
-
-# 'trigger deploy tmra-tender-pwa to qc':
-#   stage: deploy
-#   needs:
-#     - job: prepare version
-#     - job: build tmra-tender-pwa qc
-#       artifacts: false
-#     - job: publish tmra-tender-pwa to qc
-#   variables:
-#     APP_NAME: tmra-tender-pwa
-#     APP_ENV: qc
-#   cache: []
-#   image: node:lts
-#   script:
-#     - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
-#     - >-
-#       curl --fail --request POST
-#       --form token=$CI_JOB_TOKEN
-#       --form ref=main
-#       --form "variables[APP_NAMES]=$APP_NAME"
-#       --form "variables[APP_ENV]=$APP_ENV"
-#       --form "variables[APP_VERSION]=$APP_VERSION"
-#       "https://gitlab.com/api/v4/projects/26870237/trigger/pipeline"
-#   environment:
-#     name: $APP_NAME-$APP_ENV
-#     url: https://app-${APP_ENV}.tmra.io/
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "stack/qc" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-#       changes:
-#         - 'apps/pwa/**/*'
-#     - if: '$CI_COMMIT_BRANCH == "stack/qc" && $APP_NAMES =~ /\b${APP_NAME}\b/'
-
-'trigger deploy tmra-tender-pwa to staging':
-  stage: deploy
-  needs:
-    - job: prepare version
-    - job: build tmra-tender-pwa staging
-      artifacts: false
-    - job: publish tmra-tender-pwa to staging
-  variables:
-    APP_NAME: tmra-tender-pwa
-    APP_ENV: staging
-  cache: []
-  image: node:lts
-  script:
-    - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
-    - >-
-      curl --fail --request POST
-      --form token=$CI_JOB_TOKEN
-      --form ref=main
-      --form "variables[APP_NAMES]=$APP_NAME"
-      --form "variables[APP_ENV]=$APP_ENV"
-      --form "variables[APP_VERSION]=$APP_VERSION"
-      "https://gitlab.com/api/v4/projects/26870237/trigger/pipeline"
-  environment:
-    name: $APP_NAME-$APP_ENV
-    url: https://app-${APP_ENV}.tmra.io/
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/staging" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
-    - if: '$CI_COMMIT_BRANCH == "stack/staging" && $APP_NAMES =~ /\b${APP_NAME}\b/'
-
-'trigger deploy tmra-tender-pwa to prod':
-  stage: deploy
-  needs:
-    - job: prepare version
-    - job: build tmra-tender-pwa prod
-      artifacts: false
-    - job: publish tmra-tender-pwa to prod
-  variables:
-    APP_NAME: tmra-tender-pwa
-    APP_ENV: prod
-  cache: []
-  image: node:lts
-  script:
-    - echo "Deploying '$APP_NAME' version '$APP_VERSION' to environment '$APP_ENV' ..."
-    - >-
-      curl --fail --request POST
-      --form token=$CI_JOB_TOKEN
-      --form ref=main
-      --form "variables[APP_NAMES]=$APP_NAME"
-      --form "variables[APP_ENV]=$APP_ENV"
-      --form "variables[APP_VERSION]=$APP_VERSION"
-      "https://gitlab.com/api/v4/projects/26870237/trigger/pipeline"
-  environment:
-    name: $APP_NAME-$APP_ENV
-    url: https://app.tmra.io/
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stack/prod" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
-      # changes:
-      #   - 'apps/pwa/**/*'
-    - if: '$CI_COMMIT_BRANCH == "stack/prod" && $APP_NAMES =~ /\b${APP_NAME}\b/'
