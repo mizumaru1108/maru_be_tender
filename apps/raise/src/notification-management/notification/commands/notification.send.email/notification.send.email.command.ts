@@ -1,10 +1,18 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-export class NotificationSendEmailCommand {}
+import { EmailService } from 'src/libs/email/email.service';
+export class NotificationSendEmailCommand {
+  type: 'SMS' | 'EMAIL';
+  user_id: string;
+  email?: string;
+  phone_number?: string;
+  content: string;
+  subject: string;
+}
 
 @CommandHandler(NotificationSendEmailCommand)
 export class NotificationSendEmailCommandHandler
   implements ICommandHandler<NotificationSendEmailCommand>
 {
-  constructor() {}
+  constructor(private readonly emailService: EmailService) {}
   async execute(command: NotificationSendEmailCommand): Promise<any> {}
 }
