@@ -5,6 +5,7 @@ import { TenderNotificationRepository } from './notification/repository/tender-n
 import { NotificationSendSmsCommandHandler } from './notification/commands/notification.send.sms/notification.send.sms.command';
 import { NotificationSendEmailCommandHandler } from './notification/commands/notification.send.email/notification.send.email.command';
 import { CqrsModule } from '@nestjs/cqrs';
+import { NotificationSaga } from 'src/notification-management/notification/sagas/notification.saga';
 
 const importedModules = [CqrsModule];
 
@@ -22,11 +23,13 @@ const exportedProvider: Provider[] = [
   TenderNotificationRepository,
 ];
 
+const sagas: Provider[] = [NotificationSaga];
+
 @Global()
 @Module({
   imports: [...importedModules],
   controllers: [TenderNotificationController],
-  providers: [...commands, ...services, ...repositories],
+  providers: [...commands, ...services, ...repositories, ...sagas],
   exports: [...exportedProvider],
 })
 export class NotificationManagementModule {}

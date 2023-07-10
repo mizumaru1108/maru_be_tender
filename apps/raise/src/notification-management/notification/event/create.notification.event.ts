@@ -3,6 +3,9 @@ export class CreateNotificationEvent {
   user_id: string;
   email?: string;
   phone_number?: string;
+  email_type?: 'template' | 'plain';
+  emailTemplateContext?: Record<string, any>;
+  emailTemplatePath?: string;
   content: string;
   subject: string;
 }

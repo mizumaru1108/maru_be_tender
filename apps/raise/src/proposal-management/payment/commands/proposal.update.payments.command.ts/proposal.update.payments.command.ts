@@ -27,7 +27,10 @@ import {
 import { ProposalRepository } from '../../../proposal/repositories/proposal.repository';
 import { UpdateProposalProps } from '../../../proposal/types';
 import { UpdatePaymentDto } from '../../dtos/requests';
-import { ProposalPaymentRepository } from '../../repositories/proposal-payment.repository';
+import {
+  ProposalPaymentRepository,
+  UpdatePaymentProps,
+} from '../../repositories/proposal-payment.repository';
 import {
   ChequeCreateProps,
   ProposalChequeRepository,
@@ -178,6 +181,7 @@ export class ProposalUpdatePaymentCommandHandler
         | ProposalAction.ACCEPTED_BY_PROJECT_MANAGER
         | ProposalAction.ACCEPTED_BY_FINANCE
         | ProposalAction.UPLOADED_BY_CASHIER
+        | ProposalAction.REJECT_CHEQUE
         | ProposalAction.DONE
         | null = null;
 
@@ -189,7 +193,6 @@ export class ProposalUpdatePaymentCommandHandler
       const createProposalLogPayloads: CreateProposalLogProps =
         Builder<CreateProposalLogProps>(CreateProposalLogProps, {
           id: nanoid(),
-          action: status,
           reviewer_id: command.currentUser.id,
           state: appRoleMappers[choosenRole],
           user_role: appRoleMappers[choosenRole],
@@ -207,6 +210,11 @@ export class ProposalUpdatePaymentCommandHandler
             command.request.notes // if notes exist
               ? command.request.notes
               : '',
+        }).build();
+
+      const updatePaymentPayload: UpdatePaymentProps =
+        Builder<UpdatePaymentProps>(UpdatePaymentProps, {
+          id: command.request.payment_id,
         }).build();
 
       const createChequePayload = Builder<ChequeCreateProps>(
@@ -228,16 +236,17 @@ export class ProposalUpdatePaymentCommandHandler
           );
         }
         this.actionValidator(['accept', 'reject'], action);
-        if (action === 'accept')
-          createProposalLogPayloads.action =
-            ProposalAction.ACCEPTED_BY_PROJECT_MANAGER;
+        if (action === 'accept') {
+          status = ProposalAction.ACCEPTED_BY_PROJECT_MANAGER;
+        }
         if (action === 'reject') {
-          createProposalLogPayloads.action = ProposalAction.SET_BY_SUPERVISOR;
+          status = ProposalAction.SET_BY_SUPERVISOR;
           if (!command.request.notes) {
             throw new PayloadErrorException(
               'Notes are required when rejecting payment',
             );
           }
+          createProposalLogPayloads.notes = command.request.notes;
         }
       }
 
@@ -247,12 +256,10 @@ export class ProposalUpdatePaymentCommandHandler
           action,
         );
         updateProposalPayloads.finance_id = userId;
-        if (action === 'accept')
-          createProposalLogPayloads.action = ProposalAction.ACCEPTED_BY_FINANCE;
-        if (action === 'confirm_payment')
-          createProposalLogPayloads.action = ProposalAction.DONE;
+        if (action === 'accept') status = ProposalAction.ACCEPTED_BY_FINANCE;
+        if (action === 'confirm_payment') status = ProposalAction.DONE;
         if (action === 'reject_payment') {
-          createProposalLogPayloads.action = ProposalAction.ACCEPTED_BY_FINANCE;
+          status = ProposalAction.REJECT_CHEQUE;
           if (!command.request.last_payment_receipt_url) {
             throw new PayloadErrorException(
               'please send the last rejected file url',
@@ -270,9 +277,7 @@ export class ProposalUpdatePaymentCommandHandler
           );
         }
         this.actionValidator(['issue'], action);
-        if (action === 'issue')
-          createProposalLogPayloads.action =
-            ProposalAction.ISSUED_BY_SUPERVISOR;
+        if (action === 'issue') status = ProposalAction.ISSUED_BY_SUPERVISOR;
       }
 
       if (choosenRole === 'tender_cashier') {
@@ -298,7 +303,7 @@ export class ProposalUpdatePaymentCommandHandler
         }
 
         if (action === 'upload_receipt') {
-          createProposalLogPayloads.action = ProposalAction.UPLOADED_BY_CASHIER;
+          status = ProposalAction.UPLOADED_BY_CASHIER;
         }
 
         const maxSize: number = 1024 * 1024 * 100; // 100MB
@@ -336,6 +341,13 @@ export class ProposalUpdatePaymentCommandHandler
         };
       }
 
+      createProposalLogPayloads.action = status;
+      // payment status harusnya accepted_by_finance ketika  lognya reject_cheque
+      updatePaymentPayload.status =
+        status === ProposalAction.REJECT_CHEQUE
+          ? ProposalAction.ACCEPTED_BY_FINANCE
+          : status;
+
       const result = await this.prismaService.$transaction(
         async (prismaSession) => {
           const session =
@@ -350,10 +362,7 @@ export class ProposalUpdatePaymentCommandHandler
           // update the payment
           // this.logger.log('info', 'updating payment');
           const updatedPayment = await this.paymentRepo.update(
-            {
-              id: command.request.payment_id,
-              status,
-            },
+            updatePaymentPayload,
             session,
           );
 
@@ -427,6 +436,7 @@ export class ProposalUpdatePaymentCommandHandler
               created_web_notif: createdWebNotif,
               created_cheque: createdCheque,
               created_file_manager: createdFileManager,
+              deleted_file_manager: deletedFileManagerUrl,
             },
           };
         },

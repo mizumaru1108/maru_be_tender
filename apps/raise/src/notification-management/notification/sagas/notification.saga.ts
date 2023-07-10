@@ -37,13 +37,13 @@ export class NotificationSaga {
                 `Phone number is needed when sending an sms notificaition!`,
               );
             }
-            const commandBuilder = Builder<NotificationSendSmsCommand>(
+            const sendSmsNotifCommand = Builder<NotificationSendSmsCommand>(
               NotificationSendSmsCommand,
               {
                 ...event,
               },
             );
-            return commandBuilder.build();
+            return sendSmsNotifCommand.build();
           default:
             throw new PayloadErrorException(`Invalid Notification Event Type`);
         }

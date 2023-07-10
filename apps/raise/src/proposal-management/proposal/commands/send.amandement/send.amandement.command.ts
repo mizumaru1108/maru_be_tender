@@ -14,7 +14,10 @@ import {
   ProposalEditRequestRepository,
 } from '../../../edit-requests/repositories/proposal.edit.request.repository';
 import { SendAmandementDto } from '../../dtos/requests';
-import { ProposalEntity } from '../../entities/proposal.entity';
+import {
+  ISendNotificaitonEvent,
+  ProposalEntity,
+} from '../../entities/proposal.entity';
 import { ProposalRepository } from '../../repositories/proposal.repository';
 import { UpdateProposalProps } from '../../types';
 import { ProposalLogRepository } from '../../../proposal-log/repositories/proposal.log.repository';
@@ -231,13 +234,26 @@ export class SendAmandementCommandHandler
             },
             notif_payload: [
               {
-                user_id: '',
-                phone: '',
-                email: '',
-                subject: '',
-                content: '',
+                notif_type: 'EMAIL',
+                user_id: proposal.user.id,
+                user_email: proposal.user.email,
+                subject,
+                content: clientContent,
+                email_type: 'template',
+                emailTemplateContext: {},
+                emailTemplatePath: '',
               },
-            ],
+              {
+                notif_type: 'SMS',
+                user_id: proposal.user.id,
+                user_phone:
+                  proposal.user.mobile_number !== null
+                    ? proposal.user.mobile_number
+                    : undefined,
+                subject,
+                content: clientContent,
+              },
+            ] as ISendNotificaitonEvent[],
           };
         },
       );
@@ -246,11 +262,10 @@ export class SendAmandementCommandHandler
         result.db_result.updated_proposal,
       );
 
-      // send / emit an event for send email
       for (const emailNotif of result.notif_payload) {
-        // publisher.sendNotificaitonEvent();
-        // // send / emit an event for send sms
-        // publisher.sendNotificaitonEvent();
+        publisher.sendNotificaitonEvent({
+          ...emailNotif,
+        });
       }
 
       publisher.commit();

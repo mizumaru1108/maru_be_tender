@@ -110,6 +110,7 @@ export enum ProposalAction {
   UPLOADED_BY_CASHIER = 'uploaded_by_cashier',
   SET_BY_SUPERVISOR = 'set_by_supervisor',
   DONE = 'done',
+  REJECT_CHEQUE = 'reject_cheque',
 }
 
 export type ProposalItemBudget = {

@@ -3,7 +3,6 @@ import { MsegatService } from 'src/libs/msegat/services/msegat.service';
 export class NotificationSendSmsCommand {
   type: 'SMS' | 'EMAIL';
   user_id: string;
-  email?: string;
   phone_number?: string;
   content: string;
   subject: string;
@@ -13,6 +12,8 @@ export class NotificationSendSmsCommand {
 export class NotificationSendSmsCommandHandler
   implements ICommandHandler<NotificationSendSmsCommand>
 {
+  private retryCount = 0;
   constructor(private readonly msegatService: MsegatService) {}
+  async sendSms(command: NotificationSendSmsCommand) {}
   async execute(command: NotificationSendSmsCommand): Promise<any> {}
 }
