@@ -262,10 +262,20 @@ export class SendAmandementCommandHandler
         result.db_result.updated_proposal,
       );
 
-      for (const emailNotif of result.notif_payload) {
-        publisher.sendNotificaitonEvent({
-          ...emailNotif,
-        });
+      for (const notifPayload of result.notif_payload) {
+        if (notifPayload.notif_type === 'SMS') {
+          const validPhone = isExistAndValidPhone(notifPayload.user_phone);
+          if (validPhone) {
+            publisher.sendNotificaitonEvent({
+              ...notifPayload,
+              user_phone: validPhone,
+            });
+          }
+        } else {
+          publisher.sendNotificaitonEvent({
+            ...notifPayload,
+          });
+        }
       }
 
       publisher.commit();
