@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EmailService } from 'src/libs/email/email.service';
 export class NotificationSendEmailCommand {
@@ -16,9 +17,13 @@ export class NotificationSendEmailCommand {
 export class NotificationSendEmailCommandHandler
   implements ICommandHandler<NotificationSendEmailCommand>
 {
+  private readonly logger = new Logger(
+    NotificationSendEmailCommandHandler.name,
+  );
   constructor(private readonly emailService: EmailService) {}
 
   async execute(command: NotificationSendEmailCommand) {
+    this.logger.debug(`send email command triggered`);
     if (
       command.email_type === 'template' &&
       !!command.emailTemplateContext &&

@@ -16,7 +16,7 @@ export class NotificationSaga {
     return events$.pipe(
       ofType(CreateNotificationEvent),
       map((event) => {
-        this.logger.debug('Create notif event triggered');
+        this.logger.debug(`Create notif event triggered ${event.type}`);
         switch (event.type) {
           case 'EMAIL':
             if (!event.email) {

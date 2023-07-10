@@ -1199,6 +1199,7 @@ export class ProposalRepository {
               governorate: true,
               proposal_item_budgets: true,
               project_timeline: true,
+              beneficiary_id: true,
             },
           },
         },

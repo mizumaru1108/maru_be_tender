@@ -112,7 +112,7 @@ export class SendAmandementCommandHandler
           }
 
           const proposal = await this.proposalRepo.fetchById(
-            { id: proposal_id },
+            { id: proposal_id, includes_relation: ['user'] },
             session,
           );
           if (!proposal) {
@@ -216,14 +216,17 @@ export class SendAmandementCommandHandler
         يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات، أو انقر هنا."`;
 
           // web notif
-          const notification = await this.notifRepo.create({
-            user_id: proposal.user.id,
-            content: clientContent,
-            subject,
-            type: 'PROPOSAL',
-            specific_type: 'NEW_AMANDEMENT_REQUEST_FROM_SUPERVISOR',
-            proposal_id: proposal_id,
-          });
+          const notification = await this.notifRepo.create(
+            {
+              user_id: proposal.user.id,
+              content: clientContent,
+              subject,
+              type: 'PROPOSAL',
+              specific_type: 'NEW_AMANDEMENT_REQUEST_FROM_SUPERVISOR',
+              proposal_id: proposal_id,
+            },
+            session,
+          );
 
           return {
             db_result: {
@@ -255,6 +258,9 @@ export class SendAmandementCommandHandler
               },
             ] as ISendNotificaitonEvent[],
           };
+        },
+        {
+          timeout: 50000,
         },
       );
 

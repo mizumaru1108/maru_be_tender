@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { MsegatService } from 'src/libs/msegat/services/msegat.service';
 import { TenderNotificationFailedLogRepository } from 'src/notification-management/failed-logs/repositories/notification.errror.log.repository';
 import asyncRetry from 'async-retry';
+import { Logger } from '@nestjs/common';
 
 export class NotificationSendSmsCommand {
   type: 'SMS' | 'EMAIL';
@@ -16,6 +17,7 @@ export class NotificationSendSmsCommandHandler
   implements ICommandHandler<NotificationSendSmsCommand>
 {
   private readonly MAX_RETRY_COUNT = 3;
+  private readonly logger = new Logger(NotificationSendSmsCommandHandler.name);
 
   constructor(
     private readonly failLogRepo: TenderNotificationFailedLogRepository,
@@ -25,6 +27,7 @@ export class NotificationSendSmsCommandHandler
   async sendSms(command: NotificationSendSmsCommand) {
     let retryCount = 0; // Track the number of retries
     let lastError: Error | undefined; // Track the last error object
+    this.logger.debug(`send sms command triggered`);
 
     await asyncRetry(
       async () => {
@@ -43,7 +46,7 @@ export class NotificationSendSmsCommandHandler
         factor: 2, // The exponential factor to increase the delay between retries
         onRetry: (error: Error) => {
           // Log or handle the retry attempt here
-          console.error(`Error sending SMS: ${error.message}`);
+          console.error(`Error sending SMS(${retryCount}): ${error.message}`);
           retryCount++;
           lastError = error; // Capture the last error object
         },
