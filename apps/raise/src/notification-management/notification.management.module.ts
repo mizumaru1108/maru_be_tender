@@ -6,7 +6,7 @@ import { NotificationSendSmsCommandHandler } from './notification/commands/notif
 import { NotificationSendEmailCommandHandler } from './notification/commands/notification.send.email/notification.send.email.command';
 import { CqrsModule } from '@nestjs/cqrs';
 import { NotificationSaga } from 'src/notification-management/notification/sagas/notification.saga';
-import { TenderNotificationErrorLogRepository } from 'src/notification-management/failed-logs/repositories/notification.errror.log.repository';
+import { TenderNotificationFailedLogRepository } from 'src/notification-management/failed-logs/repositories/notification.errror.log.repository';
 
 const importedModules = [CqrsModule];
 
@@ -19,13 +19,13 @@ const services: Provider[] = [TenderNotificationService];
 
 const repositories: Provider[] = [
   TenderNotificationRepository,
-  TenderNotificationErrorLogRepository,
+  TenderNotificationFailedLogRepository,
 ];
 
 const exportedProvider: Provider[] = [
   TenderNotificationService,
   TenderNotificationRepository,
-  TenderNotificationErrorLogRepository,
+  TenderNotificationFailedLogRepository,
 ];
 
 const sagas: Provider[] = [NotificationSaga];

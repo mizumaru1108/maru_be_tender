@@ -1,6 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { MsegatService } from 'src/libs/msegat/services/msegat.service';
-import { TenderNotificationErrorLogRepository } from 'src/notification-management/failed-logs/repositories/notification.errror.log.repository';
+import { TenderNotificationFailedLogRepository } from 'src/notification-management/failed-logs/repositories/notification.errror.log.repository';
+import asyncRetry from 'async-retry';
+
 export class NotificationSendSmsCommand {
   type: 'SMS' | 'EMAIL';
   user_id: string;
@@ -13,49 +15,51 @@ export class NotificationSendSmsCommand {
 export class NotificationSendSmsCommandHandler
   implements ICommandHandler<NotificationSendSmsCommand>
 {
-  // private readonly MAX_RETRY_COUNT = 3;
+  private readonly MAX_RETRY_COUNT = 3;
 
   constructor(
-    private readonly failLogRepo: TenderNotificationErrorLogRepository,
+    private readonly failLogRepo: TenderNotificationFailedLogRepository,
     private readonly msegatService: MsegatService,
   ) {}
 
   async sendSms(command: NotificationSendSmsCommand) {
-    // await asyncRetry(
-    //   async (bail: (error: Error) => void) => {
-    //     try {
-    //       await this.msegatService.sendSMSAsync({
-    //         numbers: command.phone_number.includes('+')
-    //           ? command.phone_number.substring(1)
-    //           : command.phone_number,
-    //         msg: command.subject + command.content,
-    //       });
-    //     } catch (error) {
-    //       // If the error is non-retryable, pass it to the bail function
-    //       // to abort the retry attempts
-    //       if (this.shouldAbortRetry(error)) {
-    //         bail(error);
-    //       }
-    //       throw error;
-    //     }
-    //   },
-    //   {
-    //     retries: this.MAX_RETRY_COUNT,
-    //     minTimeout: 1000, // Minimum delay between retries (in milliseconds)
-    //     factor: 2, // The exponential factor to increase the delay between retries
-    //     onRetry: (error: Error) => {
-    //       // Log or handle the retry attempt here
-    //       console.error(`Error sending SMS: ${error.message}`);
-    //     },
-    //   },
-    // );
-  }
+    let retryCount = 0; // Track the number of retries
+    let lastError: Error | undefined; // Track the last error object
 
-  shouldAbortRetry(error: Error): boolean {
-    // Implement your own logic here to determine if the error is non-retryable
-    // Return true to abort further retry attempts for this error
-    // Return false to continue retrying
-    return false;
+    await asyncRetry(
+      async () => {
+        await this.msegatService.sendSMSAsync({
+          numbers: command.phone_number.includes('+')
+            ? command.phone_number.substring(1)
+            : command.phone_number,
+          msg: command.subject + command.content,
+        });
+        retryCount = 0; // Reset the retry count on successful attempt
+        lastError = undefined; // Reset the last error
+      },
+      {
+        retries: this.MAX_RETRY_COUNT,
+        minTimeout: 1000, // Minimum delay between retries (in milliseconds)
+        factor: 2, // The exponential factor to increase the delay between retries
+        onRetry: (error: Error) => {
+          // Log or handle the retry attempt here
+          console.error(`Error sending SMS: ${error.message}`);
+          retryCount++;
+          lastError = error; // Capture the last error object
+        },
+      },
+    );
+
+    if (retryCount === this.MAX_RETRY_COUNT) {
+      // Create a log using failLogRepo.create after three unsuccessful retries
+      await this.failLogRepo.create({
+        type: 'SMS',
+        user_id: command.user_id,
+        content: command.content,
+        subject: command.subject,
+        error_log: JSON.stringify(lastError?.message) || '', // Get the error message
+      });
+    }
   }
 
   async execute(command: NotificationSendSmsCommand): Promise<any> {
@@ -65,15 +69,6 @@ export class NotificationSendSmsCommandHandler
     } catch (error) {
       // Handle failed SMS sending here
       console.error('Failed to send SMS:', error);
-      // if (this.retryCount === this.MAX_RETRY_COUNT) {
-      //   // Log or handle the maximum retry attempts here
-      //   console.error('Exceeded maximum retry attempts for sending SMS.');
-      //   // ... additional error handling or logging ...
-      // } else {
-      //   // Retry the sendSms operation
-      //   console.log('Retrying sending SMS...');
-      //   await this.execute(command);
-      // }
     }
   }
 }
