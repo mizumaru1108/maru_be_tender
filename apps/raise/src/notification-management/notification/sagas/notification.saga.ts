@@ -24,7 +24,7 @@ export class NotificationSaga {
                 `Email is needed when sending an email notificaition!`,
               );
             }
-            const sendEmailNotifCommand = Builder<NotificationSendSmsCommand>(
+            const sendEmailNotifCommand = Builder<NotificationSendEmailCommand>(
               NotificationSendEmailCommand,
               {
                 ...event,

@@ -13,7 +13,7 @@ export class NotificationSendSmsCommand {
 export class NotificationSendSmsCommandHandler
   implements ICommandHandler<NotificationSendSmsCommand>
 {
-  private readonly MAX_RETRY_COUNT = 3;
+  // private readonly MAX_RETRY_COUNT = 3;
 
   constructor(
     private readonly failLogRepo: TenderNotificationErrorLogRepository,
