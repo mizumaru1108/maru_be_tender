@@ -244,7 +244,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     const { token: accessToken, user, refreshToken } = response.response;
     const activeRoleIndex = 0;
     localStorage.setItem('activeRoleIndex', activeRoleIndex.toString());
-    console.log('cek response:', response?.response);
+    // console.log('cek response:', response?.response);
     if (!user) {
       throw new Error(`Error getting currently active user`);
     }

@@ -204,6 +204,11 @@ export const FEATURE_APPOINTMENT: boolean =
     ? true
     : false;
 
+export const FEATURE_PAYEMENTS_NEW: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_PAYEMENTS_NEW &&
+  process.env.REACT_APP_CONFIG_FEATURE_PAYEMENTS_NEW === 'true'
+    ? true
+    : false;
 export const FEATURE_VERIFICATION_SIGN_UP: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_VERIFICATION_SIGN_UP &&
   process.env.REACT_APP_CONFIG_FEATURE_VERIFICATION_SIGN_UP === 'true'

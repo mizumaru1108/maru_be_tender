@@ -6,6 +6,7 @@ import { LoadingButton } from '@mui/lab';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import {
+  getProposal,
   getProposalCount,
   updatePaymentBySupervisorAndManagerAndFinance,
 } from 'redux/slices/proposal';
@@ -14,9 +15,9 @@ import React, { useMemo } from 'react';
 import { fCurrencyNumber } from 'utils/formatNumber';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { role_url_map } from '../../../../@types/commons';
-import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { FEATURE_PAYEMENTS_NEW, FEATURE_PROPOSAL_COUNTING } from 'config';
 import { TransferReceipt } from '../../../../@types/proposal';
 
 function PaymentsTable() {
@@ -24,7 +25,8 @@ function PaymentsTable() {
   const { translate } = useLocales();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const params = useParams();
+  // console.log({ params });
   const { enqueueSnackbar } = useSnackbar();
 
   const { proposal } = useSelector((state) => state.proposal);
@@ -46,7 +48,8 @@ function PaymentsTable() {
           action: payment_action,
         })
       ).then((res) => {
-        if (res.statusCode === 200) {
+        console.log({ res });
+        if (res.statusCode === 200 || res.statusCode === 201) {
           enqueueSnackbar('تم قبول أذن الصرف بنجاح', {
             variant: 'success',
             preventDuplicate: true,
@@ -59,6 +62,9 @@ function PaymentsTable() {
           // dispatch(getProposalCount(activeRole ?? 'test'));
           if (FEATURE_PROPOSAL_COUNTING) {
             dispatch(getProposalCount(activeRole ?? 'test'));
+          }
+          if (FEATURE_PAYEMENTS_NEW) {
+            dispatch(getProposal(params.id as string, activeRole as string));
           }
         }
       });
@@ -110,7 +116,8 @@ function PaymentsTable() {
           url: url,
         })
       ).then((res) => {
-        if (res.data.statusCode === 200) {
+        console.log({ res });
+        if (res.statusCode === 200 || res.statusCode === 201) {
           enqueueSnackbar('تم رفض أذن الصرف بنجاح', {
             variant: 'success',
             preventDuplicate: true,
@@ -124,6 +131,7 @@ function PaymentsTable() {
           if (FEATURE_PROPOSAL_COUNTING) {
             dispatch(getProposalCount(activeRole ?? 'test'));
           }
+          dispatch(getProposal(params.id as string, activeRole as string));
         }
       });
     } catch (error) {

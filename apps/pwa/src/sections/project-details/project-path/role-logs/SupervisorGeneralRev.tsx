@@ -1,4 +1,5 @@
 import { Grid, Stack, Typography } from '@mui/material';
+import { FEATURE_PROJECT_PATH_NEW } from 'config';
 import useLocales from 'hooks/useLocales';
 import moment from 'moment';
 import React from 'react';
@@ -16,7 +17,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
   if (stepGeneralLog && stepGeneralLog.message) {
     batch = Number(stepGeneralLog.message.split('_')[1]);
   }
-  // console.log('stepGeneralLog', stepGeneralLog?.new_values);
+  // console.log('stepGeneralLog', stepGeneralLog);
   // console.log('proposal.payments', proposal.payments);
 
   return (
@@ -59,18 +60,34 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                   </Stack>
                 </Stack>
               </Grid>
-              <Grid item xs={6}>
-                <Typography variant="h6">{translate(`review.vat_in_project`)}</Typography>
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              {FEATURE_PROJECT_PATH_NEW ? (
+                <Grid item xs={6}>
+                  <Typography variant="h6">{translate(`review.need_picture`)}</Typography>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                    <Typography>
-                      {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
-                        ? `${translate('review.yes')}`
-                        : `${translate('review.no')}`}
-                    </Typography>
+                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                      <Typography>
+                        {stepGeneralLog?.new_values?.need_picture || proposal?.need_picture
+                          ? `${translate('review.yes')}`
+                          : `${translate('review.no')}`}
+                      </Typography>
+                    </Stack>
                   </Stack>
-                </Stack>
-              </Grid>
+                </Grid>
+              ) : (
+                <Grid item xs={6}>
+                  <Typography variant="h6">{translate(`review.vat_in_project`)}</Typography>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                      <Typography>
+                        {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
+                          ? `${translate('review.yes')}`
+                          : `${translate('review.no')}`}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                </Grid>
+              )}
+
               <Grid item xs={6}>
                 <Typography variant="h6">{translate(`review.vat`)}</Typography>
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>

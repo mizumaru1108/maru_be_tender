@@ -37,6 +37,7 @@ export type PaymentStatus =
   | 'accepted_by_project_manager'
   | 'accepted_by_finance'
   | 'uploaded_by_cashier'
+  | 'reject_cheque'
   | 'done';
 
 export type AccreditationTypeId = 'PLAIN' | 'INCOMING';
@@ -410,7 +411,8 @@ export type Log = {
     | 'done'
     | 'project_completed'
     | 'send_revised_version'
-    | 'complete_payment';
+    | 'complete_payment'
+    | 'reject_cheque';
   created_at: Date;
   updated_at: Date;
   user_role: Role;

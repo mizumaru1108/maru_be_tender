@@ -14,7 +14,7 @@ import { getOnePayments } from '../../../../queries/commons/getOnePayments';
 import { useNavigate, useParams } from 'react-router';
 import { role_url_map } from '../../../../@types/commons';
 import { LoadingButton } from '@mui/lab';
-import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { FEATURE_PAYEMENTS_NEW, FEATURE_PROPOSAL_COUNTING } from 'config';
 
 function PaymentsTable() {
   const { activeRole } = useAuth();
@@ -55,9 +55,8 @@ function PaymentsTable() {
           action: 'issue',
         })
       ).then((res) => {
-        if (res.statusCode === 200) {
+        if (res.statusCode === 200 || res.statusCode === 201) {
           // reExecute();
-          getProposal(id as string, activeRole! as string);
           enqueueSnackbar('تم إصدار أذن الصرف بنجاح', {
             variant: 'success',
             preventDuplicate: true,
@@ -71,6 +70,10 @@ function PaymentsTable() {
           if (FEATURE_PROPOSAL_COUNTING) {
             dispatch(getProposalCount(activeRole ?? 'test'));
           }
+          if (FEATURE_PAYEMENTS_NEW) {
+            dispatch(getProposal(params.id as string, activeRole as string));
+          }
+
           // window.location.reload();
         }
       });

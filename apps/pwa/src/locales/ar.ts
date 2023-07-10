@@ -1977,6 +1977,7 @@ const ar = {
       insert_payment: 'أضف دفع',
       issued_by_supervisor: 'الدفع صادر عن المشرف',
       set_by_supervisor: 'تم تعيين الدفع صادر عن المشرف',
+      reject_cheque: 'تم رفض التحقق',
       payment_rejected_by_pm: 'تم رفض الدفع من قبل مدير المشروع',
       accepted_by_project_manager: 'تم قبول المشروع',
       accepted_by_finance: 'تم قبول المشروع',
