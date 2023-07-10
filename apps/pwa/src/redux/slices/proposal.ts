@@ -532,7 +532,7 @@ export const insertPaymentsBySupervisor = (data: any) => async () => {
       proposal_id: data.proposal_id,
     };
     // const url = '/tender/proposal/payment/insert-payment'
-    const url = '/tender/proposal/payment/insert-payment-cqrs/aa';
+    const url = '/tender/proposal/payment/insert-payment-cqrs';
     const res = await axiosInstance.post(url, variables, {
       headers: { 'x-hasura-role': data.role },
     });
@@ -583,7 +583,7 @@ export const updatePaymentBySupervisorAndManagerAndFinance = (data: any) => asyn
       last_payment_receipt_url: data.url,
     };
     // const url = '/tender/proposal/payment/update-payment';
-    const url = '/tender/proposal/payment/update-payment-cqrs/aa';
+    const url = '/tender/proposal/payment/update-payment-cqrs';
     const res = await axiosInstance.patch(url, variables, {
       headers: { 'x-hasura-role': data.role },
     });
@@ -672,7 +672,7 @@ export const insertChequeByCashier = (data: any) => async () => {
       cheque: data.cheque,
     };
     // const url = /tender/proposal/payment/update-payment
-    const url = '/tender/proposal/payment/update-payment-cqrs/aa';
+    const url = '/tender/proposal/payment/update-payment-cqrs';
 
     const res = await axiosInstance.patch(url, variables, {
       headers: { 'x-hasura-role': data.role },
