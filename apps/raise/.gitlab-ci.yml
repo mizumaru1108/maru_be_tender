@@ -47,7 +47,7 @@
   stage: publish
   needs: ['prepare version', 'build tmra-raise']
   variables:
-    APP_NAME: tmra-raise
+    SERVICE_NAME: tmra-raise
   cache: []
   image:
     name: gcr.io/kaniko-project/executor:debug
@@ -65,8 +65,8 @@
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/apps/raise/Dockerfile"
       --build-arg=APP_VERSION="${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}:${APP_VERSION}"
-      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}:${APP_ENV}"
+      --destination "${CI_REGISTRY_IMAGE}/${SERVICE_NAME}:${APP_VERSION}"
+      --destination "${CI_REGISTRY_IMAGE}/${SERVICE_NAME}:${APP_ENV}"
   rules:
     - if: '$CI_COMMIT_BRANCH == "stack/dev" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
     - if: '$CI_COMMIT_BRANCH == "stack/dev" && $APP_NAMES =~ /\btmra-raise\b/'
@@ -95,7 +95,7 @@
       curl --fail-with-body
       --form token=$CI_JOB_TOKEN
       --form ref=main
-      --form "variables[APP_NAMES]=$APP_NAME"
+      --form "variables[APP_NAMES]=$SERVICE_NAME"
       --form "variables[SERVICE_ENV]=$SERVICE_BUILD_ENV"
       --form "variables[SERVICE_VERSION]=$SERVICE_VERSION"
       "https://gitlab.com/api/v4/projects/$DEVSECOPS_PROJECT_ID/trigger/pipeline"
@@ -124,7 +124,7 @@
       curl --fail-with-body
       --form token=$CI_JOB_TOKEN
       --form ref=main
-      --form "variables[APP_NAMES]=$APP_NAME"
+      --form "variables[APP_NAMES]=$SERVICE_NAME"
       --form "variables[SERVICE_ENV]=$SERVICE_BUILD_ENV"
       --form "variables[SERVICE_VERSION]=$SERVICE_VERSION"
       "https://gitlab.com/api/v4/projects/$DEVSECOPS_PROJECT_ID/trigger/pipeline"
@@ -153,7 +153,7 @@
       curl --fail-with-body
       --form token=$CI_JOB_TOKEN
       --form ref=main
-      --form "variables[APP_NAMES]=$APP_NAME"
+      --form "variables[APP_NAMES]=$SERVICE_NAME"
       --form "variables[SERVICE_ENV]=$SERVICE_BUILD_ENV"
       --form "variables[SERVICE_VERSION]=$SERVICE_VERSION"
       "https://gitlab.com/api/v4/projects/$DEVSECOPS_PROJECT_ID/trigger/pipeline"
