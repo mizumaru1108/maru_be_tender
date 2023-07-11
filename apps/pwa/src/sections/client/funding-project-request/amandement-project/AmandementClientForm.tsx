@@ -418,7 +418,11 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
           </ProjectBudgetForm>
         )}
         {step === 4 && (
-          <ProjectTimeLine onSubmit={onSubmitform5} defaultValues={requestState?.project_timeline}>
+          <ProjectTimeLine
+            onSubmit={onSubmitform5}
+            defaultValues={requestState?.project_timeline}
+            revised={tmpValues?.revised}
+          >
             <AmandementActionBox step={step} onReturn={onReturn} isLoad={isLoading} />
           </ProjectTimeLine>
         )}

@@ -2,18 +2,29 @@ import { useEffect, useState } from 'react';
 // form
 import { Controller, useFormContext } from 'react-hook-form';
 // @mui
-import { MenuItem, TextField, TextFieldProps, Typography, useTheme } from '@mui/material';
+import {
+  Button,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  TextField,
+  TextFieldProps,
+  Typography,
+  useTheme,
+} from '@mui/material';
+import ReplayIcon from '@mui/icons-material/Replay';
 //
 // import { LIST_OF_BANK } from 'sections/auth/register/RegisterFormData';
 import axios from 'axios';
 import { TMRA_RAISE_URL } from 'config';
 import { useDispatch } from 'react-redux';
-import { setBankList } from '../../redux/slices/banks';
 import { AuthorityInterface } from '../../sections/admin/bank-name/list/types';
 import useAuth from '../../hooks/useAuth';
 import axiosInstance from '../../utils/axios';
 import { useSnackbar } from 'notistack';
 import useLocales from 'hooks/useLocales';
+import { dispatch, useSelector } from '../../redux/store';
+import { getBankList } from '../../redux/slices/banks';
 
 // ----------------------------------------------------------------------
 
@@ -31,82 +42,23 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useLocales();
 
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [loading, setLoading] = useState<boolean>(false);
   const [bankValue, setBankValue] = useState<AuthorityInterface[] | []>([]);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
+  const { banks, isLoading, error } = useSelector((state) => state.banks);
+  // console.log({ error });
 
-  const getBankList = async () => {
-    setLoading(true);
-    try {
-      // const { status, data } = await axios.get(
-      //   `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list`
-      // );
-
-      let datas: AuthorityInterface[] = [];
-      // console.log({ activeRole });
-      // if (activeRole && activeRole !== 'tender_client') {
-      //   // console.log('masuk if');
-      //   // const rest = await axiosInstance.get(`/tender/proposal/payment/find-bank-list?limit=0`, {
-      //   //   headers: { 'x-hasura-role': activeRole! },
-      //   // });
-      //   datas = rest.data.data;
-      // } else {
-      //   // console.log('masuk else');
-      //   const rest = await axios.get(
-      //     `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list?limit=0`
-      //   );
-      //   datas = rest.data.data;
-      // }
-      const rest = await axios.get(
-        `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list?limit=0`
-      );
-      datas = rest.data.data;
-      // console.log({ datas });
-      if (datas) {
-        const test = datas
-          .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
-          .map((bank: any) => bank);
-        // console.log({ test });
-        // console.log(datas);
-        setBankValue(test);
-        dispatch(setBankList(test));
-        setLoading(false);
-      }
-    } catch (error) {
-      const statusCode = (error && error.statusCode) || 0;
-      const message = (error && error.message) || null;
-      if (message && statusCode !== 0) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      } else {
-        enqueueSnackbar(translate('pages.common.internal_server_error'), {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      }
-      setLoading(false);
-      console.error(error);
-    }
+  const handleRefetchBankList = () => {
+    dispatch(getBankList());
   };
 
-  useEffect(() => {
-    if (name === 'bank_name') {
-      getBankList();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name]);
+  // useEffect(() => {
+  //   if (name === 'bank_name') {
+  //     getBankList();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [name]);
+  // console.log('error', error);
 
   return (
     <Controller
@@ -185,6 +137,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
               select
               fullWidth
               error={!!error}
+              disabled={(name === 'bank_name' && isLoading) || false}
               helperText={
                 <Typography variant="caption" component="span" sx={{ backgroundColor: 'white' }}>
                   {error?.message}
@@ -217,12 +170,18 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
               }}
             >
               {
-                !children && name === 'bank_name' && !loading && bankValue && bankValue.length > 0
-                  ? bankValue.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.bank_name}
-                      </MenuItem>
-                    ))
+                !children && name === 'bank_name' && !isLoading && banks && banks.length > 0
+                  ? [...banks]
+                      .filter((bank) => bank.is_deleted === false)
+                      .map((option, index) => (
+                        <MenuItem
+                          data-cy={`bank-name-select-option-${index}`}
+                          key={option.id}
+                          value={option.id}
+                        >
+                          {option.bank_name}
+                        </MenuItem>
+                      ))
                   : null
                 // LIST_OF_BANK.map((option) => (
                 //   <MenuItem key={option} value={option}>
@@ -233,6 +192,16 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
               {children && children}
             </TextField>
           )}
+          {name === 'bank_name' && banks.length === 0 && !isLoading ? (
+            <Button
+              data-cy={`button-retry-fetching-bank`}
+              variant="outlined"
+              onClick={handleRefetchBankList}
+              endIcon={<ReplayIcon />}
+            >
+              Re-try Fetching Bank List
+            </Button>
+          ) : null}
         </>
       )}
     />
