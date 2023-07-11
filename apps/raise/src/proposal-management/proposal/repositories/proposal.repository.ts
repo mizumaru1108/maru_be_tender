@@ -1792,6 +1792,8 @@ export class ProposalRepository {
         if (currentUser.choosenRole === 'tender_cashier') {
           whereClause = {
             ...whereClause,
+            inner_status:
+              InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
             finance_id: { not: null },
             payments: {
               every: {
@@ -1802,35 +1804,6 @@ export class ProposalRepository {
                 ],
               },
             },
-            // OR: [
-            //   {
-            //     payments: {
-            //       every: {
-            //         status: {
-            //           in: ['done', 'accepted_by_finance'],
-            //         },
-            //       },
-            //     },
-            //   },
-            //   {
-            //     payments: {
-            //       every: {
-            //         status: {
-            //           in: ['accepted_by_finance'],
-            //         },
-            //       },
-            //     },
-            //   },
-            //   {
-            //     payments: {
-            //       every: {
-            //         status: {
-            //           in: ['done'],
-            //         },
-            //       },
-            //     },
-            //   },
-            // ],
           };
         }
 
