@@ -5,7 +5,6 @@ import {
   ForbiddenException,
   Get,
   HttpStatus,
-  InternalServerErrorException,
   NotFoundException,
   Patch,
   Post,
@@ -29,6 +28,7 @@ import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-
 import { CommandBus } from '@nestjs/cqrs';
 import { FileFieldsInterceptor } from '@webundsoehne/nest-fastify-file-upload';
 import { Builder } from 'builder-pattern';
+import { RequestErrorException } from 'src/tender-commons/exceptions/request-error.exception';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
 import { InvalidTrackIdException } from '../../../tender-track/track/exceptions/invalid-track-id.excception';
@@ -53,7 +53,6 @@ import {
 import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
 import { ProposalService } from '../services/proposal.service';
-import { RequestErrorException } from 'src/tender-commons/exceptions/request-error.exception';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(
@@ -136,19 +135,6 @@ export class TenderProposalController {
       const result = await this.commandBus.execute(sendAmandement);
       return baseResponseHelper(result, HttpStatus.OK);
     } catch (error) {
-      // if (error instanceof ProposalNotFoundException) {
-      //   throw new NotFoundException(error.message);
-      // }
-      // if (
-      //   error instanceof PayloadErrorException ||
-      //   error instanceof InvalidTrackIdException
-      // ) {
-      //   throw new BadRequestException(error.message);
-      // }
-      // if (error instanceof ForbiddenChangeStateActionException) {
-      //   throw new ForbiddenException(error.message);
-      // }
-      // throw error;
       return this.errorMapper(error);
     }
   }
