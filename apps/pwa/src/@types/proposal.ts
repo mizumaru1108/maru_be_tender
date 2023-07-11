@@ -264,6 +264,7 @@ export interface AmandmentRequestForm extends AmandementProposal {
   project_name: string;
   execution_time: number;
   project_beneficiaries_specific_type: string;
+  beneficiary_id: string;
   pm_name: string;
   pm_mobile: string;
   pm_email: string;
@@ -295,6 +296,7 @@ export type AmandementFields = {
   num_ofproject_binicficiaries: string;
   project_attachments: string;
   project_beneficiaries: string;
+  beneficiary_id: string;
   project_goals: string;
   project_idea: string;
   project_implement_date: string;

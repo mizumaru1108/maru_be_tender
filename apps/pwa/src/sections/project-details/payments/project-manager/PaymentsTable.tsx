@@ -23,6 +23,7 @@ function PaymentsTable() {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const params = useParams();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const dispatch = useDispatch();
 
@@ -145,7 +146,9 @@ function PaymentsTable() {
 
   const handleRejectPayment = async (id: string, note?: string) => {
     // console.log({ note });
+
     try {
+      setIsLoading(true);
       await dispatch(
         updatePaymentBySupervisorAndManagerAndFinance({
           id,
@@ -188,6 +191,8 @@ function PaymentsTable() {
           },
         }
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -295,7 +300,9 @@ function PaymentsTable() {
                     }}
                     startIcon={<CloseIcon />}
                     disabled={
-                      currentSelectedIndex !== index || currentSelectedIndex !== stepBeforeComplete
+                      currentSelectedIndex !== index ||
+                      currentSelectedIndex !== stepBeforeComplete ||
+                      isLoading
                     }
                     onClick={() => {
                       setSelectedPaymentId(item.id);
@@ -315,7 +322,9 @@ function PaymentsTable() {
                     }}
                     startIcon={<CheckIcon />}
                     disabled={
-                      currentSelectedIndex !== index || currentSelectedIndex !== stepBeforeComplete
+                      currentSelectedIndex !== index ||
+                      currentSelectedIndex !== stepBeforeComplete ||
+                      isLoading
                     }
                     onClick={() => {
                       handleApprovalPayment(item.id);

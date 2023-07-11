@@ -216,8 +216,8 @@ export const FEATURE_VERIFICATION_SIGN_UP: boolean =
     : false;
 
 export const FEATURE_PROJECT_PATH_NEW: boolean =
-  process.env.REACT_APP_CONFIG_FEATURE_PROJECT_PATH_NEW &&
-  process.env.REACT_APP_CONFIG_FEATURE_PROJECT_PATH_NEW === 'true'
+  process.env.REACT_APP_CONFIG_FEATURE_PROJECT_PATH_REV &&
+  process.env.REACT_APP_CONFIG_FEATURE_PROJECT_PATH_REV === 'true'
     ? true
     : false;
 
