@@ -1792,35 +1792,45 @@ export class ProposalRepository {
         if (currentUser.choosenRole === 'tender_cashier') {
           whereClause = {
             ...whereClause,
-            OR: [
-              {
-                payments: {
-                  every: {
-                    status: {
-                      in: ['done', 'accepted_by_finance'],
-                    },
-                  },
-                },
+            finance_id: { not: null },
+            payments: {
+              every: {
+                OR: [
+                  { status: { in: ['done', 'accepted_by_finance'] } },
+                  { status: { in: ['done'] } },
+                  { status: { in: ['accepted_by_finance'] } },
+                ],
               },
-              {
-                payments: {
-                  every: {
-                    status: {
-                      in: ['accepted_by_finance'],
-                    },
-                  },
-                },
-              },
-              {
-                payments: {
-                  every: {
-                    status: {
-                      in: ['done'],
-                    },
-                  },
-                },
-              },
-            ],
+            },
+            // OR: [
+            //   {
+            //     payments: {
+            //       every: {
+            //         status: {
+            //           in: ['done', 'accepted_by_finance'],
+            //         },
+            //       },
+            //     },
+            //   },
+            //   {
+            //     payments: {
+            //       every: {
+            //         status: {
+            //           in: ['accepted_by_finance'],
+            //         },
+            //       },
+            //     },
+            //   },
+            //   {
+            //     payments: {
+            //       every: {
+            //         status: {
+            //           in: ['done'],
+            //         },
+            //       },
+            //     },
+            //   },
+            // ],
           };
         }
 
@@ -1834,7 +1844,6 @@ export class ProposalRepository {
                 },
               },
             },
-            // outter_status: { in: ['ONGOING', 'PENDING', 'ON_REVISION'] },
           };
         }
 
@@ -1896,6 +1905,7 @@ export class ProposalRepository {
         skip: offset,
         include: {
           user: true,
+          payments: true,
         },
         orderBy: order_by,
       };
@@ -1907,8 +1917,8 @@ export class ProposalRepository {
         };
       }
 
-      // console.log(logUtil(whereClause));
-      // console.log({ queryOptions });
+      console.log(logUtil(whereClause));
+      console.log(logUtil(queryOptions));
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
@@ -2084,29 +2094,14 @@ export class ProposalRepository {
         if (currentUser.choosenRole === 'tender_project_manager') {
           whereClause = {
             ...whereClause,
-            // OR: [
-            //   { project_manager_id: currentUser.id },
-            //   { project_manager_id: null },
-            // ],
             project_manager_id: currentUser.id,
             inner_status: {
               notIn: [
                 InnerStatusEnum.CREATED_BY_CLIENT,
                 InnerStatusEnum.ACCEPTED_BY_MODERATOR,
                 InnerStatusEnum.REJECTED_BY_MODERATOR,
-                // InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
-                // InnerStatusEnum.REJECTED_BY_SUPERVISOR,
-                // InnerStatusEnum.ASKING_PROJECT_MANAGER_CHANGES,
-                // InnerStatusEnum.REVISED_BY_PROJECT_MANAGER,
               ],
             },
-            // payments: {
-            //   some: {
-            //     status: {
-            //       notIn: ['issued_by_supervisor'],
-            //     },
-            //   },
-            // },
           };
         }
 
@@ -2114,15 +2109,6 @@ export class ProposalRepository {
           whereClause = {
             ...whereClause,
             inner_status: {
-              // in: [
-              //   'ACCEPTED_BY_CEO',
-              //   'REJECTED_BY_CEO',
-              //   InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
-              //   InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
-              //   InnerStatusEnum.DONE_BY_CASHIER,
-              //   InnerStatusEnum.REQUESTING_CLOSING_FORM,
-              //   InnerStatusEnum.PROJECT_COMPLETED,
-              // ],
               notIn: [
                 InnerStatusEnum.CREATED_BY_CLIENT,
                 InnerStatusEnum.ACCEPTED_BY_MODERATOR,
