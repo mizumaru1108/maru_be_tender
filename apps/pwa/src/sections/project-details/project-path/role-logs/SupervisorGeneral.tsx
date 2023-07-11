@@ -16,6 +16,7 @@ function SupervisorGeneral({ stepGeneralLog }: Props) {
   if (stepGeneralLog && stepGeneralLog.message) {
     batch = Number(stepGeneralLog.message.split('_')[1]);
   }
+  // console.log('stepGeneralLog_', stepGeneralLog);
   // console.log('stepGeneralLog', stepGeneralLog?.new_values);
   // console.log('proposal.payments', proposal.payments);
 

@@ -442,7 +442,8 @@ function ProjectPath() {
                 item.action !== 'sending_closing_report' &&
                 (item.action === 'accepted_by_project_manager' ||
                   item.action === 'accept' ||
-                  item.action === 'update')
+                  item.action === 'update' ||
+                  item.action === 'set_by_supervisor')
             ).length > 0 &&
             (stepGeneralLog || stepGransLog) ? (
               <>
@@ -470,8 +471,7 @@ function ProjectPath() {
                 item.action !== 'project_completed' &&
                 item.action !== 'sending_closing_report' &&
                 item.action !== 'send_revised_version' &&
-                item.action !== 'complete_payment' &&
-                (item.action !== 'reject' && FEATURE_PROJECT_PATH_NEW)
+                item.action !== 'complete_payment'
             ).length > 0 &&
             isConsultation === false &&
             stepGeneralLog ? (
@@ -495,8 +495,7 @@ function ProjectPath() {
                 item.action !== 'project_completed' &&
                 item.action !== 'sending_closing_report' &&
                 item.action !== 'complete_payment' &&
-                item.action !== 'send_revised_version' &&
-                (item.action !== 'reject' && FEATURE_PROJECT_PATH_NEW)
+                item.action !== 'send_revised_version'
             ).length > 0 &&
             isConsultation &&
             stepGransLog ? (

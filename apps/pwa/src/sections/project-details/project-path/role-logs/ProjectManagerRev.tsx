@@ -20,7 +20,8 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
   if (stepGeneralLog && stepGeneralLog.message) {
     batch = Number(stepGeneralLog.message.split('_')[1]);
   }
-  // console.log('test', stepGeneralLog?.new_values);
+  // console.log({ stepGeneralLog });
+  console.log('test', stepGeneralLog);
   React.useEffect(() => {
     if (proposal) {
       setDataGrants((currentProposal: any) => {
@@ -86,10 +87,157 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
 
   return (
     <React.Fragment>
-      {isConsultation === false && stepGeneralLog.action !== 'accepted_by_project_manager' && (
-        <React.Fragment>
-          <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+      {isConsultation === false &&
+        stepGeneralLog.action !== 'accepted_by_project_manager' &&
+        stepGeneralLog.action !== 'set_by_supervisor' && (
+          <React.Fragment>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <Typography>
+                  {translate(
+                    `${
+                      stepGeneralLog?.user_role === 'CEO'
+                        ? 'project_already_reviewed_by_ceo'
+                        : 'project_already_reviewed_by_project_manager'
+                    }`
+                  )}{' '}
+                  {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
+                </Typography>
+              </Stack>
+            </Stack>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.closing_report`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {stepGeneralLog?.new_values?.closing_report || proposal?.closing_report
+                        ? `${translate('review.yes')}`
+                        : `${translate('review.no')}`}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.closing_agreement`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {stepGeneralLog?.new_values?.does_an_agreement || proposal?.does_an_agreement
+                        ? `${translate('review.yes')}`
+                        : `${translate('review.no')}`}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.vat_in_project`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
+                        ? `${translate('review.yes')}`
+                        : `${translate('review.no')}`}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.vat`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {(stepGeneralLog?.new_values?.vat_percentage || proposal?.vat_percentage) ??
+                        0}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.inclu_or_exclu`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
+                        ? `${translate('review.yes')}`
+                        : `${translate('review.no')}`}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.number_of_payment`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {stepGeneralLog?.new_values?.number_of_payments_by_supervisor ||
+                        proposal?.number_of_payments_by_supervisor}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.payment_support`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {stepGeneralLog?.new_values?.fsupport_by_supervisor ||
+                        proposal?.fsupport_by_supervisor}{' '}
+                      {translate('review.sar')}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.support_amount_inclu`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {stepGeneralLog?.new_values?.support_type || proposal?.support_type
+                        ? `${translate('review.yes')}`
+                        : `${translate('review.no')}`}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+            </Grid>
+            <Typography variant="h6">{translate(`review.procedure`)}</Typography>
+            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <Typography>
+                  {stepGeneralLog?.new_values?.support_goal_id || proposal?.support_goal_id
+                    ? translate(
+                        `review.support_goals.${
+                          stepGeneralLog?.new_values?.support_goal_id || proposal?.support_goal_id
+                        }`
+                      )
+                    : '-'}
+                </Typography>
+              </Stack>
+            </Stack>
+            <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
+            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <Typography>{(stepGeneralLog.notes || proposal.notes) ?? '-'}</Typography>
+              </Stack>
+            </Stack>
+            <Typography variant="h6">{translate(`review.support_output`)}</Typography>
+            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <Typography>
+                  {(stepGeneralLog?.new_values?.support_outputs || proposal?.support_outputs) ??
+                    '-'}
+                </Typography>
+              </Stack>
+            </Stack>
+          </React.Fragment>
+        )}
+      {dataGrants &&
+        isConsultation &&
+        stepGeneralLog.action !== 'accepted_by_project_manager' &&
+        stepGeneralLog.action !== 'set_by_supervisor' && (
+          <Grid container spacing={2}>
+            <Stack direction="column" gap={2} sx={{ pb: 2, px: 2 }}>
               <Typography>
                 {translate(
                   `${
@@ -101,422 +249,53 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
               </Typography>
             </Stack>
-          </Stack>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <Typography variant="h6">{translate(`review.closing_report`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>
-                    {stepGeneralLog?.new_values?.closing_report || proposal?.closing_report
-                      ? `${translate('review.yes')}`
-                      : `${translate('review.no')}`}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6">{translate(`review.closing_agreement`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>
-                    {stepGeneralLog?.new_values?.does_an_agreement || proposal?.does_an_agreement
-                      ? `${translate('review.yes')}`
-                      : `${translate('review.no')}`}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6">{translate(`review.vat_in_project`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>
-                    {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
-                      ? `${translate('review.yes')}`
-                      : `${translate('review.no')}`}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6">{translate(`review.vat`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>
-                    {(stepGeneralLog?.new_values?.vat_percentage || proposal?.vat_percentage) ?? 0}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6">{translate(`review.inclu_or_exclu`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>
-                    {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
-                      ? `${translate('review.yes')}`
-                      : `${translate('review.no')}`}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6">{translate(`review.number_of_payment`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>
-                    {stepGeneralLog?.new_values?.number_of_payments_by_supervisor ||
-                      proposal?.number_of_payments_by_supervisor}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6">{translate(`review.payment_support`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>
-                    {stepGeneralLog?.new_values?.fsupport_by_supervisor ||
-                      proposal?.fsupport_by_supervisor}{' '}
-                    {translate('review.sar')}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6">{translate(`review.support_amount_inclu`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>
-                    {stepGeneralLog?.new_values?.support_type || proposal?.support_type
-                      ? `${translate('review.yes')}`
-                      : `${translate('review.no')}`}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Grid>
-          </Grid>
-          <Typography variant="h6">{translate(`review.procedure`)}</Typography>
-          <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              <Typography>
-                {stepGeneralLog?.new_values?.support_goal_id || proposal?.support_goal_id
-                  ? translate(`review.support_goals.${stepGeneralLog?.new_values?.support_goal_id}`)
-                  : '-'}
-              </Typography>
-            </Stack>
-          </Stack>
-          <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
-          <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              <Typography>{(stepGeneralLog.notes || proposal.notes) ?? '-'}</Typography>
-            </Stack>
-          </Stack>
-          <Typography variant="h6">{translate(`review.support_output`)}</Typography>
-          <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              <Typography>
-                {(stepGeneralLog?.new_values?.support_outputs || proposal?.support_outputs) ?? '-'}
-              </Typography>
-            </Stack>
-          </Stack>
-        </React.Fragment>
-      )}
-      {dataGrants && isConsultation && stepGeneralLog.action !== 'accepted_by_project_manager' && (
-        <Grid container spacing={2}>
-          <Stack direction="column" gap={2} sx={{ pb: 2, px: 2 }}>
-            <Typography>
-              {translate(
-                `${
-                  stepGeneralLog?.user_role === 'CEO'
-                    ? 'project_already_reviewed_by_ceo'
-                    : 'project_already_reviewed_by_project_manager'
-                }`
-              )}{' '}
-              {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
-            </Typography>
-          </Stack>
-          {Object.entries(dataGrants.proposal!)
-            .filter(
-              ([key]) => key !== 'inclu_or_exclu' && key !== 'vat' && key !== 'vat_percentage'
-            )
-            .map(([key, value]) => {
-              // console.log({ stepGeneralLog });
-              // if (!value) {
-              //   return null;
-              // }
-              if (key === 'created_at' || key === 'updated_at') {
-                return null; // Exclude these properties from rendering
-              }
-              if (key === 'support_goal_id') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {value ? translate(`review.support_goals.${String(value)}`) : '-'}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                );
-              }
-              if (key === 'accreditation_type_id') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {value ? translate(`review.accreditation_type.${String(value)}`) : '-'}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                );
-              }
-              if (key === 'been_supported_before') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {value ? translate('review.yes') : translate('review.no')}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                );
-              }
-              if (key === 'been_made_before') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {value ? translate('review.yes') : translate('review.no')}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                );
-              }
-              if (key === 'does_an_agreement') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {value ? translate('review.yes') : translate('review.no')}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                );
-              }
-              if (key === 'closing_report') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {value ? translate('review.yes') : translate('review.no')}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                );
-              }
-              if (key === 'need_picture') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {value ? translate('review.yes') : translate('review.no')}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                );
-              }
-              if (key === 'fsupport_by_supervisor') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {value ? `${String(value) + ' ' + translate('review.sar')}` : '-'}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                );
-              }
-              if (key === 'remote_or_insite') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {value && value === 'both'
-                          ? translate('remote_or_insite.both')
-                          : value === 'online'
-                          ? translate('remote_or_insite.remote')
-                          : translate('remote_or_insite.insite')}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                );
-              }
-              if (key === 'support_type') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {value === true ? translate('partial_support') : translate('full_support')}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                );
-              }
-              if (key === 'target_group_type') {
-                const tmpVal: string = value as string;
-                if (tmpVal) {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          {translate(`review.target_group_type_enum.${value}`)}
-                          {/* {target_type_map[tmpVal.toUpperCase() as keyof BeneficiariesMap]
-                          ? translate(`review.target_group_type_enum.${value}`)
-                          : value} */}
-                        </Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                } else {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>{'-'}</Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                }
-              }
-              if (key === 'target_group_age') {
-                const tmpVal: string = value as string;
-                if (tmpVal) {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          {translate(`review.target_group_age_enum.${value}`)}
-                          {/* {target_age_map[tmpVal.toUpperCase() as keyof BeneficiariesMap]
-                          ? translate(`review.target_group_age_enum.${value}`)
-                          : value} */}
-                        </Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                } else {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>{'-'}</Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                }
-              }
-              if (key !== 'clasification_field' && key !== 'clause') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">{translate(`review.${key}`)}</Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>{value ? String(value) : '-'}</Typography>
-                    </Stack>
-                  </Grid>
-                );
-              } else {
-                return null;
-              }
-            })}
-          {dataGrants &&
-            Object.entries(dataGrants.proposal!)
+            {Object.entries(dataGrants.proposal!)
               .filter(
-                ([key]) => key === 'inclu_or_exclu' || key === 'vat' || key === 'vat_percentage'
+                ([key]) => key !== 'inclu_or_exclu' && key !== 'vat' && key !== 'vat_percentage'
               )
               .map(([key, value]) => {
-                if (key === 'inclu_or_exclu' && proposal?.vat) {
+                // console.log({ stepGeneralLog });
+                // if (!value) {
+                //   return null;
+                // }
+                if (key === 'created_at' || key === 'updated_at') {
+                  return null; // Exclude these properties from rendering
+                }
+                if (key === 'support_goal_id') {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
+                      </Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>
+                          {value ? translate(`review.support_goals.${String(value)}`) : '-'}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                }
+                if (key === 'accreditation_type_id') {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
+                      </Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>
+                          {value ? translate(`review.accreditation_type.${String(value)}`) : '-'}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                }
+                if (key === 'been_supported_before') {
                   return (
                     <Grid item xs={6} key={key}>
                       <Typography variant="h6">
@@ -533,24 +312,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                     </Grid>
                   );
                 }
-                if (key === 'vat_percentage' && proposal?.vat) {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          <Typography>{value ? String(value) : '-'}</Typography>
-                        </Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                }
-                if (key === 'vat') {
+                if (key === 'been_made_before') {
                   return (
                     <Grid item xs={6} key={key}>
                       <Typography variant="h6">
@@ -567,22 +329,275 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                     </Grid>
                   );
                 }
-                return null;
+                if (key === 'does_an_agreement') {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
+                      </Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>
+                          {value ? translate('review.yes') : translate('review.no')}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                }
+                if (key === 'closing_report') {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
+                      </Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>
+                          {value ? translate('review.yes') : translate('review.no')}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                }
+                if (key === 'need_picture') {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
+                      </Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>
+                          {value ? translate('review.yes') : translate('review.no')}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                }
+                if (key === 'fsupport_by_supervisor') {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
+                      </Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>
+                          {value ? `${String(value) + ' ' + translate('review.sar')}` : '-'}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                }
+                if (key === 'remote_or_insite') {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
+                      </Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>
+                          {value && value === 'both'
+                            ? translate('remote_or_insite.both')
+                            : value === 'online'
+                            ? translate('remote_or_insite.remote')
+                            : translate('remote_or_insite.insite')}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                }
+                if (key === 'support_type') {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">
+                        {
+                          // key
+                          translate(`review.${key}`)
+                        }
+                      </Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>
+                          {value === true
+                            ? translate('partial_support')
+                            : translate('full_support')}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                }
+                if (key === 'target_group_type') {
+                  const tmpVal: string = value as string;
+                  if (tmpVal) {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
+                        </Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>
+                            {translate(`review.target_group_type_enum.${value}`)}
+                            {/* {target_type_map[tmpVal.toUpperCase() as keyof BeneficiariesMap]
+                          ? translate(`review.target_group_type_enum.${value}`)
+                          : value} */}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  } else {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
+                        </Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>{'-'}</Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                }
+                if (key === 'target_group_age') {
+                  const tmpVal: string = value as string;
+                  if (tmpVal) {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
+                        </Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>
+                            {translate(`review.target_group_age_enum.${value}`)}
+                            {/* {target_age_map[tmpVal.toUpperCase() as keyof BeneficiariesMap]
+                          ? translate(`review.target_group_age_enum.${value}`)
+                          : value} */}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  } else {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
+                        </Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>{'-'}</Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                }
+                if (key !== 'clasification_field' && key !== 'clause') {
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="h6">{translate(`review.${key}`)}</Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>{value ? String(value) : '-'}</Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                } else {
+                  return null;
+                }
               })}
-          <Grid item xs={6}>
-            <Typography variant="h6">
-              {
-                // key
-                translate(`review.notes`)
-              }
-            </Typography>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              <Typography>{stepGeneralLog.notes ?? '-'}</Typography>
-            </Stack>
+            {dataGrants &&
+              Object.entries(dataGrants.proposal!)
+                .filter(
+                  ([key]) => key === 'inclu_or_exclu' || key === 'vat' || key === 'vat_percentage'
+                )
+                .map(([key, value]) => {
+                  if (key === 'inclu_or_exclu' && proposal?.vat) {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
+                        </Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>
+                            {value ? translate('review.yes') : translate('review.no')}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                  if (key === 'vat_percentage' && proposal?.vat) {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
+                        </Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>
+                            <Typography>{value ? String(value) : '-'}</Typography>
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                  if (key === 'vat') {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
+                        </Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>
+                            {value ? translate('review.yes') : translate('review.no')}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                  return null;
+                })}
+            <Grid item xs={6}>
+              <Typography variant="h6">
+                {
+                  // key
+                  translate(`review.notes`)
+                }
+              </Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <Typography>{stepGeneralLog.notes ?? '-'}</Typography>
+              </Stack>
+            </Grid>
           </Grid>
-        </Grid>
-      )}
-      {stepGeneralLog.action === 'accepted_by_project_manager' && (
+        )}
+      {(stepGeneralLog.action === 'accepted_by_project_manager' ||
+        stepGeneralLog.action === 'set_by_supervisor') && (
         <>
           {' '}
           <Typography variant="h6">{translate(`review.payment`)}</Typography>
