@@ -3,6 +3,7 @@ import { MsegatService } from 'src/libs/msegat/services/msegat.service';
 import { TenderNotificationFailedLogRepository } from 'src/notification-management/failed-logs/repositories/notification.errror.log.repository';
 import asyncRetry from 'async-retry';
 import { Logger } from '@nestjs/common';
+import { logUtil } from 'src/commons/utils/log-util';
 
 export class NotificationSendSmsCommand {
   type: 'SMS' | 'EMAIL';
@@ -27,11 +28,12 @@ export class NotificationSendSmsCommandHandler
   async sendSms(command: NotificationSendSmsCommand) {
     let retryCount = 0; // Track the number of retries
     let lastError: Error | undefined; // Track the last error object
-    this.logger.debug(`send sms command triggered, payload ${command}`);
+    this.logger.debug(
+      `send sms command triggered, payload ${logUtil(command)}`,
+    );
 
     await asyncRetry(
       async () => {
-        console.log(`trying to send sms to ${command.phone_number}`);
         await this.msegatService.sendSMSAsync({
           numbers: command.phone_number.includes('+')
             ? command.phone_number.substring(1)

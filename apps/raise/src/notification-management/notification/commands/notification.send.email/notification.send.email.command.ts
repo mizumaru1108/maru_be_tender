@@ -6,7 +6,7 @@ export class NotificationSendEmailCommand {
   type: 'SMS' | 'EMAIL';
   user_id: string;
   email: string;
-  phone_number?: string;
+  email_sender?: string;
   email_type?: 'template' | 'plain';
   emailTemplateContext?: Record<string, any>;
   emailTemplatePath?: string;
@@ -30,23 +30,23 @@ export class NotificationSendEmailCommandHandler
       !!command.emailTemplateContext &&
       !!command.emailTemplatePath
     ) {
-      console.log(`try sending email template to ${command.email}`);
       this.emailService.sendMail({
         subject: command.subject,
         mailType: command.email_type,
         templateContext: command.emailTemplateContext,
         templatePath: command.emailTemplatePath,
         to: command.email,
+        from: command.email_sender,
       });
     }
 
     if (command.email_type === 'plain') {
-      console.log(`try to sending email plain`);
       this.emailService.sendMail({
         subject: command.subject,
         mailType: command.email_type,
         content: command.content,
         to: command.email,
+        from: command.email_sender,
       });
     }
   }

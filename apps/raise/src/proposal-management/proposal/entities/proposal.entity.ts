@@ -130,10 +130,14 @@ export class ProposalEntity extends AggregateRoot {
       {
         type: props.notif_type,
         user_id: props.user_id,
-        email: props.user_email,
-        phone_number: props.user_phone,
         content: props.content,
         subject: props.subject,
+        email: props.user_email,
+        email_sender: 'no-reply@hcharity.org',
+        phone_number: props.user_phone,
+        email_type: props.email_type,
+        emailTemplateContext: props.emailTemplateContext,
+        emailTemplatePath: props.emailTemplatePath,
       },
     );
     this.apply(eventBuilder.build());

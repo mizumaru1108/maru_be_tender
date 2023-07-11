@@ -7,7 +7,6 @@ import { ROOT_LOGGER } from '../../../../libs/root-logger';
 import { TenderNotificationRepository } from '../../../../notification-management/notification/repository/tender-notification.repository';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { DataNotFoundException } from '../../../../tender-commons/exceptions/data-not-found.exception';
-import { PayloadErrorException } from '../../../../tender-commons/exceptions/payload-error.exception';
 import { RequestErrorException } from '../../../../tender-commons/exceptions/request-error.exception';
 import { TenderAppRoleEnum } from '../../../../tender-commons/types';
 import {
@@ -71,7 +70,7 @@ export class SendAmandementCommandHandler
 
           /* object atleas has id, and one more payload (notes), if not then throw err */
           if (Object.keys(request).length < 2) {
-            throw new PayloadErrorException('Give at least one revision!');
+            throw new RequestErrorException('Give at least one revision!');
           }
 
           const proposal = await this.proposalRepo.fetchById(
