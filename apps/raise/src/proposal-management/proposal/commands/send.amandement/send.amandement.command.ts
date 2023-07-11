@@ -1,9 +1,15 @@
+import { ConfigService } from '@nestjs/config';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
+import { ITenderAppConfig } from 'src/commons/configs/tender-app-config';
+import { isExistAndValidPhone } from '../../../../commons/utils/is-exist-and-valid-phone';
+import { ROOT_LOGGER } from '../../../../libs/root-logger';
+import { TenderNotificationRepository } from '../../../../notification-management/notification/repository/tender-notification.repository';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { DataNotFoundException } from '../../../../tender-commons/exceptions/data-not-found.exception';
 import { PayloadErrorException } from '../../../../tender-commons/exceptions/payload-error.exception';
 import { RequestErrorException } from '../../../../tender-commons/exceptions/request-error.exception';
+import { TenderAppRoleEnum } from '../../../../tender-commons/types';
 import {
   OutterStatusEnum,
   ProposalAction,
@@ -13,6 +19,7 @@ import {
   CreateProposalEditRequestProps,
   ProposalEditRequestRepository,
 } from '../../../edit-requests/repositories/proposal.edit.request.repository';
+import { ProposalLogRepository } from '../../../proposal-log/repositories/proposal.log.repository';
 import { SendAmandementDto } from '../../dtos/requests';
 import {
   ISendNotificaitonEvent,
@@ -20,14 +27,6 @@ import {
 } from '../../entities/proposal.entity';
 import { ProposalRepository } from '../../repositories/proposal.repository';
 import { UpdateProposalProps } from '../../types';
-import { ProposalLogRepository } from '../../../proposal-log/repositories/proposal.log.repository';
-import { TenderAppRoleEnum } from '../../../../tender-commons/types';
-import { EmailService } from '../../../../libs/email/email.service';
-import { ROOT_LOGGER } from '../../../../libs/root-logger';
-import { isExistAndValidPhone } from '../../../../commons/utils/is-exist-and-valid-phone';
-import { MsegatService } from '../../../../libs/msegat/services/msegat.service';
-import { UserEntity } from '../../../../tender-user/user/entities/user.entity';
-import { TenderNotificationRepository } from '../../../../notification-management/notification/repository/tender-notification.repository';
 
 export class SendAmandementCommand {
   currentUser: TenderCurrentUser;
@@ -47,55 +46,19 @@ export class SendAmandementCommandHandler
     'log.logger': SendAmandementCommandHandler.name,
   });
 
-  async sendNotif(
-    proposal: ProposalEntity,
-    user: UserEntity,
-    subject: string,
-    content: string,
-  ) {
-    // email notif
-    this.emailService.sendMail({
-      subject,
-      mailType: 'template',
-      templateContext: {
-        clientUsername: `${user.employee_name}`,
-        projectPageLink: `lll/client/dashboard/previous-funding-requests/${proposal.id}/show-project`,
-      },
-      templatePath: 'tender/ar/proposal/project_new_amandement_request',
-      to: user.email,
-    });
-
-    // send sms notif for close report
-    // validate client phone
-    this.logger.log('info', `validating client phone ${user.mobile_number}`);
-    const clientPhone = isExistAndValidPhone(user.mobile_number);
-
-    // sms notif for payment release
-    if (clientPhone) {
-      this.logger.log(
-        'info',
-        `valid phone number, trying to sending sms to ${clientPhone}`,
-      );
-      await this.msegatService.sendSMSAsync({
-        numbers: clientPhone.includes('+')
-          ? clientPhone.substring(1)
-          : clientPhone,
-        msg: subject + content,
-      });
-    }
-  }
-
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly configService: ConfigService,
     private readonly proposalRepo: ProposalRepository,
     private readonly logRepo: ProposalLogRepository,
     private readonly editRequestRepo: ProposalEditRequestRepository,
     private readonly notifRepo: TenderNotificationRepository,
-    private readonly emailService: EmailService,
-    private readonly msegatService: MsegatService,
     private readonly eventPublisher: EventPublisher,
   ) {}
   async execute(command: SendAmandementCommand): Promise<any> {
+    const appConfig =
+      this.configService.get<ITenderAppConfig>('tenderAppConfig');
+
     const { currentUser, request } = command;
     const { proposal_id } = request;
     try {
@@ -243,8 +206,16 @@ export class SendAmandementCommandHandler
                 subject,
                 content: clientContent,
                 email_type: 'template',
-                emailTemplateContext: {},
-                emailTemplatePath: '',
+                emailTemplateContext: {
+                  clientUsername: `${proposal.user.employee_name}`,
+                  projectPageLink: `${
+                    appConfig?.baseUrl || ''
+                  }/client/dashboard/previous-funding-requests/${
+                    proposal.id
+                  }/show-project`,
+                },
+                emailTemplatePath:
+                  'tender/ar/proposal/project_new_amandement_request',
               },
               {
                 notif_type: 'SMS',

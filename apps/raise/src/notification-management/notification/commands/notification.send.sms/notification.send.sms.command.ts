@@ -27,10 +27,11 @@ export class NotificationSendSmsCommandHandler
   async sendSms(command: NotificationSendSmsCommand) {
     let retryCount = 0; // Track the number of retries
     let lastError: Error | undefined; // Track the last error object
-    this.logger.debug(`send sms command triggered`);
+    this.logger.debug(`send sms command triggered, payload ${command}`);
 
     await asyncRetry(
       async () => {
+        console.log(`trying to send sms to ${command.phone_number}`);
         await this.msegatService.sendSMSAsync({
           numbers: command.phone_number.includes('+')
             ? command.phone_number.substring(1)

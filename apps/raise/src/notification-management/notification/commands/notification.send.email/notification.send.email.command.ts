@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { logUtil } from 'src/commons/utils/log-util';
 import { EmailService } from 'src/libs/email/email.service';
 export class NotificationSendEmailCommand {
   type: 'SMS' | 'EMAIL';
@@ -23,12 +24,13 @@ export class NotificationSendEmailCommandHandler
   constructor(private readonly emailService: EmailService) {}
 
   async execute(command: NotificationSendEmailCommand) {
-    this.logger.debug(`send email command triggered`);
+    this.logger.debug(`send email command triggered ${logUtil(command)}`);
     if (
       command.email_type === 'template' &&
       !!command.emailTemplateContext &&
       !!command.emailTemplatePath
     ) {
+      console.log(`try sending email template to ${command.email}`);
       this.emailService.sendMail({
         subject: command.subject,
         mailType: command.email_type,
@@ -39,6 +41,7 @@ export class NotificationSendEmailCommandHandler
     }
 
     if (command.email_type === 'plain') {
+      console.log(`try to sending email plain`);
       this.emailService.sendMail({
         subject: command.subject,
         mailType: command.email_type,
