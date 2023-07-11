@@ -461,7 +461,6 @@ function ProjectPath() {
               </>
             ) : null}
             {/*  */}
-            {/*  */}
             {logs.filter(
               (item: Log, index: number) =>
                 index === activeStep &&
