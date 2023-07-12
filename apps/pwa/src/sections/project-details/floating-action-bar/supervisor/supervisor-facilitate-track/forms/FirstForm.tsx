@@ -233,15 +233,15 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             type={'number'}
             size={'small'}
             name="payment_number"
-            placeholder="عدد المدفوعات"
-            label="عدد المدفوعات"
+            placeholder="عدد الدفعات"
+            label="عدد الدفعات"
           /> */}
           <BaseField
             data-cy="acc_form_consulation_payment_number"
             type="numberField"
             name="payment_number"
-            placeholder="عدد المدفوعات"
-            label="عدد المدفوعات*"
+            placeholder="عدد الدفعات"
+            label="عدد الدفعات*"
           />
         </Grid>
         <Grid item md={12} xs={12}>

@@ -38,9 +38,9 @@ function ProjectPath() {
 
   const [activeStep, setActiveStep] = React.useState(0);
   // console.log({ activeStep });
-  const [stepOn, setStepOn] = React.useState(1);
-  const [stepUserRole, setStepUserRole] = React.useState('');
-  const [stepActionType, setStepActionType] = React.useState('');
+  // const [stepOn, setStepOn] = React.useState(1);
+  // const [stepUserRole, setStepUserRole] = React.useState('');
+  // const [stepActionType, setStepActionType] = React.useState('');
   // const [stepProposal, setStepProposal] = React.useState<PropsalLog | null>(null);
   const [stepGransLog, setGransLog] = React.useState<PropsalLogGrants | null>();
   const [stepGeneralLog, setGeneralLog] = React.useState<PropsalLog | null>(null);
@@ -69,17 +69,18 @@ function ProjectPath() {
   const handleStep = (step: number, item: Log) => () => {
     // console.log({ item });
     window.scrollTo(115, 115);
-    setStepOn(step);
+    // setStepOn(step);
     setActiveStep(step);
     if (item !== undefined) {
       setGeneralLog(item);
       if (item && isConsultation) {
         setGransLog(item);
       }
-    } else {
-      setStepUserRole('');
-      setStepActionType('');
     }
+    // else {
+    //   setStepUserRole('');
+    //   setStepActionType('');
+    // }
   };
 
   const lastLog =
@@ -106,44 +107,42 @@ function ProjectPath() {
       setLogs(tmpLogs);
       setActiveStep(tmpLogs.length - 1);
     }
+    const tmpLogProposal = [...proposal.proposal_logs].filter((item: Log) => item.action);
+
     setGransLog((current) => {
       const tmpData = { ...current };
       return {
         ...current,
-        new_values: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.new_values || null,
-        created_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.created_at || '',
-        state: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.state || '',
-        reviewer: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.reviewer || '',
-        employee_name:
-          proposal.proposal_logs[proposal.proposal_logs.length - 1]?.employee_name || '',
-        user_role_id: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.user_role_id || '',
-        action: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.action || '',
-        message: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.message || '',
-        notes: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.notes || '',
-        updated_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.updated_at || '',
-        user_role: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.user_role || '',
+        new_values: tmpLogProposal[tmpLogProposal.length - 1]?.new_values || null,
+        created_at: tmpLogProposal[tmpLogProposal.length - 1]?.created_at || '',
+        state: tmpLogProposal[tmpLogProposal.length - 1]?.state || '',
+        reviewer: tmpLogProposal[tmpLogProposal.length - 1]?.reviewer || '',
+        employee_name: tmpLogProposal[tmpLogProposal.length - 1]?.employee_name || '',
+        user_role_id: tmpLogProposal[tmpLogProposal.length - 1]?.user_role_id || '',
+        action: tmpLogProposal[tmpLogProposal.length - 1]?.action || '',
+        message: tmpLogProposal[tmpLogProposal.length - 1]?.message || '',
+        notes: tmpLogProposal[tmpLogProposal.length - 1]?.notes || '',
+        updated_at: tmpLogProposal[tmpLogProposal.length - 1]?.updated_at || '',
+        user_role: tmpLogProposal[tmpLogProposal.length - 1]?.user_role || '',
       };
     });
     setGeneralLog((current: any) => {
       const tmpData = { ...current };
       return {
         ...current,
-        new_values: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.new_values || null,
-        // proposal_log: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.new_values || null,
-        action: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.action || '',
-        message: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.message || '',
-        notes: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.notes || '',
-        updated_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.updated_at || '',
-        created_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.created_at || '',
-        state: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.state || '',
-        user_role: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.user_role || '',
+        new_values: tmpLogProposal[tmpLogProposal.length - 1]?.new_values || null,
+        // proposal_log: tmpLogProposal[tmpLogProposal.length - 1]?.new_values || null,
+        action: tmpLogProposal[tmpLogProposal.length - 1]?.action || '',
+        message: tmpLogProposal[tmpLogProposal.length - 1]?.message || '',
+        notes: tmpLogProposal[tmpLogProposal.length - 1]?.notes || '',
+        updated_at: tmpLogProposal[tmpLogProposal.length - 1]?.updated_at || '',
+        created_at: tmpLogProposal[tmpLogProposal.length - 1]?.created_at || '',
+        state: tmpLogProposal[tmpLogProposal.length - 1]?.state || '',
+        user_role: tmpLogProposal[tmpLogProposal.length - 1]?.user_role || '',
         reviewer: {
-          employee_name:
-            proposal.proposal_logs[proposal.proposal_logs.length - 1]?.reviewer?.employee_name ||
-            '',
+          employee_name: tmpLogProposal[tmpLogProposal.length - 1]?.reviewer?.employee_name || '',
         },
-        employee_name:
-          proposal.proposal_logs[proposal.proposal_logs.length - 1]?.employee_name || '',
+        employee_name: tmpLogProposal[tmpLogProposal.length - 1]?.employee_name || '',
       };
     });
   }, [followUps, proposal]);
@@ -443,7 +442,8 @@ function ProjectPath() {
                 item.action !== 'sending_closing_report' &&
                 (item.action === 'accepted_by_project_manager' ||
                   item.action === 'accept' ||
-                  item.action === 'update')
+                  item.action === 'update' ||
+                  item.action === 'set_by_supervisor')
             ).length > 0 &&
             (stepGeneralLog || stepGransLog) ? (
               <>
@@ -460,7 +460,6 @@ function ProjectPath() {
                 )}
               </>
             ) : null}
-            {/*  */}
             {/*  */}
             {logs.filter(
               (item: Log, index: number) =>

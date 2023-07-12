@@ -68,6 +68,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
       project_implement_date: '',
       execution_time: 0,
       project_beneficiaries: '',
+      beneficiary_id: '',
       letter_ofsupport_req: {
         url: '',
         size: undefined,
@@ -291,6 +292,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
                 project_implement_date: tmpValues?.data.project_implement_date,
                 execution_time: tmpValues?.data.execution_time,
                 project_beneficiaries: tmpValues?.data.project_beneficiaries,
+                beneficiary_id: tmpValues?.data?.beneficiary_id,
                 letter_ofsupport_req: {
                   ...tmpValues?.data.letter_ofsupport_req,
                 },
@@ -416,7 +418,11 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
           </ProjectBudgetForm>
         )}
         {step === 4 && (
-          <ProjectTimeLine onSubmit={onSubmitform5} defaultValues={requestState?.project_timeline}>
+          <ProjectTimeLine
+            onSubmit={onSubmitform5}
+            defaultValues={requestState?.project_timeline}
+            revised={tmpValues?.revised}
+          >
             <AmandementActionBox step={step} onReturn={onReturn} isLoad={isLoading} />
           </ProjectTimeLine>
         )}

@@ -10,6 +10,17 @@ import { AggregateRoot } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
 import { CreateNotificationEvent } from '../../../notification-management/notification/event/create.notification.event';
 
+export interface ISendNotificaitonEvent {
+  notif_type: 'EMAIL' | 'SMS';
+  user_id: string;
+  subject: string;
+  content: string;
+  user_email?: string;
+  user_phone?: string;
+  email_type?: 'template' | 'plain';
+  emailTemplateContext?: Record<string, any>;
+  emailTemplatePath?: string;
+}
 export class ProposalEntity extends AggregateRoot {
   // notification                        notification[]
   accreditation_type_id?: string | null;
@@ -111,20 +122,22 @@ export class ProposalEntity extends AggregateRoot {
   // payment_configuration               supervisor[]
 
   /**
-   * emit event to create a customer after creating a user.
+   * emit event to send notification.
    */
-  sendNotificaitonEvent(
-    user_id: string,
-    user_email: string,
-    user_phone: string,
-    subject: string,
-    content: string,
-  ) {
-    // organization_id: string, // payload: RegisterMerchantCommand,
+  sendNotificaitonEvent(props: ISendNotificaitonEvent) {
     const eventBuilder = Builder<CreateNotificationEvent>(
       CreateNotificationEvent,
       {
-        user_id: '',
+        type: props.notif_type,
+        user_id: props.user_id,
+        content: props.content,
+        subject: props.subject,
+        email: props.user_email,
+        email_sender: 'no-reply@hcharity.org',
+        phone_number: props.user_phone,
+        email_type: props.email_type,
+        emailTemplateContext: props.emailTemplateContext,
+        emailTemplatePath: props.emailTemplatePath,
       },
     );
     this.apply(eventBuilder.build());

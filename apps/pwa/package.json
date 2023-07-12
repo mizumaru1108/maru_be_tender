@@ -194,7 +194,6 @@
     "lint:fix": "eslint --fix --ext .ts,.tsx ./src",
     "re-build": "rm -rf build node_modules && yarn install && yarn build",
     "re-start": "rm -rf build node_modules && yarn install && yarn start",
-    "start": "cross-env GENERATE_SOURCEMAP=false react-app-rewired start",
-    "push:dev": "git push origin main:stack/dev"
+    "start": "cross-env GENERATE_SOURCEMAP=false react-app-rewired start"
   }
 }

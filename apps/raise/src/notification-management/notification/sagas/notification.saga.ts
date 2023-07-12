@@ -16,23 +16,34 @@ export class NotificationSaga {
     return events$.pipe(
       ofType(CreateNotificationEvent),
       map((event) => {
-        this.logger.debug('Create notif event triggered');
+        this.logger.debug(`Create notif event triggered ${event.type}`);
         switch (event.type) {
           case 'EMAIL':
-            const sendEmailNotifCommand = Builder(
+            if (!event.email) {
+              throw new PayloadErrorException(
+                `Email is needed when sending an email notificaition!`,
+              );
+            }
+            const sendEmailNotifCommand = Builder<NotificationSendEmailCommand>(
               NotificationSendEmailCommand,
               {
-                NotificationSendEmailCommand,
-                event,
+                ...event,
               },
             );
             return sendEmailNotifCommand.build();
           case 'SMS':
-            const commandBuilder = Builder(NotificationSendSmsCommand, {
+            if (!event.phone_number) {
+              throw new PayloadErrorException(
+                `Phone number is needed when sending an sms notificaition!`,
+              );
+            }
+            const sendSmsNotifCommand = Builder<NotificationSendSmsCommand>(
               NotificationSendSmsCommand,
-              event,
-            });
-            return commandBuilder.build();
+              {
+                ...event,
+              },
+            );
+            return sendSmsNotifCommand.build();
           default:
             throw new PayloadErrorException(`Invalid Notification Event Type`);
         }

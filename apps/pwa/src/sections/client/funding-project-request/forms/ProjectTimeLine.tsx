@@ -2,7 +2,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Alert, Grid } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
 import useLocales from 'hooks/useLocales';
-import { useEffect, useState } from 'react';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { AmandementFields } from '../../../../@types/proposal';
@@ -24,9 +25,22 @@ type Props = {
 };
 
 const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) => {
+  // console.log({ defaultValues });
   const { translate } = useLocales();
   const [budgetError, setBudgetError] = useState(false);
   const isDisabled = !!revised && revised.hasOwnProperty('project_timeline') ? false : true;
+  const tmpDefaultValues =
+    (defaultValues?.length &&
+      defaultValues.map((item: any) => {
+        const { name, start_date, end_date } = item;
+        return {
+          name: name,
+          start_date: moment(start_date).format('YYYY-MM-DD'),
+          end_date: moment(end_date).format('YYYY-MM-DD'),
+        };
+      })) ||
+    [];
+  // console.log({ tmpDefaultValues });
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -49,7 +63,7 @@ const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(ProjectTimeLineSchema),
     defaultValues: {
-      project_timeline: (defaultValues && defaultValues.length && defaultValues) || [
+      project_timeline: (tmpDefaultValues && tmpDefaultValues.length > 0 && tmpDefaultValues) || [
         { name: '', start_date: '', end_date: '' },
       ],
     },
@@ -59,14 +73,16 @@ const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) 
     handleSubmit,
     formState: { isSubmitting },
     watch,
+    // reset,
   } = methods;
 
   const project_timeline = watch('project_timeline');
-  // console.log(project_timeline[lastIndex].start_date ? true : false, 'test');
+
+  // console.log('test', project_timeline);
 
   const handleOnSubmit = (data: FormValuesProps) => {
-    // console.log({ data });
-    onSubmit(data);
+    console.log({ data });
+    // onSubmit(data);
   };
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(handleOnSubmit)}>

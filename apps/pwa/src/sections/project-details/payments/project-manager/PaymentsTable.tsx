@@ -4,6 +4,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
 import {
+  getProposal,
   getProposalCount,
   updatePaymentBySupervisorAndManagerAndFinance,
 } from 'redux/slices/proposal';
@@ -12,15 +13,17 @@ import useLocales from 'hooks/useLocales';
 import { fCurrencyNumber } from 'utils/formatNumber';
 import useAuth from 'hooks/useAuth';
 import { role_url_map } from '../../../../@types/commons';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import RejectionModal from 'components/modal-dialog/RejectionModal';
-import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { FEATURE_PAYEMENTS_NEW, FEATURE_PROPOSAL_COUNTING } from 'config';
 import { TransferReceipt } from '../../../../@types/proposal';
 
 function PaymentsTable() {
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
+  const params = useParams();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const dispatch = useDispatch();
 
@@ -93,7 +96,7 @@ function PaymentsTable() {
           action: 'accept',
         })
       ).then((res) => {
-        if (res.statusCode === 200) {
+        if (res.statusCode === 200 || res.statusCode === 201) {
           enqueueSnackbar('تم قبول أذن الصرف بنجاح', {
             variant: 'success',
             preventDuplicate: true,
@@ -106,6 +109,9 @@ function PaymentsTable() {
           // dispatch(getProposalCount(activeRole ?? 'test'));
           if (FEATURE_PROPOSAL_COUNTING) {
             dispatch(getProposalCount(activeRole ?? 'test'));
+          }
+          if (FEATURE_PAYEMENTS_NEW) {
+            dispatch(getProposal(params.id as string, activeRole as string));
           }
         }
       });
@@ -140,7 +146,9 @@ function PaymentsTable() {
 
   const handleRejectPayment = async (id: string, note?: string) => {
     // console.log({ note });
+
     try {
+      setIsLoading(true);
       await dispatch(
         updatePaymentBySupervisorAndManagerAndFinance({
           id,
@@ -149,7 +157,7 @@ function PaymentsTable() {
           note: note,
         })
       ).then((res) => {
-        if (res.data.statusCode === 200) {
+        if (res.data.statusCode === 200 || res.statusCode === 201) {
           enqueueSnackbar('تم رفض أذن الصرف بنجاح', {
             variant: 'success',
             preventDuplicate: true,
@@ -163,6 +171,7 @@ function PaymentsTable() {
           if (FEATURE_PROPOSAL_COUNTING) {
             dispatch(getProposalCount(activeRole ?? 'test'));
           }
+          dispatch(getProposal(params.id as string, activeRole as string));
         }
       });
     } catch (error) {
@@ -182,6 +191,8 @@ function PaymentsTable() {
           },
         }
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -289,7 +300,9 @@ function PaymentsTable() {
                     }}
                     startIcon={<CloseIcon />}
                     disabled={
-                      currentSelectedIndex !== index || currentSelectedIndex !== stepBeforeComplete
+                      currentSelectedIndex !== index ||
+                      currentSelectedIndex !== stepBeforeComplete ||
+                      isLoading
                     }
                     onClick={() => {
                       setSelectedPaymentId(item.id);
@@ -309,7 +322,9 @@ function PaymentsTable() {
                     }}
                     startIcon={<CheckIcon />}
                     disabled={
-                      currentSelectedIndex !== index || currentSelectedIndex !== stepBeforeComplete
+                      currentSelectedIndex !== index ||
+                      currentSelectedIndex !== stepBeforeComplete ||
+                      isLoading
                     }
                     onClick={() => {
                       handleApprovalPayment(item.id);

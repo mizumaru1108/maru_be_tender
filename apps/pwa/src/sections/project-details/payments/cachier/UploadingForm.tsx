@@ -86,7 +86,6 @@ function UploadingForm({ paymentId, onClose }: any) {
           },
         });
         dispatch(getProposal(id as string, activeRole as string));
-
         // dispatch(getProposalCount(activeRole ?? 'test'));
         if (FEATURE_PROPOSAL_COUNTING) {
           dispatch(getProposalCount(activeRole ?? 'test'));

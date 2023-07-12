@@ -5,12 +5,16 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
+  - pre
   - pre-publish
   - build
   - test
   - publish
   - post-publish
   - deploy
+
+variables:
+  DEVSECOPS_PROJECT_ID: '26870237'
 
 image: node:lts
 
@@ -55,7 +59,7 @@ cache:
 #     - if: '($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event") && $CI_COMMIT_BRANCH != "stack/dev" && $CI_COMMIT_BRANCH != "stack/qc" && $CI_COMMIT_BRANCH != "stack/staging" && $CI_COMMIT_BRANCH != "stack/prod"'
 
 "prepare version":
-  stage: pre-publish
+  stage: pre
   needs: []
   cache: []
   image: alpine
@@ -65,6 +69,9 @@ cache:
     - echo "APP_ENV=$APP_ENV APP_VERSION=$APP_VERSION"
     - echo "APP_ENV=$APP_ENV" > build.env
     - echo "APP_VERSION=$APP_VERSION" >> build.env
+    # transition
+    - echo "SERVICE_VERSION=$APP_VERSION" >> build.env
+    - echo "SERVICE_BUILD_ENV=$APP_ENV" >> build.env
   artifacts:
     reports:
       dotenv: build.env
@@ -108,5 +115,5 @@ cache:
     # - if: '$CI_COMMIT_BRANCH == "stack/dev" && $BUILD_PACKAGE == "tmra-raise"'
 
 include:
-  # - local: "/apps/raise/.gitlab-ci.yml"
+  - local: "/apps/raise/.gitlab-ci.yml"
   - local: "/apps/pwa/.gitlab-ci.yml"

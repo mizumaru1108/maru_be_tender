@@ -523,8 +523,8 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                   : true
               }
               name="payment_number"
-              placeholder="عدد المدفوعات"
-              label="عدد المدفوعات*"
+              placeholder="عدد الدفعات"
+              label="عدد الدفعات*"
             />
           </Grid>
           {isVat && (

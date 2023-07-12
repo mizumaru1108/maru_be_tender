@@ -13,6 +13,8 @@ import { useSnackbar } from 'notistack';
 import AmandementClientForm from '../../sections/client/funding-project-request/amandement-project/AmandementClientForm';
 import Iconify from '../../components/Iconify';
 import { MotionValue } from 'framer-motion';
+import { dispatch, useSelector } from 'redux/store';
+import { getBeneficiariesList } from 'redux/slices/proposal';
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
   minHeight: '100vh',
@@ -28,6 +30,7 @@ type ITmpValues = {
 
 const AmandementRequest = () => {
   const { translate, currentLang } = useLocales();
+  const { loadingCount } = useSelector((state) => state.proposal);
   const navigate = useNavigate();
   const params = useParams();
   const { activeRole } = useAuth();
@@ -77,7 +80,10 @@ const AmandementRequest = () => {
 
   React.useEffect(() => {
     fetchingData();
-  }, [fetchingData]);
+    dispatch(getBeneficiariesList(activeRole!));
+  }, [fetchingData, activeRole]);
+
+  if (loadingCount) return <>Loading...</>;
 
   return (
     // <Page title="Fundin Project Request">

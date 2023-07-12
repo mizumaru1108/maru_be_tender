@@ -37,6 +37,7 @@ export type PaymentStatus =
   | 'accepted_by_project_manager'
   | 'accepted_by_finance'
   | 'uploaded_by_cashier'
+  | 'reject_cheque'
   | 'done';
 
 export type AccreditationTypeId = 'PLAIN' | 'INCOMING';
@@ -263,6 +264,7 @@ export interface AmandmentRequestForm extends AmandementProposal {
   project_name: string;
   execution_time: number;
   project_beneficiaries_specific_type: string;
+  beneficiary_id: string;
   pm_name: string;
   pm_mobile: string;
   pm_email: string;
@@ -294,6 +296,7 @@ export type AmandementFields = {
   num_ofproject_binicficiaries: string;
   project_attachments: string;
   project_beneficiaries: string;
+  beneficiary_id: string;
   project_goals: string;
   project_idea: string;
   project_implement_date: string;
@@ -410,7 +413,8 @@ export type Log = {
     | 'done'
     | 'project_completed'
     | 'send_revised_version'
-    | 'complete_payment';
+    | 'complete_payment'
+    | 'reject_cheque';
   created_at: Date;
   updated_at: Date;
   user_role: Role;

@@ -27,7 +27,10 @@ import {
 import { ProposalRepository } from '../../../proposal/repositories/proposal.repository';
 import { UpdateProposalProps } from '../../../proposal/types';
 import { UpdatePaymentDto } from '../../dtos/requests';
-import { ProposalPaymentRepository } from '../../repositories/proposal-payment.repository';
+import {
+  ProposalPaymentRepository,
+  UpdatePaymentProps,
+} from '../../repositories/proposal-payment.repository';
 import {
   ChequeCreateProps,
   ProposalChequeRepository,
@@ -47,6 +50,7 @@ import {
   TenderNotificationRepository,
   CreateNotificaitonProps,
 } from '../../../../notification-management/notification/repository/tender-notification.repository';
+import { NotificationEntity } from 'src/notification-management/notification/entities/notification.entity';
 
 export class ProposalUpdatePaymentCommand {
   currentUser: TenderCurrentUser;
@@ -177,6 +181,7 @@ export class ProposalUpdatePaymentCommandHandler
         | ProposalAction.ACCEPTED_BY_PROJECT_MANAGER
         | ProposalAction.ACCEPTED_BY_FINANCE
         | ProposalAction.UPLOADED_BY_CASHIER
+        | ProposalAction.REJECT_CHEQUE
         | ProposalAction.DONE
         | null = null;
 
@@ -188,7 +193,6 @@ export class ProposalUpdatePaymentCommandHandler
       const createProposalLogPayloads: CreateProposalLogProps =
         Builder<CreateProposalLogProps>(CreateProposalLogProps, {
           id: nanoid(),
-          action: status,
           reviewer_id: command.currentUser.id,
           state: appRoleMappers[choosenRole],
           user_role: appRoleMappers[choosenRole],
@@ -208,6 +212,11 @@ export class ProposalUpdatePaymentCommandHandler
               : '',
         }).build();
 
+      const updatePaymentPayload: UpdatePaymentProps =
+        Builder<UpdatePaymentProps>(UpdatePaymentProps, {
+          id: command.request.payment_id,
+        }).build();
+
       const createChequePayload = Builder<ChequeCreateProps>(
         ChequeCreateProps,
         {
@@ -215,7 +224,10 @@ export class ProposalUpdatePaymentCommandHandler
         },
       ).build();
 
-      const notifPayload: CreateNotificaitonProps[] = [];
+      let notifPayload = Builder<CreateNotificaitonProps>(
+        CreateNotificaitonProps,
+        {},
+      ).build();
 
       if (choosenRole === 'tender_project_manager') {
         if (proposal.project_manager_id !== userId) {
@@ -224,8 +236,9 @@ export class ProposalUpdatePaymentCommandHandler
           );
         }
         this.actionValidator(['accept', 'reject'], action);
-        if (action === 'accept')
+        if (action === 'accept') {
           status = ProposalAction.ACCEPTED_BY_PROJECT_MANAGER;
+        }
         if (action === 'reject') {
           status = ProposalAction.SET_BY_SUPERVISOR;
           if (!command.request.notes) {
@@ -233,12 +246,7 @@ export class ProposalUpdatePaymentCommandHandler
               'Notes are required when rejecting payment',
             );
           }
-          if (!command.request.last_payment_receipt_url) {
-            throw new PayloadErrorException(
-              'please send the last rejected file url',
-            );
-          }
-          deletedFileManagerUrl.push(command.request.last_payment_receipt_url);
+          createProposalLogPayloads.notes = command.request.notes;
         }
       }
 
@@ -251,7 +259,13 @@ export class ProposalUpdatePaymentCommandHandler
         if (action === 'accept') status = ProposalAction.ACCEPTED_BY_FINANCE;
         if (action === 'confirm_payment') status = ProposalAction.DONE;
         if (action === 'reject_payment') {
-          status = ProposalAction.ACCEPTED_BY_FINANCE;
+          status = ProposalAction.REJECT_CHEQUE;
+          if (!command.request.last_payment_receipt_url) {
+            throw new PayloadErrorException(
+              'please send the last rejected file url',
+            );
+          }
+          deletedFileManagerUrl.push(command.request.last_payment_receipt_url);
         }
         // !TODO: if (action is edit) do something, still abmigous, need to discuss.
       }
@@ -277,7 +291,7 @@ export class ProposalUpdatePaymentCommandHandler
         updateProposalPayloads.cashier_id = userId;
 
         if (action === 'upload_receipt') {
-          notifPayload.push({
+          notifPayload = {
             id: uuidv4(),
             user_id: proposal.user.id,
             content: `"مرحباً ${proposal.user.employee_name}، نود إخبارك أن المشروع '${proposal.project_name}' تم إرسال الدفعة.
@@ -285,7 +299,7 @@ export class ProposalUpdatePaymentCommandHandler
             subject: 'إصدار دفع جديد',
             type: 'PROPOSAL',
             specific_type: 'PAYMENT_RELEASE',
-          });
+          };
         }
 
         if (action === 'upload_receipt') {
@@ -327,26 +341,28 @@ export class ProposalUpdatePaymentCommandHandler
         };
       }
 
-      let updatedProposal: ProposalEntity | null = null;
-      let updatedPayment: ProposalPaymentEntity | null = null;
-      let createdCheque: ChequeEntity | null = null;
-      let createdFileManager: FileManagerEntity[] | null = null;
-      let createdLogs: ProposalLogEntity | null = null;
+      createProposalLogPayloads.action = status;
+      // payment status harusnya accepted_by_finance ketika  lognya reject_cheque
+      updatePaymentPayload.status =
+        status === ProposalAction.REJECT_CHEQUE
+          ? ProposalAction.ACCEPTED_BY_FINANCE
+          : status;
 
-      await this.prismaService.$transaction(
+      const result = await this.prismaService.$transaction(
         async (prismaSession) => {
           const session =
             prismaSession instanceof PrismaService
               ? prismaSession
               : this.prismaService;
 
+          let createdCheque: ChequeEntity | null = null;
+          let createdFileManager: FileManagerEntity[] | null = null;
+          let createdWebNotif: NotificationEntity | null = null;
+
           // update the payment
           // this.logger.log('info', 'updating payment');
-          updatedPayment = await this.paymentRepo.update(
-            {
-              id: command.request.payment_id,
-              status,
-            },
+          const updatedPayment = await this.paymentRepo.update(
+            updatePaymentPayload,
             session,
           );
 
@@ -384,14 +400,14 @@ export class ProposalUpdatePaymentCommandHandler
 
           // update proposal
           // this.logger.log('info', `updating proposal`);
-          updatedProposal = await this.proposalRepo.update(
+          const updatedProposal = await this.proposalRepo.update(
             updateProposalPayloads,
             session,
           );
 
           // create proposal logs
           // this.logger.log('info', `updating payment`);
-          createdLogs = await this.logRepo.create(
+          const createdLogs = await this.logRepo.create(
             createProposalLogPayloads,
             session,
           );
@@ -405,12 +421,24 @@ export class ProposalUpdatePaymentCommandHandler
           }
 
           // create web notif
-          if (notifPayload.length > 0) {
-            for (const notif of notifPayload) {
-              // this.logger.log('info', `creating notif`);
-              await this.notifRepo.create(notif, session);
-            }
+          if (Object.keys(notifPayload).length > 1) {
+            createdWebNotif = await this.notifRepo.create(
+              notifPayload,
+              session,
+            );
           }
+
+          return {
+            db_result: {
+              updated_payment: updatedPayment,
+              updated_proposal: updatedProposal,
+              created_logs: createdLogs,
+              created_web_notif: createdWebNotif,
+              created_cheque: createdCheque,
+              created_file_manager: createdFileManager,
+              deleted_file_manager: deletedFileManagerUrl,
+            },
+          };
         },
         {
           timeout: 20000, // transaction timeout
@@ -421,20 +449,12 @@ export class ProposalUpdatePaymentCommandHandler
       if (
         appRoleMappers[choosenRole] === 'CASHIER' &&
         action === 'upload_receipt' &&
-        createdCheque !== null &&
-        createdLogs !== null
+        result.db_result.created_cheque !== null &&
+        result.db_result.created_cheque.transfer_receipt &&
+        result.db_result.created_cheque.transfer_receipt !== undefined &&
+        result.db_result.created_cheque.transfer_receipt.url &&
+        result.db_result.created_logs !== null
       ) {
-        const chequeNotif = createdCheque as ChequeEntity;
-        let chequeLink: string = '';
-
-        if (
-          chequeNotif.transfer_receipt !== undefined &&
-          cheque.transfer_receipt
-        ) {
-          const tmp: any = cheque.transfer_receipt;
-          if (tmp['url'] !== undefined) chequeLink = tmp['url'];
-        }
-
         // email notif payment release
         this.emailService.sendMail({
           subject: 'إصدار دفع جديد', // "new payment release"
@@ -442,7 +462,8 @@ export class ProposalUpdatePaymentCommandHandler
           templateContext: {
             projectName: proposal.project_name,
             clientName: proposal.user?.employee_name,
-            paymentPageLink: chequeLink,
+            paymentPageLink:
+              result.db_result.created_cheque.transfer_receipt.url,
           },
           templatePath: 'tender/ar/proposal/new_upload_receipt',
           to: proposal.user.email,
@@ -474,13 +495,7 @@ export class ProposalUpdatePaymentCommandHandler
         }
       }
 
-      return {
-        updatedProposal,
-        updatedPayment,
-        createdCheque,
-        createdFileManager,
-        createdLogs,
-      };
+      return result;
     } catch (error) {
       if (fileManagerPayload.length > 0) {
         for (const file of fileManagerPayload) {

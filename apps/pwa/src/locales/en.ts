@@ -1957,6 +1957,7 @@ const en = {
       insert_payment: 'INSERT PAYMENT',
       issued_by_supervisor: 'PAYMENT ISSUED BY SUPERVISOR',
       set_by_supervisor: 'PAYMENT SET BY SUPERVISOR',
+      reject_cheque: 'CHEQUE REJECTED',
       payment_rejected_by_pm: 'PAYMENT REJECTED BY PROJECT MANAGER',
       accepted_by_project_manager: 'PAYMENT ACCEPTED BY PROJECT MANAGER',
       accepted_by_finance: 'PAYMENT ACCEPTED BY FINANCE',

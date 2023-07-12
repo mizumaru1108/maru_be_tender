@@ -455,8 +455,8 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                         : true
                     }
                     name="payment_number"
-                    placeholder="عدد المدفوعات"
-                    label="عدد المدفوعات*"
+                    placeholder="عدد الدفعات"
+                    label="عدد الدفعات*"
                   />
                 </Grid>
                 {vat === 'true' && (

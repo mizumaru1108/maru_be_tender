@@ -7,7 +7,8 @@ import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { BankingValuesProps } from '../../../../@types/register';
 import useLocales from '../../../../hooks/useLocales';
-import { useSelector } from '../../../../redux/store';
+import { getBankList } from '../../../../redux/slices/banks';
+import { dispatch, useSelector } from '../../../../redux/store';
 import { BankingInfoData } from '../RegisterFormData';
 
 type FormProps = {
@@ -90,6 +91,7 @@ const BankingInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
       .replace(/(.{4})/g, '$1 ');
     newValues = { ...newValues, bank_account_number: newBankAccNumber };
     reset(newValues);
+    dispatch(getBankList());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
 

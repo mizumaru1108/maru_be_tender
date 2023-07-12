@@ -99,13 +99,13 @@ const AmandementForms = ({
     // window.scrollTo(0, 0);
     if (!!defaultValues) {
       const newValues = JSON.parse(JSON.stringify(defaultValues));
-
+      // console.log('test newvalue:', newValues?.beneficiary_details?.name);
       reset({
         amount_required_fsupport: String(newValues.amount_required_fsupport),
         letter_ofsupport_req: '-',
         num_ofproject_binicficiaries: String(newValues.num_ofproject_binicficiaries),
         project_attachments: '-',
-        project_beneficiaries: newValues.project_beneficiaries,
+        project_beneficiaries: newValues?.beneficiary_details?.name,
         project_goals: newValues.project_goals,
         project_idea: newValues.project_idea,
         project_implement_date: String(newValues.project_implement_date),

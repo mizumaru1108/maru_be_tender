@@ -154,3 +154,11 @@ export interface TrackProps {
   created_at: string;
   updated_at: string;
 }
+
+export interface BankReduxProps {
+  id: string;
+  bank_name: string;
+  is_deleted: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
