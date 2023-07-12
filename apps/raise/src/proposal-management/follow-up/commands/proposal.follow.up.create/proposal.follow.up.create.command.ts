@@ -1,5 +1,9 @@
+import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Builder } from 'builder-pattern';
+import { nanoid } from 'nanoid';
 import { FileMimeTypeEnum } from 'src/commons/enums/file-mimetype.enum';
+import { envLoadErrorHelper } from 'src/commons/helpers/env-loaderror-helper';
 import { validateFileExtension } from 'src/commons/utils/validate-allowed-extension';
 import { validateFileSize } from 'src/commons/utils/validate-file-size';
 import { BunnyService } from 'src/libs/bunny/services/bunny.service';
@@ -12,7 +16,12 @@ import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.d
 import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
 import { PayloadErrorException } from 'src/tender-commons/exceptions/payload-error.exception';
 import { generateFileName } from 'src/tender-commons/utils/generate-filename';
+import {
+  CreateFileManagerProps,
+  TenderFileManagerRepository,
+} from 'src/tender-file-manager/repositories/tender-file-manager.repository';
 import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
+import { v4 as uuidv4 } from 'uuid';
 export class ProposalFollowUpCreateCommand {
   user: TenderCurrentUser;
   request: CreateProposalFollowUpDto;
@@ -30,11 +39,18 @@ export class ProposalFollowUpCreateCommandHandler
       ProposalFollowUpCreateCommandResult
     >
 {
+  private readonly appEnv: string;
   constructor(
     private readonly proposalRepo: ProposalRepository,
     private readonly bunnyService: BunnyService,
+    private readonly configService: ConfigService,
+    private readonly fileManagerRepo: TenderFileManagerRepository,
     private readonly followUpRepo: ProposalFollowUpRepository,
-  ) {}
+  ) {
+    const environment = this.configService.get('APP_ENV');
+    if (!environment) envLoadErrorHelper('APP_ENV');
+    this.appEnv = environment;
+  }
 
   async uploadFile(
     file: TenderFilePayload,
@@ -84,8 +100,7 @@ export class ProposalFollowUpCreateCommandHandler
   async execute(command: ProposalFollowUpCreateCommand): Promise<any> {
     const { user, request } = command;
 
-    const uploadedFilePath: string[] = [];
-    let tenderFileFollowUpObj: UploadFilesJsonbDto[] = [];
+    let fileManagerPayload: CreateFileManagerProps[] = [];
 
     if (
       user.choosenRole === 'tender_client' &&
@@ -102,13 +117,8 @@ export class ProposalFollowUpCreateCommandHandler
       );
       if (!proposal) throw new DataNotFoundException('Proposal Not Found!');
 
-      const {
-        proposal_id,
-        follow_up_type,
-        content,
-        follow_up_attachment,
-        employee_only,
-      } = request;
+      const { follow_up_type, content, follow_up_attachment, employee_only } =
+        request;
 
       if (follow_up_type === 'plain' && !content) {
         throw new PayloadErrorException(
@@ -129,109 +139,75 @@ export class ProposalFollowUpCreateCommandHandler
       }
 
       // const createFollowUpPayload = CreateFollowUpMapper(user);
-      const maxSize = 1024 * 1024 * 5;
-      // if (follow_up_attachment && follow_up_attachment.length > 0) {
-      //   for (let i = 0; i < follow_up_attachment.length; i++) {
-      //     /* project attachment */
-      //     const followUpFileName = generateFileName(
-      //       follow_up_attachment[i].fullName,
-      //       follow_up_attachment[i].fileExtension as FileMimeTypeEnum,
-      //     );
+      const createFollowUpPayload = Builder<ProposalFollowUpEntity>(
+        ProposalFollowUpEntity,
+        {
+          id: nanoid(),
+          employee_only,
+          content,
+          submitter_role: user.choosenRole,
+          proposal_id: proposal.id,
+          user_id: user.id,
+        },
+      ).build();
 
-      //     // const followUpFilePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposal_id}/follow-ups/${user.id}/${followUpFileName}`;
+      if (follow_up_attachment && follow_up_attachment.length > 0) {
+        for (const attachment of follow_up_attachment) {
+          const uploadRes = await this.uploadFile(
+            attachment,
+            `tmra/${this.appEnv}/organization/tender-management/proposal/${proposal.id}/follow-ups/${user.id}`,
+            [
+              FileMimeTypeEnum.PDF,
+              FileMimeTypeEnum.DOC,
+              FileMimeTypeEnum.DOCX,
+              FileMimeTypeEnum.PPT,
+              FileMimeTypeEnum.PPTX,
+              FileMimeTypeEnum.JPEG,
+              FileMimeTypeEnum.JPG,
+              FileMimeTypeEnum.PNG,
+              FileMimeTypeEnum.XLS,
+              FileMimeTypeEnum.XLSX,
+            ],
+            1024 * 1024 * 50,
+          );
 
-      //     // const followUpFileBuffer = Buffer.from(
-      //     //   follow_up_attachment[i].base64Data.replace(/^data:.*;base64,/, ''),
-      //     //   'base64',
-      //     // );
+          fileManagerPayload.push({
+            id: uuidv4(),
+            user_id: user.id,
+            name: uploadRes.name,
+            mimetype: uploadRes.type,
+            size: uploadRes.size,
+            url: uploadRes.url,
+            column_name: 'license_file',
+            table_name: 'client_data',
+          });
 
-      //     // validateAllowedExtension(follow_up_attachment[i].fileExtension, [
-      //     //   FileMimeTypeEnum.PDF,
-      //     //   FileMimeTypeEnum.DOC,
-      //     //   FileMimeTypeEnum.DOCX,
-      //     //   FileMimeTypeEnum.PPT,
-      //     //   FileMimeTypeEnum.PPTX,
-      //     //   FileMimeTypeEnum.JPEG,
-      //     //   FileMimeTypeEnum.JPG,
-      //     //   FileMimeTypeEnum.PNG,
-      //     //   FileMimeTypeEnum.XLS,
-      //     //   FileMimeTypeEnum.XLSX,
-      //     // ]);
-      //     // validateFileUploadSize(follow_up_attachment[i].size, maxSize);
+          const tmpFile: UploadFilesJsonbDto = {
+            ...uploadRes,
+          };
+          if (createFollowUpPayload.attachments.length > 0) {
+            createFollowUpPayload.attachments.push({
+              ...tmpFile,
+            });
+          } else {
+            createFollowUpPayload.attachments = [{ ...tmpFile }];
+          }
+        }
+      }
+      // const createdFolllowUp = await this.followUpRepo.create(
+      //   createFollowUpPayload,
+      //   fileManagerCreateManyPayload,
+      //   user,
+      //   employee_only,
+      //   this.configService.get('tenderAppConfig.baseUrl') as string,
+      //   payload.selectLang,
+      // );
 
-      //     //   const imageUrl = await this.bunnyService.uploadFileBase64(
-      //     //     follow_up_attachment[i].fullName,
-      //     //     followUpFileBuffer,
-      //     //     followUpFilePath,
-      //     //     `Uploading Proposal Follow Up from user ${user.id}`,
-      //     //   );
+      // await this.notifService.sendSmsAndEmailBatch(
+      //   createdFolllowUp.followupNotif,
+      // );
 
-      //     //   uploadedFilePath.push(imageUrl);
-      //     //   const newFileFollowUpObj = [
-      //     //     {
-      //     //       url: imageUrl,
-      //     //       type: follow_up_attachment[i].fileExtension,
-      //     //       size: follow_up_attachment[i].size,
-      //     //     },
-      //     //   ];
-
-      //     //   tenderFileFollowUpObj = [
-      //     //     ...tenderFileFollowUpObj,
-      //     //     ...newFileFollowUpObj,
-      //     //   ];
-      //     // }
-      //   }
-
-      //   // createFollowUpPayload.attachments = tenderFileFollowUpObj as any;
-
-      //   // const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
-      //   //   [];
-
-      //   // if (createFollowUpPayload.attachments instanceof Array) {
-      //   //   const tmp = createFollowUpPayload.attachments as any[];
-      //   //   if (tmp.length > 0) {
-      //   //     for (let i = 0; i < tmp.length; i++) {
-      //   //       if (isUploadFileJsonb(tmp[i])) {
-      //   //         const tmpFileJsonb: UploadFilesJsonbDto = tmp[i];
-      //   //         const isExist = await this.tenderFileManagerService.findByUrl(
-      //   //           tmpFileJsonb.url,
-      //   //         );
-
-      //   //         if (!isExist) {
-      //   //           const payload: Prisma.file_managerUncheckedCreateInput = {
-      //   //             id: uuidv4(),
-      //   //             user_id: user.id,
-      //   //             url: tmpFileJsonb.url,
-      //   //             mimetype: tmpFileJsonb.type,
-      //   //             size: tmpFileJsonb.size,
-      //   //             column_name: 'attachments',
-      //   //             table_name: 'proposal_follow_up',
-      //   //             name: tmpFileJsonb.url.split('/').pop() as string,
-      //   //           };
-      //   //           fileManagerCreateManyPayload.push(payload);
-      //   //         }
-      //   //       }
-      //   //     }
-      //   //   } else {
-      //   //     delete createFollowUpPayload.attachments;
-      //   //   }
-      //   // }
-
-      //   // const createdFolllowUp = await this.followUpRepo.create(
-      //   //   createFollowUpPayload,
-      //   //   fileManagerCreateManyPayload,
-      //   //   user,
-      //   //   employee_only,
-      //   //   this.configService.get('tenderAppConfig.baseUrl') as string,
-      //   //   payload.selectLang,
-      //   // );
-
-      //   // await this.notifService.sendSmsAndEmailBatch(
-      //   //   createdFolllowUp.followupNotif,
-      //   // );
-
-      //   // return createdFolllowUp.followUps;
-      // }
+      // return createdFolllowUp.followUps;
     } catch (error) {
       throw error;
     }

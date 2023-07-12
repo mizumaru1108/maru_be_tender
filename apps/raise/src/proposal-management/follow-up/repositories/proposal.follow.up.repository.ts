@@ -6,20 +6,57 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { FollowUpNotifMapper } from '../mappers/follow-up-notif-mapper';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
-export class ProposalFollowUpCreateProps {}
+import { Builder } from 'builder-pattern';
+import { nanoid } from 'nanoid';
+import { ProposalFollowUpEntity } from 'src/proposal-management/follow-up/entities/proposal.follow.up.entity';
+import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
+export class ProposalFollowUpCreateProps {
+  id?: string;
+  employee_only: boolean;
+  submitter_role: string;
+  proposal_id: string;
+  user_id: string;
+  content: string;
+  attachment: UploadFilesJsonbDto[];
+}
 @Injectable()
 export class ProposalFollowUpRepository {
   private readonly logger = ROOT_LOGGER.child({
     logger: ProposalFollowUpRepository.name,
   });
   constructor(private readonly prismaService: PrismaService) {}
-  async create(props: ProposalFollowUpCreateProps, session?: PrismaService) {
+
+  async create(
+    props: ProposalFollowUpCreateProps,
+    session?: PrismaService,
+  ): Promise<ProposalFollowUpEntity> {
     let prisma = this.prismaService;
     if (session) prisma = session;
 
     try {
-    } catch (error) {}
+      const rawCreated = await prisma.proposal_follow_up.create({
+        data: {
+          id: props.id || nanoid(),
+          employee_only: props.employee_only,
+          content: props.content,
+          attachments: props.attachment as unknown as Prisma.InputJsonValue,
+          submitter_role: props.submitter_role,
+          proposal_id: props.proposal_id,
+          user_id: props.user_id,
+        },
+      });
+
+      const createdEntity = Builder(ProposalFollowUpEntity, {
+        ...rawCreated,
+      }).build();
+
+      return createdEntity;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
   }
+
   async createFollowUp(
     followUpCreatePayload: Prisma.proposal_follow_upUncheckedCreateInput,
     fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
