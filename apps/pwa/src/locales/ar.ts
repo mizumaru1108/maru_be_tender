@@ -1877,7 +1877,8 @@ const ar = {
     MODERATOR: 'مسؤول الفرز',
     ACCOUNTS_MANAGER: 'إدارة الشركاء (مشرف الحسابات)',
     ADMIN: 'سوبر ادمن',
-    CLIENT: 'عميل',
+    // CLIENT: 'عميل',
+    CLIENT: 'شريك',
   },
   closing_project_by_client: 'إغلاق مشروع',
   review: {
@@ -2136,7 +2137,8 @@ const ar = {
     ceo: 'المدير التنفيذي',
     consultant: 'مستشار',
     cashier: 'أمين الصندوق',
-    client: 'عميل',
+    // client: 'عميل',
+    client: 'شريك',
   },
   nothing_payment: 'لم يتم تعيين المدفوعات حتى الآن',
   notification: {

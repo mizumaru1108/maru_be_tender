@@ -38,8 +38,8 @@ function AppointmentsTap({ defaultValues }: Props) {
         .filter(
           (item: IArrayAppointments) =>
             item.status === 'confirmed' &&
-            // moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate))
-            isDateAbove(moment(item.date).format('DD-MM-YYYY'), todayDate, 'same')
+            moment(moment(item.date).format('DD-MM-YYYY')).isSame(moment(todayDate))
+          // isDateAbove(moment(item.date).format('DD-MM-YYYY'), todayDate, 'same')
         )
         .map((item: IArrayAppointments) => ({
           id: item.status.charAt(0).toUpperCase() + item.status.slice(1),
@@ -71,6 +71,8 @@ function AppointmentsTap({ defaultValues }: Props) {
     }
     // eslint-disable-next-line
   }, [currentLang]);
+
+  // console.log({ todayAppointments, upcomingAppointments });
 
   const headerCells: AppointmentsTableHeader[] = [
     {
