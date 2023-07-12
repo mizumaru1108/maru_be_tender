@@ -1,20 +1,32 @@
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
+import { nanoid } from 'nanoid';
+import { NotificationEntity } from 'src/notification-management/notification/entities/notification.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { FileMimeTypeEnum } from '../../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../../commons/helpers/env-loaderror-helper';
+import { isExistAndValidPhone } from '../../../../commons/utils/is-exist-and-valid-phone';
 import { validateFileExtension } from '../../../../commons/utils/validate-allowed-extension';
 import { validateFileSize } from '../../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../../libs/bunny/services/bunny.service';
+import { EmailService } from '../../../../libs/email/email.service';
+import { MsegatService } from '../../../../libs/msegat/services/msegat.service';
+import { ROOT_LOGGER } from '../../../../libs/root-logger';
+import {
+  CreateNotificaitonProps,
+  TenderNotificationRepository,
+} from '../../../../notification-management/notification/repository/tender-notification.repository';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { TenderFilePayload } from '../../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../../tender-commons/dto/upload-files-jsonb.dto';
 import { DataNotFoundException } from '../../../../tender-commons/exceptions/data-not-found.exception';
 import { ForbiddenPermissionException } from '../../../../tender-commons/exceptions/forbidden-permission-exception';
 import { PayloadErrorException } from '../../../../tender-commons/exceptions/payload-error.exception';
+import { appRoleMappers } from '../../../../tender-commons/types';
 import { ProposalAction } from '../../../../tender-commons/types/proposal';
 import { generateFileName } from '../../../../tender-commons/utils/generate-filename';
+import { FileManagerEntity } from '../../../../tender-file-manager/entities/file-manager.entity';
 import {
   CreateFileManagerProps,
   TenderFileManagerRepository,
@@ -27,30 +39,15 @@ import {
 import { ProposalRepository } from '../../../proposal/repositories/proposal.repository';
 import { UpdateProposalProps } from '../../../proposal/types';
 import { UpdatePaymentDto } from '../../dtos/requests';
-import {
-  ProposalPaymentRepository,
-  UpdatePaymentProps,
-} from '../../repositories/proposal-payment.repository';
+import { ChequeEntity } from '../../entities/cheque.entity';
 import {
   ChequeCreateProps,
   ProposalChequeRepository,
 } from '../../repositories/proposal-cheque.repository';
-import { nanoid } from 'nanoid';
-import { appRoleMappers } from '../../../../tender-commons/types';
-import { ProposalEntity } from '../../../proposal/entities/proposal.entity';
-import { ProposalPaymentEntity } from '../../entities/proposal-payment.entity';
-import { ChequeEntity } from '../../entities/cheque.entity';
-import { FileManagerEntity } from '../../../../tender-file-manager/entities/file-manager.entity';
-import { ProposalLogEntity } from '../../../proposal-log/entities/proposal-log.entity';
-import { MsegatService } from '../../../../libs/msegat/services/msegat.service';
-import { EmailService } from '../../../../libs/email/email.service';
-import { isExistAndValidPhone } from '../../../../commons/utils/is-exist-and-valid-phone';
-import { ROOT_LOGGER } from '../../../../libs/root-logger';
 import {
-  TenderNotificationRepository,
-  CreateNotificaitonProps,
-} from '../../../../notification-management/notification/repository/tender-notification.repository';
-import { NotificationEntity } from 'src/notification-management/notification/entities/notification.entity';
+  ProposalPaymentRepository,
+  UpdatePaymentProps,
+} from '../../repositories/proposal-payment.repository';
 
 export class ProposalUpdatePaymentCommand {
   currentUser: TenderCurrentUser;

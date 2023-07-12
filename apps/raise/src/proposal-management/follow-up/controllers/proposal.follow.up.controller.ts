@@ -18,10 +18,19 @@ import { CreateProposalFollowUpDto } from '../dtos/requests/create-follow-up.dto
 import { DeleteProposalFollowUpDto } from '../dtos/requests/delete-follow-up.dto';
 
 import { ProposalFollowUpService } from '../services/proposal-follow-up.service';
+import { CommandBus } from '@nestjs/cqrs';
+import { Builder } from 'builder-pattern';
+import {
+  ProposalFollowUpCreateCommand,
+  ProposalFollowUpCreateCommandResult,
+} from 'src/proposal-management/follow-up/commands/proposal.follow.up.create/proposal.follow.up.create.command';
 
 @Controller('tender-proposal/follow-up')
 export class ProposalFollowUpController {
-  constructor(private readonly followUpService: ProposalFollowUpService) {}
+  constructor(
+    private readonly followUpService: ProposalFollowUpService,
+    private readonly commandBus: CommandBus,
+  ) {}
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(
@@ -50,32 +59,38 @@ export class ProposalFollowUpController {
     );
   }
 
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles(
-    'tender_accounts_manager',
-    'tender_admin',
-    'tender_cashier',
-    'tender_ceo',
-    'tender_consultant',
-    'tender_finance',
-    'tender_moderator',
-    'tender_project_manager',
-    'tender_project_supervisor',
-    'tender_client',
-  )
-  @Post('create-cqrs')
-  async createCqrs(
-    @CurrentUser() user: TenderCurrentUser,
-    @Body() request: CreateProposalFollowUpDto,
-  ): Promise<BaseResponse<proposal_follow_up>> {
-    const response = await this.followUpService.create(user, request);
+  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  // @TenderRoles(
+  //   'tender_accounts_manager',
+  //   'tender_admin',
+  //   'tender_cashier',
+  //   'tender_ceo',
+  //   'tender_consultant',
+  //   'tender_finance',
+  //   'tender_moderator',
+  //   'tender_project_manager',
+  //   'tender_project_supervisor',
+  //   'tender_client',
+  // )
+  // @Post('create-cqrs')
+  // async createCqrs(
+  //   @CurrentUser() user: TenderCurrentUser,
+  //   @Body() request: CreateProposalFollowUpDto,
+  // ): Promise<BaseResponse<proposal_follow_up>> {
+  //   const command = Builder(ProposalFollowUpCreateCommand, {
+  //     request,
+  //     user,
+  //   }).build();
 
-    return baseResponseHelper(
-      response,
-      HttpStatus.OK,
-      'Follow Up Successfully Added!',
-    );
-  }
+  //   const result = await this.commandBus.execute<
+  //     ProposalFollowUpCreateCommand,
+  //     ProposalFollowUpCreateCommandResult
+  //   >(command);
+
+  //   return baseResponseHelper({
+  //     data: result,
+  //   });
+  // }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_ceo', 'tender_project_manager')

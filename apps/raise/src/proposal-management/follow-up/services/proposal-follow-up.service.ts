@@ -185,7 +185,7 @@ export class ProposalFollowUpService {
         }
       }
 
-      const createdFolllowUp = await this.followUpRepo.create(
+      const createdFolllowUp = await this.followUpRepo.createFollowUp(
         createFollowUpPayload,
         fileManagerCreateManyPayload,
         currentUser,

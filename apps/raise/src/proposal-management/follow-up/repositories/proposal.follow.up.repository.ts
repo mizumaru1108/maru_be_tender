@@ -6,15 +6,21 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { FollowUpNotifMapper } from '../mappers/follow-up-notif-mapper';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
-
+export class ProposalFollowUpCreateProps {}
 @Injectable()
 export class ProposalFollowUpRepository {
   private readonly logger = ROOT_LOGGER.child({
     logger: ProposalFollowUpRepository.name,
   });
   constructor(private readonly prismaService: PrismaService) {}
+  async create(props: ProposalFollowUpCreateProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
 
-  async create(
+    try {
+    } catch (error) {}
+  }
+  async createFollowUp(
     followUpCreatePayload: Prisma.proposal_follow_upUncheckedCreateInput,
     fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
     currentUser: TenderCurrentUser,
