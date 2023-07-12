@@ -115,5 +115,5 @@ cache:
     # - if: '$CI_COMMIT_BRANCH == "stack/dev" && $BUILD_PACKAGE == "tmra-raise"'
 
 include:
-  - local: "/apps/raise/.gitlab-ci.yml"
+  # - local: "/apps/raise/.gitlab-ci.yml"
   - local: "/apps/pwa/.gitlab-ci.yml"

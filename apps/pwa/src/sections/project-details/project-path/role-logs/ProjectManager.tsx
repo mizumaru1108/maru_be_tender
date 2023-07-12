@@ -20,7 +20,7 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
   if (stepGeneralLog && stepGeneralLog.message) {
     batch = Number(stepGeneralLog.message.split('_')[1]);
   }
-  // console.log('test', stepGeneralLog);
+  // console.log('test', stepGeneralLog?.new_values);
   React.useEffect(() => {
     if (proposal) {
       setDataGrants((currentProposal: any) => {

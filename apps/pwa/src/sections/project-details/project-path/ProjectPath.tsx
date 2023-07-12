@@ -113,32 +113,33 @@ function ProjectPath() {
       const tmpData = { ...current };
       return {
         ...current,
-        new_values: tmpLogProposal[tmpLogProposal.length - 1]?.new_values || null,
-        created_at: tmpLogProposal[tmpLogProposal.length - 1]?.created_at || '',
-        state: tmpLogProposal[tmpLogProposal.length - 1]?.state || '',
-        reviewer: tmpLogProposal[tmpLogProposal.length - 1]?.reviewer || '',
-        employee_name: tmpLogProposal[tmpLogProposal.length - 1]?.employee_name || '',
-        user_role_id: tmpLogProposal[tmpLogProposal.length - 1]?.user_role_id || '',
-        action: tmpLogProposal[tmpLogProposal.length - 1]?.action || '',
-        message: tmpLogProposal[tmpLogProposal.length - 1]?.message || '',
-        notes: tmpLogProposal[tmpLogProposal.length - 1]?.notes || '',
-        updated_at: tmpLogProposal[tmpLogProposal.length - 1]?.updated_at || '',
-        user_role: tmpLogProposal[tmpLogProposal.length - 1]?.user_role || '',
+        new_values: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.new_values || null,
+        created_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.created_at || '',
+        state: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.state || '',
+        reviewer: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.reviewer || '',
+        employee_name:
+          proposal.proposal_logs[proposal.proposal_logs.length - 1]?.employee_name || '',
+        user_role_id: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.user_role_id || '',
+        action: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.action || '',
+        message: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.message || '',
+        notes: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.notes || '',
+        updated_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.updated_at || '',
+        user_role: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.user_role || '',
       };
     });
     setGeneralLog((current: any) => {
       const tmpData = { ...current };
       return {
         ...current,
-        new_values: tmpLogProposal[tmpLogProposal.length - 1]?.new_values || null,
-        // proposal_log: tmpLogProposal[tmpLogProposal.length - 1]?.new_values || null,
-        action: tmpLogProposal[tmpLogProposal.length - 1]?.action || '',
-        message: tmpLogProposal[tmpLogProposal.length - 1]?.message || '',
-        notes: tmpLogProposal[tmpLogProposal.length - 1]?.notes || '',
-        updated_at: tmpLogProposal[tmpLogProposal.length - 1]?.updated_at || '',
-        created_at: tmpLogProposal[tmpLogProposal.length - 1]?.created_at || '',
-        state: tmpLogProposal[tmpLogProposal.length - 1]?.state || '',
-        user_role: tmpLogProposal[tmpLogProposal.length - 1]?.user_role || '',
+        new_values: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.new_values || null,
+        // proposal_log: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.new_values || null,
+        action: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.action || '',
+        message: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.message || '',
+        notes: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.notes || '',
+        updated_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.updated_at || '',
+        created_at: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.created_at || '',
+        state: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.state || '',
+        user_role: proposal.proposal_logs[proposal.proposal_logs.length - 1]?.user_role || '',
         reviewer: {
           employee_name: tmpLogProposal[tmpLogProposal.length - 1]?.reviewer?.employee_name || '',
         },
@@ -442,8 +443,7 @@ function ProjectPath() {
                 item.action !== 'sending_closing_report' &&
                 (item.action === 'accepted_by_project_manager' ||
                   item.action === 'accept' ||
-                  item.action === 'update' ||
-                  item.action === 'set_by_supervisor')
+                  item.action === 'update')
             ).length > 0 &&
             (stepGeneralLog || stepGransLog) ? (
               <>
