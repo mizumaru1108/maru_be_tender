@@ -560,6 +560,7 @@ export class TenderUserRepository {
 
     try {
       console.log(logUtil(query));
+      this.logger.log('info', `${logUtil(query)}`);
       const users: FindUserResponse['data'] =
         await this.prismaService.user.findMany({
           where: {
