@@ -14,6 +14,7 @@ import { UserStatus } from '../types/user_status';
 import { v4 as uuidv4 } from 'uuid';
 import { Builder } from 'builder-pattern';
 import { UserEntity } from '../entities/user.entity';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 export class CreateUserProps {
   id?: string;
   employee_name: string;
@@ -29,13 +30,14 @@ export class FetchByIdProps {
 }
 @Injectable()
 export class TenderUserRepository {
-  private readonly logger = ROOT_LOGGER.child({
-    'log.logger': TenderUserRepository.name,
-  });
+  // private readonly logger = ROOT_LOGGER.child({
+  //   'log.logger': TenderUserRepository.name,
+  // });
   constructor(
     private readonly prismaService: PrismaService,
     private readonly bunnyService: BunnyService,
     private readonly fusionAuthService: FusionAuthService,
+    @InjectPinoLogger(TenderUserRepository.name) private logger: PinoLogger,
   ) {}
 
   /**
@@ -560,6 +562,7 @@ export class TenderUserRepository {
 
     try {
       console.log(logUtil(query));
+      this.logger.debug(`applied filter: ${logUtil(query)}`);
       const users: FindUserResponse['data'] =
         await this.prismaService.user.findMany({
           where: {
@@ -647,7 +650,7 @@ export class TenderUserRepository {
     status: UserStatus,
     reviewer_id?: string,
   ) {
-    this.logger.log('info', `Changing user ${userId} status to ${status}`);
+    this.logger.info(`Changing user ${userId} status to ${status}`);
     try {
       return await this.prismaService.$transaction(async (prismaSession) => {
         const user = await prismaSession.user.update({
@@ -715,16 +718,14 @@ export class TenderUserRepository {
     try {
       return await this.prismaService.$transaction(
         async (prismaSession) => {
-          this.logger.log(
-            'info',
+          this.logger.info(
             `creating user with payload of \n${logUtil(userData)}`,
           );
           const user = await prismaSession.user.create({
             data: userData,
           });
 
-          this.logger.log(
-            'info',
+          this.logger.info(
             `creating user status with payload of \n${logUtil(
               userStatusLogData,
             )}`,
@@ -734,8 +735,7 @@ export class TenderUserRepository {
           });
 
           if (rolesData) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `creating user_role with payload of \n${logUtil(rolesData)}`,
             );
             await prismaSession.user_role.createMany({
@@ -744,8 +744,7 @@ export class TenderUserRepository {
           }
 
           if (bankInfoData) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `creating bank information with payload of \n ${logUtil(
                 bankInfoData,
               )}`,
@@ -759,8 +758,7 @@ export class TenderUserRepository {
             fileManagerCreateManyPayload &&
             fileManagerCreateManyPayload.length > 0
           ) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `file manager with payload of \n ${logUtil(
                 fileManagerCreateManyPayload,
               )}`,
@@ -776,13 +774,11 @@ export class TenderUserRepository {
       );
     } catch (error) {
       // delete the fusion auth user if the user creation failed
-      this.logger.log(
-        'info',
+      this.logger.info(
         `Falied to store user data on db, deleting the user ${userData.id} from fusion auth`,
       );
       await this.fusionAuthService.fusionAuthDeleteUser(userData.id);
-      this.logger.log(
-        'info',
+      this.logger.info(
         `deleting all uploaded files related for user ${userData.id}`,
       );
       if (uploadedFilesPath && uploadedFilesPath.length > 0) {
@@ -843,7 +839,7 @@ export class TenderUserRepository {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2025'
       ) {
-        this.logger.log('warn', `User with id: ${userId} not found`);
+        this.logger.info('warn', `User with id: ${userId} not found`);
         return null; // gonna be still works if the user is not found.
       } else {
         const theError = prismaErrorThrower(
@@ -858,7 +854,7 @@ export class TenderUserRepository {
   }
 
   async deleteUserWFusionAuth(userId: string) {
-    this.logger.log('info', `Deleting user with id: ${userId}`);
+    this.logger.info(`Deleting user with id: ${userId}`);
     try {
       const result = await this.prismaService.$transaction(async (prisma) => {
         const prismaResult = await this.deleteUser(userId);
@@ -886,8 +882,7 @@ export class TenderUserRepository {
   ) {
     // log the key and the value
     Object.keys(updatePayload).forEach((key) => {
-      this.logger.log(
-        'info',
+      this.logger.info(
         `updating client field ${key} with value ${updatePayload[key]}`,
       );
     });
@@ -933,16 +928,12 @@ export class TenderUserRepository {
       return await this.prismaService.$transaction(
         async (prisma) => {
           if (createRolesData && createRolesData.length > 0) {
-            this.logger.log(
-              'info',
-              `Deleteing all previous roles on user ${userId}`,
-            );
+            this.logger.info(`Deleteing all previous roles on user ${userId}`);
             await prisma.user_role.deleteMany({
               where: { user_id: userId },
             });
 
-            this.logger.log(
-              'info',
+            this.logger.info(
               `Creating new roles for ${userId}, with payload of \n ${logUtil(
                 createRolesData,
               )}`,
@@ -1009,8 +1000,7 @@ export class TenderUserRepository {
     bankAccounts: Prisma.bank_informationCreateInput,
     prismaSession?: Prisma.TransactionClient,
   ) {
-    this.logger.log(
-      'info',
+    this.logger.info(
       `Creating bank account for user with id: ${userId}, with payload: ${JSON.stringify(
         bankAccounts,
       )}`,
@@ -1047,8 +1037,7 @@ export class TenderUserRepository {
   ) {
     // log the key and the value
     Object.keys(updatePayload).forEach((key) => {
-      this.logger.log(
-        'info',
+      this.logger.info(
         `updating bank account field ${key} with value ${updatePayload[key]}`,
       );
     });

@@ -22,7 +22,7 @@ function FloatinActonBar() {
 
   const location = useLocation();
 
-  const { activeTap, proposal } = useSelector((state) => state.proposal);
+  const { activeTap, proposal, loadingCount } = useSelector((state) => state.proposal);
 
   const { activeRole } = useAuth();
 
@@ -42,67 +42,71 @@ function FloatinActonBar() {
   return (
     <>
       {/* ’Moderator is done */}
-      {activeTap &&
-        ['project-path', 'project-budget'].includes(activeTap) &&
-        actionType === 'show-details' &&
-        ['tender_moderator'].includes(role) && <ModeratorActionBar />}
-      {/* Supervisor is done */}
-      {activeTap &&
-        ['project-path', 'project-budget'].includes(activeTap) &&
-        actionType === 'show-details' &&
-        role === 'tender_project_supervisor' &&
-        proposal.inner_status !== 'DONE_BY_CASHIER' && <SupervisorFloatingActionBar />}
-      {/* Projectmanager is done */}
-      {activeTap &&
-        ['project-path', 'project-budget'].includes(activeTap) &&
-        actionType === 'show-details' &&
-        role === 'tender_project_manager' && <ProjectManagerFloatingActionBar />}
-      {/* CEO is done */}
-      {activeTap &&
-        ['project-path', 'project-budget'].includes(activeTap) &&
-        actionType === 'show-details' &&
-        ['tender_ceo'].includes(role) && <CeoFloatingActionBar />}
-      {/* Consultant is done */}
-      {activeTap &&
-        ['project-path', 'supervisor-revision'].includes(activeTap) &&
-        actionType === 'show-details' &&
-        ['tender_consultant'].includes(role) && <ConsultantFloatingActionBar />}
+      {loadingCount ? null : (
+        <React.Fragment>
+          {activeTap &&
+            ['project-path', 'project-budget'].includes(activeTap) &&
+            actionType === 'show-details' &&
+            ['tender_moderator'].includes(role) && <ModeratorActionBar />}
+          {/* Supervisor is done */}
+          {activeTap &&
+            ['project-path', 'project-budget'].includes(activeTap) &&
+            actionType === 'show-details' &&
+            role === 'tender_project_supervisor' &&
+            proposal.inner_status !== 'DONE_BY_CASHIER' && <SupervisorFloatingActionBar />}
+          {/* Projectmanager is done */}
+          {activeTap &&
+            ['project-path', 'project-budget'].includes(activeTap) &&
+            actionType === 'show-details' &&
+            role === 'tender_project_manager' && <ProjectManagerFloatingActionBar />}
+          {/* CEO is done */}
+          {activeTap &&
+            ['project-path', 'project-budget'].includes(activeTap) &&
+            actionType === 'show-details' &&
+            ['tender_ceo'].includes(role) && <CeoFloatingActionBar />}
+          {/* Consultant is done */}
+          {activeTap &&
+            ['project-path', 'supervisor-revision'].includes(activeTap) &&
+            actionType === 'show-details' &&
+            ['tender_consultant'].includes(role) && <ConsultantFloatingActionBar />}
 
-      {/* disabled other than accept reject button */}
-      {activeTap &&
-        actionType === 'reject-project' &&
-        ['tender_ceo', 'tender_project_manager'].includes(role) && <RejectProjectsActionBar />}
+          {/* disabled other than accept reject button */}
+          {activeTap &&
+            actionType === 'reject-project' &&
+            ['tender_ceo', 'tender_project_manager'].includes(role) && <RejectProjectsActionBar />}
 
-      {activeTap &&
-        ['project-path'].includes(activeTap) &&
-        actionType === 'show-details' &&
-        pathName &&
-        pathName[3] === 'project-report' &&
-        proposal.inner_status === 'DONE_BY_CASHIER' && <FloatingCloseReportSPV />}
+          {activeTap &&
+            ['project-path'].includes(activeTap) &&
+            actionType === 'show-details' &&
+            pathName &&
+            pathName[3] === 'project-report' &&
+            proposal.inner_status === 'DONE_BY_CASHIER' && <FloatingCloseReportSPV />}
 
-      {activeTap &&
-        ['follow-ups'].includes(activeTap) &&
-        (actionType === 'show-details' || actionType === 'show-project') &&
-        pathName &&
-        pathName[3] === 'project-report' &&
-        // (role === 'tender_project_supervisor' || role === 'tender_client') &&
-        ['PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'].includes(proposal.inner_status) && (
-          <FloatingClientSubmit />
-        )}
+          {activeTap &&
+            ['follow-ups'].includes(activeTap) &&
+            (actionType === 'show-details' || actionType === 'show-project') &&
+            pathName &&
+            pathName[3] === 'project-report' &&
+            // (role === 'tender_project_supervisor' || role === 'tender_client') &&
+            ['PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'].includes(proposal.inner_status) && (
+              <FloatingClientSubmit />
+            )}
 
-      {!fetching &&
-        data &&
-        (data.proposal_closing_report.length ? (
-          <React.Fragment>
-            {activeTap &&
-              ['follow-ups'].includes(activeTap) &&
-              (actionType === 'show-details' || actionType === 'show-project') &&
-              pathName &&
-              pathName[3] === 'previous-funding-requests' &&
-              // (role === 'tender_project_supervisor' || role === 'tender_client') &&
-              ['PROJECT_COMPLETED'].includes(proposal.inner_status) && <FloatingClientSubmit />}
-          </React.Fragment>
-        ) : null)}
+          {!fetching &&
+            data &&
+            (data.proposal_closing_report.length ? (
+              <React.Fragment>
+                {activeTap &&
+                  ['follow-ups'].includes(activeTap) &&
+                  (actionType === 'show-details' || actionType === 'show-project') &&
+                  pathName &&
+                  pathName[3] === 'previous-funding-requests' &&
+                  // (role === 'tender_project_supervisor' || role === 'tender_client') &&
+                  ['PROJECT_COMPLETED'].includes(proposal.inner_status) && <FloatingClientSubmit />}
+              </React.Fragment>
+            ) : null)}
+        </React.Fragment>
+      )}
     </>
   );
 }
