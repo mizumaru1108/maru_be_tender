@@ -51,6 +51,33 @@ export class ProposalFollowUpController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_accounts_manager',
+    'tender_admin',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_consultant',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+    'tender_client',
+  )
+  @Post('create-cqrs')
+  async createCqrs(
+    @CurrentUser() user: TenderCurrentUser,
+    @Body() request: CreateProposalFollowUpDto,
+  ): Promise<BaseResponse<proposal_follow_up>> {
+    const response = await this.followUpService.create(user, request);
+
+    return baseResponseHelper(
+      response,
+      HttpStatus.OK,
+      'Follow Up Successfully Added!',
+    );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_ceo', 'tender_project_manager')
   @Patch('delete')
   async delete(

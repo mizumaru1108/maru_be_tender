@@ -98,6 +98,7 @@ export class SendAmandementCommandHandler
               id: proposal.id,
               supervisor_id: currentUser.id,
               outter_status: OutterStatusEnum.ON_REVISION,
+              state: 'CLIENT',
             },
           ).build();
 

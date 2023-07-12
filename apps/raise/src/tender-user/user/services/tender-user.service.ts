@@ -611,14 +611,14 @@ export class TenderUserService {
       };
       this.emailService.sendMail(employeeEmailNotifPayload);
 
-      const employeeWebNotifPayload: CreateNotificationDto = {
-        type: 'ACCOUNT',
-        specific_type: 'NEW_SUSPENDED_ACCOUNT',
-        user_id: status_log.account_manager_detail.id,
-        subject,
-        content: employeeContent,
-      };
-      this.tenderNotificationService.create(employeeWebNotifPayload);
+      // const employeeWebNotifPayload: CreateNotificationDto = {
+      //   type: 'ACCOUNT',
+      //   specific_type: 'NEW_SUSPENDED_ACCOUNT',
+      //   user_id: status_log.account_manager_detail.id,
+      //   subject,
+      //   content: employeeContent,
+      // };
+      // this.tenderNotificationService.create(employeeWebNotifPayload);
 
       const accManagerPhone = isExistAndValidPhone(
         status_log.account_manager_detail.mobile_number,
