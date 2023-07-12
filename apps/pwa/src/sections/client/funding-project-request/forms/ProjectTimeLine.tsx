@@ -81,8 +81,8 @@ const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) 
   // console.log('test', project_timeline);
 
   const handleOnSubmit = (data: FormValuesProps) => {
-    console.log({ data });
-    // onSubmit(data);
+    // console.log({ data });
+    onSubmit(data);
   };
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(handleOnSubmit)}>

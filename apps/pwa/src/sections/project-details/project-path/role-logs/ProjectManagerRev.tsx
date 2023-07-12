@@ -5,6 +5,7 @@ import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'redux/store';
 import { Log } from '../../../../@types/proposal';
+import { FEATURE_PROJECT_PATH_NEW } from '../../../../config';
 
 interface Props {
   // stepGeneralLog: Log;
@@ -127,18 +128,33 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 </Stack>
               </Stack>
             </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6">{translate(`review.vat_in_project`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+            {FEATURE_PROJECT_PATH_NEW ? (
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.need_picture`)}</Typography>
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                  <Typography>
-                    {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
-                      ? `${translate('review.yes')}`
-                      : `${translate('review.no')}`}
-                  </Typography>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {stepGeneralLog?.new_values?.need_picture || proposal?.need_picture
+                        ? `${translate('review.yes')}`
+                        : `${translate('review.no')}`}
+                    </Typography>
+                  </Stack>
                 </Stack>
-              </Stack>
-            </Grid>
+              </Grid>
+            ) : (
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.vat_in_project`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>
+                      {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
+                        ? `${translate('review.yes')}`
+                        : `${translate('review.no')}`}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+            )}
             <Grid item xs={6}>
               <Typography variant="h6">{translate(`review.vat`)}</Typography>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
@@ -202,7 +218,11 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Typography>
                 {stepGeneralLog?.new_values?.support_goal_id || proposal?.support_goal_id
-                  ? translate(`review.support_goals.${stepGeneralLog?.new_values?.support_goal_id}`)
+                  ? translate(
+                      `review.support_goals.${
+                        stepGeneralLog?.new_values?.support_goal_id || proposal?.support_goal_id
+                      }`
+                    )
                   : '-'}
               </Typography>
             </Stack>
