@@ -494,7 +494,7 @@ export class TenderUserService {
       finalResult = response.data;
     }
 
-    console.log({ finalResult });
+    // console.log({ finalResult });
 
     return {
       data: finalResult,
