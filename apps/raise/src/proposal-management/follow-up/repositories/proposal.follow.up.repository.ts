@@ -10,6 +10,15 @@ import { Builder } from 'builder-pattern';
 import { nanoid } from 'nanoid';
 import { ProposalFollowUpEntity } from 'src/proposal-management/follow-up/entities/proposal.follow.up.entity';
 import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
+import { InvalidIdentifierException } from 'src/tender-commons/exceptions/invalid.identifier.exception';
+
+export class ProposalFollowUpFindOneProps {
+  id?: string;
+  user_id?: string;
+  proposal_id?: string;
+  method?: 'AND' | 'OR';
+  include_relations?: string[];
+}
 export class ProposalFollowUpCreateProps {
   id?: string;
   employee_only: boolean;
@@ -17,8 +26,9 @@ export class ProposalFollowUpCreateProps {
   proposal_id: string;
   user_id: string;
   content: string;
-  attachment: UploadFilesJsonbDto[];
+  attachments: UploadFilesJsonbDto[];
 }
+
 @Injectable()
 export class ProposalFollowUpRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -39,12 +49,81 @@ export class ProposalFollowUpRepository {
           id: props.id || nanoid(),
           employee_only: props.employee_only,
           content: props.content,
-          attachments: props.attachment as unknown as Prisma.InputJsonValue,
+          attachments: props.attachments as unknown as Prisma.InputJsonValue,
           submitter_role: props.submitter_role,
           proposal_id: props.proposal_id,
           user_id: props.user_id,
         },
       });
+
+      const createdEntity = Builder(ProposalFollowUpEntity, {
+        ...rawCreated,
+      }).build();
+
+      return createdEntity;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
+  async findOneFilter(props: ProposalFollowUpFindOneProps) {
+    try {
+      const { id, proposal_id, user_id, include_relations, method } = props;
+
+      let args: Prisma.proposal_follow_upFindFirstArgs = {};
+      let whereClause: Prisma.proposal_follow_upWhereInput = {};
+
+      if (!id && !proposal_id && !user_id) {
+        throw new InvalidIdentifierException(
+          `You must include at lease one identifier!`,
+        );
+      }
+      let clause: Prisma.proposal_follow_upWhereInput[] = [];
+      if (id) clause.push({ id });
+      if (proposal_id) clause.push({ proposal_id });
+      if (user_id) clause.push({ user_id });
+      if (method === 'AND') whereClause.AND = clause;
+      if (method === 'OR') whereClause.OR = clause;
+
+      if (include_relations && include_relations.length > 0) {
+        let include: Prisma.proposal_follow_upInclude = {};
+
+        for (const relation of include_relations) {
+          if (relation === 'sender') {
+            include = {
+              ...include,
+              user: true,
+            };
+          }
+          if (relation === 'proposal') {
+            include = {
+              ...include,
+              proposal: true,
+            };
+          }
+        }
+
+        args.include = include;
+      }
+
+      return args;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findOne(
+    props: ProposalFollowUpFindOneProps,
+    session?: PrismaService,
+  ): Promise<ProposalFollowUpEntity | null> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const args = await this.findOneFilter(props);
+      const rawCreated = await prisma.proposal_follow_up.findFirst(args);
+
+      if (!rawCreated) return null;
 
       const createdEntity = Builder(ProposalFollowUpEntity, {
         ...rawCreated,

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 
 import { CqrsModule } from '@nestjs/cqrs';
-import { TenderTrackModule } from '../tender-track/track.module';
 import { ProposalEditRequestModule } from './edit-requests/proposal.edit.request.module';
 import { ProposalFollowUpModule } from './follow-up/proposal.follow.up.module';
 import { ProposalItemBudgetModule } from './item-budget/proposal.item.budget.module';
@@ -19,7 +18,6 @@ const importedModules = [
   ProposalProjectTimelineModule,
   ProposalModule,
   ProposalLogModule,
-  TenderTrackModule,
 ];
 
 @Module({

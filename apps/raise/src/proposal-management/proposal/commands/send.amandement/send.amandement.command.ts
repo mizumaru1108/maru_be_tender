@@ -3,7 +3,6 @@ import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
 import { ITenderAppConfig } from 'src/commons/configs/tender-app-config';
 import { isExistAndValidPhone } from '../../../../commons/utils/is-exist-and-valid-phone';
-import { ROOT_LOGGER } from '../../../../libs/root-logger';
 import { TenderNotificationRepository } from '../../../../notification-management/notification/repository/tender-notification.repository';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { DataNotFoundException } from '../../../../tender-commons/exceptions/data-not-found.exception';
@@ -41,9 +40,9 @@ export class SendAmandementCommandHandler
   implements
     ICommandHandler<SendAmandementCommand, SendAmandementCommandResult>
 {
-  private readonly logger = ROOT_LOGGER.child({
-    'log.logger': SendAmandementCommandHandler.name,
-  });
+  // private readonly logger = ROOT_LOGGER.child({
+  //   'log.logger': SendAmandementCommandHandler.name,
+  // });
 
   constructor(
     private readonly prismaService: PrismaService,
@@ -175,8 +174,7 @@ export class SendAmandementCommandHandler
           // notifications  (new amandement request from supervisor to user notif)
           // template subject and content
           const subject = `طلب تعديل جديد`;
-          const clientContent = `"مرحبًا ${proposal.user.employee_name}، نود إبلاغك بأنه تم طلب تعديل معلومات مشروعك '${proposal.project_name}'.
-        يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات، أو انقر هنا."`;
+          const clientContent = `"مرحبًا ${proposal.user.employee_name}، نود إبلاغك بأنه تم طلب تعديل معلومات مشروعك '${proposal.project_name}'. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات، أو انقر هنا."`;
 
           // web notif
           const notification = await this.notifRepo.create(
