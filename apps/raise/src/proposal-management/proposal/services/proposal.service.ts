@@ -31,7 +31,10 @@ import { logUtil } from '../../../commons/utils/log-util';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileUploadSize } from '../../../commons/utils/validate-file-size';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
+import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
 import { MsegatService } from '../../../libs/msegat/services/msegat.service';
+import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import {
   InnerStatusEnum,
@@ -70,9 +73,6 @@ import { SupervisorGrantTrackAccMapper } from '../mappers/supervisor-grant-track
 import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-track-acc.mapper';
 import { UpdateProposalTrackInfoMapper } from '../mappers/update-proposal-track-info.mapper';
 import { UpdateProposalMapper } from '../mappers/update-proposal.mapper';
-import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
-import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
-import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class ProposalService {
@@ -1458,12 +1458,74 @@ export class ProposalService {
       proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
 
-      proposalLogCreateInput.new_values = {
-        ...proposalUpdatePayload,
-        createdItemBudgetPayload,
-        updatedItemBudgetPayload,
-        deletedItemBudgetIds,
-      } as Prisma.InputJsonValue;
+      // for saving history of changed when action is update
+      // with consul
+      if (proposal?.track?.with_consultation === true) {
+        const savedChangesGrant = {
+          accreditation_type_id: proposal?.accreditation_type_id,
+          added_value: proposal?.added_value,
+          been_made_before: proposal?.been_made_before,
+          been_supported_before: proposal?.been_supported_before,
+          chairman_of_board_of_directors:
+            proposal?.chairman_of_board_of_directors,
+          closing_report: proposal?.closing_report, // diffrent from dto
+          does_an_agreement: proposal?.does_an_agreement,
+          fsupport_by_supervisor: proposal?.fsupport_by_supervisor,
+          inclu_or_exclu: proposal?.inclu_or_exclu,
+          inner_status: proposal?.inner_status,
+          most_clents_projects: proposal?.most_clents_projects,
+          need_picture: proposal?.need_picture,
+          number_of_payments_by_supervisor:
+            proposal?.number_of_payments_by_supervisor,
+          outter_status: proposal?.outter_status,
+          project_manager_id: proposal?.project_manager_id,
+          reasons_to_accept: proposal?.reasons_to_accept,
+          remote_or_insite: proposal?.remote_or_insite,
+          state: proposal?.state,
+          support_outputs: proposal?.support_outputs,
+          support_type: proposal?.support_type,
+          target_group_age: proposal?.target_group_age,
+          target_group_num: proposal?.target_group_num,
+          target_group_type: proposal?.target_group_type,
+          vat: proposal?.vat,
+          vat_percentage: proposal?.vat_percentage,
+        };
+        proposalLogCreateInput.new_values = {
+          ...proposalUpdatePayload,
+          ...savedChangesGrant,
+          createdItemBudgetPayload,
+          updatedItemBudgetPayload,
+          deletedItemBudgetIds,
+        } as Prisma.InputJsonValue;
+      }
+
+      // non consul
+      if (proposal?.track?.with_consultation === false) {
+        const savedChangesNonGrant = {
+          clasification_field: proposal?.clasification_field,
+          clause: proposal?.clause,
+          closing_report: proposal?.closing_report,
+          does_an_agreement: proposal?.does_an_agreement,
+          fsupport_by_supervisor: proposal?.fsupport_by_supervisor,
+          inclu_or_exclu: proposal?.inclu_or_exclu,
+          need_picture: proposal?.need_picture,
+          number_of_payments_by_supervisor:
+            proposal?.number_of_payments_by_supervisor,
+          support_goal_id: proposal?.support_goal_id,
+          support_outputs: proposal?.support_outputs,
+          support_type: proposal?.support_type,
+          vat: proposal?.vat,
+          vat_percentage: proposal?.vat_percentage,
+        };
+
+        proposalLogCreateInput.new_values = {
+          ...proposalUpdatePayload,
+          ...savedChangesNonGrant,
+          createdItemBudgetPayload,
+          updatedItemBudgetPayload,
+          deletedItemBudgetIds,
+        } as Prisma.InputJsonValue;
+      }
     }
 
     if (request.action === ProposalAction.REJECT) {
@@ -1483,6 +1545,11 @@ export class ProposalService {
         throw new BadRequestException('Project Manager Payload is Required!');
       }
 
+      /* not grant */
+      proposalLogCreateInput.action = ProposalAction.UPDATE;
+      proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
+
       const result = await this.handleUpdateProposalTrackInfo(
         proposal,
         request.proposal_id,
@@ -1492,9 +1559,6 @@ export class ProposalService {
         updatedItemBudgetPayload,
         deletedItemBudgetIds,
       );
-      // createdRecommendedSupportPayload,
-      // updatedRecommendedSupportPayload,
-      // deletedRecommendedSupportIds,
 
       proposalUpdatePayload = { ...result.proposalUpdatePayload };
       createdItemBudgetPayload = [...result.createdItemBudgetPayload];
@@ -1840,30 +1904,6 @@ export class ProposalService {
         proposalUpdatePayload,
         request,
       );
-
-      // createdRecommendedSupportPayload =
-      //   SupervisorAccCreatedRecommendedSupportMapper(
-      //     proposal_id,
-      //     request.created_recommended_support,
-      //     createdRecommendedSupportPayload,
-      //   );
-
-      // if (
-      //   request.updated_recommended_support &&
-      //   request.updated_recommended_support.length > 0
-      // ) {
-      //   updatedRecommendedSupportPayload = request.updated_recommended_support;
-      //   console.log({ updatedRecommendedSupportPayload });
-      // }
-
-      // if (
-      //   request.deleted_recommended_support &&
-      //   request.deleted_recommended_support.length > 0
-      // ) {
-      //   for (const recommendSuppport of request.deleted_recommended_support) {
-      //     deletedRecommendedSupportIds.push(recommendSuppport.id);
-      //   }
-      // }
     }
 
     return {
@@ -1872,9 +1912,6 @@ export class ProposalService {
       updatedItemBudgetPayload,
       deletedItemBudgetIds,
     };
-    // createdRecommendedSupportPayload,
-    // updatedRecommendedSupportPayload,
-    // deletedRecommendedSupportIds,
   }
 
   async fetchTrack(limit: number, page: number) {
