@@ -22,7 +22,7 @@ function FloatinActonBar() {
 
   const location = useLocation();
 
-  const { activeTap, proposal, loadingCount } = useSelector((state) => state.proposal);
+  const { activeTap, proposal, loadingPayment } = useSelector((state) => state.proposal);
 
   const { activeRole } = useAuth();
 
@@ -42,7 +42,7 @@ function FloatinActonBar() {
   return (
     <>
       {/* ’Moderator is done */}
-      {loadingCount ? null : (
+      {loadingPayment ? null : (
         <React.Fragment>
           {activeTap &&
             ['project-path', 'project-budget'].includes(activeTap) &&

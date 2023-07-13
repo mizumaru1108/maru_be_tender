@@ -371,7 +371,7 @@ export const getProposal = (id: string, role: string) => async () => {
   try {
     dispatch(slice.actions.startLoading);
     dispatch(slice.actions.setLoadingPayment(true));
-    dispatch(slice.actions.setLoadingCount(true));
+    // dispatch(slice.actions.setLoadingCount(true));
     if (
       role === 'tender_admin' ||
       role === 'tender_ceo' ||
@@ -426,7 +426,7 @@ export const getProposal = (id: string, role: string) => async () => {
     dispatch(slice.actions.hasError(error));
   } finally {
     dispatch(slice.actions.setLoadingPayment(false));
-    dispatch(slice.actions.setLoadingCount(false));
+    // dispatch(slice.actions.setLoadingCount(false));
   }
 };
 export const getTrackList = (isGeneral: number, role: string) => async () => {
