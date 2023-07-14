@@ -2473,7 +2473,7 @@ export class ProposalRepository {
               payments: {
                 some: {
                   status: {
-                    equals: PaymentStatusEnum.SET_BY_SUPERVISOR,
+                    equals: PaymentStatusEnum.ISSUED_BY_SUPERVISOR,
                   },
                 },
               },
