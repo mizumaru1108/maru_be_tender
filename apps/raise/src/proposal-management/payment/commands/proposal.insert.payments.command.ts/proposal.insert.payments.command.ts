@@ -24,6 +24,7 @@ import {
   ProposalAction,
 } from '../../../../tender-commons/types/proposal';
 import { TenderAppRoleEnum } from '../../../../tender-commons/types';
+import { ProposalEntity } from 'src/proposal-management/proposal/entities/proposal.entity';
 
 export class ProposalInsertPaymentCommand {
   currentUserId: string;
@@ -31,9 +32,17 @@ export class ProposalInsertPaymentCommand {
   payments: ProposalPaymentCreateDto[];
 }
 
+export class ProposalInsertPaymentCommandResult {
+  updated_proposal: ProposalEntity;
+}
+
 @CommandHandler(ProposalInsertPaymentCommand)
 export class ProposalInsertPaymentCommandHandler
-  implements ICommandHandler<ProposalInsertPaymentCommand>
+  implements
+    ICommandHandler<
+      ProposalInsertPaymentCommand,
+      ProposalInsertPaymentCommandResult
+    >
 {
   constructor(
     private readonly prismaService: PrismaService,
@@ -42,7 +51,9 @@ export class ProposalInsertPaymentCommandHandler
     private readonly paymentRepo: ProposalPaymentRepository,
   ) {}
 
-  async execute(command: ProposalInsertPaymentCommand): Promise<any> {
+  async execute(
+    command: ProposalInsertPaymentCommand,
+  ): Promise<ProposalInsertPaymentCommandResult> {
     const { currentUserId, proposal_id, payments } = command;
     try {
       return await this.prismaService.$transaction(async (prismaSession) => {
@@ -154,7 +165,9 @@ export class ProposalInsertPaymentCommandHandler
           session,
         );
 
-        return updatedProposal;
+        return {
+          updated_proposal: updatedProposal,
+        };
       });
     } catch (error) {
       throw error;

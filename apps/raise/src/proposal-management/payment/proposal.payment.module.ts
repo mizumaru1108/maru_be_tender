@@ -6,7 +6,7 @@ import { ProposalLogModule } from '../proposal-log/proposal.log.module';
 import { ProposalInsertPaymentCommandHandler } from './commands/proposal.insert.payments.command.ts/proposal.insert.payments.command';
 import { ProposalPaymentSendCloseReportCommandHandler } from './commands/proposal.send.close.report.command/proposal.send.close.report.command';
 import { ProposalUpdatePaymentCommandHandler } from './commands/proposal.update.payments.command.ts/proposal.update.payments.command';
-import { ProposalPaymentController } from './controllers/proposal-payment.controller';
+import { ProposalPaymentController } from './controllers/proposal.payment.controller';
 import { ProposalChequeRepository } from './repositories/proposal-cheque.repository';
 import { ProposalPaymentRepository } from './repositories/proposal-payment.repository';
 import { ProposalPaymentService } from './services/proposal-payment.service';

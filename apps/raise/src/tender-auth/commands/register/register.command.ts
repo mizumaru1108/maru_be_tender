@@ -17,7 +17,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
-import { PrismaTransactionExpiredException } from '../../../tender-commons/exceptions/prisma-transaction-expired.exception';
+import { PrismaTransactionExpiredException } from '../../../tender-commons/exceptions/prisma-error/prisma-transaction-expired.exception';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
 import {
   CreateFileManagerProps,

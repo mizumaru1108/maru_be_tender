@@ -21,7 +21,7 @@ import { FusionAuthRegisterError } from '../../libs/fusionauth/exceptions/fusion
 import { InvalidFileExtensionException } from '../../tender-commons/exceptions/invalid-file-extension.exception';
 import { InvalidFileSizeException } from '../../tender-commons/exceptions/invalid-file-size.exception';
 import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
-import { PrismaTransactionExpiredException } from '../../tender-commons/exceptions/prisma-transaction-expired.exception';
+import { PrismaTransactionExpiredException } from '../../tender-commons/exceptions/prisma-error/prisma-transaction-expired.exception';
 import { CreateUserResponseDto } from '../../tender-user/user/dtos/responses/create-user-response.dto';
 import { UserAlreadyExistException } from '../../tender-user/user/exceptions/user-already-exist-exception.exception';
 import { RegisterClientCommand } from '../commands/register/register.command';

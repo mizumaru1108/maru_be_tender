@@ -5,10 +5,12 @@ import {
   ForbiddenException,
   Get,
   HttpStatus,
+  InternalServerErrorException,
   NotFoundException,
   Patch,
   Post,
   Query,
+  UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
@@ -46,6 +48,7 @@ import { InvalidNumberofPaymentsException } from '../exceptions/invalid.number.o
 import { InvalidAmountOfSupportException } from '../exceptions/invalid.amount.of.support.exception';
 import { ProposalUpdatePaymentCommand } from '../commands/proposal.update.payments.command.ts/proposal.update.payments.command';
 import { ProposalPaymentSendCloseReportCommand } from '../commands/proposal.send.close.report.command/proposal.send.close.report.command';
+import { BasePrismaErrorException } from 'src/tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 
 @Controller('tender/proposal/payment')
 export class ProposalPaymentController {
@@ -53,6 +56,30 @@ export class ProposalPaymentController {
     private readonly paymentService: ProposalPaymentService,
     private readonly commandBus: CommandBus,
   ) {}
+
+  paymentControllerErrorMapper(error: any) {
+    if (error instanceof DataNotFoundException) {
+      return new NotFoundException(error.message);
+    }
+
+    if (error instanceof ForbiddenPermissionException) {
+      return new ForbiddenException(error.message);
+    }
+
+    if (
+      error instanceof PayloadErrorException ||
+      error instanceof InvalidNumberofPaymentsException ||
+      error instanceof InvalidAmountOfSupportException
+    ) {
+      return new BadRequestException(error.message);
+    }
+
+    if (error instanceof BasePrismaErrorException) {
+      return new UnprocessableEntityException(error.message);
+    }
+
+    return new InternalServerErrorException(error);
+  }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
@@ -81,20 +108,7 @@ export class ProposalPaymentController {
         'Payment created successfully',
       );
     } catch (error) {
-      if (error instanceof DataNotFoundException) {
-        throw new NotFoundException(error.message);
-      }
-      if (error instanceof ForbiddenPermissionException) {
-        throw new ForbiddenException(error.message);
-      }
-      if (
-        error instanceof PayloadErrorException ||
-        error instanceof InvalidNumberofPaymentsException ||
-        error instanceof InvalidAmountOfSupportException
-      ) {
-        throw new BadRequestException(error.message);
-      }
-      throw error;
+      throw this.paymentControllerErrorMapper(error);
     }
   }
 
@@ -241,20 +255,7 @@ export class ProposalPaymentController {
         'Payment updated successfully',
       );
     } catch (error) {
-      if (error instanceof DataNotFoundException) {
-        throw new NotFoundException(error.message);
-      }
-      if (error instanceof ForbiddenPermissionException) {
-        throw new ForbiddenException(error.message);
-      }
-      if (
-        error instanceof PayloadErrorException ||
-        error instanceof InvalidNumberofPaymentsException ||
-        error instanceof InvalidAmountOfSupportException
-      ) {
-        throw new BadRequestException(error.message);
-      }
-      throw error;
+      throw this.paymentControllerErrorMapper(error);
     }
   }
 
@@ -349,10 +350,7 @@ export class ProposalPaymentController {
         'Payment updated successfully',
       );
     } catch (error) {
-      if (error instanceof DataNotFoundException) {
-        throw new NotFoundException(error.message);
-      }
-      throw error;
+      throw this.paymentControllerErrorMapper(error);
     }
   }
 

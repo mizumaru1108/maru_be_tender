@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma, cheque, payment } from '@prisma/client';
 import { Sql } from '@prisma/client/runtime';
@@ -27,6 +27,8 @@ import { CloseReportNotifMapper } from '../mappers';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
 import { Builder } from 'builder-pattern';
 import { ProposalPaymentEntity } from '../entities/proposal-payment.entity';
+import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 export class CreatePaymentProps {
   id?: string;
@@ -48,15 +50,32 @@ export class UpdatePaymentProps {
 
 @Injectable()
 export class ProposalPaymentRepository {
-  private readonly logger = ROOT_LOGGER.child({
-    logger: ProposalPaymentRepository.name,
-  });
   constructor(
     private readonly prismaService: PrismaService,
     private readonly bunnyService: BunnyService,
     private readonly configService: ConfigService,
+    @InjectPinoLogger(ProposalPaymentRepository.name)
+    private logger: PinoLogger,
   ) {}
 
+  async paymentRepoErrorMapper(error: any) {
+    console.trace(error);
+    this.logger.error(`error detail ${JSON.stringify(error)}`);
+
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2003'
+    ) {
+      throw new PrismaInvalidForeignKeyException(
+        `name: ${error.name}, message: ${error.message}${
+          error.meta ? `, meta: ${error.meta}` : ''
+        }`,
+      );
+    }
+
+    throw error;
+  }
+  // refactored with session
   async findById(
     id: string,
     session?: PrismaService,
@@ -92,10 +111,12 @@ export class ProposalPaymentRepository {
 
       return paymentEntity;
     } catch (error) {
+      console.trace(error);
       throw error;
     }
   }
 
+  // refactored with session
   async create(props: CreatePaymentProps, session?: PrismaService) {
     let prisma = this.prismaService;
     if (session) prisma = session;
@@ -133,11 +154,11 @@ export class ProposalPaymentRepository {
 
       return createdPaymentEntity;
     } catch (error) {
-      console.trace(error);
-      throw error;
+      this.paymentRepoErrorMapper(error);
     }
   }
 
+  // refactored with session
   async createMany(
     props: CreatePaymentProps[],
     session?: PrismaService,
@@ -166,6 +187,7 @@ export class ProposalPaymentRepository {
     }
   }
 
+  // refactored with session
   async update(props: UpdatePaymentProps, session?: PrismaService) {
     let prisma = this.prismaService;
     if (session) prisma = session;
@@ -183,7 +205,7 @@ export class ProposalPaymentRepository {
         },
       });
 
-      const createdPaymentEntity = Builder<ProposalPaymentEntity>(
+      const updatedPaymentEntity = Builder<ProposalPaymentEntity>(
         ProposalPaymentEntity,
         {
           ...rawCreatedPayment,
@@ -202,10 +224,9 @@ export class ProposalPaymentRepository {
         },
       ).build();
 
-      return createdPaymentEntity;
+      return updatedPaymentEntity;
     } catch (error) {
-      console.trace(error);
-      throw error;
+      this.paymentRepoErrorMapper(error);
     }
   }
 
@@ -263,8 +284,7 @@ export class ProposalPaymentRepository {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          this.logger.log(
-            'info',
+          this.logger.info(
             `updating proposal ${proposal_id} with payload of \n ${logUtil(
               proposalUpdatePayload,
             )}`,
@@ -275,7 +295,7 @@ export class ProposalPaymentRepository {
             data: proposalUpdatePayload,
           });
 
-          this.logger.log('info', `Creating Proposal Log`);
+          this.logger.info(`Creating Proposal Log`);
           const logs = await prisma.proposal_log.create({
             data: {
               id: nanoid(),
@@ -333,8 +353,7 @@ export class ProposalPaymentRepository {
           //   });
           // }
 
-          this.logger.log(
-            'info',
+          this.logger.info(
             `creating payments with payload of \n${logUtil(
               createManyPaymentPayload,
             )}`,
@@ -419,8 +438,7 @@ export class ProposalPaymentRepository {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          this.logger.log(
-            'info',
+          this.logger.info(
             `updating payment status of ${paymentId} to ${status}`,
           );
           const payment = await prisma.payment.update({
@@ -434,8 +452,7 @@ export class ProposalPaymentRepository {
 
           let cheque: cheque | null = null;
           if (chequeCreatePayload) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `creating cheque records with payload of\n${chequeCreatePayload}`,
             );
             cheque = await prisma.cheque.create({
@@ -444,8 +461,7 @@ export class ProposalPaymentRepository {
           }
 
           if (Object.keys(proposalUpdateInput).length > 0) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `updating proposal with payload of \n${proposalUpdateInput}`,
             );
             await prisma.proposal.update({
@@ -456,7 +472,7 @@ export class ProposalPaymentRepository {
             });
           }
 
-          this.logger.log('info', `Creating Proposal Log`);
+          this.logger.info(`Creating Proposal Log`);
           const logs = await prisma.proposal_log.create({
             data: {
               id: nanoid(),
@@ -518,8 +534,7 @@ export class ProposalPaymentRepository {
             updateNotif.createManyWebNotifPayload &&
             updateNotif.createManyWebNotifPayload.length > 0
           ) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `Creating new notification with payload of \n${updateNotif.createManyWebNotifPayload}`,
             );
             await prisma.notification.createMany({
@@ -531,8 +546,7 @@ export class ProposalPaymentRepository {
             fileManagerCreateManyPayload &&
             fileManagerCreateManyPayload.length > 0
           ) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `Creating file manager with payload of \n${fileManagerCreateManyPayload}`,
             );
             await prisma.file_manager.createMany({
@@ -571,8 +585,7 @@ export class ProposalPaymentRepository {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          this.logger.log(
-            'info',
+          this.logger.info(
             `updating proposal ${proposal_id} status to DONE_BY_CASHIER`,
           );
 
@@ -595,7 +608,7 @@ export class ProposalPaymentRepository {
             take: 1,
           });
 
-          this.logger.log('info', `Creating Proposal Log`);
+          this.logger.info(`Creating Proposal Log`);
           await prisma.proposal_log.create({
             data: {
               id: nanoid(),
@@ -636,8 +649,7 @@ export class ProposalPaymentRepository {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          this.logger.log(
-            'info',
+          this.logger.info(
             `updating proposal ${proposal_id} status to ${
               send
                 ? 'REQUESTING_CLOSING_FORM'
@@ -675,7 +687,7 @@ export class ProposalPaymentRepository {
             take: 1,
           });
 
-          this.logger.log('info', `Creating Proposal Log`);
+          this.logger.info(`Creating Proposal Log`);
           const logs = await prisma.proposal_log.create({
             data: {
               id: nanoid(),
@@ -730,8 +742,7 @@ export class ProposalPaymentRepository {
             closeReportNotif.createManyWebNotifPayload &&
             closeReportNotif.createManyWebNotifPayload.length > 0
           ) {
-            this.logger.log(
-              'info',
+            this.logger.info(
               `Creating new notification with payload of \n${closeReportNotif.createManyWebNotifPayload}`,
             );
             await prisma.notification.createMany({
@@ -765,8 +776,7 @@ export class ProposalPaymentRepository {
   ) {
     try {
       return await this.prismaService.$transaction(async (prisma) => {
-        this.logger.log(
-          'info',
+        this.logger.info(
           `updating proposal ${proposal_id}, inner and outter to be completed`,
         );
         await prisma.proposal.update({
@@ -779,8 +789,7 @@ export class ProposalPaymentRepository {
           },
         });
 
-        this.logger.log(
-          'info',
+        this.logger.info(
           `creating closing report with paylaod of \n${logUtil(
             closingReportPayload,
           )}`,
@@ -789,8 +798,7 @@ export class ProposalPaymentRepository {
           data: closingReportPayload,
         });
 
-        this.logger.log(
-          'info',
+        this.logger.info(
           `creating new file manager with paylaod of \n${logUtil(
             fileManagerCreateManyPayload,
           )}`,
@@ -799,7 +807,7 @@ export class ProposalPaymentRepository {
           data: fileManagerCreateManyPayload,
         });
 
-        this.logger.log('info', `creating new proposal log`);
+        this.logger.info(`creating new proposal log`);
         await prisma.proposal_log.create({
           data: {
             id: nanoid(),
@@ -812,8 +820,7 @@ export class ProposalPaymentRepository {
       });
     } catch (err) {
       if (uploadedFilePath.length > 0) {
-        this.logger.log(
-          'info',
+        this.logger.info(
           `error occured during submitting closing report, deleting all previous uploaded files`,
         );
         uploadedFilePath.forEach(async (path) => {
