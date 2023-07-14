@@ -63,8 +63,8 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
           <RHFTextField
             name="entity"
             disabled={isEdit}
-            label={'اسم العميل'}
-            placeholder={'الرجاء أدخل اسم العميل'}
+            label={'اسم الشريك'}
+            placeholder={'الرجاء أدخل اسم الشريك'}
           />
         </Grid>
         <Grid item md={12} xs={12}>

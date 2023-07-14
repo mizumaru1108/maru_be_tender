@@ -26,6 +26,8 @@ import ProjectManager from './role-logs/ProjectManager';
 import ProjectManagerRev from './role-logs/ProjectManagerRev';
 import SupervisorGeneralRev from './role-logs/SupervisorGeneralRev';
 import SupervisorGrantsRev from './role-logs/SupervisorGrantsRev';
+import { IsPaymentAction } from 'utils/checkIsPaymentAction';
+import { CheckType, LogAction, LogActionCheck } from 'utils/logActionCheck';
 
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
@@ -94,7 +96,7 @@ function ProjectPath() {
       : lastLog?.action === null
       ? true
       : false;
-  const hasRejectAction = lastLog?.action && lastLog?.action === 'reject';
+  // const hasRejectAction = lastLog?.action && lastLog?.action === 'reject';
   const isCompleted = lastLog?.action && lastLog?.action === 'project_completed' ? true : false;
   React.useEffect(() => {
     const insertPayment = proposal.proposal_logs
@@ -105,7 +107,11 @@ function ProjectPath() {
     }
     const tmpLogs = [...proposal.proposal_logs]
       .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-      .filter((item: Log) => item.action || (item.action === null && item.state === 'CLIENT'));
+      .filter(
+        (item: Log) =>
+          (item.action && item.action !== 'update') ||
+          (item.action === null && item.state === 'CLIENT')
+      );
     if (tmpLogs.length > 0) {
       setLogs(tmpLogs);
       setActiveStep(tmpLogs[tmpLogs.length - 1]?.id || '-1');
@@ -408,8 +414,15 @@ function ProjectPath() {
                     {(isCompleted && activeStep === '-1') ||
                     (logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT')
                       ? null
-                      : logs[logs.length - 1].action !== 'set_by_supervisor' &&
-                        translate('review.waiting')}
+                      : !IsPaymentAction(logs[logs.length - 1].action) &&
+                        // logs[logs.length - 1].action !== 'update'
+                        LogActionCheck({
+                          action: logs[logs.length - 1].action as LogAction,
+                          type: CheckType.notIn,
+                          logAction: [LogAction.Update, LogAction.Reject],
+                        })
+                      ? translate('review.waiting')
+                      : null}
                   </Typography>
                 )}
               </React.Fragment>
@@ -449,7 +462,7 @@ function ProjectPath() {
                 item.action !== 'send_back_for_revision' &&
                 item.action !== 'step_back' &&
                 item.action !== 'sending_closing_report' &&
-                item.action === 'done'
+                (item.action === 'done' || item.action === 'uploaded_by_cashier')
             ).length > 0 && stepGeneralLog ? (
               <CashierPaymentLog stepGeneralLog={stepGeneralLog} />
             ) : null}
