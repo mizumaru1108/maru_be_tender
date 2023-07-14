@@ -24,7 +24,7 @@ import {
   ProposalEntity,
 } from '../../entities/proposal.entity';
 import { ProposalRepository } from '../../repositories/proposal.repository';
-import { UpdateProposalProps } from '../../types';
+import { ProposalUpdateProps } from '../../types';
 
 export class SendAmandementCommand {
   currentUser: TenderCurrentUser;
@@ -91,8 +91,8 @@ export class SendAmandementCommandHandler
             );
           }
 
-          const proposalUpdateProps = Builder<UpdateProposalProps>(
-            UpdateProposalProps,
+          const proposalUpdateProps = Builder<ProposalUpdateProps>(
+            ProposalUpdateProps,
             {
               id: proposal.id,
               supervisor_id: currentUser.id,

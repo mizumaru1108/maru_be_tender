@@ -44,7 +44,7 @@ import {
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
 import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
-import { IProposalLogsResponse } from '../../proposal-log/interfaces/proposal-logs-response';
+import { IProposalLogsResponse } from '../../proposal-log/dtos/responses/proposal.logs.response';
 import { ProposalLogRepository } from '../../proposal-log/repositories/proposal.log.repository';
 import {
   CreateProposalInterceptorDto,

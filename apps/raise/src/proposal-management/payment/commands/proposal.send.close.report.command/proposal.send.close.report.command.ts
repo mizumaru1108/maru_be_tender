@@ -24,7 +24,7 @@ import {
   ProposalLogRepository,
 } from '../../../proposal-log/repositories/proposal.log.repository';
 import { ProposalRepository } from '../../../proposal/repositories/proposal.repository';
-import { UpdateProposalProps } from '../../../proposal/types';
+import { ProposalUpdateProps } from '../../../proposal/types';
 import { SendClosingReportDto } from '../../dtos/requests';
 import {
   CreateNotificaitonProps,
@@ -82,8 +82,8 @@ export class ProposalPaymentSendCloseReportCommandHandler
           );
         }
 
-        const updateProposalPayload: UpdateProposalProps =
-          Builder<UpdateProposalProps>(UpdateProposalProps, {
+        const updateProposalPayload: ProposalUpdateProps =
+          Builder<ProposalUpdateProps>(ProposalUpdateProps, {
             id: proposal.id,
             inner_status: send
               ? InnerStatusEnum.REQUESTING_CLOSING_FORM

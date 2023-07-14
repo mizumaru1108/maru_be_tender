@@ -27,7 +27,7 @@ import { ProposalEntity } from '../../entities/proposal.entity';
 import { ForbiddenChangeStateActionException } from '../../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../../exceptions/proposal-not-found.exception';
 import { ProposalRepository } from '../../repositories/proposal.repository';
-import { UpdateProposalProps } from '../../types';
+import { ProposalUpdateProps } from '../../types';
 /* Command is specific for doing business logic, please dont do query here, you are only allowed to use prisma to start and end a sessions */
 export class ChangeStateCommand {
   currentUser: TenderCurrentUser;
@@ -35,7 +35,7 @@ export class ChangeStateCommand {
 }
 
 export interface EachRoleChangeStateCommandResponse {
-  proposalUpdateProps?: UpdateProposalProps;
+  proposalUpdateProps?: ProposalUpdateProps;
   proposalLogCreateProps?: CreateProposalLogProps;
 }
 @CommandHandler(ChangeStateCommand)
@@ -51,7 +51,7 @@ export class ChangeStateCommandHandler
   ) {}
 
   async applyChanges(
-    proposalUpdateProps: UpdateProposalProps,
+    proposalUpdateProps: ProposalUpdateProps,
     proposalLogCreateProps: CreateProposalLogProps,
     session?: PrismaService,
   ) {
@@ -82,7 +82,7 @@ export class ChangeStateCommandHandler
         throw new ForbiddenChangeStateActionException(`${request.action}`);
       }
 
-      const proposalUpdateProps: UpdateProposalProps = {
+      const proposalUpdateProps: ProposalUpdateProps = {
         id: request.proposal_id,
       };
 
@@ -171,8 +171,8 @@ export class ChangeStateCommandHandler
       throw new ForbiddenChangeStateActionException(`${request.action}`);
     }
 
-    const proposalUpdateProps = Builder<UpdateProposalProps>(
-      UpdateProposalProps,
+    const proposalUpdateProps = Builder<ProposalUpdateProps>(
+      ProposalUpdateProps,
       {
         id: request.proposal_id,
         inner_status: InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,

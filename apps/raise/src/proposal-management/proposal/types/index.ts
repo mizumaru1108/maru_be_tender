@@ -1,15 +1,20 @@
-import { ProposalItemBudgetEntity } from '../../item-budget/entities/proposal.item.budget.entity';
-import { ProposalPaymentEntity } from '../../payment/entities/proposal-payment.entity';
-
-export interface FetchProposalByIdProps {
+export interface ProposalFetchByIdProps {
   id: string;
   includes_relation?: string[];
 }
-export interface DeleteProposalProps {
+
+export interface ProposalFindManyProps {
+  limit?: number;
+  page?: number;
+  sort_by?: string;
+  sort_direction?: string;
+}
+
+export interface ProposalDeleteProps {
   id: string;
 }
 
-export class CreateProposalProps {
+export class ProposalCreateProps {
   accreditation_type_id?: string | null;
   added_value?: string | null;
   amount_required_fsupport?: number | null;
@@ -82,7 +87,7 @@ export class CreateProposalProps {
   whole_budget?: number | null;
 }
 
-export class UpdateProposalProps {
+export class ProposalUpdateProps {
   accreditation_type_id?: string | null;
   added_value?: string | null;
   amount_required_fsupport?: number | null;

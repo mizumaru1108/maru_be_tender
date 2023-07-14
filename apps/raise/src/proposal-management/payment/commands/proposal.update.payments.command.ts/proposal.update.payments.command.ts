@@ -3,6 +3,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
 import { nanoid } from 'nanoid';
 import { NotificationEntity } from 'src/notification-management/notification/entities/notification.entity';
+import { PaymentStatusEnum } from 'src/proposal-management/payment/types/enums/payment.status.enum';
+import { ProposalLogActionEnum } from 'src/proposal-management/proposal-log/types/enums/proposal.log.action.enum';
 import { v4 as uuidv4 } from 'uuid';
 import { FileMimeTypeEnum } from '../../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../../commons/helpers/env-loaderror-helper';
@@ -24,7 +26,6 @@ import { DataNotFoundException } from '../../../../tender-commons/exceptions/dat
 import { ForbiddenPermissionException } from '../../../../tender-commons/exceptions/forbidden-permission-exception';
 import { PayloadErrorException } from '../../../../tender-commons/exceptions/payload-error.exception';
 import { appRoleMappers } from '../../../../tender-commons/types';
-import { ProposalAction } from '../../../../tender-commons/types/proposal';
 import { generateFileName } from '../../../../tender-commons/utils/generate-filename';
 import { FileManagerEntity } from '../../../../tender-file-manager/entities/file-manager.entity';
 import {
@@ -37,7 +38,7 @@ import {
   ProposalLogRepository,
 } from '../../../proposal-log/repositories/proposal.log.repository';
 import { ProposalRepository } from '../../../proposal/repositories/proposal.repository';
-import { UpdateProposalProps } from '../../../proposal/types';
+import { ProposalUpdateProps } from '../../../proposal/types';
 import { UpdatePaymentDto } from '../../dtos/requests';
 import { ChequeEntity } from '../../entities/cheque.entity';
 import {
@@ -153,11 +154,13 @@ export class ProposalUpdatePaymentCommandHandler
         id: payment.proposal_id,
         includes_relation: ['user'],
       });
+
       if (!proposal) {
         throw new DataNotFoundException(
           'No proposal data found on this payment',
         );
       }
+
       if (!proposal.user) {
         throw new DataNotFoundException(
           'Failed to fetch user that submitted this proposal!',
@@ -172,18 +175,8 @@ export class ProposalUpdatePaymentCommandHandler
         sort_direction: 'desc',
       });
 
-      let status:
-        | ProposalAction.SET_BY_SUPERVISOR
-        | ProposalAction.ISSUED_BY_SUPERVISOR
-        | ProposalAction.ACCEPTED_BY_PROJECT_MANAGER
-        | ProposalAction.ACCEPTED_BY_FINANCE
-        | ProposalAction.UPLOADED_BY_CASHIER
-        | ProposalAction.REJECT_CHEQUE
-        | ProposalAction.DONE
-        | null = null;
-
-      const updateProposalPayloads: UpdateProposalProps =
-        Builder<UpdateProposalProps>(UpdateProposalProps, {
+      const updateProposalPayloads: ProposalUpdateProps =
+        Builder<ProposalUpdateProps>(ProposalUpdateProps, {
           id: proposal.id,
         }).build();
 
@@ -203,7 +196,7 @@ export class ProposalUpdatePaymentCommandHandler
             : null,
           notes:
             appRoleMappers[choosenRole] === 'PROJECT_MANAGER' && // if it pm
-            status === ProposalAction.SET_BY_SUPERVISOR && // if it rejected
+            action === 'reject' && // if it rejected
             command.request.notes // if notes exist
               ? command.request.notes
               : '',
@@ -232,12 +225,22 @@ export class ProposalUpdatePaymentCommandHandler
             `'You are not the person in charge for this proposal!'`,
           );
         }
+
         this.actionValidator(['accept', 'reject'], action);
+
         if (action === 'accept') {
-          status = ProposalAction.ACCEPTED_BY_PROJECT_MANAGER;
+          createProposalLogPayloads.action =
+            ProposalLogActionEnum.ACCEPTED_BY_PROJECT_MANAGER;
+          updatePaymentPayload.status =
+            PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER;
         }
+
         if (action === 'reject') {
-          status = ProposalAction.SET_BY_SUPERVISOR;
+          createProposalLogPayloads.action =
+            ProposalLogActionEnum.REJECTED_BY_PROJECT_MANAGER;
+          updatePaymentPayload.status =
+            PaymentStatusEnum.REJECTED_BY_PROJECT_MANAGER;
+
           if (!command.request.notes) {
             throw new PayloadErrorException(
               'Notes are required when rejecting payment',
@@ -253,10 +256,23 @@ export class ProposalUpdatePaymentCommandHandler
           action,
         );
         updateProposalPayloads.finance_id = userId;
-        if (action === 'accept') status = ProposalAction.ACCEPTED_BY_FINANCE;
-        if (action === 'confirm_payment') status = ProposalAction.DONE;
+
+        if (action === 'accept') {
+          createProposalLogPayloads.action =
+            ProposalLogActionEnum.ACCEPTED_BY_FINANCE;
+          updatePaymentPayload.status = PaymentStatusEnum.ACCEPTED_BY_FINANCE;
+        }
+
+        if (action === 'confirm_payment') {
+          createProposalLogPayloads.action = ProposalLogActionEnum.DONE;
+          updatePaymentPayload.status = PaymentStatusEnum.DONE;
+        }
+
         if (action === 'reject_payment') {
-          status = ProposalAction.REJECT_CHEQUE;
+          createProposalLogPayloads.action =
+            ProposalLogActionEnum.REJECT_CHEQUE;
+          updatePaymentPayload.status = PaymentStatusEnum.ACCEPTED_BY_FINANCE;
+
           if (!command.request.last_payment_receipt_url) {
             throw new PayloadErrorException(
               'please send the last rejected file url',
@@ -274,7 +290,11 @@ export class ProposalUpdatePaymentCommandHandler
           );
         }
         this.actionValidator(['issue'], action);
-        if (action === 'issue') status = ProposalAction.ISSUED_BY_SUPERVISOR;
+        if (action === 'issue') {
+          createProposalLogPayloads.action =
+            ProposalLogActionEnum.ISSUED_BY_SUPERVISOR;
+          updatePaymentPayload.status = PaymentStatusEnum.ISSUED_BY_SUPERVISOR;
+        }
       }
 
       if (choosenRole === 'tender_cashier') {
@@ -300,7 +320,9 @@ export class ProposalUpdatePaymentCommandHandler
         }
 
         if (action === 'upload_receipt') {
-          status = ProposalAction.UPLOADED_BY_CASHIER;
+          createProposalLogPayloads.action =
+            ProposalLogActionEnum.UPLOADED_BY_CASHIER;
+          updatePaymentPayload.status = PaymentStatusEnum.UPLOADED_BY_CASHIER;
         }
 
         const maxSize: number = 1024 * 1024 * 100; // 100MB
@@ -337,13 +359,6 @@ export class ProposalUpdatePaymentCommandHandler
           type: uploadRes.type,
         };
       }
-
-      createProposalLogPayloads.action = status;
-      // payment status harusnya accepted_by_finance ketika  lognya reject_cheque
-      updatePaymentPayload.status =
-        status === ProposalAction.REJECT_CHEQUE
-          ? ProposalAction.ACCEPTED_BY_FINANCE
-          : status;
 
       const result = await this.prismaService.$transaction(
         async (prismaSession) => {

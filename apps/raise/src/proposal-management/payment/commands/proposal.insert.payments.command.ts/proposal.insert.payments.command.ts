@@ -16,7 +16,7 @@ import {
 } from '../../repositories/proposal-payment.repository';
 import { nanoid } from 'nanoid';
 import { InvalidAmountOfSupportException } from '../../exceptions/invalid.amount.of.support.exception';
-import { UpdateProposalProps } from '../../../proposal/types';
+import { ProposalUpdateProps } from '../../../proposal/types';
 import { Builder } from 'builder-pattern';
 import {
   InnerStatusEnum,
@@ -139,8 +139,8 @@ export class ProposalInsertPaymentCommandHandler
         // set payment / insert payment
         await this.logRepo.create(createLogPayloads, session);
 
-        const updateProposalPayloads: UpdateProposalProps =
-          Builder<UpdateProposalProps>(UpdateProposalProps, {
+        const updateProposalPayloads: ProposalUpdateProps =
+          Builder<ProposalUpdateProps>(ProposalUpdateProps, {
             id: proposal.id,
             inner_status:
               InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,

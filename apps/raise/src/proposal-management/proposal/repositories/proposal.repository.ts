@@ -36,11 +36,13 @@ import { ProposalEntity } from '../entities/proposal.entity';
 import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
 import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
 import {
-  CreateProposalProps,
-  DeleteProposalProps,
-  FetchProposalByIdProps,
-  UpdateProposalProps,
+  ProposalCreateProps,
+  ProposalDeleteProps,
+  ProposalFetchByIdProps,
+  ProposalFindManyProps,
+  ProposalUpdateProps,
 } from '../types';
+import { PaymentStatusEnum } from 'src/proposal-management/payment/types/enums/payment.status.enum';
 
 @Injectable()
 export class ProposalRepository {
@@ -52,7 +54,7 @@ export class ProposalRepository {
   ) {}
 
   async findByIdFilter(
-    props: FetchProposalByIdProps,
+    props: ProposalFetchByIdProps,
   ): Promise<Prisma.proposalFindFirstArgs> {
     const { includes_relation } = props;
 
@@ -169,7 +171,7 @@ export class ProposalRepository {
 
   /* Latest, already able to do passing session, and return entity instead of prisma model*/
   async fetchById(
-    props: FetchProposalByIdProps,
+    props: ProposalFetchByIdProps,
     session?: PrismaService,
   ): Promise<ProposalEntity | null> {
     let prisma = this.prismaService;
@@ -255,7 +257,7 @@ export class ProposalRepository {
 
   /* Latest, already able to do passing session, and return entity instead of prisma model*/
   async update(
-    props: UpdateProposalProps,
+    props: ProposalUpdateProps,
     session?: PrismaService,
   ): Promise<ProposalEntity> {
     let prisma = this.prismaService;
@@ -379,7 +381,7 @@ export class ProposalRepository {
 
   /* Latest, already able to do passing session, and return entity instead of prisma model*/
   async create(
-    props: CreateProposalProps,
+    props: ProposalCreateProps,
     session?: PrismaService,
   ): Promise<ProposalEntity> {
     let prisma = this.prismaService;
@@ -501,7 +503,7 @@ export class ProposalRepository {
   }
 
   /* Latest, already able to do passing session, and return entity instead of prisma model*/
-  async delete(props: DeleteProposalProps, session?: PrismaService) {
+  async delete(props: ProposalDeleteProps, session?: PrismaService) {
     let prisma = this.prismaService;
     if (session) prisma = session;
     try {
@@ -555,6 +557,12 @@ export class ProposalRepository {
       }
       throw error;
     }
+  }
+
+  async findMany(props: ProposalFindManyProps, session?: PrismaService) {
+    const prisma = session || this.prismaService;
+    try {
+    } catch (error) {}
   }
 
   async validateOwnBankAccount(user_id: string, bank_id: string) {
@@ -2434,52 +2442,50 @@ export class ProposalRepository {
       if (currentUser.choosenRole === 'tender_project_supervisor') {
         whereClause = {
           ...whereClause,
-          AND: [
-            { supervisor_id: currentUser.id },
+          supervisor_id: currentUser.id,
+          OR: [
             {
-              OR: [
-                {
-                  inner_status:
-                    InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
+              inner_status:
+                InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
+            },
+            {
+              payments: {
+                some: {
+                  status: {
+                    in: [
+                      PaymentStatusEnum.SET_BY_SUPERVISOR,
+                      PaymentStatusEnum.REJECTED_BY_PROJECT_MANAGER,
+                    ],
+                  },
                 },
-                {
-                  payments: { some: { status: { in: ['set_by_supervisor'] } } },
-                },
-              ],
+              },
             },
           ],
-          // supervisor_id: currentUser.id,
-          // payments: { some: { status: { in: ['set_by_supervisor'] } } },
-          // OR: [
-          // {
-          //   inner_status:
-          //     InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
-          // },
-          // { payments: { some: { status: { in: ['set_by_supervisor'] } } } },
-          // ],
         };
       }
 
       if (currentUser.choosenRole === 'tender_project_manager') {
         whereClause = {
           ...whereClause,
-          // OR: [
-          //   { project_manager_id: currentUser.id },
-          //   { project_manager_id: null },
-          // ],
-          // payments: {
-          //   some: {
-          //     status: {
-          //       in: ['issued_by_supervisor'],
-          //     },
-          //   },
-          // },
+          project_manager_id: currentUser.id,
           AND: [
             {
-              project_manager_id: currentUser.id,
+              payments: {
+                some: {
+                  status: {
+                    equals: PaymentStatusEnum.SET_BY_SUPERVISOR,
+                  },
+                },
+              },
             },
             {
-              payments: { some: { status: { in: ['issued_by_supervisor'] } } },
+              payments: {
+                every: {
+                  status: {
+                    not: PaymentStatusEnum.REJECTED_BY_PROJECT_MANAGER,
+                  },
+                },
+              },
             },
           ],
         };
@@ -2539,7 +2545,7 @@ export class ProposalRepository {
         };
       }
 
-      console.log(logUtil(queryOptions));
+      // console.log(logUtil(queryOptions));
 
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
