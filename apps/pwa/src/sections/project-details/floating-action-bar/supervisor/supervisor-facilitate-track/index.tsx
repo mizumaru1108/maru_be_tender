@@ -354,9 +354,13 @@ function FloatinActionBar() {
           content_type_id: 'TEXT',
           receiver_id: proposalSubmitter.id,
           owner_id: user?.id,
+          // receiver_role_as: `tender_${proposalSubmitter.roles[
+          //   activeRoleIndex
+          // ].role.id.toLowerCase()}`,
           receiver_role_as: `tender_${proposalSubmitter.roles[
             activeRoleIndex
-          ].role.id.toLowerCase()}`,
+          ]?.user_type_id.toLowerCase()}`,
+
           sender_role_as: `tender_${proposalStateRole.toLowerCase()}`,
           created_at: moment().toISOString(),
           updated_at: moment().toISOString(),

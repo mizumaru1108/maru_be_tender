@@ -42,7 +42,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.closing_report || proposal?.closing_report
+                      {stepGeneralLog?.new_values?.closing_report
                         ? `${translate('review.yes')}`
                         : `${translate('review.no')}`}
                     </Typography>
@@ -54,7 +54,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.does_an_agreement || proposal?.does_an_agreement
+                      {stepGeneralLog?.new_values?.does_an_agreement
                         ? `${translate('review.yes')}`
                         : `${translate('review.no')}`}
                     </Typography>
@@ -67,7 +67,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                       <Typography>
-                        {stepGeneralLog?.new_values?.need_picture || proposal?.need_picture
+                        {stepGeneralLog?.new_values?.need_picture
                           ? `${translate('review.yes')}`
                           : `${translate('review.no')}`}
                       </Typography>
@@ -80,7 +80,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                       <Typography>
-                        {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
+                        {stepGeneralLog?.new_values?.inclu_or_exclu
                           ? `${translate('review.yes')}`
                           : `${translate('review.no')}`}
                       </Typography>
@@ -93,10 +93,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                 <Typography variant="h6">{translate(`review.vat`)}</Typography>
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                    <Typography>
-                      {(stepGeneralLog?.new_values?.vat_percentage || proposal?.vat_percentage) ??
-                        0}
-                    </Typography>
+                    <Typography>{stepGeneralLog?.new_values?.vat_percentage ?? 0}</Typography>
                   </Stack>
                 </Stack>
               </Grid>
@@ -105,7 +102,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
+                      {stepGeneralLog?.new_values?.inclu_or_exclu
                         ? `${translate('review.yes')}`
                         : `${translate('review.no')}`}
                     </Typography>
@@ -117,8 +114,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.number_of_payments_by_supervisor ||
-                        proposal?.number_of_payments_by_supervisor}
+                      {stepGeneralLog?.new_values?.number_of_payments_by_supervisor}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -128,9 +124,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.fsupport_by_supervisor ||
-                        proposal?.fsupport_by_supervisor}{' '}
-                      {translate('review.sar')}
+                      {stepGeneralLog?.new_values?.fsupport_by_supervisor} {translate('review.sar')}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -140,7 +134,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.support_type || proposal?.support_type
+                      {stepGeneralLog?.new_values?.support_type
                         ? `${translate('review.yes')}`
                         : `${translate('review.no')}`}
                     </Typography>
@@ -152,11 +146,9 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 <Typography>
-                  {stepGeneralLog?.new_values?.support_goal_id || proposal?.support_goal_id
+                  {stepGeneralLog?.new_values?.support_goal_id
                     ? translate(
-                        `review.support_goals.${
-                          stepGeneralLog?.new_values?.support_goal_id || proposal?.support_goal_id
-                        }`
+                        `review.support_goals.${stepGeneralLog?.new_values?.support_goal_id}`
                       )
                     : '-'}
                 </Typography>
@@ -171,10 +163,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
             <Typography variant="h6">{translate(`review.support_output`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>
-                  {(stepGeneralLog?.new_values?.support_outputs || proposal?.support_outputs) ??
-                    '-'}
-                </Typography>
+                <Typography>{stepGeneralLog?.new_values?.support_outputs ?? '-'}</Typography>
               </Stack>
             </Stack>
           </React.Fragment>

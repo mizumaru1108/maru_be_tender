@@ -135,14 +135,17 @@ export interface Proposal {
     employee_name: string;
     email: string;
     mobile_number: string;
-    roles:
-      | {
-          role: {
-            // title: string;
-            id: string;
-          };
-        }[]
-      | [];
+    // roles:
+    //   | {
+    //       role: {
+    //         // title: string;
+    //         id: string;
+    //         user_id: string;
+    //         user_type_id: string;
+    //       };
+    //     }[]
+    //   | [];
+    roles: { id: string; user_id: string; user_type_id: string }[] | [];
     client_data: {
       region: string; // Orign
       governorate: string; // the values of the orign
@@ -411,6 +414,7 @@ export type Log = {
     | 'accepted_by_project_manager'
     | 'accepted_by_finance'
     | 'done'
+    | 'uploaded_by_cashier'
     | 'project_completed'
     | 'send_revised_version'
     | 'complete_payment'

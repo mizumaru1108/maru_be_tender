@@ -21,9 +21,9 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
   if (stepGeneralLog && stepGeneralLog.message) {
     batch = Number(stepGeneralLog.message.split('_')[1]);
   }
-  // console.log('test', stepGeneralLog?.new_values);
+  // console.log('test', stepGeneralLog?.new_values?.closing_report);
   React.useEffect(() => {
-    if (proposal) {
+    if (proposal || stepGeneralLog) {
       setDataGrants((currentProposal: any) => {
         // console.log('test ');
         const tmpValues = { ...currentProposal };
@@ -35,54 +35,39 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
           updated_at: stepGeneralLog?.updated_at || '',
           user_role: stepGeneralLog?.user_role || '',
           proposal: {
-            accreditation_type_id:
-              stepGeneralLog?.new_values?.accreditation_type_id || proposal.accreditation_type_id,
-            added_value: stepGeneralLog?.new_values?.added_value || proposal.added_value,
-            been_made_before:
-              stepGeneralLog?.new_values?.been_made_before || proposal.been_made_before,
-            been_supported_before:
-              stepGeneralLog?.new_values?.been_supported_before || proposal.been_supported_before,
-            closing_report: stepGeneralLog?.new_values?.closing_report || proposal.closing_report,
-            does_an_agreement:
-              stepGeneralLog?.new_values?.does_an_agreement || proposal.does_an_agreement,
+            accreditation_type_id: stepGeneralLog?.new_values?.accreditation_type_id,
+            added_value: stepGeneralLog?.new_values?.added_value,
+            been_made_before: stepGeneralLog?.new_values?.been_made_before,
+            been_supported_before: stepGeneralLog?.new_values?.been_supported_before,
+            closing_report: stepGeneralLog?.new_values?.closing_report,
+            does_an_agreement: stepGeneralLog?.new_values?.does_an_agreement,
             chairman_of_board_of_directors:
-              stepGeneralLog?.new_values?.chairman_of_board_of_directors ||
-              proposal.chairman_of_board_of_directors,
-            vat_percentage: stepGeneralLog?.new_values?.vat_percentage || proposal.vat_percentage,
-            vat: stepGeneralLog?.new_values?.vat || proposal.vat,
-            target_group_type:
-              stepGeneralLog?.new_values?.target_group_type || proposal.target_group_type,
-            target_group_num:
-              stepGeneralLog?.new_values?.target_group_num || proposal.target_group_num,
-            target_group_age:
-              stepGeneralLog?.new_values?.target_group_age || proposal.target_group_age,
-            support_type: stepGeneralLog?.new_values?.support_type || proposal.support_type,
-            support_outputs:
-              stepGeneralLog?.new_values?.support_outputs || proposal.support_outputs,
-            support_goal_id:
-              stepGeneralLog?.new_values?.support_goal_id || proposal.support_goal_id,
-            remote_or_insite:
-              stepGeneralLog?.new_values?.remote_or_insite || proposal.remote_or_insite,
-            clasification_field:
-              stepGeneralLog?.new_values?.clasification_field || proposal.clasification_field,
-            reasons_to_accept:
-              stepGeneralLog?.new_values?.reasons_to_accept || proposal.reasons_to_accept,
+              stepGeneralLog?.new_values?.chairman_of_board_of_directors,
+            vat_percentage: stepGeneralLog?.new_values?.vat_percentage,
+            vat: stepGeneralLog?.new_values?.vat,
+            target_group_type: stepGeneralLog?.new_values?.target_group_type,
+            target_group_num: stepGeneralLog?.new_values?.target_group_num,
+            target_group_age: stepGeneralLog?.new_values?.target_group_age,
+            support_type: stepGeneralLog?.new_values?.support_type,
+            support_outputs: stepGeneralLog?.new_values?.support_outputs,
+            support_goal_id: stepGeneralLog?.new_values?.support_goal_id,
+            remote_or_insite: stepGeneralLog?.new_values?.remote_or_insite,
+            clasification_field: stepGeneralLog?.new_values?.clasification_field,
+            reasons_to_accept: stepGeneralLog?.new_values?.reasons_to_accept,
             number_of_payments_by_supervisor:
-              stepGeneralLog?.new_values?.number_of_payments_by_supervisor ||
-              proposal.number_of_payments_by_supervisor,
-            need_picture: stepGeneralLog?.new_values?.need_picture || proposal.need_picture,
-            inclu_or_exclu: stepGeneralLog?.new_values?.inclu_or_exclu || proposal.inclu_or_exclu,
-            fsupport_by_supervisor:
-              stepGeneralLog?.new_values?.fsupport_by_supervisor || proposal.fsupport_by_supervisor,
-            clause: stepGeneralLog?.new_values?.clause || proposal.clause,
-            most_clents_projects:
-              stepGeneralLog?.new_values?.most_clents_projects || proposal.most_clents_projects,
+              stepGeneralLog?.new_values?.number_of_payments_by_supervisor,
+            need_picture: stepGeneralLog?.new_values?.need_picture,
+            inclu_or_exclu: stepGeneralLog?.new_values?.inclu_or_exclu,
+            fsupport_by_supervisor: stepGeneralLog?.new_values?.fsupport_by_supervisor,
+            clause: stepGeneralLog?.new_values?.clause,
+            most_clents_projects: stepGeneralLog?.new_values?.most_clents_projects,
           },
         };
       });
     }
   }, [stepGeneralLog, proposal]);
 
+  // console.log('dataGrants', dataGrants);
   // console.log('proposal.payments', proposal.payments);
 
   return (
@@ -111,7 +96,8 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.closing_report || proposal?.closing_report
+                      {!!stepGeneralLog?.new_values?.closing_report &&
+                      stepGeneralLog?.new_values?.closing_report
                         ? `${translate('review.yes')}`
                         : `${translate('review.no')}`}
                     </Typography>
@@ -123,7 +109,8 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.does_an_agreement || proposal?.does_an_agreement
+                      {!!stepGeneralLog?.new_values?.does_an_agreement &&
+                      stepGeneralLog?.new_values?.does_an_agreement
                         ? `${translate('review.yes')}`
                         : `${translate('review.no')}`}
                     </Typography>
@@ -136,7 +123,8 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                       <Typography>
-                        {stepGeneralLog?.new_values?.need_picture || proposal?.need_picture
+                        {!!stepGeneralLog?.new_values?.need_picture &&
+                        stepGeneralLog?.new_values?.need_picture
                           ? `${translate('review.yes')}`
                           : `${translate('review.no')}`}
                       </Typography>
@@ -149,7 +137,8 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                       <Typography>
-                        {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
+                        {!!stepGeneralLog?.new_values?.inclu_or_exclu &&
+                        stepGeneralLog?.new_values?.inclu_or_exclu
                           ? `${translate('review.yes')}`
                           : `${translate('review.no')}`}
                       </Typography>
@@ -161,10 +150,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 <Typography variant="h6">{translate(`review.vat`)}</Typography>
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                    <Typography>
-                      {(stepGeneralLog?.new_values?.vat_percentage || proposal?.vat_percentage) ??
-                        0}
-                    </Typography>
+                    <Typography>{stepGeneralLog?.new_values?.vat_percentage ?? 0}</Typography>
                   </Stack>
                 </Stack>
               </Grid>
@@ -173,7 +159,8 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.inclu_or_exclu || proposal?.inclu_or_exclu
+                      {!!stepGeneralLog?.new_values?.inclu_or_exclu &&
+                      stepGeneralLog?.new_values?.inclu_or_exclu
                         ? `${translate('review.yes')}`
                         : `${translate('review.no')}`}
                     </Typography>
@@ -185,8 +172,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.number_of_payments_by_supervisor ||
-                        proposal?.number_of_payments_by_supervisor}
+                      {stepGeneralLog?.new_values?.number_of_payments_by_supervisor}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -196,9 +182,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.fsupport_by_supervisor ||
-                        proposal?.fsupport_by_supervisor}{' '}
-                      {translate('review.sar')}
+                      {stepGeneralLog?.new_values?.fsupport_by_supervisor} {translate('review.sar')}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -208,7 +192,8 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {stepGeneralLog?.new_values?.support_type || proposal?.support_type
+                      {!!stepGeneralLog?.new_values?.support_type &&
+                      stepGeneralLog?.new_values?.support_type
                         ? `${translate('review.yes')}`
                         : `${translate('review.no')}`}
                     </Typography>
@@ -220,11 +205,10 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 <Typography>
-                  {stepGeneralLog?.new_values?.support_goal_id || proposal?.support_goal_id
+                  {!!stepGeneralLog?.new_values?.support_goal_id &&
+                  stepGeneralLog?.new_values?.support_goal_id
                     ? translate(
-                        `review.support_goals.${
-                          stepGeneralLog?.new_values?.support_goal_id || proposal?.support_goal_id
-                        }`
+                        `review.support_goals.${stepGeneralLog?.new_values?.support_goal_id}`
                       )
                     : '-'}
                 </Typography>
@@ -233,16 +217,13 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
             <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>{(stepGeneralLog.notes || proposal.notes) ?? '-'}</Typography>
+                <Typography>{stepGeneralLog?.notes ?? '-'}</Typography>
               </Stack>
             </Stack>
             <Typography variant="h6">{translate(`review.support_output`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>
-                  {(stepGeneralLog?.new_values?.support_outputs || proposal?.support_outputs) ??
-                    '-'}
-                </Typography>
+                <Typography>{stepGeneralLog?.new_values?.support_outputs ?? '-'}</Typography>
               </Stack>
             </Stack>
           </React.Fragment>

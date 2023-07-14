@@ -74,8 +74,10 @@ function FilePopup({ open, handleClose }: Props) {
   const onSubmit = async (data: any) => {
     if (role === 'tender_client') {
       try {
+        // const url = 'tender-proposal/follow-up/create';
+        const url = 'tender-proposal/follow-up/create-cqrs';
         const response = await axiosInstance.post(
-          'tender-proposal/follow-up/create',
+          url,
           {
             follow_up_attachment: [data.file],
             proposal_id,
@@ -121,8 +123,10 @@ function FilePopup({ open, handleClose }: Props) {
     } else {
       try {
         // await dispatch(addFollowups({follow_up_attachment: [data.file],proposal_id,follow_up_type: 'attachments',},role));
+        // const url = 'tender-proposal/follow-up/create';
+        const url = 'tender-proposal/follow-up/create-cqrs';
         const response = await axiosInstance.post(
-          'tender-proposal/follow-up/create',
+          url,
           {
             follow_up_attachment: [data.file],
             proposal_id,

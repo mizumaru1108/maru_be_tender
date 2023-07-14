@@ -33,46 +33,32 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
           updated_at: stepGransLog.updated_at,
           user_role: stepGransLog.user_role,
           proposal: {
-            accreditation_type_id:
-              stepGransLog?.new_values?.accreditation_type_id || proposal.accreditation_type_id,
-            added_value: stepGransLog?.new_values?.added_value || proposal.added_value,
-            been_made_before:
-              stepGransLog?.new_values?.been_made_before || proposal.been_made_before,
-            been_supported_before:
-              stepGransLog?.new_values?.been_supported_before || proposal.been_supported_before,
-            closing_report: stepGransLog?.new_values?.closing_report || proposal.closing_report,
-            does_an_agreement:
-              stepGransLog?.new_values?.does_an_agreement || proposal.does_an_agreement,
+            accreditation_type_id: stepGransLog?.new_values?.accreditation_type_id,
+            added_value: stepGransLog?.new_values?.added_value,
+            been_made_before: stepGransLog?.new_values?.been_made_before,
+            been_supported_before: stepGransLog?.new_values?.been_supported_before,
+            closing_report: stepGransLog?.new_values?.closing_report,
+            does_an_agreement: stepGransLog?.new_values?.does_an_agreement,
             chairman_of_board_of_directors:
-              stepGransLog?.new_values?.chairman_of_board_of_directors ||
-              proposal.chairman_of_board_of_directors,
-            vat_percentage: stepGransLog?.new_values?.vat_percentage || proposal.vat_percentage,
-            vat: stepGransLog?.new_values?.vat || proposal.vat,
-            target_group_type:
-              stepGransLog?.new_values?.target_group_type || proposal.target_group_type,
-            target_group_num:
-              stepGransLog?.new_values?.target_group_num || proposal.target_group_num,
-            target_group_age:
-              stepGransLog?.new_values?.target_group_age || proposal.target_group_age,
-            support_type: stepGransLog?.new_values?.support_type || proposal.support_type,
-            support_outputs: stepGransLog?.new_values?.support_outputs || proposal.support_outputs,
-            support_goal_id: stepGransLog?.new_values?.support_goal_id || proposal.support_goal_id,
-            remote_or_insite:
-              stepGransLog?.new_values?.remote_or_insite || proposal.remote_or_insite,
-            clasification_field:
-              stepGransLog?.new_values?.clasification_field || proposal.clasification_field,
-            reasons_to_accept:
-              stepGransLog?.new_values?.reasons_to_accept || proposal.reasons_to_accept,
+              stepGransLog?.new_values?.chairman_of_board_of_directors,
+            vat_percentage: stepGransLog?.new_values?.vat_percentage,
+            vat: stepGransLog?.new_values?.vat,
+            target_group_type: stepGransLog?.new_values?.target_group_type,
+            target_group_num: stepGransLog?.new_values?.target_group_num,
+            target_group_age: stepGransLog?.new_values?.target_group_age,
+            support_type: stepGransLog?.new_values?.support_type,
+            support_outputs: stepGransLog?.new_values?.support_outputs,
+            support_goal_id: stepGransLog?.new_values?.support_goal_id,
+            remote_or_insite: stepGransLog?.new_values?.remote_or_insite,
+            clasification_field: stepGransLog?.new_values?.clasification_field,
+            reasons_to_accept: stepGransLog?.new_values?.reasons_to_accept,
             number_of_payments_by_supervisor:
-              stepGransLog?.new_values?.number_of_payments_by_supervisor ||
-              proposal.number_of_payments_by_supervisor,
-            need_picture: stepGransLog?.new_values?.need_picture || proposal.need_picture,
-            inclu_or_exclu: stepGransLog?.new_values?.inclu_or_exclu || proposal.inclu_or_exclu,
-            fsupport_by_supervisor:
-              stepGransLog?.new_values?.fsupport_by_supervisor || proposal.fsupport_by_supervisor,
-            clause: stepGransLog?.new_values?.clause || proposal.clause,
-            most_clents_projects:
-              stepGransLog?.new_values?.most_clents_projects || proposal.most_clents_projects,
+              stepGransLog?.new_values?.number_of_payments_by_supervisor,
+            need_picture: stepGransLog?.new_values?.need_picture,
+            inclu_or_exclu: stepGransLog?.new_values?.inclu_or_exclu,
+            fsupport_by_supervisor: stepGransLog?.new_values?.fsupport_by_supervisor,
+            clause: stepGransLog?.new_values?.clause,
+            most_clents_projects: stepGransLog?.new_values?.most_clents_projects,
           },
         };
       });
