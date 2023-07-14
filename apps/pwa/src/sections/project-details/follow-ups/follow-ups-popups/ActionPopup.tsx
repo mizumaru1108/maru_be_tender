@@ -63,8 +63,10 @@ function ActionPopup({ open, handleClose }: Props) {
   const onSubmit = async (data: any) => {
     if (role === 'tender_client') {
       try {
+        // const url = 'tender-proposal/follow-up/create';
+        const url = 'tender-proposal/follow-up/create-cqrs';
         const response = await axiosInstance.post(
-          'tender-proposal/follow-up/create',
+          url,
           {
             content: data.action,
             proposal_id,

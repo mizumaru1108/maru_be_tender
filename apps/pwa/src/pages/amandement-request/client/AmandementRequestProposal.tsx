@@ -86,9 +86,11 @@ function AmandementRequestProposal() {
 
   const handleSubmit = async () => {
     setIsLoad(true);
+    // const url = 'tender-proposal/send-amandement';
+    const url = 'tender-proposal/send-amandement-cqrs';
     try {
       const rest = await axiosInstance.post(
-        'tender-proposal/send-amandement',
+        url,
         {
           ...tmpValues,
         },
