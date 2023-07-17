@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { nanoid } from 'nanoid';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { AdvertisementEntity } from 'src/advertisements/entities/advertisement.entity';
 import { AdvertisementTypeEnum } from 'src/advertisements/types/enums/advertisement.type.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
+import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
 
 export class AdvertisementCreateProps {
   content: string;
@@ -38,7 +40,30 @@ export class AdvertisementFindManyProps {
 
 @Injectable()
 export class AdvertisementRepository {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    @InjectPinoLogger(AdvertisementRepository.name)
+    private logger: PinoLogger,
+  ) {}
+
+  advertisementRepoErrorMapper(error: any) {
+    // console.trace(error);
+    // this.logger.error(`error detail ${JSON.stringify(error)}`);
+    this.logger.error({});
+
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2003'
+    ) {
+      return new PrismaInvalidForeignKeyException(
+        error.code,
+        error.clientVersion,
+        error.meta,
+      );
+    }
+
+    return new InternalServerErrorException(error);
+  }
 
   async create(
     props: AdvertisementCreateProps,
@@ -65,8 +90,7 @@ export class AdvertisementRepository {
       }).build();
       return createdEntity;
     } catch (error) {
-      console.trace(error);
-      throw error;
+      throw this.advertisementRepoErrorMapper(error);
     }
   }
 
@@ -120,6 +144,11 @@ export class AdvertisementRepository {
     }
   }
 
+  async findManyFilters(props: AdvertisementFindManyProps) {
+    const queryOptions: Prisma.AdvertisementsFindManyArgs = {};
+    return queryOptions;
+  }
+
   async findMany(
     props: AdvertisementFindManyProps,
     session?: PrismaService,
@@ -132,8 +161,9 @@ export class AdvertisementRepository {
       const getSortBy = sort_by ? sort_by : 'created_at';
       const getSortDirection = sort_direction ? sort_direction : 'desc';
 
+      const options = await this.findManyFilters(props);
       let queryOptions: Prisma.AdvertisementsFindManyArgs = {
-        // where: clause,
+        where: options.where,
 
         orderBy: {
           [getSortBy]: getSortDirection,
@@ -162,16 +192,21 @@ export class AdvertisementRepository {
     }
   }
 
-  // async countMany(
-  //   props: AdvertisementFindManyProps,
-  //   session?: PrismaService,
-  // ): Promise<number> {
-  //   let prisma = this.prismaService;
-  //   if (session) prisma = session;
-  //   try {
-  //   } catch (error) {
-  //     console.trace(error);
-  //     throw error;
-  //   }
-  // }
+  async countMany(
+    props: AdvertisementFindManyProps,
+    session?: PrismaService,
+  ): Promise<number> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const queryOptions = await this.findManyFilters(props);
+      const result = await prisma.advertisements.count({
+        where: queryOptions.where,
+      });
+      return result;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
 }

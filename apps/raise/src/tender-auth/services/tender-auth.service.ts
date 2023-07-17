@@ -88,7 +88,6 @@ export class TenderAuthService {
         email,
         license_number,
       );
-      // console.log('user', user);
 
       if (!user) {
         throw new UnauthorizedException('Wrong Credentials!');

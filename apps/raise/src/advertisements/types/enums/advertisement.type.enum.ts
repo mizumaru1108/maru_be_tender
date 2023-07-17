@@ -1,4 +1,4 @@
-export class AdvertisementTypeEnum {
-  INTERNAL = 'INTERNAL';
-  EXTERNAL = 'EXTERNAL';
+export enum AdvertisementTypeEnum {
+  INTERNAL = 'INTERNAL',
+  EXTERNAL = 'EXTERNAL',
 }

@@ -10,4 +10,6 @@ export class AdvertisementEntity {
   logo?: any; // jsonb
   date: Date;
   start_time: string;
+  created_at: Date | null = new Date();
+  updated_at: Date | null = new Date();
 }

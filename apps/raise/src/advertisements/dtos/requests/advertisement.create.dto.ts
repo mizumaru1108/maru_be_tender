@@ -27,6 +27,7 @@ export class AdvertisementCreateDto {
   track_id?: string;
 
   @ApiProperty({
+    description: 'description of the AdvertisementTypeEnum property',
     enum: AdvertisementTypeEnum,
   })
   @IsNotEmpty()

@@ -12,6 +12,8 @@ Table advertisements {
   logo Json
   date DateTime [not null]
   start_time String [not null]
+  created_at DateTime [default: `now()`]
+  updated_at DateTime [default: `now()`]
 }
 
 Table bank_information {

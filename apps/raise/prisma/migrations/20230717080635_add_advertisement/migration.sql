@@ -8,6 +8,8 @@ CREATE TABLE "advertisements" (
     "logo" JSONB,
     "date" DATE NOT NULL,
     "start_time" VARCHAR NOT NULL,
+    "created_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "advertisements_pkey" PRIMARY KEY ("id")
 );

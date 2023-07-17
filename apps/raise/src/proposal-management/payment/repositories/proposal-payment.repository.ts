@@ -1,11 +1,13 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma, cheque, payment } from '@prisma/client';
 import { Sql } from '@prisma/client/runtime';
+import { Builder } from 'builder-pattern';
 import { nanoid } from 'nanoid';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
-import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
   TenderAppRole,
@@ -23,12 +25,9 @@ import {
   FindBankListFilter,
   FindTrackBudgetFilter,
 } from '../dtos/requests';
+import { ProposalPaymentEntity } from '../entities/proposal-payment.entity';
 import { CloseReportNotifMapper } from '../mappers';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
-import { Builder } from 'builder-pattern';
-import { ProposalPaymentEntity } from '../entities/proposal-payment.entity';
-import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 export class CreatePaymentProps {
   id?: string;
@@ -67,9 +66,9 @@ export class ProposalPaymentRepository {
       error.code === 'P2003'
     ) {
       throw new PrismaInvalidForeignKeyException(
-        `name: ${error.name}, message: ${error.message}${
-          error.meta ? `, meta: ${error.meta}` : ''
-        }`,
+        error.code,
+        error.clientVersion,
+        error.meta,
       );
     }
 
