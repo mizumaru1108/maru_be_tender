@@ -159,19 +159,25 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
     setIsLoading(true);
     // get total from fsupport_by_supervisor
-    const limitSupport = proposal.fsupport_by_supervisor;
+    const limitSupport = Number(proposal.fsupport_by_supervisor);
     // get total from item budgets in proposal
     let totalSupportProposal: number | undefined = undefined;
-    if (proposal.proposal_item_budgets) {
-      totalSupportProposal = proposal
-        .proposal_item_budgets!.map((item) => parseInt(item.amount))
-        .reduce((acc, curr) => acc! + curr!, 0);
+    // if (proposal.proposal_item_budgets) {
+    //   totalSupportProposal = proposal
+    //     .proposal_item_budgets!.map((item) => parseInt(item.amount))
+    //     .reduce((acc, curr) => acc! + curr!, 0);
+    // }
+    if (proposal.fsupport_by_supervisor) {
+      totalSupportProposal = Number(proposal.fsupport_by_supervisor);
     }
     let totalAmount: number | undefined = undefined;
     if (data.detail_project_budgets) {
       totalAmount = data
         .detail_project_budgets!.map((item) => item.amount)
         .reduce((acc, curr) => acc! + curr!, 0);
+    }
+    if (proposal.fsupport_by_supervisor) {
+      totalAmount = Number(proposal.fsupport_by_supervisor);
     }
     let checkPassAmount = false;
     if (data.support_type) {
@@ -181,7 +187,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         checkPassAmount = false;
       }
     } else {
-      if (totalAmount <= limitSupport) {
+      if (totalAmount < limitSupport) {
         checkPassAmount = true;
       } else {
         checkPassAmount = false;
@@ -296,11 +302,14 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         onEdit(false);
       } else {
         console.log(' masuk false');
-        enqueueSnackbar(`${translate('notification.error_exceeds_amount')}: ${data.support_type}`, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
+        enqueueSnackbar(
+          `${translate('notification.error_exceeds_amount')}: ${totalSupportProposal}`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          }
+        );
       }
     } else {
       enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {
@@ -518,7 +527,9 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
               type={'number'}
               size={'small'}
               disabled={
-                support_type === 'false' || !support_type || support_type === undefined
+                save
+                  ? true
+                  : support_type === 'false' || !support_type || support_type === undefined
                   ? false
                   : true
               }

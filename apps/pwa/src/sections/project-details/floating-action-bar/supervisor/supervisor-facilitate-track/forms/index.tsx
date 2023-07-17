@@ -1,32 +1,28 @@
-import { StepLabel, Stepper, Step } from '@mui/material';
+import { Step, StepLabel, Stepper } from '@mui/material';
 import { ModalDialogStepper } from 'components/modal-dialog/ModalDialogStepper';
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import axiosInstance from 'utils/axios';
-import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { updateProposalByFacilitatedSupervisor } from 'queries/project-supervisor/updateProposalByFacilitatedSupervisor';
 import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import {
-  setStepFive,
-  setStepFour,
-  setStepOne,
+  setStepFive, setStepOne,
   setStepThree,
   setStepTwo,
   stepBackOne,
-  stepResetActive,
+  stepResetActive
 } from 'redux/slices/supervisorAcceptingForm';
 import { useDispatch, useSelector } from 'redux/store';
 import { useMutation } from 'urql';
+import axiosInstance from 'utils/axios';
+import { getProposalCount } from '../../../../../../redux/slices/proposal';
 import ActionBox from './ActionBox';
 import FifthForm from './FifthForm';
 import FirstForm from './FirstForm';
-import ForthFrom from './ForthFrom';
 import SecondForm from './SecondForm';
 import ThirdForm from './ThirdForm';
-import { getProposalCount } from '../../../../../../redux/slices/proposal';
-import { FEATURE_PROPOSAL_COUNTING } from 'config';
 //
 
 const steps = [

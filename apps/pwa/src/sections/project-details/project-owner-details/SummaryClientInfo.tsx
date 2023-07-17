@@ -70,7 +70,15 @@ function SummaryClientInfo({ dataClient }: SummaryClientInfoProps) {
         </Typography>
         <Typography sx={StylTextContent}>{dataClient.license_number}</Typography>
         <Typography sx={StylTextContent}>{dataClient.license_issue_date}</Typography>
-        <Typography sx={StylTextContent}>{dataClient.headquarters}</Typography>
+        {/* <Typography sx={StylTextContent}>{dataClient.headquarters}</Typography> */}
+        <Typography sx={StylTextContent}>
+          {[
+            'register_form1.headquarters.options.own',
+            'register_form1.headquarters.options.rent',
+          ].includes(dataClient.headquarters)
+            ? translate(dataClient.headquarters)
+            : dataClient.headquarters}
+        </Typography>
       </Box>
       <Box
         sx={{

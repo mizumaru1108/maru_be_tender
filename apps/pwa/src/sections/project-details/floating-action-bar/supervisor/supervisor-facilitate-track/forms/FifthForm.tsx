@@ -99,20 +99,17 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
 
       data.deleted_proposal_budget = tempDeletedBudget;
 
-      // const totalAmount = data.updated_proposal_budget.reduce(
-      //   (acc, cur) => acc + Number(cur.amount),
-      //   0
-      // );
-
-      if (step1 && step1.fsupport_by_supervisor && totalAmount) {
-        if (step1.support_type && totalAmount <= step1.fsupport_by_supervisor!) {
+      if (step1 && proposal.fsupport_by_supervisor && totalAmount) {
+        if (step1.support_type && totalAmount <= proposal.fsupport_by_supervisor!) {
           onSubmit(data);
         } else {
-          if (totalAmount <= step1.fsupport_by_supervisor!) {
+          if (totalAmount < proposal.fsupport_by_supervisor!) {
             onSubmit(data);
           } else {
             enqueueSnackbar(
-              `${translate('notification.error_exceeds_amount')}: ${step1.fsupport_by_supervisor}`,
+              `${translate('notification.error_exceeds_amount')}: ${
+                proposal.fsupport_by_supervisor
+              }`,
               {
                 variant: 'error',
                 preventDuplicate: true,

@@ -165,10 +165,13 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
 
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
     let totalSupportProposal: number | undefined = undefined;
-    if (proposal.proposal_item_budgets) {
-      totalSupportProposal = proposal
-        .proposal_item_budgets!.map((item) => parseInt(item.amount))
-        .reduce((acc, curr) => acc! + curr!, 0);
+    // if (proposal.proposal_item_budgets) {
+    //   totalSupportProposal = proposal
+    //     .proposal_item_budgets!.map((item) => parseInt(item.amount))
+    //     .reduce((acc, curr) => acc! + curr!, 0);
+    // }
+    if (proposal.fsupport_by_supervisor) {
+      totalSupportProposal = Number(proposal.fsupport_by_supervisor);
     }
     let totalAmount: number | undefined = undefined;
     if (data.detail_project_budgets) {
@@ -176,6 +179,9 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         .detail_project_budgets!.map((item) => item.amount)
         .reduce((acc, curr) => acc! + curr!, 0);
     }
+    // if (proposal.fsupport_by_supervisor) {
+    //   totalAmount = Number(proposal.fsupport_by_supervisor);
+    // }
     let checkPassAmount = false;
     if (data.support_type) {
       if (totalAmount <= totalSupportProposal) {
@@ -184,7 +190,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         checkPassAmount = false;
       }
     } else {
-      if (totalAmount <= totalSupportProposal) {
+      if (totalAmount < totalSupportProposal) {
         checkPassAmount = true;
       } else {
         checkPassAmount = false;
@@ -235,11 +241,14 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
         // console.log({ newData });
       } else {
         // console.log('false');
-        enqueueSnackbar(`${translate('notification.error_exceeds_amount')}: ${data.support_type}`, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-        });
+        enqueueSnackbar(
+          `${translate('notification.error_exceeds_amount')}: ${totalSupportProposal}`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          }
+        );
       }
     } else {
       enqueueSnackbar(translate('notification.proposal_item_budget_empty'), {
