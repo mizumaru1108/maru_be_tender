@@ -1866,6 +1866,7 @@ const en = {
     notes: 'Notes',
     review_by_supervisor: 'Review by Supervisor',
     review_by_project_manager: 'Review by Project Manager',
+    review_by_ceo: 'Review by CEO',
     closing_report: 'Closing Report',
     closing_agreement: 'Closing Agreement',
     vat_in_project: 'Vat in Project',

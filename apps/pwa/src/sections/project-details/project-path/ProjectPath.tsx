@@ -116,42 +116,42 @@ function ProjectPath() {
       setLogs(tmpLogs);
       setActiveStep(tmpLogs[tmpLogs.length - 1]?.id || '-1');
     }
-    const tmpLogProposal = [...proposal.proposal_logs].filter((item: Log) => item.action);
+    // const tmpLogProposal = [...proposal.proposal_logs].filter((item: Log) => item.action);
 
     setGransLog((current) => {
       const tmpData = { ...current };
       return {
         ...current,
-        new_values: tmpLogProposal[tmpLogProposal.length - 1]?.new_values || null,
-        created_at: tmpLogProposal[tmpLogProposal.length - 1]?.created_at || '',
-        state: tmpLogProposal[tmpLogProposal.length - 1]?.state || '',
-        reviewer: tmpLogProposal[tmpLogProposal.length - 1]?.reviewer || '',
-        employee_name: tmpLogProposal[tmpLogProposal.length - 1]?.employee_name || '',
-        user_role_id: tmpLogProposal[tmpLogProposal.length - 1]?.user_role_id || '',
-        action: tmpLogProposal[tmpLogProposal.length - 1]?.action || '',
-        message: tmpLogProposal[tmpLogProposal.length - 1]?.message || '',
-        notes: tmpLogProposal[tmpLogProposal.length - 1]?.notes || '',
-        updated_at: tmpLogProposal[tmpLogProposal.length - 1]?.updated_at || '',
-        user_role: tmpLogProposal[tmpLogProposal.length - 1]?.user_role || '',
+        new_values: tmpLogs[tmpLogs.length - 1]?.new_values || null,
+        created_at: tmpLogs[tmpLogs.length - 1]?.created_at || '',
+        state: tmpLogs[tmpLogs.length - 1]?.state || '',
+        reviewer: tmpLogs[tmpLogs.length - 1]?.reviewer || '',
+        employee_name: tmpLogs[tmpLogs.length - 1]?.employee_name || '',
+        user_role_id: tmpLogs[tmpLogs.length - 1]?.user_role_id || '',
+        action: tmpLogs[tmpLogs.length - 1]?.action || '',
+        message: tmpLogs[tmpLogs.length - 1]?.message || '',
+        notes: tmpLogs[tmpLogs.length - 1]?.notes || '',
+        updated_at: tmpLogs[tmpLogs.length - 1]?.updated_at || '',
+        user_role: tmpLogs[tmpLogs.length - 1]?.user_role || '',
       };
     });
     setGeneralLog((current: any) => {
       const tmpData = { ...current };
       return {
         ...current,
-        new_values: tmpLogProposal[tmpLogProposal.length - 1]?.new_values || null,
-        // proposal_log: tmpLogProposal[tmpLogProposal.length - 1]?.new_values || null,
-        action: tmpLogProposal[tmpLogProposal.length - 1]?.action || '',
-        message: tmpLogProposal[tmpLogProposal.length - 1]?.message || '',
-        notes: tmpLogProposal[tmpLogProposal.length - 1]?.notes || '',
-        updated_at: tmpLogProposal[tmpLogProposal.length - 1]?.updated_at || '',
-        created_at: tmpLogProposal[tmpLogProposal.length - 1]?.created_at || '',
-        state: tmpLogProposal[tmpLogProposal.length - 1]?.state || '',
-        user_role: tmpLogProposal[tmpLogProposal.length - 1]?.user_role || '',
+        new_values: tmpLogs[tmpLogs.length - 1]?.new_values || null,
+        // proposal_log: tmpLogs[tmpLogs.length - 1]?.new_values || null,
+        action: tmpLogs[tmpLogs.length - 1]?.action || '',
+        message: tmpLogs[tmpLogs.length - 1]?.message || '',
+        notes: tmpLogs[tmpLogs.length - 1]?.notes || '',
+        updated_at: tmpLogs[tmpLogs.length - 1]?.updated_at || '',
+        created_at: tmpLogs[tmpLogs.length - 1]?.created_at || '',
+        state: tmpLogs[tmpLogs.length - 1]?.state || '',
+        user_role: tmpLogs[tmpLogs.length - 1]?.user_role || '',
         reviewer: {
-          employee_name: tmpLogProposal[tmpLogProposal.length - 1]?.reviewer?.employee_name || '',
+          employee_name: tmpLogs[tmpLogs.length - 1]?.reviewer?.employee_name || '',
         },
-        employee_name: tmpLogProposal[tmpLogProposal.length - 1]?.employee_name || '',
+        employee_name: tmpLogs[tmpLogs.length - 1]?.employee_name || '',
       };
     });
   }, [followUps, proposal]);
@@ -174,7 +174,7 @@ function ProjectPath() {
       return <Page500 error={errorTracks.message} />;
     }
   }
-  // console.log({ logs, proposal });
+  // console.log({ logs, activeStep });
   return (
     <Grid container>
       <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>
@@ -419,7 +419,7 @@ function ProjectPath() {
                         LogActionCheck({
                           action: logs[logs.length - 1].action as LogAction,
                           type: CheckType.notIn,
-                          logAction: [LogAction.Update, LogAction.Reject],
+                          logAction: [LogAction.Update, LogAction.Reject, LogAction.Accept],
                         })
                       ? translate('review.waiting')
                       : null}

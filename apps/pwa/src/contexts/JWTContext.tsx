@@ -240,11 +240,11 @@ function AuthProvider({ children }: AuthProviderProps) {
       password: password,
       applicationId: FUSIONAUTH_API.appId,
     });
-    // console.log('status code = ', response.statusCode);
+    // console.log('cek response:', response);
     const { token: accessToken, user, refreshToken } = response.response;
     const activeRoleIndex = 0;
     localStorage.setItem('activeRoleIndex', activeRoleIndex.toString());
-    console.log('cek response:', response?.response);
+    // console.log('cek response:', response?.response);
     if (!user) {
       throw new Error(`Error getting currently active user`);
     }

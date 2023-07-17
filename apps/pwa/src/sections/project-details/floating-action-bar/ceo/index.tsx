@@ -77,7 +77,7 @@ function FloatingActionBar() {
         selectLang: currentLang.value,
       };
 
-      console.log('payloadApprovalCeo', payload);
+      // console.log('payloadApprovalCeo', payload);
 
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {

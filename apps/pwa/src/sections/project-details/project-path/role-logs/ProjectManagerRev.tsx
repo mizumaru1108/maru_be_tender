@@ -76,19 +76,27 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
         stepGeneralLog.action !== 'accepted_by_project_manager' &&
         stepGeneralLog.action !== 'set_by_supervisor' && (
           <React.Fragment>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>
-                  {translate(
-                    `${
-                      stepGeneralLog?.user_role === 'CEO'
-                        ? 'project_already_reviewed_by_ceo'
-                        : 'project_already_reviewed_by_project_manager'
-                    }`
-                  )}{' '}
-                  {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
-                </Typography>
-              </Stack>
+            <Stack>
+              <Typography variant="h6">
+                {/* {translate(`review.review_by_supervisor`)} */}
+                {translate(
+                  `${
+                    stepGeneralLog?.user_role === 'CEO'
+                      ? 'review.review_by_ceo'
+                      : 'review.review_by_project_manager'
+                  }`
+                )}
+              </Typography>
+              <Typography>
+                {translate(
+                  `${
+                    stepGeneralLog?.user_role === 'CEO'
+                      ? 'project_already_reviewed_by_ceo'
+                      : 'project_already_reviewed_by_project_manager'
+                  }`
+                )}{' '}
+                {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
+              </Typography>
             </Stack>
             <Grid container spacing={2}>
               <Grid item xs={6}>
@@ -233,7 +241,17 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
         stepGeneralLog.action !== 'accepted_by_project_manager' &&
         stepGeneralLog.action !== 'set_by_supervisor' && (
           <Grid container spacing={2}>
-            <Stack direction="column" gap={2} sx={{ pb: 2, px: 2 }}>
+            <Stack>
+              <Typography variant="h6">
+                {/* {translate(`review.review_by_supervisor`)} */}
+                {translate(
+                  `${
+                    stepGeneralLog?.user_role === 'CEO'
+                      ? 'review.review_by_ceo'
+                      : 'review.review_by_project_manager'
+                  }`
+                )}
+              </Typography>
               <Typography>
                 {translate(
                   `${
