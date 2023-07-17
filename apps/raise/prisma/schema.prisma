@@ -13,6 +13,21 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
+model Advertisements {
+    id  String @id
+    type String  // internal / external
+    title String 
+    content String 
+    track_id String?
+    track  track? @relation(fields: [track_id], references: [id])
+    logo Json?
+    date              DateTime       @db.Date
+    start_time        String         @db.VarChar
+
+    @@map("advertisements")
+}
+
+
 model bank_information {
   user_id                                              String
   bank_account_name                                    String?    @db.VarChar
@@ -564,6 +579,7 @@ model track {
   proposal          proposal[]
   track_section     track_section[]
   user              user[]
+  track_advertisements Advertisements[]
 }
 
 model track_section {

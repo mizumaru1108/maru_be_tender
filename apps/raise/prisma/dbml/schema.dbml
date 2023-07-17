@@ -2,6 +2,18 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
+Table advertisements {
+  id String [pk]
+  type String [not null]
+  title String [not null]
+  content String [not null]
+  track_id String
+  track track
+  logo Json
+  date DateTime [not null]
+  start_time String [not null]
+}
+
 Table bank_information {
   user_id String [not null]
   bank_account_name String
@@ -553,6 +565,7 @@ Table track {
   proposal proposal [not null]
   track_section track_section [not null]
   user user [not null]
+  track_advertisements advertisements [not null]
 }
 
 Table track_section {
@@ -1463,6 +1476,8 @@ Table backup_client_data_latest {
   chairman_mobile String
   qid Int
 }
+
+Ref: advertisements.track_id > track.id
 
 Ref: bank_information.user_id > user.id [delete: Cascade]
 

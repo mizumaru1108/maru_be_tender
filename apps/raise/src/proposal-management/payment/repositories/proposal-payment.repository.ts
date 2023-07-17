@@ -58,7 +58,7 @@ export class ProposalPaymentRepository {
     private logger: PinoLogger,
   ) {}
 
-  async paymentRepoErrorMapper(error: any) {
+  paymentRepoErrorMapper(error: any) {
     console.trace(error);
     this.logger.error(`error detail ${JSON.stringify(error)}`);
 
@@ -75,6 +75,7 @@ export class ProposalPaymentRepository {
 
     throw error;
   }
+
   // refactored with session
   async findById(
     id: string,

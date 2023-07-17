@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -68,6 +68,8 @@ import { TenderEventsModule } from './tender-events-gateway/tender-events.module
 import { TenderFileManagerModule } from './tender-file-manager/tender-file-manager.module';
 import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
 import { TenderStatisticsModule } from './tender-statistics/tender-statistics.module';
+import { AdvertisementsModule } from 'src/advertisements/advertisments.module';
+import { HealthModule } from 'src/health/health.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -86,12 +88,51 @@ import { TenderStatisticsModule } from './tender-statistics/tender-statistics.mo
 //   },
 // });
 
+/**
+ * Hendy's note: Exclude hostname & pid as they're useless in Kubernetes.
+ * Reference: https://stackoverflow.com/a/68918229/122441
+ */
+const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
+
 @Module({
   imports: [
+    // LoggerModule.forRoot({
+    //   pinoHttp: {
+    //     level: 'debug',
+    //     transport:
+    //       process.env.LOG_FORMAT === 'pretty'
+    //         ? {
+    //             target: 'pino-pretty',
+    //             options: {
+    //               // options for pino-pretty here
+    //               colorize: true,
+    //               levelFirst: true,
+    //               translateTime: 'SYS:standard',
+    //               ignore:
+    //                 'req,res,responseTime,trace_id,span_id,trace_flags,dd',
+    //             },
+    //           }
+    //         : undefined,
+    //     formatters:
+    //       process.env.LOG_FORMAT === 'pretty'
+    //         ? {}
+    //         : {
+    //             level: (label) => {
+    //               return {
+    //                 level: label,
+    //               };
+    //             },
+    //           },
+    //   },
+    // }),
+    DatadogTraceModule.forRoot(),
+
     LoggerModule.forRoot({
       pinoHttp: {
-        level: 'debug',
+        ...PINO_LOGGER_EXCLUDE_HOSTNAME_PID,
+        level: process.env.LOG_LEVEL ?? 'info',
         transport:
+          (process.env.NODE_ENV ?? 'development') === 'development' ||
           process.env.LOG_FORMAT === 'pretty'
             ? {
                 target: 'pino-pretty',
@@ -101,23 +142,18 @@ import { TenderStatisticsModule } from './tender-statistics/tender-statistics.mo
                   levelFirst: true,
                   translateTime: 'SYS:standard',
                   ignore:
-                    'req,res,responseTime,trace_id,span_id,trace_flags,dd',
+                    'context,responseTime,trace_id,span_id,trace_flags,dd',
+                  messageFormat: '{context}| {msg}',
                 },
               }
             : undefined,
-        formatters:
-          process.env.LOG_FORMAT === 'pretty'
-            ? {}
-            : {
-                level: (label) => {
-                  return {
-                    level: label,
-                  };
-                },
-              },
       },
+      exclude: [
+        { method: RequestMethod.GET, path: 'health/startup' },
+        { method: RequestMethod.GET, path: 'health/liveness' },
+        { method: RequestMethod.GET, path: 'health/readiness' },
+      ],
     }),
-    DatadogTraceModule.forRoot(),
 
     ScheduleModule.forRoot(),
 
@@ -204,6 +240,8 @@ import { TenderStatisticsModule } from './tender-statistics/tender-statistics.mo
     PaymentPaytabsModule,
     BankModule,
     QaHelperModule,
+    AdvertisementsModule,
+    HealthModule,
   ],
   controllers: [],
 })
