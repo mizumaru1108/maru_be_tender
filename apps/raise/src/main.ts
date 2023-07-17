@@ -1,7 +1,11 @@
 import './traces'; // MUST be the first one! because of instrumentations
 import ecsPinoFormat from '@elastic/ecs-pino-format';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import {
+  SwaggerModule,
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+} from '@nestjs/swagger';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -99,7 +103,10 @@ async function bootstrap() {
       .setDescription('Tmra Raise API')
       .setVersion('3.0')
       .build();
-    const document = SwaggerModule.createDocument(app, config);
+    const swaggerOptions: SwaggerDocumentOptions = {
+      operationIdFactory: (controllerKey, methodKey) => methodKey,
+    };
+    const document = SwaggerModule.createDocument(app, config, swaggerOptions);
     SwaggerModule.setup('api', app, document);
   }
 
