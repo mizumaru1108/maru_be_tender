@@ -170,8 +170,8 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     //     .proposal_item_budgets!.map((item) => parseInt(item.amount))
     //     .reduce((acc, curr) => acc! + curr!, 0);
     // }
-    if (proposal.fsupport_by_supervisor) {
-      totalSupportProposal = Number(proposal.fsupport_by_supervisor);
+    if (proposal.amount_required_fsupport) {
+      totalSupportProposal = Number(proposal.amount_required_fsupport);
     }
     let totalAmount: number | undefined = undefined;
     if (data.detail_project_budgets) {
