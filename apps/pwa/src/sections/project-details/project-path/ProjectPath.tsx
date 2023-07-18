@@ -378,6 +378,7 @@ function ProjectPath() {
                               item.action === 'send_revised_version' ||
                               item.action === 'step_back' ||
                               item.action === 'one_step_back' ||
+                              item.action === 'rejected_by_project_manager' ||
                               (item.action === 'accept' && item.user_role === 'MODERATOR'))
                               ? translate(`review.notes`)
                               : null}
@@ -387,7 +388,7 @@ function ProjectPath() {
                 {activeStep === '-1' && !stepGeneralLog && !stepGransLog && (
                   <Typography variant="h6">{translate(`review.notes`)}</Typography>
                 )}
-                {activeStep !== '-1' && logs[logs.length - 1].id !== activeStep ? (
+                {activeStep !== '-1' ? (
                   logs
                     .filter(
                       (item: Log, index: number) =>
@@ -419,7 +420,12 @@ function ProjectPath() {
                         LogActionCheck({
                           action: logs[logs.length - 1].action as LogAction,
                           type: CheckType.notIn,
-                          logAction: [LogAction.Update, LogAction.Reject, LogAction.Accept],
+                          logAction: [
+                            LogAction.Update,
+                            LogAction.Reject,
+                            LogAction.Accept,
+                            LogAction.RejectedByProjectManager,
+                          ],
                         })
                       ? translate('review.waiting')
                       : null}

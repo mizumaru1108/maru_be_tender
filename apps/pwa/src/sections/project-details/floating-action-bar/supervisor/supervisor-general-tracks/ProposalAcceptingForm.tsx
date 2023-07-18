@@ -242,7 +242,9 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       } else {
         // console.log('false');
         enqueueSnackbar(
-          `${translate('notification.error_exceeds_amount')}: ${totalSupportProposal}`,
+          data.support_type
+            ? `${translate('notification.error_not_same_amount')}: ${totalSupportProposal}`
+            : `${translate('notification.error_exceeds_amount')}: ${totalSupportProposal}`,
           {
             variant: 'error',
             preventDuplicate: true,
@@ -459,9 +461,12 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     type={'number'}
                     size={'small'}
                     disabled={
-                      support_type === 'false' || !support_type || support_type === undefined
-                        ? false
-                        : true
+                      // save
+                      //   ? true
+                      //   : support_type === 'false' || !support_type || support_type === undefined
+                      //   ? false
+                      //   : true
+                      save
                     }
                     name="payment_number"
                     placeholder="عدد الدفعات"

@@ -1988,6 +1988,8 @@ const ar = {
       send_revised_version: 'إرسال النسخة المنقحة',
       proposal_created: 'تم انشاء المشروع',
       uploaded_by_cashier: 'دفعة تم تحميلها بواسطة كاشير',
+      rejected_by_project_manager: 'تم رفض المشروع',
+      error_not_same_amount: 'إجمالي ميزانيات المشروع لا يتطابق مع مبلغ الدعم المطلوب',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'من 1 سنة إلى 13',

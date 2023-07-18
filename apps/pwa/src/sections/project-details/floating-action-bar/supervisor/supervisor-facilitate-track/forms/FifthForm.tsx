@@ -100,8 +100,39 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
       data.deleted_proposal_budget = tempDeletedBudget;
 
       if (step1 && proposal.amount_required_fsupport && totalAmount) {
-        if (step1.support_type && totalAmount <= proposal.amount_required_fsupport!) {
-          onSubmit(data);
+        // if (step1.support_type && totalAmount <= proposal.amount_required_fsupport!) {
+        //   onSubmit(data);
+        // } else {
+        //   if (totalAmount < proposal.amount_required_fsupport!) {
+        //     onSubmit(data);
+        //   } else {
+        //   enqueueSnackbar(
+        //     `${translate('notification.error_exceeds_amount')}: ${
+        //       proposal.amount_required_fsupport
+        //     }`,
+        //     {
+        //       variant: 'error',
+        //       preventDuplicate: true,
+        //       autoHideDuration: 3000,
+        //     }
+        //   );
+        // }
+        // }
+        if (step1.support_type) {
+          if (totalAmount === proposal.amount_required_fsupport!) {
+            onSubmit(data);
+          } else {
+            enqueueSnackbar(
+              `${translate('notification.error_not_same_amount')}: ${
+                proposal.amount_required_fsupport
+              }`,
+              {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              }
+            );
+          }
         } else {
           if (totalAmount < proposal.amount_required_fsupport!) {
             onSubmit(data);

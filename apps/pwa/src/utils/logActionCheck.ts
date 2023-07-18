@@ -16,6 +16,7 @@ export enum LogAction {
   IssuedBySupervisor = 'issued_by_supervisor',
   SetBySupervisor = 'set_by_supervisor',
   AcceptedByProjectManager = 'accepted_by_project_manager',
+  RejectedByProjectManager = 'rejected_by_project_manager',
   AcceptedByFinance = 'accepted_by_finance',
   Done = 'done',
   UploadedByCashier = 'uploaded_by_cashier',

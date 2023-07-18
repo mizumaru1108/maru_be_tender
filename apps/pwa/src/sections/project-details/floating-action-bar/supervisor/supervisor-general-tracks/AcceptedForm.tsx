@@ -518,11 +518,12 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
               type={'number'}
               size={'small'}
               disabled={
+                // save
+                //   ? true
+                //   : support_type === 'false' || !support_type || support_type === undefined
+                //   ? false
+                //   : true
                 save
-                  ? true
-                  : support_type === 'false' || !support_type || support_type === undefined
-                  ? false
-                  : true
               }
               name="payment_number"
               placeholder="عدد الدفعات"
@@ -576,9 +577,10 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                         error={!!error}
                         helperText={error?.message}
                         disabled={
-                          (support_type === 'false' || !support_type || support_type === undefined
-                            ? false
-                            : true) || save
+                          // (support_type === 'false' || !support_type || support_type === undefined
+                          //   ? false
+                          //   : true) || save
+                          save
                         }
                         sx={{
                           '& > .MuiFormHelperText-root': {
@@ -603,9 +605,10 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                         error={!!error}
                         helperText={error?.message}
                         disabled={
-                          (support_type === 'false' || !support_type || support_type === undefined
-                            ? false
-                            : true) || save
+                          // (support_type === 'false' || !support_type || support_type === undefined
+                          //   ? false
+                          //   : true) || save
+                          save
                         }
                         sx={{
                           '& > .MuiFormHelperText-root': {
@@ -631,9 +634,10 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                         error={!!error}
                         helperText={error?.message}
                         disabled={
-                          (support_type === 'false' || !support_type || support_type === undefined
-                            ? false
-                            : true) || save
+                          // (support_type === 'false' || !support_type || support_type === undefined
+                          //   ? false
+                          //   : true) || save
+                          save
                         }
                         sx={{
                           '& > .MuiFormHelperText-root': {
@@ -663,9 +667,10 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                       remove(i);
                     }}
                     disabled={
-                      (support_type === 'false' || !support_type || support_type === undefined
-                        ? false
-                        : true) || save
+                      // (support_type === 'false' || !support_type || support_type === undefined
+                      //   ? false
+                      //   : true) || save
+                      save
                     }
                   >
                     <CloseIcon />

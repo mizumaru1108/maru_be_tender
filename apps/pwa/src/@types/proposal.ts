@@ -412,6 +412,7 @@ export type Log = {
     | 'issued_by_supervisor'
     | 'set_by_supervisor'
     | 'accepted_by_project_manager'
+    | 'rejected_by_project_manager'
     | 'accepted_by_finance'
     | 'done'
     | 'uploaded_by_cashier'

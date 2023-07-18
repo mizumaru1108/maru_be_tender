@@ -1967,6 +1967,7 @@ const en = {
       send_revised_version: 'SEND REVISED VERSION',
       proposal_created: 'PROPOSAL CREATED',
       uploaded_by_cashier: 'PAYMENT UPLOADED BY CASHIER',
+      rejected_by_project_manager: 'PAYMENT REJECTED BY PROJECT MANAGER',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'Age 1 to 13',
@@ -2145,6 +2146,7 @@ const en = {
     content_payment: 'Your payment receipt has been uploaded by Cashier (Cashier) at',
     proof_of_funds: 'Proof of Funds',
     error_exceeds_amount: 'total project budgets exceeds the support amount provided',
+    error_not_same_amount: 'total project budgets does not match the support amount requested',
   },
   button: {
     back: 'Back',
