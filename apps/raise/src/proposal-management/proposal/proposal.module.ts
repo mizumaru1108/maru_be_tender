@@ -9,6 +9,7 @@ import { SendAmandementCommandHandler } from './commands/send.amandement/send.am
 import { TenderProposalController } from './controllers/proposal.controller';
 import { ProposalRepository } from './repositories/proposal.repository';
 import { ProposalService } from './services/proposal.service';
+import { ProposalFindByIdQueryHandler } from 'src/proposal-management/proposal/queries/proposal.find.by.id.query/proposal.find.by.id.query';
 
 const importedModule = [
   CqrsModule,
@@ -23,7 +24,7 @@ const commands: Provider[] = [
   SendAmandementCommandHandler,
 ];
 
-const queries: Provider[] = [];
+const queries: Provider[] = [ProposalFindByIdQueryHandler];
 
 const repositories: Provider[] = [ProposalRepository];
 

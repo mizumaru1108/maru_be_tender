@@ -4,15 +4,18 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  HttpException,
   HttpStatus,
   InternalServerErrorException,
   NotFoundException,
   Patch,
   Post,
   Query,
-  UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+import { Builder } from 'builder-pattern';
+import { BasePrismaErrorException } from 'src/tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
@@ -20,9 +23,15 @@ import { baseResponseHelper } from '../../../commons/helpers/base-response-helpe
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
+import { DataNotFoundException } from '../../../tender-commons/exceptions/data-not-found.exception';
+import { ForbiddenPermissionException } from '../../../tender-commons/exceptions/forbidden-permission-exception';
+import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { ProposalInsertPaymentCommand } from '../commands/proposal.insert.payments.command.ts/proposal.insert.payments.command';
+import { ProposalPaymentSendCloseReportCommand } from '../commands/proposal.send.close.report.command/proposal.send.close.report.command';
+import { ProposalUpdatePaymentCommand } from '../commands/proposal.update.payments.command.ts/proposal.update.payments.command';
 import {
   AskClosingReportDto,
   BankDetailsDto,
@@ -37,18 +46,10 @@ import {
   UpdateTrackBudgetDto,
 } from '../dtos/requests';
 import { UpdatePaymentResponseDto } from '../dtos/responses';
-import { ProposalPaymentService } from '../services/proposal-payment.service';
-import { DataNotFoundException } from '../../../tender-commons/exceptions/data-not-found.exception';
-import { ForbiddenPermissionException } from '../../../tender-commons/exceptions/forbidden-permission-exception';
-import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
-import { CommandBus } from '@nestjs/cqrs';
-import { Builder } from 'builder-pattern';
-import { ProposalInsertPaymentCommand } from '../commands/proposal.insert.payments.command.ts/proposal.insert.payments.command';
-import { InvalidNumberofPaymentsException } from '../exceptions/invalid.number.of.payments.exception';
 import { InvalidAmountOfSupportException } from '../exceptions/invalid.amount.of.support.exception';
-import { ProposalUpdatePaymentCommand } from '../commands/proposal.update.payments.command.ts/proposal.update.payments.command';
-import { ProposalPaymentSendCloseReportCommand } from '../commands/proposal.send.close.report.command/proposal.send.close.report.command';
-import { BasePrismaErrorException } from 'src/tender-commons/exceptions/prisma-error/base.prisma.error.exception';
+import { InvalidNumberofPaymentsException } from '../exceptions/invalid.number.of.payments.exception';
+import { ProposalPaymentService } from '../services/proposal-payment.service';
+import { ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
 
 @Controller('tender/proposal/payment')
 export class ProposalPaymentController {
@@ -75,12 +76,21 @@ export class ProposalPaymentController {
     }
 
     if (error instanceof BasePrismaErrorException) {
-      return new UnprocessableEntityException(error.message);
+      return new HttpException(
+        {
+          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          message: error.message,
+          error: error.stack ? JSON.parse(error.stack) : error.message,
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
 
     return new InternalServerErrorException(error);
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
   @Post('insert-payment-cqrs')
@@ -112,6 +122,8 @@ export class ProposalPaymentController {
     }
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
   @Post('insert-payment')
@@ -130,6 +142,8 @@ export class ProposalPaymentController {
     );
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Post('add-track-budget')
@@ -144,6 +158,8 @@ export class ProposalPaymentController {
     );
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
   @Post('submit-closing-report')
@@ -163,6 +179,8 @@ export class ProposalPaymentController {
     );
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin', 'tender_ceo')
   @Get('find-track-budgets')
@@ -181,6 +199,8 @@ export class ProposalPaymentController {
     );
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(
     'tender_project_supervisor',
@@ -224,6 +244,8 @@ export class ProposalPaymentController {
   //   );
   // }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(
     'tender_cashier',
@@ -259,6 +281,8 @@ export class ProposalPaymentController {
     }
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(
     'tender_cashier',
@@ -282,6 +306,8 @@ export class ProposalPaymentController {
     );
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_cashier')
   @Patch('complete-payment')
@@ -301,6 +327,8 @@ export class ProposalPaymentController {
     );
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
   @Patch('send-closing-report')
@@ -320,6 +348,8 @@ export class ProposalPaymentController {
     );
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles(
     'tender_cashier',
@@ -354,6 +384,8 @@ export class ProposalPaymentController {
     }
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Patch('delete-track-budget')
@@ -368,6 +400,8 @@ export class ProposalPaymentController {
     );
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Patch('update-track-budget')
@@ -383,6 +417,8 @@ export class ProposalPaymentController {
   }
 
   // Bank list
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Post('add-bank-list')
@@ -398,6 +434,8 @@ export class ProposalPaymentController {
     );
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Patch('update-bank')
@@ -413,6 +451,8 @@ export class ProposalPaymentController {
     );
   }
 
+  @ApiSecurity('x-hasura-role')
+  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Patch('bank/soft-delete')

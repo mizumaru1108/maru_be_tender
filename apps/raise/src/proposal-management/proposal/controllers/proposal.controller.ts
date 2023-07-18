@@ -4,6 +4,7 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  HttpException,
   HttpStatus,
   NotFoundException,
   Patch,
@@ -25,9 +26,13 @@ import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 // import { FileFieldsInterceptor } from '@webundsoehne/nest-fastify-file-upload';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
+import { ProposalFindByIdQueryDto } from 'src/proposal-management/proposal/dtos/queries/proposal.find.by.id.query.dto';
+import { BasePrismaErrorException } from 'src/tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { RequestErrorException } from 'src/tender-commons/exceptions/request-error.exception';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
@@ -53,13 +58,47 @@ import {
 import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
 import { ProposalService } from '../services/proposal.service';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import {
+  ProposalFindByIdQuery,
+  ProposalFindByIdQueryResult,
+} from 'src/proposal-management/proposal/queries/proposal.find.by.id.query/proposal.find.by.id.query';
+import { ProposalEntity } from 'src/proposal-management/proposal/entities/proposal.entity';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(
     private readonly proposalService: ProposalService,
     private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
   ) {}
+
+  errorMapper(error: any) {
+    if (error instanceof ProposalNotFoundException) {
+      throw new NotFoundException(error.message);
+    }
+    if (
+      error instanceof PayloadErrorException ||
+      error instanceof InvalidTrackIdException
+    ) {
+      throw new BadRequestException(error.message);
+    }
+    if (error instanceof ForbiddenChangeStateActionException) {
+      throw new ForbiddenException(error.message);
+    }
+    if (error instanceof RequestErrorException) {
+      throw new UnprocessableEntityException(`${error}`);
+    }
+
+    if (error instanceof BasePrismaErrorException) {
+      return new HttpException(
+        {
+          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          message: error.message,
+          error: error.stack ? JSON.parse(error.stack) : error.message,
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+  }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
@@ -261,6 +300,33 @@ export class TenderProposalController {
 
     return baseResponseHelper(
       result,
+      HttpStatus.OK,
+      'Proposal fetched successfully',
+    );
+  }
+
+  // same as fetch by id but using cqrs
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: Promise<BaseResponse<ProposalEntity | null>>,
+  })
+  @UseGuards(TenderJwtGuard)
+  @Get('find-by-id')
+  async findById(
+    @Query() query: ProposalFindByIdQueryDto,
+  ): Promise<BaseResponse<ProposalEntity | null>> {
+    const queries = Builder<ProposalFindByIdQuery>(ProposalFindByIdQuery, {
+      ...query,
+    }).build();
+
+    const result = await this.queryBus.execute<
+      ProposalFindByIdQuery,
+      ProposalFindByIdQueryResult
+    >(queries);
+
+    return baseResponseHelper(
+      result.proposal,
       HttpStatus.OK,
       'Proposal fetched successfully',
     );
@@ -576,23 +642,5 @@ export class TenderProposalController {
       HttpStatus.OK,
       'Proposal updated successfully',
     );
-  }
-
-  errorMapper(error: any) {
-    if (error instanceof ProposalNotFoundException) {
-      throw new NotFoundException(error.message);
-    }
-    if (
-      error instanceof PayloadErrorException ||
-      error instanceof InvalidTrackIdException
-    ) {
-      throw new BadRequestException(error.message);
-    }
-    if (error instanceof ForbiddenChangeStateActionException) {
-      throw new ForbiddenException(error.message);
-    }
-    if (error instanceof RequestErrorException) {
-      throw new UnprocessableEntityException(`${error}`);
-    }
   }
 }
