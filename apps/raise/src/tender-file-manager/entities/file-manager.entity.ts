@@ -32,6 +32,7 @@ export class FileManagerEntity {
   updated_at: Date = new Date();
   proposal_id?: string | null;
   bank_information_id?: string | null;
+  advertisement_id?: string | null;
   fid?: number | null;
   user?: UserEntity;
 }

@@ -13,7 +13,7 @@ export class AdvertisementCreateProps {
   content: string;
   title: string;
   type: AdvertisementTypeEnum;
-  logo?: UploadFilesJsonbDto;
+  logo?: UploadFilesJsonbDto[];
   id?: string; // incase of predefined id,
   track_id?: string;
   date: Date;
@@ -25,7 +25,7 @@ export class AdvertisementUpdateProps {
   content?: string;
   title?: string;
   type?: AdvertisementTypeEnum;
-  logo?: UploadFilesJsonbDto;
+  logo?: UploadFilesJsonbDto[];
   track_id?: string;
   date?: Date;
   start_time?: string;
@@ -76,7 +76,7 @@ export class AdvertisementRepository {
           content: props.content,
           title: props.title,
           type: props.type as unknown as string,
-          logo: props.logo as unknown as Prisma.InputJsonValue,
+          logo: props.logo as unknown as Prisma.InputJsonArray,
           track_id: props.track_id,
           date: props.date,
           start_time: props.start_time,
@@ -105,7 +105,7 @@ export class AdvertisementRepository {
           content: props.content,
           title: props.title,
           type: props.type as unknown as string,
-          logo: props.logo as unknown as Prisma.InputJsonValue,
+          logo: props.logo as unknown as Prisma.InputJsonArray,
           track_id: props.track_id,
           date: props.date,
           start_time: props.start_time,

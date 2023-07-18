@@ -696,6 +696,7 @@ Table file_manager {
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [default: `now()`, not null]
   proposal_id String
+  advertisement_id String
   bank_information_id String
   fid Int
   user user

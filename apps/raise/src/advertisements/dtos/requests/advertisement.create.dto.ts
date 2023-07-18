@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
@@ -31,6 +32,12 @@ export class AdvertisementCreateDto {
     enum: AdvertisementTypeEnum,
   })
   @IsNotEmpty()
+  @Transform(({ value }) => {
+    if (value && typeof value === 'string') {
+      return value.toUpperCase();
+    }
+    return value;
+  })
   @IsEnum(AdvertisementTypeEnum, {
     message: `Type must be one of ${Object.values(AdvertisementTypeEnum).join(
       ', ',

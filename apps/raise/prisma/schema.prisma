@@ -712,6 +712,7 @@ model file_manager {
   created_at          DateTime @default(now()) @db.Timestamptz(6)
   updated_at          DateTime @default(now()) @db.Timestamptz(6)
   proposal_id         String?
+  advertisement_id    String?
   bank_information_id String?
   fid                 Int?
   user                user?    @relation(fields: [user_id], references: [id], onDelete: Cascade)

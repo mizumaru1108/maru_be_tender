@@ -1,0 +1,7847 @@
+openapi: 3.0.0
+paths:
+  /:
+    get:
+      operationId: getHello
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /stripe/request:
+    post:
+      operationId: request
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequestDto'
+      responses:
+        '201':
+          description: ''
+  /stripe/callback/success:
+    get:
+      operationId: callback
+      parameters:
+        - name: session_id
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /stripe/requestCart:
+    post:
+      operationId: requestCart
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequestCartDto'
+      responses:
+        '201':
+          description: ''
+  /stripe/confirmPaymentIntent:
+    post:
+      operationId: callbackPaymentIntent
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequestCartDto'
+      responses:
+        '201':
+          description: ''
+  /stripe/callbackCart/success:
+    get:
+      operationId: callbackCart
+      parameters:
+        - name: session_id
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /stripe/reqPayStripe:
+    post:
+      operationId: reqPayStripe
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequestDto'
+      responses:
+        '201':
+          description: ''
+  /stripe/payStripeWebHook:
+    post:
+      operationId: payStripWebHook
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /project/getMyProjects:
+    get:
+      operationId: getMyProjects
+      summary: Get list of my projects
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: createdBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: updatedBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: appliedBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: operatorUserId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: maxDiameterSize
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: minDiameterSize
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: toiletSize
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: prayerMinCapacity
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: prayerMaxCapacity
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: hasAc
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: hasClassroom
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: hasGreenSpace
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: hasFemaleSection
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: hasParking
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: isDeleted
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: isPublished
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: &ref_0
+        - project
+  /project/manager/getListAll:
+    get:
+      operationId: getAllProjects
+      summary: Get All Projects viewed by manager
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /project/donor/organization/{organizationId}/getAllPublished:
+    get:
+      operationId: getAllProjectsForDonors
+      summary: Get All Projects viewed by donor
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /project/manager/getProjectList:
+    get:
+      operationId: getProjectList
+      summary: Get All Projects viewed by manager
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: createdBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: updatedBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: appliedBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: operatorUserId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: maxDiameterSize
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: minDiameterSize
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: toiletSize
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: prayerMinCapacity
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: prayerMaxCapacity
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: hasAc
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: hasClassroom
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: hasGreenSpace
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: hasFemaleSection
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: hasParking
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: isDeleted
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: isPublished
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /project/manager/operator/{operatorId}/getListAll:
+    get:
+      operationId: getAllProjectsByOperatorId
+      summary: Get All Projects viewed by operator
+      parameters:
+        - name: operatorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /project/detail/{projectId}:
+    get:
+      operationId: getProjectDetailById
+      summary: Get a project detail by projectId
+      parameters:
+        - name: projectId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Project `projectId` details retrieved successfully!
+      tags: *ref_0
+  /project/createProject:
+    post:
+      operationId: createProject
+      summary: Create Project
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateDto'
+      responses:
+        '201':
+          description: The Project has been successfully created!
+      tags: *ref_0
+  /project/setDeletedFlagBatch:
+    post:
+      operationId: setDeletedFlag
+      summary: set flag to delete campaign
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectSetDeletedFlagDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /project/approve:
+    patch:
+      operationId: approveProject
+      summary: Approve project
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectStatusUpdateDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /project/reject:
+    patch:
+      operationId: rejectProject
+      summary: Approve project
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectStatusUpdateDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /project/updateProject/{projectId}:
+    patch:
+      operationId: updateProject
+      summary: update project
+      parameters:
+        - name: projectId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectUpdateDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /project/deleteProject/{organizationId}/{projectId}:
+    delete:
+      operationId: deleteProject
+      summary: permanent delete project!
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: projectId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /item/manager/getListAll:
+    get:
+      operationId: getAllProjects
+      summary: Get All Items viewed by manager
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: &ref_1
+        - item
+  /item/manager/operator/{operatorId}/getListAll:
+    get:
+      operationId: getAllItemsByOperatorId
+      summary: Get All Items viewed by operator
+      parameters:
+        - name: operatorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_1
+  /item/create:
+    post:
+      operationId: create
+      summary: Create item
+      parameters: []
+      responses:
+        '201':
+          description: The Item has been successfully created.
+      tags: *ref_1
+  /item/setDeletedFlagBatch:
+    post:
+      operationId: setDeletedFlag
+      summary: set flag to delete campaign
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemSetDeletedFlagDto'
+      responses:
+        '201':
+          description: The New Campaign has been successfully flagged as deleted.
+      tags: *ref_1
+  /item/update/{itemId}:
+    patch:
+      operationId: updateProject
+      summary: update project
+      parameters:
+        - name: itemId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_1
+  /contacts/send:
+    post:
+      operationId: sendEmail
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageDto'
+      responses:
+        '201':
+          description: ''
+  /hr:
+    post:
+      operationId: create
+      summary: Create Hr Data
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHrDto'
+      responses:
+        '201':
+          description: The Hr has been successfully created.
+      tags: &ref_2
+        - hr
+    get:
+      operationId: getAllHr
+      summary: Get All Hr
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+  /hr/{id}:
+    get:
+      operationId: getById
+      summary: Get hr by id
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+    put:
+      operationId: update
+      summary: update hr
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateHrDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+    delete:
+      operationId: delete
+      summary: Delete hr
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+  /orgs/getListAll:
+    get:
+      operationId: findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: &ref_3
+        - orgs
+  /orgs/getAllOrgAdmin:
+    get:
+      operationId: getAllOrgAdmin
+      summary: Get all organization overview (superadmin)
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully fetch all organization request by Super Admin
+      tags: *ref_3
+  /orgs/{organizationId}:
+    get:
+      operationId: getOrganization
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    patch:
+      operationId: updateOrganization
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/appearance/{organizationId}:
+    get:
+      operationId: getAppearance
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/appearance/{organizationId}/create:
+    post:
+      operationId: createAppearance
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppearancenDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_3
+  /orgs/appearance/{organizationId}/update:
+    patch:
+      operationId: updateAppearance
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppearancenDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/donors:
+    get:
+      operationId: getDonorList
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/donor:
+    get:
+      operationId: getDonorsList
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/{organizationId}/paymentGateway:
+    get:
+      operationId: getPaymentGatewayList
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    patch:
+      operationId: updatePaymentGateway
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentGateWayDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    post:
+      operationId: addPaymentGateway
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentGateWayDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_3
+  /orgs/insight:
+    get:
+      operationId: getInsightSummary
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: period
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: startDate
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: endDate
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/notification-settings/{organizationId}:
+    get:
+      operationId: getNotificationSettings
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    patch:
+      operationId: updateNotificationSettings
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationSettingsDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/notification-settings:
+    post:
+      operationId: createNotificationSettings
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationSettingsDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_3
+  /orgs/notifications:
+    get:
+      operationId: getNotificationList
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: type
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/{organizationId}/notifications/add:
+    post:
+      operationId: addNotification
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: ''
+      tags: *ref_3
+  /orgs/faq:
+    get:
+      operationId: getFaqList
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    post:
+      operationId: createFaq
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FaqDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_3
+  /orgs/faq/{faqId}:
+    post:
+      operationId: updateFaq
+      parameters:
+        - name: faqId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FaqDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_3
+  /orgs/{organizationId}/landingPage:
+    post:
+      operationId: createLandingPage
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: ''
+      tags: *ref_3
+    patch:
+      operationId: editLandingPage
+      summary: update landingPage
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    get:
+      operationId: getLandingPage
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/{organizationId}/aboutUs:
+    post:
+      operationId: createAboutUs
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: ''
+      tags: *ref_3
+    patch:
+      operationId: editAboutUs
+      summary: update aboutUs
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    get:
+      operationId: getAboutUs
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/{organizationId}/blog:
+    post:
+      operationId: createBlog
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: ''
+      tags: *ref_3
+    patch:
+      operationId: editBlog
+      summary: update blog
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    get:
+      operationId: getBlog
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/{organizationId}/contactUs:
+    post:
+      operationId: createContactUs
+      summary: create contactUs
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NonProfitAppearancePageDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_3
+    patch:
+      operationId: editContactUs
+      summary: update contactUs
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditNonProfitAppearancePageDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    get:
+      operationId: getContactUs
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orgs/donor/{organizationId}/{donorId}:
+    get:
+      operationId: getInsightSummaryDonorId
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: donorId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: period
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /referral/getListAll:
+    get:
+      operationId: findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: &ref_4
+        - referral
+  /referral/getSummary:
+    get:
+      operationId: getSummary
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+  /referral/getTopFiveByProjectByZone:
+    get:
+      operationId: getTopFiveByProjectByZone
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+  /donor/anonymous/create:
+    post:
+      operationId: createDonor
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorUpdateProfileDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_5
+        - donor
+  /donor/apply-vendor:
+    post:
+      operationId: applyVendor
+      summary: Apply to become vendor from donor.
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags: *ref_5
+  /donor/payment/submit:
+    post:
+      operationId: create
+      summary: Create Donor Payment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorPaymentSubmitDto'
+      responses:
+        '201':
+          description: The Donor payment has been successfully created.
+      tags: *ref_5
+  /donor/donate:
+    post:
+      operationId: donate
+      summary: Create Donor Payment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorDonateDto'
+      responses:
+        '201':
+          description: The Donor payment has been successfully created.
+      tags: *ref_5
+  /donor/donatePaytabs/webhook:
+    post:
+      operationId: donatePaytabsWebhook
+      summary: Paytabs webhook handler
+      parameters:
+        - name: signature
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        '201':
+          description: ''
+      tags: *ref_5
+  /donor/donateStripe/webhook:
+    post:
+      operationId: donateStripeWebhook
+      summary: Stripe webhook handler
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags: *ref_5
+  /donor/donate-item:
+    post:
+      operationId: donateItem
+      summary: Create Donor Payment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorDonateItemDto'
+      responses:
+        '201':
+          description: The Donor payment has been successfully created.
+      tags: *ref_5
+  /donor/donate-item/callback:
+    post:
+      operationId: donateItemCallback
+      summary: Create Donor Payment
+      parameters: []
+      responses:
+        '201':
+          description: The Donor payment has been successfully created.
+      tags: *ref_5
+  /donor/getDonationLogs:
+    get:
+      operationId: getDonationLogs
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: donorUserId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: sortStatus
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: sortDate
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /donor/{donorId}/insight:
+    get:
+      operationId: getDonorInsight
+      summary: Get insight donation log for donor
+      parameters:
+        - name: donorId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: period
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: startDate
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: endDate
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /donor/donorTransaction:
+    get:
+      operationId: getTrxDonorList
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /donor/donorList:
+    get:
+      operationId: getDonorList
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /donor/totalDonation/{donorId}:
+    get:
+      operationId: getTotalDonation
+      summary: Create Donor Payment
+      parameters:
+        - name: donorId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: currencyCode
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /donor/totalDonationDonor/{donorId}:
+    get:
+      operationId: getTotalDonationDonor
+      summary: Get Donation Donor Summary Dashboard
+      parameters:
+        - name: donorId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: currencyCode
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /donor/organization/{organizationId}/manager/getListAll:
+    get:
+      operationId: getDonorListAll
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /donor/{donorId}:
+    get:
+      operationId: getDonor
+      parameters:
+        - name: donorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+    patch:
+      operationId: updateDonor
+      parameters:
+        - name: donorId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DonorUpdateProfileDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /donor/{donorId}/history/getAllSuccess:
+    get:
+      operationId: getAllSuccessDonation
+      summary: Get list of success donation history by donorId
+      parameters:
+        - name: donorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of donation history sucessfully retrieved
+      tags: *ref_5
+  /manager/getChartData:
+    get:
+      operationId: getChartData
+      summary: Get Chart Data
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - manager
+  /campaign/setFavorite:
+    post:
+      operationId: setFavorite
+      summary: Set Favorite
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignSetFavoriteDto'
+      responses:
+        '201':
+          description: The donor favorite campaign has been successfully set.
+      tags: &ref_6
+        - campaign
+  /campaign/setDeletedFlagBatch:
+    post:
+      operationId: setDeletedFlag
+      summary: set flag to delete campaign
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignSetDeletedFlagDto'
+      responses:
+        '201':
+          description: The New Campaign has been successfully flagged as deleted.
+      tags: *ref_6
+  /campaign/getListAll:
+    get:
+      operationId: findAll
+      summary: Get list all campaign
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: isFinished
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: sortPublished
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: sortFinished
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List all campaigns by organization ID.
+      tags: *ref_6
+  /campaign/getAllCampaignVendorRequest:
+    get:
+      operationId: getAllCampaignVendorRequest
+      summary: Get all pending campaign vendor request (operator/admin)
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: campaignId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully fetch all campaign vendor request on 'campaignId'
+      tags: *ref_6
+  /campaign/getAllMyCampaign:
+    get:
+      operationId: getAllMyCampaign
+      summary: Get all my campaign (operator/admin)
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: isPublished
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: showQuickDonate
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: campaignId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: campaignType
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortMethod
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully fetch all campaign on user 'userId'
+      tags: *ref_6
+  /campaign/findAllCampaigns:
+    get:
+      operationId: getCampaignsByOrganizationId
+      summary: Get all my campaign (organizationId)
+      parameters:
+        - name: orgzanizationId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: isPublished
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: showQuickDonate
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: campaignId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: campaignType
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortMethod
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully fetch all campaign
+      tags: *ref_6
+  /campaign/organization/{organizationId}/{campaignId}/donor-list:
+    get:
+      operationId: getCampaignDonorListOnOperatorDashboard
+      summary: Get list all donor on spesific campaign
+      parameters:
+        - name: campaignId
+          required: false
+          in: path
+          schema:
+            type: string
+        - name: organizationId
+          required: false
+          in: path
+          schema:
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: minDonationCount
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: maxDonationCount
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: minTotalDonation
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: maxTotalDonation
+          required: false
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /campaign/organization/{organizationId}/getListAll:
+    get:
+      operationId: getAllByOrganizationId
+      summary: List all campaigns by organization ID
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /campaign/organization/{organizationId}/getAllPublished:
+    get:
+      operationId: getAllPublished
+      summary: List all campaigns displayed in public page
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /campaign/organization/{organizationId}/operator/{operatorId}/getListAll:
+    get:
+      operationId: getAllByOperatorId
+      summary: Get list all campaign by operatorID
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: operatorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /campaign/organization/{organizationId}/getListAllNew:
+    get:
+      operationId: getAllNewCampaign
+      summary: Get list all new campaign created by all operator
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /campaign/organization/{organizationId}/getListAllNewPaginated:
+    get:
+      operationId: getAllNewCampaignPaginated
+      summary: Successfully get list of new campaign on organization
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: type
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: isFinished
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get list of new campaign on organization.
+      tags: *ref_6
+  /campaign/organization/{organizationId}/unapproval/{campaignId}:
+    get:
+      operationId: getNewCampaignById
+      summary: 'Get Detail of Unapproval Campaign Info Created by Manager by CampaignId '
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: campaignId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /campaign/organization/{organizationId}/vendor/{vendorId}/getListApproved:
+    get:
+      operationId: getApprovedMyCampaignByVendor
+      summary: Get list all my approved campaign (vendor)
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: vendorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /campaign/organization/{organizationId}/vendor/{vendorId}/getListPending:
+    get:
+      operationId: getPendingMyCampaignByVendorId
+      summary: Get list all my pending campaign (vendor)
+      parameters:
+        - name: organizationId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: vendorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /campaign/{campaignId}/operator/{operatorId}/getListPending:
+    get:
+      operationId: getPendingMyCampaignByOperatorId
+      summary: Get list all my pending campaign (Operator)
+      parameters:
+        - name: campaignId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: operatorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /campaign/campaignCreate:
+    post:
+      operationId: campaignCreate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignCreateDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_6
+  /campaign/vendor/apply:
+    post:
+      operationId: vendorApply
+      summary: Vendor apply to campaign
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignApplyVendorDto'
+      responses:
+        '201':
+          description: >-
+            Current vendor has been applied to campaign `campaignId`
+            successfully
+      tags: *ref_6
+  /campaign/operator/approve:
+    post:
+      operationId: approveCampaign
+      summary: Operator/Manager approve for vendor request
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCampaignStatusDto'
+      responses:
+        '201':
+          description: Campain vendor request has been approved successfully!
+      tags: *ref_6
+  /campaign/operator/reject:
+    post:
+      operationId: rejectCampaign
+      summary: Operator reject for campaign
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCampaignStatusDto'
+      responses:
+        '201':
+          description: Campaign `campaignId` has been rejected by Operator !
+      tags: *ref_6
+  /campaign/getNewObjectId:
+    post:
+      operationId: getNewCampaignObjectId
+      summary: create new campaign objectId
+      parameters: []
+      responses:
+        '201':
+          description: The New Campaign has been successfully created.
+      tags: *ref_6
+  /campaign/detail/{campaignId}:
+    get:
+      operationId: getCampaignDetailById
+      summary: get a campaign detail by campaignId
+      parameters:
+        - name: campaignId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Campaign `campaignId` details retrieved successfully!
+      tags: *ref_6
+  /campaign/campaignUpdate/{campaignId}:
+    patch:
+      operationId: campaignUpdate
+      summary: update campaign
+      parameters:
+        - name: campaignId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignUpdateDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /operator/getListAll:
+    get:
+      operationId: getListAll
+      summary: Get List All Operator
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: &ref_7
+        - operator
+  /operator/{operatorId}/detail:
+    get:
+      operationId: getOperatorDetail
+      summary: Get operator details
+      parameters:
+        - name: operatorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_7
+  /operator/{operatorId}/getChartData:
+    get:
+      operationId: getChartData
+      summary: Get Chart Data
+      parameters:
+        - name: operatorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_7
+  /ticket/create:
+    post:
+      operationId: create
+      summary: Create Ticket
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTicketDto'
+      responses:
+        '201':
+          description: The Ticket has been successfully created.
+      tags: &ref_8
+        - ticket
+  /ticket/getListAll:
+    get:
+      operationId: getAllTickets
+      summary: Get All Ticket with its status
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_8
+  /zakat/metal:
+    get:
+      operationId: fetchingMetalPrice
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /zakat/metalprice:
+    get:
+      operationId: getMetalPrice
+      parameters:
+        - name: base
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: symbols
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /zakat/getSummary:
+    get:
+      operationId: getSummary
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /zakat/transactionAll:
+    get:
+      operationId: getTransactionAll
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: sortStatus
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /zakat/transactionList:
+    get:
+      operationId: getTransactionList
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: sortStatus
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /zakat/expense/list:
+    get:
+      operationId: getExpenseList
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /zakat/expense/create:
+    post:
+      operationId: createExpense
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseDto'
+      responses:
+        '201':
+          description: ''
+  /zakat/donate:
+    post:
+      operationId: createDonate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequestDto'
+      responses:
+        '201':
+          description: ''
+  /user/test-superadmin:
+    post:
+      operationId: testSuperAdmin
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /user/test-cluster-admin:
+    post:
+      operationId: testClusterAdmin
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /user/test-vendor:
+    post:
+      operationId: testVendor
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /user/test-operator:
+    post:
+      operationId: testOperator
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /user/test-nonprofit:
+    post:
+      operationId: testNonProfit
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /user/test-donor:
+    post:
+      operationId: testDonor
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /user:
+    get:
+      operationId: getAllUser
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /user/authzed-tests:
+    get:
+      operationId: authzedTesting
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /user/{id}:
+    get:
+      operationId: getOneUser
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+    patch:
+      operationId: updateUser
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /user/updateUserProfile:
+    patch:
+      operationId: updateUserProfile
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /auth/google/login:
+    post:
+      operationId: googleLogin
+      summary: Login with fusion auth
+      parameters: []
+      responses:
+        '201':
+          description: Login Success!
+  /auth/google/auth-callback:
+    post:
+      operationId: handleGoogleCallback
+      summary: Login with fusion auth
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandleGoogleCallbackDto'
+      responses:
+        '201':
+          description: Login Success!
+  /auth/fusion/login:
+    post:
+      operationId: fusionLogin
+      summary: Login with fusion auth
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+      responses:
+        '201':
+          description: Login Success!
+  /auth/fusion/register:
+    post:
+      operationId: fusionRegister
+      summary: Register user with fusion auth
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequestDto'
+      responses:
+        '201':
+          description: User has been registered successfully!
+  /auth/register:
+    post:
+      operationId: register
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /auth/register-organization:
+    post:
+      operationId: registerOrganization
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterOrganizationDto'
+      responses:
+        '201':
+          description: ''
+  /vendor/getListAll:
+    get:
+      operationId: findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: &ref_9
+        - vendor
+  /vendor/{vendorId}:
+    get:
+      operationId: getVendor
+      summary: Get Vendor
+      parameters:
+        - name: vendorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_9
+  /vendor/{vendorId}/summary:
+    get:
+      operationId: getSummary
+      summary: Get Summary
+      parameters:
+        - name: vendorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_9
+  /vendor/{vendorId}/getChartData:
+    get:
+      operationId: getChartData
+      summary: Get Chart Data
+      parameters:
+        - name: vendorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_9
+  /widgets/basket/list:
+    get:
+      operationId: getBasketList
+      parameters:
+        - name: donorId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /widgets/basket/create:
+    post:
+      operationId: createBasket
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasketDto'
+      responses:
+        '201':
+          description: ''
+  /widgets/basket/{basketId}:
+    patch:
+      operationId: updateBasket
+      parameters:
+        - name: basketId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasketDto'
+      responses:
+        '200':
+          description: ''
+  /widgets/basketProject/create:
+    post:
+      operationId: createBasketProject
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasketProjectDto'
+      responses:
+        '201':
+          description: ''
+  /widget-backend/donation/add:
+    post:
+      operationId: create
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /widget-backend:
+    get:
+      operationId: findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /widget-backend/{id}:
+    get:
+      operationId: findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+    patch:
+      operationId: update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWidgetBackendDto'
+      responses:
+        '200':
+          description: ''
+    delete:
+      operationId: remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /comments/createComment:
+    post:
+      operationId: createComment
+      summary: Create Comment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentDto'
+      responses:
+        '201':
+          description: Comment created successfully.
+  /comments/allComment:
+    get:
+      operationId: getAllComment
+      summary: Get ALL USER comment without paginated
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: commentOwnerId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: parentCommentId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: campaignId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: projectId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: itemId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortMethod
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: All user comments fetched successfully.
+  /comments/allCommentsPaginated:
+    get:
+      operationId: getAllCommentPaginated
+      summary: Get ALL USER Comment Paginated
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: commentOwnerId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: parentCommentId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: campaignId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: projectId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: itemId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortMethod
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: All user comments fetched successfully.
+  /comments/currentUserComment:
+    get:
+      operationId: getMyComment
+      summary: Get CURRENT USER comment
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: commentOwnerId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: parentCommentId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: campaignId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: projectId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: itemId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortMethod
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully fetch all of my comment.
+  /comments/currentUserCommentPaginated:
+    get:
+      operationId: getMyCommentPaginated
+      summary: Get CURRENT USER comment PAGINATED
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: commentOwnerId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: parentCommentId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: campaignId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: projectId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: itemId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortMethod
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully fetch all of my comment.
+  /comments/findComment:
+    get:
+      operationId: findOneComment
+      summary: Get user comment with filter
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: commentOwnerId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: organizationId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: parentCommentId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: campaignId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: projectId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: itemId
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortMethod
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully fetch user comment.
+  /comments/userComment/{id}:
+    get:
+      operationId: findCommentById
+      summary: Get user comment by id
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully fetch user comment.
+  /comments/softDeleteComments:
+    patch:
+      operationId: softDeleteComment
+      summary: Soft delete comment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteCommentsDto'
+      responses:
+        '200':
+          description: Soft delete comment performed successfully!
+  /comments/softDeleteMyComments:
+    patch:
+      operationId: softDeleteMyComments
+      summary: Soft delete current user comment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteCommentsDto'
+      responses:
+        '200':
+          description: Soft delete comment performed successfully!
+  /permission-manager/assign/operator:
+    post:
+      operationId: assignOperator
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertUserPermission'
+      responses:
+        '201':
+          description: ''
+  /permission-manager/assign/vendor:
+    post:
+      operationId: assignVendor
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertUserPermission'
+      responses:
+        '201':
+          description: ''
+  /permission-manager/assign/nonprofit:
+    post:
+      operationId: assignNonprofit
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertUserPermission'
+      responses:
+        '201':
+          description: ''
+  /gs/auth/login:
+    post:
+      operationId: login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+      responses:
+        '201':
+          description: ''
+  /gs/auth/register:
+    post:
+      operationId: register
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GSRegisterRequestDto'
+      responses:
+        '201':
+          description: ''
+  /gs/auth/resetPassword:
+    post:
+      operationId: resetPassword
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GSResetPassword'
+      responses:
+        '201':
+          description: ''
+  /gs/auth/verifyUser:
+    post:
+      operationId: verifyUserCheck
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GSVerifyUser'
+      responses:
+        '201':
+          description: ''
+  /gs/auth/submit-change-password:
+    post:
+      operationId: submitForgotPassword
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitChangePasswordDto'
+      responses:
+        '201':
+          description: ''
+  /tender/proposal/beneficiaries/create:
+    post:
+      operationId: create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBeneficiariesDto'
+      responses:
+        '201':
+          description: ''
+  /tender/proposal/beneficiaries/update:
+    patch:
+      operationId: update
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBeneficiaryDto'
+      responses:
+        '200':
+          description: ''
+  /tender/proposal/beneficiaries/find-by-id:
+    get:
+      operationId: findById
+      parameters:
+        - name: id
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/proposal/beneficiaries/find-all:
+    get:
+      operationId: findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/edit-request-hook-handler:
+    post:
+      operationId: postEditRequest
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /tender/twilio-test:
+    post:
+      operationId: twilioTest
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /tender/msegat-test:
+    post:
+      operationId: msegatTest
+      parameters: []
+      responses:
+        '201':
+          description: ''
+  /tender-proposal/follow-up/create:
+    post:
+      operationId: create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProposalFollowUpDto'
+      responses:
+        '201':
+          description: ''
+  /tender-proposal/follow-up/create-cqrs:
+    post:
+      operationId: createCqrs
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProposalFollowUpDto'
+      responses:
+        '201':
+          description: ''
+  /tender-proposal/follow-up/delete:
+    patch:
+      operationId: delete
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteProposalFollowUpDto'
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/interceptor-create:
+    post:
+      operationId: createProposal
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProposalInterceptorDto'
+      responses:
+        '201':
+          description: ''
+  /tender-proposal/send-amandement:
+    post:
+      operationId: sendAmandement
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendAmandementDto'
+      responses:
+        '201':
+          description: ''
+  /tender-proposal/send-amandement-cqrs:
+    post:
+      operationId: sendAmandementCqrs
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendAmandementDto'
+      responses:
+        '201':
+          description: ''
+  /tender-proposal/delete-draft:
+    post:
+      operationId: deleteDraft
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProposalDeleteDraftDto'
+      responses:
+        '201':
+          description: ''
+  /tender-proposal/ask-amandement-request:
+    post:
+      operationId: askForAmandementRequest
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AskAmandementRequestDto'
+      responses:
+        '201':
+          description: ''
+  /tender-proposal/request-in-process:
+    get:
+      operationId: requestInProcess
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: type
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: track_id
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: vat
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: project_name
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/previous:
+    get:
+      operationId: getPreviousProposal
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: outter_status
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: project_name
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/payment-adjustment:
+    get:
+      operationId: fetchPaymentAdjustment
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: type
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: project_name
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/fetch-by-id:
+    get:
+      operationId: fetchById
+      parameters:
+        - name: id
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/find-by-id:
+    get:
+      operationId: findById
+      parameters:
+        - name: id
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: relations
+          required: false
+          in: query
+          examples:
+            - user
+            - beneficiary_details
+            - follow_ups
+            - track
+            - proposal_item_budgets
+            - supervisor
+            - poposal_log
+            - payments
+            - bank_information
+            - project_timeline
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Promise'
+      security:
+        - bearer: []
+  /tender-proposal/amandement-lists:
+    get:
+      operationId: fetchAmandementList
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: project_name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: entity
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: employee_name
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/rejection-list:
+    get:
+      operationId: fetchRejectionList
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: project_name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: track_id
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/closing-report-list:
+    get:
+      operationId: fetchClosingReportList
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: project_name
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/amandement-request-lists:
+    get:
+      operationId: fetchAmandementRequestList
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: project_name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: entity
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: employee_name
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/list:
+    get:
+      operationId: fetchProposalList
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: project_name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: outter_status
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: project_number
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: employee_name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: project_track
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/proposal-count:
+    get:
+      operationId: getProposalCount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/old/list:
+    get:
+      operationId: fetchOldProposalList
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: project_name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: outter_status
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: project_number
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: employee_name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: project_track
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/amandement:
+    get:
+      operationId: getAmandementById
+      parameters:
+        - name: id
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/fetch-track:
+    get:
+      operationId: fetchTrack
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/change-state:
+    patch:
+      operationId: changeProposalState
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeProposalStateDto'
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/change-state-cqrs:
+    patch:
+      operationId: applyChangeProposalState
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeProposalStateDto'
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/interceptor-save-draft:
+    patch:
+      operationId: interceptorSaveDraft
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProposalSaveDraftInterceptorDto'
+      responses:
+        '200':
+          description: ''
+  /tender-proposal/send-revision:
+    patch:
+      operationId: sendRevision
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendRevisionDto'
+      responses:
+        '200':
+          description: ''
+  /tender/track/create:
+    post:
+      operationId: create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTrackDto'
+      responses:
+        '201':
+          description: ''
+  /tender/track/update:
+    patch:
+      operationId: update
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTrackDto'
+      responses:
+        '200':
+          description: ''
+  /tender/track/fetch-all:
+    get:
+      operationId: fetchAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: track_name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: include_general
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/proposal/payment/insert-payment-cqrs:
+    post:
+      operationId: insertPayments
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProposalPaymentDto'
+      responses:
+        '201':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/insert-payment:
+    post:
+      operationId: insertPayment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProposalPaymentDto'
+      responses:
+        '201':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/add-track-budget:
+    post:
+      operationId: addBudget
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTrackBudgetDto'
+      responses:
+        '201':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/submit-closing-report:
+    post:
+      operationId: askClosingReport
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AskClosingReportDto'
+      responses:
+        '201':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/find-track-budgets:
+    get:
+      operationId: findTrackBudgets
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: id
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/find-track-budget:
+    get:
+      operationId: findTrackBudgetsByTrackId
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: id
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/update-payment-cqrs:
+    patch:
+      operationId: updatePayments
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePaymentDto'
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/update-payment:
+    patch:
+      operationId: updatePayment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePaymentDto'
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/complete-payment:
+    patch:
+      operationId: completePayment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetByIdDto'
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/send-closing-report:
+    patch:
+      operationId: sendClosingReport
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendClosingReportDto'
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/send-closing-report-cqrs:
+    patch:
+      operationId: sendCloseReport
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendClosingReportDto'
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/delete-track-budget:
+    patch:
+      operationId: deleteTrackBudget
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteTrackBudgetDto'
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/update-track-budget:
+    patch:
+      operationId: updateTrackBudget
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTrackBudgetDto'
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/add-bank-list:
+    post:
+      operationId: addBanks
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankListCreateDto'
+      responses:
+        '201':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/update-bank:
+    patch:
+      operationId: updateBanks
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankListCreateDto'
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/bank/soft-delete:
+    patch:
+      operationId: softDelete
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetByIdDto'
+      responses:
+        '200':
+          description: ''
+      security:
+        - bearer: []
+        - x-hasura-role: []
+  /tender/proposal/payment/find-bank-list:
+    get:
+      operationId: findBankList
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/proposal/payment/find-bank-details:
+    get:
+      operationId: findBankDetails
+      parameters:
+        - name: id
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/appointments/create-appointment:
+    post:
+      operationId: createAppointment
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAppointmentDto'
+      responses:
+        '201':
+          description: ''
+  /tender/appointments/response-invitation:
+    patch:
+      operationId: responseInvitation
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationResponseDto'
+      responses:
+        '200':
+          description: ''
+  /tender/appointments/mine:
+    get:
+      operationId: getMyAppointments
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: month
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: year
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: user_id
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: employee_id
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/appointments/fetch:
+    get:
+      operationId: fetchAppointment
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: month
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: year
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: user_id
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: employee_id
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/schedules/mine:
+    get:
+      operationId: getMySchedules
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /tender/schedules/client:
+    get:
+      operationId: getClientSchedules
+      parameters:
+        - name: id
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/schedules/upsert-schedules:
+    post:
+      operationId: upsertSchedules
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateScheduleDto'
+      responses:
+        '201':
+          description: ''
+  /tender-user/create:
+    post:
+      operationId: createUser
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenderCreateUserDto'
+      responses:
+        '201':
+          description: ''
+  /tender-user/find-users:
+    get:
+      operationId: findUsers
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: employee_name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: association_name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: track_id
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: user_type_id
+          required: false
+          in: query
+          examples:
+            - SUPERVISOR
+            - MODERATOR
+          schema:
+            type: array
+            items:
+              type: string
+        - name: employee_path
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: account_status
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: client_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: email
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: hide_internal
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: hide_external
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: single_role
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: include_schedule
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: split_roles
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-user/delete:
+    post:
+      operationId: deleteUser
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenderDeleteUserDto'
+      responses:
+        '201':
+          description: ''
+  /tender-user/update-profile:
+    patch:
+      operationId: updateProfile
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileDto'
+      responses:
+        '200':
+          description: ''
+  /tender-user/update-status:
+    patch:
+      operationId: updateStatus
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserStatusUpdateDto'
+      responses:
+        '200':
+          description: ''
+  /tender-user/update-user:
+    patch:
+      operationId: updateUser
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: ''
+  /tender/client/edit-request/create:
+    post:
+      operationId: createEditRequest
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientEditRequestFieldDto'
+      responses:
+        '201':
+          description: ''
+  /tender/client/current-user-track:
+    get:
+      operationId: getCurrentUserTrack
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /tender/client/my-profile:
+    get:
+      operationId: getMyProfile
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /tender/client/proposal/list:
+    get:
+      operationId: findProposalList
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: employee_name
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/client/proposals:
+    get:
+      operationId: findClientProposalById
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: user_id
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/client/edit-request/list:
+    get:
+      operationId: findEditRequest
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: association_name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/client/edit-request/find:
+    get:
+      operationId: find
+      parameters:
+        - name: requestId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/client/edit-request/my-pending-count:
+    get:
+      operationId: getPendingCount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /tender/client/approve-edit-requests:
+    patch:
+      operationId: approveEditRequests
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditRequestByIdDto'
+      responses:
+        '200':
+          description: ''
+  /tender/client/reject-edit-requests:
+    patch:
+      operationId: rejectEditRequests
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectEditRequestDto'
+      responses:
+        '200':
+          description: ''
+  /tender-auth/old/login:
+    post:
+      operationId: oldLogin
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+      responses:
+        '201':
+          description: ''
+  /tender-auth/login:
+    post:
+      operationId: login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+      responses:
+        '201':
+          description: ''
+  /tender-auth/send-email-verif:
+    post:
+      operationId: sendEmailVerif
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendEmailVerifDto'
+      responses:
+        '201':
+          description: ''
+  /tender-auth/verify-email/{token}:
+    post:
+      operationId: verifyEmail
+      parameters:
+        - name: token
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: ''
+  /tender-auth/register:
+    post:
+      operationId: register
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterTenderDto'
+      responses:
+        '201':
+          description: ''
+  /tender-auth/register-client:
+    post:
+      operationId: registerClient
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterTenderDto'
+      responses:
+        '201':
+          description: ''
+  /tender-auth/reset-password-request:
+    post:
+      operationId: resetPasswordRequest
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequestDto'
+      responses:
+        '201':
+          description: ''
+  /tender-auth/ask-forgot-password-url:
+    post:
+      operationId: askForgotPasswordUrl
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequestDto'
+      responses:
+        '201':
+          description: ''
+  /tender-auth/forgot-password-request:
+    post:
+      operationId: forgotPasswordRequest
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequestDto'
+      responses:
+        '201':
+          description: ''
+  /tender-auth/submit-change-password:
+    post:
+      operationId: submitForgotPassword
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitChangePasswordDto'
+      responses:
+        '201':
+          description: ''
+  /tender-email/send:
+    post:
+      operationId: send
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendNewEmailDto'
+      responses:
+        '201':
+          description: ''
+  /tender-email/my-inbox:
+    get:
+      operationId: myInbox
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sender_id
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: receiver_id
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender-email/my-outbox:
+    get:
+      operationId: myOutbox
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sender_id
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: receiver_id
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/messages/send:
+    post:
+      operationId: send
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMessageDto'
+      responses:
+        '201':
+          description: ''
+  /tender/messages/find:
+    get:
+      operationId: findMessages
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: content
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sender_id
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: content_title
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: room_id
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: group_message
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/messages/toogle-read:
+    patch:
+      operationId: toogleRead
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToogleReadMessageDto'
+      responses:
+        '200':
+          description: ''
+  /tender/room-chats/create:
+    post:
+      operationId: createRoomChat
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRoomChatDto'
+      responses:
+        '201':
+          description: ''
+  /tender/room-chats/get-last-chat:
+    get:
+      operationId: fetchLastChat
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /statistics/orders:
+    get:
+      operationId: getAllStatistics
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /statistics/partners:
+    get:
+      operationId: getAllPartnersStatistics
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /statistics/partners-section:
+    get:
+      operationId: getPartnersReport
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: start_date
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: end_date
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /statistics/benificiaries-report:
+    get:
+      operationId: getProjectBeneficiariesReport
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: start_date
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: end_date
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /statistics/average-track-transaction-time:
+    get:
+      operationId: averageTransaction
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: start_date
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: end_date
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /statistics/average-employee-transaction-time:
+    get:
+      operationId: avarageEmployeeTransaction
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: start_date
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: end_date
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: employee_name
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /statistics/budget-info:
+    get:
+      operationId: getBudgetInfo
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: start_date
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: end_date
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /tender/notification/read:
+    patch:
+      operationId: read
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseNotificationDto'
+      responses:
+        '200':
+          description: ''
+  /tender/notification/read-mine:
+    patch:
+      operationId: readAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /tender/notification/hide:
+    patch:
+      operationId: hide
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseNotificationDto'
+      responses:
+        '200':
+          description: ''
+  /tender/notification/hide-all-mine:
+    patch:
+      operationId: hideAllMine
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /tender/notification/delete:
+    patch:
+      operationId: delete
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseNotificationDto'
+      responses:
+        '200':
+          description: ''
+  /tender/notification/delete-all-mine:
+    patch:
+      operationId: deleteAllMine
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /tender/file-manager/fetch-all:
+    get:
+      operationId: fetchAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: file_name
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /paytabs/request-single:
+    post:
+      operationId: requestSingle
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentPaytabsDto'
+      responses:
+        '201':
+          description: ''
+  /paytabs/callback-single:
+    post:
+      operationId: callbackSingle
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentPaytabsCallbackDto'
+      responses:
+        '201':
+          description: ''
+  /paytabs/request-cart:
+    post:
+      operationId: requestCart
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentPaytabsDto'
+      responses:
+        '201':
+          description: ''
+  /paytabs/callback-cart:
+    post:
+      operationId: callbackCart
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentPaytabsCallbackDto'
+      responses:
+        '201':
+          description: ''
+  /qa-helper/proposal/create-moderator:
+    post:
+      operationId: createProposal
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QaProposalCreateDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_10
+        - qa-helper
+  /qa-helper/proposal/create-supervisor:
+    post:
+      operationId: createProposalSupervisor
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QaProposalCreateSupervisorDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_10
+  /qa-helper/proposal/delete/{id}:
+    delete:
+      operationId: deleteProposal
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_10
+  /advertisements/create:
+    post:
+      operationId: create
+      summary: creating advertisement either for internal or external
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertisementCreateDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Promise'
+      tags: &ref_11
+        - advertisements
+  /advertisements:
+    get:
+      operationId: findMany
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 10
+            type: number
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: desc
+            type: string
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_11
+  /advertisements/update:
+    post:
+      operationId: update
+      summary: updating advertisement either for internal or external
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertisementCreateDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_11
+  /health/startup:
+    get:
+      operationId: startup
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /health/liveness:
+    get:
+      operationId: liveness
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /health/readiness:
+    get:
+      operationId: readiness
+      parameters: []
+      responses:
+        '200':
+          description: ''
+info:
+  title: Tmra Raise
+  description: Tmra Raise API
+  version: '3.0'
+  contact: {}
+tags: []
+servers: []
+components:
+  schemas:
+    PaymentRequestDto:
+      type: object
+      properties: {}
+    PaymentRequestCartDto:
+      type: object
+      properties: {}
+    CoordiateLocation:
+      type: object
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+      required:
+        - latitude
+        - longitude
+    ProjectCreateDto:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        operatorUserId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        country:
+          type: string
+        city:
+          type: string
+        address:
+          type: string
+        coordinate:
+          $ref: '#/components/schemas/CoordiateLocation'
+        diameterSize:
+          type: number
+        prayerSize:
+          type: number
+        toiletSize:
+          type: number
+        hasAc:
+          type: string
+        hasClassroom:
+          type: string
+        hasParking:
+          type: string
+        hasGreenSpace:
+          type: string
+        hasFemaleSection:
+          type: string
+        nearByPlaces:
+          type: array
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            type: string
+      required:
+        - organizationId
+        - name
+        - description
+        - country
+        - city
+        - address
+        - coordinate
+        - diameterSize
+        - prayerSize
+        - toiletSize
+        - hasAc
+        - hasClassroom
+        - hasParking
+        - hasGreenSpace
+        - hasFemaleSection
+        - images
+    ProjectSetDeletedFlagDto:
+      type: object
+      properties:
+        projectIds:
+          type: array
+          items:
+            type: string
+      required:
+        - projectIds
+    ProjectStatusUpdateDto:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        projectId:
+          type: string
+        status:
+          type: string
+        rejectReason:
+          type: string
+      required:
+        - organizationId
+        - projectId
+        - status
+    ProjectUpdateDto:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        operatorUserId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        country:
+          type: string
+        city:
+          type: string
+        address:
+          type: string
+        coordinate:
+          $ref: '#/components/schemas/CoordiateLocation'
+        diameterSize:
+          type: number
+        prayerSize:
+          type: number
+        toiletSize:
+          type: number
+        hasAc:
+          type: string
+        hasClassroom:
+          type: string
+        hasParking:
+          type: string
+        hasGreenSpace:
+          type: string
+        hasFemaleSection:
+          type: string
+        nearByPlaces:
+          type: array
+          items:
+            type: string
+        updatedImage:
+          type: array
+          items:
+            type: string
+      required:
+        - organizationId
+        - name
+        - description
+        - country
+        - city
+        - address
+        - coordinate
+        - diameterSize
+        - prayerSize
+        - toiletSize
+        - hasAc
+        - hasClassroom
+        - hasParking
+        - hasGreenSpace
+        - hasFemaleSection
+        - updatedImage
+    ItemSetDeletedFlagDto:
+      type: object
+      properties:
+        itemIds:
+          type: array
+          items:
+            type: string
+      required:
+        - itemIds
+    MessageDto:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        help_message:
+          type: string
+        organizationId:
+          type: object
+        files:
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - email
+        - help_message
+    CreateHrDto:
+      type: object
+      properties:
+        hrName:
+          type: string
+      required:
+        - hrName
+    UpdateHrDto:
+      type: object
+      properties:
+        hrName:
+          type: string
+    OrganizationDto:
+      type: object
+      properties: {}
+    AppearancenDto:
+      type: object
+      properties:
+        ownerUserId:
+          type: string
+        ownerRealmId:
+          type: string
+        primaryColor:
+          type: string
+        secondaryColor:
+          type: string
+        logo:
+          type: string
+        themesColor:
+          type: string
+        usePallete:
+          type: boolean
+        headerAndFooter:
+          type: string
+        whyShouldWe:
+          type: string
+        accent:
+          type: string
+        lButton:
+          type: string
+        lText:
+          type: string
+        ourStory:
+          type: string
+        peopleSay:
+          type: string
+        mainImageUrl:
+          type: string
+        secondaryImage:
+          type: string
+        eventImagesUrl1:
+          type: string
+        eventImagesUrl2:
+          type: string
+        eventImagesUrl3:
+          type: string
+        detailStory1:
+          type: string
+        detailStory2:
+          type: string
+        detailStory3:
+          type: string
+        videoUrl:
+          type: string
+        whySupportUs1:
+          type: string
+        whySupportUs2:
+          type: string
+        whySupportUs3:
+          type: string
+        favIcon:
+          type: string
+    ObjectId:
+      type: object
+      properties: {}
+    PaymentGateWayDto:
+      type: object
+      properties:
+        organizationId:
+          $ref: '#/components/schemas/ObjectId'
+        defaultCurrency:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        payementMethod:
+          type: string
+        profileId:
+          type: string
+        profileName:
+          type: string
+        apiKey:
+          type: string
+        clientKey:
+          type: string
+        serverKey:
+          type: string
+        isActive:
+          type: string
+        isDeleted:
+          type: string
+        isLiveMode:
+          type: string
+        isTestMode:
+          type: string
+      required:
+        - organizationId
+        - defaultCurrency
+        - name
+        - apiKey
+        - clientKey
+        - serverKey
+    NotificationSettingsDto:
+      type: object
+      properties: {}
+    FaqDto:
+      type: object
+      properties: {}
+    NonProfitAppearancePageDto:
+      type: object
+      properties: {}
+    EditNonProfitAppearancePageDto:
+      type: object
+      properties: {}
+    DonorUpdateProfileDto:
+      type: object
+      properties:
+        isAnonymous:
+          type: boolean
+        about:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zipcode:
+          type: string
+        address:
+          type: string
+        country:
+          type: string
+        facebook:
+          type: string
+        twitter:
+          type: string
+        linkedin:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        gender:
+          type: string
+        mobile:
+          type: string
+        profilePic:
+          type: string
+        isEmailChecklist:
+          type: boolean
+        anonymous:
+          type: boolean
+      required:
+        - isAnonymous
+        - about
+        - city
+        - state
+        - zipcode
+        - address
+        - country
+        - facebook
+        - twitter
+        - linkedin
+        - firstName
+        - lastName
+        - gender
+        - mobile
+        - profilePic
+        - isEmailChecklist
+        - anonymous
+    DonorPaymentSubmitDto:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        projectId:
+          type: string
+        campaignId:
+          type: string
+        donorId:
+          type: string
+        itemId:
+          type: string
+        type:
+          type: string
+        paymentGatewayId:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        ipAddress:
+          type: string
+      required:
+        - organizationId
+        - projectId
+        - campaignId
+        - donorId
+        - itemId
+        - type
+        - paymentGatewayId
+        - amount
+        - currency
+        - ipAddress
+    DonorDonateDto:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        stripeSuccessUrl:
+          type: string
+        stripeCancelUrl:
+          type: string
+        user:
+          type: object
+        donationDetails:
+          type: array
+          items:
+            type: string
+      required:
+        - organizationId
+        - donationDetails
+    DonorDonateItemDto:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        itemId:
+          type: string
+        qty:
+          type: number
+      required:
+        - organizationId
+        - itemId
+        - qty
+    CampaignSetFavoriteDto:
+      type: object
+      properties:
+        campaignIds:
+          type: array
+          items:
+            type: string
+        donorId:
+          type: string
+      required:
+        - campaignIds
+        - donorId
+    CampaignSetDeletedFlagDto:
+      type: object
+      properties:
+        campaignIds:
+          type: array
+          items:
+            type: string
+      required:
+        - campaignIds
+    CampaignCreateDto:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        projectId:
+          type: string
+        campaignName:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        campaignType:
+          type: string
+        isMoney:
+          type: string
+        methods:
+          type: array
+          items:
+            type: string
+        currencyCode:
+          type: string
+        amountTarget:
+          type: string
+        isPublished:
+          type: string
+        milestone:
+          type: array
+          items:
+            type: string
+        creatorUserId:
+          type: string
+        islamCharityType:
+          type: string
+        marketingPlanEnabled:
+          type: boolean
+        marketingPlan:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        contentLanguage:
+          type: array
+          items:
+            type: string
+        purposeDonation:
+          type: string
+        quickDonateEnabled:
+          type: boolean
+      required:
+        - organizationId
+        - projectId
+        - campaignName
+        - description
+        - campaignType
+        - isMoney
+        - methods
+        - milestone
+        - images
+        - contentLanguage
+    CampaignApplyVendorDto:
+      type: object
+      properties:
+        campaignId:
+          type: string
+        organizationId:
+          type: string
+    UpdateCampaignStatusDto:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        campaignId:
+          type: string
+        vendorId:
+          type: string
+      required:
+        - organizationId
+        - campaignId
+        - vendorId
+    CampaignUpdateDto:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        projectId:
+          type: string
+        campaignName:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        campaignType:
+          type: string
+        isMoney:
+          type: string
+        methods:
+          type: array
+          items:
+            type: string
+        currencyCode:
+          type: string
+        amountTarget:
+          type: string
+        isPublished:
+          type: string
+        milestone:
+          type: array
+          items:
+            type: string
+        creatorUserId:
+          type: string
+        islamCharityType:
+          type: string
+        marketingPlanEnabled:
+          type: boolean
+        marketingPlan:
+          type: string
+        updatedImage:
+          type: array
+          items:
+            type: string
+        contentLanguage:
+          type: array
+          items:
+            type: string
+        purposeDonation:
+          type: string
+        quickDonateEnabled:
+          type: boolean
+      required:
+        - organizationId
+        - projectId
+        - campaignName
+        - description
+        - campaignType
+        - isMoney
+        - methods
+        - milestone
+        - updatedImage
+        - contentLanguage
+    CreateTicketDto:
+      type: object
+      properties:
+        title:
+          type: string
+        department:
+          type: string
+        description:
+          type: string
+      required:
+        - title
+        - department
+        - description
+    ExpenseDto:
+      type: object
+      properties: {}
+    HandleGoogleCallbackDto:
+      type: object
+      properties:
+        code:
+          type: string
+      required:
+        - code
+    LoginRequestDto:
+      type: object
+      properties:
+        loginId:
+          type: string
+        password:
+          type: string
+        organizationId:
+          type: string
+      required:
+        - loginId
+        - password
+    RegisterRequestDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        organizationId:
+          type: object
+        country:
+          type: string
+        state:
+          type: string
+        address:
+          type: string
+        mobile:
+          type: string
+      required:
+        - firstName
+        - lastName
+        - email
+        - password
+        - country
+        - state
+        - address
+        - mobile
+    RegisterFileUpload:
+      type: object
+      properties:
+        base64Data:
+          type: string
+        fullName:
+          type: string
+        imageExtension:
+          type: string
+        size:
+          type: number
+      required:
+        - base64Data
+        - fullName
+        - imageExtension
+        - size
+    RegisterOrganizationDto:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        country:
+          type: string
+        state:
+          type: string
+        address:
+          type: string
+        selectedIndustry:
+          type: string
+        organizationMission:
+          type: string
+        organizationName:
+          type: string
+        organizationWebsite:
+          type: string
+        locationOrganization:
+          type: string
+        imageLogo:
+          $ref: '#/components/schemas/RegisterFileUpload'
+        useCurrency:
+          type: string
+        paymentGateway:
+          type: string
+        timeZone:
+          type: string
+        domainUrl:
+          type: string
+        ownerUserId:
+          type: string
+      required:
+        - email
+        - password
+    BasketDto:
+      type: object
+      properties: {}
+    BasketProjectDto:
+      type: object
+      properties: {}
+    CreateWidgetBackendDto:
+      type: object
+      properties: {}
+    CreateCommentDto:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        parentCommentId:
+          type: string
+        campaignId:
+          type: string
+        projectId:
+          type: string
+        itemId:
+          type: string
+        content:
+          type: string
+      required:
+        - organizationId
+        - content
+    DeleteCommentsDto:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        commentIds:
+          type: array
+          items:
+            type: string
+      required:
+        - organizationId
+        - commentIds
+    UpsertUserPermission:
+      type: object
+      properties:
+        organizationId:
+          type: string
+        userId:
+          type: string
+      required:
+        - organizationId
+        - userId
+    GSRegisterRequestDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        organizationId:
+          type: object
+        organizationEmail:
+          type: object
+        domainUrl:
+          type: string
+        country:
+          type: string
+        state:
+          type: string
+        address:
+          type: string
+        mobile:
+          type: string
+      required:
+        - firstName
+        - lastName
+        - email
+        - password
+    GSResetPassword:
+      type: object
+      properties:
+        organization_id:
+          type: object
+        email:
+          type: string
+        domain_url:
+          type: string
+      required:
+        - email
+        - domain_url
+    GSVerifyUser:
+      type: object
+      properties:
+        token:
+          type: string
+        organization_id:
+          type: object
+        donor_name:
+          type: string
+        donor_email:
+          type: string
+        domain_url:
+          type: string
+      required:
+        - token
+    SubmitChangePasswordDto:
+      type: object
+      properties:
+        changePasswordId:
+          type: string
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+      required:
+        - changePasswordId
+        - newPassword
+    CreateBeneficiariesDto:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+    UpdateBeneficiaryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        is_deleted:
+          type: boolean
+      required:
+        - id
+    CreateProposalFollowUpDto:
+      type: object
+      properties:
+        proposal_id:
+          type: string
+        selectLang:
+          type: string
+        follow_up_type:
+          type: string
+        follow_up_attachment:
+          type: array
+          items:
+            type: string
+        content:
+          type: string
+        employee_only:
+          type: boolean
+      required:
+        - proposal_id
+        - follow_up_type
+        - employee_only
+    DeleteProposalFollowUpDto:
+      type: object
+      properties:
+        id:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+    CreateProposalInterceptorDto:
+      type: object
+      properties:
+        project_name:
+          type: string
+        project_idea:
+          type: string
+        project_location:
+          type: string
+        project_implement_date:
+          type: string
+        execution_time:
+          type: number
+        beneficiary_id:
+          type: string
+        num_ofproject_binicficiaries:
+          type: number
+        project_goals:
+          type: string
+        project_outputs:
+          type: string
+        project_strengths:
+          type: string
+        project_risks:
+          type: string
+        pm_name:
+          type: string
+        pm_mobile:
+          type: string
+        pm_email:
+          type: string
+        region:
+          type: string
+        governorate:
+          type: string
+        amount_required_fsupport:
+          type: number
+        detail_project_budgets:
+          type: array
+          items:
+            type: string
+        proposal_bank_information_id:
+          type: string
+        project_timeline:
+          type: array
+          items:
+            type: string
+      required:
+        - project_name
+        - project_idea
+        - project_location
+        - project_implement_date
+        - execution_time
+        - beneficiary_id
+    SendAmandementDto:
+      type: object
+      properties:
+        selectLang:
+          type: string
+        proposal_id:
+          type: string
+        notes:
+          type: string
+        project_goals:
+          type: string
+        project_outputs:
+          type: string
+        project_strengths:
+          type: string
+        project_risks:
+          type: string
+        project_idea:
+          type: string
+        project_location:
+          type: string
+        project_implement_date:
+          type: string
+        project_beneficiaries:
+          type: string
+        num_ofproject_binicficiaries:
+          type: string
+        amount_required_fsupport:
+          type: string
+        letter_ofsupport_req:
+          type: string
+        project_attachments:
+          type: string
+        timelines:
+          type: string
+      required:
+        - proposal_id
+        - notes
+    ProposalDeleteDraftDto:
+      type: object
+      properties:
+        proposal_id:
+          type: string
+      required:
+        - proposal_id
+    AskAmandementRequestDto:
+      type: object
+      properties:
+        notes:
+          type: string
+        proposal_id:
+          type: string
+      required:
+        - notes
+        - proposal_id
+    Promise:
+      type: object
+      properties: {}
+    ModeratorChangeStatePayload:
+      type: object
+      properties:
+        track_id:
+          type: string
+        supervisor_id:
+          type: string
+      required:
+        - track_id
+    SupervisorChangeStatePayload:
+      type: object
+      properties:
+        inclu_or_exclu:
+          type: boolean
+        vat_percentage:
+          type: number
+        support_goal_id:
+          type: string
+        vat:
+          type: boolean
+        support_outputs:
+          type: string
+        number_of_payments_by_supervisor:
+          type: number
+        fsupport_by_supervisor:
+          type: number
+        does_an_agreement:
+          type: boolean
+        need_picture:
+          type: boolean
+        closing_report:
+          type: boolean
+        support_type:
+          type: boolean
+        clause:
+          type: string
+        clasification_field:
+          type: string
+        created_proposal_budget:
+          type: array
+          items:
+            type: string
+        updated_proposal_budget:
+          type: array
+          items:
+            type: string
+        deleted_proposal_budget:
+          type: array
+          items:
+            type: string
+        accreditation_type_id:
+          type: string
+        chairman_of_board_of_directors:
+          type: string
+        most_clents_projects:
+          type: string
+        been_supported_before:
+          type: boolean
+        added_value:
+          type: string
+        reasons_to_accept:
+          type: string
+        target_group_num:
+          type: number
+        target_group_type:
+          type: string
+        target_group_age:
+          type: string
+        been_made_before:
+          type: boolean
+        remote_or_insite:
+          type: string
+        created_recommended_support:
+          type: array
+          items:
+            type: string
+        updated_recommended_support:
+          type: array
+          items:
+            type: string
+        deleted_recommended_support:
+          type: array
+          items:
+            type: string
+    ProjectManagerChangeStatePayload:
+      type: object
+      properties:
+        inclu_or_exclu:
+          type: boolean
+        vat_percentage:
+          type: number
+        support_goal_id:
+          type: string
+        vat:
+          type: boolean
+        support_outputs:
+          type: string
+        number_of_payments_by_supervisor:
+          type: number
+        fsupport_by_supervisor:
+          type: number
+        does_an_agreement:
+          type: boolean
+        need_picture:
+          type: boolean
+        closing_report:
+          type: boolean
+        support_type:
+          type: boolean
+        clause:
+          type: string
+        clasification_field:
+          type: string
+        created_proposal_budget:
+          type: array
+          items:
+            type: string
+        updated_proposal_budget:
+          type: array
+          items:
+            type: string
+        deleted_proposal_budget:
+          type: array
+          items:
+            type: string
+        accreditation_type_id:
+          type: string
+        chairman_of_board_of_directors:
+          type: string
+        most_clents_projects:
+          type: string
+        been_supported_before:
+          type: boolean
+        added_value:
+          type: string
+        reasons_to_accept:
+          type: string
+        target_group_num:
+          type: number
+        target_group_type:
+          type: string
+        target_group_age:
+          type: string
+        been_made_before:
+          type: boolean
+        remote_or_insite:
+          type: string
+        created_recommended_support:
+          type: array
+          items:
+            type: string
+        updated_recommended_support:
+          type: array
+          items:
+            type: string
+        deleted_recommended_support:
+          type: array
+          items:
+            type: string
+      required:
+        - number_of_payments_by_supervisor
+        - fsupport_by_supervisor
+    CeoChangeStatePayload:
+      type: object
+      properties:
+        step_back_to:
+          type: string
+        inclu_or_exclu:
+          type: boolean
+        vat_percentage:
+          type: number
+        support_goal_id:
+          type: string
+        vat:
+          type: boolean
+        support_outputs:
+          type: string
+        number_of_payments_by_supervisor:
+          type: number
+        fsupport_by_supervisor:
+          type: number
+        does_an_agreement:
+          type: boolean
+        need_picture:
+          type: boolean
+        closing_report:
+          type: boolean
+        support_type:
+          type: boolean
+        clause:
+          type: string
+        clasification_field:
+          type: string
+        created_proposal_budget:
+          type: array
+          items:
+            type: string
+        updated_proposal_budget:
+          type: array
+          items:
+            type: string
+        deleted_proposal_budget:
+          type: array
+          items:
+            type: string
+        accreditation_type_id:
+          type: string
+        chairman_of_board_of_directors:
+          type: string
+        most_clents_projects:
+          type: string
+        been_supported_before:
+          type: boolean
+        added_value:
+          type: string
+        reasons_to_accept:
+          type: string
+        target_group_num:
+          type: number
+        target_group_type:
+          type: string
+        target_group_age:
+          type: string
+        been_made_before:
+          type: boolean
+        remote_or_insite:
+          type: string
+        created_recommended_support:
+          type: array
+          items:
+            type: string
+        updated_recommended_support:
+          type: array
+          items:
+            type: string
+        deleted_recommended_support:
+          type: array
+          items:
+            type: string
+    ChangeProposalStateDto:
+      type: object
+      properties:
+        selectLang:
+          type: string
+        proposal_id:
+          type: string
+        action:
+          type: string
+        moderator_payload:
+          $ref: '#/components/schemas/ModeratorChangeStatePayload'
+        supervisor_payload:
+          $ref: '#/components/schemas/SupervisorChangeStatePayload'
+        project_manager_payload:
+          $ref: '#/components/schemas/ProjectManagerChangeStatePayload'
+        ceo_payload:
+          $ref: '#/components/schemas/CeoChangeStatePayload'
+        reject_reason:
+          type: string
+        notes:
+          type: string
+        message:
+          type: string
+      required:
+        - proposal_id
+        - action
+    ProposalSaveDraftInterceptorDto:
+      type: object
+      properties:
+        proposal_id:
+          type: string
+        project_name:
+          type: string
+        project_idea:
+          type: string
+        project_location:
+          type: string
+        project_implement_date:
+          type: string
+        execution_time:
+          type: number
+        project_beneficiaries:
+          type: string
+        letter_ofsupport_req:
+          type: object
+        project_attachments:
+          type: object
+        num_ofproject_binicficiaries:
+          type: number
+        project_goals:
+          type: string
+        project_outputs:
+          type: string
+        project_strengths:
+          type: string
+        project_risks:
+          type: string
+        pm_name:
+          type: string
+        pm_mobile:
+          type: string
+        pm_email:
+          type: string
+        region:
+          type: string
+        governorate:
+          type: string
+        amount_required_fsupport:
+          type: number
+        detail_project_budgets:
+          type: array
+          items:
+            type: string
+        proposal_bank_information_id:
+          type: string
+        project_timeline:
+          type: array
+          items:
+            type: string
+      required:
+        - proposal_id
+        - project_name
+        - project_idea
+        - project_location
+        - project_implement_date
+        - execution_time
+        - project_beneficiaries
+    SendRevisionDto:
+      type: object
+      properties:
+        proposal_id:
+          type: string
+        project_goals:
+          type: string
+        project_outputs:
+          type: string
+        project_strengths:
+          type: string
+        project_risks:
+          type: string
+        project_idea:
+          type: string
+        project_location:
+          type: string
+        project_implement_date:
+          format: date-time
+          type: string
+        project_beneficiaries:
+          type: string
+        num_ofproject_binicficiaries:
+          type: number
+        amount_required_fsupport:
+          type: number
+        letter_ofsupport_req:
+          type: object
+        project_attachments:
+          type: object
+        detail_project_budgets:
+          type: array
+          items:
+            type: string
+        project_timeline:
+          type: array
+          items:
+            type: string
+      required:
+        - proposal_id
+    CreateTrackDto:
+      type: object
+      properties:
+        name:
+          type: string
+        with_consultation:
+          type: boolean
+      required:
+        - name
+        - with_consultation
+    UpdateTrackDto:
+      type: object
+      properties:
+        name:
+          type: string
+        with_consultation:
+          type: boolean
+        id:
+          type: string
+      required:
+        - id
+    CreateProposalPaymentDto:
+      type: object
+      properties:
+        payments:
+          type: array
+          items:
+            type: string
+        proposal_id:
+          type: string
+      required:
+        - payments
+        - proposal_id
+    CreateTrackBudgetDto:
+      type: object
+      properties:
+        name:
+          type: string
+        budget:
+          type: number
+        track_ids:
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - budget
+        - track_ids
+    AskClosingReportDto:
+      type: object
+      properties:
+        proposal_id:
+          type: string
+        number_of_beneficiaries:
+          type: number
+        target_beneficiaries:
+          type: string
+        execution_place:
+          type: string
+        gender:
+          type: string
+        project_duration:
+          type: string
+        project_repeated:
+          type: string
+        number_of_volunteer:
+          type: number
+        number_of_staff:
+          type: number
+        attachments:
+          type: array
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            type: string
+      required:
+        - proposal_id
+        - number_of_beneficiaries
+        - target_beneficiaries
+        - execution_place
+        - gender
+        - project_duration
+        - project_repeated
+        - number_of_volunteer
+        - number_of_staff
+        - attachments
+        - images
+    TenderFilePayload:
+      type: object
+      properties:
+        base64Data:
+          type: string
+        fullName:
+          type: string
+        fileExtension:
+          type: string
+        size:
+          type: number
+      required:
+        - base64Data
+        - fullName
+        - fileExtension
+        - size
+    CreateChequeDto:
+      type: object
+      properties:
+        deposit_date:
+          format: date-time
+          type: string
+        number:
+          type: string
+        transfer_receipt:
+          $ref: '#/components/schemas/TenderFilePayload'
+      required:
+        - deposit_date
+        - number
+        - transfer_receipt
+    UpdatePaymentDto:
+      type: object
+      properties:
+        payment_id:
+          type: string
+        action:
+          type: string
+        cheque:
+          $ref: '#/components/schemas/CreateChequeDto'
+        notes:
+          type: string
+        last_payment_receipt_url:
+          type: string
+      required:
+        - payment_id
+        - action
+    GetByIdDto:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+        - id
+    SendClosingReportDto:
+      type: object
+      properties:
+        id:
+          type: string
+        send:
+          type: boolean
+      required:
+        - id
+        - send
+    DeleteTrackBudgetDto:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+        - id
+    UpdateTrackBudgetDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        budget:
+          type: number
+      required:
+        - id
+        - name
+        - budget
+    BankListCreateDto:
+      type: object
+      properties:
+        id:
+          type: string
+        bank_name:
+          type: string
+      required:
+        - bank_name
+    CreateAppointmentDto:
+      type: object
+      properties:
+        authCode:
+          type: string
+        selectLang:
+          type: string
+        date:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+        client_id:
+          type: string
+      required:
+        - date
+        - start_time
+        - end_time
+        - client_id
+    InvitationResponseDto:
+      type: object
+      properties:
+        authCode:
+          type: string
+        appointmentId:
+          type: string
+        response:
+          type: string
+        reject_reason:
+          type: string
+      required:
+        - appointmentId
+        - response
+    CreateScheduleDto:
+      type: object
+      properties:
+        payload:
+          type: array
+          items:
+            type: string
+      required:
+        - payload
+    TenderCreateUserDto:
+      type: object
+      properties:
+        selectLang:
+          type: string
+        employee_name:
+          type: string
+        password:
+          type: string
+        mobile_number:
+          type: string
+        email:
+          type: string
+        activate_user:
+          type: boolean
+        track_id:
+          type: string
+        user_roles:
+          type: array
+          items:
+            type: string
+      required:
+        - employee_name
+        - password
+        - mobile_number
+        - email
+        - activate_user
+        - track_id
+        - user_roles
+    TenderDeleteUserDto:
+      type: object
+      properties:
+        user_id:
+          type: string
+      required:
+        - user_id
+    UpdateProfileDto:
+      type: object
+      properties:
+        employee_name:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        mobile_number:
+          type: string
+        new_password:
+          type: string
+        current_password:
+          type: string
+      required:
+        - current_password
+    UserStatusUpdateDto:
+      type: object
+      properties:
+        selectLang:
+          type: string
+        status:
+          type: string
+        user_id:
+          type: string
+      required:
+        - status
+        - user_id
+    UpdateUserDto:
+      type: object
+      properties:
+        id:
+          type: string
+        selectLang:
+          type: string
+        activate_user:
+          type: boolean
+        email:
+          type: string
+        password:
+          type: string
+        employee_name:
+          type: string
+        track_id:
+          type: string
+        mobile_number:
+          type: string
+        user_roles:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - activate_user
+        - email
+        - employee_name
+        - track_id
+        - mobile_number
+        - user_roles
+    ClientEditRequestFieldDto:
+      type: object
+      properties:
+        selectLang:
+          type: string
+        entity:
+          type: string
+        authority:
+          type: string
+        headquarters:
+          type: string
+        date_of_esthablistmen:
+          format: date-time
+          type: string
+        num_of_beneficiaries:
+          type: number
+        num_of_employed_facility:
+          type: number
+        governorate:
+          type: string
+        region:
+          type: string
+        entity_mobile:
+          type: string
+        center_administration:
+          type: string
+        twitter_acount:
+          type: string
+        phone:
+          type: string
+        website:
+          type: string
+        license_number:
+          type: string
+        license_expired:
+          format: date-time
+          type: string
+        license_issue_date:
+          format: date-time
+          type: string
+        license_file:
+          type: object
+        board_ofdec_file:
+          type: array
+          items:
+            type: string
+        ceo_mobile:
+          type: string
+        ceo_name:
+          type: string
+        data_entry_mobile:
+          type: string
+        data_entry_name:
+          type: string
+        data_entry_mail:
+          type: string
+        client_field:
+          type: string
+        chairman_name:
+          type: string
+        chairman_mobile:
+          type: string
+        created_banks:
+          type: array
+          items:
+            type: string
+        updated_banks:
+          type: array
+          items:
+            type: string
+        deleted_banks:
+          type: array
+          items:
+            type: string
+        old_banks:
+          type: array
+          items:
+            type: string
+        bank_information:
+          type: array
+          items:
+            type: string
+        createdBanks:
+          type: array
+          items:
+            type: string
+        updatedBanks:
+          type: array
+          items:
+            type: string
+        deletedBanks:
+          type: array
+          items:
+            type: string
+    EditRequestByIdDto:
+      type: object
+      properties:
+        requestId:
+          type: string
+      required:
+        - requestId
+    RejectEditRequestDto:
+      type: object
+      properties:
+        requestId:
+          type: string
+        reject_reason:
+          type: string
+      required:
+        - requestId
+        - reject_reason
+    SendEmailVerifDto:
+      type: object
+      properties:
+        email:
+          type: string
+        selectLang:
+          type: string
+      required:
+        - email
+    bankData:
+      type: object
+      properties:
+        bank_account_name:
+          type: string
+        bank_account_number:
+          type: string
+        bank_id:
+          type: string
+        card_image:
+          $ref: '#/components/schemas/TenderFilePayload'
+      required:
+        - bank_account_name
+        - bank_account_number
+        - bank_id
+        - card_image
+    registerClient:
+      type: object
+      properties:
+        selectLang:
+          type: string
+        email:
+          type: string
+        license_number:
+          type: string
+        password:
+          type: string
+        employee_name:
+          type: string
+        employee_path:
+          type: string
+        authority:
+          type: string
+        board_ofdec_file:
+          $ref: '#/components/schemas/TenderFilePayload'
+        center_administration:
+          type: string
+        ceo_mobile:
+          type: string
+        ceo_name:
+          type: string
+        chairman_mobile:
+          type: string
+        chairman_name:
+          type: string
+        date_of_esthablistmen:
+          format: date-time
+          type: string
+        data_entry_mail:
+          type: string
+        entity_mobile:
+          type: string
+        governorate:
+          type: string
+        headquarters:
+          type: string
+        license_expired:
+          format: date-time
+          type: string
+        license_file:
+          $ref: '#/components/schemas/TenderFilePayload'
+        license_issue_date:
+          format: date-time
+          type: string
+        data_entry_mobile:
+          type: string
+        num_of_beneficiaries:
+          type: number
+        num_of_employed_facility:
+          type: number
+        phone:
+          type: string
+        region:
+          type: string
+        twitter_acount:
+          type: string
+        website:
+          type: string
+        entity:
+          type: string
+        status:
+          type: string
+        data_entry_name:
+          type: string
+        client_field:
+          type: string
+        bank_informations:
+          $ref: '#/components/schemas/bankData'
+      required:
+        - email
+        - license_number
+        - password
+        - employee_name
+        - authority
+        - board_ofdec_file
+        - ceo_mobile
+        - ceo_name
+        - chairman_mobile
+        - chairman_name
+        - date_of_esthablistmen
+        - data_entry_mail
+        - entity_mobile
+        - governorate
+        - headquarters
+        - license_expired
+        - license_file
+        - license_issue_date
+        - data_entry_mobile
+        - num_of_beneficiaries
+        - num_of_employed_facility
+        - region
+        - twitter_acount
+        - website
+        - entity
+        - data_entry_name
+        - client_field
+        - bank_informations
+    RegisterTenderDto:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/registerClient'
+      required:
+        - data
+    ForgotPasswordRequestDto:
+      type: object
+      properties:
+        selectLang:
+          type: string
+        email:
+          type: string
+      required:
+        - email
+    SendNewEmailDto:
+      type: object
+      properties:
+        email:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        receiver_id:
+          type: string
+      required:
+        - email
+        - title
+        - content
+        - receiver_id
+    CreateMessageDto:
+      type: object
+      properties:
+        selectLang:
+          type: string
+        content_type_id:
+          type: string
+        correspondence_type_id:
+          type: string
+        content:
+          type: string
+        attachment:
+          $ref: '#/components/schemas/TenderFilePayload'
+        content_title:
+          type: string
+        reply_id:
+          type: string
+        partner_id:
+          type: string
+        partner_selected_role:
+          type: string
+        current_user_selected_role:
+          type: string
+      required:
+        - content_type_id
+        - correspondence_type_id
+        - partner_id
+        - partner_selected_role
+        - current_user_selected_role
+    ToogleReadMessageDto:
+      type: object
+      properties:
+        roomId:
+          type: string
+        messageId:
+          type: string
+      required:
+        - roomId
+    CreateRoomChatDto:
+      type: object
+      properties:
+        correspondance_type:
+          type: string
+        partner_id:
+          type: string
+      required:
+        - correspondance_type
+        - partner_id
+    BaseNotificationDto:
+      type: object
+      properties:
+        notificationId:
+          type: string
+      required:
+        - notificationId
+    PaymentPaytabsDto:
+      type: object
+      properties:
+        organizationId:
+          $ref: '#/components/schemas/ObjectId'
+        currency:
+          type: string
+        campaignId:
+          $ref: '#/components/schemas/ObjectId'
+        donorId:
+          type: string
+        type:
+          type: string
+        total_amount:
+          type: number
+        success_url:
+          type: string
+        cancel_url:
+          type: string
+        price:
+          type: string
+        quantity:
+          type: string
+        isAnonymous:
+          type: boolean
+        isEmailChecklist:
+          type: boolean
+        amount:
+          type: number
+        paymentMethodType:
+          type: string
+        extraAmount:
+          type: number
+        zakatLogs:
+          type: array
+          items:
+            type: string
+        campaignTitle:
+          type: string
+        data_basket:
+          type: array
+          items:
+            type: string
+      required:
+        - organizationId
+        - currency
+        - donorId
+    PaytabsPaymentResultModel:
+      type: object
+      properties: {}
+    PaytabsPaymentInfoModel:
+      type: object
+      properties: {}
+    PaytabsCustomerDetailsModel:
+      type: object
+      properties: {}
+    PaymentPaytabsCallbackDto:
+      type: object
+      properties:
+        tran_ref:
+          type: string
+        cart_id:
+          type: string
+        cart_description:
+          type: string
+        cart_currency:
+          type: string
+        cart_amount:
+          type: string
+        tran_currency:
+          type: string
+        tran_total:
+          type: string
+        payment_result:
+          $ref: '#/components/schemas/PaytabsPaymentResultModel'
+        payment_info:
+          $ref: '#/components/schemas/PaytabsPaymentInfoModel'
+        customer_details:
+          $ref: '#/components/schemas/PaytabsCustomerDetailsModel'
+        shipping_details:
+          $ref: '#/components/schemas/PaytabsCustomerDetailsModel'
+      required:
+        - tran_ref
+        - cart_id
+        - cart_description
+        - cart_currency
+        - cart_amount
+        - tran_currency
+        - tran_total
+    QaProposalCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        client_user_id:
+          type: string
+        supervisor_id:
+          type: string
+    QaProposalCreateSupervisorDto:
+      type: object
+      properties:
+        name:
+          type: string
+        client_user_id:
+          type: string
+        supervisor_id:
+          type: string
+        track_id:
+          type: string
+    AdvertisementCreateDto:
+      type: object
+      properties:
+        content:
+          type: string
+        title:
+          type: string
+        track_id:
+          type: string
+        type:
+          type: string
+          description: description of the AdvertisementTypeEnum property
+          enum:
+            - INTERNAL
+            - EXTERNAL
+        date:
+          type: string
+        start_time:
+          type: string
+      required:
+        - content
+        - title
+        - type
+        - date
+        - start_time
