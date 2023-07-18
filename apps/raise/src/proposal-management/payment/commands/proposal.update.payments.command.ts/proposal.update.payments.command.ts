@@ -311,8 +311,7 @@ export class ProposalUpdatePaymentCommandHandler
           notifPayload = {
             id: uuidv4(),
             user_id: proposal.user.id,
-            content: `"مرحباً ${proposal.user.employee_name}، نود إخبارك أن المشروع '${proposal.project_name}' تم إرسال الدفعة.
-            يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات ، أو انقر هنا."`,
+            content: `"مرحباً ${proposal.user.employee_name}، نود إخبارك أن المشروع '${proposal.project_name}' تم إرسال الدفعة. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات ، أو انقر هنا."`,
             subject: 'إصدار دفع جديد',
             type: 'PROPOSAL',
             specific_type: 'PAYMENT_RELEASE',

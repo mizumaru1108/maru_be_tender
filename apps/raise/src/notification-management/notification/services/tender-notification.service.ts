@@ -4,24 +4,24 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
+import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
+import { EmailService } from '../../../libs/email/email.service';
+import { MsegatService } from '../../../libs/msegat/services/msegat.service';
+import { CommonNotifMapperResponse } from '../../../tender-commons/dto/common-notif-mapper-response.dto';
+import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
 import { CreateManyNotificationDto } from '../dtos/requests/create-many-notification.dto';
 import { CreateNotificationDto } from '../dtos/requests/create-notification.dto';
 import { createManyNotificationMapper } from '../mappers/create-many-notification.mapper';
 import { createNotificationMapper } from '../mappers/create-notification.mapper';
 import { TenderNotificationRepository } from '../repository/tender-notification.repository';
-import { EmailService } from '../../../libs/email/email.service';
-import { MsegatService } from '../../../libs/msegat/services/msegat.service';
-import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
-import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
-import { CommonNotifMapperResponse } from '../../../tender-commons/dto/common-notif-mapper-response.dto';
-import { CommonNotificationMapperResponse } from '../../../tender-commons/dto/common-notification-mapper-response.dto';
 
 @Injectable()
 export class TenderNotificationService {
   constructor(
     private readonly tenderNotificationRepository: TenderNotificationRepository,
     private readonly emailService: EmailService,
-    private readonly msegatService: MsegatService, // private readonly twilioService: TwilioService,
+    private readonly msegatService: MsegatService, // private readonly twilioService: TwilioService,s
   ) {}
 
   async create(payload: CreateNotificationDto) {

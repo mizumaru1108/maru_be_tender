@@ -140,11 +140,13 @@ export class ProposalPaymentSendCloseReportCommandHandler
 
         // Define the notification message
         const subject = `تقرير إغلاق المشروع`; //close report
-        const clientContent = `اقتراحك ${
+        const clientContent = `اقتراحك${
           proposal.project_name
         } قريب من الاكتمال، خطوة واحدة فقط للحصول على تقرير الإغلاق! عليك فقط تقديم نموذج تقرير إغلاق المشروع \n${moment(
           new Date(),
-        ).format('llll')}`;
+        )
+          .locale('ar-sa')
+          .format('llll')}`;
 
         const notifPayload: CreateNotificaitonProps =
           Builder<CreateNotificaitonProps>(CreateNotificaitonProps, {

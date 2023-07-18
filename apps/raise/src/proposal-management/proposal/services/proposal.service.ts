@@ -1819,9 +1819,9 @@ export class ProposalService {
     }
     const subject = `عرض ${translatedAction} إشعار`;
     // let clientContent = `Your proposal (${log.data.proposal.project_name}), has been ${actions}ed by ${reviewerRole} at (${log.data.created_at})`;
-    let clientContent = `مرحبًا ${log.data.proposal.user.employee_name}، نود إخبارك أن المشروع "${log.data.proposal.project_name}" تم ${actions}ه. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات أو النقر هنا.`;
+    let clientContent = `مرحبًا ${log.data.proposal.user.employee_name}، نود إخبارك أن المشروع "${log.data.proposal.project_name}" تم ${translatedAction}ه. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات أو النقر هنا.`;
     if (log.data.reviewer) {
-      clientContent = `مرحبًا ${log.data.proposal.user.employee_name}، نود إخبارك أن المشروع "${log.data.proposal.project_name}" تم ${actions}ه. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات أو النقر هنا.`;
+      clientContent = `مرحبًا ${log.data.proposal.user.employee_name}، نود إخبارك أن المشروع "${log.data.proposal.project_name}" تم ${translatedAction}ه. يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات أو النقر هنا.`;
     }
     // const employeeContent = `Your review has been submitted for proposal (${log.data.proposal.project_name}) at (${log.data.created_at}), and already been notified to the user ${log.data.proposal.user.employee_name} (${log.data.proposal.user.email})`;
 
