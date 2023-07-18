@@ -29,9 +29,14 @@ import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 // import { FileFieldsInterceptor } from '@webundsoehne/nest-fastify-file-upload';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiResponse, ApiSecurity } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { ProposalFindByIdQueryDto } from 'src/proposal-management/proposal/dtos/queries/proposal.find.by.id.query.dto';
+import { ProposalEntity } from 'src/proposal-management/proposal/entities/proposal.entity';
+import {
+  ProposalFindByIdQuery,
+  ProposalFindByIdQueryResult,
+} from 'src/proposal-management/proposal/queries/proposal.find.by.id.query/proposal.find.by.id.query';
 import { BasePrismaErrorException } from 'src/tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { RequestErrorException } from 'src/tender-commons/exceptions/request-error.exception';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
@@ -58,11 +63,6 @@ import {
 import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
 import { ProposalService } from '../services/proposal.service';
-import {
-  ProposalFindByIdQuery,
-  ProposalFindByIdQueryResult,
-} from 'src/proposal-management/proposal/queries/proposal.find.by.id.query/proposal.find.by.id.query';
-import { ProposalEntity } from 'src/proposal-management/proposal/entities/proposal.entity';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(

@@ -1800,16 +1800,17 @@ export class ProposalRepository {
         if (currentUser.choosenRole === 'tender_cashier') {
           whereClause = {
             ...whereClause,
-            inner_status:
-              InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
+            OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
             finance_id: { not: null },
             payments: {
-              every: {
-                OR: [
-                  { status: { in: ['done', 'accepted_by_finance'] } },
-                  { status: { in: ['done'] } },
-                  { status: { in: ['accepted_by_finance'] } },
-                ],
+              some: {
+                status: {
+                  in: [
+                    PaymentStatusEnum.REJECT_CHEQUE,
+                    PaymentStatusEnum.ACCEPTED_BY_FINANCE,
+                    PaymentStatusEnum.DONE,
+                  ],
+                },
               },
             },
           };
@@ -1821,7 +1822,10 @@ export class ProposalRepository {
             payments: {
               some: {
                 status: {
-                  in: ['accepted_by_project_manager', 'uploaded_by_cashier'],
+                  in: [
+                    PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+                    PaymentStatusEnum.UPLOADED_BY_CASHIER,
+                  ],
                 },
               },
             },
@@ -2496,7 +2500,9 @@ export class ProposalRepository {
           ...whereClause,
           OR: [{ finance_id: currentUser.id }, { finance_id: null }],
           payments: {
-            some: { status: { in: ['accepted_by_project_manager'] } },
+            some: {
+              status: { in: [PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER] },
+            },
           },
         };
       }
@@ -2506,7 +2512,15 @@ export class ProposalRepository {
           ...whereClause,
           OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
           payments: {
-            some: { status: { in: ['accepted_by_finance', 'done'] } },
+            some: {
+              status: {
+                in: [
+                  PaymentStatusEnum.REJECT_CHEQUE,
+                  PaymentStatusEnum.ACCEPTED_BY_FINANCE,
+                  PaymentStatusEnum.DONE,
+                ],
+              },
+            },
           },
         };
       }
