@@ -7,7 +7,6 @@ import {
   InternalServerErrorException,
   Post,
   Query,
-  UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -33,7 +32,6 @@ import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
 import { TenderRoles } from 'src/tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from 'src/tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from 'src/tender-auth/guards/tender-roles.guard';
-import { BasePrismaErrorException } from 'src/tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
 import { manualPaginationHelper } from 'src/tender-commons/helpers/manual-pagination-helper';
 
@@ -57,7 +55,7 @@ export class AdvertisementHttpController {
       );
     }
 
-    return new InternalServerErrorException(error);
+    throw new InternalServerErrorException(error);
   }
 
   @ApiOperation({

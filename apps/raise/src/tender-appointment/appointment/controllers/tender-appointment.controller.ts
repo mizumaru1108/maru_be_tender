@@ -14,7 +14,7 @@ import { baseResponseHelper } from '../../../commons/helpers/base-response-helpe
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 
 import { appointment } from '@prisma/client';
-import { FastifyReply } from 'fastify';
+// import { FastifyReply } from 'fastify';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
@@ -101,30 +101,30 @@ export class TenderAppointmentController {
     );
   }
 
-  @Get('google-callback')
-  async googleCallback(@Query() query: any, @Res() res: FastifyReply) {
-    console.log('query', query);
-    // TODO: HOW TO IDENTIFY THE USER ?? if the user email is not same as the email in the APP?
-    // await this.tenderAppointmentService.createAppointmentOld(query.code);
-    console.log('google callback hit');
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8" />
-          <title>Logining in...</title>
-        </head>
-        <body>
-          query: ${JSON.stringify(query.code)}
-          your google account has been linked to tender app, you can close this
-          <script>
-            window.close();
-        </script>
-        </body>
-      </html>
-    `;
+  // @Get('google-callback')
+  // async googleCallback(@Query() query: any, @Res() res: FastifyReply) {
+  //   console.log('query', query);
+  //   // TODO: HOW TO IDENTIFY THE USER ?? if the user email is not same as the email in the APP?
+  //   // await this.tenderAppointmentService.createAppointmentOld(query.code);
+  //   console.log('google callback hit');
+  //   const html = `
+  //     <!DOCTYPE html>
+  //     <html>
+  //       <head>
+  //         <meta charset="utf-8" />
+  //         <title>Logining in...</title>
+  //       </head>
+  //       <body>
+  //         query: ${JSON.stringify(query.code)}
+  //         your google account has been linked to tender app, you can close this
+  //         <script>
+  //           window.close();
+  //       </script>
+  //       </body>
+  //     </html>
+  //   `;
 
-    res.header('Content-Type', 'text/html').code(200);
-    res.send(html);
-  }
+  //   res.header('Content-Type', 'text/html').code(200);
+  //   res.send(html);
+  // }
 }

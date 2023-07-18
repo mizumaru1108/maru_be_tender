@@ -48,21 +48,19 @@ export class AdvertisementRepository {
 
   advertisementRepoErrorMapper(error: any) {
     // console.trace(error);
-    // this.logger.error(`error detail ${JSON.stringify(error)}`);
-    this.logger.error({});
+    // this.logger.error(`Error Details = %o`, error);
 
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === 'P2003'
     ) {
-      return new PrismaInvalidForeignKeyException(
+      throw new PrismaInvalidForeignKeyException(
         error.code,
         error.clientVersion,
         error.meta,
       );
     }
-
-    return new InternalServerErrorException(error);
+    throw new InternalServerErrorException(error);
   }
 
   async create(
@@ -119,8 +117,7 @@ export class AdvertisementRepository {
       }).build();
       return updatedEntity;
     } catch (error) {
-      console.trace(error);
-      throw error;
+      throw this.advertisementRepoErrorMapper(error);
     }
   }
 
@@ -139,8 +136,7 @@ export class AdvertisementRepository {
         ...result,
       }).build();
     } catch (error) {
-      console.trace(error);
-      throw error;
+      throw this.advertisementRepoErrorMapper(error);
     }
   }
 
@@ -187,8 +183,7 @@ export class AdvertisementRepository {
 
       return entities;
     } catch (error) {
-      console.trace(error);
-      throw error;
+      throw this.advertisementRepoErrorMapper(error);
     }
   }
 
@@ -205,8 +200,7 @@ export class AdvertisementRepository {
       });
       return result;
     } catch (error) {
-      console.trace(error);
-      throw error;
+      throw this.advertisementRepoErrorMapper(error);
     }
   }
 }

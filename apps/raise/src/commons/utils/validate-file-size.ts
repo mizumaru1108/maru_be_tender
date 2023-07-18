@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
+// import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import { InvalidFileSizeException } from '../../tender-commons/exceptions/invalid-file-size.exception';
 import { convertBytesToMB } from './bytes-to-mb-converter';
 
@@ -11,7 +11,7 @@ import { convertBytesToMB } from './bytes-to-mb-converter';
  * @author RDanang (Iyoy)
  */
 export function validateFileUploadSize(
-  fileOrFileSize: MulterFile | number,
+  fileOrFileSize: Express.Multer.File | number,
   maxSize?: number,
 ): boolean {
   const max = maxSize ? maxSize : 1024 * 1024 * 3; // default is 3MB
@@ -30,7 +30,7 @@ export function validateFileUploadSize(
 }
 
 export function validateFileSize(
-  fileOrFileSize: MulterFile | number,
+  fileOrFileSize: Express.Multer.File | number,
   maxSize?: number,
   fileName?: string,
 ): boolean {

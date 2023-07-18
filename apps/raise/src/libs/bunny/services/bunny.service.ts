@@ -1,22 +1,19 @@
 import {
-  Logger,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
+// import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import axios, { AxiosRequestConfig } from 'axios';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
-import {
-  generateRandomNumberString,
-  generateRandomString,
-} from '../../../commons/utils/generate-random-string';
+import { generateRandomNumberString } from '../../../commons/utils/generate-random-string';
+import { logUtil } from '../../../commons/utils/log-util';
 import { sanitizeString } from '../../../commons/utils/sanitize-string';
 import { uploadFileNameParser } from '../../../commons/utils/upload-filename-parser';
 import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
 import { validateFileUploadSize } from '../../../commons/utils/validate-file-size';
-import { logUtil } from '../../../commons/utils/log-util';
 import { FileUploadErrorException } from '../exception/file-upload-error.exception';
 
 /**
@@ -176,8 +173,9 @@ export class BunnyService {
     }
   }
 
+  // file: MulterFile,
   public async uploadFile(
-    file: MulterFile,
+    file: Express.Multer.File,
     allowedFileType: FileMimeTypeEnum[],
     maxFileSize: number,
     serviceName: string,
@@ -238,7 +236,7 @@ export class BunnyService {
   }
 
   public async uploadFileMulter(
-    file: MulterFile,
+    file: Express.Multer.File,
     path: string,
     serviceName: string,
   ): Promise<string> {

@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
+// import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import { FileMimeTypeEnum } from '../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
 import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura-webhook-payload';
@@ -33,7 +33,8 @@ export class TenderService {
     this.appEnv = environment;
   }
 
-  async uploadFiles(payload: UploadFilesDto, files: MulterFile[]) {
+  // async uploadFiles(payload: UploadFilesDto, files: MulterFile[]) {
+  async uploadFiles(payload: UploadFilesDto, files: Express.Multer.File[]) {
     // const maxSize: number = 1024 * 1024 * 1; // 1MB
     const maxSize: number = 1024 * 1024 * 512;
     const allowedType: FileMimeTypeEnum[] = [

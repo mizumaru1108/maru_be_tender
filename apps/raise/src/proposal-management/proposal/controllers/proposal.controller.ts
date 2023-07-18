@@ -26,7 +26,7 @@ import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-p
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 
 import { CommandBus } from '@nestjs/cqrs';
-import { FileFieldsInterceptor } from '@webundsoehne/nest-fastify-file-upload';
+// import { FileFieldsInterceptor } from '@webundsoehne/nest-fastify-file-upload';
 import { Builder } from 'builder-pattern';
 import { RequestErrorException } from 'src/tender-commons/exceptions/request-error.exception';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
@@ -53,6 +53,7 @@ import {
 import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
 import { ProposalService } from '../services/proposal.service';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(

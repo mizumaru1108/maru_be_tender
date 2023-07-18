@@ -1,23 +1,11 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  HttpStatus,
-  Post,
-  UploadedFiles,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
-import { AnyFilesInterceptor } from '@webundsoehne/nest-fastify-file-upload';
-import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
-import { BaseResponse } from '../../commons/dtos/base-response';
-import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+// import { AnyFilesInterceptor } from '@webundsoehne/nest-fastify-file-upload';
+// import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura-webhook-payload';
-import { UploadFilesDto } from '../../tender-commons/dto/upload-files.dto';
 
 import { ROOT_LOGGER } from '../../libs/root-logger';
-import { TenderService } from '../services/tender.service';
 import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
+import { TenderService } from '../services/tender.service';
 
 @Controller('tender')
 export class TenderController {
@@ -27,20 +15,20 @@ export class TenderController {
 
   constructor(private tenderService: TenderService) {}
 
-  @UseInterceptors(AnyFilesInterceptor())
-  @Post('uploads') // tender/uploads
-  async upload(
-    @Body() payload: UploadFilesDto,
-    @UploadedFiles() file: MulterFile[],
-  ): Promise<BaseResponse<string>> {
-    if (!file) throw new BadRequestException();
-    const uploadResult = await this.tenderService.uploadFiles(payload, file);
-    return baseResponseHelper(
-      uploadResult,
-      HttpStatus.CREATED,
-      'Successfully uploaded files',
-    );
-  }
+  // @UseInterceptors(AnyFilesInterceptor())
+  // @Post('uploads') // tender/uploads
+  // async upload(
+  //   @Body() payload: UploadFilesDto,
+  //   @UploadedFiles() file: MulterFile[],
+  // ): Promise<BaseResponse<string>> {
+  //   if (!file) throw new BadRequestException();
+  //   const uploadResult = await this.tenderService.uploadFiles(payload, file);
+  //   return baseResponseHelper(
+  //     uploadResult,
+  //     HttpStatus.CREATED,
+  //     'Successfully uploaded files',
+  //   );
+  // }
 
   @Post('edit-request-hook-handler')
   async postEditRequest(@Body() payload: BaseHashuraWebhookPayload) {

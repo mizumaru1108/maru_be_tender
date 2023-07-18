@@ -1,44 +1,39 @@
-import './traces'; // MUST be the first one! because of instrumentations
-import ecsPinoFormat from '@elastic/ecs-pino-format';
 import { NestFactory } from '@nestjs/core';
 import {
-  SwaggerModule,
   DocumentBuilder,
   SwaggerDocumentOptions,
+  SwaggerModule,
 } from '@nestjs/swagger';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
-import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
+import './traces'; // MUST be the first one! because of instrumentations
 import { ValidationPipe } from '@nestjs/common';
-import { contentParser } from 'fastify-multer';
-import pino from 'pino';
-// import { WsAdapter } from '@nestjs/platform-ws';
+import { ConfigService } from '@nestjs/config';
+import { AppModule } from './app.module';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { Logger as PinoLogger, LoggerErrorInterceptor } from 'nestjs-pino';
+
+import { json, urlencoded } from 'express';
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 async function bootstrap() {
-  // bootstrap NestJS
-  const pinoLogger = pino(ecsPinoFormat());
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter({
-      logger: process.env.LOG_FORMAT === 'pretty' ? true : pinoLogger,
-      // in express we can use json and urlencoded. u can see in code that i define below
-      bodyLimit: 52428800, // prevent 413 Payload Too Large (fastify)
-      // how to limit json and urlencoded (form submit) in express
-      // app.use(json({ limit: '50mb' }));
-      // app.use(urlencoded({ limit: '50mb', extended: true }));
-    }),
-    {
-      bufferLogs: true,
-    },
-  );
-  app.useLogger(app.get(PinoLogger));
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  // Reference: https://github.com/iamolegga/nestjs-pino#expose-stack-trace-and-error-class-in-err-property
+  app.useLogger(app.get(Logger));
+
+  // global interceptor
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
+  // Validation Pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
+
+  // json length(base64) / size of file upload
+  app.use(json({ limit: '200mb' }));
+  app.use(urlencoded({ limit: '200mb', extended: true }));
+
+  // CORS
   app.enableCors({
     methods: ['OPTIONS', 'POST', 'GET', 'PATCH', 'DELETE'],
     allowedHeaders: [
@@ -91,32 +86,36 @@ async function bootstrap() {
 
   const config = app.get<ConfigService>(ConfigService);
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-    }),
-  );
-
   if (config.get<string>('APP_ENV') === 'dev') {
     const config = new DocumentBuilder()
       .setTitle('Tmra Raise')
       .setDescription('Tmra Raise API')
       .setVersion('3.0')
       .build();
+
     const swaggerOptions: SwaggerDocumentOptions = {
       operationIdFactory: (controllerKey, methodKey) => methodKey,
     };
+
     const document = SwaggerModule.createDocument(app, config, swaggerOptions);
+
     SwaggerModule.setup('api', app, document);
   }
-
-  app.register(contentParser);
 
   /**
    * workaround for server not serving websocket
    */
   // app.useWebSocketAdapter(new WsAdapter(app));
   app.useWebSocketAdapter(new IoAdapter(app));
-  await app.listen(3000, '0.0.0.0');
+
+  const PORT = process.env.PORT || 3000;
+  await app.listen(PORT);
 }
-bootstrap();
+
+try {
+  bootstrap()
+    .then(() => console.log('App started at port: ', process.env.APP_PORT))
+    .catch((e) => console.log(e));
+} catch (error) {
+  console.log(error);
+}
