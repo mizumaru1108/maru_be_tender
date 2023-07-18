@@ -2145,8 +2145,8 @@ const en = {
     subject_payment: 'New Payment Release',
     content_payment: 'Your payment receipt has been uploaded by Cashier (Cashier) at',
     proof_of_funds: 'Proof of Funds',
-    error_exceeds_amount: 'total project budgets exceeds the support amount provided',
-    error_not_same_amount: 'total project budgets does not match the support amount requested',
+    error_exceeds_amount: 'Total project budgets exceeds the support amount provided',
+    error_not_same_amount: 'Total project budgets does not match the support amount requested',
   },
   button: {
     back: 'Back',

@@ -460,14 +460,13 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     data-cy="acc_form_non_consulation_payment_number"
                     type={'number'}
                     size={'small'}
-                    disabled={
-                      // save
-                      //   ? true
-                      //   : support_type === 'false' || !support_type || support_type === undefined
-                      //   ? false
-                      //   : true
-                      save
-                    }
+                    // disabled={
+                    //   save
+                    //     ? true
+                    //     : support_type === 'false' || !support_type || support_type === undefined
+                    //     ? false
+                    //     : true
+                    // }
                     name="payment_number"
                     placeholder="عدد الدفعات"
                     label="عدد الدفعات*"
@@ -538,11 +537,11 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                               size="small"
                               error={!!error}
                               helperText={error?.message}
-                              disabled={
-                                support_type === 'false' || support_type === undefined
-                                  ? false
-                                  : true
-                              }
+                              // disabled={
+                              //   support_type === 'false' || support_type === undefined
+                              //     ? false
+                              //     : true
+                              // }
                               sx={{
                                 '& > .MuiFormHelperText-root': {
                                   backgroundColor: 'transparent',
@@ -565,11 +564,11 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                               size="small"
                               error={!!error}
                               helperText={error?.message}
-                              disabled={
-                                support_type === 'false' || support_type === undefined
-                                  ? false
-                                  : true
-                              }
+                              // disabled={
+                              //   support_type === 'false' || support_type === undefined
+                              //     ? false
+                              //     : true
+                              // }
                               sx={{
                                 '& > .MuiFormHelperText-root': {
                                   backgroundColor: 'transparent',
@@ -593,11 +592,11 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                               type="number"
                               error={!!error}
                               helperText={error?.message}
-                              disabled={
-                                support_type === 'false' || support_type === undefined
-                                  ? false
-                                  : true
-                              }
+                              // disabled={
+                              //   support_type === 'false' || support_type === undefined
+                              //     ? false
+                              //     : true
+                              // }
                               sx={{
                                 '& > .MuiFormHelperText-root': {
                                   backgroundColor: 'transparent',
