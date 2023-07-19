@@ -6,6 +6,7 @@ import {
   IsNumber,
   IsBoolean,
   IsArray,
+  ValidateNested,
 } from 'class-validator';
 import { ValidateObjectIdDecorator } from '../../commons/decorators/validate-object-id.decorator';
 
@@ -14,6 +15,7 @@ import { ZakatLogDto } from 'src/zakat/dto/zakat_log.dto';
 import { PaytabsPaymentResultModel } from 'src/libs/paytabs/models/paytabs-payment-result.model';
 import { PaytabsPaymentInfoModel } from 'src/libs/paytabs/models/paytabs-payment-info.model';
 import { PaytabsCustomerDetailsModel } from 'src/libs/paytabs/models/paytabs-customer-details.model';
+import { Type } from 'class-transformer';
 
 export class PaymentPaytabsDto {
   @ApiProperty()
@@ -101,13 +103,20 @@ export class PaymentPaytabsDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  data_basket?: Array<{
-    _id: string;
-    organizationId: Types.ObjectId;
-    amount: number;
-  }>;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DataBasketDto)
+  data_basket?: DataBasketDto[];
 }
 
+export class DataBasketDto {
+  @ApiProperty()
+  _id: string;
+  @ApiProperty()
+  organizationId: Types.ObjectId;
+  @ApiProperty()
+  amount: number;
+}
 export class PaymentPaytabsCallbackDto {
   @ApiProperty()
   @IsString()

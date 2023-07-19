@@ -32,6 +32,8 @@ export class AdvertisementUpdateProps {
 }
 
 export class AdvertisementFindManyProps {
+  track_id?: string[];
+  type?: AdvertisementTypeEnum[];
   limit?: number;
   page?: number;
   sort_by?: string;
@@ -100,7 +102,7 @@ export class AdvertisementRepository {
     if (session) prisma = session;
     try {
       const rawUpdated = await prisma.advertisements.update({
-        where: {},
+        where: { id: props.id },
         data: {
           content: props.content,
           title: props.title,
@@ -141,7 +143,28 @@ export class AdvertisementRepository {
   }
 
   async findManyFilters(props: AdvertisementFindManyProps) {
+    const { track_id, type } = props;
     const queryOptions: Prisma.AdvertisementsFindManyArgs = {};
+    let findManyWhereClause: Prisma.AdvertisementsWhereInput = {};
+
+    if (track_id !== undefined) {
+      findManyWhereClause = {
+        ...findManyWhereClause,
+        track_id: {
+          in: track_id,
+        },
+      };
+    }
+
+    if (type !== undefined) {
+      findManyWhereClause = {
+        ...findManyWhereClause,
+        type: {
+          in: type,
+        },
+      };
+    }
+    queryOptions.where = findManyWhereClause;
     return queryOptions;
   }
 

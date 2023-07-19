@@ -6,6 +6,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  InternalServerErrorException,
   NotFoundException,
   Patch,
   Post,
@@ -29,9 +30,10 @@ import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 // import { FileFieldsInterceptor } from '@webundsoehne/nest-fastify-file-upload';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
-import { ProposalFindByIdQueryDto } from 'src/proposal-management/proposal/dtos/queries/proposal.find.by.id.query.dto';
+import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
+import { ProposalFindByIdQueryRequest } from 'src/proposal-management/proposal/dtos/queries/proposal.find.by.id.query.dto';
 import { ProposalEntity } from 'src/proposal-management/proposal/entities/proposal.entity';
 import {
   ProposalFindByIdQuery,
@@ -63,6 +65,9 @@ import {
 import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
 import { ProposalService } from '../services/proposal.service';
+import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
+
+@ApiTags('ProposalModule')
 @Controller('tender-proposal')
 export class TenderProposalController {
   constructor(
@@ -72,20 +77,23 @@ export class TenderProposalController {
   ) {}
 
   errorMapper(error: any) {
-    if (error instanceof ProposalNotFoundException) {
-      throw new NotFoundException(error.message);
+    if (
+      error instanceof ProposalNotFoundException ||
+      error instanceof DataNotFoundException
+    ) {
+      return new NotFoundException(error.message);
     }
     if (
       error instanceof PayloadErrorException ||
       error instanceof InvalidTrackIdException
     ) {
-      throw new BadRequestException(error.message);
+      return new BadRequestException(error.message);
     }
     if (error instanceof ForbiddenChangeStateActionException) {
-      throw new ForbiddenException(error.message);
+      return new ForbiddenException(error.message);
     }
     if (error instanceof RequestErrorException) {
-      throw new UnprocessableEntityException(`${error}`);
+      return new UnprocessableEntityException(`${error}`);
     }
 
     if (error instanceof BasePrismaErrorException) {
@@ -98,6 +106,8 @@ export class TenderProposalController {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
+
+    return new InternalServerErrorException(error);
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
@@ -307,29 +317,31 @@ export class TenderProposalController {
 
   // same as fetch by id but using cqrs
   @ApiBearerAuth()
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: Promise<BaseResponse<ProposalEntity | null>>,
-  })
+  @BaseApiOkResponse(ProposalEntity, 'object')
   @UseGuards(TenderJwtGuard)
   @Get('find-by-id')
   async findById(
-    @Query() query: ProposalFindByIdQueryDto,
-  ): Promise<BaseResponse<ProposalEntity | null>> {
-    const queries = Builder<ProposalFindByIdQuery>(ProposalFindByIdQuery, {
-      ...query,
-    }).build();
+    @Query() query: ProposalFindByIdQueryRequest,
+  ): Promise<BaseResponse<ProposalEntity>> {
+    try {
+      const queries = Builder<ProposalFindByIdQuery>(ProposalFindByIdQuery, {
+        ...query,
+        relation: query.relations,
+      }).build();
 
-    const result = await this.queryBus.execute<
-      ProposalFindByIdQuery,
-      ProposalFindByIdQueryResult
-    >(queries);
+      const result = await this.queryBus.execute<
+        ProposalFindByIdQuery,
+        ProposalFindByIdQueryResult
+      >(queries);
 
-    return baseResponseHelper(
-      result.proposal,
-      HttpStatus.OK,
-      'Proposal fetched successfully',
-    );
+      return baseResponseHelper(
+        result.proposal,
+        HttpStatus.OK,
+        'Proposal fetched successfully',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 
   // both supervisor and client can see the amandment list
@@ -574,19 +586,7 @@ export class TenderProposalController {
       const result = await this.commandBus.execute(proposalCommand);
       return baseResponseHelper(result, HttpStatus.OK);
     } catch (error) {
-      if (error instanceof ProposalNotFoundException) {
-        throw new NotFoundException(error.message);
-      }
-      if (
-        error instanceof PayloadErrorException ||
-        error instanceof InvalidTrackIdException
-      ) {
-        throw new BadRequestException(error.message);
-      }
-      if (error instanceof ForbiddenChangeStateActionException) {
-        throw new ForbiddenException(error.message);
-      }
-      throw error;
+      throw this.errorMapper(error);
     }
   }
 

@@ -1,6 +1,8 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 import { IsArray } from 'class-validator';
 import { Types } from 'mongoose';
+import { DataBasketDto } from 'src/payment-paytabs/dto';
 
 import { IPaymentIntent } from 'src/tender-commons/types/stripe';
 import { ZakatLogDto } from 'src/zakat/dto/zakat_log.dto';
@@ -27,10 +29,13 @@ export class PaymentRequestCartDto {
   zakatLogs?: Array<ZakatLogDto>;
   campaignTitle?: string;
 
-  data_basket?: {
-    _id: string;
-    organizationId: Types.ObjectId;
-    amount: number;
-  }[];
+  // data_basket?: {
+  //   _id: string;
+  //   organizationId: Types.ObjectId;
+  //   amount: number;
+  // }[];
+  @ApiProperty({ type: () => Array<DataBasketDto> })
+  data_basket: Array<DataBasketDto>;
+
   payment_intent?: IPaymentIntent | null;
 }

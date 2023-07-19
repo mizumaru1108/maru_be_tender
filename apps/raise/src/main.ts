@@ -88,6 +88,7 @@ async function bootstrap() {
 
   if (config.get<string>('APP_ENV') === 'dev') {
     const config = new DocumentBuilder()
+      .addBearerAuth()
       .setTitle('Tmra Raise')
       .setDescription('Tmra Raise API')
       .setVersion('3.0')

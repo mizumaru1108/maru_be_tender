@@ -2,26 +2,13 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsString, IsNotEmpty, IsOptional, IsIn } from 'class-validator';
 
-export class ProposalFindByIdQueryDto {
+export class ProposalFindByIdQueryRequest {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   id: string;
 
-  @ApiPropertyOptional({
-    examples: [
-      'user',
-      'beneficiary_details',
-      'follow_ups',
-      'track',
-      'proposal_item_budgets',
-      'supervisor',
-      'poposal_log',
-      'payments',
-      'bank_information',
-      'project_timeline',
-    ],
-  })
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString({ each: true })
   @IsNotEmpty({ each: true })

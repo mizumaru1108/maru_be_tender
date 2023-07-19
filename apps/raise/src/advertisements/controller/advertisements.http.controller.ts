@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   InternalServerErrorException,
+  Patch,
   Post,
   Query,
   UploadedFiles,
@@ -14,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import {
   AdvertisementCreateCommand,
@@ -33,6 +34,8 @@ import {
   AdvertisementFindManyQueryResult,
 } from 'src/advertisements/queries/advertisement.find.many.query/advertisement.find.many.query';
 import { AdvertisementTypeEnum } from 'src/advertisements/types/enums/advertisement.type.enum';
+import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
+import { BasePaginationApiOkResponse } from 'src/commons/decorators/base.pagination.api.ok.response.decorator';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { BaseResponse } from 'src/commons/dtos/base-response';
 import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
@@ -44,7 +47,7 @@ import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/
 import { manualPaginationHelper } from 'src/tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
 
-@ApiTags('advertisements')
+@ApiTags('AdvertisementModule')
 @Controller('advertisements')
 export class AdvertisementHttpController {
   constructor(
@@ -73,14 +76,8 @@ export class AdvertisementHttpController {
   @ApiOperation({
     summary: 'creating advertisement either for internal or external',
   })
-  @ApiBody({
-    type: AdvertisementCreateDto,
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    type: Promise<BaseResponse<AdvertisementEntity>>,
-  })
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'logo', maxCount: 4 }]))
+  @BaseApiOkResponse(AdvertisementCreateCommandResult, 'object')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'logo', maxCount: 1 }]))
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Post('create')
@@ -91,7 +88,7 @@ export class AdvertisementHttpController {
     files: {
       logo?: Express.Multer.File[];
     },
-  ): Promise<BaseResponse<AdvertisementEntity>> {
+  ): Promise<BaseResponse<AdvertisementCreateCommandResult>> {
     try {
       const command = Builder<AdvertisementCreateCommand>(
         AdvertisementCreateCommand,
@@ -110,7 +107,7 @@ export class AdvertisementHttpController {
       >(command);
 
       return baseResponseHelper(
-        result.advertisement,
+        result,
         HttpStatus.CREATED,
         'Advertisement Created Successfully!',
       );
@@ -120,7 +117,33 @@ export class AdvertisementHttpController {
   }
 
   @Get()
+  @BasePaginationApiOkResponse(AdvertisementEntity, 'array')
   async findMany(@Query() dto: AdvertisementFindManyQueryDto) {
+    const builder = Builder<AdvertisementFindManyQuery>(
+      AdvertisementFindManyQuery,
+      {
+        ...dto,
+      },
+    );
+
+    const { result, total } = await this.queryBus.execute<
+      AdvertisementFindManyQuery,
+      AdvertisementFindManyQueryResult
+    >(builder.build());
+
+    return manualPaginationHelper(
+      result,
+      total,
+      dto.page || 1,
+      dto.limit || 10,
+      HttpStatus.OK,
+      'Advertisement List Fetched Successfully!',
+    );
+  }
+
+  @Get()
+  @BasePaginationApiOkResponse(AdvertisementEntity, 'array')
+  async findMyAdvertisement(@Query() dto: AdvertisementFindManyQueryDto) {
     const builder = Builder<AdvertisementFindManyQuery>(
       AdvertisementFindManyQuery,
       {
@@ -146,34 +169,42 @@ export class AdvertisementHttpController {
   @ApiOperation({
     summary: 'updating advertisement either for internal or external',
   })
-  @ApiBody({
-    type: AdvertisementCreateDto,
-  })
+  @BaseApiOkResponse(AdvertisementUpdateCommandResult, 'object')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'logo', maxCount: 1 }]))
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
-  @Post('update')
-  async update(@Body() dto: AdvertisementUpdateDto) {
+  @Patch('update')
+  async update(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() dto: AdvertisementUpdateDto,
+    @UploadedFiles()
+    files: {
+      logo?: Express.Multer.File[];
+    },
+  ): Promise<BaseResponse<AdvertisementUpdateCommandResult>> {
     try {
       const command = Builder<AdvertisementUpdateCommand>(
         AdvertisementUpdateCommand,
         {
           ...dto,
+          id: dto.advertisement_id,
           date: dto.date ? new Date(dto.date) : undefined,
+          logos: files.logo,
+          current_user: currentUser,
         },
       ).build();
-
       const result = await this.commandBus.execute<
         AdvertisementUpdateCommand,
         AdvertisementUpdateCommandResult
       >(command);
 
-      return baseResponseHelper({
-        data: result,
-        message: 'Advertisement Updated Successfully!',
-        statusCode: HttpStatus.OK,
-      });
+      return baseResponseHelper(
+        result,
+        HttpStatus.OK,
+        'Advertisement Updated Successfully!',
+      );
     } catch (e) {
-      throw e;
+      throw this.advertisementControllerErrorMapper(e);
     }
   }
 }

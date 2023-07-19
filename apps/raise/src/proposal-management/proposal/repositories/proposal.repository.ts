@@ -165,7 +165,6 @@ export class ProposalRepository {
 
       findByIdFilter.include = include;
     }
-
     return findByIdFilter;
   }
 

@@ -13,7 +13,7 @@ export class AdvertisementUpdateDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  id: string;
+  advertisement_id: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -56,4 +56,10 @@ export class AdvertisementUpdateDto {
   @IsString()
   @Validate12HourTimeFormat()
   start_time?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty({ each: true })
+  @IsString({ each: true })
+  deleted_logo_urls?: string[];
 }

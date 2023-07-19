@@ -41,7 +41,8 @@ import { EmailAlreadyVerifiedException } from '../../tender-user/user/exceptions
 import { FusionAuthPasswordlessLoginErrorException } from '../../libs/fusionauth/exceptions/fusion.auth.passwordless.login.error.exception';
 import { DataNotFoundException } from '../../tender-commons/exceptions/data-not-found.exception';
 import { FusionAuthVerifyEmailErrorException } from '../../libs/fusionauth/exceptions/fusion.auth.verify.email.error.exception';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('AuthModule')
 @Controller('tender-auth')
 export class TenderAuthController {
   constructor(

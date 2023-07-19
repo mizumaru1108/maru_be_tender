@@ -1,31 +1,33 @@
 import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { AdvertisementEntity } from 'src/advertisements/entities/advertisement.entity';
 import { AdvertisementRepository } from 'src/advertisements/repositories/advertisement.repository';
-import { AdvertisementTypeEnum } from 'src/advertisements/types/enums/advertisement.type.enum';
-export class AdvertisementFindManyQuery {
-  track_id: string[];
-  type: AdvertisementTypeEnum[];
+
+// TODO: Fix this to find the ads by the user requirement ex: internal / external
+export class AdvertisementFindMyAdsQuery {
   limit?: number;
   page?: number;
   sort_by?: string;
   sort_direction?: string;
 }
 
-export class AdvertisementFindManyQueryResult {
+export class AdvertisementFindMyAdsQueryResult {
   result: AdvertisementEntity[];
   total: number;
 }
 
-@QueryHandler(AdvertisementFindManyQuery)
-export class AdvertisementFindManyQueryHandler
+@QueryHandler(AdvertisementFindMyAdsQuery)
+export class AdvertisementFindMyAdsQueryHandler
   implements
-    IQueryHandler<AdvertisementFindManyQuery, AdvertisementFindManyQueryResult>
+    IQueryHandler<
+      AdvertisementFindMyAdsQuery,
+      AdvertisementFindMyAdsQueryResult
+    >
 {
   constructor(private readonly adsRepo: AdvertisementRepository) {}
 
   async execute(
-    query: AdvertisementFindManyQuery,
-  ): Promise<AdvertisementFindManyQueryResult> {
+    query: AdvertisementFindMyAdsQuery,
+  ): Promise<AdvertisementFindMyAdsQueryResult> {
     const result = await this.adsRepo.findMany({ ...query });
     const total = await this.adsRepo.countMany({ ...query });
     return {

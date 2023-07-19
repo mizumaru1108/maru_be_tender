@@ -1,7 +1,9 @@
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { ApiProperty } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { execute } from 'graphql';
+import { nanoid } from 'nanoid';
 import { type } from 'os';
 import { async } from 'rxjs';
 import { AdvertisementEntity } from 'src/advertisements/entities/advertisement.entity';
@@ -19,6 +21,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
 import { PayloadErrorException } from 'src/tender-commons/exceptions/payload-error.exception';
 import { generateFileName } from 'src/tender-commons/utils/generate-filename';
+import { FileManagerEntity } from 'src/tender-file-manager/entities/file-manager.entity';
 import {
   CreateFileManagerProps,
   TenderFileManagerRepository,
@@ -37,8 +40,11 @@ export class AdvertisementCreateCommand {
 }
 
 export class AdvertisementCreateCommandResult {
+  @ApiProperty()
   advertisement: AdvertisementEntity;
-  file_managers: CreateFileManagerProps[];
+
+  @ApiProperty()
+  created_file_managers: FileManagerEntity[];
 }
 
 @CommandHandler(AdvertisementCreateCommand)
@@ -117,6 +123,7 @@ export class AdvertisementCreateHandler
       const adsPayloads = Builder<AdvertisementCreateProps>(
         AdvertisementCreateProps,
         {
+          id: nanoid(),
           content: command.content,
           title: command.title,
           type: command.type,
@@ -144,6 +151,7 @@ export class AdvertisementCreateHandler
             url: uploadRes.url,
             column_name: 'logo',
             table_name: 'advertisements',
+            advertisement_id: adsPayloads.id,
           });
 
           const tmpUploaded = {
@@ -164,21 +172,24 @@ export class AdvertisementCreateHandler
         const session = tx instanceof PrismaService ? tx : this.prismaService;
         const createdAds = await this.adsRepo.create(adsPayloads, session);
 
+        const createdFileManagers: FileManagerEntity[] = [];
         if (fileManagerPayload.length > 0) {
           for (const file of fileManagerPayload) {
-            await this.fileManagerRepo.create(file, session);
+            createdFileManagers.push(
+              await this.fileManagerRepo.create(file, session),
+            );
           }
         }
 
         return {
           advertisement: createdAds,
-          file_managers: fileManagerPayload,
+          created_file_managers: createdFileManagers,
         };
       });
 
       return {
         advertisement: result.advertisement,
-        file_managers: result.file_managers,
+        created_file_managers: result.created_file_managers,
       };
     } catch (error) {
       if (fileManagerPayload.length > 0) {

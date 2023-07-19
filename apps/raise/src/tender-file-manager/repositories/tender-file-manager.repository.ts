@@ -10,6 +10,7 @@ import { Builder } from 'builder-pattern';
 import { FileManagerEntity } from '../entities/file-manager.entity';
 import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
 import { v4 as uuidv4 } from 'uuid';
+import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
 export class FileManagerFetchByUrlProps {
   url: string;
 }
@@ -25,10 +26,26 @@ export class CreateFileManagerProps {
   user_id?: string | null;
   proposal_id?: string | null;
   bank_information_id?: string | null;
+  advertisement_id?: string | null;
+}
+export class UpdateFileManagerProps {
+  id?: string; // incase of predefined
+  url?: string;
+  name?: string;
+  size?: number;
+  mimetype?: string;
+  table_name?: string | null;
+  column_name?: string | null;
+  user_id?: string | null;
+  proposal_id?: string | null;
+  bank_information_id?: string | null;
+  advertisement_id?: string | null;
+  is_deleted?: boolean;
 }
 
 export interface FindManyFileManagerProps {
   proposal_id?: string;
+  advertisement_id?: string;
   includes_relation?: string[];
   page?: number;
   limit?: number;
@@ -47,10 +64,24 @@ export class TenderFileManagerRepository {
   });
 
   constructor(private readonly prismaService: PrismaService) {}
+  errorMapper(error: any) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2003'
+    ) {
+      return new PrismaInvalidForeignKeyException(
+        error.code,
+        error.clientVersion,
+        error.meta,
+      );
+    }
+
+    return error;
+  }
 
   /* refactored with pass session */
-  async findManyItemBudgetFilter(props: FindManyFileManagerProps) {
-    const { proposal_id } = props;
+  async findManyFileManagerFilter(props: FindManyFileManagerProps) {
+    const { proposal_id, advertisement_id } = props;
     let args: Prisma.file_managerFindManyArgs = {};
     let whereClause: Prisma.file_managerWhereInput = {};
 
@@ -60,6 +91,14 @@ export class TenderFileManagerRepository {
         proposal_id,
       };
     }
+
+    if (advertisement_id) {
+      whereClause = {
+        ...whereClause,
+        advertisement_id,
+      };
+    }
+
     args.where = whereClause;
 
     return args;
@@ -74,7 +113,7 @@ export class TenderFileManagerRepository {
     if (session) prisma = session;
 
     try {
-      const args = await this.findManyItemBudgetFilter(props);
+      const args = await this.findManyFileManagerFilter(props);
       const { limit = 0, page = 0, sort_by, sort_direction } = props;
       const offset = (page - 1) * limit;
       const getSortBy = sort_by ? sort_by : 'created_at';
@@ -121,7 +160,7 @@ export class TenderFileManagerRepository {
     let prisma = this.prismaService;
     if (session) prisma = session;
     try {
-      const rawRes = await this.prismaService.file_manager.findUnique({
+      const rawRes = await prisma.file_manager.findUnique({
         where: {
           url,
         },
@@ -166,6 +205,7 @@ export class TenderFileManagerRepository {
           user_id: props.user_id,
           proposal_id: props.proposal_id,
           bank_information_id: props.bank_information_id,
+          advertisement_id: props.advertisement_id,
         },
       });
 
@@ -182,13 +222,60 @@ export class TenderFileManagerRepository {
 
       return createdFileManagerEntity;
     } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderFileManagerRepository.name,
-        'Creating new file manager Error:',
-        `validating roles!`,
-      );
-      throw theError;
+      throw this.errorMapper(error);
+    }
+  }
+
+  /* refactored with pass session */
+  async update(
+    props: UpdateFileManagerProps,
+    session?: PrismaService,
+  ): Promise<FileManagerEntity> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    const { url, id } = props;
+
+    try {
+      let whereClause: Prisma.file_managerWhereUniqueInput = {};
+
+      // validate the identifier
+      if (url === undefined && id === undefined) {
+        throw new PayloadErrorException(
+          `You must include at least one identifier`,
+        );
+      }
+      if (url) whereClause.url = url;
+      if (id) whereClause.id = id;
+
+      const rawUpdated = await prisma.file_manager.update({
+        where: whereClause,
+        data: {
+          name: props.name,
+          url: props.url,
+          size: props.size,
+          mimetype: props.mimetype,
+          table_name: props.table_name,
+          column_name: props.column_name,
+          user_id: props.user_id,
+          proposal_id: props.proposal_id,
+          bank_information_id: props.bank_information_id,
+          advertisement_id: props.advertisement_id,
+          is_deleted: props.is_deleted,
+        },
+      });
+
+      const updatedEntity = Builder<FileManagerEntity>(FileManagerEntity, {
+        ...rawUpdated,
+        size:
+          rawUpdated.size !== null
+            ? parseFloat(rawUpdated.size.toString())
+            : undefined,
+      }).build();
+
+      return updatedEntity;
+    } catch (error) {
+      throw this.errorMapper(error);
     }
   }
 

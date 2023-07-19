@@ -9,6 +9,7 @@ import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 import { AggregateRoot } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
 import { CreateNotificationEvent } from '../../../notification-management/notification/event/create.notification.event';
+import { ApiProperty } from '@nestjs/swagger';
 
 export interface ISendNotificaitonEvent {
   notif_type: 'EMAIL' | 'SMS';
@@ -42,7 +43,10 @@ export class ProposalEntity extends AggregateRoot {
   follow_ups?: ProposalFollowUpEntity[];
   fsupport_by_supervisor?: number | null;
   governorate?: string | null;
+
+  @ApiProperty()
   id: string;
+
   inclu_or_exclu?: boolean | null = false;
   inner_status?: string | null = 'CREATED_BY_CLIENT';
   letter_ofsupport_req: any; //Json?
