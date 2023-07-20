@@ -158,6 +158,8 @@ const ar = {
       send_amandement: 'طلب تعديل الشريك',
     },
     admin: {
+      advertising_internal_form: 'نموذج داخلي للإعلان',
+      advertising_external_form: 'نموذج إعلان خارجي',
       transaction_progress: 'تقدم المعاملة',
       create_a_new_transaction_flow_track: 'قم بإنشاء مسار تدفق معاملات جديد',
       project_state: 'حالة المشروع',
@@ -2356,6 +2358,39 @@ const ar = {
     },
   },
   system_messages: {
+    add_new_advertising: 'اضافة رسالة التفاعلية جديدة',
+    form: {
+      errors: {
+        title: 'عنوان الرسالة',
+        content: 'محتوى الرسالة',
+        showTime: 'وقت العرض مطلوب',
+        track: 'المسار مطلوب',
+        image: {
+          size: 'يجب أن يكون حجم الملف أقل من 5 ميغا بايت',
+          fileExtension: 'يجب أن يكون الملف صورة',
+        },
+      },
+      image: {
+        label: 'الصورة',
+        placeholder: 'الرجاء تحديد صورة',
+      },
+      title: {
+        label: 'عنوان',
+        placeholder: 'الرجاء إدخال العنوان',
+      },
+      content: {
+        label: 'محتوى',
+        placeholder: 'الرجاء إدخال المحتوى',
+      },
+      showTime: {
+        label: 'موعد العرض',
+        placeholder: 'الرجاء إدخال وقت العرض',
+      },
+      track: {
+        label: 'المسار',
+        placeholder: 'الرجاء إدخال المسار',
+      },
+    },
     tab: {
       options: {
         internal_messages: 'الرسائل الداخلية',
@@ -2368,6 +2403,8 @@ const ar = {
     },
     button: {
       add_new_slide: 'اضافة صفحة جديدة',
+      addition: 'اضافة',
+      cancel: 'الغاء',
     },
     headercell: {
       image: 'صورة',

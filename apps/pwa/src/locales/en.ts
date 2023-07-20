@@ -155,6 +155,8 @@ const en = {
       send_amandement: 'Partner Amandement Request',
     },
     admin: {
+      advertising_internal_form: 'Advertising Internal Form',
+      advertising_external_form: 'Advertising External Form',
       transaction_progress: 'Transaction Progress',
       create_a_new_transaction_flow_track: 'Create a New Transaction Flow Track',
       project_state: 'Project State',
@@ -2337,6 +2339,39 @@ const en = {
     },
   },
   system_messages: {
+    add_new_advertising: 'Add New Advertising',
+    form: {
+      errors: {
+        title: 'Title is required',
+        content: 'Content is required',
+        showTime: 'Show time is required',
+        track: 'Track is required',
+        image: {
+          size: 'The file size must be less than 5 MB',
+          fileExtension: 'The file must be an image',
+        },
+      },
+      image: {
+        label: 'Image',
+        placeholder: 'Please select an image',
+      },
+      title: {
+        label: 'Title',
+        placeholder: 'Please enter title',
+      },
+      content: {
+        label: 'Content',
+        placeholder: 'Please enter content',
+      },
+      showTime: {
+        label: 'Show Time',
+        placeholder: 'Please enter show time',
+      },
+      track: {
+        label: 'Track',
+        placeholder: 'Please enter track',
+      },
+    },
     tab: {
       options: {
         internal_messages: 'Internal Messages',
@@ -2349,6 +2384,8 @@ const en = {
     },
     button: {
       add_new_slide: 'Add New Slide',
+      addition: 'Addition',
+      cancel: 'Cancel',
     },
     headercell: {
       image: 'Image',

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 // @mui
 import {
   Box,
@@ -14,17 +14,16 @@ import {
 } from '@mui/material';
 import Scrollbar from 'components/Scrollbar';
 import SearchField from 'components/sorting/searchField';
-import { TableHeadCustom, TableNoData } from 'components/table';
-import TableInternalMessageSkeleton from 'components/table/admin/system-messages/internal-message/TableInternalMessageSkeleton';
+import { TableHeadCustom } from 'components/table';
 import { InternalMessageListMock } from 'components/table/admin/system-messages/mock';
 import { InternalMessagesList } from 'components/table/admin/system-messages/types';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import useTable, { getComparator } from 'hooks/useTable';
 import useTabs from 'hooks/useTabs';
+import { useSnackbar } from 'notistack';
 import axiosInstance from 'utils/axios';
 import InternalMessageListRow from './InternalMessageListRow';
-import { useSnackbar } from 'notistack';
 
 const TABLE_HEAD = [
   { id: 'title', label: 'system_messages.headercell.title' },

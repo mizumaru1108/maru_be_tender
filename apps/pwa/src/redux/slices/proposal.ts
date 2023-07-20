@@ -16,6 +16,8 @@ import { insertChequeUpdatePayment } from 'queries/Cashier/insertChequeUpdatePay
 import { createNewFollowUp } from 'queries/commons/createNewFollowUp';
 import axiosInstance from 'utils/axios';
 import { useQuery } from 'urql';
+import { DefaultApi } from 'raise-sdk';
+import { getRaiseConfiguration, raiseConfiguration } from 'utils/raise-configuration';
 
 // ----------------------------------------------------------------------
 
@@ -385,6 +387,15 @@ export const getProposal = (id: string, role: string) => async () => {
     ) {
       // console.log('masuk sni');
       try {
+        // const proposalApi = new DefaultApi(await getRaiseConfiguration(role));
+        // await proposalApi
+        //   .fetchById({ id }, { headers: { 'x-hasura-role': role } })
+        //   .then((res) => {
+        //     console.log('testing openApiGenerator: ', res.data);
+        //   })
+        //   .catch((err) => {
+        //     console.log(err);
+        //   });
         const response = await axiosInstance.get(`tender-proposal/fetch-by-id?id=${id}`, {
           headers: { 'x-hasura-role': role },
         });
@@ -430,6 +441,7 @@ export const getProposal = (id: string, role: string) => async () => {
   }
 };
 export const getTrackList = (isGeneral: number, role: string) => async () => {
+  // console.log('masuk sini');
   try {
     dispatch(slice.actions.startLoading);
     dispatch(slice.actions.setLoadingCount(true));

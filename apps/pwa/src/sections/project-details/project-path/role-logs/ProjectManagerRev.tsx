@@ -74,7 +74,8 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
     <React.Fragment>
       {isConsultation === false &&
         stepGeneralLog.action !== 'accepted_by_project_manager' &&
-        stepGeneralLog.action !== 'set_by_supervisor' && (
+        stepGeneralLog.action !== 'set_by_supervisor' &&
+        stepGeneralLog.action !== 'rejected_by_project_manager' && (
           <React.Fragment>
             <Stack>
               <Typography variant="h6">
@@ -239,7 +240,8 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
       {dataGrants &&
         isConsultation &&
         stepGeneralLog.action !== 'accepted_by_project_manager' &&
-        stepGeneralLog.action !== 'set_by_supervisor' && (
+        stepGeneralLog.action !== 'set_by_supervisor' &&
+        stepGeneralLog.action !== 'rejected_by_project_manager' && (
           <Grid container spacing={2}>
             <Stack>
               <Typography variant="h6">
@@ -611,7 +613,8 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
           </Grid>
         )}
       {(stepGeneralLog.action === 'accepted_by_project_manager' ||
-        stepGeneralLog.action === 'set_by_supervisor') && (
+        stepGeneralLog.action === 'set_by_supervisor' ||
+        stepGeneralLog.action === 'rejected_by_project_manager') && (
         <>
           {' '}
           <Typography variant="h6">{translate(`review.payment`)}</Typography>

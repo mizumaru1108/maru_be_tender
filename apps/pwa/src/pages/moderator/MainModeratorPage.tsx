@@ -16,6 +16,7 @@ import useAuth from '../../hooks/useAuth';
 import React from 'react';
 import axiosInstance from '../../utils/axios';
 import SortingCardTable from 'components/sorting/sorting';
+import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -118,7 +119,7 @@ function MainManagerPage() {
   }, [fetchingIncoming]);
 
   if (fetching || incomingFetching) return <>{translate('pages.common.loading')}</>;
-  console.log({ isLoading });
+  // console.log({ isLoading });
   // if (isLoading) return <>{translate('pages.common.loading')}</>;
 
   return (
@@ -126,17 +127,23 @@ function MainManagerPage() {
     <Page title={translate('pages.moderator.main')}>
       <Container>
         <ContentStyle>
-          <CardInsight
-            headline={translate('account_manager.heading.daily_stats')}
-            data={Object.keys(statsData).map((item) => ({
-              title: translate(`${item}`),
-              value: statsData[`${item}`].aggregate.count,
-            }))}
-            cardContainerColumns={15}
-            cardContainerSpacing={1}
-            cardStyle={{ p: 2, bgcolor: 'white' }}
-          />
           <Grid container spacing={3}>
+            <Grid item md={12} xs={12}>
+              <EmployeeCarousel />
+            </Grid>
+            <Grid item md={12} xs={12}>
+              {/* <EmployeeCarousel /> */}
+              <CardInsight
+                headline={translate('account_manager.heading.daily_stats')}
+                data={Object.keys(statsData).map((item) => ({
+                  title: translate(`${item}`),
+                  value: statsData[`${item}`].aggregate.count,
+                }))}
+                cardContainerColumns={15}
+                cardContainerSpacing={1}
+                cardStyle={{ p: 2, bgcolor: 'white' }}
+              />
+            </Grid>
             <Grid item md={12} xs={12}>
               <Stack direction="row" justifyContent="space-between">
                 <Typography variant="h4" sx={{ mb: '20px' }}>

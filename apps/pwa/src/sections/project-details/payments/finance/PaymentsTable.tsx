@@ -261,7 +261,8 @@ function PaymentsTable() {
               {item.status !== 'set_by_supervisor' &&
               item.status !== 'issued_by_supervisor' &&
               item.status !== 'uploaded_by_cashier' &&
-              item.status !== 'accepted_by_project_manager' ? (
+              item.status !== 'accepted_by_project_manager' &&
+              item.status !== 'rejected_by_project_manager' ? (
                 <Grid item md={2}>
                   <Typography
                     sx={{
@@ -270,6 +271,18 @@ function PaymentsTable() {
                   >
                     {translate(
                       'content.administrative.project_details.payment.table.btn.exchange_permit_success'
+                    )}
+                  </Typography>
+                </Grid>
+              ) : item.status === 'rejected_by_project_manager' ? (
+                <Grid item md={2}>
+                  <Typography
+                    data-cy="content.administrative.project_details.payment.table.btn.exchange_permit_reject_by_pm"
+                    color="error"
+                    variant="h6"
+                  >
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_reject_by_pm'
                     )}
                   </Typography>
                 </Grid>
@@ -304,7 +317,7 @@ function PaymentsTable() {
                   </LoadingButton>
                 </Grid>
               ) : currentSelectedIndex === stepBeforeComplete &&
-                item.status === 'set_by_supervisor' ? (
+                item.status === 'rejected_by_project_manager' ? (
                 <Grid item md={2}>
                   <Typography
                     data-cy="content.administrative.project_details.payment.table.btn.exchange_permit_reject_by_pm"

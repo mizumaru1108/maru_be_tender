@@ -134,7 +134,10 @@ function PaymentsTable() {
     );
     console.log({ payments });
     for (var i = 0; i < payments.length; i++) {
-      if (payments[i].status === 'set_by_supervisor') {
+      if (
+        payments[i].status === 'set_by_supervisor' ||
+        payments[i].status === 'rejected_by_project_manager'
+      ) {
         setCurrentIssuedPayament(i);
         break;
       }
@@ -190,7 +193,8 @@ function PaymentsTable() {
                     </Typography>
                   </Stack>
                 </Grid>
-                {item.status !== 'set_by_supervisor' ? (
+                {item.status !== 'set_by_supervisor' &&
+                item.status !== 'rejected_by_project_manager' ? (
                   <Grid item md={3}>
                     <Typography variant="h6" sx={{ color: '#0E8478' }}>
                       {translate(

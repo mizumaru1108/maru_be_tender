@@ -17,7 +17,7 @@ const data = [
   },
 ];
 
-function ClientCarousel() {
+function EmployeeCarousel() {
   const theme = useTheme();
   const carouselRef = useRef<Slider | null>(null);
 
@@ -89,9 +89,9 @@ function ClientCarousel() {
                     justifyContent="space-around"
                     sx={{ p: '10px 25px 10px 25px', w: '100%', h: '100%' }}
                   >
-                    <Box flex={1} sx={{ alignSelf: 'center' }}>
-                      <img src={`/icons/mosque-carousel-icon.svg`} alt="" />
-                    </Box>
+                    {/* <Box flex={1} sx={{ alignSelf: 'center' }}>
+                  <img src={`/icons/mosque-carousel-icon.svg`} alt="" />
+                </Box> */}
                     <Stack direction="column" gap={1} justifyContent="center" flex={4}>
                       <Typography
                         className={classes.multiLineEllipsis}
@@ -119,4 +119,4 @@ function ClientCarousel() {
   );
 }
 
-export default ClientCarousel;
+export default EmployeeCarousel;

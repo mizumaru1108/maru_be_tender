@@ -76,7 +76,7 @@ function PaymentsTable() {
         // }
         if (
           payments[i].status === 'issued_by_supervisor' ||
-          payments[i].status === 'set_by_supervisor'
+          payments[i].status === 'rejected_by_project_manager'
         ) {
           currIndex = i;
           break;
@@ -172,6 +172,7 @@ function PaymentsTable() {
             dispatch(getProposalCount(activeRole ?? 'test'));
           }
           dispatch(getProposal(params.id as string, activeRole as string));
+          navigate(`/${role_url_map[`${activeRole!}`]}/dashboard/app`);
         }
       });
     } catch (error) {
@@ -337,7 +338,7 @@ function PaymentsTable() {
                 </Grid>
               </>
             ) : currentSelectedIndex === stepBeforeComplete &&
-              item.status === 'set_by_supervisor' ? (
+              item.status === 'rejected_by_project_manager' ? (
               <Grid item md={2}>
                 <Typography
                   data-cy="content.administrative.project_details.payment.table.btn.exchange_permit_refuse"

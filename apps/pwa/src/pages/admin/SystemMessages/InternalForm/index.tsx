@@ -1,10 +1,10 @@
 import { Container, styled } from '@mui/material';
+import Page from 'components/Page';
 import { FEATURE_BANNER } from 'config';
-import SystemMessages from 'sections/admin/system-messges';
-import Page from '../../components/Page';
-import useLocales from '../../hooks/useLocales';
+import useLocales from 'hooks/useLocales';
+import AdvertisingInternalForm from 'sections/admin/system-messges/form/internal';
 
-function SystemMessagesPage() {
+function AdvertisingInternalPage() {
   const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -17,12 +17,12 @@ function SystemMessagesPage() {
 
   return (
     // <Page title="System Messages">
-    <Page title={translate('pages.admin.system_messages')}>
+    <Page title={translate('pages.admin.advertising_internal_form')}>
       <Container>
-        <ContentStyle>{FEATURE_BANNER && <SystemMessages />}</ContentStyle>
+        <ContentStyle>{FEATURE_BANNER && <AdvertisingInternalForm />}</ContentStyle>
       </Container>
     </Page>
   );
 }
 
-export default SystemMessagesPage;
+export default AdvertisingInternalPage;

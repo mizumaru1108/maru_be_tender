@@ -38,6 +38,7 @@ export type PaymentStatus =
   | 'accepted_by_finance'
   | 'uploaded_by_cashier'
   | 'reject_cheque'
+  | 'rejected_by_project_manager'
   | 'done';
 
 export type AccreditationTypeId = 'PLAIN' | 'INCOMING';

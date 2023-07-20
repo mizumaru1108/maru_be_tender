@@ -456,7 +456,9 @@ function ProjectPath() {
                 item.action !== 'send_back_for_revision' &&
                 item.action !== 'step_back' &&
                 item.action !== 'sending_closing_report' &&
-                item.action === 'accepted_by_finance'
+                (item.action === 'accepted_by_finance' ||
+                  item.action === 'reject_cheque' ||
+                  item.action === 'done')
             ).length > 0 && stepGeneralLog ? (
               <FinancePaymentLog stepGeneralLog={stepGeneralLog} />
             ) : null}
@@ -487,7 +489,8 @@ function ProjectPath() {
                 (item.action === 'accepted_by_project_manager' ||
                   item.action === 'accept' ||
                   item.action === 'update' ||
-                  item.action === 'set_by_supervisor')
+                  item.action === 'set_by_supervisor' ||
+                  item.action === 'rejected_by_project_manager')
             ).length > 0 &&
             (stepGeneralLog || stepGransLog) ? (
               <>

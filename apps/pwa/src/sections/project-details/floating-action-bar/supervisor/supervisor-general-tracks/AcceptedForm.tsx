@@ -159,7 +159,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
     setIsLoading(true);
     // get total from amount_required_fsupport
-    const limitSupport = Number(proposal.amount_required_fsupport);
+    const limitSupport = Number(proposal.fsupport_by_supervisor);
     // get total from item budgets in proposal
     // let totalSupportProposal: number | undefined = undefined;
     // if (proposal.proposal_item_budgets) {
@@ -169,9 +169,11 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
     // }
     let totalAmount: number | undefined = undefined;
     if (data.detail_project_budgets) {
-      totalAmount = data
-        .detail_project_budgets!.map((item) => item.amount)
-        .reduce((acc, curr) => acc! + curr!, 0);
+      totalAmount = Number(
+        data
+          .detail_project_budgets!.map((item) => item.amount)
+          .reduce((acc, curr) => acc! + curr!, 0)
+      );
     }
     let checkPassAmount = false;
     if (data.support_type) {
@@ -291,6 +293,8 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
               },
             }
           );
+        } finally {
+          setIsLoading(false);
         }
         setSave(true);
         onEdit(false);
