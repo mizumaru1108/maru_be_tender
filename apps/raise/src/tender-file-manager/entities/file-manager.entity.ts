@@ -16,9 +16,11 @@
 //   user                user?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 // }
 
+import { ApiProperty } from '@nestjs/swagger';
 import { UserEntity } from '../../tender-user/user/entities/user.entity';
 
 export class FileManagerEntity {
+  @ApiProperty()
   id: string;
   name: string;
   size: number;

@@ -7,6 +7,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /stripe/request:
     post:
       operationId: request
@@ -20,6 +24,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /stripe/callback/success:
     get:
       operationId: callback
@@ -37,6 +45,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /stripe/requestCart:
     post:
       operationId: requestCart
@@ -80,6 +92,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /stripe/reqPayStripe:
     post:
       operationId: reqPayStripe
@@ -108,21 +124,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -226,6 +238,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_0
   /project/donor/organization/{organizationId}/getAllPublished:
     get:
@@ -240,6 +258,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_0
   /project/manager/getProjectList:
     get:
@@ -249,21 +271,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -357,6 +375,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_0
   /project/manager/operator/{operatorId}/getListAll:
     get:
@@ -371,6 +395,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_0
   /project/detail/{projectId}:
     get:
@@ -414,6 +442,8 @@ paths:
               $ref: '#/components/schemas/ProjectSetDeletedFlagDto'
       responses:
         '200':
+          description: ''
+        '201':
           description: ''
       tags: *ref_0
   /project/approve:
@@ -493,6 +523,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: &ref_1
         - item
   /item/manager/operator/{operatorId}/getListAll:
@@ -508,6 +544,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_1
   /item/create:
     post:
@@ -583,6 +625,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_2
   /hr/{id}:
     get:
@@ -597,6 +645,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_2
     put:
       operationId: update
@@ -629,6 +681,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_2
   /orgs/getListAll:
     get:
@@ -637,6 +693,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: &ref_3
         - orgs
   /orgs/getAllOrgAdmin:
@@ -647,21 +709,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -683,6 +741,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
     patch:
       operationId: updateOrganization
@@ -714,6 +776,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/appearance/{organizationId}/create:
     post:
@@ -752,6 +818,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/donors:
     get:
@@ -773,22 +843,58 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
+        - name: sorting_field
           required: false
           in: query
           schema:
-            default: desc
             type: string
-        - name: sorting_field
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: donor
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: transactionDate
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: email
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: phoneNumber
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: country
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: amount
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: donorName
           required: false
           in: query
           schema:
@@ -809,6 +915,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
     patch:
       operationId: updatePaymentGateway
@@ -845,6 +955,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/insight:
     get:
@@ -886,6 +1000,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
     patch:
       operationId: updateNotificationSettings
@@ -904,6 +1022,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/notification-settings:
     post:
@@ -918,6 +1040,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/notifications:
     get:
@@ -936,6 +1062,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_3
   /orgs/{organizationId}/notifications/add:
     post:
@@ -949,6 +1081,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/faq:
     get:
@@ -962,6 +1098,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_3
     post:
       operationId: createFaq
@@ -975,6 +1117,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/faq/{faqId}:
     post:
@@ -994,6 +1140,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/{organizationId}/landingPage:
     post:
@@ -1007,6 +1157,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
     patch:
       operationId: editLandingPage
@@ -1032,6 +1186,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/{organizationId}/aboutUs:
     post:
@@ -1045,6 +1203,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
     patch:
       operationId: editAboutUs
@@ -1070,6 +1232,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/{organizationId}/blog:
     post:
@@ -1083,6 +1249,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
     patch:
       operationId: editBlog
@@ -1108,6 +1278,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/{organizationId}/contactUs:
     post:
@@ -1128,6 +1302,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
     patch:
       operationId: editContactUs
@@ -1147,6 +1325,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
     get:
       operationId: getContactUs
@@ -1159,6 +1341,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /orgs/donor/{organizationId}/{donorId}:
     get:
@@ -1179,9 +1365,47 @@ paths:
           in: query
           schema:
             type: string
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: campaignId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: donorUserId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: currency
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: nonprofitRealmId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: priode
+          required: false
+          in: query
+          schema:
+            enum:
+              - 7days
+              - year
+              - 30days
+            type: string
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_3
   /referral/getListAll:
     get:
@@ -1190,6 +1414,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: &ref_4
         - referral
   /referral/getSummary:
@@ -1221,12 +1451,17 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: &ref_5
         - donor
   /donor/apply-vendor:
     post:
       operationId: applyVendor
       summary: Apply to become vendor from donor.
+      description: Endpoint for donor to apply as vendor.
       parameters: []
       responses:
         '201':
@@ -1336,11 +1571,18 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_5
   /donor/{donorId}/insight:
     get:
       operationId: getDonorInsight
       summary: Get insight donation log for donor
+      description: Endpoint for get insight of donor donation
       parameters:
         - name: donorId
           required: true
@@ -1378,23 +1620,54 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
+        - name: sorting_field
           required: false
           in: query
           schema:
-            default: desc
             type: string
-        - name: sorting_field
-          required: false
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: createdAt
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: donationStatus
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: amount
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: donorName
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: email
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: exZktList
+          required: true
           in: query
           schema:
             type: string
@@ -1409,23 +1682,54 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
+        - name: sorting_field
           required: false
           in: query
           schema:
-            default: desc
             type: string
-        - name: sorting_field
-          required: false
+        - name: organizationId
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: firstName
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: lastName
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: email
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: phoneNumber
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: country
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: type
+          required: true
           in: query
           schema:
             type: string
@@ -1470,6 +1774,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_5
   /donor/organization/{organizationId}/manager/getListAll:
     get:
@@ -1483,6 +1791,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_5
   /donor/{donorId}:
     get:
@@ -1496,6 +1808,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_5
     patch:
       operationId: updateDonor
@@ -1514,6 +1830,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_5
   /donor/{donorId}/history/getAllSuccess:
     get:
@@ -1537,6 +1857,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagerChartDataDto'
       tags:
         - manager
   /campaign/setFavorite:
@@ -1603,25 +1927,30 @@ paths:
     get:
       operationId: getAllCampaignVendorRequest
       summary: Get all pending campaign vendor request (operator/admin)
+      description: >-
+        Story (Operator > Campaign Vendor Request)
+
+        Ref:
+        https://www.notion.so/hendyirawan/Operator-Campaign-Vendor-Request-d33e785f1bf54b2da37e8d71c2eef984
+
+        Data Displayed by Frontend (response)
+
+        Vendor Name, Total Campaigns Done Before.
       parameters:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -1649,21 +1978,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -1698,11 +2023,22 @@ paths:
           required: false
           in: query
           schema:
+            enum:
+              - campaignName
+              - campaignType
+              - contentLanguage
+              - createdAt
+              - updatedAt
+              - status
+              - milestoneCount
             type: string
         - name: sortMethod
           required: false
           in: query
           schema:
+            enum:
+              - asc
+              - desc
             type: string
       responses:
         '200':
@@ -1721,21 +2057,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -1770,11 +2102,22 @@ paths:
           required: false
           in: query
           schema:
+            enum:
+              - campaignName
+              - campaignType
+              - contentLanguage
+              - createdAt
+              - updatedAt
+              - status
+              - milestoneCount
             type: string
         - name: sortMethod
           required: false
           in: query
           schema:
+            enum:
+              - asc
+              - desc
             type: string
       responses:
         '200':
@@ -1784,6 +2127,11 @@ paths:
     get:
       operationId: getCampaignDonorListOnOperatorDashboard
       summary: Get list all donor on spesific campaign
+      description: >-
+        Story Campaign Donor on Operator Dashboard
+
+        Ref:
+        https://www.notion.so/hendyirawan/Campaign-Donor-on-Operator-Dashboard-307544af9290495c85964371e72810c1
       parameters:
         - name: campaignId
           required: false
@@ -1798,21 +2146,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -1855,6 +2199,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_6
   /campaign/organization/{organizationId}/getAllPublished:
     get:
@@ -1869,6 +2217,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_6
   /campaign/organization/{organizationId}/operator/{operatorId}/getListAll:
     get:
@@ -1888,6 +2242,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_6
   /campaign/organization/{organizationId}/getListAllNew:
     get:
@@ -1902,11 +2262,18 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_6
   /campaign/organization/{organizationId}/getListAllNewPaginated:
     get:
       operationId: getAllNewCampaignPaginated
       summary: Successfully get list of new campaign on organization
+      description: Simply refactor from getListAllNew (apply pagination and filter)
       parameters:
         - name: organizationId
           required: true
@@ -1916,21 +2283,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -1940,16 +2303,40 @@ paths:
           required: false
           in: query
           schema:
+            enum:
+              - maintenance
+              - building
+              - inspection
+              - repair
+              - furnishing
+              - dawah
+              - waqf
+              - zakat
+              - campaign
+              - quick-donate
             type: string
         - name: isFinished
           required: false
           in: query
           schema:
+            enum:
+              - 'y'
+              - 'yes'
+              - 'Yes'
+              - 'YES'
+              - 'n'
+              - 'no'
+              - 'No'
+              - 'NO'
             type: string
         - name: sortBy
           required: false
           in: query
           schema:
+            enum:
+              - newest
+              - oldest
+              - tranding
             type: string
       responses:
         '200':
@@ -1973,6 +2360,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_6
   /campaign/organization/{organizationId}/vendor/{vendorId}/getListApproved:
     get:
@@ -1992,6 +2385,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_6
   /campaign/organization/{organizationId}/vendor/{vendorId}/getListPending:
     get:
@@ -2011,6 +2410,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_6
   /campaign/{campaignId}/operator/{operatorId}/getListPending:
     get:
@@ -2030,6 +2435,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_6
   /campaign/campaignCreate:
     post:
@@ -2049,6 +2460,11 @@ paths:
     post:
       operationId: vendorApply
       summary: Vendor apply to campaign
+      description: >-
+        Story Title: Vendor > Apply to campaign
+
+        Story URL:
+        https://www.notion.so/hendyirawan/Vendor-Apply-to-campaign-548856c4d9a649479d57c0d9b29288d0
       parameters: []
       requestBody:
         required: true
@@ -2066,6 +2482,11 @@ paths:
     post:
       operationId: approveCampaign
       summary: Operator/Manager approve for vendor request
+      description: >-
+        Story Title: Operator > approve campaign vendor request
+
+        Story Ref:
+        https://www.notion.so/hendyirawan/Operator-Campaign-Vendor-Request-d33e785f1bf54b2da37e8d71c2eef984
       parameters: []
       requestBody:
         required: true
@@ -2143,21 +2564,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -2191,6 +2608,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_7
   /operator/{operatorId}/getChartData:
     get:
@@ -2205,6 +2626,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorChartDataDto'
       tags: *ref_7
   /ticket/create:
     post:
@@ -2230,6 +2655,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: *ref_8
   /zakat/metal:
     get:
@@ -2255,6 +2686,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /zakat/getSummary:
     get:
       operationId: getSummary
@@ -2284,6 +2719,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
   /zakat/transactionList:
     get:
       operationId: getTransactionList
@@ -2301,6 +2742,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
   /zakat/expense/list:
     get:
       operationId: getExpenseList
@@ -2313,6 +2760,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /zakat/expense/create:
     post:
       operationId: createExpense
@@ -2326,6 +2777,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
   /zakat/donate:
     post:
       operationId: createDonate
@@ -2339,6 +2794,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /user/test-superadmin:
     post:
       operationId: testSuperAdmin
@@ -2418,6 +2877,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /user/updateUserProfile:
     patch:
       operationId: updateUserProfile
@@ -2485,6 +2948,8 @@ paths:
   /auth/register-organization:
     post:
       operationId: registerOrganization
+      summary: ''
+      description: '* Register organization'
       parameters: []
       requestBody:
         required: true
@@ -2502,6 +2967,12 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags: &ref_9
         - vendor
   /vendor/{vendorId}:
@@ -2517,6 +2988,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       tags: *ref_9
   /vendor/{vendorId}/summary:
     get:
@@ -2545,6 +3020,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorChartDataDto'
       tags: *ref_9
   /widgets/basket/list:
     get:
@@ -2558,6 +3037,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /widgets/basket/create:
     post:
       operationId: createBasket
@@ -2571,6 +3054,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /widgets/basket/{basketId}:
     patch:
       operationId: updateBasket
@@ -2589,6 +3076,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /widgets/basketProject/create:
     post:
       operationId: createBasketProject
@@ -2602,6 +3093,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /widget-backend/donation/add:
     post:
       operationId: create
@@ -2609,6 +3104,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /widget-backend:
     get:
       operationId: findAll
@@ -2616,6 +3115,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: string
   /widget-backend/{id}:
     get:
       operationId: findOne
@@ -2628,6 +3131,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: string
     patch:
       operationId: update
       parameters:
@@ -2645,6 +3152,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: string
     delete:
       operationId: remove
       parameters:
@@ -2656,10 +3167,15 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: string
   /comments/createComment:
     post:
       operationId: createComment
       summary: Create Comment
+      description: can be filtered by campaign, project, item
       parameters: []
       requestBody:
         required: true
@@ -2678,21 +3194,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -2701,42 +3213,56 @@ paths:
         - name: commentOwnerId
           required: false
           in: query
+          description: Apply to find by commentOwnerId.
           schema:
             type: string
         - name: organizationId
           required: false
           in: query
+          description: Apply to find by commentOwnerId.
           schema:
             type: string
         - name: parentCommentId
           required: false
           in: query
+          description: Apply to filter comments by campaignId
           schema:
             type: string
         - name: campaignId
           required: false
           in: query
+          description: Apply to find by campaignId
           schema:
             type: string
         - name: projectId
           required: false
           in: query
+          description: Apply to find by projectId
           schema:
             type: string
         - name: itemId
           required: false
           in: query
+          description: Apply to find by itemId.
           schema:
             type: string
         - name: sortBy
           required: false
           in: query
+          description: sort by querry
           schema:
+            enum:
+              - createdAt
+              - updatedAt
             type: string
         - name: sortMethod
           required: false
           in: query
+          description: sort by querry
           schema:
+            enum:
+              - asc
+              - desc
             type: string
       responses:
         '200':
@@ -2749,21 +3275,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -2772,42 +3294,56 @@ paths:
         - name: commentOwnerId
           required: false
           in: query
+          description: Apply to find by commentOwnerId.
           schema:
             type: string
         - name: organizationId
           required: false
           in: query
+          description: Apply to find by commentOwnerId.
           schema:
             type: string
         - name: parentCommentId
           required: false
           in: query
+          description: Apply to filter comments by campaignId
           schema:
             type: string
         - name: campaignId
           required: false
           in: query
+          description: Apply to find by campaignId
           schema:
             type: string
         - name: projectId
           required: false
           in: query
+          description: Apply to find by projectId
           schema:
             type: string
         - name: itemId
           required: false
           in: query
+          description: Apply to find by itemId.
           schema:
             type: string
         - name: sortBy
           required: false
           in: query
+          description: sort by querry
           schema:
+            enum:
+              - createdAt
+              - updatedAt
             type: string
         - name: sortMethod
           required: false
           in: query
+          description: sort by querry
           schema:
+            enum:
+              - asc
+              - desc
             type: string
       responses:
         '200':
@@ -2820,21 +3356,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -2843,42 +3375,56 @@ paths:
         - name: commentOwnerId
           required: false
           in: query
+          description: Apply to find by commentOwnerId.
           schema:
             type: string
         - name: organizationId
           required: false
           in: query
+          description: Apply to find by commentOwnerId.
           schema:
             type: string
         - name: parentCommentId
           required: false
           in: query
+          description: Apply to filter comments by campaignId
           schema:
             type: string
         - name: campaignId
           required: false
           in: query
+          description: Apply to find by campaignId
           schema:
             type: string
         - name: projectId
           required: false
           in: query
+          description: Apply to find by projectId
           schema:
             type: string
         - name: itemId
           required: false
           in: query
+          description: Apply to find by itemId.
           schema:
             type: string
         - name: sortBy
           required: false
           in: query
+          description: sort by querry
           schema:
+            enum:
+              - createdAt
+              - updatedAt
             type: string
         - name: sortMethod
           required: false
           in: query
+          description: sort by querry
           schema:
+            enum:
+              - asc
+              - desc
             type: string
       responses:
         '200':
@@ -2891,21 +3437,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -2914,42 +3456,56 @@ paths:
         - name: commentOwnerId
           required: false
           in: query
+          description: Apply to find by commentOwnerId.
           schema:
             type: string
         - name: organizationId
           required: false
           in: query
+          description: Apply to find by commentOwnerId.
           schema:
             type: string
         - name: parentCommentId
           required: false
           in: query
+          description: Apply to filter comments by campaignId
           schema:
             type: string
         - name: campaignId
           required: false
           in: query
+          description: Apply to find by campaignId
           schema:
             type: string
         - name: projectId
           required: false
           in: query
+          description: Apply to find by projectId
           schema:
             type: string
         - name: itemId
           required: false
           in: query
+          description: Apply to find by itemId.
           schema:
             type: string
         - name: sortBy
           required: false
           in: query
+          description: sort by querry
           schema:
+            enum:
+              - createdAt
+              - updatedAt
             type: string
         - name: sortMethod
           required: false
           in: query
+          description: sort by querry
           schema:
+            enum:
+              - asc
+              - desc
             type: string
       responses:
         '200':
@@ -2962,21 +3518,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -2985,42 +3537,56 @@ paths:
         - name: commentOwnerId
           required: false
           in: query
+          description: Apply to find by commentOwnerId.
           schema:
             type: string
         - name: organizationId
           required: false
           in: query
+          description: Apply to find by commentOwnerId.
           schema:
             type: string
         - name: parentCommentId
           required: false
           in: query
+          description: Apply to filter comments by campaignId
           schema:
             type: string
         - name: campaignId
           required: false
           in: query
+          description: Apply to find by campaignId
           schema:
             type: string
         - name: projectId
           required: false
           in: query
+          description: Apply to find by projectId
           schema:
             type: string
         - name: itemId
           required: false
           in: query
+          description: Apply to find by itemId.
           schema:
             type: string
         - name: sortBy
           required: false
           in: query
+          description: sort by querry
           schema:
+            enum:
+              - createdAt
+              - updatedAt
             type: string
         - name: sortMethod
           required: false
           in: query
+          description: sort by querry
           schema:
+            enum:
+              - asc
+              - desc
             type: string
       responses:
         '200':
@@ -3215,21 +3781,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -3245,6 +3807,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /tender/twilio-test:
     post:
       operationId: twilioTest
@@ -3252,6 +3818,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: boolean
   /tender/msegat-test:
     post:
       operationId: msegatTest
@@ -3259,6 +3829,10 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: boolean
   /tender-proposal/follow-up/create:
     post:
       operationId: create
@@ -3311,6 +3885,8 @@ paths:
       responses:
         '201':
           description: ''
+      tags: &ref_10
+        - ProposalModule
   /tender-proposal/send-amandement:
     post:
       operationId: sendAmandement
@@ -3324,6 +3900,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_10
   /tender-proposal/send-amandement-cqrs:
     post:
       operationId: sendAmandementCqrs
@@ -3337,6 +3914,11 @@ paths:
       responses:
         '201':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+      tags: *ref_10
   /tender-proposal/delete-draft:
     post:
       operationId: deleteDraft
@@ -3350,6 +3932,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_10
   /tender-proposal/ask-amandement-request:
     post:
       operationId: askForAmandementRequest
@@ -3363,6 +3946,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_10
   /tender-proposal/request-in-process:
     get:
       operationId: requestInProcess
@@ -3370,27 +3954,18 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
-          required: false
-          in: query
-          schema:
-            type: string
-        - name: type
           required: false
           in: query
           schema:
@@ -3413,6 +3988,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/previous:
     get:
       operationId: getPreviousProposal
@@ -3420,21 +3996,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -3455,6 +4027,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/payment-adjustment:
     get:
       operationId: fetchPaymentAdjustment
@@ -3462,27 +4035,18 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
-          required: false
-          in: query
-          schema:
-            type: string
-        - name: type
           required: false
           in: query
           schema:
@@ -3495,6 +4059,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/fetch-by-id:
     get:
       operationId: fetchById
@@ -3507,6 +4072,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/find-by-id:
     get:
       operationId: findById
@@ -3519,20 +4085,20 @@ paths:
         - name: relations
           required: false
           in: query
-          examples:
-            - user
-            - beneficiary_details
-            - follow_ups
-            - track
-            - proposal_item_budgets
-            - supervisor
-            - poposal_log
-            - payments
-            - bank_information
-            - project_timeline
           schema:
             type: array
             items:
+              enum:
+                - user
+                - beneficiary_details
+                - follow_ups
+                - track
+                - proposal_item_budgets
+                - supervisor
+                - poposal_log
+                - payments
+                - bank_information
+                - project_timeline
               type: string
       responses:
         '200':
@@ -3540,7 +4106,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Promise'
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/ProposalEntity'
+      tags: *ref_10
       security:
         - bearer: []
   /tender-proposal/amandement-lists:
@@ -3550,21 +4121,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -3588,6 +4155,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/rejection-list:
     get:
       operationId: fetchRejectionList
@@ -3595,21 +4163,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -3628,6 +4192,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/closing-report-list:
     get:
       operationId: fetchClosingReportList
@@ -3635,21 +4200,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -3663,6 +4224,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/amandement-request-lists:
     get:
       operationId: fetchAmandementRequestList
@@ -3670,21 +4232,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -3708,6 +4266,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/list:
     get:
       operationId: fetchProposalList
@@ -3715,21 +4274,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -3751,6 +4306,8 @@ paths:
           required: false
           in: query
           schema:
+            minimum: 1
+            maximum: 1000000000000000000
             type: number
         - name: employee_name
           required: false
@@ -3767,6 +4324,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/proposal-count:
     get:
       operationId: getProposalCount
@@ -3774,6 +4332,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/old/list:
     get:
       operationId: fetchOldProposalList
@@ -3781,21 +4340,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -3817,6 +4372,8 @@ paths:
           required: false
           in: query
           schema:
+            minimum: 1
+            maximum: 1000000000000000000
             type: number
         - name: employee_name
           required: false
@@ -3833,6 +4390,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/amandement:
     get:
       operationId: getAmandementById
@@ -3845,6 +4403,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/fetch-track:
     get:
       operationId: fetchTrack
@@ -3852,21 +4411,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -3875,9 +4430,12 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/change-state:
     patch:
       operationId: changeProposalState
+      summary: ''
+      description: changing proposal state (acc/reject, create logs)
       parameters: []
       requestBody:
         required: true
@@ -3888,9 +4446,12 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/change-state-cqrs:
     patch:
       operationId: applyChangeProposalState
+      summary: ''
+      description: experimental
       parameters: []
       requestBody:
         required: true
@@ -3901,6 +4462,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/interceptor-save-draft:
     patch:
       operationId: interceptorSaveDraft
@@ -3914,6 +4476,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender-proposal/send-revision:
     patch:
       operationId: sendRevision
@@ -3927,6 +4490,7 @@ paths:
       responses:
         '200':
           description: ''
+      tags: *ref_10
   /tender/track/create:
     post:
       operationId: create
@@ -3960,32 +4524,23 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
           schema:
             type: string
         - name: track_name
-          required: false
-          in: query
-          schema:
-            type: string
-        - name: include_general
           required: false
           in: query
           schema:
@@ -4064,21 +4619,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -4102,21 +4653,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -4178,6 +4725,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       security:
         - bearer: []
         - x-hasura-role: []
@@ -4194,6 +4745,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
       security:
         - bearer: []
         - x-hasura-role: []
@@ -4300,21 +4855,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -4368,27 +4919,18 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
-          required: false
-          in: query
-          schema:
-            type: string
-        - name: status
           required: false
           in: query
           schema:
@@ -4397,11 +4939,15 @@ paths:
           required: false
           in: query
           schema:
+            minimum: 1
+            maximum: 12
             type: number
         - name: year
           required: false
           in: query
           schema:
+            minimum: 1970
+            maximum: 2025
             type: number
         - name: user_id
           required: false
@@ -4423,27 +4969,18 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
-          required: false
-          in: query
-          schema:
-            type: string
-        - name: status
           required: false
           in: query
           schema:
@@ -4452,11 +4989,15 @@ paths:
           required: false
           in: query
           schema:
+            minimum: 1
+            maximum: 12
             type: number
         - name: year
           required: false
           in: query
           schema:
+            minimum: 1970
+            maximum: 2025
             type: number
         - name: user_id
           required: false
@@ -4523,21 +5064,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -4582,6 +5119,9 @@ paths:
           required: false
           in: query
           schema:
+            enum:
+              - main
+              - sub
             type: string
         - name: email
           required: false
@@ -4592,26 +5132,45 @@ paths:
           required: false
           in: query
           schema:
+            enum:
+              - '1'
+              - '0'
             type: string
         - name: hide_external
           required: false
           in: query
           schema:
+            enum:
+              - '1'
+              - '0'
             type: string
         - name: single_role
           required: false
           in: query
           schema:
+            enum:
+              - '1'
+              - '0'
             type: string
         - name: include_schedule
           required: false
           in: query
+          description: including the relation (schedule)
           schema:
+            enum:
+              - '1'
+              - '0'
             type: string
         - name: split_roles
           required: false
           in: query
+          description: |-
+            not yet handled, for spliting if user has 2 role
+            it will be splited like using unwind on the roles
           schema:
+            enum:
+              - '1'
+              - '0'
             type: string
       responses:
         '200':
@@ -4702,21 +5261,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -4730,6 +5285,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /tender/client/proposals:
     get:
       operationId: findClientProposalById
@@ -4737,21 +5296,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -4765,6 +5320,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /tender/client/edit-request/list:
     get:
       operationId: findEditRequest
@@ -4772,32 +5331,23 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
           schema:
             type: string
         - name: association_name
-          required: false
-          in: query
-          schema:
-            type: string
-        - name: status
           required: false
           in: query
           schema:
@@ -4863,6 +5413,8 @@ paths:
       responses:
         '201':
           description: ''
+      tags: &ref_11
+        - AuthModule
   /tender-auth/login:
     post:
       operationId: login
@@ -4876,6 +5428,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_11
   /tender-auth/send-email-verif:
     post:
       operationId: sendEmailVerif
@@ -4889,6 +5442,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_11
   /tender-auth/verify-email/{token}:
     post:
       operationId: verifyEmail
@@ -4901,6 +5455,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_11
   /tender-auth/register:
     post:
       operationId: register
@@ -4914,6 +5469,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_11
   /tender-auth/register-client:
     post:
       operationId: registerClient
@@ -4927,6 +5483,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_11
   /tender-auth/reset-password-request:
     post:
       operationId: resetPasswordRequest
@@ -4940,6 +5497,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_11
   /tender-auth/ask-forgot-password-url:
     post:
       operationId: askForgotPasswordUrl
@@ -4953,6 +5511,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_11
   /tender-auth/forgot-password-request:
     post:
       operationId: forgotPasswordRequest
@@ -4966,6 +5525,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_11
   /tender-auth/submit-change-password:
     post:
       operationId: submitForgotPassword
@@ -4979,6 +5539,7 @@ paths:
       responses:
         '201':
           description: ''
+      tags: *ref_11
   /tender-email/send:
     post:
       operationId: send
@@ -4999,21 +5560,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -5039,21 +5596,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -5092,21 +5645,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -5136,6 +5685,9 @@ paths:
           required: false
           in: query
           schema:
+            enum:
+              - '1'
+              - '0'
             type: string
       responses:
         '200':
@@ -5173,21 +5725,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -5196,6 +5744,10 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                type: object
   /statistics/orders:
     get:
       operationId: getAllStatistics
@@ -5217,21 +5769,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -5257,21 +5805,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -5297,21 +5841,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -5337,21 +5877,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -5382,21 +5918,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -5438,6 +5970,8 @@ paths:
   /tender/notification/hide:
     patch:
       operationId: hide
+      summary: ''
+      description: DEPRECATED FOR NOW
       parameters: []
       requestBody:
         required: true
@@ -5451,6 +5985,8 @@ paths:
   /tender/notification/hide-all-mine:
     patch:
       operationId: hideAllMine
+      summary: ''
+      description: DEPRECATED FOR NOW
       parameters: []
       responses:
         '200':
@@ -5482,21 +6018,17 @@ paths:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -5575,7 +6107,7 @@ paths:
       responses:
         '201':
           description: ''
-      tags: &ref_10
+      tags: &ref_12
         - qa-helper
   /qa-helper/proposal/create-supervisor:
     post:
@@ -5590,7 +6122,7 @@ paths:
       responses:
         '201':
           description: ''
-      tags: *ref_10
+      tags: *ref_12
   /qa-helper/proposal/delete/{id}:
     delete:
       operationId: deleteProposal
@@ -5603,11 +6135,11 @@ paths:
       responses:
         '200':
           description: ''
-      tags: *ref_10
+      tags: *ref_12
   /advertisements/create:
     post:
       operationId: create
-      summary: creating advertisement either for internal or external
+      summary: creating advertisement either for internal or external (admin only)
       parameters: []
       requestBody:
         required: true
@@ -5616,36 +6148,42 @@ paths:
             schema:
               $ref: '#/components/schemas/AdvertisementCreateDto'
       responses:
-        '201':
+        '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Promise'
-      tags: &ref_11
-        - advertisements
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: >-
+                            #/components/schemas/AdvertisementCreateCommandResult
+        '201':
+          description: ''
+      tags: &ref_13
+        - AdvertisementModule
   /advertisements:
     get:
       operationId: findMany
+      summary: find advertisement either for internal or external (admin only)
       parameters:
         - name: page
           required: false
           in: query
+          description: Page
           schema:
             default: 1
             type: number
         - name: limit
           required: false
           in: query
+          description: Limit
           schema:
             default: 10
             type: number
-        - name: sort
-          required: false
-          in: query
-          schema:
-            default: desc
-            type: string
         - name: sorting_field
           required: false
           in: query
@@ -5654,9 +6192,57 @@ paths:
       responses:
         '200':
           description: ''
-      tags: *ref_11
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AdvertisementEntity'
+      tags: *ref_13
+  /advertisements/mine:
+    get:
+      operationId: findMyAdvertisement
+      summary: find personalized ads for curtain user
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Page
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Limit
+          schema:
+            default: 10
+            type: number
+        - name: sorting_field
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AdvertisementEntity'
+      tags: *ref_13
   /advertisements/update:
-    post:
+    patch:
       operationId: update
       summary: updating advertisement either for internal or external
       parameters: []
@@ -5665,11 +6251,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdvertisementCreateDto'
+              $ref: '#/components/schemas/AdvertisementUpdateDto'
       responses:
-        '201':
+        '200':
           description: ''
-      tags: *ref_11
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/AdvertisementUpdateCommandResult'
+      tags: *ref_13
   /health/startup:
     get:
       operationId: startup
@@ -5699,13 +6293,177 @@ info:
 tags: []
 servers: []
 components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
   schemas:
+    ObjectId:
+      type: object
+      properties: {}
+    ZakatLogDetails:
+      type: object
+      properties:
+        name:
+          type: string
+        unit:
+          type: string
+        carat:
+          type: number
+        numberOfUnits:
+          type: number
+        amount:
+          type: number
+        currency:
+          type: string
+      required:
+        - name
+        - unit
+        - carat
+        - numberOfUnits
+        - amount
+        - currency
+    ZakatLogDto:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ObjectId'
+        donationLogId:
+          $ref: '#/components/schemas/ObjectId'
+        type:
+          type: string
+        currency:
+          type: string
+        totalAmount:
+          type: number
+        unit:
+          type: string
+        numberOfUnits:
+          type: number
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ZakatLogDetails'
+        createdAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - donationLogId
+        - type
+        - currency
+        - totalAmount
+        - unit
+        - numberOfUnits
+        - details
+        - createdAt
     PaymentRequestDto:
       type: object
-      properties: {}
+      properties:
+        organizationId:
+          $ref: '#/components/schemas/ObjectId'
+        campaignId:
+          $ref: '#/components/schemas/ObjectId'
+        donorId:
+          $ref: '#/components/schemas/ObjectId'
+        type:
+          type: string
+        amount:
+          type: number
+        paymentMethodType:
+          type: string
+        currency:
+          type: string
+        success_url:
+          type: string
+        cancel_url:
+          type: string
+        price:
+          type: string
+        quantity:
+          type: string
+        extraAmount:
+          type: number
+        zakatLogs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ZakatLogDto'
+        isAnonymous:
+          type: boolean
+        isEmailChecklist:
+          type: boolean
+      required:
+        - organizationId
+        - campaignId
+        - donorId
+        - type
+        - amount
+        - paymentMethodType
+        - currency
+        - success_url
+        - cancel_url
+        - price
+        - quantity
+        - extraAmount
+        - zakatLogs
     PaymentRequestCartDto:
       type: object
-      properties: {}
+      properties:
+        data_basket:
+          type: array
+          items:
+            type: string
+        organizationId:
+          $ref: '#/components/schemas/ObjectId'
+        campaignId:
+          $ref: '#/components/schemas/ObjectId'
+        donorId:
+          $ref: '#/components/schemas/ObjectId'
+        type:
+          type: string
+        total_amount:
+          type: number
+        currency:
+          type: string
+        success_url:
+          type: string
+        cancel_url:
+          type: string
+        price:
+          type: string
+        quantity:
+          type: string
+        isAnonymous:
+          type: boolean
+        isEmailChecklist:
+          type: boolean
+        amount:
+          type: number
+        paymentMethodType:
+          type: string
+        extraAmount:
+          type: number
+        zakatLogs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ZakatLogDto'
+        campaignTitle:
+          type: string
+        payment_intent:
+          type: object
+          nullable: true
+      required:
+        - data_basket
+        - organizationId
+        - donorId
+        - type
+        - total_amount
+        - currency
+        - success_url
+        - cancel_url
+        - price
+        - quantity
     CoordiateLocation:
       type: object
       properties:
@@ -5716,6 +6474,23 @@ components:
       required:
         - latitude
         - longitude
+    ProjectNearbyPlaces:
+      type: object
+      properties: {}
+    PayloadImage:
+      type: object
+      properties:
+        base64Data:
+          type: string
+        fullName:
+          type: string
+        imageExtension:
+          type: string
+          pattern: /^[.][^.]+/
+      required:
+        - base64Data
+        - fullName
+        - imageExtension
     ProjectCreateDto:
       type: object
       properties:
@@ -5743,22 +6518,37 @@ components:
           type: number
         hasAc:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         hasClassroom:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         hasParking:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         hasGreenSpace:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         hasFemaleSection:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         nearByPlaces:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ProjectNearbyPlaces'
         images:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/PayloadImage'
       required:
         - organizationId
         - name
@@ -5794,12 +6584,22 @@ components:
           type: string
         status:
           type: string
+          enum:
+            - approved
+            - rejected
         rejectReason:
           type: string
       required:
         - organizationId
         - projectId
         - status
+    UpdateImagePayload:
+      type: object
+      properties:
+        oldUrl:
+          type: string
+        newImage:
+          $ref: '#/components/schemas/PayloadImage'
     ProjectUpdateDto:
       type: object
       properties:
@@ -5827,22 +6627,37 @@ components:
           type: number
         hasAc:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         hasClassroom:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         hasParking:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         hasGreenSpace:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         hasFemaleSection:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         nearByPlaces:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ProjectNearbyPlaces'
         updatedImage:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/UpdateImagePayload'
       required:
         - organizationId
         - name
@@ -5869,6 +6684,16 @@ components:
             type: string
       required:
         - itemIds
+    AttachmentFile:
+      type: object
+      properties:
+        filename:
+          type: string
+        path:
+          type: string
+      required:
+        - filename
+        - path
     MessageDto:
       type: object
       properties:
@@ -5879,11 +6704,12 @@ components:
         help_message:
           type: string
         organizationId:
-          type: object
+          type: string
+          nullable: true
         files:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/AttachmentFile'
       required:
         - name
         - email
@@ -5902,7 +6728,86 @@ components:
           type: string
     OrganizationDto:
       type: object
-      properties: {}
+      properties:
+        organizationEmail:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        contactPhone:
+          type: string
+        aboutHeading:
+          type: string
+        aboutBody:
+          type: string
+        aboutPicture:
+          type: string
+        isoPhoneCode:
+          type: string
+        country:
+          type: string
+        state:
+          type: string
+        city:
+          type: string
+        zipCode:
+          type: string
+        instagram:
+          type: string
+        facebook:
+          type: string
+        twitter:
+          type: string
+        contactWhatsapp:
+          type: string
+        latitude:
+          type: string
+        longitude:
+          type: string
+        currencyOptions:
+          type: object
+        defaultLanguage:
+          type: string
+        campaignLanguage:
+          type: string
+        selectedLanguage:
+          type: object
+        zakatTransaction:
+          type: boolean
+        zakatCalculator:
+          type: boolean
+        ownerUserId:
+          type: string
+        ownerRealmId:
+          $ref: '#/components/schemas/ObjectId'
+        favicon:
+          type: string
+      required:
+        - organizationEmail
+        - name
+        - address
+        - contactPhone
+        - aboutHeading
+        - aboutBody
+        - aboutPicture
+        - isoPhoneCode
+        - country
+        - state
+        - city
+        - zipCode
+        - instagram
+        - facebook
+        - twitter
+        - contactWhatsapp
+        - latitude
+        - longitude
+        - currencyOptions
+        - defaultLanguage
+        - campaignLanguage
+        - selectedLanguage
+        - zakatTransaction
+        - zakatCalculator
     AppearancenDto:
       type: object
       properties:
@@ -5960,9 +6865,6 @@ components:
           type: string
         favIcon:
           type: string
-    ObjectId:
-      type: object
-      properties: {}
     PaymentGateWayDto:
       type: object
       properties:
@@ -6005,16 +6907,127 @@ components:
         - serverKey
     NotificationSettingsDto:
       type: object
-      properties: {}
+      properties:
+        organizationId:
+          type: string
+        showNotif:
+          type: boolean
+        allowSound:
+          type: boolean
+        newDonation:
+          type: boolean
+        completeDonation:
+          type: boolean
+        emailNotif:
+          type: boolean
+      required:
+        - organizationId
+        - showNotif
+        - allowSound
+        - newDonation
+        - completeDonation
+        - emailNotif
     FaqDto:
       type: object
-      properties: {}
+      properties:
+        organizationId:
+          type: string
+        question:
+          type: boolean
+        answer:
+          type: boolean
+      required:
+        - organizationId
+        - question
+        - answer
     NonProfitAppearancePageDto:
       type: object
-      properties: {}
+      properties:
+        ownerUserId:
+          type: string
+        ownerRealmId:
+          type: string
+        contactUsCsEmail:
+          type: string
+        disclaimer:
+          type: string
+        faq:
+          type: array
+          items:
+            type: string
+        organizationId:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        latitude:
+          type: string
+        longitude:
+          type: string
+        locationName:
+          type: string
+        privacyPolicy:
+          type: array
+          items:
+            type: string
+      required:
+        - ownerUserId
+        - ownerRealmId
+        - contactUsCsEmail
+        - disclaimer
+        - faq
+        - organizationId
+        - createdAt
+        - updatedAt
+        - latitude
+        - longitude
+        - locationName
+        - privacyPolicy
     EditNonProfitAppearancePageDto:
       type: object
-      properties: {}
+      properties:
+        ownerUserId:
+          type: string
+        ownerRealmId:
+          type: string
+        contactUsCsEmail:
+          type: string
+        disclaimer:
+          type: string
+        faq:
+          type: array
+          items:
+            type: string
+        organizationId:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        latitude:
+          type: string
+        longitude:
+          type: string
+        locationName:
+          type: string
+        privacyPolicy:
+          type: array
+          items:
+            type: string
+      required:
+        - ownerUserId
+        - ownerRealmId
+        - contactUsCsEmail
+        - disclaimer
+        - faq
+        - organizationId
+        - createdAt
+        - updatedAt
+        - latitude
+        - longitude
+        - locationName
+        - privacyPolicy
     DonorUpdateProfileDto:
       type: object
       properties:
@@ -6084,6 +7097,13 @@ components:
         itemId:
           type: string
         type:
+          enum:
+            - campaign
+            - item
+            - project
+            - mixed
+            - cart
+            - zakat
           type: string
         paymentGatewayId:
           type: string
@@ -6104,6 +7124,48 @@ components:
         - amount
         - currency
         - ipAddress
+    DonorDonationDetailsDto:
+      type: object
+      properties:
+        donationType:
+          type: string
+          description: Type of donations
+          enum:
+            - campaign
+            - item
+            - project
+        itemId:
+          type: string
+          description: >-
+            Optional (only if donationType is Item)
+
+            Make it as array, in case donor can donate multiple items
+
+            and apply validation from dto because there's possibility of qty
+            props
+        qty:
+          type: number
+          description: >-
+            Optional (only if donationType is Item)
+
+            amount of item donated, to calculate total amount (fetched item
+            price * qty)
+          minimum: 1
+        projectId:
+          type: string
+          description: Optional (only if donationType is Project)
+        campaignId:
+          type: string
+          description: Optional (only if donationType is campaign)
+        donationAmount:
+          type: number
+          description: |-
+            if it wasn't item, then it's campaign or project
+            so added the amount of donation, rather than fetch
+            from item
+          minimum: 1
+      required:
+        - donationType
     DonorDonateDto:
       type: object
       properties:
@@ -6118,7 +7180,7 @@ components:
         donationDetails:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/DonorDonationDetailsDto'
       required:
         - organizationId
         - donationDetails
@@ -6131,10 +7193,57 @@ components:
           type: string
         qty:
           type: number
+          minimum: 1
       required:
         - organizationId
         - itemId
         - qty
+    ChartDetailData:
+      type: object
+      properties:
+        name:
+          type: string
+        data:
+          type: array
+          items:
+            type: number
+      required:
+        - name
+        - data
+    ChartDataDto:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDetailData'
+        categories:
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - value
+        - data
+        - categories
+    ManagerChartDataDto:
+      type: object
+      properties:
+        Donation:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataDto'
+        MoneyPaid:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataDto'
+      required:
+        - Donation
+        - MoneyPaid
     CampaignSetFavoriteDto:
       type: object
       properties:
@@ -6156,6 +7265,41 @@ components:
             type: string
       required:
         - campaignIds
+    CreateMilestoneDto:
+      type: object
+      properties:
+        name:
+          type: string
+        detail:
+          type: string
+        representationalValue:
+          type: number
+        deadline:
+          type: string
+      required:
+        - name
+        - detail
+        - representationalValue
+        - deadline
+    PayloadContentLanguage:
+      type: object
+      properties:
+        language:
+          type: string
+        value:
+          type: string
+        active:
+          type: boolean
+        title:
+          type: string
+        description:
+          type: string
+      required:
+        - language
+        - value
+        - active
+        - title
+        - description
     CampaignCreateDto:
       type: object
       properties:
@@ -6173,6 +7317,9 @@ components:
           type: string
         isMoney:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         methods:
           type: array
           items:
@@ -6186,7 +7333,7 @@ components:
         milestone:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateMilestoneDto'
         creatorUserId:
           type: string
         islamCharityType:
@@ -6198,18 +7345,17 @@ components:
         images:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/PayloadImage'
         contentLanguage:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/PayloadContentLanguage'
         purposeDonation:
           type: string
         quickDonateEnabled:
           type: boolean
       required:
         - organizationId
-        - projectId
         - campaignName
         - description
         - campaignType
@@ -6230,6 +7376,7 @@ components:
       properties:
         organizationId:
           type: string
+          description: For permission guard
         campaignId:
           type: string
         vendorId:
@@ -6255,6 +7402,9 @@ components:
           type: string
         isMoney:
           type: string
+          enum:
+            - 'Y'
+            - 'N'
         methods:
           type: array
           items:
@@ -6268,7 +7418,7 @@ components:
         milestone:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateMilestoneDto'
         creatorUserId:
           type: string
         islamCharityType:
@@ -6280,18 +7430,17 @@ components:
         updatedImage:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/UpdateImagePayload'
         contentLanguage:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/PayloadContentLanguage'
         purposeDonation:
           type: string
         quickDonateEnabled:
           type: boolean
       required:
         - organizationId
-        - projectId
         - campaignName
         - description
         - campaignType
@@ -6300,6 +7449,20 @@ components:
         - milestone
         - updatedImage
         - contentLanguage
+    OperatorChartDataDto:
+      type: object
+      properties:
+        Donation:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataDto'
+        MoneySpend:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataDto'
+      required:
+        - Donation
+        - MoneySpend
     CreateTicketDto:
       type: object
       properties:
@@ -6314,6 +7477,31 @@ components:
         - department
         - description
     ExpenseDto:
+      type: object
+      properties:
+        id:
+          type: string
+        campaignId:
+          type: string
+        referenceId:
+          type: string
+        expenseDate:
+          type: string
+        amount:
+          type: number
+        createdDate:
+          type: string
+        createdBy:
+          type: string
+      required:
+        - id
+        - campaignId
+        - referenceId
+        - expenseDate
+        - amount
+        - createdDate
+        - createdBy
+    Expense:
       type: object
       properties: {}
     HandleGoogleCallbackDto:
@@ -6347,7 +7535,8 @@ components:
         password:
           type: string
         organizationId:
-          type: object
+          type: string
+          nullable: true
         country:
           type: string
         state:
@@ -6361,10 +7550,6 @@ components:
         - lastName
         - email
         - password
-        - country
-        - state
-        - address
-        - mobile
     RegisterFileUpload:
       type: object
       properties:
@@ -6376,6 +7561,7 @@ components:
           type: string
         size:
           type: number
+          description: in bytes
       required:
         - base64Data
         - fullName
@@ -6423,15 +7609,110 @@ components:
       required:
         - email
         - password
+    VendorChartDataDto:
+      type: object
+      properties:
+        Income:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataDto'
+        Campaign:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChartDataDto'
+      required:
+        - Income
+        - Campaign
     BasketDto:
       type: object
-      properties: {}
+      properties:
+        id:
+          type: string
+        campaignId:
+          $ref: '#/components/schemas/ObjectId'
+        donorId:
+          $ref: '#/components/schemas/ObjectId'
+        donationType:
+          type: string
+        currency:
+          type: string
+        amount:
+          type: number
+        unit:
+          type: number
+        isDeleted:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - campaignId
+        - donorId
+        - donationType
+        - currency
+        - amount
+        - unit
+        - isDeleted
+        - createdAt
+        - updatedAt
     BasketProjectDto:
       type: object
-      properties: {}
+      properties:
+        id:
+          type: string
+        campaignId:
+          $ref: '#/components/schemas/ObjectId'
+        donorId:
+          $ref: '#/components/schemas/ObjectId'
+        donationType:
+          type: string
+        projectType:
+          type: string
+        currency:
+          type: string
+        amount:
+          type: number
+        unit:
+          type: number
+        isDeleted:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - campaignId
+        - donorId
+        - donationType
+        - projectType
+        - currency
+        - amount
+        - unit
+        - isDeleted
+        - createdAt
+        - updatedAt
     CreateWidgetBackendDto:
       type: object
-      properties: {}
+      properties:
+        quickDonates:
+          $ref: '#/components/schemas/'
+        id:
+          type: string
+        donorPhone:
+          type: string
+        receiverPhone:
+          type: string
+        donorName:
+          type: string
+        donorEmail:
+          type: string
+      required:
+        - quickDonates
+        - id
+        - donorEmail
     CreateCommentDto:
       type: object
       properties:
@@ -6439,14 +7720,19 @@ components:
           type: string
         parentCommentId:
           type: string
+          description: Add it if you want this comment to be a reply to another comment
         campaignId:
           type: string
+          description: Add it if you want comment to campaign.
         projectId:
           type: string
+          description: Add it if you want comment to project.
         itemId:
           type: string
+          description: Add it if you want to comment to item.
         content:
           type: string
+          description: Content of the item
       required:
         - organizationId
         - content
@@ -6484,9 +7770,11 @@ components:
         password:
           type: string
         organizationId:
-          type: object
+          type: string
+          nullable: true
         organizationEmail:
-          type: object
+          type: string
+          nullable: true
         domainUrl:
           type: string
         country:
@@ -6506,7 +7794,8 @@ components:
       type: object
       properties:
         organization_id:
-          type: object
+          type: string
+          nullable: true
         email:
           type: string
         domain_url:
@@ -6520,7 +7809,8 @@ components:
         token:
           type: string
         organization_id:
-          type: object
+          type: string
+          nullable: true
         donor_name:
           type: string
         donor_email:
@@ -6559,19 +7849,39 @@ components:
           type: boolean
       required:
         - id
+    TenderFilePayload:
+      type: object
+      properties:
+        base64Data:
+          type: string
+        fullName:
+          type: string
+        fileExtension:
+          type: string
+        size:
+          type: number
+          description: in bytes
+      required:
+        - base64Data
+        - fullName
+        - fileExtension
+        - size
     CreateProposalFollowUpDto:
       type: object
       properties:
         proposal_id:
           type: string
         selectLang:
-          type: string
+          type: object
         follow_up_type:
-          type: string
+          type: object
+          enum:
+            - attachments
+            - plain
         follow_up_attachment:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/TenderFilePayload'
         content:
           type: string
         employee_only:
@@ -6589,11 +7899,46 @@ components:
             type: string
       required:
         - id
+    CreateProjectBudgetDto:
+      type: object
+      properties:
+        id:
+          type: string
+        clause:
+          type: string
+        explanation:
+          type: string
+        amount:
+          type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
+      required:
+        - clause
+        - explanation
+        - amount
+    CreateProjectTimelineDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        start_date:
+          format: date-time
+          type: string
+        end_date:
+          format: date-time
+          type: string
+      required:
+        - name
+        - start_date
+        - end_date
     CreateProposalInterceptorDto:
       type: object
       properties:
         project_name:
           type: string
+          description: first form ----------------------------------------------------
         project_idea:
           type: string
         project_location:
@@ -6602,10 +7947,17 @@ components:
           type: string
         execution_time:
           type: number
+          minimum: 1
+          maximum: 999999999999
         beneficiary_id:
           type: string
         num_ofproject_binicficiaries:
           type: number
+          description: |-
+            first form ----------------------------------------------------
+            second form ----------------------------------------------------
+          minimum: 0.01
+          maximum: 1000000000000000000
         project_goals:
           type: string
         project_outputs:
@@ -6616,6 +7968,9 @@ components:
           type: string
         pm_name:
           type: string
+          description: |-
+            second form ----------------------------------------------------
+            third form ----------------------------------------------------
         pm_mobile:
           type: string
         pm_email:
@@ -6626,16 +7981,25 @@ components:
           type: string
         amount_required_fsupport:
           type: number
+          description: |-
+            third form ----------------------------------------------------
+            fourth form ----------------------------------------------------
+          minimum: 0.01
+          maximum: 1000000000000000000
         detail_project_budgets:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateProjectBudgetDto'
         proposal_bank_information_id:
           type: string
+          description: |-
+            fourth form ----------------------------------------------------
+            fifth form ----------------------------------------------------
         project_timeline:
+          description: fifth form ----------------------------------------------------
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateProjectTimelineDto'
       required:
         - project_name
         - project_idea
@@ -6647,7 +8011,7 @@ components:
       type: object
       properties:
         selectLang:
-          type: string
+          type: object
         proposal_id:
           type: string
         notes:
@@ -6698,9 +8062,1061 @@ components:
       required:
         - notes
         - proposal_id
-    Promise:
+    BaseResponse:
       type: object
-      properties: {}
+      properties:
+        statusCode:
+          type: number
+        message:
+          type: string
+        data:
+          type: object
+        meta:
+          type: object
+      required:
+        - statusCode
+        - message
+        - data
+        - meta
+    BeneficiaryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        is_deleted:
+          type: boolean
+      required:
+        - id
+        - name
+        - is_deleted
+    ChequeEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        payment_id:
+          type: string
+        deposit_date:
+          format: date-time
+          type: string
+        number:
+          type: string
+        transfer_receipt:
+          type: object
+        payment:
+          $ref: '#/components/schemas/ProposalPaymentEntity'
+      required:
+        - id
+        - payment_id
+        - deposit_date
+        - number
+        - transfer_receipt
+    PaymentStatusEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        payments:
+          $ref: '#/components/schemas/ProposalPaymentEntity'
+      required:
+        - id
+    ProposalPaymentEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        payment_amount:
+          type: number
+          nullable: true
+        proposal_id:
+          type: string
+        payment_date:
+          format: date-time
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+          default: SET_BY_SUPERVISOR
+        number_of_payments:
+          type: number
+          nullable: true
+        order:
+          type: number
+          nullable: true
+        created_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.891Z
+        updated_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.891Z
+        cheques:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChequeEntity'
+        proposal:
+          $ref: '#/components/schemas/ProposalEntity'
+        payment_status:
+          $ref: '#/components/schemas/PaymentStatusEntity'
+      required:
+        - id
+        - proposal_id
+    ProposalProjectTimelineEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        start_date:
+          format: date-time
+          type: string
+        end_date:
+          format: date-time
+          type: string
+        proposal_id:
+          type: string
+        proposal:
+          $ref: '#/components/schemas/ProposalEntity'
+      required:
+        - id
+        - name
+        - start_date
+        - end_date
+        - proposal_id
+    ProposalItemBudgetEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+        explanation:
+          type: string
+        clause:
+          type: string
+        proposal_id:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.894Z
+        updated_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.894Z
+        proposal:
+          $ref: '#/components/schemas/ProposalEntity'
+      required:
+        - id
+        - amount
+        - explanation
+        - clause
+        - proposal_id
+        - proposal
+    AppointmentEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        empolyee_id:
+          type: string
+        user_id:
+          type: string
+        meeting_url:
+          type: string
+        calendar_url:
+          type: string
+        date:
+          format: date-time
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+        reject_reason:
+          type: string
+        status:
+          type: string
+        day:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+          default: 2023-07-20T08:21:55.896Z
+        updated_at:
+          format: date-time
+          type: string
+          default: 2023-07-20T08:21:55.896Z
+        calendar_event_id:
+          type: string
+        employee:
+          $ref: '#/components/schemas/UserEntity'
+        client:
+          $ref: '#/components/schemas/UserEntity'
+      required:
+        - id
+        - empolyee_id
+        - user_id
+        - meeting_url
+        - calendar_url
+        - date
+        - start_time
+        - end_time
+        - status
+        - day
+        - created_at
+        - updated_at
+        - calendar_event_id
+        - employee
+        - client
+    NotificationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        proposal_id:
+          type: string
+          nullable: true
+        message_id:
+          type: string
+          nullable: true
+        appointment_id:
+          type: string
+          nullable: true
+        user_id:
+          type: string
+        type:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.895Z
+        updated_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.895Z
+        read_status:
+          type: boolean
+          nullable: true
+          default: false
+        subject:
+          type: string
+        shown:
+          type: boolean
+          default: true
+        specific_type:
+          type: string
+          nullable: true
+        proposal_log_id:
+          type: string
+          nullable: true
+        appointment:
+          $ref: '#/components/schemas/AppointmentEntity'
+        proposal:
+          $ref: '#/components/schemas/ProposalEntity'
+        proposal_log:
+          $ref: '#/components/schemas/ProposalLogEntity'
+      required:
+        - id
+        - content
+        - user_id
+        - type
+        - subject
+        - shown
+    UserTypeEntity:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+        - id
+    ProposalLogEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        proposal_id:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+          default: 2023-07-20T08:21:55.894Z
+        updated_at:
+          format: date-time
+          type: string
+          default: 2023-07-20T08:21:55.894Z
+        reviewer_id:
+          type: string
+          nullable: true
+        state:
+          type: string
+        new_values:
+          type: object
+        old_values:
+          type: object
+        notes:
+          type: string
+          nullable: true
+        action:
+          type: string
+          nullable: true
+        message:
+          type: string
+          nullable: true
+        user_role:
+          type: string
+          nullable: true
+        response_time:
+          type: number
+          nullable: true
+        reject_reason:
+          type: string
+          nullable: true
+        reviewer:
+          $ref: '#/components/schemas/UserEntity'
+        proposal:
+          $ref: '#/components/schemas/ProposalEntity'
+        notification:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationEntity'
+        user_type:
+          $ref: '#/components/schemas/UserTypeEntity'
+      required:
+        - id
+        - proposal_id
+        - created_at
+        - updated_at
+        - state
+        - proposal
+    ProposalTrackSectionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        budget:
+          type: number
+        section_id:
+          type: string
+        is_leaf:
+          type: boolean
+          default: false
+        track_id:
+          type: string
+        is_deleted:
+          type: boolean
+          default: false
+        track_section:
+          $ref: '#/components/schemas/ProposalTrackSectionEntity'
+        other_track_section:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalTrackSectionEntity'
+        track:
+          $ref: '#/components/schemas/TrackEntity'
+      required:
+        - id
+        - name
+        - budget
+        - is_leaf
+        - track_id
+        - is_deleted
+        - track
+    TrackEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          nullable: true
+        with_consultation:
+          type: boolean
+          nullable: true
+          default: false
+        created_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.898Z
+        is_deleted:
+          type: boolean
+          nullable: true
+          default: false
+        proposals:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalEntity'
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalTrackSectionEntity'
+        user:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserEntity'
+      required:
+        - id
+    ProposalEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        accreditation_type_id:
+          type: string
+          nullable: true
+        added_value:
+          type: string
+          nullable: true
+        amount_required_fsupport:
+          type: number
+          nullable: true
+        been_made_before:
+          type: boolean
+          nullable: true
+          default: false
+        been_supported_before:
+          type: boolean
+          nullable: true
+          default: false
+        beneficiary_detail:
+          $ref: '#/components/schemas/BeneficiaryEntity'
+        beneficiary_id:
+          type: string
+          nullable: true
+        cashier_id:
+          type: string
+          nullable: true
+        chairman_of_board_of_directors:
+          type: string
+          nullable: true
+        clasification_field:
+          type: string
+          nullable: true
+        clause:
+          type: string
+          nullable: true
+        closing_report:
+          type: boolean
+          nullable: true
+          default: false
+        created_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.885Z
+        does_an_agreement:
+          type: boolean
+          nullable: true
+          default: false
+        execution_time:
+          type: number
+          nullable: true
+        finance_id:
+          type: string
+          nullable: true
+        follow_ups:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalFollowUpEntity'
+        fsupport_by_supervisor:
+          type: number
+          nullable: true
+        governorate:
+          type: string
+          nullable: true
+        inclu_or_exclu:
+          type: boolean
+          nullable: true
+          default: false
+        inner_status:
+          type: string
+          nullable: true
+          default: CREATED_BY_CLIENT
+        letter_ofsupport_req:
+          type: object
+        most_clents_projects:
+          type: string
+          nullable: true
+        need_consultant:
+          type: boolean
+          nullable: true
+        need_picture:
+          type: boolean
+          nullable: true
+          default: false
+        num_ofproject_binicficiaries:
+          type: number
+          nullable: true
+        number_of_payments:
+          type: number
+          nullable: true
+        number_of_payments_by_supervisor:
+          type: number
+          nullable: true
+        oid:
+          type: number
+          nullable: true
+        old_inner_status:
+          type: string
+          nullable: true
+        on_consulting:
+          type: boolean
+          nullable: true
+          default: false
+        on_revision:
+          type: boolean
+          nullable: true
+          default: false
+        outter_status:
+          type: string
+          nullable: true
+          default: ONGOING
+        partial_support_amount:
+          type: number
+          nullable: true
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalPaymentEntity'
+        pm_email:
+          type: string
+          nullable: true
+        pm_mobile:
+          type: string
+          nullable: true
+        pm_name:
+          type: string
+          nullable: true
+        previously_add_bank:
+          nullable: true
+          type: array
+          items:
+            type: string
+        project_attachments:
+          type: object
+        project_beneficiaries:
+          type: string
+          nullable: true
+        project_beneficiaries_specific_type:
+          type: string
+          nullable: true
+        project_goals:
+          type: string
+          nullable: true
+        project_idea:
+          type: string
+          nullable: true
+        project_implement_date:
+          format: date-time
+          type: string
+          nullable: true
+        project_location:
+          type: string
+          nullable: true
+        project_manager_id:
+          type: string
+          nullable: true
+        project_name:
+          type: string
+        project_number:
+          type: number
+          nullable: true
+        project_numbers1:
+          type: number
+          nullable: true
+        project_outputs:
+          type: string
+          nullable: true
+        project_risks:
+          type: string
+          nullable: true
+        project_strengths:
+          type: string
+          nullable: true
+        project_timeline:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalProjectTimelineEntity'
+        project_track:
+          type: string
+          nullable: true
+        proposal_bank_id:
+          type: string
+          nullable: true
+        proposal_beneficiaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/BeneficiaryEntity'
+        proposal_item_budgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalItemBudgetEntity'
+        proposal_log:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalLogEntity'
+        reasons_to_accept:
+          type: string
+          nullable: true
+        region:
+          type: string
+          nullable: true
+        remote_or_insite:
+          type: string
+          nullable: true
+        state:
+          type: string
+          nullable: true
+          default: MODERATOR
+        step:
+          type: string
+          nullable: true
+        submitter_user_id:
+          type: string
+        supervisor_id:
+          type: string
+          nullable: true
+        support_goal_id:
+          type: string
+          nullable: true
+        support_outputs:
+          type: string
+          nullable: true
+        support_type:
+          type: boolean
+          nullable: true
+          default: false
+        target_group_age:
+          type: string
+          nullable: true
+        target_group_num:
+          type: number
+          nullable: true
+        target_group_type:
+          type: string
+          nullable: true
+        track:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/TrackEntity'
+        track_id:
+          type: string
+          nullable: true
+        updated_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.885Z
+        vat:
+          type: boolean
+          nullable: true
+          default: false
+        vat_percentage:
+          type: number
+          nullable: true
+        whole_budget:
+          type: number
+          nullable: true
+        user:
+          $ref: '#/components/schemas/UserEntity'
+        supervisor:
+          $ref: '#/components/schemas/UserEntity'
+      required:
+        - id
+        - letter_ofsupport_req
+        - project_attachments
+        - project_name
+        - submitter_user_id
+    BankInformationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        bank_account_name:
+          type: string
+          nullable: true
+        bank_account_number:
+          type: string
+          nullable: true
+        bank_name:
+          type: string
+          nullable: true
+        proposal_id:
+          type: string
+          nullable: true
+        card_image:
+          type: object
+        is_deleted:
+          type: boolean
+          nullable: true
+        bank_id:
+          type: string
+          nullable: true
+        created_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.888Z
+        updated_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.888Z
+        user:
+          $ref: '#/components/schemas/UserEntity'
+        proposal_bank_informationToproposal_proposal_bank_id:
+          $ref: '#/components/schemas/ProposalEntity'
+      required:
+        - id
+        - user_id
+        - user
+    UserRoleEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        user_type_id:
+          type: string
+      required:
+        - id
+        - user_id
+        - user_type_id
+    FileManagerEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        size:
+          type: number
+        mimetype:
+          type: string
+        url:
+          type: string
+        table_name:
+          type: string
+          nullable: true
+        column_name:
+          type: string
+          nullable: true
+        user_id:
+          type: string
+          nullable: true
+        is_deleted:
+          type: boolean
+          default: false
+        created_at:
+          format: date-time
+          type: string
+          default: 2023-07-20T08:21:55.900Z
+        updated_at:
+          format: date-time
+          type: string
+          default: 2023-07-20T08:21:55.900Z
+        proposal_id:
+          type: string
+          nullable: true
+        bank_information_id:
+          type: string
+          nullable: true
+        advertisement_id:
+          type: string
+          nullable: true
+        fid:
+          type: number
+          nullable: true
+        user:
+          $ref: '#/components/schemas/UserEntity'
+      required:
+        - id
+        - name
+        - size
+        - mimetype
+        - url
+        - is_deleted
+        - created_at
+        - updated_at
+    ClientDataEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        entity:
+          type: string
+          nullable: true
+        authority:
+          type: string
+          nullable: true
+        headquarters:
+          type: string
+          nullable: true
+        date_of_esthablistmen:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.901Z
+        num_of_beneficiaries:
+          type: number
+          nullable: true
+        num_of_employed_facility:
+          type: number
+          nullable: true
+        governorate:
+          type: string
+          nullable: true
+        region:
+          type: string
+          nullable: true
+        entity_mobile:
+          type: string
+          nullable: true
+        center_administration:
+          type: string
+          nullable: true
+        twitter_acount:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+        password:
+          type: string
+          nullable: true
+        license_number:
+          type: string
+          nullable: true
+        license_expired:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.901Z
+        license_issue_date:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.901Z
+        ceo_mobile:
+          type: string
+          nullable: true
+        ceo_name:
+          type: string
+          nullable: true
+        data_entry_mobile:
+          type: string
+          nullable: true
+        data_entry_name:
+          type: string
+          nullable: true
+        data_entry_mail:
+          type: string
+          nullable: true
+        created_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.901Z
+        updated_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.901Z
+        client_field:
+          type: string
+          nullable: true
+        user_id:
+          type: string
+        license_file:
+          type: object
+        board_ofdec_file:
+          type: object
+        chairman_name:
+          type: string
+          nullable: true
+        chairman_mobile:
+          type: string
+          nullable: true
+        qid:
+          type: number
+          nullable: true
+        user:
+          $ref: '#/components/schemas/UserEntity'
+        client_log:
+          type: array
+          items:
+            type: object
+      required:
+        - id
+        - user_id
+        - user
+        - client_log
+    UserStatusEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        client_log:
+          type: object
+        user:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserEntity'
+        user_status_log:
+          type: array
+          items:
+            type: object
+      required:
+        - id
+        - client_log
+    UserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        employee_name:
+          type: string
+          nullable: true
+        mobile_number:
+          type: string
+          nullable: true
+        email:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.887Z
+        updated_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.887Z
+        employee_path:
+          type: string
+          nullable: true
+        last_login:
+          format: date-time
+          type: string
+          nullable: true
+          default: null
+        status_id:
+          type: string
+        address:
+          type: string
+          nullable: true
+          default: null
+        google_session:
+          type: object
+        is_online:
+          type: boolean
+          nullable: true
+          default: null
+        track_id:
+          type: string
+          nullable: true
+          default: null
+        uid:
+          type: number
+          nullable: true
+          default: null
+        bank_information:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankInformationEntity'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRoleEntity'
+        file_manager:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileManagerEntity'
+        track:
+          $ref: '#/components/schemas/TrackEntity'
+        proposal_proposal_project_manager_idTouser:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalEntity'
+        proposals:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalEntity'
+        proposal_proposal_supervisor_idTouser:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalEntity'
+        client_data:
+          $ref: '#/components/schemas/ClientDataEntity'
+        status:
+          $ref: '#/components/schemas/UserStatusEntity'
+      required:
+        - id
+        - email
+        - status_id
+        - google_session
+        - roles
+        - status
+    ProposalFollowUpEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        proposal_id:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.887Z
+        updated_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.887Z
+        attachments:
+          type: object
+        content:
+          type: string
+          nullable: true
+        user_id:
+          type: string
+        submitter_role:
+          type: string
+        employee_only:
+          type: boolean
+        user:
+          $ref: '#/components/schemas/UserEntity'
+        proposal:
+          $ref: '#/components/schemas/ProposalEntity'
+      required:
+        - id
+        - proposal_id
+        - user_id
+        - submitter_role
+        - employee_only
     ModeratorChangeStatePayload:
       type: object
       properties:
@@ -6710,13 +9126,33 @@ components:
           type: string
       required:
         - track_id
+    ExistingProjectBudgetDto:
+      type: object
+      properties:
+        id:
+          type: string
+        clause:
+          type: string
+        explanation:
+          type: string
+        amount:
+          type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
+      required:
+        - clause
+        - explanation
+        - amount
     SupervisorChangeStatePayload:
       type: object
       properties:
         inclu_or_exclu:
           type: boolean
+          description: exist on regular track but can be exist on GRANT Track
         vat_percentage:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         support_goal_id:
           type: string
         vat:
@@ -6725,8 +9161,12 @@ components:
           type: string
         number_of_payments_by_supervisor:
           type: number
+          minimum: 1
+          maximum: 1000000000000000000
         fsupport_by_supervisor:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         does_an_agreement:
           type: boolean
         need_picture:
@@ -6742,17 +9182,21 @@ components:
         created_proposal_budget:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateProjectBudgetDto'
         updated_proposal_budget:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
         deleted_proposal_budget:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
         accreditation_type_id:
           type: string
+          description: >-
+            -------------------------------------------------------------------------------------------
+
+            exist only on CONCESSIONAL_GRANTS
         chairman_of_board_of_directors:
           type: string
         most_clents_projects:
@@ -6765,6 +9209,8 @@ components:
           type: string
         target_group_num:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         target_group_type:
           type: string
         target_group_age:
@@ -6772,19 +9218,23 @@ components:
         been_made_before:
           type: boolean
         remote_or_insite:
-          type: string
+          type: object
+          enum:
+            - remote
+            - insite
+            - both
         created_recommended_support:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateProjectBudgetDto'
         updated_recommended_support:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
         deleted_recommended_support:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
     ProjectManagerChangeStatePayload:
       type: object
       properties:
@@ -6792,6 +9242,8 @@ components:
           type: boolean
         vat_percentage:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         support_goal_id:
           type: string
         vat:
@@ -6800,8 +9252,12 @@ components:
           type: string
         number_of_payments_by_supervisor:
           type: number
+          minimum: 1
+          maximum: 1000000000000000000
         fsupport_by_supervisor:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         does_an_agreement:
           type: boolean
         need_picture:
@@ -6817,17 +9273,18 @@ components:
         created_proposal_budget:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateProjectBudgetDto'
         updated_proposal_budget:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
         deleted_proposal_budget:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
         accreditation_type_id:
           type: string
+          description: exist only on CONCESSIONAL_GRANTS
         chairman_of_board_of_directors:
           type: string
         most_clents_projects:
@@ -6840,6 +9297,8 @@ components:
           type: string
         target_group_num:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         target_group_type:
           type: string
         target_group_age:
@@ -6847,19 +9306,23 @@ components:
         been_made_before:
           type: boolean
         remote_or_insite:
-          type: string
+          type: object
+          enum:
+            - remote
+            - insite
+            - both
         created_recommended_support:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateProjectBudgetDto'
         updated_recommended_support:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
         deleted_recommended_support:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
       required:
         - number_of_payments_by_supervisor
         - fsupport_by_supervisor
@@ -6867,11 +9330,13 @@ components:
       type: object
       properties:
         step_back_to:
-          type: string
+          type: object
         inclu_or_exclu:
           type: boolean
         vat_percentage:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         support_goal_id:
           type: string
         vat:
@@ -6880,8 +9345,12 @@ components:
           type: string
         number_of_payments_by_supervisor:
           type: number
+          minimum: 1
+          maximum: 1000000000000000000
         fsupport_by_supervisor:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         does_an_agreement:
           type: boolean
         need_picture:
@@ -6897,17 +9366,18 @@ components:
         created_proposal_budget:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateProjectBudgetDto'
         updated_proposal_budget:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
         deleted_proposal_budget:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
         accreditation_type_id:
           type: string
+          description: exist only on CONCESSIONAL_GRANTS
         chairman_of_board_of_directors:
           type: string
         most_clents_projects:
@@ -6920,6 +9390,8 @@ components:
           type: string
         target_group_num:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         target_group_type:
           type: string
         target_group_age:
@@ -6927,27 +9399,53 @@ components:
         been_made_before:
           type: boolean
         remote_or_insite:
-          type: string
+          type: object
+          enum:
+            - remote
+            - insite
+            - both
         created_recommended_support:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateProjectBudgetDto'
         updated_recommended_support:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
         deleted_recommended_support:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingProjectBudgetDto'
     ChangeProposalStateDto:
       type: object
       properties:
         selectLang:
-          type: string
+          type: object
         proposal_id:
           type: string
         action:
+          enum:
+            - accept
+            - update
+            - accept_and_ask_for_consultation
+            - ask_for_amandement_request
+            - complete
+            - complete_payment
+            - project_completed
+            - reject
+            - send_back_for_revision
+            - sending_closing_report
+            - send_revised_version
+            - step_back
+            - study_again
+            - insert_payment
+            - issued_by_supervisor
+            - accepted_by_finance
+            - accepted_by_project_manager
+            - uploaded_by_cashier
+            - set_by_supervisor
+            - done
+            - reject_cheque
           type: string
         moderator_payload:
           $ref: '#/components/schemas/ModeratorChangeStatePayload'
@@ -7051,8 +9549,12 @@ components:
           type: string
         num_ofproject_binicficiaries:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         amount_required_fsupport:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         letter_ofsupport_req:
           type: object
         project_attachments:
@@ -7060,11 +9562,11 @@ components:
         detail_project_budgets:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateProjectBudgetDto'
         project_timeline:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateProjectTimelineDto'
       required:
         - proposal_id
     CreateTrackDto:
@@ -7088,13 +9590,29 @@ components:
           type: string
       required:
         - id
+    ProposalPaymentCreateDto:
+      type: object
+      properties:
+        order:
+          type: number
+        payment_amount:
+          type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
+        payment_date:
+          format: date-time
+          type: string
+      required:
+        - order
+        - payment_amount
+        - payment_date
     CreateProposalPaymentDto:
       type: object
       properties:
         payments:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ProposalPaymentCreateDto'
         proposal_id:
           type: string
       required:
@@ -7107,6 +9625,8 @@ components:
           type: string
         budget:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
         track_ids:
           type: array
           items:
@@ -7139,11 +9659,11 @@ components:
         attachments:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/TenderFilePayload'
         images:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/TenderFilePayload'
       required:
         - proposal_id
         - number_of_beneficiaries
@@ -7156,22 +9676,6 @@ components:
         - number_of_staff
         - attachments
         - images
-    TenderFilePayload:
-      type: object
-      properties:
-        base64Data:
-          type: string
-        fullName:
-          type: string
-        fileExtension:
-          type: string
-        size:
-          type: number
-      required:
-        - base64Data
-        - fullName
-        - fileExtension
-        - size
     CreateChequeDto:
       type: object
       properties:
@@ -7192,7 +9696,15 @@ components:
         payment_id:
           type: string
         action:
-          type: string
+          type: object
+          enum:
+            - accept
+            - reject
+            - edit
+            - upload_receipt
+            - issue
+            - confirm_payment
+            - reject_payment
         cheque:
           $ref: '#/components/schemas/CreateChequeDto'
         notes:
@@ -7235,6 +9747,8 @@ components:
           type: string
         budget:
           type: number
+          minimum: 0.01
+          maximum: 1000000000000000000
       required:
         - id
         - name
@@ -7254,7 +9768,7 @@ components:
         authCode:
           type: string
         selectLang:
-          type: string
+          type: object
         date:
           type: string
         start_time:
@@ -7276,26 +9790,50 @@ components:
         appointmentId:
           type: string
         response:
-          type: string
+          type: object
+          enum:
+            - confirmed
+            - declined
         reject_reason:
           type: string
       required:
         - appointmentId
         - response
+    CreateSchedulePayload:
+      type: object
+      properties:
+        day:
+          type: string
+          enum:
+            - Monday
+            - Tuesday
+            - Wednesday
+            - Thursday
+            - Friday
+            - Saturday
+            - Sunday
+        start_time:
+          type: string
+        end_time:
+          type: string
+      required:
+        - day
+        - start_time
+        - end_time
     CreateScheduleDto:
       type: object
       properties:
         payload:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateSchedulePayload'
       required:
         - payload
     TenderCreateUserDto:
       type: object
       properties:
         selectLang:
-          type: string
+          type: object
         employee_name:
           type: string
         password:
@@ -7348,8 +9886,15 @@ components:
       type: object
       properties:
         selectLang:
-          type: string
+          type: object
         status:
+          enum:
+            - WAITING_FOR_ACTIVATION
+            - SUSPENDED_ACCOUNT
+            - CANCELED_ACCOUNT
+            - ACTIVE_ACCOUNT
+            - REVISED_ACCOUNT
+            - WAITING_FOR_EDITING_APPROVAL
           type: string
         user_id:
           type: string
@@ -7362,13 +9907,14 @@ components:
         id:
           type: string
         selectLang:
-          type: string
+          type: object
         activate_user:
           type: boolean
         email:
           type: string
         password:
           type: string
+          minLength: 8
         employee_name:
           type: string
         track_id:
@@ -7376,9 +9922,9 @@ components:
         mobile_number:
           type: string
         user_roles:
-          type: array
           items:
-            type: string
+            type: array
+          type: array
       required:
         - id
         - activate_user
@@ -7387,11 +9933,90 @@ components:
         - track_id
         - mobile_number
         - user_roles
+    CreateBankInformationDto:
+      type: object
+      properties:
+        bank_name:
+          type: string
+        bank_id:
+          type: string
+          description: For relation to banks (bank name)
+        bank_account_name:
+          type: string
+        bank_account_number:
+          type: string
+        card_image:
+          $ref: '#/components/schemas/TenderFilePayload'
+      required:
+        - bank_name
+        - bank_id
+        - bank_account_name
+        - bank_account_number
+        - card_image
+    UpdateBankInformationDto:
+      type: object
+      properties:
+        id:
+          type: string
+        bank_id:
+          type: string
+          description: For relation to banks (bank name)
+        bank_name:
+          type: string
+        bank_account_name:
+          type: string
+        bank_account_number:
+          type: string
+        card_image:
+          type: object
+      required:
+        - id
+        - bank_name
+        - bank_account_name
+        - bank_account_number
+        - card_image
+    UploadFilesJsonbDto:
+      type: object
+      properties:
+        url:
+          type: string
+        size:
+          type: number
+        type:
+          type: string
+      required:
+        - url
+        - size
+        - type
+    ExistingClientBankInformation:
+      type: object
+      properties:
+        id:
+          type: string
+        bank_id:
+          type: string
+          description: For relation to banks (bank name)
+        user_id:
+          type: string
+        bank_name:
+          type: string
+        bank_account_name:
+          type: string
+        bank_account_number:
+          type: string
+        card_image:
+          $ref: '#/components/schemas/UploadFilesJsonbDto'
+      required:
+        - id
+        - bank_name
+        - bank_account_name
+        - bank_account_number
+        - card_image
     ClientEditRequestFieldDto:
       type: object
       properties:
         selectLang:
-          type: string
+          type: object
         entity:
           type: string
         authority:
@@ -7432,7 +10057,7 @@ components:
         board_ofdec_file:
           type: array
           items:
-            type: string
+            type: object
         ceo_mobile:
           type: string
         ceo_name:
@@ -7452,35 +10077,35 @@ components:
         created_banks:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/CreateBankInformationDto'
         updated_banks:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/UpdateBankInformationDto'
         deleted_banks:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingClientBankInformation'
         old_banks:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingClientBankInformation'
         bank_information:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingClientBankInformation'
         createdBanks:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingClientBankInformation'
         updatedBanks:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingClientBankInformation'
         deletedBanks:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ExistingClientBankInformation'
     EditRequestByIdDto:
       type: object
       properties:
@@ -7504,7 +10129,10 @@ components:
         email:
           type: string
         selectLang:
-          type: string
+          type: object
+          enum:
+            - en
+            - ar
       required:
         - email
     bankData:
@@ -7514,6 +10142,8 @@ components:
           type: string
         bank_account_number:
           type: string
+          minLength: 24
+          maxLength: 24
         bank_id:
           type: string
         card_image:
@@ -7527,7 +10157,7 @@ components:
       type: object
       properties:
         selectLang:
-          type: string
+          type: object
         email:
           type: string
         license_number:
@@ -7593,6 +10223,9 @@ components:
           type: string
         client_field:
           type: string
+          enum:
+            - main
+            - sub
         bank_informations:
           $ref: '#/components/schemas/bankData'
       required:
@@ -7635,7 +10268,7 @@ components:
       type: object
       properties:
         selectLang:
-          type: string
+          type: object
         email:
           type: string
       required:
@@ -7660,21 +10293,36 @@ components:
       type: object
       properties:
         selectLang:
-          type: string
+          type: object
         content_type_id:
-          type: string
+          type: object
+          enum:
+            - TEXT
+            - IMAGE
+            - VIDEO
+            - AUDIO
+            - FILE
         correspondence_type_id:
-          type: string
+          type: object
+          enum:
+            - INTERNAL
+            - EXTERNAL
         content:
           type: string
+          description: if content type is TEXT this field is required
         attachment:
-          $ref: '#/components/schemas/TenderFilePayload'
+          description: if content type is NOT TEXT this field will be required.
+          allOf:
+            - $ref: '#/components/schemas/TenderFilePayload'
         content_title:
           type: string
+          description: the title of the attachment.
         reply_id:
           type: string
+          description: refer to it's own table as replies.
         partner_id:
           type: string
+          description: id of the person that you want to send the message to.
         partner_selected_role:
           type: string
         current_user_selected_role:
@@ -7698,7 +10346,10 @@ components:
       type: object
       properties:
         correspondance_type:
-          type: string
+          type: object
+          enum:
+            - INTERNAL
+            - EXTERNAL
         partner_id:
           type: string
       required:
@@ -7711,6 +10362,19 @@ components:
           type: string
       required:
         - notificationId
+    DataBasketDto:
+      type: object
+      properties:
+        _id:
+          type: string
+        organizationId:
+          $ref: '#/components/schemas/ObjectId'
+        amount:
+          type: number
+      required:
+        - _id
+        - organizationId
+        - amount
     PaymentPaytabsDto:
       type: object
       properties:
@@ -7747,13 +10411,13 @@ components:
         zakatLogs:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/ZakatLogDto'
         campaignTitle:
           type: string
         data_basket:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/DataBasketDto'
       required:
         - organizationId
         - currency
@@ -7820,6 +10484,60 @@ components:
           type: string
         track_id:
           type: string
+    AdvertisementEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        track_id:
+          type: string
+          nullable: true
+        track:
+          $ref: '#/components/schemas/TrackEntity'
+        logo:
+          type: object
+        date:
+          format: date-time
+          type: string
+        start_time:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.932Z
+        updated_at:
+          format: date-time
+          type: string
+          nullable: true
+          default: 2023-07-20T08:21:55.932Z
+      required:
+        - id
+        - type
+        - title
+        - content
+        - date
+        - start_time
+        - created_at
+        - updated_at
+    AdvertisementCreateCommandResult:
+      type: object
+      properties:
+        advertisement:
+          $ref: '#/components/schemas/AdvertisementEntity'
+        created_file_managers:
+          type: array
+          items:
+            type: string
+      required:
+        - advertisement
+        - created_file_managers
     AdvertisementCreateDto:
       type: object
       properties:
@@ -7830,11 +10548,11 @@ components:
         track_id:
           type: string
         type:
-          type: string
-          description: description of the AdvertisementTypeEnum property
           enum:
             - INTERNAL
             - EXTERNAL
+          type: string
+          description: description of the AdvertisementTypeEnum property
         date:
           type: string
         start_time:
@@ -7845,3 +10563,91 @@ components:
         - type
         - date
         - start_time
+    PaginatedResponse:
+      type: object
+      properties:
+        statusCode:
+          type: number
+        message:
+          type: string
+        data:
+          type: object
+        meta:
+          type: object
+        totalData:
+          type: number
+          description: Total number of documents in collection that match a query {Number}
+          default: 0
+        limit:
+          type: number
+          description: Limit that was used {Number}
+          default: 10
+        page:
+          type: number
+          description: Current page number {Number}
+          default: 1
+        totalPages:
+          type: number
+          description: Total number of pages. {Number}
+          default: 1
+        pagingCounter:
+          type: number
+          description: >-
+            The starting index/serial/chronological number of first document in
+            current page. {Number}
+
+            (Eg: if page=2 and limit=10, then pagingCounter will be 11)
+          default: 1
+        hasPrevPage:
+          type: boolean
+          description: Availability of prev page. {Boolean}
+          default: false
+        hasNextPage:
+          type: boolean
+          description: Availability of next page. {Boolean}
+          default: false
+        prevPage:
+          type: object
+          description: Previous page number if available or NULL. {Number}
+          default: null
+        nextPage:
+          type: object
+          description: Next page number if available or NULL. {Number}
+          default: null
+        offset:
+          type: object
+          description: Only if specified or default page/offset values were used {Number}
+      required:
+        - statusCode
+        - message
+        - data
+        - meta
+    AdvertisementUpdateCommandResult:
+      type: object
+      properties: {}
+    AdvertisementUpdateDto:
+      type: object
+      properties:
+        advertisement_id:
+          type: string
+        content:
+          type: string
+        title:
+          type: string
+        track_id:
+          type: string
+        type:
+          enum:
+            - INTERNAL
+            - EXTERNAL
+          type: string
+        date:
+          type: string
+        start_time:
+          type: string
+        deleted_logo_urls:
+          type: array
+          items:
+            type: string
+      required:
+        - advertisement_id

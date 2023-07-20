@@ -33,6 +33,10 @@ import {
   AdvertisementFindManyQuery,
   AdvertisementFindManyQueryResult,
 } from 'src/advertisements/queries/advertisement.find.many.query/advertisement.find.many.query';
+import {
+  AdvertisementFindMyAdsQuery,
+  AdvertisementFindMyAdsQueryResult,
+} from 'src/advertisements/queries/advertisement.find.my.ads.query/advertisement.find.my.ads.query';
 import { AdvertisementTypeEnum } from 'src/advertisements/types/enums/advertisement.type.enum';
 import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
 import { BasePaginationApiOkResponse } from 'src/commons/decorators/base.pagination.api.ok.response.decorator';
@@ -74,9 +78,10 @@ export class AdvertisementHttpController {
   }
 
   @ApiOperation({
-    summary: 'creating advertisement either for internal or external',
+    summary:
+      'creating advertisement either for internal or external (admin only)',
   })
-  @BaseApiOkResponse(AdvertisementCreateCommandResult, 'object')
+  @BaseApiOkResponse(AdvertisementCreateCommandResult, 'array')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'logo', maxCount: 1 }]))
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
@@ -116,8 +121,13 @@ export class AdvertisementHttpController {
     }
   }
 
+  @ApiOperation({
+    summary: 'find advertisement either for internal or external (admin only)',
+  })
+  @BasePaginationApiOkResponse(AdvertisementEntity)
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
   @Get()
-  @BasePaginationApiOkResponse(AdvertisementEntity, 'array')
   async findMany(@Query() dto: AdvertisementFindManyQueryDto) {
     const builder = Builder<AdvertisementFindManyQuery>(
       AdvertisementFindManyQuery,
@@ -141,19 +151,38 @@ export class AdvertisementHttpController {
     );
   }
 
-  @Get()
-  @BasePaginationApiOkResponse(AdvertisementEntity, 'array')
-  async findMyAdvertisement(@Query() dto: AdvertisementFindManyQueryDto) {
-    const builder = Builder<AdvertisementFindManyQuery>(
-      AdvertisementFindManyQuery,
+  @ApiOperation({
+    summary: 'find personalized ads for curtain user',
+  })
+  @BasePaginationApiOkResponse(AdvertisementEntity)
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_client',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+    'tender_accounts_manager',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_consultant',
+  )
+  @Get('mine')
+  async findMyAdvertisement(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() dto: AdvertisementFindManyQueryDto,
+  ) {
+    const builder = Builder<AdvertisementFindMyAdsQuery>(
+      AdvertisementFindMyAdsQuery,
       {
         ...dto,
+        user: currentUser,
       },
     );
 
     const { result, total } = await this.queryBus.execute<
-      AdvertisementFindManyQuery,
-      AdvertisementFindManyQueryResult
+      AdvertisementFindMyAdsQuery,
+      AdvertisementFindMyAdsQueryResult
     >(builder.build());
 
     return manualPaginationHelper(

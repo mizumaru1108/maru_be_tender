@@ -6,4 +6,5 @@ export interface TenderCurrentUser {
   type: TenderFusionAuthRoles[];
   choosenRole: TenderFusionAuthRoles;
   googleSession?: Credentials;
+  track_id?: string;
 }

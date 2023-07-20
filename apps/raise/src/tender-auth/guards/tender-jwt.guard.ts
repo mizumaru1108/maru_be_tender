@@ -9,6 +9,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { FusionAuthService } from '../../libs/fusionauth/services/fusion-auth.service';
 import { TenderCurrentUser } from '../../tender-user/user/interfaces/current-user.interface';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 /**
  * @author RDananag (iyoy)
@@ -20,7 +21,8 @@ import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 @Injectable()
 export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
   constructor(
-    private fusionAuthService: FusionAuthService,
+    private readonly fusionAuthService: FusionAuthService,
+    private readonly prismaService: PrismaService,
     @InjectPinoLogger(TenderJwtGuard.name) private logger: PinoLogger,
   ) {
     super();
@@ -72,6 +74,25 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
         type: validToken.response.jwt.role,
         choosenRole: request.headers['x-hasura-role'],
       };
+
+      // if the user wasn't client then get the track id of that user
+      if (user.choosenRole !== 'tender_client') {
+        const tmpUser = await this.prismaService.user.findFirst({
+          where: { id: user.id },
+        });
+
+        if (!tmpUser) {
+          throw new UnauthorizedException('User not found!,Invalid token!');
+        }
+
+        if (!tmpUser.track_id) {
+          throw new UnauthorizedException(
+            'Cant fetch track data, Invalid token!',
+          );
+        }
+
+        user.track_id = tmpUser.track_id;
+      }
 
       request.user = user;
     } catch (e) {
