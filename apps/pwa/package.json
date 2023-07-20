@@ -194,6 +194,7 @@
     "lint:fix": "eslint --fix --ext .ts,.tsx ./src",
     "re-build": "rm -rf build node_modules && yarn install && yarn build",
     "re-start": "rm -rf build node_modules && yarn install && yarn start",
-    "start": "cross-env GENERATE_SOURCEMAP=false react-app-rewired start"
+    "start": "cross-env GENERATE_SOURCEMAP=false react-app-rewired start",
+    "raise:sdk": "openapi-generator-cli generate -i ../../raise-openapi.yaml -g typescript-axios -o src/raise-sdk/ --skip-validate-spec --additional-properties=useSingleRequestParameter=true,supportsES6=true"
   }
 }

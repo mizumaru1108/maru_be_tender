@@ -19,6 +19,12 @@ const ApplicationAndAdmissionSettings = Loadable(
 );
 const MobileSettings = Loadable(lazy(() => import('pages/admin/MobileSettings')));
 const SystemMessages = Loadable(lazy(() => import('pages/admin/SystemMessages')));
+const SystemMessagesInternalForm = Loadable(
+  lazy(() => import('pages/admin/SystemMessages/InternalForm'))
+);
+const SystemMessagesExternalForm = Loadable(
+  lazy(() => import('pages/admin/SystemMessages/ExternalForm'))
+);
 const SystemConfiguration = Loadable(lazy(() => import('pages/admin/SystemConfiguration')));
 const UsersAndPermissions = Loadable(lazy(() => import('pages/admin/UsersAndPermissions')));
 const UsersAndPermissionsAdd = Loadable(lazy(() => import('pages/admin/UsersAndPermissionsAdd')));
@@ -102,7 +108,15 @@ export const adminRoute = {
           element: <ApplicationAndAdmissionSettings />,
         },
         { path: 'mobile-settings', element: <MobileSettings /> },
-        { path: 'system-messages', element: <SystemMessages /> },
+        // { path: 'system-messages', element: <SystemMessages /> },
+        {
+          path: 'system-messages',
+          children: [
+            { path: '', element: <SystemMessages /> },
+            { path: 'internal-add', element: <SystemMessagesInternalForm /> },
+            { path: 'external-add', element: <SystemMessagesExternalForm /> },
+          ],
+        },
         { path: 'system-configuration', element: <SystemConfiguration /> },
         {
           path: 'current-project',

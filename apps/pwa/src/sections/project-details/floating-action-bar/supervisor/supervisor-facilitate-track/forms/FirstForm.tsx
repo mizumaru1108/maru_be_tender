@@ -73,6 +73,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   // const inclu_or_exclu = watch('inclu_or_exclu');
 
   const onSubmitForm = async (data: SupervisorStep1) => {
+    // console.log('data', data);
     onSubmit(data);
   };
 

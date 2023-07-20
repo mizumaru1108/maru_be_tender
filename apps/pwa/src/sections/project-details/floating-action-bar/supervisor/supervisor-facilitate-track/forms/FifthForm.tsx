@@ -74,10 +74,13 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
   const onSubmitForm = (data: SupervisorStep4) => {
     // console.log(step1, 'step1');
     let totalAmount: number | undefined = undefined;
+    const fSupportBySpv: number = Number(proposal.fsupport_by_supervisor);
     if (data.proposal_item_budgets.length) {
-      totalAmount = data
-        ?.proposal_item_budgets!.map((item) => item.amount)
-        .reduce((acc, curr) => acc! + curr!, 0);
+      totalAmount = Number(
+        data
+          ?.proposal_item_budgets!.map((item) => item.amount)
+          .reduce((acc, curr) => acc! + curr!, 0)
+      );
     }
     // console.log(totalAmount);
     if (data.proposal_item_budgets.length) {
@@ -99,7 +102,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
 
       data.deleted_proposal_budget = tempDeletedBudget;
 
-      if (step1 && proposal.amount_required_fsupport && totalAmount) {
+      if (step1 && fSupportBySpv && totalAmount) {
         // if (step1.support_type && totalAmount <= proposal.amount_required_fsupport!) {
         //   onSubmit(data);
         // } else {
@@ -119,13 +122,11 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
         // }
         // }
         if (step1.support_type) {
-          if (totalAmount === proposal.amount_required_fsupport!) {
+          if (totalAmount === fSupportBySpv!) {
             onSubmit(data);
           } else {
             enqueueSnackbar(
-              `${translate('notification.error_not_same_amount')}: ${
-                proposal.amount_required_fsupport
-              }`,
+              `${translate('notification.error_not_same_amount')}: ${fSupportBySpv}`,
               {
                 variant: 'error',
                 preventDuplicate: true,
@@ -134,19 +135,14 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
             );
           }
         } else {
-          if (totalAmount < proposal.amount_required_fsupport!) {
+          if (totalAmount < fSupportBySpv!) {
             onSubmit(data);
           } else {
-            enqueueSnackbar(
-              `${translate('notification.error_exceeds_amount')}: ${
-                proposal.amount_required_fsupport
-              }`,
-              {
-                variant: 'error',
-                preventDuplicate: true,
-                autoHideDuration: 3000,
-              }
-            );
+            enqueueSnackbar(`${translate('notification.error_exceeds_amount')}: ${fSupportBySpv}`, {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+            });
           }
         }
       }

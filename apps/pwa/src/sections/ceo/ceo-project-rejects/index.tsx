@@ -22,6 +22,7 @@ export interface tracks {
   id: string;
   name: string;
   with_consultation: boolean;
+  is_deleted?: boolean;
 }
 
 function CeoProjectRejects() {
