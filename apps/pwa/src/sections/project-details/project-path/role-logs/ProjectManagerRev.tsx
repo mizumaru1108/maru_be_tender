@@ -159,7 +159,11 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 <Typography variant="h6">{translate(`review.vat`)}</Typography>
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                    <Typography>{stepGeneralLog?.new_values?.vat_percentage ?? 0}</Typography>
+                    <Typography>
+                      {(stepGeneralLog?.new_values?.vat &&
+                        stepGeneralLog?.new_values?.vat_percentage) ||
+                        '-'}
+                    </Typography>
                   </Stack>
                 </Stack>
               </Grid>
@@ -201,8 +205,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                   <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                     <Typography>
-                      {!!stepGeneralLog?.new_values?.support_type &&
-                      stepGeneralLog?.new_values?.support_type
+                      {!!stepGeneralLog?.new_values?.vat && stepGeneralLog?.new_values?.vat
                         ? `${translate('review.yes')}`
                         : `${translate('review.no')}`}
                     </Typography>

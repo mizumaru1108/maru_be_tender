@@ -41,16 +41,11 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
     inclu_or_exclu: Yup.boolean(),
     payment_number: Yup.string()
       .required(translate('errors.cre_proposal.payment_number.required'))
-      .test(
-        'len',
-        `${translate('errors.cre_proposal.payment_number.greater_than')} ${
-          proposal.proposal_item_budgets.length
-        }`,
-        (val) => {
-          const number_of_payment = Number(val);
-          return !(number_of_payment < proposal.proposal_item_budgets.length);
-        }
-      ),
+      .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {
+        const number_of_payment = Number(val) > 0;
+        console.log('number_of_payment', number_of_payment);
+        return number_of_payment;
+      }),
     // accreditation_type_id: Yup.string().required('Procedures is required!'),
     // support_goal_id: Yup.string().required('Procedures is required!'),
   });

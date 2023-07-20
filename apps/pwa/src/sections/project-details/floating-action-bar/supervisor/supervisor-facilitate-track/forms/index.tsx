@@ -8,11 +8,12 @@ import { updateProposalByFacilitatedSupervisor } from 'queries/project-superviso
 import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import {
-  setStepFive, setStepOne,
+  setStepFive,
+  setStepOne,
   setStepThree,
   setStepTwo,
   stepBackOne,
-  stepResetActive
+  stepResetActive,
 } from 'redux/slices/supervisorAcceptingForm';
 import { useDispatch, useSelector } from 'redux/store';
 import { useMutation } from 'urql';
@@ -94,7 +95,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   const handleSubmit = async (data: any) => {
     const { notes, ...restStep1 } = step1;
     const editedBy = location.pathname.split('/')[1];
-    // console.log(data, 'data');
+    console.log(data, 'data');
     setIsSubmitting(true);
 
     try {

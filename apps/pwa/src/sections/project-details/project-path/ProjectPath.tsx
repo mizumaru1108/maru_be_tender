@@ -110,6 +110,7 @@ function ProjectPath() {
       .filter(
         (item: Log) =>
           (item.action && item.action !== 'update') ||
+          (item.action && item.action === 'update' && proposal.track.with_consultation) ||
           (item.action === null && item.state === 'CLIENT')
       );
     if (tmpLogs.length > 0) {
@@ -351,18 +352,16 @@ function ProjectPath() {
             {/*  */}
 
             {/*  */}
-            {logs.find((item: Log, index: number) => activeStep === item.id && item)?.user_role !==
-              'PROJECT_SUPERVISOR' && (
-              <React.Fragment>
-                {(isCompleted && activeStep === '-1') ||
-                (logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT')
-                  ? null
-                  : // <Typography variant="h6">{translate(`review.notes`)}</Typography>
-                    logs
-                      .filter((item: Log, index: number) => activeStep === item.id)
-                      .map((item: Log, index: number) => (
-                        <Stack key={index} direction="column" gap={2}>
-                          {/* <Typography>
+            <React.Fragment>
+              {(isCompleted && activeStep === '-1') ||
+              (logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT')
+                ? null
+                : // <Typography variant="h6">{translate(`review.notes`)}</Typography>
+                  logs
+                    .filter((item: Log, index: number) => activeStep === item.id)
+                    .map((item: Log, index: number) => (
+                      <Stack key={index} direction="column" gap={2}>
+                        {/* <Typography>
                         {item?.user_role === 'PROJECT_MANAGER' && item?.action === 'set_by_supervisor'
                           ? translate(`review.action.payment_rejected_by_pm`)
                           : item.action
@@ -371,68 +370,69 @@ function ProjectPath() {
                           ? translate(`review.action.proposal_created`)
                           : null}
                       </Typography> */}
-                          <Typography variant="h6">
-                            {item.notes &&
-                            (item.action === 'reject' ||
-                              item.action === 'send_back_for_revision' ||
-                              item.action === 'send_revised_version' ||
-                              item.action === 'step_back' ||
-                              item.action === 'one_step_back' ||
-                              item.action === 'rejected_by_project_manager' ||
-                              (item.action === 'accept' && item.user_role === 'MODERATOR'))
-                              ? translate(`review.notes`)
-                              : null}
-                          </Typography>
-                        </Stack>
-                      ))}
-                {activeStep === '-1' && !stepGeneralLog && !stepGransLog && (
-                  <Typography variant="h6">{translate(`review.notes`)}</Typography>
-                )}
-                {activeStep !== '-1' ? (
-                  logs
-                    .filter(
-                      (item: Log, index: number) =>
-                        // item.action !== 'set_by_supervisor' &&
-                        // item.action !== 'accepted_by_project_manager' &&
-                        activeStep === item.id
-                    )
-                    .map((item: Log, index: number) => (
-                      <React.Fragment key={index}>
-                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                          <Typography>
-                            {item.notes === 'Proposal has been revised'
-                              ? translate('proposal_has_been_revised')
-                              : item.action === 'accept' &&
-                                (item.user_role === 'PROJECT_MANAGER' || item.user_role === 'CEO')
-                              ? null
-                              : item.notes ?? null}
-                          </Typography>
-                        </Stack>
-                      </React.Fragment>
-                    ))
-                ) : (
-                  <Typography>
-                    {(isCompleted && activeStep === '-1') ||
-                    (logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT')
-                      ? null
-                      : !IsPaymentAction(logs[logs.length - 1].action) &&
-                        // logs[logs.length - 1].action !== 'update'
-                        LogActionCheck({
-                          action: logs[logs.length - 1].action as LogAction,
-                          type: CheckType.notIn,
-                          logAction: [
-                            LogAction.Update,
-                            LogAction.Reject,
-                            LogAction.Accept,
-                            LogAction.RejectedByProjectManager,
-                          ],
-                        })
-                      ? translate('review.waiting')
-                      : null}
-                  </Typography>
-                )}
-              </React.Fragment>
-            )}
+                        <Typography variant="h6">
+                          {item.notes &&
+                          (item.action === 'reject' ||
+                            item.action === 'send_back_for_revision' ||
+                            item.action === 'send_revised_version' ||
+                            item.action === 'step_back' ||
+                            item.action === 'one_step_back' ||
+                            item.action === 'rejected_by_project_manager' ||
+                            (item.action === 'accept' && item.user_role === 'MODERATOR'))
+                            ? translate(`review.notes`)
+                            : null}
+                        </Typography>
+                      </Stack>
+                    ))}
+              {activeStep === '-1' && !stepGeneralLog && !stepGransLog && (
+                <Typography variant="h6">{translate(`review.notes`)}</Typography>
+              )}
+              {activeStep !== '-1' ? (
+                logs
+                  .filter(
+                    (item: Log, index: number) =>
+                      // item.action !== 'set_by_supervisor' &&
+                      // item.action !== 'accepted_by_project_manager' &&
+                      activeStep === item.id
+                  )
+                  .map((item: Log, index: number) => (
+                    <React.Fragment key={index}>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>
+                          {item.notes === 'Proposal has been revised'
+                            ? translate('proposal_has_been_revised')
+                            : (item.action === 'accept' || item.action === 'update') &&
+                              (item.user_role === 'PROJECT_MANAGER' ||
+                                item.user_role === 'CEO' ||
+                                item.user_role === 'PROJECT_SUPERVISOR')
+                            ? null
+                            : item.notes ?? null}
+                        </Typography>
+                      </Stack>
+                    </React.Fragment>
+                  ))
+              ) : (
+                <Typography>
+                  {(isCompleted && activeStep === '-1') ||
+                  (logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT')
+                    ? null
+                    : !IsPaymentAction(logs[logs.length - 1].action) &&
+                      // logs[logs.length - 1].action !== 'update'
+                      LogActionCheck({
+                        action: logs[logs.length - 1].action as LogAction,
+                        type: CheckType.notIn,
+                        logAction: [
+                          LogAction.Update,
+                          LogAction.Reject,
+                          LogAction.Accept,
+                          LogAction.RejectedByProjectManager,
+                        ],
+                      })
+                    ? translate('review.waiting')
+                    : null}
+                </Typography>
+              )}
+            </React.Fragment>
             {/*  */}
             {/* CashierPaymentLog */}
             {isCompleted && activeStep === '-1' ? null : <Divider />}

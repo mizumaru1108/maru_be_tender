@@ -96,18 +96,12 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     inclu_or_exclu: Yup.boolean(),
     support_goal_id: Yup.string().required('Procedures is required!'),
     payment_number: Yup.string()
-      // .required(translate('errors.cre_proposal.payment_number.required'))
-      .test(
-        'len',
-        `${translate('errors.cre_proposal.payment_number.greater_than')} ${
-          proposal.proposal_item_budgets.length
-        }`,
-        (val) => {
-          if (!val) return true;
-          const number_of_payment = Number(val);
-          return !(number_of_payment < proposal.proposal_item_budgets.length);
-        }
-      ),
+      .required(translate('errors.cre_proposal.payment_number.required'))
+      .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {
+        const number_of_payment = Number(val) > 0;
+        console.log('number_of_payment', number_of_payment);
+        return number_of_payment;
+      }),
   });
 
   const defaultValues = {

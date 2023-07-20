@@ -72,9 +72,9 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
   });
 
   const onSubmitForm = (data: SupervisorStep4) => {
-    // console.log(step1, 'step1');
+    // console.log(data, 'data test');
     let totalAmount: number | undefined = undefined;
-    const fSupportBySpv: number = Number(proposal.fsupport_by_supervisor);
+    const fSupportBySpv: number = Number(proposal.amount_required_fsupport);
     if (data.proposal_item_budgets.length) {
       totalAmount = Number(
         data
@@ -101,8 +101,9 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
         }));
 
       data.deleted_proposal_budget = tempDeletedBudget;
-
+      console.log('masuk sini', { step1, fSupportBySpv, totalAmount });
       if (step1 && fSupportBySpv && totalAmount) {
+        console.log('mausk if sini');
         // if (step1.support_type && totalAmount <= proposal.amount_required_fsupport!) {
         //   onSubmit(data);
         // } else {
