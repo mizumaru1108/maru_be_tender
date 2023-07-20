@@ -43,8 +43,8 @@ export class AdvertisementCreateCommandResult {
   @ApiProperty()
   advertisement: AdvertisementEntity;
 
-  @ApiProperty()
-  created_file_managers: FileManagerEntity[];
+  @ApiProperty({ type: () => Array<FileManagerEntity> || [] })
+  created_file_managers: FileManagerEntity[] | [];
 }
 
 @CommandHandler(AdvertisementCreateCommand)

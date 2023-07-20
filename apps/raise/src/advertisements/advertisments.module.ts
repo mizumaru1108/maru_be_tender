@@ -4,6 +4,7 @@ import { AdvertisementCreateHandler } from 'src/advertisements/commands/advertis
 import { AdvertisementUpdateHandler } from 'src/advertisements/commands/advertisement.update/advertisement.update.command';
 import { AdvertisementHttpController } from 'src/advertisements/controller/advertisements.http.controller';
 import { AdvertisementFindManyQueryHandler } from 'src/advertisements/queries/advertisement.find.many.query/advertisement.find.many.query';
+import { AdvertisementFindMyAdsQueryHandler } from 'src/advertisements/queries/advertisement.find.my.ads.query/advertisement.find.my.ads.query';
 import { AdvertisementRepository } from 'src/advertisements/repositories/advertisement.repository';
 
 const importedModule = [CqrsModule];
@@ -13,7 +14,10 @@ const commands: Provider[] = [
   AdvertisementCreateHandler,
   AdvertisementUpdateHandler,
 ];
-const queries: Provider[] = [AdvertisementFindManyQueryHandler];
+const queries: Provider[] = [
+  AdvertisementFindManyQueryHandler,
+  AdvertisementFindMyAdsQueryHandler,
+];
 const exportedProviders: Provider[] = [];
 
 @Module({

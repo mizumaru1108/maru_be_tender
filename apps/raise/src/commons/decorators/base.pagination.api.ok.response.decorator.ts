@@ -9,7 +9,7 @@ import { PaginatedResponse } from 'src/commons/dtos/paginated-response.dto';
 
 export const BasePaginationApiOkResponse = <DataDto extends Type<unknown>>(
   dataDto: DataDto,
-  type: 'object' | 'array' = 'object',
+  total?: number,
   options?: ApiResponseOptions,
 ) =>
   applyDecorators(
@@ -21,10 +21,8 @@ export const BasePaginationApiOkResponse = <DataDto extends Type<unknown>>(
           { $ref: getSchemaPath(PaginatedResponse) },
           {
             properties: {
-              data:
-                type === 'array'
-                  ? { type: type, items: { $ref: getSchemaPath(dataDto) } }
-                  : { $ref: getSchemaPath(dataDto) },
+              data: { type: 'array', items: { $ref: getSchemaPath(dataDto) } },
+              // total,
             },
           },
         ],

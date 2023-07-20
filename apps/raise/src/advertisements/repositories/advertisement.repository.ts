@@ -197,6 +197,7 @@ export class AdvertisementRepository {
         };
       }
 
+      // console.log({ queryOptions });
       const rawResults = await prisma.advertisements.findMany(queryOptions);
       const entities = rawResults.map((rawResults) => {
         return Builder<AdvertisementEntity>(AdvertisementEntity, {
