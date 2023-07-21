@@ -11,6 +11,10 @@ import { ProposalProjectTimelineModule } from '../proposal-management/poject-tim
 import { ProposalModule } from '../proposal-management/proposal/proposal.module';
 import { ProposalLogModule } from '../proposal-management/proposal-log/proposal.log.module';
 import { ProposalItemBudgetModule } from '../proposal-management/item-budget/proposal.item.budget.module';
+import {
+  mapperuserCommand,
+  mapperuserHandler,
+} from 'src/qa-helper/commands/mapper.command';
 
 const commands: Provider[] = [
   QaProposalCreateNewModeratorStateCommandHandler,

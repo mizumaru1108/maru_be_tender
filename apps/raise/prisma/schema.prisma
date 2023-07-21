@@ -41,7 +41,7 @@ model bank_information {
   bank_id                                              String?    @db.VarChar
   created_at                                           DateTime?  @default(now()) @db.Timestamptz(6)
   updated_at                                           DateTime?  @default(now()) @db.Timestamptz(6)
-  user                                                 user       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user                                                 user       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   proposal_bank_informationToproposal_proposal_bank_id proposal[] @relation("bank_informationToproposal_proposal_bank_id")
 }
 
@@ -78,7 +78,7 @@ model client_data {
   chairman_name            String?      @db.VarChar
   chairman_mobile          String?      @db.VarChar
   qid                      Int?
-  user                     user         @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  user                     user         @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   client_log               client_log[]
 }
 
@@ -102,7 +102,7 @@ model employees_permissions {
   advisors_committee                 Boolean? @default(false)
   project_supervisor                 Boolean? @default(false)
   id                                 String   @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user                               user     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user                               user     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model inquiry_type {
@@ -126,8 +126,8 @@ model message {
   sender_role_as   String?
   receiver_role_as String?
   content_type     content_type   @relation(fields: [content_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  sender           user?          @relation(fields: [owner_id], references: [id])
-  receiver         user?          @relation("message_receiver_idTouser", fields: [receiver_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  sender           user?          @relation(fields: [owner_id], references: [id], onUpdate: Cascade)
+  receiver         user?          @relation("message_receiver_idTouser", fields: [receiver_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   room_chat        room_chat?     @relation(fields: [room_id], references: [id], onDelete: Cascade)
   notification     notification[]
 }
@@ -231,14 +231,14 @@ model proposal {
   accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   proposal_beneficiaries              proposal_beneficiaries?          @relation(fields: [project_beneficiaries], references: [id], onDelete: Cascade)
   project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
-  project_manager                     user?                            @relation("proposal_project_manager_idTouser", fields: [project_manager_id], references: [id], onDelete: Cascade)
+  project_manager                     user?                            @relation("proposal_project_manager_idTouser", fields: [project_manager_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bank_information                    bank_information?                @relation("bank_informationToproposal_proposal_bank_id", fields: [proposal_bank_id], references: [id], onDelete: Cascade)
   proposal_request                    proposal_request?                @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_requested_fkey")
   user_type                           user_type?                       @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction)
   proposal_status                     proposal_status?                 @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_status_fkey")
   proposal_step                       proposal_step?                   @relation(fields: [step], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user                                user                             @relation(fields: [submitter_user_id], references: [id], onDelete: Cascade)
-  supervisor                          user?                            @relation("proposal_supervisor_idTouser", fields: [supervisor_id], references: [id], onDelete: Cascade)
+  user                                user                             @relation(fields: [submitter_user_id], references: [id], onDelete: Cascade,onUpdate: Cascade)
+  supervisor                          user?                            @relation("proposal_supervisor_idTouser", fields: [supervisor_id], references: [id], onDelete: Cascade,onUpdate: Cascade)
   support_goal                        support_goal?                    @relation(fields: [support_goal_id], references: [id])
   track                               track?                           @relation(fields: [track_id], references: [id], onUpdate: NoAction)
   proposal_asked_edit_request         proposal_asked_edit_request[]
@@ -292,7 +292,7 @@ model proposal_log {
   notification  notification[]
   user_type     user_type      @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_log_assign_fkey")
   proposal      proposal       @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  reviewer      user?          @relation(fields: [reviewer_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_log_user_id_fkey")
+  reviewer      user?          @relation(fields: [reviewer_id], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "proposal_log_user_id_fkey")
 }
 
 model proposal_state {
@@ -384,7 +384,7 @@ model proposal_follow_up {
   submitter_role String
   employee_only  Boolean
   proposal       proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  user           user      @relation("proposal_follow_up_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  user           user      @relation("proposal_follow_up_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model proposal_status {
@@ -400,9 +400,9 @@ model client_log {
   created_at               DateTime    @default(now()) @db.Timestamptz(6)
   updated_at               DateTime    @default(now()) @db.Timestamptz(6)
   status                   String
-  client_data              client_data @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  user                     user        @relation(fields: [reviewer_id], references: [id], onDelete: Cascade)
-  user_status              user_status @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  client_data              client_data @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user                     user        @relation(fields: [reviewer_id], references: [id], onDelete: Cascade,onUpdate: Cascade)
+  user_status              user_status @relation(fields: [status], references: [id], onDelete: NoAction, onUpdate: Cascade)
 }
 
 model proposal_request {
@@ -480,8 +480,8 @@ model room_chat {
   updated_at                                DateTime                @default(now()) @db.Timestamptz(6)
   message                                   message[]
   correspondance_category                   correspondance_category @relation(fields: [correspondance_category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "room_chat_correspondance_category_fkey")
-  user_room_chat_participant1_user_idTouser user?                   @relation("room_chat_participant1_user_idTouser", fields: [participant1_user_id], references: [id])
-  user_room_chat_participant2_user_idTouser user?                   @relation("room_chat_participant2_user_idTouser", fields: [participant2_user_id], references: [id])
+  user_room_chat_participant1_user_idTouser user?                   @relation("room_chat_participant1_user_idTouser", fields: [participant1_user_id], references: [id],onUpdate: Cascade)
+  user_room_chat_participant2_user_idTouser user?                   @relation("room_chat_participant2_user_idTouser", fields: [participant2_user_id], references: [id],onUpdate: Cascade)
 }
 
 model contact_us {
@@ -496,9 +496,9 @@ model contact_us {
   reason_visit                          String?
   created_at                            DateTime?     @default(now()) @db.Timestamptz(6)
   updated_at                            DateTime?     @default(now()) @db.Timestamptz(6)
-  inquiry_type_contact_usToinquiry_type inquiry_type? @relation(fields: [inquiry_type], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "message_inquiry_type_fkey")
-  user_contact_us_receiver_idTouser     user          @relation("contact_us_receiver_idTouser", fields: [receiver_id], references: [id], onUpdate: Restrict, map: "message_receiver_id_fkey")
-  user_contact_us_sender_idTouser       user          @relation("contact_us_sender_idTouser", fields: [sender_id], references: [id], onUpdate: Restrict, map: "message_sender_id_fkey")
+  inquiry_type_contact_usToinquiry_type inquiry_type? @relation(fields: [inquiry_type], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "message_inquiry_type_fkey")
+  user_contact_us_receiver_idTouser     user          @relation("contact_us_receiver_idTouser", fields: [receiver_id], references: [id], onUpdate: Cascade, map: "message_receiver_id_fkey")
+  user_contact_us_sender_idTouser       user          @relation("contact_us_sender_idTouser", fields: [sender_id], references: [id], onUpdate: Cascade, map: "message_sender_id_fkey")
 }
 
 model appointment {
@@ -516,8 +516,8 @@ model appointment {
   created_at        DateTime?      @default(now()) @db.Timestamptz(6)
   updated_at        DateTime?      @default(now()) @db.Timestamptz(6)
   calendar_event_id String         @db.VarChar
-  employee          user           @relation("appointment_employee_idTouser", fields: [employee_id], references: [id], onDelete: Cascade)
-  client            user           @relation("appointment_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  employee          user           @relation("appointment_employee_idTouser", fields: [employee_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  client            user           @relation("appointment_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   notification      notification[]
 }
 
@@ -527,7 +527,7 @@ model schedule {
   day        String  @db.VarChar
   start_time String? @db.VarChar
   end_time   String? @db.VarChar
-  user       user    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user       user    @relation(fields: [user_id], references: [id], onDelete: Cascade,onUpdate: Cascade)
 }
 
 model email_record {
@@ -538,8 +538,8 @@ model email_record {
   receiver_id String
   created_at  DateTime? @default(now()) @db.Timestamptz(6)
   updated_at  DateTime? @default(now()) @db.Timestamptz(6)
-  receiver    user      @relation("email_record_receiver_idTouser", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  sender      user      @relation("email_record_sender_idTouser", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  receiver    user      @relation("email_record_receiver_idTouser", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  sender      user      @relation("email_record_sender_idTouser", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: Cascade)
 }
 
 model authority {
@@ -607,7 +607,7 @@ model user_role {
   id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id      String
   user_type_id String
-  user         user      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user         user      @relation(fields: [user_id], references: [id], onDelete: Cascade,onUpdate: Cascade)
   user_type    user_type @relation(fields: [user_type_id], references: [id], onDelete: Cascade)
 }
 
@@ -654,7 +654,7 @@ model notification {
   message         message?      @relation(fields: [message_id], references: [id], onDelete: Cascade)
   proposal        proposal?     @relation(fields: [proposal_id], references: [id])
   proposal_log    proposal_log? @relation(fields: [proposal_log_id], references: [id], onDelete: Cascade)
-  user            user          @relation("notification_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
+  user            user          @relation("notification_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model NotificationFailedLogs {
@@ -677,9 +677,9 @@ model user_status_log {
   status_id              String
   notes                  String?
   created_at             DateTime?   @default(now()) @db.Timestamptz(6)
-  account_manager_detail user?       @relation("userTouser_status_log_account_manager_id", fields: [account_manager_id], references: [id], onDelete: Cascade)
+  account_manager_detail user?       @relation("userTouser_status_log_account_manager_id", fields: [account_manager_id], references: [id], onDelete: Cascade,onUpdate: Cascade)
   user_status            user_status @relation(fields: [status_id], references: [id], onDelete: Cascade)
-  user_detail            user        @relation("userTouser_status_log_user_id", fields: [user_id], references: [id], onDelete: Cascade)
+  user_detail            user        @relation("userTouser_status_log_user_id", fields: [user_id], references: [id], onDelete: Cascade,onUpdate: Cascade)
 }
 
 model edit_requests {
@@ -693,9 +693,9 @@ model edit_requests {
   created_at          DateTime            @default(now()) @db.Timestamptz(6)
   new_value           String              @db.VarChar
   old_value           String              @db.VarChar
-  reviewer            user?               @relation("edit_requests_reviewer_idTouser", fields: [reviewer_id], references: [id], onDelete: Cascade, map: "edit_request_logs_reviwer_id_fkey")
-  edit_request_status edit_request_status @relation(fields: [status_id], references: [id], onDelete: Cascade, map: "edit_request_logs_status_id_fkey")
-  user                user                @relation("edit_requests_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade, map: "edit_request_logs_user_id_fkey")
+  reviewer            user?               @relation("edit_requests_reviewer_idTouser", fields: [reviewer_id], references: [id], onDelete: Cascade, onUpdate: Cascade,map: "edit_request_logs_reviwer_id_fkey")
+  edit_request_status edit_request_status @relation(fields: [status_id], references: [id], onDelete: Cascade,onUpdate: Cascade, map: "edit_request_logs_status_id_fkey")
+  user                user                @relation("edit_requests_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "edit_request_logs_user_id_fkey")
 }
 
 model file_manager {
@@ -714,7 +714,7 @@ model file_manager {
   advertisement_id    String?
   bank_information_id String?
   fid                 Int?
-  user                user?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user                user?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model bank_information2 {
@@ -786,8 +786,8 @@ model proposal_asked_edit_request {
   created_at    DateTime @default(now()) @db.Timestamptz(6)
   supervisor_id String?
   proposal      proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
-  sender        user     @relation("proposal_asked_edit_request_sender_idTouser", fields: [sender_id], references: [id], onDelete: Cascade)
-  supervisor    user?    @relation("proposal_asked_edit_request_supervisor_idTouser", fields: [supervisor_id], references: [id], onDelete: Cascade)
+  sender        user     @relation("proposal_asked_edit_request_sender_idTouser", fields: [sender_id], references: [id], onDelete: Cascade,onUpdate: Cascade)
+  supervisor    user?    @relation("proposal_asked_edit_request_supervisor_idTouser", fields: [supervisor_id], references: [id], onDelete: Cascade,onUpdate: Cascade)
 }
 
 model proposal_closing_report {
