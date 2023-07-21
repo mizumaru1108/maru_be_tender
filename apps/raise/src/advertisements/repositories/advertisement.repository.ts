@@ -8,6 +8,7 @@ import { AdvertisementTypeEnum } from 'src/advertisements/types/enums/advertisem
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
 import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
+import moment from 'moment';
 
 export class AdvertisementCreateProps {
   content: string;
@@ -16,8 +17,8 @@ export class AdvertisementCreateProps {
   logo?: UploadFilesJsonbDto[];
   id?: string; // incase of predefined id,
   track_id?: string;
-  date: Date;
-  start_time: string;
+  expired_date: Date;
+  expired_time: string;
 }
 
 export class AdvertisementUpdateProps {
@@ -27,13 +28,14 @@ export class AdvertisementUpdateProps {
   type?: AdvertisementTypeEnum;
   logo?: UploadFilesJsonbDto[];
   track_id?: string;
-  date?: Date;
-  start_time?: string;
+  expired_date?: Date;
+  expired_time?: string;
 }
 
 export class AdvertisementFindManyProps {
   track_id?: string[];
   type?: AdvertisementTypeEnum[];
+  only_active?: boolean;
   limit?: number;
   page?: number;
   sort_by?: string;
@@ -80,8 +82,8 @@ export class AdvertisementRepository {
           type: props.type as unknown as string,
           logo: props.logo as unknown as Prisma.InputJsonArray,
           track_id: props.track_id,
-          date: props.date,
-          start_time: props.start_time,
+          expired_date: props.expired_date,
+          expired_time: props.expired_time,
         },
       });
 
@@ -109,8 +111,8 @@ export class AdvertisementRepository {
           type: props.type as unknown as string,
           logo: props.logo as unknown as Prisma.InputJsonArray,
           track_id: props.track_id,
-          date: props.date,
-          start_time: props.start_time,
+          expired_date: props.expired_date,
+          expired_time: props.expired_time,
         },
       });
 
@@ -143,7 +145,7 @@ export class AdvertisementRepository {
   }
 
   async findManyFilters(props: AdvertisementFindManyProps) {
-    const { track_id, type } = props;
+    const { track_id, type, only_active } = props;
     const queryOptions: Prisma.AdvertisementsFindManyArgs = {};
     let findManyWhereClause: Prisma.AdvertisementsWhereInput = {};
 
@@ -161,6 +163,19 @@ export class AdvertisementRepository {
         ...findManyWhereClause,
         type: {
           in: type,
+        },
+      };
+    }
+
+    if (only_active !== undefined) {
+      // find where expired_date + expired_time (xx:xx am/pm) < now
+      findManyWhereClause = {
+        ...findManyWhereClause,
+        expired_date: {
+          lte: new Date(),
+        },
+        expired_time: {
+          lt: moment().format('hh:mm A'), // Filter data with expired_time less than or equal to the current time
         },
       };
     }

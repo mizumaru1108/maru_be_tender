@@ -8,8 +8,8 @@ export class AdvertisementEntity {
   track_id?: string | null;
   track?: TrackEntity;
   logo?: any; // jsonb
-  date: Date;
-  start_time: string;
+  expired_date: Date;
+  expired_time: string;
   created_at: Date | null = new Date();
   updated_at: Date | null = new Date();
 }

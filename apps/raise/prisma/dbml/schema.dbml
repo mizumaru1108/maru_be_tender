@@ -10,8 +10,8 @@ Table advertisements {
   track_id String
   track track
   logo Json
-  date DateTime [not null]
-  start_time String [not null]
+  expired_date DateTime [not null]
+  expired_time String [not null]
   created_at DateTime [default: `now()`]
   updated_at DateTime [default: `now()`]
 }

@@ -39,6 +39,7 @@ import {
   ProposalFindByIdQuery,
   ProposalFindByIdQueryResult,
 } from 'src/proposal-management/proposal/queries/proposal.find.by.id.query/proposal.find.by.id.query';
+import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
 import { BasePrismaErrorException } from 'src/tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { RequestErrorException } from 'src/tender-commons/exceptions/request-error.exception';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
@@ -65,7 +66,6 @@ import {
 import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
 import { ProposalService } from '../services/proposal.service';
-import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
 
 @ApiTags('ProposalModule')
 @Controller('tender-proposal')

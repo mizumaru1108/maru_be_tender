@@ -100,7 +100,7 @@ export class AdvertisementHttpController {
         {
           ...dto,
           type: dto.type as unknown as AdvertisementTypeEnum,
-          date: new Date(dto.date),
+          expired_date: new Date(dto.expired_date),
           logos: files.logo,
           current_user: currentUser,
         },

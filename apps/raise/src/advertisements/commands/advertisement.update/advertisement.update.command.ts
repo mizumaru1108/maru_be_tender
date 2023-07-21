@@ -116,8 +116,8 @@ export class AdvertisementUpdateHandler
           content: command.content,
           title: command.title,
           track_id: command.track_id,
-          date: command.date,
-          start_time: command.start_time,
+          expired_date: command.date,
+          expired_time: command.start_time,
         },
       ).build();
 

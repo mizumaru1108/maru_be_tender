@@ -49,11 +49,11 @@ export class AdvertisementCreateDto {
   @IsNotEmpty()
   @IsString()
   @IsDateString()
-  date: string;
+  expired_date: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @Validate12HourTimeFormat()
-  start_time: string;
+  expired_time: string;
 }

@@ -4,7 +4,7 @@ import {
   SwaggerDocumentOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
-import './traces'; // MUST be the first one! because of instrumentations
+// import './traces'; // MUST be the first one! because of instrumentations
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';

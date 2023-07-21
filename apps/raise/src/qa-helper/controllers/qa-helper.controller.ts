@@ -24,11 +24,25 @@ import { QaProposalDeleteCommand } from '../commands/qa.proposal.delete/qa.propo
 import { QaProposalCreateSupervisorDto } from '../dto/requests/qa-proposal-create-supervisor.dto';
 import { QaProposalCreateDto } from '../dto/requests/qa-proposal-create.dto';
 import { QaProposalDeleteDto } from '../dto/requests/qa-proposal.delete.dto';
+import { mapperuserCommand } from 'src/qa-helper/commands/mapper.command';
 
 @ApiTags('qa-helper')
 @Controller('qa-helper')
 export class QaHelperControllers {
   constructor(private readonly commandBus: CommandBus) {}
+
+  @Post('mapping')
+  async mapping() {
+    try {
+      const createProposalCommand =
+        Builder<mapperuserCommand>(mapperuserCommand).build();
+
+      const result = await this.commandBus.execute(createProposalCommand);
+      return baseResponseHelper(result, HttpStatus.OK);
+    } catch (error) {
+      throw error;
+    }
+  }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')

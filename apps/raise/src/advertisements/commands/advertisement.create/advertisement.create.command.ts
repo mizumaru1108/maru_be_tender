@@ -34,8 +34,8 @@ export class AdvertisementCreateCommand {
   title: string;
   track_id?: string;
   type: AdvertisementTypeEnum;
-  date: Date;
-  start_time: string;
+  expired_date: Date;
+  expired_time: string;
   logos?: Express.Multer.File[];
 }
 
@@ -128,8 +128,8 @@ export class AdvertisementCreateHandler
           title: command.title,
           type: command.type,
           track_id: command.track_id,
-          date: command.date,
-          start_time: command.start_time,
+          expired_date: command.expired_date,
+          expired_time: command.expired_time,
         },
       ).build();
 

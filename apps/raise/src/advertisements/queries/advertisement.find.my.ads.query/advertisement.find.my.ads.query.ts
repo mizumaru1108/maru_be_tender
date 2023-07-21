@@ -36,6 +36,7 @@ export class AdvertisementFindMyAdsQueryHandler
   ): Promise<AdvertisementFindMyAdsQueryResult> {
     const appliedFilter: AdvertisementFindManyProps = {
       ...query,
+      only_active: true,
     };
 
     if (query.user.choosenRole !== 'tender_client') {

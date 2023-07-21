@@ -1,0 +1,24 @@
+id,employee_name,mobile_number,email,status_id,track_id
+59976329-be8d-4cd9-8682-dce44dd1a362,Mas Danang Admin,966561066353,danang+tender_admin@soluvas.com,ACTIVE_ACCOUNT,
+9249491b-66e5-4b7d-a04d-ea8c685411f8,Account Manager,966123123123,frisky+acc_manager@soluvas.com,ACTIVE_ACCOUNT,3b16ee27-05c9-40fc-b564-52f5ca9286d5
+9f25ff88-4283-46e2-9d92-abaec23dc6ed,Moderator,966222213409,frisky+moderator@soluvas.com,ACTIVE_ACCOUNT,5895b09f-213e-4cf3-be7c-66b587d3ae79
+9095ccff-b77a-40ae-bc2f-a8982eb38be1,Project Supervisor baptisms,6285718530636,frisky+supervisor_baptisms@soluvas.com,ACTIVE_ACCOUNT,31409640-edfc-4dea-9408-400981923de4
+aa700e49-a2d2-4b88-a586-eb750a1b1423,Project Supervisor initiatives (Edited),966123123211,frisky+supervisor_initiatives@soluvas.com,ACTIVE_ACCOUNT,9d33e68b-886f-4b09-b34b-dfddd36c3777
+cf3fac19-ce9e-41ac-9450-34e707b71c29,Frisky Grant Supervisor,592251227,frisky+supervisor_grant@soluvas.com,ACTIVE_ACCOUNT,a17c9ff9-1966-4c1a-a356-ff99190c7910
+3317d882-4975-452c-8b38-04f7cb29b673,Supervisor Mosque,6285718530636,frisky+supervisor_mosque@soluvas.com,ACTIVE_ACCOUNT,c4622507-98ef-40ef-9d40-b36255157468
+3d6277e6-88e9-4a78-9fed-0aa08c590896,Project Manager baptisms,6285718530636,frisky+project_manager_baptisms@soluvas.com,ACTIVE_ACCOUNT,31409640-edfc-4dea-9408-400981923de4
+936eb911-c4d8-4dfd-9df8-f270ecf6e6c8,Project Manager initiatives,6285718530636,frisky+project_manager_initiatives@soluvas.com,ACTIVE_ACCOUNT,9d33e68b-886f-4b09-b34b-dfddd36c3777
+eb31c936-78ba-471b-a994-a48572e956ea,Project Manager grant,6285718530636,frisky+project_manager_grant@soluvas.com,ACTIVE_ACCOUNT,a17c9ff9-1966-4c1a-a356-ff99190c7910
+6b3935bf-b9e6-4061-9426-527111d5aa62,Project Manager mosque,6285718530636,frisky+project_manager_mosque@soluvas.com,ACTIVE_ACCOUNT,c4622507-98ef-40ef-9d40-b36255157468
+4692e745-ff51-4a74-b50a-f17d6e9d4a64,Consultant,6285718530636,frisky+consultant@soluvas.com,ACTIVE_ACCOUNT,a17c9ff9-1966-4c1a-a356-ff99190c7910
+26a23900-2a49-4950-aa5a-917032b785f5,CEO,966857185306,frisky+ceo@soluvas.com,ACTIVE_ACCOUNT,3b16ee27-05c9-40fc-b564-52f5ca9286d5
+68806bcd-5fad-4dec-84ae-01cb5e547fdd,Finance,966583329936,frisky+finance@soluvas.com,ACTIVE_ACCOUNT,3b16ee27-05c9-40fc-b564-52f5ca9286d5
+df9916bc-81fc-478c-bc45-bed74c63270c,Frisky Name Cashier (Example),599944501,frisky+cashier@soluvas.com,ACTIVE_ACCOUNT,3b16ee27-05c9-40fc-b564-52f5ca9286d5
+fe4aba39-de5a-44af-9d7c-e3b9d7aa843a,1 Test Putri Account,966122111111,putri+client1@soluvas.com,ACTIVE_ACCOUNT,
+bf9ae432-1078-45ec-a541-46e99ddc3ac5,Frisky Midiawan Kurnia,966592251227,frisky+client71@soluvas.com,ACTIVE_ACCOUNT,
+c708e830-f134-4afe-889e-9f253f94f458,Frisky Test Appointment,966556677860,frisky+client1@soluvas.com,ACTIVE_ACCOUNT,
+8e467af5-0501-4dbf-9246-5e9a8baae8cf,MizumaruHachi,966123489061,umar+maru8@soluvas.com,ACTIVE_ACCOUNT,
+9cd6fc8c-d9d0-41ad-8ba4-ee2bb3b2efe0,before prod test (edited),966335567619,frisky+client3@soluvas.com,ACTIVE_ACCOUNT,
+d9b3dfe0-e93f-4d4a-a584-9a01e8cc34dc,Client test automation,966599944091,frisky+client_auto@soluvas.com,ACTIVE_ACCOUNT,
+e1e7baa8-5504-4b16-b30e-8c2ac992ba2a,Frisky EID,678901236,frisky+multi_eid@soluvas.com,ACTIVE_ACCOUNT,e723726c-9e42-4775-8788-4a5a14f060e4
+74972d12-7c62-428d-b394-89880ee6489a,Frisky SPV PM,966555678012,frisky+spv_pm@soluvas.com,ACTIVE_ACCOUNT,10e42ad4-c268-4160-83d7-21069e6555d1
