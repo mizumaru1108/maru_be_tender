@@ -86,7 +86,14 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
             </Stack>
             {Object.entries(newProposal.proposal!)
               .filter(
-                ([key]) => key !== 'inclu_or_exclu' && key !== 'vat' && key !== 'vat_percentage'
+                ([key]) =>
+                  key !== 'inclu_or_exclu' &&
+                  key !== 'vat' &&
+                  key !== 'vat_percentage' &&
+                  key !== 'been_made_before' &&
+                  key !== 'support_goal_id' &&
+                  key !== 'accreditation_type_id' &&
+                  key !== 'chairman_of_board_of_directors'
               )
               .map(([key, value]) => {
                 // console.log({ stepGransLog });
@@ -265,8 +272,8 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>
                           {value === true
-                            ? translate('partial_support')
-                            : translate('full_support')}
+                            ? translate('full_support')
+                            : translate('partial_support')}
                         </Typography>
                       </Stack>
                     </Grid>

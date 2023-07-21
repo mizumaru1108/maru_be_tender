@@ -164,8 +164,10 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     //     .proposal_item_budgets!.map((item) => parseInt(item.amount))
     //     .reduce((acc, curr) => acc! + curr!, 0);
     // }
-    if (proposal.fsupport_by_supervisor) {
-      totalSupportProposal = Number(proposal.fsupport_by_supervisor);
+    if (proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport) {
+      totalSupportProposal = Number(
+        proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport
+      );
     }
     let totalAmount: number | undefined = undefined;
     if (data.detail_project_budgets) {
@@ -180,7 +182,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     // }
     let checkPassAmount = false;
     if (data.support_type) {
-      if (totalAmount <= totalSupportProposal) {
+      if (totalAmount === totalSupportProposal) {
         checkPassAmount = true;
       } else {
         checkPassAmount = false;
