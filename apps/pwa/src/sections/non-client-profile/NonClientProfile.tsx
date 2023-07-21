@@ -116,7 +116,9 @@ export default function NonClientProfile() {
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.first_name')}
                   </Typography>
-                  <Typography sx={{ mb: '15px' }}>{data.profile.employee_name || 'N/A'}</Typography>
+                  <Typography sx={{ mb: '15px' }}>
+                    {data?.profile?.employee_name || 'N/A'}
+                  </Typography>
                 </Stack>
               </Stack>
             </Grid>
@@ -130,7 +132,7 @@ export default function NonClientProfile() {
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.email')}
                   </Typography>
-                  <Typography sx={{ mb: '15px' }}>{data.profile.email || 'N/A'}</Typography>
+                  <Typography sx={{ mb: '15px' }}>{data?.profile?.email || 'N/A'}</Typography>
                 </Stack>
 
                 <Stack direction="column" alignItems="start">
@@ -140,7 +142,7 @@ export default function NonClientProfile() {
                   <Typography
                     sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
                   >
-                    {data.profile.mobile_number || 'N/A'}
+                    {data?.profile?.mobile_number || 'N/A'}
                   </Typography>
                 </Stack>
                 {/* <Stack direction="column">

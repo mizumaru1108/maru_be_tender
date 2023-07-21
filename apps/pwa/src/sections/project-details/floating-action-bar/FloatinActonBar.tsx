@@ -86,7 +86,7 @@ function FloatinActonBar() {
             ['follow-ups'].includes(activeTap) &&
             (actionType === 'show-details' || actionType === 'show-project') &&
             pathName &&
-            pathName[3] === 'project-report' &&
+            (pathName[3] === 'project-report' || pathName[3] === 'current-project') &&
             // (role === 'tender_project_supervisor' || role === 'tender_client') &&
             ['PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'].includes(proposal.inner_status) && (
               <FloatingClientSubmit />
