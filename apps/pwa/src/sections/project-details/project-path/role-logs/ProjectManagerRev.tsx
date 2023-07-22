@@ -274,7 +274,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                   key !== 'inclu_or_exclu' &&
                   key !== 'vat' &&
                   key !== 'vat_percentage' &&
-                  key !== 'been_made_before' &&
+                  key !== 'been_supported_before' &&
                   key !== 'support_goal_id' &&
                   key !== 'accreditation_type_id' &&
                   key !== 'chairman_of_board_of_directors'
@@ -321,23 +321,23 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                     </Grid>
                   );
                 }
-                if (key === 'been_supported_before') {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          {value ? translate('review.yes') : translate('review.no')}
-                        </Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                }
+                // if (key === 'been_supported_before') {
+                //   return (
+                //     <Grid item xs={6} key={key}>
+                //       <Typography variant="h6">
+                //         {
+                //           // key
+                //           translate(`review.${key}`)
+                //         }
+                //       </Typography>
+                //       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                //         <Typography>
+                //           {value ? translate('review.yes') : translate('review.no')}
+                //         </Typography>
+                //       </Stack>
+                //     </Grid>
+                //   );
+                // }
                 if (key === 'been_made_before') {
                   return (
                     <Grid item xs={6} key={key}>
