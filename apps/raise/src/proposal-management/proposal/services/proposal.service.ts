@@ -1228,6 +1228,7 @@ export class ProposalService {
       proposalLogCreateInput.action = ProposalAction.REJECT;
       proposalLogCreateInput.state = 'PROJECT_SUPERVISOR';
       proposalLogCreateInput.user_role = 'PROJECT_SUPERVISOR';
+      proposalLogCreateInput.reject_reason = request.reject_reason;
     }
 
     /* step back (same for grants and not grants) DONE */
@@ -1447,6 +1448,7 @@ export class ProposalService {
       proposalLogCreateInput.action = ProposalAction.REJECT;
       proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
+      proposalLogCreateInput.reject_reason = request.reject_reason;
       // proposalLogCreateInput.notes = request.notes;
     }
 
@@ -1526,6 +1528,7 @@ export class ProposalService {
       proposalLogCreateInput.action = ProposalAction.ACCEPT;
       proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.CEO;
+      proposalLogCreateInput.reject_reason = request.reject_reason;
 
       // for saving history of changed when action is update
       // with consul

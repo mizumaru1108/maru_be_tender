@@ -1800,8 +1800,8 @@ export class ProposalRepository {
           whereClause = {
             ...whereClause,
             OR: [
-              { cashier_id: currentUser.id },
-              { cashier_id: null },
+              // { cashier_id: currentUser.id },
+              // { cashier_id: null },
               {
                 payments: {
                   some: {
@@ -1824,6 +1824,7 @@ export class ProposalRepository {
                 },
               },
             ],
+            cashier_id: currentUser.id,
             finance_id: { not: null },
             inner_status:
               InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
@@ -2506,8 +2507,8 @@ export class ProposalRepository {
         whereClause = {
           ...whereClause,
           OR: [
-            { cashier_id: currentUser.id },
-            { cashier_id: null },
+            // { cashier_id: currentUser.id },
+            // { cashier_id: null },
             {
               payments: {
                 some: {
@@ -2530,6 +2531,7 @@ export class ProposalRepository {
               },
             },
           ],
+          cashier_id: null,
           inner_status:
             InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
         };

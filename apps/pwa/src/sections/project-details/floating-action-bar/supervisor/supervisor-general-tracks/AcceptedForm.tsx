@@ -158,13 +158,6 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
     const limitSupport = Number(
       proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport
     );
-    // get total from item budgets in proposal
-    // let totalSupportProposal: number | undefined = undefined;
-    // if (proposal.proposal_item_budgets) {
-    //   totalSupportProposal = proposal
-    //     .proposal_item_budgets!.map((item) => parseInt(item.amount))
-    //     .reduce((acc, curr) => acc! + curr!, 0);
-    // }
     let totalAmount: number | undefined = undefined;
     if (data.detail_project_budgets) {
       totalAmount = Number(
@@ -307,7 +300,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         setSave(true);
         onEdit(false);
       } else {
-        console.log(' masuk false');
+        setIsLoading(false);
         enqueueSnackbar(`${translate('notification.error_exceeds_amount')}: ${limitSupport}`, {
           variant: 'error',
           preventDuplicate: true,
@@ -320,7 +313,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         preventDuplicate: true,
         autoHideDuration: 3000,
       });
-
+      setIsLoading(false);
       resetField('detail_project_budgets');
     }
   };

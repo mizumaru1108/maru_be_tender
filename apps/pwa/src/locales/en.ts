@@ -1866,6 +1866,7 @@ const en = {
     waiting: 'Waiting Review...',
     order_status: 'Order Status',
     notes: 'Notes',
+    reject_reason: 'Reject Reason',
     review_by_supervisor: 'Review by Supervisor',
     review_by_project_manager: 'Review by Project Manager',
     review_by_ceo: 'Review by CEO',

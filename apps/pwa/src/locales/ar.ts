@@ -1889,6 +1889,7 @@ const ar = {
     notes: 'ملحوظة',
     review_by_supervisor: 'مراجعة من قبل المشرف',
     review_by_ceo: 'مراجعة من قبل الرئيس',
+    reject_reason: 'رفض السبب',
     review_by_project_manager: 'مراجعة من قبل المدير',
     closing_report: 'التقرير الختامي',
     closing_agreement: 'اتفاق ختامي',

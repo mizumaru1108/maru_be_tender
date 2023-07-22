@@ -28,6 +28,7 @@ import SupervisorGeneralRev from './role-logs/SupervisorGeneralRev';
 import SupervisorGrantsRev from './role-logs/SupervisorGrantsRev';
 import { IsPaymentAction } from 'utils/checkIsPaymentAction';
 import { CheckType, LogAction, LogActionCheck } from 'utils/logActionCheck';
+import Space from '../../../components/space/space';
 
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
@@ -175,7 +176,7 @@ function ProjectPath() {
       return <Page500 error={errorTracks.message} />;
     }
   }
-  // console.log({ logs, activeStep });
+  // console.log({ activeStep });
   return (
     <Grid container>
       <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>
@@ -384,6 +385,7 @@ function ProjectPath() {
                         </Typography>
                       </Stack>
                     ))}
+
               {activeStep === '-1' && !stepGeneralLog && !stepGransLog && (
                 <Typography variant="h6">{translate(`review.notes`)}</Typography>
               )}
@@ -413,11 +415,26 @@ function ProjectPath() {
                   ))
               ) : (
                 <Typography>
-                  {(isCompleted && activeStep === '-1') ||
+                  {/* {(isCompleted && activeStep === '-1') ||
                   (logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT')
                     ? null
                     : !IsPaymentAction(logs[logs.length - 1].action) &&
-                      // logs[logs.length - 1].action !== 'update'
+                      LogActionCheck({
+                        action: logs[logs.length - 1].action as LogAction,
+                        type: CheckType.notIn,
+                        logAction: [
+                          LogAction.Update,
+                          LogAction.Reject,
+                          LogAction.Accept,
+                          LogAction.RejectedByProjectManager,
+                        ],
+                      })
+                    ? translate('review.waiting')
+                    : null} */}
+                  {activeStep === '-1' && <>{translate('review.waiting')}</>}
+                  {logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT'
+                    ? null
+                    : !IsPaymentAction(logs[logs.length - 1].action) &&
                       LogActionCheck({
                         action: logs[logs.length - 1].action as LogAction,
                         type: CheckType.notIn,
@@ -432,6 +449,19 @@ function ProjectPath() {
                     : null}
                 </Typography>
               )}
+              {logs
+                .filter((item: Log, index: number) => activeStep === item.id)
+                .map((item: Log, index: number) => (
+                  <Stack key={index} direction="column" gap={2}>
+                    {item.reject_reason && item.action === 'reject' ? (
+                      <>
+                        <Typography variant="h6">{translate(`review.reject_reason`)}</Typography>
+                        {/* <Space size="small" direction="vertical" /> */}
+                        <Typography>{item.reject_reason || '-'}</Typography>
+                      </>
+                    ) : null}
+                  </Stack>
+                ))}
             </React.Fragment>
             {/*  */}
             {/* CashierPaymentLog */}

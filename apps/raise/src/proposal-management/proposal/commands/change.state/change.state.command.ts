@@ -317,6 +317,7 @@ export class ChangeStateCommandHandler
       proposalLogCreateProps.action = ProposalAction.REJECT;
       proposalLogCreateProps.state = 'PROJECT_SUPERVISOR';
       proposalLogCreateProps.user_role = 'PROJECT_SUPERVISOR';
+      proposalLogCreateProps.reject_reason = request.reject_reason;
     }
 
     // /* step back (same for grants and not grants) DONE */
