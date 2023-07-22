@@ -655,6 +655,7 @@ export class ProposalService {
             );
           }
           updateProposalPayload.outter_status = OutterStatusEnum.ONGOING;
+          updateProposalPayload.state = 'PROJECT_SUPERVISOR';
         } catch (err) {
           if (uploadedFilePath.length > 0) {
             this.logger.log('info', `error details \n ${logUtil(err)}`);

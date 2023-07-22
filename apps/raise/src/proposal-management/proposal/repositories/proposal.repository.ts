@@ -1799,19 +1799,34 @@ export class ProposalRepository {
         if (currentUser.choosenRole === 'tender_cashier') {
           whereClause = {
             ...whereClause,
-            OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
-            finance_id: { not: null },
-            payments: {
-              some: {
-                status: {
-                  in: [
-                    PaymentStatusEnum.REJECT_CHEQUE,
-                    PaymentStatusEnum.ACCEPTED_BY_FINANCE,
-                    PaymentStatusEnum.DONE,
-                  ],
+            OR: [
+              { cashier_id: currentUser.id },
+              { cashier_id: null },
+              {
+                payments: {
+                  some: {
+                    status: {
+                      in: [
+                        PaymentStatusEnum.REJECT_CHEQUE,
+                        PaymentStatusEnum.ACCEPTED_BY_FINANCE,
+                      ],
+                    },
+                  },
                 },
               },
-            },
+              {
+                payments: {
+                  every: {
+                    status: {
+                      in: [PaymentStatusEnum.DONE],
+                    },
+                  },
+                },
+              },
+            ],
+            finance_id: { not: null },
+            inner_status:
+              InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
           };
         }
 
@@ -2022,20 +2037,8 @@ export class ProposalRepository {
               notIn: [
                 InnerStatusEnum.CREATED_BY_CLIENT,
                 InnerStatusEnum.ACCEPTED_BY_MODERATOR,
-                // InnerStatusEnum.REJECTED_BY_MODERATOR,
-                // InnerStatusEnum.DONE_BY_CASHIER,
-                // InnerStatusEnum.ASKING_SUPERVISOR_CHANGES,
-                // InnerStatusEnum.ASKING_PROJECT_SUPERVISOR_CHANGES,
-                // InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION,
               ],
             },
-            // payments: {
-            //   some: {
-            //     status: {
-            //       notIn: ['set_by_supervisor'],
-            //     },
-            //   },
-            // },
           };
         }
 
@@ -2051,13 +2054,6 @@ export class ProposalRepository {
                 InnerStatusEnum.REQUESTING_CLOSING_FORM,
               ],
             },
-            // payments: {
-            //   some: {
-            //     status: {
-            //       in: ['done'],
-            //     },
-            //   },
-            // },
           };
         }
 
@@ -2509,18 +2505,33 @@ export class ProposalRepository {
       if (currentUser.choosenRole === 'tender_cashier') {
         whereClause = {
           ...whereClause,
-          OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
-          payments: {
-            some: {
-              status: {
-                in: [
-                  PaymentStatusEnum.REJECT_CHEQUE,
-                  PaymentStatusEnum.ACCEPTED_BY_FINANCE,
-                  PaymentStatusEnum.DONE,
-                ],
+          OR: [
+            { cashier_id: currentUser.id },
+            { cashier_id: null },
+            {
+              payments: {
+                some: {
+                  status: {
+                    in: [
+                      PaymentStatusEnum.REJECT_CHEQUE,
+                      PaymentStatusEnum.ACCEPTED_BY_FINANCE,
+                    ],
+                  },
+                },
               },
             },
-          },
+            {
+              payments: {
+                every: {
+                  status: {
+                    in: [PaymentStatusEnum.DONE],
+                  },
+                },
+              },
+            },
+          ],
+          inner_status:
+            InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
         };
       }
 
