@@ -57,7 +57,13 @@ export default function NavItem({ item, depth, active, open, isCollapse, count, 
   }, [title, translate, count]);
   // console.log({ menuTitle });
   const renderContent = (
-    <ListItemStyle depth={depth} active={active} disabled={disabled} {...other}>
+    <ListItemStyle
+      data-cy={`NavItem-${title}`}
+      depth={depth}
+      active={active}
+      disabled={disabled}
+      {...other}
+    >
       {icon && <ListItemIconStyle>{icon}</ListItemIconStyle>}
 
       {depth !== 1 && <DotIcon active={active && depth !== 1} />}

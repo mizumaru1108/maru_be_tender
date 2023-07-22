@@ -34,8 +34,7 @@ export default function NavSectionVertical({ navConfig, isCollapse, ...other }: 
         <List key={group.subheader} disablePadding sx={{ px: 2 }}>
           {group.items.map((list: any) => (
             <NavList
-              key={list.title + list.path}
-              data-cy={`NavList-${list.title}-${list.path}`}
+              key={list.title + '-' + list.path}
               data={list}
               depth={1}
               hasChildren={!!list.children}

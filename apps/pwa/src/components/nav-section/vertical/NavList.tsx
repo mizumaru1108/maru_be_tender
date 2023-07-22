@@ -52,7 +52,13 @@ export default function NavList({
   return (
     <>
       {isExternalLink(data.path) ? (
-        <Link href={data.path} target="_blank" rel="noopener" underline="none">
+        <Link
+          href={data.path}
+          data-cy={`NavList-${data.title}-${data.path}`}
+          target="_blank"
+          rel="noopener"
+          underline="none"
+        >
           <NavItem
             sx={{
               color: '#000',
@@ -63,7 +69,6 @@ export default function NavList({
                 color: '#fff',
               }),
             }}
-            data-cy={`NavItem-${data.title}`}
             item={data}
             depth={depth}
             open={open}
@@ -81,7 +86,6 @@ export default function NavList({
               color: '#fff',
             }),
           }}
-          data-cy={`NavItem-${data.title}`}
           item={data}
           depth={depth}
           open={open}
