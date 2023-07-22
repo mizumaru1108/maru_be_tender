@@ -281,6 +281,19 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   React.useEffect(() => {
     let loopNumber = -1;
 
+    // if (paymentNumber > item_budgets.length) {
+    //   loopNumber = Number(paymentNumber) - item_budgets.length;
+    //   if (loopNumber > 0) {
+    //     handleLoop(loopNumber);
+    //   }
+    // }
+    // if (paymentNumber < item_budgets.length) {
+    //   loopNumber = Number(paymentNumber);
+    //   // console.log('masuk else', loopNumber);
+    //   if (loopNumber >= proposal.proposal_item_budgets.length) {
+    //     handleRemoveLoop(loopNumber);
+    //   }
+    // }
     if (paymentNumber > item_budgets.length) {
       loopNumber = Number(paymentNumber) - item_budgets.length;
       if (loopNumber > 0) {
@@ -288,11 +301,11 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       }
     }
     if (paymentNumber < item_budgets.length) {
-      loopNumber = Number(paymentNumber);
-      // console.log('masuk else', loopNumber);
-      if (loopNumber >= proposal.proposal_item_budgets.length) {
-        handleRemoveLoop(loopNumber);
-      }
+      loopNumber = item_budgets.length - Number(paymentNumber);
+      // console.log('masuk else', <loo></loo>pNumber);
+      handleRemoveLoop(loopNumber);
+      // if (loopNumber >= proposal.proposal_item_budgets.length) {
+      // }
     }
     // console.log({ paymentNumber, loopNumber });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -604,7 +617,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                           )}
                         />
                       </Grid>
-                      <Grid item xs={2}>
+                      {/* <Grid item xs={2}>
                         <IconButton
                           color="error"
                           data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].delete`}
@@ -630,7 +643,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                         >
                           <CloseIcon />
                         </IconButton>
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   ))}
                   {/* <Button

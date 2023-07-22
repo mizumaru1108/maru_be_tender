@@ -13,6 +13,7 @@ import useLocales from 'hooks/useLocales';
 import CloseIcon from '@mui/icons-material/Close';
 import uuidv4 from 'utils/uuidv4';
 import { useSnackbar } from 'notistack';
+import { getMissingItems } from '../../../../../../utils/checkDeletedArray';
 
 function FifthForm({ children, onSubmit, paymentNumber }: any) {
   const { step4, step1 } = useSelector((state) => state.supervisorAcceptingForm);
@@ -102,8 +103,15 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
           amount: Number(el.amount),
         }));
 
-      data.deleted_proposal_budget = tempDeletedBudget;
-      console.log('masuk sini', { step1, fSupportBySpv, totalAmount });
+      // data.deleted_proposal_budget = tempDeletedBudget;
+      data.deleted_proposal_budget = getMissingItems(
+        proposal.proposal_item_budgets,
+        data.proposal_item_budgets
+      ).map((el) => ({
+        ...el,
+        amount: Number(el.amount),
+      }));
+      // console.log('masuk sini', { step1, fSupportBySpv, totalAmount });
       if (step1 && fSupportBySpv && totalAmount) {
         console.log('mausk if sini');
         // if (step1.support_type && totalAmount <= proposal.amount_required_fsupport!) {
@@ -320,7 +328,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
                   )}
                 />
               </Grid>
-              <Grid item xs={2}>
+              {/* <Grid item xs={2}>
                 <IconButton
                   data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].delete`}
                   color="error"
@@ -351,7 +359,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
                 >
                   <CloseIcon />
                 </IconButton>
-              </Grid>
+              </Grid> */}
             </Grid>
           ))}
           {/* <Button

@@ -27,6 +27,7 @@ import useAuth from '../../../../../hooks/useAuth';
 import { _supportGoalsArr } from '../../../../../_mock/_supportGoalsArr';
 import axiosInstance from '../../../../../utils/axios';
 import { FEATURE_PROPOSAL_COUNTING, REOPEN_TMRA_S568 } from 'config';
+import { getMissingItems } from '../../../../../utils/checkDeletedArray';
 
 function AcceptedForm({ onEdit }: EditAccModalForm) {
   const { translate, currentLang } = useLocales();
@@ -47,6 +48,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
     | { id?: string; amount?: number | undefined | null; clause?: string; explanation?: string }[]
     | []
   >([]);
+  // console.log({ tempDeletedBudget });
 
   const [oneProposal, setOneProposal] = useState<any>();
   const [proposalResult] = useQuery({
@@ -200,7 +202,17 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           amount: Number(el.amount),
         }));
 
-      const deleted_proposal_budget = tempDeletedBudget.map((el) => ({
+      // const deleted_proposal_budget =
+      //   tempDeletedBudget.length > 0
+      //     ? tempDeletedBudget.map((el) => ({
+      //         ...el,
+      //         amount: Number(el.amount),
+      //       }))
+      //     : getMissingItems(proposal.proposal_item_budgets, data.detail_project_budgets);
+      const deleted_proposal_budget = getMissingItems(
+        proposal.proposal_item_budgets,
+        data.detail_project_budgets
+      ).map((el) => ({
         ...el,
         amount: Number(el.amount),
       }));
@@ -373,6 +385,20 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
 
   React.useEffect(() => {
     let loopNumber = -1;
+    // console.log({ item_budgets });
+    // if (paymentNumber > item_budgets.length) {
+    //   loopNumber = Number(paymentNumber) - item_budgets.length;
+    //   if (loopNumber > 0) {
+    //     handleLoop(loopNumber);
+    //   }
+    // }
+    // if (paymentNumber < item_budgets.length) {
+    //   loopNumber = Number(paymentNumber);
+    //   // console.log('masuk else', loopNumber);
+    //   if (loopNumber >= proposal.proposal_item_budgets.length) {
+    //     handleRemoveLoop(loopNumber);
+    //   }
+    // }
 
     if (paymentNumber > item_budgets.length) {
       loopNumber = Number(paymentNumber) - item_budgets.length;
@@ -381,11 +407,11 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
       }
     }
     if (paymentNumber < item_budgets.length) {
-      loopNumber = Number(paymentNumber);
-      // console.log('masuk else', loopNumber);
-      if (loopNumber >= proposal.proposal_item_budgets.length) {
-        handleRemoveLoop(loopNumber);
-      }
+      loopNumber = item_budgets.length - Number(paymentNumber);
+      // console.log('masuk else', <loo></loo>pNumber);
+      handleRemoveLoop(loopNumber);
+      // if (loopNumber >= proposal.proposal_item_budgets.length) {
+      // }
     }
     // console.log({ paymentNumber, loopNumber });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -648,7 +674,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                     )}
                   />
                 </Grid>
-                <Grid item xs={2}>
+                {/* <Grid item xs={2}>
                   <IconButton
                     data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].delete`}
                     color="error"
@@ -675,7 +701,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                   >
                     <CloseIcon />
                   </IconButton>
-                </Grid>
+                </Grid> */}
               </Grid>
             ))}
             {/* <Button
