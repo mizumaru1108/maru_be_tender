@@ -63,6 +63,7 @@ export default function NavList({
                 color: '#fff',
               }),
             }}
+            data-cy={`NavItem-${data.title}`}
             item={data}
             depth={depth}
             open={open}
@@ -80,6 +81,7 @@ export default function NavList({
               color: '#fff',
             }),
           }}
+          data-cy={`NavItem-${data.title}`}
           item={data}
           depth={depth}
           open={open}
