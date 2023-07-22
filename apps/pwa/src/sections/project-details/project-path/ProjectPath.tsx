@@ -385,19 +385,7 @@ function ProjectPath() {
                         </Typography>
                       </Stack>
                     ))}
-              {logs
-                .filter((item: Log, index: number) => activeStep === item.id)
-                .map((item: Log, index: number) => (
-                  <Stack key={index} direction="column" gap={2}>
-                    {item.reject_reason && item.action === 'reject' ? (
-                      <>
-                        <Typography variant="h6">{translate(`review.reject_reason`)}</Typography>
-                        <Space size='small' direction='vertical'/>
-                        <Typography variant="h6">{item.reject_reason || '-'}</Typography>
-                      </>
-                    ) : null}
-                  </Stack>
-                ))}
+
               {activeStep === '-1' && !stepGeneralLog && !stepGransLog && (
                 <Typography variant="h6">{translate(`review.notes`)}</Typography>
               )}
@@ -461,6 +449,19 @@ function ProjectPath() {
                     : null}
                 </Typography>
               )}
+              {logs
+                .filter((item: Log, index: number) => activeStep === item.id)
+                .map((item: Log, index: number) => (
+                  <Stack key={index} direction="column" gap={2}>
+                    {item.reject_reason && item.action === 'reject' ? (
+                      <>
+                        <Typography variant="h6">{translate(`review.reject_reason`)}</Typography>
+                        {/* <Space size="small" direction="vertical" /> */}
+                        <Typography>{item.reject_reason || '-'}</Typography>
+                      </>
+                    ) : null}
+                  </Stack>
+                ))}
             </React.Fragment>
             {/*  */}
             {/* CashierPaymentLog */}
