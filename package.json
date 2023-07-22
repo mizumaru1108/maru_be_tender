@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "deploy:dev": "git push origin main:stack/dev",
-    "deploy:staging-from-dev": "git fetch --all && git push origin origin/stack/dev:stack/staging",
-    "deploy:prod-from-staging": "git fetch --all && git push origin origin/stack/staging:stack/prod"
+    "deploy:staging-from-dev": "git checkout stack/dev && git pull && git push && git push origin stack/dev:stack/staging && git checkout main",
+    "deploy:prod-from-staging": "git checkout stack/staging && git pull && git push && git push origin stack/staging:stack/prod && git checkout main"
   }
 }
