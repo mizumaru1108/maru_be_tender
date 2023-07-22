@@ -391,12 +391,7 @@ function ProjectPath() {
               )}
               {activeStep !== '-1' ? (
                 logs
-                  .filter(
-                    (item: Log, index: number) =>
-                      // item.action !== 'set_by_supervisor' &&
-                      // item.action !== 'accepted_by_project_manager' &&
-                      activeStep === item.id
-                  )
+                  .filter((item: Log, index: number) => activeStep === item.id)
                   .map((item: Log, index: number) => (
                     <React.Fragment key={index}>
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
