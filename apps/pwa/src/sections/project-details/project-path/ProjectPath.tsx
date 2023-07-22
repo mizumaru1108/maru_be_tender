@@ -175,7 +175,7 @@ function ProjectPath() {
       return <Page500 error={errorTracks.message} />;
     }
   }
-  // console.log({ logs, activeStep });
+  // console.log({ activeStep });
   return (
     <Grid container>
       <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>
@@ -413,11 +413,26 @@ function ProjectPath() {
                   ))
               ) : (
                 <Typography>
-                  {(isCompleted && activeStep === '-1') ||
+                  {/* {(isCompleted && activeStep === '-1') ||
                   (logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT')
                     ? null
                     : !IsPaymentAction(logs[logs.length - 1].action) &&
-                      // logs[logs.length - 1].action !== 'update'
+                      LogActionCheck({
+                        action: logs[logs.length - 1].action as LogAction,
+                        type: CheckType.notIn,
+                        logAction: [
+                          LogAction.Update,
+                          LogAction.Reject,
+                          LogAction.Accept,
+                          LogAction.RejectedByProjectManager,
+                        ],
+                      })
+                    ? translate('review.waiting')
+                    : null} */}
+                  {activeStep === '-1' && <>{translate('review.waiting')}</>}
+                  {logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT'
+                    ? null
+                    : !IsPaymentAction(logs[logs.length - 1].action) &&
                       LogActionCheck({
                         action: logs[logs.length - 1].action as LogAction,
                         type: CheckType.notIn,
