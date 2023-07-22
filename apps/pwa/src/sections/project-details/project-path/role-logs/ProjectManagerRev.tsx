@@ -270,7 +270,14 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
             </Stack>
             {Object.entries(dataGrants.proposal!)
               .filter(
-                ([key]) => key !== 'inclu_or_exclu' && key !== 'vat' && key !== 'vat_percentage'
+                ([key]) =>
+                  key !== 'inclu_or_exclu' &&
+                  key !== 'vat' &&
+                  key !== 'vat_percentage' &&
+                  key !== 'been_made_before' &&
+                  key !== 'support_goal_id' &&
+                  key !== 'accreditation_type_id' &&
+                  key !== 'chairman_of_board_of_directors'
               )
               .map(([key, value]) => {
                 // console.log({ stepGeneralLog });
@@ -449,8 +456,8 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>
                           {value === true
-                            ? translate('partial_support')
-                            : translate('full_support')}
+                            ? translate('full_support')
+                            : translate('partial_support')}
                         </Typography>
                       </Stack>
                     </Grid>
@@ -549,7 +556,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                   ([key]) => key === 'inclu_or_exclu' || key === 'vat' || key === 'vat_percentage'
                 )
                 .map(([key, value]) => {
-                  if (key === 'inclu_or_exclu' && proposal?.vat) {
+                  if (key === 'inclu_or_exclu' && dataGrants?.proposal?.vat) {
                     return (
                       <Grid item xs={6} key={key}>
                         <Typography variant="h6">
@@ -566,7 +573,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                       </Grid>
                     );
                   }
-                  if (key === 'vat_percentage' && proposal?.vat) {
+                  if (key === 'vat_percentage' && dataGrants?.proposal?.vat) {
                     return (
                       <Grid item xs={6} key={key}>
                         <Typography variant="h6">

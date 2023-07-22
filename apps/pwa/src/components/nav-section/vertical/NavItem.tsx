@@ -20,13 +20,12 @@ export default function NavItem({ item, depth, active, open, isCollapse, count, 
   const { translate } = useLocales();
   const theme = useTheme();
   const { title, icon, info, children, disabled, caption } = item;
-  // console.log({ count });
+  // console.log({ title, count });
   const menuTitle = React.useMemo(() => {
     let tmpTitle = '';
     if (
       title === 'incoming_funding_requests_project_supervisor' ||
-      title === 'incoming_funding_requests' ||
-      title === 'incoming_exchange_permission_requests'
+      title === 'incoming_funding_requests'
     ) {
       tmpTitle = count?.incoming
         ? `( ${count?.incoming || 0} ) ${translate(title)}`
@@ -39,7 +38,11 @@ export default function NavItem({ item, depth, active, open, isCollapse, count, 
       tmpTitle = count?.previous
         ? `( ${count?.previous || 0} ) ${translate(title)}`
         : translate(title);
-    } else if (title === 'payment_adjustment' || title === 'exchange_permission') {
+    } else if (
+      title === 'payment_adjustment' ||
+      title === 'exchange_permission' ||
+      title === 'incoming_exchange_permission_requests'
+    ) {
       tmpTitle = count?.payment_adjustment
         ? `( ${count?.payment_adjustment || 0} ) ${translate(title)}`
         : translate(title);

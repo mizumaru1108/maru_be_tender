@@ -74,7 +74,9 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
   const onSubmitForm = (data: SupervisorStep4) => {
     // console.log(data, 'data test');
     let totalAmount: number | undefined = undefined;
-    const fSupportBySpv: number = Number(proposal.amount_required_fsupport);
+    const fSupportBySpv: number = Number(
+      proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport
+    );
     if (data.proposal_item_budgets.length) {
       totalAmount = Number(
         data
@@ -164,6 +166,23 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [paymentNumber]);
 
+  const handleLoop = (loopNumber: number) => {
+    for (let i = 0; i < loopNumber; i++) {
+      append({
+        amount: undefined,
+        clause: '',
+        explanation: '',
+        id: uuidv4(),
+      });
+    }
+  };
+
+  const handleRemoveLoop = (loopNumber: number) => {
+    for (let i = 0; i < loopNumber; i++) {
+      remove(proposal.proposal_item_budgets.length - 1 - i);
+    }
+  };
+
   useEffect(() => {
     if (proposal && proposal.proposal_item_budgets.length) {
       setBasedBudget(proposal.proposal_item_budgets);
@@ -173,18 +192,32 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
     }
 
     let loopNumber = -1;
+    // if (paymentNumber > proposal.proposal_item_budgets.length) {
+    //   loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
+    //   if (loopNumber > 0) {
+    //     for (let i = 0; i < loopNumber; i++) {
+    //       append({
+    //         amount: undefined,
+    //         clause: '',
+    //         explanation: '',
+    //         id: uuidv4(),
+    //       });
+    //     }
+    //   }
+    // }
+    // console.log('paynumber', paymentNumber, proposal.proposal_item_budgets.length);
     if (paymentNumber > proposal.proposal_item_budgets.length) {
       loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
       if (loopNumber > 0) {
-        for (let i = 0; i < loopNumber; i++) {
-          append({
-            amount: undefined,
-            clause: '',
-            explanation: '',
-            id: uuidv4(),
-          });
-        }
+        handleLoop(loopNumber);
       }
+    }
+    if (paymentNumber < proposal.proposal_item_budgets.length) {
+      loopNumber = proposal.proposal_item_budgets.length - Number(paymentNumber);
+      // console.log('masuk else', <loo></loo>pNumber);
+      handleRemoveLoop(loopNumber);
+      // if (loopNumber >= proposal.proposal_item_budgets.length) {
+      // }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

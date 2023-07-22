@@ -65,10 +65,10 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
     }
   }, [stepGransLog, proposal]);
 
-  // console.log({ newProposal });
+  console.log({ newProposal });
 
+  console.log({ stepGransLog });
   // console.log(target_age_map, 'tesat');
-  // console.log({ stepGransLog });
   // console.log('proposal.payments', proposal.payments);
 
   return (
@@ -160,7 +160,7 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
                       <Typography variant="h6">
                         {
                           // key
-                          translate(`review.${key}`)
+                          translate(`review.${key}.asd`)
                         }
                       </Typography>
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
@@ -366,64 +366,65 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
                   return null;
                 }
               })}
-            {Object.entries(proposal)
-              .filter(
-                ([key]) => key === 'inclu_or_exclu' || key === 'vat' || key === 'vat_percentage'
-              )
-              .map(([key, value]) => {
-                if (key === 'inclu_or_exclu' && proposal?.vat) {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          {value ? translate('review.yes') : translate('review.no')}
+            {newProposal.proposal &&
+              Object.entries(newProposal.proposal)
+                .filter(
+                  ([key]) => key === 'inclu_or_exclu' || key === 'vat' || key === 'vat_percentage'
+                )
+                .map(([key, value]) => {
+                  if (key === 'inclu_or_exclu' && newProposal?.proposal?.vat) {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
                         </Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                }
-                if (key === 'vat_percentage' && proposal?.vat) {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          <Typography>{value ? String(value) : '-'}</Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>
+                            {value ? translate('review.yes') : translate('review.no')}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                  if (key === 'vat_percentage' && newProposal?.proposal?.vat) {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
                         </Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                }
-                if (key === 'vat') {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          {value ? translate('review.yes') : translate('review.no')}
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>
+                            <Typography>{value ? String(value) : '-'}</Typography>
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                  if (key === 'vat') {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
                         </Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                }
-                return null;
-              })}
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>
+                            {value ? translate('review.yes') : translate('review.no')}
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                  return null;
+                })}
             <Grid item xs={6}>
               <Typography variant="h6">
                 {
