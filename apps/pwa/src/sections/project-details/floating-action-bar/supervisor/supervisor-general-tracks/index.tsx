@@ -587,9 +587,9 @@ function FloatingActionBar() {
                 <MenuItem onClick={() => setAction('STEP_BACK')}>
                   {translate('account_manager.partner_details.amendment_return_to_moderator')}
                 </MenuItem>
-                <MenuItem onClick={() => setAction('PENDING_REQUEST')}>
+                {/* <MenuItem onClick={() => setAction('PENDING_REQUEST')}>
                   {translate('account_manager.partner_details.amendment_cancel_proposal')}
-                </MenuItem>
+                </MenuItem> */}
               </Menu>
             </Stack>
           </Grid>
