@@ -62,10 +62,22 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
         throw new UnauthorizedException('Invalid token!');
       }
 
-      const xHasuraRole = request.headers['x-hasura-role'];
-      if (validToken.response.jwt.roles.indexOf(xHasuraRole) === -1) {
+      const requestedRole = request.headers['x-hasura-role'];
+      const validRoles: string[] = validToken.response.jwt.roles ?? [];
+      if (validRoles.indexOf(requestedRole) === -1) {
+        this.logger.warn(
+          {
+            jwt: validToken.response.jwt,
+            requestedRole,
+            validRoles,
+          },
+          'User %s does not have access to requested role %s. Valid roles: %o',
+          validToken.response.jwt.sub,
+          requestedRole,
+          validRoles,
+        );
         throw new UnauthorizedException(
-          `Current user roles doesn't have the required role to access this resource!`,
+          `User ${validToken.response.jwt.sub} does not have access to requested role ${requestedRole}. Valid roles: ${validRoles}`,
         );
       }
 
@@ -94,23 +106,24 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
         }
 
         //
-        if (!tmpUser.track_id && user.choosenRole !== 'tender_admin') {
+        if (!tmpUser.track_id) {
           this.logger.warn(
             { user: user, dbUser: tmpUser },
-            'Cant fetch track data for user %s and user is not tender_admin, Invalid token!',
+            'Cant fetch track data for employee user %s with role %s, Invalid token!',
             user.id,
+            user.choosenRole,
           );
           throw new UnauthorizedException(
-            `Cant fetch track data for user "${user.id}", Invalid token!`,
+            `Cant fetch track data for user "${user.id}" with role "${user.choosenRole}", Invalid token!`,
           );
         }
 
-        user.track_id = tmpUser.track_id ?? undefined;
+        user.track_id = tmpUser.track_id;
       }
 
       request.user = user;
     } catch (e) {
-      // console.log(e);
+      // this.logger.log(e);
       if (
         e instanceof UnauthorizedException ||
         e instanceof BadRequestException
