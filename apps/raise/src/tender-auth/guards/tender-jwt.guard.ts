@@ -27,6 +27,7 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
   ) {
     super();
   }
+
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     let jwtToken: string;
@@ -82,16 +83,29 @@ export class TenderJwtGuard extends AuthGuard('jwt') implements CanActivate {
         });
 
         if (!tmpUser) {
-          throw new UnauthorizedException('User not found!,Invalid token!');
-        }
-
-        if (!tmpUser.track_id) {
+          this.logger.warn(
+            { user: user },
+            'User %s not found!,Invalid token!',
+            user.id,
+          );
           throw new UnauthorizedException(
-            'Cant fetch track data, Invalid token!',
+            `User "${user.id}" not found!,Invalid token!`,
           );
         }
 
-        user.track_id = tmpUser.track_id;
+        //
+        if (!tmpUser.track_id && user.choosenRole !== 'tender_admin') {
+          this.logger.warn(
+            { user: user, dbUser: tmpUser },
+            'Cant fetch track data for user %s and user is not tender_admin, Invalid token!',
+            user.id,
+          );
+          throw new UnauthorizedException(
+            `Cant fetch track data for user "${user.id}", Invalid token!`,
+          );
+        }
+
+        user.track_id = tmpUser.track_id ?? undefined;
       }
 
       request.user = user;
