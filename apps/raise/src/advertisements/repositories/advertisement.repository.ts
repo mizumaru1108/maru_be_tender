@@ -169,14 +169,27 @@ export class AdvertisementRepository {
 
     if (only_active !== undefined) {
       // find where expired_date + expired_time (xx:xx am/pm) < now
+      const currentDate = new Date();
       findManyWhereClause = {
         ...findManyWhereClause,
-        expired_date: {
-          lte: new Date(),
-        },
-        expired_time: {
-          lt: moment().format('hh:mm A'), // Filter data with expired_time less than or equal to the current time
-        },
+        OR: [
+          {
+            // greater than this day
+            expired_date: {
+              gt: currentDate,
+            },
+          },
+          {
+            // same day
+            expired_date: {
+              equals: currentDate,
+            },
+            // expired time greater than now
+            expired_time: {
+              gte: moment(currentDate).format('hh:mm A'),
+            },
+          },
+        ],
       };
     }
     queryOptions.where = findManyWhereClause;
