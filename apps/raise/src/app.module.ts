@@ -142,8 +142,9 @@ const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
                   levelFirst: true,
                   translateTime: 'SYS:standard',
                   ignore:
-                    'context,responseTime,trace_id,span_id,trace_flags,dd',
+                    'req.id,req.headers,req.remoteAddress,req.remotePort,req.query,res,context,responseTime,trace_id,span_id,trace_flags,dd',
                   messageFormat: '{context}| {msg}',
+                  singleLine: true,
                 },
               }
             : undefined,
