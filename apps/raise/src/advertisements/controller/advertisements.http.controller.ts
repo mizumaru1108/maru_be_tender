@@ -304,14 +304,14 @@ export class AdvertisementHttpController {
   @BaseApiOkResponse(AdvertisementDeleteCommandResult, 'object')
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
-  @Delete('delete')
+  @Delete('/:advertisement_id')
   async delete(
-    @Body() dto: AdvertisementDeleteDto,
+    @Param('advertisement_id') advertisement_id: string,
   ): Promise<BaseResponse<AdvertisementDeleteCommandResult>> {
     try {
       const command = Builder<AdvertisementDeleteCommand>(
         AdvertisementDeleteCommand,
-        { id: dto.advertisement_id },
+        { id: advertisement_id },
       ).build();
       const result = await this.commandBus.execute<
         AdvertisementDeleteCommand,

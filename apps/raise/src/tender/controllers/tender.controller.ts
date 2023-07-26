@@ -30,6 +30,11 @@ export class TenderController {
   //   );
   // }
 
+  @Post('fusion-auth/hook/delete-user')
+  async deleteUserHook(@Body() payload: any) {
+    console.log({ payload });
+  }
+
   @Post('edit-request-hook-handler')
   async postEditRequest(@Body() payload: BaseHashuraWebhookPayload) {
     // this.logger.info('payload: ' + { payload: JSON.stringify(payload) });
