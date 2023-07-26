@@ -8,8 +8,13 @@ import useLocales from 'hooks/useLocales';
 import moment from 'moment';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { TypeAdvertisingForm } from 'sections/admin/system-messges/system-message.model';
+import { useNavigate } from 'react-router';
+import {
+  FormInputAdvertisingForm,
+  TypeAdvertisingForm,
+} from 'sections/admin/system-messges/system-message.model';
 import * as Yup from 'yup';
+import { role_url_map } from '../../../../@types/commons';
 import BaseField from '../../../../components/hook-form/BaseField';
 import { RHFUploadSingleFileBe } from '../../../../components/hook-form/RHFUploadBe';
 import Space from '../../../../components/space/space';
@@ -20,30 +25,40 @@ import { checkFileExtension, FileType } from '../../../../utils/checkFileExtensi
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
 import { tracks } from '../../../ceo/ceo-project-rejects';
 
-interface FormInputAdvertisingForm {
-  title: string;
-  content: string;
-  showTime: Date | string;
-  track: string;
-  // image: CustomFile | string | null;
-  image: any;
-}
+// interface FormInputAdvertisingForm {
+//   title?: string;
+//   content?: string;
+//   showTime?: Date | string;
+//   track?: string;
+//   // image: CustomFile | string | null;
+//   image?: any;
+// }
 
 interface Props {
   advertisingType: TypeAdvertisingForm;
+  onSubmit: (data: FormInputAdvertisingForm) => void;
+  isLoading?: boolean;
+  defaultvalues?: FormInputAdvertisingForm | null;
 }
 
-export default function AdvertisingForm({ advertisingType }: Props) {
+export default function AdvertisingForm({
+  advertisingType,
+  onSubmit,
+  isLoading = false,
+  defaultvalues = null,
+}: Props) {
+  // console.log({ defaultvalues });
   const { translate } = useLocales();
   const { activeRole } = useAuth();
   const { loadingCount, track_list } = useSelector((state) => state.proposal);
+  const navigate = useNavigate();
   // const [value, setValue] = React.useState<Dayjs | null>(dayjs('2018-01-01T00:00:00.000Z'));
 
   const validationSchema = Yup.object().shape({
     ...(advertisingType === TypeAdvertisingForm.internal && {
       title: Yup.string().required(translate('system_messages.form.errors.title')),
       content: Yup.string().required(translate('system_messages.form.errors.content')),
-      track: Yup.string().required(translate('system_messages.form.errors.track')),
+      track_id: Yup.string().required(translate('system_messages.form.errors.track')),
       // showTime: Yup.string().required(translate('system_messages.form.errors.showTime')),
     }),
     ...(advertisingType === TypeAdvertisingForm.external && {
@@ -84,24 +99,27 @@ export default function AdvertisingForm({ advertisingType }: Props) {
   });
   const defaultValues = {
     ...(advertisingType === TypeAdvertisingForm.internal && {
-      title: '',
-      content: '',
-      showTime: '',
+      title: defaultvalues ? defaultvalues?.title : '',
+      content: defaultvalues ? defaultvalues?.content : '',
+      track_id: defaultvalues ? defaultvalues?.track_id : '',
     }),
     ...(advertisingType === TypeAdvertisingForm.external && {
-      title: '',
-      content: '',
-      showTime: '',
-      image: {
-        url: '',
-        size: undefined,
-        type: '',
-        base64Data: '',
-        fileExtension: '',
-        fullName: '',
-        file: undefined,
-      },
-      // image: null,
+      title: defaultvalues ? defaultvalues?.title : '',
+      content: defaultvalues ? defaultvalues?.content : '',
+      track_id: defaultvalues ? defaultvalues?.track_id : '',
+      showTime: defaultvalues ? dayjs(defaultvalues?.showTime).format('YYYY-MM-DD') : '',
+      image:
+        defaultvalues && defaultvalues?.logo && defaultvalues?.logo.length > 0
+          ? defaultvalues?.logo[defaultvalues?.logo.length - 1]
+          : {
+              url: '',
+              size: undefined,
+              type: '',
+              base64Data: '',
+              fileExtension: '',
+              fullName: '',
+              file: undefined,
+            },
     }),
   };
 
@@ -116,11 +134,12 @@ export default function AdvertisingForm({ advertisingType }: Props) {
   } = methods;
 
   const onSubmitForm = (formValue: FormInputAdvertisingForm) => {
-    console.log({ formValue });
+    // console.log({ formValue });
+    onSubmit(formValue);
   };
-  React.useEffect(() => {
-    dispatch(getTrackList(0, activeRole! as string));
-  }, [activeRole]);
+  // React.useEffect(() => {
+  //   dispatch(getTrackList(0, activeRole! as string));
+  // }, [activeRole]);
   if (loadingCount) return <>{translate('pages.common.loading')}</>;
   return (
     <div>
@@ -147,24 +166,17 @@ export default function AdvertisingForm({ advertisingType }: Props) {
             />
           </Grid>
           <Space direction="horizontal" size="small" />
-          {advertisingType === TypeAdvertisingForm.internal && (
+          {/* {advertisingType === TypeAdvertisingForm.internal && (
             <>
               <Grid item md={12} xs={12}>
                 <RHFSelect
                   type="select"
-                  name="track"
+                  name="track_id"
                   data-cy="system_messages.form.track"
                   label={translate('system_messages.form.track.label')}
                   placeholder={translate('system_messages.form.track.placeholder')}
                   size="small"
                 >
-                  {/* {track_list &&
-                    track_list.length > 0 &&
-                    track_list?.map((item: tracks, index: any) => (
-                      <MenuItem key={index} value={item?.id}>
-                        {formatCapitalizeText(item.name)}
-                      </MenuItem>
-                    ))} */}
                   {[...track_list]
                     .filter((item: tracks) => item.is_deleted === false)
                     .map((item: tracks, index: any) => (
@@ -180,7 +192,30 @@ export default function AdvertisingForm({ advertisingType }: Props) {
               </Grid>
               <Space direction="horizontal" size="small" />
             </>
-          )}
+          )} */}
+          <Grid item md={12} xs={12}>
+            <RHFSelect
+              type="select"
+              name="track_id"
+              data-cy="system_messages.form.track"
+              label={translate('system_messages.form.track.label')}
+              placeholder={translate('system_messages.form.track.placeholder')}
+              size="small"
+            >
+              {[...track_list]
+                .filter((item: tracks) => item.is_deleted === false)
+                .map((item: tracks, index: any) => (
+                  <MenuItem
+                    data-cy={`system_messages.form.track-${index}`}
+                    key={index}
+                    value={item?.id}
+                  >
+                    {formatCapitalizeText(item?.name)}
+                  </MenuItem>
+                ))}
+            </RHFSelect>
+          </Grid>
+          <Space direction="horizontal" size="small" />
           {advertisingType === TypeAdvertisingForm.external && (
             <>
               <Grid item md={4} xs={12}>
@@ -216,6 +251,7 @@ export default function AdvertisingForm({ advertisingType }: Props) {
           <Grid item md={4} xs={12} display="flex" flex="column" justifyContent="center">
             <Button
               data-cy="system_messages.button.addition"
+              disabled={isLoading}
               variant="contained"
               sx={{ width: '200px', height: '40px', fontSize: '16px' }}
               size={'medium'}
@@ -226,6 +262,7 @@ export default function AdvertisingForm({ advertisingType }: Props) {
             <Space direction="vertical" size="small" />
             <Button
               data-cy="system_messages.button.cancel"
+              disabled={isLoading}
               variant="contained"
               color="error"
               sx={{
@@ -233,6 +270,11 @@ export default function AdvertisingForm({ advertisingType }: Props) {
                 height: '40px',
                 fontSize: '16px',
                 '&:hover': { backgroundColor: '#f75c5c' },
+              }}
+              onClick={() => {
+                if (activeRole) {
+                  navigate(`/${role_url_map[`${activeRole}`]}/dashboard/system-messages`);
+                }
               }}
               size={'medium'}
             >

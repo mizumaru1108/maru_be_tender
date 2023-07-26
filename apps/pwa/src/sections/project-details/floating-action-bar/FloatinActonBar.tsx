@@ -92,7 +92,7 @@ function FloatinActonBar() {
               <FloatingClientSubmit />
             )}
 
-          {!fetching &&
+          {!loadingPayment &&
             data &&
             (data.proposal_closing_report.length ? (
               <React.Fragment>

@@ -19,10 +19,7 @@ import SearchField from 'components/sorting/searchField';
 import { TableHeadCustom, TableNoData } from 'components/table';
 import TableInternalMessageSkeleton from 'components/table/admin/system-messages/internal-message/TableInternalMessageSkeleton';
 import { AdvertisingTapeListMock } from 'components/table/admin/system-messages/mock';
-import {
-  AdvertisingTapeList,
-  InternalMessagesList,
-} from 'components/table/admin/system-messages/types';
+import { AdvertisingTapeList } from 'components/table/admin/system-messages/types';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import useTable, { getComparator } from 'hooks/useTable';
@@ -30,6 +27,9 @@ import useTabs from 'hooks/useTabs';
 import axiosInstance from 'utils/axios';
 import AdvertisingTapeRow from './AdvertisingTapeRow';
 import { useSnackbar } from 'notistack';
+import { responsePathAsArray } from 'graphql';
+import { useSelector } from '../../../../../redux/store';
+import dayjs from 'dayjs';
 
 const TABLE_HEAD = [
   { id: 'image', label: 'system_messages.headercell.image' },
@@ -61,10 +61,13 @@ export default function AdvertisingTapeListTable() {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  const { track_list } = useSelector((state) => state.proposal);
 
   const [sortOrder, setSortOrder] = useState<any>({ employee_name: 'asc' });
 
   const [tableData, setTableData] = useState<Array<AdvertisingTapeList>>([]);
+
+  // console.log({ tableData });
 
   const [filterName, setFilterName] = useState('');
 
@@ -89,30 +92,35 @@ export default function AdvertisingTapeListTable() {
     },
   ];
 
-  const fetchingPrevious = React.useCallback(async () => {
+  const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
-    let currentPage = page + 1;
-    const url = employeeName
-      ? `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}&employee_name=${employeeName}`
-      : `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}`;
+    const currentPage = page + 1;
+    // const url = employeeName
+    //   ? `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}&employee_name=${employeeName}`
+    //   : `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}`;
+    const url = `advertisements?type=external&limit=${rowsPerPage}&page=${currentPage}`;
+    // console.log({ track_list });
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
       });
       if (response) {
+        // console.log('test : ', response?.data?.data);
         setTableData(
-          response.data.data.map((item: AdvertisingTapeList, index: any) => ({
+          response?.data?.data.map((item: AdvertisingTapeList, index: any) => ({
             id: item.id || '',
             title: item.title || '',
-            message_content: item.message_content || '',
-            the_lenght_show: item.the_lenght_show || '',
-            track: item.track || '',
+            content: item.content || '',
+            // track_id: item.track_id || '',
+            showTime: `${dayjs(item.expired_date).format('YYYY-MM-DD (hh:mm A)')}`,
+            track_id: track_list.find((track) => track.id === item.track_id)?.name || '',
+            image: item?.logo?.length > 0 ? item?.logo[0].url : null,
           }))
         );
-        setTotal(response.data.total as number);
-        setIsLoading(false);
+        setTotal(Number(response?.data?.total));
       }
     } catch (err) {
+      // console.log('masuk cacth', err);
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       if (message && statusCode !== 0) {
@@ -140,7 +148,50 @@ export default function AdvertisingTapeListTable() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, page, rowsPerPage, employeeName]);
+  }, [activeRole, enqueueSnackbar, page, rowsPerPage]);
+
+  const handleDelete = React.useCallback(
+    async (id: string) => {
+      // setIsLoading(true);
+      const url = `/advertisements`;
+      try {
+        const response = await axiosInstance.delete(`${url}/${id}`, {
+          headers: { 'x-hasura-role': activeRole! },
+        });
+        // console.log({ response });
+        if (response) {
+          // console.log('test response', response?.data?.data);
+          fetchingData();
+        }
+      } catch (err) {
+        const statusCode = (err && err.statusCode) || 0;
+        const message = (err && err.message) || null;
+        if (message && statusCode !== 0) {
+          enqueueSnackbar(err.message, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+        } else {
+          enqueueSnackbar(translate('pages.common.internal_server_error'), {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+        }
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeRole, enqueueSnackbar]
+  );
 
   const handleFilterName = (filterName: string) => {
     setFilterName(filterName);
@@ -186,10 +237,10 @@ export default function AdvertisingTapeListTable() {
     setPage(0);
   };
 
-  // useEffect(() => {
-  //   fetchingPrevious();
-  //   // eslint-disable-next-line
-  // }, []);
+  useEffect(() => {
+    fetchingData();
+    // eslint-disable-next-line
+  }, [fetchingData]);
 
   return (
     <Box>
@@ -252,26 +303,27 @@ export default function AdvertisingTapeListTable() {
               />
 
               <TableBody>
-                {/* {isLoading
+                {isLoading
                   ? [...Array(rowsPerPage)].map((item, index) => (
                       <TableInternalMessageSkeleton key={index} sx={{ bgcolor: '#d9d9d9' }} />
                     ))
-                  : AdvertisingTapeListMock.map((row) => (
+                  : [...tableData].map((row) => (
                       <AdvertisingTapeRow
                         key={row.id}
                         row={row}
                         selected={selected.includes(row?.id || '')}
+                        onDelete={handleDelete}
                       />
                     ))}
-                {!isLoading && dataFiltered.length === 0 && <TableNoData isNotFound={isNotFound} />} */}
-                {AdvertisingTapeListMock.map((row) => (
+                {!isLoading && dataFiltered.length === 0 && <TableNoData isNotFound={isNotFound} />}
+                {/* {AdvertisingTapeListMock.map((row) => (
                   <AdvertisingTapeRow
                     data-cy={`table-row-advertising-${row.id}`}
                     key={row.id}
                     row={row}
                     selected={selected.includes(row?.id || '')}
                   />
-                ))}
+                ))} */}
               </TableBody>
             </Table>
           </TableContainer>

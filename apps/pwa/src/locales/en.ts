@@ -2341,6 +2341,12 @@ const en = {
   },
   system_messages: {
     add_new_advertising: 'Add New Advertising',
+    snackbar: {
+      internal_messages_success_create: 'The internal message has been created successfully',
+      internal_messages_success_update: 'The internal message has been updated successfully',
+      external_messages_success_create: 'The external message has been created successfully',
+      external_messages_success_update: 'The external message has been updated successfully',
+    },
     form: {
       errors: {
         title: 'Title is required',

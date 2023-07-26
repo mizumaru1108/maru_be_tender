@@ -11,9 +11,9 @@ interface Props {
 }
 
 export default function SearchField({ onReturnSearch, isLoading = false, reFetch }: Props) {
-  const [searchName, setSearchName] = React.useState<string>('');
+  const [searchName, setSearchName] = React.useState<string | null>(null);
   const { translate } = useLocales();
-  const debouncedValue = useDebounce<string>(searchName, 500);
+  const debouncedValue = useDebounce<string>(searchName || '', 500);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setSearchName(event.target.value);
@@ -27,7 +27,7 @@ export default function SearchField({ onReturnSearch, isLoading = false, reFetch
         }
       } else {
         if (!isLoading) {
-          onReturnSearch(searchName);
+          onReturnSearch(searchName || '');
         }
       }
     }
@@ -37,13 +37,17 @@ export default function SearchField({ onReturnSearch, isLoading = false, reFetch
     if (debouncedValue && !isLoading) onReturnSearch(debouncedValue);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
+  React.useEffect(() => {
+    if (searchName !== null && searchName === '' && reFetch) reFetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchName]);
   return (
     <React.Fragment>
       <TextField
         data-cy={'textfield_search'}
         disabled={isLoading}
         size={'small'}
-        value={searchName}
+        value={searchName || ''}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -65,7 +69,7 @@ export default function SearchField({ onReturnSearch, isLoading = false, reFetch
                   />
                 </IconButton>
               )}
-              <Iconify icon={'eva:search-fill'} sx={{ color: 'text.primary' }} />
+              {/* <Iconify icon={'eva:search-fill'} sx={{ color: 'text.primary' }} /> */}
             </InputAdornment>
           ),
         }}

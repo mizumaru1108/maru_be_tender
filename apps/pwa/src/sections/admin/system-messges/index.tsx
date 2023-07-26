@@ -24,9 +24,9 @@ export default function SystemMessages() {
   const handleAddForm = () => {
     // setValue(newValue);
     if (value === 0) {
-      navigate(`/${role_url_map[activeRole!]}/dashboard/system-messages/internal-add`);
+      navigate(`/${role_url_map[activeRole!]}/dashboard/system-messages/internal`);
     } else {
-      navigate(`/${role_url_map[activeRole!]}/dashboard/system-messages/external-add`);
+      navigate(`/${role_url_map[activeRole!]}/dashboard/system-messages/external`);
     }
   };
   // console.log({ value });
