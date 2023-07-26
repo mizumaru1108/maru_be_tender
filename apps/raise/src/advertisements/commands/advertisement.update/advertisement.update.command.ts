@@ -16,7 +16,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
 import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
 import { generateFileName } from 'src/tender-commons/utils/generate-filename';
-import { FileManagerEntity } from 'src/tender-file-manager/entities/file-manager.entity';
 import {
   CreateFileManagerProps,
   TenderFileManagerRepository,

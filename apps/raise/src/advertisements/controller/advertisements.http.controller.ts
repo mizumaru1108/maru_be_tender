@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -22,11 +23,16 @@ import {
   AdvertisementCreateCommandResult,
 } from 'src/advertisements/commands/advertisement.create/advertisement.create.command';
 import {
+  AdvertisementDeleteCommandResult,
+  AdvertisementDeleteCommand,
+} from 'src/advertisements/commands/advertisement.delete/advertisement.delete.command';
+import {
   AdvertisementUpdateCommand,
   AdvertisementUpdateCommandResult,
 } from 'src/advertisements/commands/advertisement.update/advertisement.update.command';
 import { AdvertisementFindManyQueryDto } from 'src/advertisements/dtos/queries/advertisement.find.many.query.dto';
 import { AdvertisementCreateDto } from 'src/advertisements/dtos/requests/advertisement.create.dto';
+import { AdvertisementDeleteDto } from 'src/advertisements/dtos/requests/advertisement.delete.dto';
 import { AdvertisementUpdateDto } from 'src/advertisements/dtos/requests/advertisement.update.dto';
 import { AdvertisementEntity } from 'src/advertisements/entities/advertisement.entity';
 import {
@@ -231,6 +237,36 @@ export class AdvertisementHttpController {
         result,
         HttpStatus.OK,
         'Advertisement Updated Successfully!',
+      );
+    } catch (e) {
+      throw this.advertisementControllerErrorMapper(e);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Deleting advertisement either for internal or external',
+  })
+  @BaseApiOkResponse(AdvertisementDeleteCommandResult, 'object')
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Delete('delete')
+  async delete(
+    @Body() dto: AdvertisementDeleteDto,
+  ): Promise<BaseResponse<AdvertisementDeleteCommandResult>> {
+    try {
+      const command = Builder<AdvertisementDeleteCommand>(
+        AdvertisementDeleteCommand,
+        { id: dto.advertisement_id },
+      ).build();
+      const result = await this.commandBus.execute<
+        AdvertisementDeleteCommand,
+        AdvertisementDeleteCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.OK,
+        'Advertisement Deleted Successfully!',
       );
     } catch (e) {
       throw this.advertisementControllerErrorMapper(e);

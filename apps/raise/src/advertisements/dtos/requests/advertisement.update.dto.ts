@@ -6,15 +6,11 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { AdvertisementDeleteDto } from 'src/advertisements/dtos/requests/advertisement.delete.dto';
 import { AdvertisementTypeEnum } from 'src/advertisements/types/enums/advertisement.type.enum';
 import { Validate12HourTimeFormat } from 'src/tender-commons/decorators/validate-12hour-time-format.decorator';
 
-export class AdvertisementUpdateDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  advertisement_id: string;
-
+export class AdvertisementUpdateDto extends AdvertisementDeleteDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()

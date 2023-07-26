@@ -255,4 +255,19 @@ export class AdvertisementRepository {
       throw this.advertisementRepoErrorMapper(error);
     }
   }
+
+  async delete(id: string, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const result = await prisma.advertisements.delete({
+        where: { id },
+      });
+      return Builder<AdvertisementEntity>(AdvertisementEntity, {
+        ...result,
+      }).build();
+    } catch (error) {
+      throw this.advertisementRepoErrorMapper(error);
+    }
+  }
 }

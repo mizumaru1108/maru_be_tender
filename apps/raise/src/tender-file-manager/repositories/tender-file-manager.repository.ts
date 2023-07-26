@@ -47,6 +47,8 @@ export interface FindManyFileManagerProps {
   proposal_id?: string;
   advertisement_id?: string;
   includes_relation?: string[];
+  column_name?: string;
+  table_name?: string;
   page?: number;
   limit?: number;
   filter?: string;
@@ -81,7 +83,7 @@ export class TenderFileManagerRepository {
 
   /* refactored with pass session */
   async findManyFileManagerFilter(props: FindManyFileManagerProps) {
-    const { proposal_id, advertisement_id } = props;
+    const { proposal_id, advertisement_id, column_name, table_name } = props;
     let args: Prisma.file_managerFindManyArgs = {};
     let whereClause: Prisma.file_managerWhereInput = {};
 
@@ -96,6 +98,20 @@ export class TenderFileManagerRepository {
       whereClause = {
         ...whereClause,
         advertisement_id,
+      };
+    }
+
+    if (column_name) {
+      whereClause = {
+        ...whereClause,
+        column_name,
+      };
+    }
+
+    if (table_name) {
+      whereClause = {
+        ...whereClause,
+        table_name,
       };
     }
 
