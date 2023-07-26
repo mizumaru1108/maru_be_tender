@@ -276,7 +276,9 @@ export class AdvertisementHttpController {
         {
           ...dto,
           id: dto.advertisement_id,
-          date: dto.date ? new Date(dto.date) : undefined,
+          expired_date: dto.expired_date
+            ? new Date(dto.expired_date)
+            : undefined,
           logos: files.logo,
           current_user: currentUser,
         },

@@ -28,8 +28,8 @@ export class AdvertisementUpdateCommand {
   content?: string;
   title?: string;
   track_id?: string;
-  date?: Date;
-  start_time?: string;
+  expired_date?: Date;
+  expired_time?: string;
   logos?: Express.Multer.File[];
   deleted_logo_urls?: string[];
 }
@@ -115,8 +115,8 @@ export class AdvertisementUpdateHandler
           content: command.content,
           title: command.title,
           track_id: command.track_id,
-          expired_date: command.date,
-          expired_time: command.start_time,
+          expired_date: command.expired_date,
+          expired_time: command.expired_time,
         },
       ).build();
 

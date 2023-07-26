@@ -44,14 +44,14 @@ export class AdvertisementUpdateDto extends AdvertisementDeleteDto {
   @IsNotEmpty()
   @IsString()
   @IsDateString()
-  date?: string;
+  expired_date?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
   @IsString()
   @Validate12HourTimeFormat()
-  start_time?: string;
+  expired_time?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
