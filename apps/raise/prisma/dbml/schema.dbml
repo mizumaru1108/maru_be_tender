@@ -1482,17 +1482,17 @@ Table backup_client_data_latest {
 
 Ref: advertisements.track_id > track.id
 
-Ref: bank_information.user_id > user.id [delete: Cascade]
+Ref: bank_information.user_id > user.id [delete: Restrict]
 
-Ref: client_data.user_id - user.id [delete: Cascade]
+Ref: client_data.user_id - user.id [delete: Restrict]
 
-Ref: employees_permissions.user_id > user.id [delete: Cascade]
+Ref: employees_permissions.user_id > user.id [delete: Restrict]
 
 Ref: message.content_type_id > content_type.id [delete: No Action]
 
-Ref: message.owner_id > user.id
+Ref: message.owner_id > user.id [delete: Restrict]
 
-Ref: message.receiver_id > user.id
+Ref: message.receiver_id > user.id [delete: Restrict]
 
 Ref: message.room_id > room_chat.id [delete: Cascade]
 
@@ -1508,7 +1508,7 @@ Ref: proposal.project_beneficiaries > proposal_beneficiaries.id [delete: Cascade
 
 Ref: proposal.project_track > project_tracks.id [delete: Restrict]
 
-Ref: proposal.project_manager_id > user.id [delete: Cascade]
+Ref: proposal.project_manager_id > user.id [delete: Restrict]
 
 Ref: proposal.proposal_bank_id > bank_information.id [delete: Cascade]
 
@@ -1520,9 +1520,9 @@ Ref: proposal.inner_status > proposal_status.id [delete: No Action]
 
 Ref: proposal.step > proposal_step.id [delete: No Action]
 
-Ref: proposal.submitter_user_id > user.id [delete: Cascade]
+Ref: proposal.submitter_user_id > user.id [delete: Restrict]
 
-Ref: proposal.supervisor_id > user.id [delete: Cascade]
+Ref: proposal.supervisor_id > user.id [delete: Restrict]
 
 Ref: proposal.support_goal_id > support_goal.id
 
@@ -1550,11 +1550,11 @@ Ref: proposal_assign.proposal_id > proposal.id [delete: Cascade]
 
 Ref: proposal_follow_up.proposal_id > proposal.id [delete: Cascade]
 
-Ref: proposal_follow_up.user_id > user.id [delete: Cascade]
+Ref: proposal_follow_up.user_id > user.id [delete: Restrict]
 
 Ref: client_log.organization_id > client_data.id [delete: Cascade]
 
-Ref: client_log.reviewer_id > user.id [delete: Cascade]
+Ref: client_log.reviewer_id > user.id [delete: Restrict]
 
 Ref: client_log.status > user_status.id [delete: No Action]
 
@@ -1564,25 +1564,25 @@ Ref: cheque.payment_id > payment.id [delete: Cascade]
 
 Ref: room_chat.correspondance_category_id > correspondance_category.id [delete: No Action]
 
-Ref: room_chat.participant1_user_id > user.id
+Ref: room_chat.participant1_user_id > user.id [delete: Restrict]
 
-Ref: room_chat.participant2_user_id > user.id
+Ref: room_chat.participant2_user_id > user.id [delete: Restrict]
 
 Ref: contact_us.inquiry_type > inquiry_type.id [delete: Restrict]
 
-Ref: contact_us.receiver_id > user.id
+Ref: contact_us.receiver_id > user.id [delete: Restrict]
 
-Ref: contact_us.sender_id > user.id
+Ref: contact_us.sender_id > user.id [delete: Restrict]
 
-Ref: appointment.employee_id > user.id [delete: Cascade]
+Ref: appointment.employee_id > user.id [delete: Restrict]
 
-Ref: appointment.user_id > user.id [delete: Cascade]
+Ref: appointment.user_id > user.id [delete: Restrict]
 
-Ref: schedule.user_id > user.id [delete: Cascade]
+Ref: schedule.user_id > user.id [delete: Restrict]
 
-Ref: email_record.receiver_id > user.id [delete: No Action]
+Ref: email_record.receiver_id > user.id [delete: Restrict]
 
-Ref: email_record.sender_id > user.id [delete: No Action]
+Ref: email_record.sender_id > user.id [delete: Restrict]
 
 Ref: recommended_support_consultant.proposal_id > proposal.id [delete: Cascade]
 
@@ -1590,9 +1590,9 @@ Ref: track_section.section_id - track_section.id [delete: Restrict]
 
 Ref: track_section.track_id > track.id [delete: Cascade]
 
-Ref: user_role.user_id > user.id [delete: Cascade]
+Ref: user_role.user_id > user.id [delete: Restrict]
 
-Ref: user_role.user_type_id > user_type.id [delete: Cascade]
+Ref: user_role.user_type_id > user_type.id [delete: Restrict]
 
 Ref: project_timeline.proposal_id > proposal.id [delete: Cascade]
 
@@ -1604,32 +1604,32 @@ Ref: notification.proposal_id > proposal.id
 
 Ref: notification.proposal_log_id > proposal_log.id [delete: Cascade]
 
-Ref: notification.user_id > user.id [delete: Cascade]
+Ref: notification.user_id > user.id [delete: Restrict]
 
-Ref: user_status_log.account_manager_id > user.id [delete: Cascade]
+Ref: user_status_log.account_manager_id > user.id [delete: Restrict]
 
 Ref: user_status_log.status_id > user_status.id [delete: Cascade]
 
-Ref: user_status_log.user_id > user.id [delete: Cascade]
+Ref: user_status_log.user_id > user.id [delete: Restrict]
 
-Ref: edit_requests.reviewer_id > user.id [delete: Cascade]
+Ref: edit_requests.reviewer_id > user.id [delete: Restrict]
 
 Ref: edit_requests.status_id > edit_request_status.id [delete: Cascade]
 
-Ref: edit_requests.user_id > user.id [delete: Cascade]
+Ref: edit_requests.user_id > user.id [delete: Restrict]
 
-Ref: file_manager.user_id > user.id [delete: Cascade]
+Ref: file_manager.user_id > user.id [delete: Restrict]
 
 Ref: proposal_edit_request.proposal_id - proposal.id [delete: Cascade]
 
-Ref: proposal_edit_request.reviewer_id > user.id [delete: Cascade]
+Ref: proposal_edit_request.reviewer_id > user.id [delete: Restrict]
 
-Ref: proposal_edit_request.user_id > user.id [delete: Cascade]
+Ref: proposal_edit_request.user_id > user.id [delete: Restrict]
 
 Ref: proposal_asked_edit_request.proposal_id > proposal.id [delete: Cascade]
 
-Ref: proposal_asked_edit_request.sender_id > user.id [delete: Cascade]
+Ref: proposal_asked_edit_request.sender_id > user.id [delete: Restrict]
 
-Ref: proposal_asked_edit_request.supervisor_id > user.id [delete: Cascade]
+Ref: proposal_asked_edit_request.supervisor_id > user.id [delete: Restrict]
 
 Ref: proposal_closing_report.proposal_id > proposal.id [delete: Cascade]
