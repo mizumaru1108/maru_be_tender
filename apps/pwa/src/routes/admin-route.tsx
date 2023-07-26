@@ -113,8 +113,23 @@ export const adminRoute = {
           path: 'system-messages',
           children: [
             { path: '', element: <SystemMessages /> },
-            { path: 'internal-add', element: <SystemMessagesInternalForm /> },
-            { path: 'external-add', element: <SystemMessagesExternalForm /> },
+            {
+              path: 'internal',
+              children: [
+                { path: '', element: <SystemMessagesInternalForm /> },
+                { path: ':id', element: <SystemMessagesInternalForm /> },
+              ],
+            },
+            {
+              path: 'external',
+              children: [
+                { path: '', element: <SystemMessagesExternalForm /> },
+                {
+                  path: ':id',
+                  element: <SystemMessagesExternalForm />,
+                },
+              ],
+            },
           ],
         },
         { path: 'system-configuration', element: <SystemConfiguration /> },

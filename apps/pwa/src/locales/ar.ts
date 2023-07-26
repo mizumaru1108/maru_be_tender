@@ -2360,6 +2360,12 @@ const ar = {
   },
   system_messages: {
     add_new_advertising: 'اضافة رسالة التفاعلية جديدة',
+    snackbar: {
+      internal_messages_success_create: 'تم إنشاء الرسالة الداخلية بنجاح',
+      internal_messages_success_update: 'تم تحديث الرسالة الداخلية بنجاح',
+      external_messages_success_create: 'تم إنشاء الرسالة الخارجية بنجاح',
+      external_messages_success_update: 'تم تحديث الرسالة الخارجية بنجاح',
+    },
     form: {
       errors: {
         title: 'عنوان الرسالة',

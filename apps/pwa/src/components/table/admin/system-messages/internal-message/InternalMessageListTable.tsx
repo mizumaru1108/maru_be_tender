@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import Scrollbar from 'components/Scrollbar';
 import SearchField from 'components/sorting/searchField';
-import { TableHeadCustom } from 'components/table';
+import { TableHeadCustom, TableNoData } from 'components/table';
 import { InternalMessageListMock } from 'components/table/admin/system-messages/mock';
 import { InternalMessagesList } from 'components/table/admin/system-messages/types';
 import useAuth from 'hooks/useAuth';
@@ -24,6 +24,9 @@ import useTabs from 'hooks/useTabs';
 import { useSnackbar } from 'notistack';
 import axiosInstance from 'utils/axios';
 import InternalMessageListRow from './InternalMessageListRow';
+import TableInternalMessageSkeleton from './TableInternalMessageSkeleton';
+import { useSelector } from '../../../../../redux/store';
+import RejectionModal from '../../../../modal-dialog/RejectionModal';
 
 const TABLE_HEAD = [
   { id: 'title', label: 'system_messages.headercell.title' },
@@ -53,10 +56,12 @@ export default function SystemMessageListTable() {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  const { track_list } = useSelector((state) => state.proposal);
 
   const [sortOrder, setSortOrder] = useState<any>({ employee_name: 'asc' });
-
   const [tableData, setTableData] = useState<Array<InternalMessagesList>>([]);
+
+  // console.log({ tableData });
 
   const [filterName, setFilterName] = useState('');
 
@@ -81,27 +86,27 @@ export default function SystemMessageListTable() {
     },
   ];
 
-  const fetchingPrevious = React.useCallback(async () => {
+  const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
-    let currentPage = page + 1;
-    const url = employeeName
-      ? `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}&employee_name=${employeeName}`
-      : `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}`;
+    const currentPage = page + 1;
+    const url = `advertisements?type=internal&limit=${rowsPerPage}&page=${currentPage}`;
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
       });
-      if (response) {
+      // console.log({ response });
+      if (response?.data?.data.length > 0) {
+        // console.log('test response', response?.data?.data);
         setTableData(
-          response.data.data.map((item: InternalMessagesList, index: any) => ({
+          response?.data?.data.map((item: InternalMessagesList, index: any) => ({
             id: item.id || '',
             title: item.title || '',
-            message_content: item.message_content || '',
-            desired_track: item.desired_track || '',
+            content: item.content || '',
+            // desired_track: item.track_id || '',
+            desired_track: track_list.find((track) => track.id === item.track_id)?.name || '',
           }))
         );
-        setTotal(response.data.total as number);
-        setIsLoading(false);
+        setTotal(Number(response.data.total));
       }
     } catch (err) {
       const statusCode = (err && err.statusCode) || 0;
@@ -131,7 +136,50 @@ export default function SystemMessageListTable() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, page, rowsPerPage, employeeName]);
+  }, [activeRole, enqueueSnackbar, page, rowsPerPage]);
+
+  const handleDelete = React.useCallback(
+    async (id: string) => {
+      // setIsLoading(true);
+      const url = `/advertisements`;
+      try {
+        const response = await axiosInstance.delete(`${url}/${id}`, {
+          headers: { 'x-hasura-role': activeRole! },
+        });
+        // console.log({ response });
+        if (response) {
+          // console.log('test response', response?.data?.data);
+          fetchingData();
+        }
+      } catch (err) {
+        const statusCode = (err && err.statusCode) || 0;
+        const message = (err && err.message) || null;
+        if (message && statusCode !== 0) {
+          enqueueSnackbar(err.message, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+        } else {
+          enqueueSnackbar(translate('pages.common.internal_server_error'), {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+        }
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeRole, enqueueSnackbar]
+  );
 
   const handleFilterName = (filterName: string) => {
     setFilterName(filterName);
@@ -177,10 +225,10 @@ export default function SystemMessageListTable() {
     setPage(0);
   };
 
-  // useEffect(() => {
-  //   fetchingPrevious();
-  //   // eslint-disable-next-line
-  // }, [fetchingPrevious]);
+  React.useEffect(() => {
+    fetchingData();
+    // eslint-disable-next-line
+  }, [fetchingData]);
 
   return (
     <Box>
@@ -238,26 +286,27 @@ export default function SystemMessageListTable() {
               />
 
               <TableBody>
-                {/* {isLoading
+                {isLoading
                   ? [...Array(rowsPerPage)].map((item, index) => (
                       <TableInternalMessageSkeleton key={index} sx={{ bgcolor: '#d9d9d9' }} />
                     ))
-                  : InternalMessageListMock.map((row) => (
+                  : [...tableData].map((row) => (
                       <InternalMessageListRow
                         key={row.id}
                         row={row}
                         selected={selected.includes(row?.id || '')}
+                        onDelete={handleDelete}
                       />
                     ))}
-                {!isLoading && dataFiltered.length === 0 && <TableNoData isNotFound={isNotFound} />} */}
-                {InternalMessageListMock.map((row) => (
+                {!isLoading && dataFiltered.length === 0 && <TableNoData isNotFound={isNotFound} />}
+                {/* {InternalMessageListMock.map((row) => (
                   <InternalMessageListRow
                     data-cy={`table-row-custom-${row.id}`}
                     key={row.id}
                     row={row}
                     selected={selected.includes(row?.id || '')}
                   />
-                ))}
+                ))} */}
               </TableBody>
             </Table>
           </TableContainer>
