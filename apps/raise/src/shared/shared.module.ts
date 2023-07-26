@@ -9,6 +9,7 @@ import { GoogleCalendarModule } from '../libs/google-calendar/google-calendar.mo
 import { GoogleOAuth2Module } from '../libs/google-oauth2/google-oauth2.module';
 import { TwilioModule } from '../libs/twilio/twilio.module';
 import { MsegatModule } from '../libs/msegat/msegat.module';
+import { DiscordModule } from 'src/libs/discord/discord.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MsegatModule } from '../libs/msegat/msegat.module';
     GoogleOAuth2Module,
     TwilioModule,
     MsegatModule,
+    DiscordModule,
     // EventsModule, // socket io for real time events (tender)
   ],
 })

@@ -1,4 +1,12 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  HttpStatus,
+  InternalServerErrorException,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 // import { AnyFilesInterceptor } from '@webundsoehne/nest-fastify-file-upload';
 // import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura-webhook-payload';
@@ -6,6 +14,15 @@ import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
 import { TenderService } from '../services/tender.service';
+import { Builder } from 'builder-pattern';
+import { PayloadErrorException } from 'src/tender-commons/exceptions/payload-error.exception';
+import {
+  DiscordWebhookSendToChannelCommand,
+  DiscordWebhookSendToChannelCommandResult,
+} from 'src/libs/discord/commands/webhook.send.to.channel/send.to.channel.command';
+import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
+import { CommandBus } from '@nestjs/cqrs';
+import { logUtil } from 'src/commons/utils/log-util';
 
 @Controller('tender')
 export class TenderController {
@@ -13,7 +30,10 @@ export class TenderController {
     'log.logger': TenderController.name,
   });
 
-  constructor(private tenderService: TenderService) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private tenderService: TenderService,
+  ) {}
 
   // @UseInterceptors(AnyFilesInterceptor())
   // @Post('uploads') // tender/uploads
@@ -30,9 +50,83 @@ export class TenderController {
   //   );
   // }
 
+  tenderControllerErrorMapper(error: any) {
+    if (error instanceof PayloadErrorException) {
+      return new BadRequestException(error.message);
+    }
+    return new InternalServerErrorException(error);
+  }
+
   @Post('fusion-auth/hook/delete-user')
   async deleteUserHook(@Body() payload: any) {
-    console.log({ payload });
+    // example data can be seen here
+    // https://fusionauth.io/docs/v1/tech/events-webhooks/events/user-delete-complete
+    // console.log(logUtil(payload));
+    try {
+      const embed = [
+        {
+          fields: [
+            {
+              name: 'email',
+              value: payload.event.user.email
+                ? JSON.stringify(payload.event.user.email)
+                : '',
+            },
+            {
+              name: 'tenant id',
+              value: payload.event.tenantId
+                ? JSON.stringify(payload.event.tenantId)
+                : '',
+            },
+            {
+              name: 'user_id',
+              value: payload.event.user.id
+                ? JSON.stringify(payload.event.user.id)
+                : '',
+            },
+            {
+              name: 'registrations',
+              value: payload.event.user.registrations
+                ? JSON.stringify(payload.event.user.registrations)
+                : '',
+            },
+            {
+              name: 'access from ip',
+              value: payload.event.info.ipAddress
+                ? JSON.stringify(payload.event.info.ipAddress)
+                : '',
+            },
+            {
+              name: 'access from user agent',
+              value: payload.event.info.userAgent
+                ? JSON.stringify(payload.event.info.userAgent)
+                : '',
+            },
+          ],
+        },
+      ];
+
+      const command = Builder<DiscordWebhookSendToChannelCommand>(
+        DiscordWebhookSendToChannelCommand,
+        {
+          content: 'User Delete Events Triggred!',
+          embed: embed,
+        },
+      ).build();
+
+      const result = await this.commandBus.execute<
+        DiscordWebhookSendToChannelCommand,
+        DiscordWebhookSendToChannelCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.OK,
+        'Send notif to discord success!',
+      );
+    } catch (e) {
+      throw this.tenderControllerErrorMapper(e);
+    }
   }
 
   @Post('edit-request-hook-handler')

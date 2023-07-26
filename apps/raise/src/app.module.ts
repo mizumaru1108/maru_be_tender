@@ -70,6 +70,7 @@ import { TenderMessagesModule } from './tender-messaging/tender-messages.module'
 import { TenderStatisticsModule } from './tender-statistics/tender-statistics.module';
 import { AdvertisementsModule } from 'src/advertisements/advertisments.module';
 import { HealthModule } from 'src/health/health.module';
+import { discordConfig } from 'src/commons/configs/discord.config';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -170,6 +171,7 @@ const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
         twilioConfig,
         tenderAppConfig,
         mseGatConfig,
+        discordConfig,
       ],
       isGlobal: true,
     }),
