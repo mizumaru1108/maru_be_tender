@@ -7,6 +7,7 @@ import {
   HttpException,
   HttpStatus,
   InternalServerErrorException,
+  Param,
   Patch,
   Post,
   Query,
@@ -36,6 +37,10 @@ import { AdvertisementDeleteDto } from 'src/advertisements/dtos/requests/adverti
 import { AdvertisementUpdateDto } from 'src/advertisements/dtos/requests/advertisement.update.dto';
 import { AdvertisementEntity } from 'src/advertisements/entities/advertisement.entity';
 import {
+  AdvertisementFindByIdQuery,
+  AdvertisementFindByIdQueryResult,
+} from 'src/advertisements/queries/advertisement.find.by.id.query/advertisement.find.by.id.query';
+import {
   AdvertisementFindManyQuery,
   AdvertisementFindManyQueryResult,
 } from 'src/advertisements/queries/advertisement.find.many.query/advertisement.find.many.query';
@@ -48,10 +53,12 @@ import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.d
 import { BasePaginationApiOkResponse } from 'src/commons/decorators/base.pagination.api.ok.response.decorator';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { BaseResponse } from 'src/commons/dtos/base-response';
+import { GetByIdDto } from 'src/commons/dtos/get-by-id.dto';
 import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
 import { TenderRoles } from 'src/tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from 'src/tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from 'src/tender-auth/guards/tender-roles.guard';
+import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
 import { PayloadErrorException } from 'src/tender-commons/exceptions/payload-error.exception';
 import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
 import { manualPaginationHelper } from 'src/tender-commons/helpers/manual-pagination-helper';
@@ -66,7 +73,10 @@ export class AdvertisementHttpController {
   ) {}
 
   advertisementControllerErrorMapper(error: any) {
-    if (error instanceof PayloadErrorException) {
+    if (
+      error instanceof PayloadErrorException ||
+      error instanceof DataNotFoundException
+    ) {
       throw new BadRequestException(error.message);
     }
     if (error instanceof PrismaInvalidForeignKeyException) {
@@ -124,6 +134,49 @@ export class AdvertisementHttpController {
       );
     } catch (e) {
       throw this.advertisementControllerErrorMapper(e);
+    }
+  }
+
+  @ApiOperation({
+    summary:
+      'find advertisement by id either for internal or external (admin only)',
+  })
+  @BaseApiOkResponse(AdvertisementEntity, 'object')
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_admin',
+    'tender_client',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+    'tender_accounts_manager',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_consultant',
+  )
+  @Get('/:advertisement_id')
+  async findById(@Param('advertisement_id') advertisement_id: string) {
+    try {
+      const queries = Builder<AdvertisementFindByIdQuery>(
+        AdvertisementFindByIdQuery,
+        {
+          advertisement_id,
+        },
+      ).build();
+
+      const result = await this.queryBus.execute<
+        AdvertisementFindByIdQuery,
+        AdvertisementFindByIdQueryResult
+      >(queries);
+
+      return baseResponseHelper(
+        result.advertisement,
+        HttpStatus.OK,
+        'Advertisement Fetched Successfully!',
+      );
+    } catch (error) {
+      throw this.advertisementControllerErrorMapper(error);
     }
   }
 
