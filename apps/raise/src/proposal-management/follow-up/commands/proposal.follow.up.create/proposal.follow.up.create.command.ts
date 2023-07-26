@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
 import { nanoid } from 'nanoid';
 import { FileMimeTypeEnum } from 'src/commons/enums/file-mimetype.enum';
@@ -8,6 +8,8 @@ import { isExistAndValidPhone } from 'src/commons/utils/is-exist-and-valid-phone
 import { validateFileExtension } from 'src/commons/utils/validate-allowed-extension';
 import { validateFileSize } from 'src/commons/utils/validate-file-size';
 import { BunnyService } from 'src/libs/bunny/services/bunny.service';
+import { EmailService } from 'src/libs/email/email.service';
+import { MsegatService } from 'src/libs/msegat/services/msegat.service';
 import { NotificationEntity } from 'src/notification-management/notification/entities/notification.entity';
 import { TenderNotificationRepository } from 'src/notification-management/notification/repository/tender-notification.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -54,11 +56,12 @@ export class ProposalFollowUpCreateCommandHandler
     private readonly proposalRepo: ProposalRepository,
     private readonly bunnyService: BunnyService,
     private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
+    private readonly msegatService: MsegatService,
     private readonly fileManagerRepo: TenderFileManagerRepository,
     private readonly followUpRepo: ProposalFollowUpRepository,
     private readonly notifRepo: TenderNotificationRepository,
-    private readonly prismaService: PrismaService,
-    private readonly eventPublisher: EventPublisher,
+    private readonly prismaService: PrismaService, // private readonly eventPublisher: EventPublisher,
   ) {
     const environment = this.configService.get('APP_ENV');
     if (!environment) envLoadErrorHelper('APP_ENV');
@@ -280,9 +283,9 @@ export class ProposalFollowUpCreateCommandHandler
         },
       );
 
-      const publisher = this.eventPublisher.mergeObjectContext(
-        result.db.created_follow_up,
-      );
+      // const publisher = this.eventPublisher.mergeObjectContext(
+      //   result.db.created_follow_up,
+      // );
 
       const notifPayloads: ISendNotificaitonEvent[] = [];
       if (user.choosenRole !== 'tender_client' && !employee_only) {
@@ -315,19 +318,51 @@ export class ProposalFollowUpCreateCommandHandler
 
       if (notifPayloads && notifPayloads.length > 0) {
         for (const notifPayload of notifPayloads) {
-          if (notifPayload.notif_type === 'SMS') {
-            const validPhone = isExistAndValidPhone(notifPayload.user_phone);
-            if (validPhone) {
-              publisher.sendNotificaitonEvent({
-                ...notifPayload,
-                user_phone: validPhone,
+          if (notifPayload.notif_type === 'SMS' && notifPayload.user_phone) {
+            const clientPhone = isExistAndValidPhone(notifPayload.user_phone);
+
+            // sms notif for follow up
+            if (clientPhone) {
+              await this.msegatService.sendSMSAsync({
+                numbers: clientPhone.includes('+')
+                  ? clientPhone.substring(1)
+                  : clientPhone,
+                msg: notifPayload.subject + notifPayload.content,
               });
             }
-          } else {
-            publisher.sendNotificaitonEvent({
-              ...notifPayload,
+          }
+
+          // email notif for follow up
+          if (
+            notifPayload.notif_type === 'EMAIL' &&
+            notifPayload.user_email &&
+            notifPayload.email_type
+          ) {
+            this.emailService.sendMail({
+              mailType: notifPayload.email_type,
+              to: notifPayload.user_email,
+              subject: notifPayload.subject,
+              content: notifPayload.content,
+              templateContext: notifPayload.emailTemplateContext,
+              templatePath: notifPayload.emailTemplatePath,
             });
           }
+
+          // TODO: Figure out how
+          // stil don't know why the event not working so try old approach
+          // if (notifPayload.notif_type === 'SMS') {
+          //   const validPhone = isExistAndValidPhone(notifPayload.user_phone);
+          //   if (validPhone) {
+          //     publisher.sendNotificaitonEvent({
+          //       ...notifPayload,
+          //       user_phone: validPhone,
+          //     });
+          //   }
+          // } else {
+          //   publisher.sendNotificaitonEvent({
+          //     ...notifPayload,
+          //   });
+          // }
         }
       }
 

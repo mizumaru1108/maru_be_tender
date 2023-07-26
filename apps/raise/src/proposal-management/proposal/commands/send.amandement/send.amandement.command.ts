@@ -25,6 +25,8 @@ import {
 } from '../../entities/proposal.entity';
 import { ProposalRepository } from '../../repositories/proposal.repository';
 import { ProposalUpdateProps } from '../../types';
+import { EmailService } from 'src/libs/email/email.service';
+import { MsegatService } from 'src/libs/msegat/services/msegat.service';
 
 export class SendAmandementCommand {
   currentUser: TenderCurrentUser;
@@ -47,6 +49,8 @@ export class SendAmandementCommandHandler
   constructor(
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
+    private readonly msegatService: MsegatService,
     private readonly proposalRepo: ProposalRepository,
     private readonly logRepo: ProposalLogRepository,
     private readonly editRequestRepo: ProposalEditRequestRepository,
@@ -238,19 +242,50 @@ export class SendAmandementCommandHandler
       );
 
       for (const notifPayload of result.notif_payload) {
-        if (notifPayload.notif_type === 'SMS') {
-          const validPhone = isExistAndValidPhone(notifPayload.user_phone);
-          if (validPhone) {
-            publisher.sendNotificaitonEvent({
-              ...notifPayload,
-              user_phone: validPhone,
+        if (notifPayload.notif_type === 'SMS' && notifPayload.user_phone) {
+          const clientPhone = isExistAndValidPhone(notifPayload.user_phone);
+
+          // sms notif for send amandement
+          if (clientPhone) {
+            await this.msegatService.sendSMSAsync({
+              numbers: clientPhone.includes('+')
+                ? clientPhone.substring(1)
+                : clientPhone,
+              msg: notifPayload.subject + notifPayload.content,
             });
           }
-        } else {
-          publisher.sendNotificaitonEvent({
-            ...notifPayload,
+        }
+
+        // email notif for send amandement
+        if (
+          notifPayload.notif_type === 'EMAIL' &&
+          notifPayload.user_email &&
+          notifPayload.email_type
+        ) {
+          this.emailService.sendMail({
+            mailType: notifPayload.email_type,
+            to: notifPayload.user_email,
+            subject: notifPayload.subject,
+            content: notifPayload.content,
+            templateContext: notifPayload.emailTemplateContext,
+            templatePath: notifPayload.emailTemplatePath,
           });
         }
+
+        // TODO: figure out why it is not sended via event
+        // if (notifPayload.notif_type === 'SMS') {
+        //   const validPhone = isExistAndValidPhone(notifPayload.user_phone);
+        //   if (validPhone) {
+        //     publisher.sendNotificaitonEvent({
+        //       ...notifPayload,
+        //       user_phone: validPhone,
+        //     });
+        //   }
+        // } else {
+        //   publisher.sendNotificaitonEvent({
+        //     ...notifPayload,
+        //   });
+        // }
       }
 
       publisher.commit();
