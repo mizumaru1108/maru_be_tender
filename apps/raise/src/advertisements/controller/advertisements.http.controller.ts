@@ -48,6 +48,7 @@ import {
   AdvertisementFindMyAdsQuery,
   AdvertisementFindMyAdsQueryResult,
 } from 'src/advertisements/queries/advertisement.find.my.ads.query/advertisement.find.my.ads.query';
+import { AdvertisementFindManyResponse } from 'src/advertisements/repositories/advertisement.repository';
 import { AdvertisementTypeEnum } from 'src/advertisements/types/enums/advertisement.type.enum';
 import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
 import { BasePaginationApiOkResponse } from 'src/commons/decorators/base.pagination.api.ok.response.decorator';
@@ -140,7 +141,7 @@ export class AdvertisementHttpController {
   @ApiOperation({
     summary: 'find advertisement either for internal or external (admin only)',
   })
-  @BasePaginationApiOkResponse(AdvertisementEntity)
+  @BasePaginationApiOkResponse(AdvertisementFindManyResponse)
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Get()

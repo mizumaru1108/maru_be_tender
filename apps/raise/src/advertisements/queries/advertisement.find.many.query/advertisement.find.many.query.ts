@@ -1,6 +1,9 @@
-import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
-import { AdvertisementEntity } from 'src/advertisements/entities/advertisement.entity';
-import { AdvertisementRepository } from 'src/advertisements/repositories/advertisement.repository';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  AdvertisementFindManyResponse,
+  AdvertisementRepository,
+} from 'src/advertisements/repositories/advertisement.repository';
 import { AdvertisementTypeEnum } from 'src/advertisements/types/enums/advertisement.type.enum';
 export class AdvertisementFindManyQuery {
   track_id: string[];
@@ -12,7 +15,9 @@ export class AdvertisementFindManyQuery {
 }
 
 export class AdvertisementFindManyQueryResult {
-  result: AdvertisementEntity[];
+  @ApiProperty()
+  result: AdvertisementFindManyResponse[];
+  @ApiProperty()
   total: number;
 }
 
@@ -26,7 +31,10 @@ export class AdvertisementFindManyQueryHandler
   async execute(
     query: AdvertisementFindManyQuery,
   ): Promise<AdvertisementFindManyQueryResult> {
-    const result = await this.adsRepo.findMany({ ...query });
+    const result = await this.adsRepo.findMany({
+      ...query,
+      expired_field: true,
+    });
     const total = await this.adsRepo.countMany({ ...query });
     return {
       result,

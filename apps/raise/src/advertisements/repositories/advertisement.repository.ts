@@ -36,10 +36,15 @@ export class AdvertisementFindManyProps {
   track_id?: string[];
   type?: AdvertisementTypeEnum[];
   only_active?: boolean;
+  expired_field?: boolean;
   limit?: number;
   page?: number;
   sort_by?: string;
   sort_direction?: string;
+}
+
+export class AdvertisementFindManyResponse extends AdvertisementEntity {
+  is_expired?: boolean;
 }
 
 @Injectable()
@@ -199,11 +204,17 @@ export class AdvertisementRepository {
   async findMany(
     props: AdvertisementFindManyProps,
     session?: PrismaService,
-  ): Promise<AdvertisementEntity[]> {
+  ): Promise<AdvertisementFindManyResponse[]> {
     let prisma = this.prismaService;
     if (session) prisma = session;
     try {
-      const { limit = 0, page = 0, sort_by, sort_direction } = props;
+      const {
+        limit = 0,
+        page = 0,
+        sort_by,
+        sort_direction,
+        expired_field,
+      } = props;
       const offset = (page - 1) * limit;
       const getSortBy = sort_by ? sort_by : 'created_at';
       const getSortDirection = sort_direction ? sort_direction : 'desc';
@@ -227,11 +238,47 @@ export class AdvertisementRepository {
 
       // console.log({ queryOptions });
       const rawResults = await prisma.advertisements.findMany(queryOptions);
-      const entities = rawResults.map((rawResults) => {
-        return Builder<AdvertisementEntity>(AdvertisementEntity, {
-          ...rawResults,
-        }).build();
+      const currentDate = moment();
+      const entities = rawResults.map((rawResult) => {
+        if (expired_field) {
+          // Parse expired_date in ISO 8601 format (YYYY-MM-DD)
+          const expiredDate = moment(rawResult.expired_date, 'YYYY-MM-DD');
+
+          // Parse expired_time in 12-hour format with AM/PM
+          const expiredTime = moment(rawResult.expired_time, 'hh:mm A');
+
+          // Combine the date and time for comparison
+          const expiredDateTime = moment(expiredDate).set({
+            hour: expiredTime.get('hour'),
+            minute: expiredTime.get('minute'),
+            second: expiredTime.get('second'),
+          });
+
+          const isExpired =
+            expiredDateTime.isBefore(currentDate) ||
+            (expiredDateTime.isSame(currentDate, 'day') &&
+              expiredDateTime.isSameOrBefore(currentDate, 'minute'));
+
+          return Builder<AdvertisementFindManyResponse>(
+            AdvertisementFindManyResponse,
+            {
+              ...rawResult,
+              is_expired: isExpired, // Set the correct is_expired value directly
+            },
+          ).build();
+        } else {
+          return Builder<AdvertisementFindManyResponse>(
+            AdvertisementFindManyResponse,
+            {
+              ...rawResult,
+              is_expired: undefined,
+            },
+          ).build();
+        }
       });
+
+      console.log(expired_field);
+      console.log(entities);
 
       return entities;
     } catch (error) {
