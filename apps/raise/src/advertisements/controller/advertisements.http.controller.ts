@@ -138,49 +138,6 @@ export class AdvertisementHttpController {
   }
 
   @ApiOperation({
-    summary:
-      'find advertisement by id either for internal or external (admin only)',
-  })
-  @BaseApiOkResponse(AdvertisementEntity, 'object')
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles(
-    'tender_admin',
-    'tender_client',
-    'tender_finance',
-    'tender_moderator',
-    'tender_project_manager',
-    'tender_project_supervisor',
-    'tender_accounts_manager',
-    'tender_cashier',
-    'tender_ceo',
-    'tender_consultant',
-  )
-  @Get('/:advertisement_id')
-  async findById(@Param('advertisement_id') advertisement_id: string) {
-    try {
-      const queries = Builder<AdvertisementFindByIdQuery>(
-        AdvertisementFindByIdQuery,
-        {
-          advertisement_id,
-        },
-      ).build();
-
-      const result = await this.queryBus.execute<
-        AdvertisementFindByIdQuery,
-        AdvertisementFindByIdQueryResult
-      >(queries);
-
-      return baseResponseHelper(
-        result.advertisement,
-        HttpStatus.OK,
-        'Advertisement Fetched Successfully!',
-      );
-    } catch (error) {
-      throw this.advertisementControllerErrorMapper(error);
-    }
-  }
-
-  @ApiOperation({
     summary: 'find advertisement either for internal or external (admin only)',
   })
   @BasePaginationApiOkResponse(AdvertisementEntity)
@@ -231,6 +188,7 @@ export class AdvertisementHttpController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Query() dto: AdvertisementFindManyQueryDto,
   ) {
+    console.log('masuk mine');
     const builder = Builder<AdvertisementFindMyAdsQuery>(
       AdvertisementFindMyAdsQuery,
       {
@@ -252,6 +210,49 @@ export class AdvertisementHttpController {
       HttpStatus.OK,
       'Advertisement List Fetched Successfully!',
     );
+  }
+
+  @ApiOperation({
+    summary:
+      'find advertisement by id either for internal or external (admin only)',
+  })
+  @BaseApiOkResponse(AdvertisementEntity, 'object')
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles(
+    'tender_admin',
+    'tender_client',
+    'tender_finance',
+    'tender_moderator',
+    'tender_project_manager',
+    'tender_project_supervisor',
+    'tender_accounts_manager',
+    'tender_cashier',
+    'tender_ceo',
+    'tender_consultant',
+  )
+  @Get('/:advertisement_id')
+  async findById(@Param('advertisement_id') advertisement_id: string) {
+    try {
+      const queries = Builder<AdvertisementFindByIdQuery>(
+        AdvertisementFindByIdQuery,
+        {
+          advertisement_id,
+        },
+      ).build();
+
+      const result = await this.queryBus.execute<
+        AdvertisementFindByIdQuery,
+        AdvertisementFindByIdQueryResult
+      >(queries);
+
+      return baseResponseHelper(
+        result.advertisement,
+        HttpStatus.OK,
+        'Advertisement Fetched Successfully!',
+      );
+    } catch (error) {
+      throw this.advertisementControllerErrorMapper(error);
+    }
   }
 
   @ApiOperation({
