@@ -12,9 +12,18 @@ import { generateRandomNumberString } from '../../../commons/utils/generate-rand
 import { logUtil } from '../../../commons/utils/log-util';
 import { sanitizeString } from '../../../commons/utils/sanitize-string';
 import { uploadFileNameParser } from '../../../commons/utils/upload-filename-parser';
-import { validateAllowedExtension } from '../../../commons/utils/validate-allowed-extension';
-import { validateFileUploadSize } from '../../../commons/utils/validate-file-size';
+import {
+  validateAllowedExtension,
+  validateFileExtension,
+} from '../../../commons/utils/validate-allowed-extension';
+import {
+  validateFileSize,
+  validateFileUploadSize,
+} from '../../../commons/utils/validate-file-size';
 import { FileUploadErrorException } from '../exception/file-upload-error.exception';
+import { TenderFilePayload } from 'src/tender-commons/dto/tender-file-payload.dto';
+import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
+import { generateFileName } from 'src/tender-commons/utils/generate-filename';
 
 /**
  * Nest Bunny Module
@@ -44,6 +53,7 @@ export class BunnyService {
     this.cdnUrl = this.configService.get('bunnyConfig.cdnUrl') as string;
   }
 
+  // DEPRECATED
   async generatePath(
     organizationId: string,
     folderType: string,
@@ -101,6 +111,7 @@ export class BunnyService {
     }
   }
 
+  // DEPRECATED
   async uploadImage(
     path: string,
     binary: Buffer,
@@ -173,8 +184,8 @@ export class BunnyService {
     }
   }
 
-  // file: MulterFile,
-  public async uploadFile(
+  // DEPRECATED
+  public async oldUploadFile(
     file: Express.Multer.File,
     allowedFileType: FileMimeTypeEnum[],
     maxFileSize: number,
@@ -235,7 +246,8 @@ export class BunnyService {
     }
   }
 
-  public async uploadFileMulter(
+  // DEPRECATED
+  public async oldUploadFileMulter(
     file: Express.Multer.File,
     path: string,
     serviceName: string,
@@ -281,7 +293,8 @@ export class BunnyService {
     }
   }
 
-  public async uploadFileBase64(
+  // DEPRECARED
+  public async oldUploadFileBase64(
     fileName: string,
     fileBuffer: Buffer,
     path: string,
@@ -329,7 +342,88 @@ export class BunnyService {
     }
   }
 
-  public async uploadBase64(
+  async uploadLogoMulter(
+    file: Express.Multer.File,
+    uploadPath: string,
+    AllowedFileTypes: FileMimeTypeEnum[],
+    maxSize: number = 1024 * 1024 * 10, // 10 mb by default
+  ) {
+    try {
+      const fileName = generateFileName(
+        file.originalname,
+        file.mimetype as FileMimeTypeEnum,
+      );
+
+      validateFileExtension(file.mimetype, AllowedFileTypes, file.originalname);
+      validateFileSize(file.size, maxSize, file.originalname);
+
+      const imageUrl = await this.uploadBufferToBunny(
+        fileName,
+        file.buffer,
+        uploadPath + `/${fileName}`,
+      );
+
+      const fileObj: UploadFilesJsonbDto = {
+        url: imageUrl,
+        type: file.mimetype,
+        size: file.size,
+      };
+
+      return {
+        name: fileName,
+        ...fileObj,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async uploadFileBase64(
+    file: TenderFilePayload,
+    uploadPath: string,
+    AllowedFileTypes: FileMimeTypeEnum[],
+    maxSize: number = 1024 * 1024 * 10, // 10 mb by default
+  ) {
+    try {
+      const fileName = generateFileName(
+        file.fullName,
+        file.fileExtension as FileMimeTypeEnum,
+      );
+
+      const fileBuffer = Buffer.from(
+        file.base64Data.replace(/^data:.*;base64,/, ''),
+        'base64',
+      );
+
+      validateFileExtension(
+        file.fileExtension,
+        AllowedFileTypes,
+        file.fullName,
+      );
+      validateFileSize(file.size, maxSize, file.fullName);
+
+      const imageUrl = await this.uploadBufferToBunny(
+        fileName,
+        fileBuffer,
+        uploadPath + `/${fileName}`,
+      );
+
+      const fileObj: UploadFilesJsonbDto = {
+        url: imageUrl,
+        type: file.fileExtension,
+        size: file.size,
+      };
+
+      return {
+        name: fileName,
+        ...fileObj,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async uploadBufferToBunny(
     fileName: string,
     fileBuffer: Buffer,
     path: string,

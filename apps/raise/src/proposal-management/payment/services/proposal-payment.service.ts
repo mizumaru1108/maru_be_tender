@@ -414,7 +414,7 @@ export class ProposalPaymentService {
       validateAllowedExtension(file.fileExtension, AllowedFileTypes);
       validateFileUploadSize(file.size, maxSize);
 
-      const imageUrl = await this.bunnyService.uploadFileBase64(
+      const imageUrl = await this.bunnyService.oldUploadFileBase64(
         file.fullName,
         fileBuffer,
         filePath,

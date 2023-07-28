@@ -62,7 +62,7 @@ export class TenderService {
           : `tmra/${this.appEnv}/organization/tender-management` +
             `/${payload.userId}/proposal-files`;
 
-        const uploaded = await this.bunnyService.uploadFile(
+        const uploaded = await this.bunnyService.oldUploadFile(
           file,
           allowedType,
           maxSize,

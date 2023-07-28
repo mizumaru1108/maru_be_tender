@@ -8,6 +8,7 @@ import { ProposalPaymentModule } from './payment/proposal.payment.module';
 import { ProposalProjectTimelineModule } from './poject-timelines/proposal.project.timeline.module';
 import { ProposalLogModule } from './proposal-log/proposal.log.module';
 import { ProposalModule } from './proposal/proposal.module';
+import { ProposalCloseReportModule } from 'src/proposal-management/closing-report/close.report.module';
 
 const importedModules = [
   CqrsModule,
@@ -18,6 +19,7 @@ const importedModules = [
   ProposalProjectTimelineModule,
   ProposalModule,
   ProposalLogModule,
+  ProposalCloseReportModule,
 ];
 
 @Module({

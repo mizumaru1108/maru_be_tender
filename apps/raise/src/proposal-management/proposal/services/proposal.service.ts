@@ -122,7 +122,7 @@ export class ProposalService {
       validateAllowedExtension(file.fileExtension, AllowedFileTypes);
       validateFileUploadSize(file.size, maxSize);
 
-      const imageUrl = await this.bunnyService.uploadFileBase64(
+      const imageUrl = await this.bunnyService.oldUploadFileBase64(
         file.fullName,
         fileBuffer,
         filePath,
@@ -181,7 +181,7 @@ export class ProposalService {
       validateAllowedExtension(file.mimetype, AllowedFileTypes);
       validateFileUploadSize(file.size, maxSize);
 
-      const imageUrl = await this.bunnyService.uploadFileMulter(
+      const imageUrl = await this.bunnyService.oldUploadFileMulter(
         file,
         filePath,
         `${uploadMessage} ${userId}`,

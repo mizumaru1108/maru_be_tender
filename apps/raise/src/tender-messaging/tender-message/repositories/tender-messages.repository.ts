@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { message, Prisma, user } from '@prisma/client';
+import { Prisma, message, user } from '@prisma/client';
 import moment from 'moment';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
@@ -64,7 +63,7 @@ export class TenderMessagesRepository {
     try {
       return await this.prismaService.$transaction(
         async (prisma) => {
-          const imageUrl = await this.bunnyService.uploadFileBase64(
+          const imageUrl = await this.bunnyService.oldUploadFileBase64(
             attachment.fullName,
             buffer,
             path,

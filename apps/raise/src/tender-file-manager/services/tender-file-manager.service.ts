@@ -67,64 +67,6 @@ export class TenderFileManagerService {
     return await this.fileManagerRepo.fetchAll(currentUser, filter);
   }
 
-  // on proposal service
-  // async uploadProposalFileIntercept(
-  //   userId: string,
-  //   proposalId: string,
-  //   uploadMessage: string,
-  //   file: Express.Multer.File,
-  //   folderName: string,
-  //   AllowedFileTypes: FileMimeTypeEnum[],
-  //   maxSize: number = 1024 * 1024 * 4,
-  //   uploadedFilePath: string[],
-  // ) {
-  //   try {
-  //     const fileName = generateFileName(
-  //       file.originalname,
-  //       file.mimetype as FileMimeTypeEnum,
-  //     );
-
-  //     const filePath = `tmra/${this.appEnv}/organization/tender-management/proposal/${proposalId}/${userId}/${folderName}/${fileName}`;
-
-  //     validateAllowedExtension(file.mimetype, AllowedFileTypes);
-  //     validateFileSize(file.size, maxSize);
-
-  //     const imageUrl = await this.bunnyService.uploadFileMulter(
-  //       file,
-  //       filePath,
-  //       `${uploadMessage} ${userId}`,
-  //     );
-
-  //     uploadedFilePath.push(imageUrl);
-  //     const fileObj = {
-  //       url: imageUrl,
-  //       type: file.mimetype,
-  //       size: file.size,
-  //     };
-
-  //     return {
-  //       uploadedFilePath,
-  //       fileObj,
-  //     };
-  //   } catch (error) {
-  //     if (uploadedFilePath.length > 0) {
-  //       this.logger.log(
-  //         'info',
-  //         `${uploadMessage} error, deleting all previous uploaded files: ${error}`,
-  //       );
-  //       uploadedFilePath.forEach(async (path) => {
-  //         await this.bunnyService.deleteMedia(path, true);
-  //       });
-  //     }
-  //     const theError = prismaErrorThrower(
-  //       error,
-  //       TenderProposalService.name,
-  //       `${uploadMessage}, error:`,
-  //       `${uploadMessage}`,
-  //     );
-  //     throw theError;
-  //   }
-  // }
   async uploadAndCreateFileManager(userId: string, path: string) {
     try {
     } catch (error) {}
@@ -134,63 +76,6 @@ export class TenderFileManagerService {
     try {
     } catch (error) {}
   }
-
-  // on client data
-  // try {
-
-  //   const filePath = `tmra/${this.appEnv}/organization/tender-management/client-data/${userId}/${folderName}/${fileName}`;
-
-  //   const fileBuffer = Buffer.from(
-  //     file.base64Data.replace(/^data:.*;base64,/, ''),
-  //     'base64',
-  //   );
-
-  //   validateAllowedExtension(file.fileExtension, AllowedFileTypes);
-  //   validateFileSize(file.size, maxSize);
-
-  //   const imageUrl = await this.bunnyService.uploadFileBase64(
-  //     file.fullName,
-  //     fileBuffer,
-  //     filePath,
-  //     `${uploadMessage} ${userId}`,
-  //   );
-
-  //   uploadedFilePath.push(imageUrl);
-  //   const fileObj = {
-  //     url: imageUrl,
-  //     type: file.fileExtension,
-  //     size: file.size,
-  //   };
-
-  //   return {
-  //     uploadedFilePath,
-  //     fileObj,
-  //   };
-  // } catch (error) {
-  //   if (uploadedFilePath.length > 0) {
-  //     this.logger.log(
-  //       'log',
-  //       `${uploadMessage} error, deleting all previous uploaded files: ${error}`,
-  //     );
-  //     uploadedFilePath.forEach(async (path) => {
-  //       await this.bunnyService.deleteMedia(path, true);
-  //     });
-  //   }
-  //   if (onCreateUser && userId) {
-  //     this.logger.log(
-  //       'info',
-  //       `Falied to store user data on db, deleting the user ${userId} from fusion auth`,
-  //     );
-  //     await this.fusionAuthService.fusionAuthDeleteUser(userId);
-  //   }
-  //   const theError = prismaErrorThrower(
-  //     error,
-  //     TenderClientService.name,
-  //     `${uploadMessage}, error:`,
-  //     `${uploadMessage}`,
-  //   );
-  //   throw theError;
-  // }
 
   async uploadProposalFile(
     userId: string,
@@ -218,7 +103,7 @@ export class TenderFileManagerService {
       validateAllowedExtension(file.fileExtension, AllowedFileTypes);
       validateFileUploadSize(file.size, maxSize);
 
-      const imageUrl = await this.bunnyService.uploadFileBase64(
+      const imageUrl = await this.bunnyService.oldUploadFileBase64(
         file.fullName,
         fileBuffer,
         filePath,

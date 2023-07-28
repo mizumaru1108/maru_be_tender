@@ -96,7 +96,7 @@ export class ProposalPaymentSendCloseReportCommandHandler
         }
 
         // update the proposal
-        this.logger.log('info', `Updating proposal`);
+        // this.logger.log('info', `Updating proposal`);
         const updatedProposal = await this.proposalRepo.update(
           updateProposalPayload,
           session,
@@ -132,7 +132,7 @@ export class ProposalPaymentSendCloseReportCommandHandler
               : null,
           }).build();
 
-        this.logger.log('info', `creating proposal log`);
+        // this.logger.log('info', `creating proposal log`);
         const createdLogs = await this.logRepo.create(
           proposalLogCreatePayload,
           session,
@@ -159,10 +159,10 @@ export class ProposalPaymentSendCloseReportCommandHandler
             content: clientContent,
           }).build();
 
-        this.logger.log(
-          'info',
-          `create notification for user ${proposal.user.email}`,
-        );
+        // this.logger.log(
+        //   'info',
+        //   `create notification for user ${proposal.user.email}`,
+        // );
         const createdNotif = await this.notifRepo.create(notifPayload, session);
 
         // if the supervisor decided to send the notif

@@ -49,7 +49,12 @@ import { UpdatePaymentResponseDto } from '../dtos/responses';
 import { InvalidAmountOfSupportException } from '../exceptions/invalid.amount.of.support.exception';
 import { InvalidNumberofPaymentsException } from '../exceptions/invalid.number.of.payments.exception';
 import { ProposalPaymentService } from '../services/proposal-payment.service';
-import { ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiSecurity } from '@nestjs/swagger';
+import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
+import {
+  PaymentSubmitClosingReportCommand,
+  PaymentSubmitClosingReportCommandResult,
+} from 'src/proposal-management/payment/commands/payment.submit.closing.report.command';
 
 @Controller('tender/proposal/payment')
 export class ProposalPaymentController {
@@ -122,6 +127,7 @@ export class ProposalPaymentController {
     }
   }
 
+  // DEPRECATED
   @ApiSecurity('x-hasura-role')
   @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
@@ -158,6 +164,7 @@ export class ProposalPaymentController {
     );
   }
 
+  // DEPRECATED
   @ApiSecurity('x-hasura-role')
   @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
@@ -177,6 +184,43 @@ export class ProposalPaymentController {
       HttpStatus.OK,
       'Asking for changes successfully applied!, please wait untill account manager responded to your request',
     );
+  }
+
+  @ApiOperation({
+    summary: 'after the payment complete client want to sent a closing report',
+  })
+  @ApiBearerAuth()
+  @ApiSecurity('x-hasura-role')
+  @BaseApiOkResponse(PaymentSubmitClosingReportCommandResult, 'array')
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Post('submit-closing-report-cqrs')
+  async submitClosingReport(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() dto: AskClosingReportDto,
+  ): Promise<BaseResponse<PaymentSubmitClosingReportCommandResult>> {
+    try {
+      const command = Builder<PaymentSubmitClosingReportCommand>(
+        PaymentSubmitClosingReportCommand,
+        {
+          dto,
+          currentUser,
+        },
+      ).build();
+
+      const result = await this.commandBus.execute<
+        PaymentSubmitClosingReportCommand,
+        PaymentSubmitClosingReportCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'Advertisement Created Successfully!',
+      );
+    } catch (e) {
+      throw this.paymentControllerErrorMapper(e);
+    }
   }
 
   @ApiSecurity('x-hasura-role')
@@ -281,6 +325,7 @@ export class ProposalPaymentController {
     }
   }
 
+  // DEPRECEATED
   @ApiSecurity('x-hasura-role')
   @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
@@ -327,6 +372,7 @@ export class ProposalPaymentController {
     );
   }
 
+  // DEPRECATED
   @ApiSecurity('x-hasura-role')
   @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)

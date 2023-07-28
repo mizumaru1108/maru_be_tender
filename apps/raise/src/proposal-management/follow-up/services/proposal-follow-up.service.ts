@@ -127,7 +127,7 @@ export class ProposalFollowUpService {
           ]);
           validateFileUploadSize(follow_up_attachment[i].size, maxSize);
 
-          const imageUrl = await this.bunnyService.uploadFileBase64(
+          const imageUrl = await this.bunnyService.oldUploadFileBase64(
             follow_up_attachment[i].fullName,
             followUpFileBuffer,
             followUpFilePath,

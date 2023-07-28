@@ -106,7 +106,7 @@ export class ProposalUpdatePaymentCommandHandler
       );
       validateFileSize(file.size, maxSize, file.fullName);
 
-      const imageUrl = await this.bunnyService.uploadBase64(
+      const imageUrl = await this.bunnyService.uploadBufferToBunny(
         fileName,
         fileBuffer,
         uploadPath + `/${fileName}`,

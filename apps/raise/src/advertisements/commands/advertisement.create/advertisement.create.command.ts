@@ -83,7 +83,7 @@ export class AdvertisementCreateHandler
       validateFileExtension(file.mimetype, AllowedFileTypes, file.originalname);
       validateFileSize(file.size, maxSize, file.originalname);
 
-      const imageUrl = await this.bunnyService.uploadBase64(
+      const imageUrl = await this.bunnyService.uploadBufferToBunny(
         fileName,
         file.buffer,
         uploadPath + `/${fileName}`,

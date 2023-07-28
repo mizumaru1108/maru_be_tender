@@ -10,23 +10,31 @@ import { ProposalPaymentController } from './controllers/proposal.payment.contro
 import { ProposalChequeRepository } from './repositories/proposal-cheque.repository';
 import { ProposalPaymentRepository } from './repositories/proposal-payment.repository';
 import { ProposalPaymentService } from './services/proposal-payment.service';
+import { PaymentSubmitClosingReportCommandHandler } from 'src/proposal-management/payment/commands/payment.submit.closing.report.command';
+import { ProposalCloseReportModule } from 'src/proposal-management/closing-report/close.report.module';
 
 const importedModule = [
   CqrsModule,
   ProposalModule,
   ProposalLogModule,
   TenderTrackModule,
+  ProposalCloseReportModule,
 ];
+
 const commands: Provider[] = [
   ProposalInsertPaymentCommandHandler,
   ProposalPaymentSendCloseReportCommandHandler,
   ProposalUpdatePaymentCommandHandler,
+  PaymentSubmitClosingReportCommandHandler,
 ];
+
 const queries: Provider[] = [];
+
 const repositories: Provider[] = [
   ProposalChequeRepository,
   ProposalPaymentRepository,
 ];
+
 const exportedProvider: Provider[] = [
   ProposalChequeRepository,
   ProposalPaymentRepository,
