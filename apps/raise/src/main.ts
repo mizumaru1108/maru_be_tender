@@ -34,54 +34,55 @@ async function bootstrap() {
   app.use(urlencoded({ limit: '200mb', extended: true }));
 
   // CORS
-  app.enableCors({
-    methods: ['OPTIONS', 'POST', 'GET', 'PATCH', 'DELETE'],
-    allowedHeaders: [
-      'Access-Control-Allow-Origin',
-      'Origin',
-      'X-Requested-With',
-      'Accept',
-      'Content-Type',
-      'Authorization',
-      'x-hasura-role',
-      'sec-ch-ua',
-      'sec-ch-ua-mobile',
-      'sec-ch-ua-platform',
-      'x-datadog-origin',
-      'x-datadog-parent-id',
-      'x-datadog-sampling-priority',
-      'x-datadog-trace-id',
-    ],
-    exposedHeaders: ['x-hasura-role', 'Authorization'],
-    credentials: true,
-    origin: [
-      'http://localhost:3000', // for local dev fetch to staging
+  // app.enableCors({
+  //   methods: ['OPTIONS', 'POST', 'GET', 'PATCH', 'DELETE'],
+  //   allowedHeaders: [
+  //     'Access-Control-Allow-Origin',
+  //     'Origin',
+  //     'X-Requested-With',
+  //     'Accept',
+  //     'Content-Type',
+  //     'Authorization',
+  //     'x-hasura-role',
+  //     'sec-ch-ua',
+  //     'sec-ch-ua-mobile',
+  //     'sec-ch-ua-platform',
+  //     'x-datadog-origin',
+  //     'x-datadog-parent-id',
+  //     'x-datadog-sampling-priority',
+  //     'x-datadog-trace-id',
+  //   ],
+  //   exposedHeaders: ['x-hasura-role', 'Authorization'],
+  //   credentials: true,
+  //   origin: [
+  //     'http://localhost:3000', // for local dev fetch to staging
 
-      // HTTP
-      // Hendy's note: we *never* use plain HTTP on server
-      // 'http://dev.tmra.io', // TMRA Dev
-      // 'http://staging.tmra.io', // TMRA staging
-      // 'http://www.tmra.io', // TMRA production
-      // 'http://givingsadaqah-dev.tmra.io', // GS Dev
-      // 'http://givingsadaqah-staging.tmra.io', // GS Staging
-      // 'http://dev.ommar.net', // Ommar Dev
-      // 'http://staging.ommar.net', // Ommar Staging
-      // 'http://app-dev.tmra.io', // Tender Dev
-      // 'http://app-staging.tmra.io', // Tender Staging
-      // HTTPS
-      'https://dev.tmra.io', // TMRA Dev
-      'https://staging.tmra.io', // TMRA staging
-      'https://www.tmra.io', // TMRA production
-      'https://givingsadaqah-dev.tmra.io', // GS Dev
-      'https://givingsadaqah-staging.tmra.io', // GS Staging
-      'https://dev.ommar.net', // Ommar Dev
-      'https://staging.ommar.net', // Ommar Staging
-      'https://tender-app-dev.tmra.io', // Tender Dev
-      'https://tender-app-staging.tmra.io', // Tender Staging
-      'https://gaith.hcharity.org', // Tender Staging
-    ],
-    preflightContinue: true,
-  });
+  //     // HTTP
+  //     // Hendy's note: we *never* use plain HTTP on server
+  //     // 'http://dev.tmra.io', // TMRA Dev
+  //     // 'http://staging.tmra.io', // TMRA staging
+  //     // 'http://www.tmra.io', // TMRA production
+  //     // 'http://givingsadaqah-dev.tmra.io', // GS Dev
+  //     // 'http://givingsadaqah-staging.tmra.io', // GS Staging
+  //     // 'http://dev.ommar.net', // Ommar Dev
+  //     // 'http://staging.ommar.net', // Ommar Staging
+  //     // 'http://app-dev.tmra.io', // Tender Dev
+  //     // 'http://app-staging.tmra.io', // Tender Staging
+  //     // HTTPS
+  //     'https://dev.tmra.io', // TMRA Dev
+  //     'https://staging.tmra.io', // TMRA staging
+  //     'https://www.tmra.io', // TMRA production
+  //     'https://givingsadaqah-dev.tmra.io', // GS Dev
+  //     'https://givingsadaqah-staging.tmra.io', // GS Staging
+  //     'https://dev.ommar.net', // Ommar Dev
+  //     'https://staging.ommar.net', // Ommar Staging
+  //     'https://tender-app-dev.tmra.io', // Tender Dev
+  //     'https://tender-app-staging.tmra.io', // Tender Staging
+  //     'https://gaith.hcharity.org', // Tender Staging
+  //   ],
+  //   preflightContinue: true,
+  // });
+  app.enableCors();
 
   const config = app.get<ConfigService>(ConfigService);
 
