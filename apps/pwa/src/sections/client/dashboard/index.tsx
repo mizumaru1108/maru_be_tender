@@ -10,14 +10,24 @@ import LoadingPage from './LoadingPage';
 import PreviousFundingInqueries from './PreviousFundingInqueries';
 import Statistic from './Statistic';
 import IncomingClientCloseReport from './IncomingClientCloseReport';
+import React from 'react';
+import { dispatch, useSelector } from 'redux/store';
+import { getTrackList } from 'redux/slices/proposal';
+import useAuth from 'hooks/useAuth';
 
 function DashboardPage() {
+  const { activeRole } = useAuth();
   const [result, mutate] = useQuery({
     query: clientMainPage,
   });
   const { data, fetching, error } = result;
+  const { loadingCount } = useSelector((state) => state.proposal);
 
-  if (fetching) return <LoadingPage />;
+  React.useEffect(() => {
+    dispatch(getTrackList(1, activeRole! as string));
+  }, [activeRole]);
+
+  if (fetching || loadingCount) return <LoadingPage />;
   if (error) return <Page500 error={error.message} />;
   return (
     <Grid container rowSpacing={6}>

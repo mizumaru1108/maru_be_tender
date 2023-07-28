@@ -17,6 +17,8 @@ import React from 'react';
 import axiosInstance from '../../utils/axios';
 import SortingCardTable from 'components/sorting/sorting';
 import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
+import { dispatch, useSelector } from 'redux/store';
+import { getTrackList } from 'redux/slices/proposal';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -40,23 +42,24 @@ function MainManagerPage() {
   });
   const { data: statsData, fetching, error } = stats;
 
-  const [incoming] = useQuery({
-    query: getProposals,
-    variables: {
-      order_by: { updated_at: 'desc' },
-      where: {
-        outter_status: { _eq: 'ONGOING' },
-        _and: { inner_status: { _eq: 'CREATED_BY_CLIENT' } },
-      },
-    },
-  });
-  const { data: incomingData, fetching: incomingFetching, error: incomingError } = incoming;
+  // const [incoming] = useQuery({
+  //   query: getProposals,
+  //   variables: {
+  //     order_by: { updated_at: 'desc' },
+  //     where: {
+  //       outter_status: { _eq: 'ONGOING' },
+  //       _and: { inner_status: { _eq: 'CREATED_BY_CLIENT' } },
+  //     },
+  //   },
+  // });
+  // const { data: incomingData, fetching: incomingFetching, error: incomingError } = incoming;
 
   // using API
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
   const [cardData, setCardData] = React.useState([]);
+  const { loadingCount } = useSelector((state) => state.proposal);
 
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
@@ -65,7 +68,6 @@ function MainManagerPage() {
         headers: { 'x-hasura-role': activeRole! },
       });
       if (rest) {
-        // console.log('rest total :', rest.data.total);
         setCardData(
           rest.data.data.map((item: any) => ({
             ...item,
@@ -73,17 +75,6 @@ function MainManagerPage() {
         );
       }
     } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
-      // handle error fetching
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       if (message && statusCode !== 0) {
@@ -115,10 +106,11 @@ function MainManagerPage() {
 
   React.useEffect(() => {
     fetchingIncoming();
+    dispatch(getTrackList(1, activeRole! as string));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchingIncoming]);
+  }, [fetchingIncoming, activeRole]);
 
-  if (fetching || incomingFetching) return <>{translate('pages.common.loading')}</>;
+  if (fetching || loadingCount) return <>{translate('pages.common.loading')}</>;
   // console.log({ isLoading });
   // if (isLoading) return <>{translate('pages.common.loading')}</>;
 

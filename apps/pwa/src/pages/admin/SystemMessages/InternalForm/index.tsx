@@ -78,7 +78,7 @@ function AdvertisingInternalPage() {
   }, [activeRole, enqueueSnackbar]);
 
   React.useEffect(() => {
-    dispatch(getTrackList(0, activeRole! as string));
+    dispatch(getTrackList(1, activeRole! as string));
   }, [activeRole]);
 
   React.useEffect(() => {

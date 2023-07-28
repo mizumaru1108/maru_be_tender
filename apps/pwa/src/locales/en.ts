@@ -2341,6 +2341,16 @@ const en = {
   },
   system_messages: {
     add_new_advertising: 'Add New Advertising',
+    details: 'Details',
+    dialog: {
+      title: 'Title',
+      track: 'Track',
+      content: 'Content',
+      banner_details: {
+        internal: 'Internal Banner Details',
+        external: 'External Banner Details',
+      },
+    },
     snackbar: {
       internal_messages_success_create: 'The internal message has been created successfully',
       internal_messages_success_update: 'The internal message has been updated successfully',

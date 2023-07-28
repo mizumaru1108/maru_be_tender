@@ -114,9 +114,9 @@ function DashboardProjectManagement() {
     fetchingIncoming();
   }, [fetchingIncoming]);
 
-  useEffect(() => {
-    dispatch(getTrackList(0, activeRole! as string));
-  }, [dispatch, activeRole]);
+  // useEffect(() => {
+  //   dispatch(getTrackList(0, activeRole! as string));
+  // }, [dispatch, activeRole]);
 
   const headerCells: ProjectManagementTableHeader[] = [
     {
