@@ -1,16 +1,21 @@
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { ApiProperty } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { nanoid } from 'nanoid';
 import { ITenderAppConfig } from 'src/commons/configs/tender-app-config';
 import { FileMimeTypeEnum } from 'src/commons/enums/file-mimetype.enum';
 import { BunnyService } from 'src/libs/bunny/services/bunny.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ProposalCloseReportEntity } from 'src/proposal-management/closing-report/entity/proposal.close.report.entity';
+import { ClosingReportBeneficiaryRepository } from 'src/proposal-management/closing-report/repositories/closing.report.beneficiary.repository';
+import { ClosingReportExecutionPlacesRepository } from 'src/proposal-management/closing-report/repositories/closing.report.execution.places.repository';
+import { ClosingReportGendersRepository } from 'src/proposal-management/closing-report/repositories/closing.report.genders.repository';
 import {
   ProposalCloseReportCreateProps,
   ProposalCloseReportRepository,
 } from 'src/proposal-management/closing-report/repositories/proposal.close.report.repository';
-import { AskClosingReportDto } from 'src/proposal-management/payment/dtos/requests';
+import { SubmitClosingReportDto } from 'src/proposal-management/payment/dtos/requests/submit.closing.report.dto';
 import { ProposalLogRepository } from 'src/proposal-management/proposal-log/repositories/proposal.log.repository';
 import { ProposalRepository } from 'src/proposal-management/proposal/repositories/proposal.repository';
 import { TenderAppRoleEnum } from 'src/tender-commons/types';
@@ -28,10 +33,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 export class PaymentSubmitClosingReportCommand {
   currentUser: TenderCurrentUser;
-  dto: AskClosingReportDto;
+  dto: SubmitClosingReportDto;
 }
 
-export class PaymentSubmitClosingReportCommandResult {}
+export class PaymentSubmitClosingReportCommandResult {
+  @ApiProperty()
+  created_close_report: ProposalCloseReportEntity;
+}
 
 @CommandHandler(PaymentSubmitClosingReportCommand)
 export class PaymentSubmitClosingReportCommandHandler
@@ -46,6 +54,9 @@ export class PaymentSubmitClosingReportCommandHandler
     private readonly bunnyService: BunnyService,
     private readonly configService: ConfigService,
     private readonly closeReportRepo: ProposalCloseReportRepository,
+    private readonly closeReportBeneficiaryRepo: ClosingReportBeneficiaryRepository,
+    private readonly closeReportGendersRepo: ClosingReportGendersRepository,
+    private readonly closeReportExecutionPlacesRepo: ClosingReportExecutionPlacesRepository,
     private readonly proposalRepo: ProposalRepository,
     private readonly logRepo: ProposalLogRepository,
     private readonly fileManagerRepo: TenderFileManagerRepository,
@@ -63,14 +74,14 @@ export class PaymentSubmitClosingReportCommandHandler
         {
           id: uuidv4(),
           proposal_id: dto.proposal_id,
-          execution_place: dto.execution_place,
-          gender: dto.gender,
+          // execution_place: dto.execution_place,
+          // gender: dto.gender,
           number_of_beneficiaries: dto.number_of_beneficiaries,
           number_of_staff: dto.number_of_staff,
           number_of_volunteer: dto.number_of_volunteer,
           project_duration: dto.project_duration,
           project_repeated: dto.project_repeated,
-          target_beneficiaries: dto.target_beneficiaries,
+          // target_beneficiaries: dto.target_beneficiaries,
         },
       ).build();
 
@@ -150,14 +161,56 @@ export class PaymentSubmitClosingReportCommandHandler
         }
       }
 
-      const result = await this.prismaService.$transaction(
+      const dbProcess = await this.prismaService.$transaction(
         async (prismaSession) => {
           const session =
             prismaSession instanceof PrismaService
               ? prismaSession
               : this.prismaService;
 
-          await this.closeReportRepo.create(closeReportPayload, session);
+          const createdCloseReport = await this.closeReportRepo.create(
+            closeReportPayload,
+            session,
+          );
+
+          // creating beneficiaries for the close report
+          for (const beneficiary of dto.beneficiaries) {
+            await this.closeReportBeneficiaryRepo.create(
+              {
+                id: nanoid(),
+                closing_report_id: createdCloseReport.id,
+                selected_numbers: beneficiary.selected_numbers,
+                selected_values: beneficiary.selected_values,
+              },
+              session,
+            );
+          }
+
+          // creating genders for the close report
+          for (const gender of dto.genders) {
+            await this.closeReportGendersRepo.create(
+              {
+                id: nanoid(),
+                closing_report_id: createdCloseReport.id,
+                selected_numbers: gender.selected_numbers,
+                selected_values: gender.selected_values,
+              },
+              session,
+            );
+          }
+
+          // creating execution places for the close report
+          for (const place of dto.execution_places) {
+            await this.closeReportExecutionPlacesRepo.create(
+              {
+                id: nanoid(),
+                closing_report_id: createdCloseReport.id,
+                selected_numbers: place.selected_numbers,
+                selected_values: place.selected_values,
+              },
+              session,
+            );
+          }
 
           await this.proposalRepo.update(
             {
@@ -184,8 +237,31 @@ export class PaymentSubmitClosingReportCommandHandler
               await this.fileManagerRepo.create(file, session);
             }
           }
+
+          const updatedCloseReport = await this.closeReportRepo.findOne(
+            {
+              id: createdCloseReport.id,
+              include_relations: [
+                'beneficiaries',
+                'execution_places',
+                'genders',
+              ],
+            },
+            session,
+          );
+
+          return {
+            created_close_report: updatedCloseReport,
+          };
+        },
+        {
+          timeout: 50000,
         },
       );
+
+      return {
+        created_close_report: dbProcess.created_close_report,
+      };
     } catch (error) {
       if (fileManagerPayload.length > 0) {
         for (const file of fileManagerPayload) {

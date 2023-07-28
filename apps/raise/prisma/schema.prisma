@@ -794,9 +794,12 @@ model proposal_closing_report {
   id                      String    @id(map: "closing_report_request_pkey")
   proposal_id             String
   number_of_beneficiaries Int
-  target_beneficiaries    String    @db.VarChar
-  execution_place         String    @db.VarChar
-  gender                  String    @db.VarChar
+  target_beneficiaries    String?    @db.VarChar // deprecated
+  beneficiaries           ClosingReportBeneficiaries[]
+  execution_place         String?    @db.VarChar // deprecated
+  execution_places         ClosingReportExecutionPlaces[] 
+  gender                  String?    @db.VarChar // deprecated
+  genders                  ClosingReportGenders[] 
   project_duration        String    @db.VarChar
   project_repeated        String    @db.VarChar
   number_of_volunteer     Int
@@ -807,6 +810,35 @@ model proposal_closing_report {
   updated_at              DateTime? @default(now()) @db.Timestamptz(6)
   proposal                proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade, map: "closing_report_request_proposal_id_fkey")
 }
+
+model ClosingReportBeneficiaries {
+    id String @id
+    closing_report_id String
+    closing_report proposal_closing_report @relation(fields: [closing_report_id], references: [id])
+    selected_values String
+    selected_numbers Int
+    @@map("closing_report_beneficiaries")
+}
+
+model ClosingReportExecutionPlaces {
+        id String @id
+    closing_report_id String
+    closing_report proposal_closing_report @relation(fields: [closing_report_id], references: [id])
+    selected_values String
+    selected_numbers Int
+    @@map("closing_report_execution_places")
+}
+
+model ClosingReportGenders {
+        id String @id
+    closing_report_id String
+    closing_report proposal_closing_report @relation(fields: [closing_report_id], references: [id])
+    selected_values String
+    selected_numbers Int
+    @@map("closing_report_genders")
+}
+
+
 
 model user3 {
   id             String    @id
