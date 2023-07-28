@@ -32,6 +32,7 @@ const TABLE_HEAD = [
   { id: 'title', label: 'system_messages.headercell.title' },
   { id: 'message_content', label: 'system_messages.headercell.message_content' },
   { id: 'track', label: 'system_messages.headercell.track' },
+  { id: 'status', label: 'system_messages.headercell.status' },
   { id: 'construction', label: 'system_messages.headercell.construction' },
 ];
 
@@ -85,6 +86,7 @@ export default function SystemMessageListTable() {
       title: translate('table_filter.sortby_options.track_za'),
     },
   ];
+  // console.debug({ track_list });
 
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
@@ -104,6 +106,7 @@ export default function SystemMessageListTable() {
             content: item.content || '',
             // desired_track: item.track_id || '',
             desired_track: track_list.find((track) => track.id === item.track_id)?.name || '',
+            status: item?.is_expired ? false : true,
           }))
         );
         setTotal(Number(response.data.total));

@@ -64,7 +64,7 @@ export default function AdvertisingForm({
       title: Yup.string().required(translate('system_messages.form.errors.title')),
       content: Yup.string().required(translate('system_messages.form.errors.content')),
       showTime: Yup.string().required(translate('system_messages.form.errors.showTime')),
-      track_id: Yup.string().required(translate('system_messages.form.errors.track')).nullable(),
+      // track_id: Yup.string().required(translate('system_messages.form.errors.track')).nullable(),
       image: Yup.mixed()
         .test('size', translate('system_messages.form.errors.image.size'), (value) => {
           if (value) {
@@ -106,7 +106,7 @@ export default function AdvertisingForm({
     ...(advertisingType === TypeAdvertisingForm.external && {
       title: defaultvalues ? defaultvalues?.title : '',
       content: defaultvalues ? defaultvalues?.content : '',
-      track_id: defaultvalues ? defaultvalues?.track_id : '',
+      // track_id: defaultvalues ? defaultvalues?.track_id : '',
       showTime: defaultvalues ? dayjs(defaultvalues?.expired_date).format('YYYY-MM-DD') : '',
       image:
         defaultvalues && defaultvalues?.logo && defaultvalues?.logo.length > 0
@@ -166,7 +166,7 @@ export default function AdvertisingForm({
             />
           </Grid>
           <Space direction="horizontal" size="small" />
-          {/* {advertisingType === TypeAdvertisingForm.internal && (
+          {advertisingType === TypeAdvertisingForm.internal && (
             <>
               <Grid item md={12} xs={12}>
                 <RHFSelect
@@ -192,30 +192,8 @@ export default function AdvertisingForm({
               </Grid>
               <Space direction="horizontal" size="small" />
             </>
-          )} */}
-          <Grid item md={12} xs={12}>
-            <RHFSelect
-              type="select"
-              name="track_id"
-              data-cy="system_messages.form.track"
-              label={translate('system_messages.form.track.label')}
-              placeholder={translate('system_messages.form.track.placeholder')}
-              size="small"
-            >
-              {[...track_list]
-                .filter((item: tracks) => item.is_deleted === false)
-                .map((item: tracks, index: any) => (
-                  <MenuItem
-                    data-cy={`system_messages.form.track-${index}`}
-                    key={index}
-                    value={item?.id}
-                  >
-                    {formatCapitalizeText(item?.name)}
-                  </MenuItem>
-                ))}
-            </RHFSelect>
-          </Grid>
-          <Space direction="horizontal" size="small" />
+          )}
+
           {advertisingType === TypeAdvertisingForm.external && (
             <>
               <Grid item md={4} xs={12}>

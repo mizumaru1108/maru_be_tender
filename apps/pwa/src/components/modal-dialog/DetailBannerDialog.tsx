@@ -27,9 +27,10 @@ type Props = {
   handleClose: () => void;
   message: string;
   data?: AdvertisingTapeList | null;
+  role?: 'client' | 'employee';
 };
 
-function DetailBannerDialog({ open, handleClose, message, data = null }: Props) {
+function DetailBannerDialog({ open, handleClose, message, data = null, role = 'employee' }: Props) {
   // console.log({ data });
   const classes = useStyles();
   const { translate } = useLocales();
@@ -72,18 +73,22 @@ function DetailBannerDialog({ open, handleClose, message, data = null }: Props) 
                   <Typography variant="body1">{data?.title}</Typography>
                 </Grid>
                 <Space direction="horizontal" size="small" />
-                <Grid item md={12} xs={12}>
-                  <Typography variant="h6" fontWeight="bold" color="#000000">
-                    {translate('system_messages.dialog.track')}
-                  </Typography>
-                </Grid>
-                <Grid item md={12} xs={12}>
-                  {/* Track */}
-                  {/* {track_list.find((item) => item?.id === data?.track_id)?.name || '-'} */}
-                  {`${formatCapitalizeText(
-                    track_list.find((item) => item?.id === data?.track_id)?.name || '-'
-                  )}`}
-                </Grid>
+                {role === 'employee' && (
+                  <section>
+                    <Grid item md={12} xs={12}>
+                      <Typography variant="h6" fontWeight="bold" color="#000000">
+                        {translate('system_messages.dialog.track')}
+                      </Typography>
+                    </Grid>
+                    <Grid item md={12} xs={12}>
+                      {/* Track */}
+                      {/* {track_list.find((item) => item?.id === data?.track_id)?.name || '-'} */}
+                      {`${formatCapitalizeText(
+                        track_list.find((item) => item?.id === data?.track_id)?.name || '-'
+                      )}`}
+                    </Grid>
+                  </section>
+                )}
                 <Space direction="horizontal" size="small" />
                 <Grid item md={12} xs={12}>
                   <Typography variant="h6" fontWeight="bold" color="#000000">

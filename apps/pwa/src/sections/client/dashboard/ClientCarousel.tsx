@@ -136,6 +136,7 @@ function ClientCarousel() {
             handleClose={() => setOpen(!open)}
             message={'system_messages.dialog.banner_details.external'}
             data={details}
+            role="client"
           />
           <CarouselArrows
             filled
@@ -168,7 +169,10 @@ function ClientCarousel() {
                     sx={{ p: '10px 25px 10px 25px', w: '100%', h: '100%' }}
                   >
                     <Box flex={1} sx={{ alignSelf: 'center' }}>
-                      <img src={`/icons/mosque-carousel-icon.svg`} alt="" />
+                      <img
+                        src={item?.logo ? item.logo[0].url : `/icons/mosque-carousel-icon.svg`}
+                        alt=""
+                      />
                     </Box>
                     <Stack direction="column" gap={1} justifyContent="center" flex={4}>
                       <Typography
@@ -176,9 +180,10 @@ function ClientCarousel() {
                         sx={{ fontSize: '16px', textAlign: 'end', color: 'text.tertiary' }}
                         variant="h4"
                       >
-                        {`${item.title} (${
+                        {/* {`${item.title} (${
                           track_list.find((track) => track.id === item.track_id)?.name || '-'
-                        })`}
+                        })`} */}
+                        {`${item.title}`}
                       </Typography>
                       <Typography
                         className={classes.multiLineEllipsis}

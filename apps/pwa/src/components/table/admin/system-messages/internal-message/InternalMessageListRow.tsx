@@ -1,13 +1,13 @@
-import { TableRow, Checkbox, TableCell, Typography, Button, Box, Grid } from '@mui/material';
-import useLocales from 'hooks/useLocales';
-import { useNavigate } from 'react-router';
-import useAuth from 'hooks/useAuth';
-import { role_url_map } from '../../../../../@types/commons';
-import { InternalMessagesListsRow } from 'components/table/admin/system-messages/types';
+import { Button, Chip, Grid, TableCell, TableRow, Typography } from '@mui/material';
 import Iconify from 'components/Iconify';
 import Space from 'components/space/space';
-import RejectionModal from '../../../../modal-dialog/RejectionModal';
+import { InternalMessagesListsRow } from 'components/table/admin/system-messages/types';
+import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
 import React from 'react';
+import { useNavigate } from 'react-router';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
+import { role_url_map } from '../../../../../@types/commons';
 import ConfirmationModal from '../../../../modal-dialog/ConfirmationModal';
 
 export default function InternalMessageListRow({
@@ -16,6 +16,7 @@ export default function InternalMessageListRow({
   onSelectRow,
   onDelete,
 }: InternalMessagesListsRow) {
+  // console.log({ row });
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
   const [openModalReject, setOpenModalReject] = React.useState(false);
@@ -40,18 +41,39 @@ export default function InternalMessageListRow({
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell> */}
         <TableCell align="left" sx={{ maxWidth: 250 }}>
-          <Typography variant="subtitle2">{row.title ?? '-'}</Typography>
+          <Typography variant="subtitle2" noWrap>
+            {row.title ?? '-'}
+          </Typography>
         </TableCell>
         <TableCell align="left" sx={{ maxWidth: 250 }}>
           <Typography
             variant="subtitle2"
             sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+            noWrap
           >
             {row.content ?? '-'}
           </Typography>
         </TableCell>
         <TableCell align="left" sx={{ maxWidth: 250 }}>
-          <Typography variant="subtitle2">{row.desired_track ?? '-'}</Typography>
+          <Typography variant="subtitle2">
+            {row?.desired_track ? formatCapitalizeText(row?.desired_track) : '-'}
+          </Typography>
+        </TableCell>
+        <TableCell align="left" sx={{ maxWidth: 250 }}>
+          {/* <Typography variant="subtitle2">{row?.status ? 'active' : 'expired'}</Typography> */}
+          {row?.status ? (
+            <Chip
+              label={translate('system_messages.status.active')}
+              color="primary"
+              sx={{ fontWeight: 'bold' }}
+            />
+          ) : (
+            <Chip
+              label={translate('system_messages.status.inactive')}
+              color="error"
+              sx={{ fontWeight: 'bold' }}
+            />
+          )}
         </TableCell>
         <TableCell align="left">
           <Grid container display="flex" flexDirection="column">

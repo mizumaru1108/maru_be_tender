@@ -2342,6 +2342,10 @@ const en = {
   system_messages: {
     add_new_advertising: 'Add New Advertising',
     details: 'Details',
+    status: {
+      active: 'Active',
+      inactive: 'Inactive',
+    },
     dialog: {
       title: 'Title',
       track: 'Track',
@@ -2411,6 +2415,7 @@ const en = {
       track: 'Track',
       construction: 'Construction',
       the_show_lenght: 'The show length',
+      status: 'Status',
     },
     current_slides: 'Current slides',
   },
