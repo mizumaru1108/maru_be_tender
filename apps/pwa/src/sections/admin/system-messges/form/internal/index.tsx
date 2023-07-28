@@ -29,8 +29,8 @@ export default function AdvertisingInternalForm({ defaultvalues = null }: Props)
   const handleSubmit = async (data: FormInputAdvertisingForm) => {
     setIsLoading(true);
     const { image, showTime, ...rest } = data;
-    const tmpDate = new Date();
-    // tmpDate.setDate(tmpDate.getDate() + 7);
+    let tmpDate = new Date();
+    tmpDate.setDate(tmpDate.getDate() + 1);
     let payload: any = {
       ...rest,
       advertisement_id: defaultvalues && defaultvalues?.id ? defaultvalues?.id : undefined,

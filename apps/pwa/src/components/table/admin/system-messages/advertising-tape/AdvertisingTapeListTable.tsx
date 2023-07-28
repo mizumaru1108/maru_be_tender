@@ -114,7 +114,7 @@ export default function AdvertisingTapeListTable() {
             // track_id: item.track_id || '',
             showTime: `${dayjs(item.expired_date).format('YYYY-MM-DD (hh:mm A)')}`,
             track_id: track_list.find((track) => track.id === item.track_id)?.name || '',
-            image: item?.logo?.length > 0 ? item?.logo[0].url : null,
+            image: item?.logo && item?.logo?.length > 0 ? item?.logo[0].url : null,
           }))
         );
         setTotal(Number(response?.data?.total));

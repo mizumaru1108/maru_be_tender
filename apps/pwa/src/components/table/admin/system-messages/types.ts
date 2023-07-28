@@ -24,7 +24,11 @@ export type AdvertisingTapeList = {
   track_id?: string;
   content: string;
   image?: string;
-  logo?: any;
+  logo?: {
+    url?: string;
+    type?: number;
+    size?: string;
+  }[];
   date?: string;
   showTime?: string;
 };

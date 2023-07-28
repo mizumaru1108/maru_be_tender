@@ -2360,6 +2360,16 @@ const ar = {
   },
   system_messages: {
     add_new_advertising: 'اضافة رسالة التفاعلية جديدة',
+    details: 'تفاصيل',
+    dialog: {
+      title: 'عنوان',
+      track: 'المسار',
+      content: 'المحتوى',
+      banner_details: {
+        internal: 'تفاصيل البانر الداخلي',
+        external: 'تفاصيل البانر الخارجي',
+      },
+    },
     snackbar: {
       internal_messages_success_create: 'تم إنشاء الرسالة الداخلية بنجاح',
       internal_messages_success_update: 'تم تحديث الرسالة الداخلية بنجاح',

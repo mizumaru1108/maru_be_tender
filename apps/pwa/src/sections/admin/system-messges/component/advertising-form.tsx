@@ -47,7 +47,6 @@ export default function AdvertisingForm({
   isLoading = false,
   defaultvalues = null,
 }: Props) {
-  // console.log({ defaultvalues });
   const { translate } = useLocales();
   const { activeRole } = useAuth();
   const { loadingCount, track_list } = useSelector((state) => state.proposal);
@@ -65,6 +64,7 @@ export default function AdvertisingForm({
       title: Yup.string().required(translate('system_messages.form.errors.title')),
       content: Yup.string().required(translate('system_messages.form.errors.content')),
       showTime: Yup.string().required(translate('system_messages.form.errors.showTime')),
+      track_id: Yup.string().required(translate('system_messages.form.errors.track')).nullable(),
       image: Yup.mixed()
         .test('size', translate('system_messages.form.errors.image.size'), (value) => {
           if (value) {
@@ -107,7 +107,7 @@ export default function AdvertisingForm({
       title: defaultvalues ? defaultvalues?.title : '',
       content: defaultvalues ? defaultvalues?.content : '',
       track_id: defaultvalues ? defaultvalues?.track_id : '',
-      showTime: defaultvalues ? dayjs(defaultvalues?.showTime).format('YYYY-MM-DD') : '',
+      showTime: defaultvalues ? dayjs(defaultvalues?.expired_date).format('YYYY-MM-DD') : '',
       image:
         defaultvalues && defaultvalues?.logo && defaultvalues?.logo.length > 0
           ? defaultvalues?.logo[defaultvalues?.logo.length - 1]
