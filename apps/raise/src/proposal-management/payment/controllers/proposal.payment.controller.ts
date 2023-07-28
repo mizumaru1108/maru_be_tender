@@ -55,6 +55,7 @@ import {
   PaymentSubmitClosingReportCommand,
   PaymentSubmitClosingReportCommandResult,
 } from 'src/proposal-management/payment/commands/payment.submit.closing.report.command';
+import { SubmitClosingReportDto } from 'src/proposal-management/payment/dtos/requests/submit.closing.report.dto';
 
 @Controller('tender/proposal/payment')
 export class ProposalPaymentController {
@@ -191,13 +192,13 @@ export class ProposalPaymentController {
   })
   @ApiBearerAuth()
   @ApiSecurity('x-hasura-role')
-  @BaseApiOkResponse(PaymentSubmitClosingReportCommandResult, 'array')
+  @BaseApiOkResponse(PaymentSubmitClosingReportCommandResult, 'object')
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
   @Post('submit-closing-report-cqrs')
   async submitClosingReport(
     @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() dto: AskClosingReportDto,
+    @Body() dto: SubmitClosingReportDto,
   ): Promise<BaseResponse<PaymentSubmitClosingReportCommandResult>> {
     try {
       const command = Builder<PaymentSubmitClosingReportCommand>(
@@ -216,7 +217,7 @@ export class ProposalPaymentController {
       return baseResponseHelper(
         result,
         HttpStatus.CREATED,
-        'Advertisement Created Successfully!',
+        'Close Report Created Successfully!',
       );
     } catch (e) {
       throw this.paymentControllerErrorMapper(e);

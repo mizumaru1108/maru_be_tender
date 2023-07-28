@@ -4,8 +4,14 @@ import { Builder } from 'builder-pattern';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProposalCloseReportEntity } from 'src/proposal-management/closing-report/entity/proposal.close.report.entity';
 import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
+import { PayloadErrorException } from 'src/tender-commons/exceptions/payload-error.exception';
 import { v4 as uuidv4 } from 'uuid';
-
+export class ProposalCloseReportFindOneProps {
+  id?: string;
+  proposal_id?: string;
+  include_relations?: string[];
+  method?: 'AND' | 'OR';
+}
 export class ProposalCloseReportCreateProps {
   id?: string; // incase of predefined so it is optional
   execution_place: string;
@@ -104,6 +110,79 @@ export class ProposalCloseReportRepository {
       const result = await prisma.proposal_closing_report.findFirst({
         where: { id: id },
       });
+      if (!result) return null;
+      return Builder<ProposalCloseReportEntity>(ProposalCloseReportEntity, {
+        ...result,
+      }).build();
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
+  async findOneFilter(
+    props: ProposalCloseReportFindOneProps,
+    session?: PrismaService,
+  ) {
+    const { id, proposal_id, include_relations, method = 'AND' } = props;
+    try {
+      const args: Prisma.proposal_closing_reportFindFirstArgs = {};
+      const whereClause: Prisma.proposal_closing_reportWhereInput = {};
+      if (!id && !proposal_id) {
+        throw new PayloadErrorException('Please at least add one identifier');
+      }
+
+      let clause: Prisma.proposal_follow_upWhereInput[] = [];
+      if (id) clause.push({ id });
+      if (proposal_id) clause.push({ proposal_id });
+      if (method === 'AND') whereClause.AND = clause;
+      if (method === 'OR') whereClause.OR = clause;
+
+      if (include_relations && include_relations.length > 0) {
+        let include: Prisma.proposal_closing_reportInclude = {};
+
+        for (const relation of include_relations) {
+          if (relation === 'beneficiaries') {
+            include = {
+              ...include,
+              beneficiaries: true,
+            };
+          }
+
+          if (relation === 'execution_places') {
+            include = {
+              ...include,
+              execution_places: true,
+            };
+          }
+
+          if (relation === 'genders') {
+            include = {
+              ...include,
+              genders: true,
+            };
+          }
+        }
+
+        args.include = include;
+      }
+
+      return args;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async findOne(
+    props: ProposalCloseReportFindOneProps,
+    session?: PrismaService,
+  ): Promise<ProposalCloseReportEntity | null> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const queryOptions = await this.findOneFilter(props);
+      const result = await prisma.proposal_closing_report.findFirst(
+        queryOptions,
+      );
       if (!result) return null;
       return Builder<ProposalCloseReportEntity>(ProposalCloseReportEntity, {
         ...result,

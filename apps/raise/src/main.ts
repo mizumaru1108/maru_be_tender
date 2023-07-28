@@ -77,7 +77,6 @@ async function bootstrap() {
       'https://dev.ommar.net', // Ommar Dev
       'https://staging.ommar.net', // Ommar Staging
       'https://tender-app-dev.tmra.io', // Tender Dev
-      'https://tender-app-qc.tmra.io', // Tender QC
       'https://tender-app-staging.tmra.io', // Tender Staging
       'https://gaith.hcharity.org', // Tender Staging
     ],

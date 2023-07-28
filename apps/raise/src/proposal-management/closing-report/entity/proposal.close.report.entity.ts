@@ -14,15 +14,21 @@
 //   updated_at              DateTime? @default(now()) @db.Timestamptz(6)
 //   proposal                proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade, map: "closing_report_request_proposal_id_fkey")
 
+import { ClosingReportBeneficiariesEntity } from 'src/proposal-management/closing-report/entity/closing.report.beneficiaries.entity';
+import { ClosingReportExecutionPlacesEntity } from 'src/proposal-management/closing-report/entity/closing.report.execution.places.entity';
+import { ClosingReportGendersEntity } from 'src/proposal-management/closing-report/entity/closing.report.genders.entity';
 import { ProposalEntity } from 'src/proposal-management/proposal/entities/proposal.entity';
 
 export class ProposalCloseReportEntity {
   id: string;
   proposal_id: string;
   number_of_beneficiaries: number;
-  target_beneficiaries: string;
-  execution_place: string;
-  gender: string;
+  target_beneficiaries?: string | null; // deprecated
+  beneficiaries: ClosingReportBeneficiariesEntity[];
+  execution_place?: string | null; // multiple
+  execution_places: ClosingReportExecutionPlacesEntity[];
+  gender?: string | null; // deprecated
+  genders: ClosingReportGendersEntity[];
   project_duration: string;
   project_repeated: string;
   number_of_volunteer: number;

@@ -778,9 +778,12 @@ Table proposal_closing_report {
   id String [pk]
   proposal_id String [not null]
   number_of_beneficiaries Int [not null]
-  target_beneficiaries String [not null]
-  execution_place String [not null]
-  gender String [not null]
+  target_beneficiaries String
+  beneficiaries closing_report_beneficiaries [not null]
+  execution_place String
+  execution_places closing_report_execution_places [not null]
+  gender String
+  genders closing_report_genders [not null]
   project_duration String [not null]
   project_repeated String [not null]
   number_of_volunteer Int [not null]
@@ -790,6 +793,30 @@ Table proposal_closing_report {
   created_at DateTime [default: `now()`]
   updated_at DateTime [default: `now()`]
   proposal proposal [not null]
+}
+
+Table closing_report_beneficiaries {
+  id String [pk]
+  closing_report_id String [not null]
+  closing_report proposal_closing_report [not null]
+  selected_values String [not null]
+  selected_numbers Int [not null]
+}
+
+Table closing_report_execution_places {
+  id String [pk]
+  closing_report_id String [not null]
+  closing_report proposal_closing_report [not null]
+  selected_values String [not null]
+  selected_numbers Int [not null]
+}
+
+Table closing_report_genders {
+  id String [pk]
+  closing_report_id String [not null]
+  closing_report proposal_closing_report [not null]
+  selected_values String [not null]
+  selected_numbers Int [not null]
 }
 
 Table user3 {
@@ -1633,3 +1660,9 @@ Ref: proposal_asked_edit_request.sender_id > user.id [delete: Restrict]
 Ref: proposal_asked_edit_request.supervisor_id > user.id [delete: Restrict]
 
 Ref: proposal_closing_report.proposal_id > proposal.id [delete: Cascade]
+
+Ref: closing_report_beneficiaries.closing_report_id > proposal_closing_report.id
+
+Ref: closing_report_execution_places.closing_report_id > proposal_closing_report.id
+
+Ref: closing_report_genders.closing_report_id > proposal_closing_report.id
