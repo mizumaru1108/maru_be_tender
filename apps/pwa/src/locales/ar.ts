@@ -2361,6 +2361,10 @@ const ar = {
   system_messages: {
     add_new_advertising: 'اضافة رسالة التفاعلية جديدة',
     details: 'تفاصيل',
+    status: {
+      active: 'نشيط',
+      inactive: 'غير نشط',
+    },
     dialog: {
       title: 'عنوان',
       track: 'المسار',
@@ -2430,6 +2434,7 @@ const ar = {
       track: 'مسار',
       construction: 'مشروع',
       the_show_lenght: 'عدد العناصر',
+      status: 'حالة',
     },
     current_slides: 'الصفحات الحالية',
   },

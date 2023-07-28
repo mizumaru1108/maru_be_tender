@@ -55,12 +55,15 @@ export default function AdvertisingTapeRow({
           />
         </TableCell>
         <TableCell align="left" sx={{ maxWidth: 200 }}>
-          <Typography variant="subtitle2">{row.title ?? '-'}</Typography>
+          <Typography variant="subtitle2" noWrap>
+            {row.title ?? '-'}
+          </Typography>
         </TableCell>
         <TableCell align="left" sx={{ maxWidth: 200 }}>
           <Typography
             variant="subtitle2"
             sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+            noWrap
           >
             {row.content ?? '-'}
           </Typography>
@@ -68,9 +71,9 @@ export default function AdvertisingTapeRow({
         <TableCell align="left" sx={{ maxWidth: 200 }}>
           <Typography variant="subtitle2">{row.showTime ?? '-'}</Typography>
         </TableCell>{' '}
-        <TableCell align="left" sx={{ maxWidth: 200 }}>
+        {/* <TableCell align="left" sx={{ maxWidth: 200 }}>
           <Typography variant="subtitle2">{row.track_id ?? '-'}</Typography>
-        </TableCell>
+        </TableCell> */}
         <TableCell align="left">
           <Grid container display="flex" flexDirection="column">
             <Grid item md={6}>

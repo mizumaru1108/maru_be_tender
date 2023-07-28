@@ -36,7 +36,7 @@ const TABLE_HEAD = [
   { id: 'title', label: 'system_messages.headercell.title' },
   { id: 'message_content', label: 'system_messages.headercell.message_content' },
   { id: 'the_show_lenght', label: 'system_messages.headercell.the_show_lenght' },
-  { id: 'track', label: 'system_messages.headercell.track' },
+  // { id: 'track', label: 'system_messages.headercell.track' },
   { id: 'construction', label: 'system_messages.headercell.construction' },
 ];
 
@@ -113,7 +113,7 @@ export default function AdvertisingTapeListTable() {
             content: item.content || '',
             // track_id: item.track_id || '',
             showTime: `${dayjs(item.expired_date).format('YYYY-MM-DD (hh:mm A)')}`,
-            track_id: track_list.find((track) => track.id === item.track_id)?.name || '',
+            // track_id: track_list.find((track) => track.id === item.track_id)?.name || '',
             image: item?.logo && item?.logo?.length > 0 ? item?.logo[0].url : null,
           }))
         );
@@ -257,7 +257,7 @@ export default function AdvertisingTapeListTable() {
             />
           </Box>
         </Grid>
-        <Grid item md={4} xs={12} display="flex" justifyContent={'flex-end'}>
+        {/* <Grid item md={4} xs={12} display="flex" justifyContent={'flex-end'}>
           <Box display="flex" alignItems="center">
             <Typography variant="body2" sx={{ fontSize: '14px', color: 'grey.600' }}>
               {translate('table_filter.sortby_title')} &nbsp;
@@ -280,7 +280,7 @@ export default function AdvertisingTapeListTable() {
               ))}
             </Select>
           </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
       <Card sx={{ backgroundColor: '#fff', mt: 2 }}>
         <Scrollbar>

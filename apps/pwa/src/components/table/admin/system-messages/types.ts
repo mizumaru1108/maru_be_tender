@@ -5,6 +5,8 @@ export type InternalMessagesList = {
   desired_track: string;
   track_id?: string;
   content: string;
+  status?: boolean;
+  is_expired?: boolean;
 };
 
 export interface InternalMessagesListsRow {
