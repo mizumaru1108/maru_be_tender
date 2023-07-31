@@ -475,7 +475,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
         }
       );
       if (rest) {
-        enqueueSnackbar('Meeting has been created', {
+        enqueueSnackbar(translate('appointment.success'), {
           variant: 'success',
           preventDuplicate: true,
           autoHideDuration: 3000,
@@ -552,9 +552,7 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
             : translate('appointment.meeting_schedule_header')}
         </Typography>
       </Grid>
-      <Grid item md={12} xs={12}>
-        {translate('appointment.meeting_schedule_sub_header')}
-      </Grid>
+
       {isLoading && (
         <Box
           sx={{
@@ -571,203 +569,209 @@ function SecondStep({ userId, setUserId, partnerName }: any) {
         </Box>
       )}
       {!isLoading && availableSchedule?.days.length === 0 && (
-        <Grid
-          item
-          md={12}
-          xs={12}
-          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-          <EmptyContent
-            title={translate('appointment.no_schedule')}
-            sx={{
-              '& span.MuiBox-root': { height: 160 },
-            }}
-          />
-        </Grid>
+        <>
+          <Grid item md={12} xs={12}>
+            {translate('appointment.unset_time_client')}
+          </Grid>
+          <Grid
+            item
+            md={12}
+            xs={12}
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          >
+            <EmptyContent
+              title={translate('appointment.no_schedule')}
+              sx={{
+                '& span.MuiBox-root': { height: 160 },
+              }}
+            />
+          </Grid>
+        </>
       )}
       {!isLoading &&
         availableSchedule &&
         availableSchedule.days &&
         availableSchedule?.days?.length > 0 && (
-          <Grid item md={7} xs={12}>
-            <Box
-              sx={{
-                width: '100%',
-                backgroundColor: '#fff',
-                borderRadius: 5,
-                padding: '20px',
-                height: '500px',
-                ':first-child': { height: '100%', maxHeight: 'unset !important' },
-                // '& .MuiCalendarPicker-root': {
-                //   height: '500px',
-                // },
-              }}
-            >
-              <CalendarPicker
-                date={date}
-                // onChange={(newDate) => setDate(newDate)}
-                onChange={(newDate) => {
-                  // const tmpDay = moment(newDate?.toISOString()).format('dddd');
-                  // console.log('newDate', tmpDay);
-                  // setSelectedDate(newDate!.toISOString());
-                  setSelectedDate({
-                    ...selectedDate,
-                    day: moment(newDate?.toISOString()).format('DD'),
-                    date: moment(newDate?.toISOString()).format('YYYY-MM-DD'),
-                  });
-                  setSelectedDay(moment(newDate?.toISOString()).format('dddd'));
+          <>
+            <Grid item md={12} xs={12}>
+              {translate('appointment.meeting_schedule_sub_header')}
+            </Grid>
+            {/* for select date */}
+            <Grid item md={7} xs={12}>
+              <Box
+                sx={{
+                  width: '100%',
+                  backgroundColor: '#fff',
+                  borderRadius: 5,
+                  padding: '20px',
+                  height: '500px',
+                  ':first-child': { height: '100%', maxHeight: 'unset !important' },
+                  // '& .MuiCalendarPicker-root': {
+                  //   height: '500px',
+                  // },
                 }}
-                renderDay={renderWeekPickerDay}
-                shouldDisableDate={disableUnAvailableDays}
-                dayOfWeekFormatter={(day) =>
-                  !isMobile
-                    ? DAY_EN_DESKTOP[`${day as DAYS_EN}`]
-                    : DAY_EN_MOBILE[`${day as DAYS_EN}`]
-                }
-                // disablePast
-                views={['day']}
-                showDaysOutsideCurrentMonth
-                onMonthChange={(newDate) => {
-                  const tmpDate = newDate.toISOString();
-                  setSelectedDay('');
-                  setSelectedDate({
-                    ...selectedDate,
-                    month: moment(tmpDate).format('MM'),
-                    year: moment(tmpDate).format('YYYY'),
-                  });
-                  // console.log('newDate', moment(tmpDate).format('MM'));
-                  // console.log('newDate', moment(tmpDate).format('YYYY'));
-                }}
-              />
-            </Box>
-          </Grid>
-        )}
-
-      {/* for select time */}
-      {!isLoading &&
-        availableSchedule &&
-        availableSchedule.days &&
-        availableSchedule?.days?.length > 0 && (
-          <Grid item md={5} xs={12} maxHeight={350} overflow={'auto'}>
-            <Typography variant="h6" sx={{ fontStyle: 'italic' }} gutterBottom>
-              {/* {title ? title : translate('errors.empty_data')} */}
-              {moment(selectedDate.date).format('dddd, MMMM Do YYYY') +
-                ' - ' +
-                moment(selectedTime, 'hh:mm A').format('hh:mm A')}
-            </Typography>
-            <Stack direction="column" gap={'10px'}>
-              {selectedDay &&
-                availableSchedule &&
-                availableSchedule.time.length > 0 &&
-                availableSchedule.time.map((time, index) => {
-                  const { time_gap, day } = time;
-                  if (selectedDay === day) {
-                    const idxMeetingDay =
-                      appointments?.time!.findIndex((item) => item.day === selectedDay) ?? -1;
-                    // console.log('time_gap', time_gap);
-                    // console.log(
-                    //   // 'appointments.date: ',
-                    //   // appointments?.time![idxMeetingDay].date,
-                    //   // 'selectedDate date: ',
-                    //   // selectedDate.date
-                    //   'idxMeetingDay',
-                    //   idxMeetingDay,
-                    //   'selectedDay',
-                    //   selectedDay,
-                    //   'appointments',
-                    //   appointments?.time
-                    // );
-                    return time_gap.map((gap, idx) => (
-                      <Button
-                        // newestTime
-                        key={idx}
-                        disabled={
-                          idxMeetingDay > -1 &&
-                          appointments?.time![idxMeetingDay].date === selectedDate.date &&
-                          // appointments?.time![idxMeetingDay].start_time.includes(gap)
-                          appointments?.time
-                            ?.filter((item) => item.day === selectedDay)
-                            .find((item) => item.start_time.includes(gap))
-                            ? true
-                            : false ||
-                              (!moment(todayDate, 'YYYY-MM-DD').isBefore(
-                                moment(selectedDate.date, 'YYYY-MM-DD')
-                              ) &&
-                                !moment(gap, 'h:mm A').isAfter(moment(newestTime, 'h:mm A')))
-                        }
-                        onClick={() => {
-                          setSelectedTime(gap);
-                        }}
-                        sx={{
-                          backgroundColor: selectedTime === gap ? '#0E8478' : '#fff',
-                          color:
+              >
+                <CalendarPicker
+                  date={date}
+                  // onChange={(newDate) => setDate(newDate)}
+                  onChange={(newDate) => {
+                    // const tmpDay = moment(newDate?.toISOString()).format('dddd');
+                    // console.log('newDate', tmpDay);
+                    // setSelectedDate(newDate!.toISOString());
+                    setSelectedDate({
+                      ...selectedDate,
+                      day: moment(newDate?.toISOString()).format('DD'),
+                      date: moment(newDate?.toISOString()).format('YYYY-MM-DD'),
+                    });
+                    setSelectedDay(moment(newDate?.toISOString()).format('dddd'));
+                  }}
+                  renderDay={renderWeekPickerDay}
+                  shouldDisableDate={disableUnAvailableDays}
+                  dayOfWeekFormatter={(day) =>
+                    !isMobile
+                      ? DAY_EN_DESKTOP[`${day as DAYS_EN}`]
+                      : DAY_EN_MOBILE[`${day as DAYS_EN}`]
+                  }
+                  // disablePast
+                  views={['day']}
+                  showDaysOutsideCurrentMonth
+                  onMonthChange={(newDate) => {
+                    const tmpDate = newDate.toISOString();
+                    setSelectedDay('');
+                    setSelectedDate({
+                      ...selectedDate,
+                      month: moment(tmpDate).format('MM'),
+                      year: moment(tmpDate).format('YYYY'),
+                    });
+                    // console.log('newDate', moment(tmpDate).format('MM'));
+                    // console.log('newDate', moment(tmpDate).format('YYYY'));
+                  }}
+                />
+              </Box>
+            </Grid>
+            {/* for select time */}
+            <Grid item md={5} xs={12} maxHeight={350} overflow={'auto'}>
+              <Typography variant="h6" sx={{ fontStyle: 'italic' }} gutterBottom>
+                {/* {title ? title : translate('errors.empty_data')} */}
+                {moment(selectedDate.date).format('dddd, MMMM Do YYYY') +
+                  ' - ' +
+                  moment(selectedTime, 'hh:mm A').format('hh:mm A')}
+              </Typography>
+              <Stack direction="column" gap={'10px'}>
+                {selectedDay &&
+                  availableSchedule &&
+                  availableSchedule.time.length > 0 &&
+                  availableSchedule.time.map((time, index) => {
+                    const { time_gap, day } = time;
+                    if (selectedDay === day) {
+                      const idxMeetingDay =
+                        appointments?.time!.findIndex((item) => item.day === selectedDay) ?? -1;
+                      // console.log('time_gap', time_gap);
+                      // console.log(
+                      //   // 'appointments.date: ',
+                      //   // appointments?.time![idxMeetingDay].date,
+                      //   // 'selectedDate date: ',
+                      //   // selectedDate.date
+                      //   'idxMeetingDay',
+                      //   idxMeetingDay,
+                      //   'selectedDay',
+                      //   selectedDay,
+                      //   'appointments',
+                      //   appointments?.time
+                      // );
+                      return time_gap.map((gap, idx) => (
+                        <Button
+                          // newestTime
+                          key={idx}
+                          disabled={
                             idxMeetingDay > -1 &&
                             appointments?.time![idxMeetingDay].date === selectedDate.date &&
-                            appointments?.time![idxMeetingDay].start_time.includes(gap)
-                              ? '#000'
-                              : selectedTime === gap
-                              ? '#fff'
-                              : '#0E8478',
-                          padding: '10px',
-                          display: 'flex',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <Typography>{gap}</Typography>
-                      </Button>
-                    ));
-                  } else {
-                    return <></>;
-                  }
-                })}
-            </Stack>
-          </Grid>
+                            // appointments?.time![idxMeetingDay].start_time.includes(gap)
+                            appointments?.time
+                              ?.filter((item) => item.day === selectedDay)
+                              .find((item) => item.start_time.includes(gap))
+                              ? true
+                              : false ||
+                                (!moment(todayDate, 'YYYY-MM-DD').isBefore(
+                                  moment(selectedDate.date, 'YYYY-MM-DD')
+                                ) &&
+                                  !moment(gap, 'h:mm A').isAfter(moment(newestTime, 'h:mm A')))
+                          }
+                          onClick={() => {
+                            setSelectedTime(gap);
+                          }}
+                          sx={{
+                            backgroundColor: selectedTime === gap ? '#0E8478' : '#fff',
+                            color:
+                              idxMeetingDay > -1 &&
+                              appointments?.time![idxMeetingDay].date === selectedDate.date &&
+                              appointments?.time![idxMeetingDay].start_time.includes(gap)
+                                ? '#000'
+                                : selectedTime === gap
+                                ? '#fff'
+                                : '#0E8478',
+                            padding: '10px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Typography>{gap}</Typography>
+                        </Button>
+                      ));
+                    } else {
+                      return <></>;
+                    }
+                  })}
+              </Stack>
+            </Grid>
+            <Grid
+              item
+              md={12}
+              xs={12}
+              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Box
+                sx={{
+                  backgroundColor: 'background.default',
+                  padding: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '50%',
+                  gap: 5,
+                  flexDirection: { md: 'row', xs: 'column' },
+                }}
+              >
+                <Button
+                  disabled={isLoading}
+                  onClick={() => {
+                    setUserId('');
+                  }}
+                  sx={{
+                    color: '#000',
+                    ':hover': { backgroundColor: '#fff' },
+                    padding: '10px 20px 10px 20px',
+                  }}
+                >
+                  رجوع
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isLoading || !selectedTime}
+                  sx={{
+                    color: '#fff',
+                    backgroundColor: 'background.paper',
+                    padding: '10px 20px 10px 20px',
+                  }}
+                  startIcon={<CheckIcon />}
+                >
+                  حفظ المواعيد
+                </Button>
+              </Box>
+            </Grid>
+          </>
         )}
-      <Grid
-        item
-        md={12}
-        xs={12}
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        <Box
-          sx={{
-            backgroundColor: 'background.default',
-            padding: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '50%',
-            gap: 5,
-            flexDirection: { md: 'row', xs: 'column' },
-          }}
-        >
-          <Button
-            disabled={isLoading}
-            onClick={() => {
-              setUserId('');
-            }}
-            sx={{
-              color: '#000',
-              ':hover': { backgroundColor: '#fff' },
-              padding: '10px 20px 10px 20px',
-            }}
-          >
-            رجوع
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isLoading || !selectedTime}
-            sx={{
-              color: '#fff',
-              backgroundColor: 'background.paper',
-              padding: '10px 20px 10px 20px',
-            }}
-            startIcon={<CheckIcon />}
-          >
-            حفظ المواعيد
-          </Button>
-        </Box>
-      </Grid>
+
       {/* {date && (
         <Grid item md={5} xs={12}>
           <Stack direction="column" gap={'10px'}>

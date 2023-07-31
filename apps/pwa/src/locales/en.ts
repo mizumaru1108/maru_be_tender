@@ -2278,9 +2278,11 @@ const en = {
   appointment: {
     meeting_schedule_header: 'Appointments available for the partner',
     meeting_schedule_sub_header: 'Please choose the appropriate day and time',
+    unset_time_client: 'Please inform related client to set available time for appointment',
     no_data: 'No data available',
     no_schedule: 'No schedule available for this partner',
     no_appointment: 'There is no available appointments',
+    success: 'Successfully created an appointment',
   },
   //old proposal Table
   old_proposal: {

@@ -73,16 +73,16 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   };
 
   useEffect(() => {
-    setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
-    if (proposal) {
-      if (proposal.fsupport_by_supervisor) {
-        setValue('fsupport_by_supervisor', proposal.fsupport_by_supervisor);
-      } else {
-        setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
-      }
+    if (proposal && proposal?.amount_required_fsupport) {
+      setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
+      // if (proposal.fsupport_by_supervisor) {
+      //   setValue('fsupport_by_supervisor', proposal.fsupport_by_supervisor);
+      // } else {
+      //   setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
+      // }
       // console.log('proposal.amount_required_fsupport', proposal.amount_required_fsupport);
     }
-  }, [proposal, setValue, reset]);
+  }, [proposal, setValue]);
 
   useEffect(() => {
     if (paymentNum) {
