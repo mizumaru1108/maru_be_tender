@@ -155,9 +155,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
   const onSubmitForm = async (data: ProposalApprovePayloadSupervisor) => {
     setIsLoading(true);
     // get total from amount_required_fsupport
-    const limitSupport = Number(
-      proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport
-    );
+    const limitSupport = Number(proposal?.amount_required_fsupport);
     let totalAmount: number | undefined = undefined;
     if (data.detail_project_budgets) {
       totalAmount = Number(

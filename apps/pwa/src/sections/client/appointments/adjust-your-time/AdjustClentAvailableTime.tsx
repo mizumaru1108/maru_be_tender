@@ -230,6 +230,7 @@ function AdjustClentAvailableTime() {
     fetching();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  // console.log({ availableTimes });
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '8px' }}>
@@ -293,7 +294,9 @@ function AdjustClentAvailableTime() {
                   data-cy={`availableTime.${index}.start_time`}
                   name={`availableTime.${index}.start_time`}
                   placeholder={translate('choose_suitable_time')}
-                  disabled={!availableTimes[index].day}
+                  disabled={
+                    availableTimes && availableTimes.length > 0 ? availableTimes[index].day : false
+                  }
                   children={
                     <>
                       {AVAILABLETIME.map((item, idx) => (
@@ -318,7 +321,9 @@ function AdjustClentAvailableTime() {
                   data-cy={`availableTime.${index}.end_time`}
                   name={`availableTime.${index}.end_time`}
                   placeholder={translate('choose_suitable_time')}
-                  disabled={!availableTimes[index].day}
+                  disabled={
+                    availableTimes && availableTimes.length > 0 ? availableTimes[index].day : false
+                  }
                   children={
                     <>
                       {AVAILABLETIME.map((item, idx) => (

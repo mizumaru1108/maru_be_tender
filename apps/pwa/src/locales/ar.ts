@@ -2290,7 +2290,7 @@ const ar = {
       },
     },
     button: {
-      accep: 'تأكيد',
+      accept: 'تأكيد',
       reject: 'رفض',
       start_meeting: 'إبدأ الاجتماع',
     },
@@ -2298,9 +2298,11 @@ const ar = {
   appointment: {
     meeting_schedule_header: 'المواعيدالمتوافرة للشريك',
     meeting_schedule_sub_header: 'الرجاء اختيار اليوم والوقت المناسب',
+    unset_time_client: 'يرجى إبلاغ العميل ذي الصلة لتحديد الوقت المتاح للموعد',
     no_data: 'لا توجد تقديمات',
     no_schedule: 'لا توجد تقديمات',
     no_appointment: 'لا توجد تقديمات',
+    success: 'تم إنشاء موعد بنجاح',
   },
   old_proposal: {
     page_title: 'مشاريع المنصة',
