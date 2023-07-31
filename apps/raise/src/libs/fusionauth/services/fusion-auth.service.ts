@@ -47,11 +47,21 @@ import { FusionAuthPasswordlessStartError } from '../exceptions/fusion.auth.pass
 import { FusionAuthPasswordlessLoginErrorException } from '../exceptions/fusion.auth.passwordless.login.error.exception';
 import { FusionAuthVerifyEmailErrorException } from '../exceptions/fusion.auth.verify.email.error.exception';
 import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
+import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
 
 /**
  * Nest Fusion Auth Service
  * @author RDanang (Iyoy!)
  */
+
+export class FusionAuthRegisterProps {
+  employee_name: string;
+  password: string;
+  mobile_number: string;
+  email: string;
+  user_roles: string[];
+  email_verified?: boolean = false;
+}
 @Injectable()
 export class FusionAuthService {
   private readonly logger = ROOT_LOGGER.child({
@@ -64,12 +74,13 @@ export class FusionAuthService {
   private fusionAuthUrl: string;
   private fusionAuthTenantId: string;
   private fusionAuthAdminKey: string;
+  private fusionAuthClientKey: string;
 
   constructor(
     private configService: ConfigService,
     private readonly notificationService: TenderNotificationService,
   ) {
-    const fusionAuthClientKey = this.configService.get(
+    this.fusionAuthClientKey = this.configService.get(
       'fusionAuthConfig.clientKey',
     ) as string;
 
@@ -90,7 +101,7 @@ export class FusionAuthService {
     ) as string;
 
     this.fusionAuthClient = new FusionAuthClient(
-      fusionAuthClientKey,
+      this.fusionAuthClientKey,
       this.fusionAuthUrl,
       this.fusionAuthTenantId,
     );
@@ -204,7 +215,7 @@ export class FusionAuthService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.fusionAuthAdminKey,
+        Authorization: this.fusionAuthClientKey,
         'X-FusionAuth-TenantId': this.fusionAuthTenantId,
       },
       data: {
@@ -213,16 +224,40 @@ export class FusionAuthService {
       },
       url: passwordlessCredsCheckUrl,
     };
+    // console.log(logUtil(options));
 
     // console.log('passwordless login start options', options);
 
     try {
       const data = await axios(options);
       return data.data.code;
-    } catch (error) {
+    } catch (error: any) {
+      // console.trace(error);
+      // console.log(logUtil(error.data));
+      // console.trace(logUtil(error)\);
       this.logger.error(
         `Error when start fusionauth passwordless login detail ${error}`,
       );
+      if (error.response.status === 404) {
+        throw new DataNotFoundException(`User ${loginId} not found!`);
+      }
+      if (
+        error.response.data &&
+        error.response.data.fieldErrors &&
+        error.response.status < 500
+      ) {
+        // console.log('response.data', logUtil(error.response.data));
+        // this.logger.error('FusionAuth Error:', error.response.data);
+        throw new FusionAuthPasswordlessStartError(
+          `Field error (${[
+            Object.keys(error.response.data.fieldErrors)[0],
+          ]}) : ${
+            error.response.data.fieldErrors[
+              Object.keys(error.response.data.fieldErrors)[0]
+            ][0].message
+          }`,
+        );
+      }
       throw new FusionAuthPasswordlessStartError(`${error}`);
     }
   }
@@ -476,36 +511,36 @@ export class FusionAuthService {
   //   }
   // }
 
-  async fusionAuthTenderRegisterUser(
-    registerRequest: TenderCreateUserFusionAuthDto,
-  ) {
+  async fusionAuthTenderRegisterUser(props: FusionAuthRegisterProps) {
     const baseUrl = this.fusionAuthUrl;
     const registerUrl = baseUrl + '/api/user/registration/';
 
     let role: string[] = ['tender_client'];
 
     // change the tender app role to fusion auth roles
-    if (registerRequest.user_roles) {
-      const tmpRoles: string[] = registerRequest.user_roles.map(
+    if (props.user_roles) {
+      const tmpRoles: string[] = props.user_roles.map(
         (role) => appRoleToFusionAuthRoles[role as TenderAppRole],
       );
       role = tmpRoles;
     }
 
     const user: IFusionAuthUser = {
-      email: registerRequest.email,
-      password: registerRequest.password,
-      firstName: registerRequest.employee_name,
+      email: props.email,
+      password: props.password,
+      firstName: props.employee_name,
       lastName: '',
+      verified: props.email_verified || false,
     };
 
-    if (registerRequest.mobile_number) {
-      user.mobilePhone = registerRequest.mobile_number;
+    if (props.mobile_number) {
+      user.mobilePhone = props.mobile_number;
     }
 
     const registration: IFusionAuthUserRegistration = {
       applicationId: this.fusionAuthAppId,
       roles: role,
+      verified: props.email_verified || false,
     };
 
     const registrationRequest: IFusionAuthRegistrationRequest = {
@@ -526,7 +561,7 @@ export class FusionAuthService {
 
     this.logger.log(
       'info',
-      `trying to register user (${registerRequest.email}) to fusion auth`,
+      `trying to register user (${props.email}) to fusion auth`,
     );
 
     try {

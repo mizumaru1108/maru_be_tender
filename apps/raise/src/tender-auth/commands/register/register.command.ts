@@ -201,9 +201,11 @@ export class RegisterClientCommandHandler
           password,
           mobile_number: dataEntryMobile,
           user_roles: ['CLIENT'],
+          email_verified: false,
         });
 
       createdFusionAuthId = registerFusionAuth.user.id;
+      // console.log(registerFusionAuth);
 
       const bankInfoId = uuidv4();
 

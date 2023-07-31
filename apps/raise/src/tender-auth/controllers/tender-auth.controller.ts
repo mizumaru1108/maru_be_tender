@@ -4,6 +4,7 @@ import {
   ConflictException,
   Controller,
   HttpStatus,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   Post,
@@ -50,6 +51,37 @@ export class TenderAuthController {
     private readonly commandBus: CommandBus,
   ) {}
 
+  errorMapper(error: any) {
+    if (
+      error instanceof UserAlreadyExistException ||
+      error instanceof EmailAlreadyVerifiedException
+    ) {
+      return new ConflictException(error.message);
+    }
+    if (
+      error instanceof FusionAuthRegisterError ||
+      error instanceof PayloadErrorException ||
+      error instanceof InvalidFileExtensionException ||
+      error instanceof InvalidFileSizeException
+    ) {
+      return new BadRequestException(error.message);
+    }
+    if (
+      error instanceof FileUploadErrorException ||
+      error instanceof PrismaTransactionExpiredException ||
+      error instanceof FusionAuthPasswordlessStartError ||
+      error instanceof FusionAuthPasswordlessLoginErrorException ||
+      error instanceof FusionAuthVerifyEmailErrorException ||
+      error instanceof TokenExpiredException
+    ) {
+      return new UnprocessableEntityException(error.message);
+    }
+    if (error instanceof DataNotFoundException) {
+      return new NotFoundException(error.message);
+    }
+    return new InternalServerErrorException(error);
+  }
+
   @Post('old/login')
   async oldLogin(
     @Body() loginRequest: LoginRequestDto,
@@ -93,10 +125,7 @@ export class TenderAuthController {
         'Send email verif success!',
       );
     } catch (error) {
-      if (error instanceof FusionAuthPasswordlessStartError) {
-        throw new UnprocessableEntityException(error.message);
-      }
-      throw error;
+      throw this.errorMapper(error);
     }
   }
 
@@ -119,22 +148,7 @@ export class TenderAuthController {
         'Verify email success!',
       );
     } catch (error) {
-      if (
-        error instanceof FusionAuthPasswordlessLoginErrorException ||
-        error instanceof FusionAuthVerifyEmailErrorException
-      ) {
-        throw new UnprocessableEntityException(error.message);
-      }
-      if (error instanceof TokenExpiredException) {
-        throw new UnprocessableEntityException(error.message);
-      }
-      if (error instanceof EmailAlreadyVerifiedException) {
-        throw new ConflictException(error.message);
-      }
-      if (error instanceof DataNotFoundException) {
-        throw new NotFoundException(error.message);
-      }
-      throw error;
+      throw this.errorMapper(error);
     }
   }
 
@@ -173,24 +187,7 @@ export class TenderAuthController {
         'Client has been registered successfully!',
       );
     } catch (error) {
-      if (error instanceof UserAlreadyExistException) {
-        throw new ConflictException(error.message);
-      }
-      if (
-        error instanceof FusionAuthRegisterError ||
-        error instanceof PayloadErrorException ||
-        error instanceof InvalidFileExtensionException ||
-        error instanceof InvalidFileSizeException
-      ) {
-        throw new BadRequestException(error.message);
-      }
-      if (
-        error instanceof FileUploadErrorException ||
-        error instanceof PrismaTransactionExpiredException
-      ) {
-        throw new UnprocessableEntityException(error.message);
-      }
-      throw error;
+      throw this.errorMapper(error);
     }
   }
 
