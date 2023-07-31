@@ -205,6 +205,7 @@ function PaymentsTable() {
                 ) : (
                   <Grid item md={3}>
                     <LoadingButton
+                      data-cy={`content.administrative.project_details.payment.table.btn.exchange_permit_issued_${index}`}
                       sx={{
                         color: index !== currentIssuedPayament ? '#fff' : '#1E1E1E',
                         backgroundColor: index === currentIssuedPayament ? '#0E8478' : '#93A3B03D',
