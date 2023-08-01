@@ -9,6 +9,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
 import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
 import moment from 'moment';
+import { logUtil } from 'src/commons/utils/log-util';
+import { TrackEntity } from 'src/tender-track/track/entities/track.entity';
 
 export class BannerCreateProps {
   content: string;
@@ -41,6 +43,7 @@ export class BannerFindManyProps {
   page?: number;
   sort_by?: string;
   sort_direction?: string;
+  include_relations?: string[];
 }
 
 export class BannerFindManyResponse extends BannerEntity {
@@ -139,19 +142,32 @@ export class BannerRepository {
     try {
       const result = await prisma.banner.findFirst({
         where: { id },
+        include: { track: true },
       });
+
       if (!result) return null;
-      return Builder<BannerEntity>(BannerEntity, {
+
+      let newTrack: TrackEntity | undefined = undefined;
+      if (result.track) {
+        newTrack = Builder<TrackEntity>(TrackEntity, {
+          ...result.track,
+        }).build();
+      }
+
+      const entity = Builder<BannerEntity>(BannerEntity, {
         ...result,
+        track: newTrack,
       }).build();
+
+      return entity;
     } catch (error) {
       throw this.errorMapper(error);
     }
   }
 
   async findManyFilters(props: BannerFindManyProps) {
-    const { track_id, type, only_active } = props;
-    const queryOptions: Prisma.BannerFindManyArgs = {};
+    const { track_id, type, only_active, include_relations } = props;
+    let queryOptions: Prisma.BannerFindManyArgs = {};
     let findManyWhereClause: Prisma.BannerWhereInput = {};
 
     if (track_id !== undefined) {
@@ -197,6 +213,22 @@ export class BannerRepository {
         ],
       };
     }
+
+    if (include_relations && include_relations.length > 0) {
+      let include: Prisma.BannerInclude = {};
+
+      for (const relation of include_relations) {
+        if (relation === 'track') {
+          include = {
+            ...include,
+            track: true,
+          };
+        }
+      }
+
+      queryOptions.include = include;
+    }
+
     queryOptions.where = findManyWhereClause;
     return queryOptions;
   }
@@ -226,6 +258,8 @@ export class BannerRepository {
         orderBy: {
           [getSortBy]: getSortDirection,
         },
+
+        include: options.include,
       };
 
       if (limit > 0) {
@@ -236,7 +270,6 @@ export class BannerRepository {
         };
       }
 
-      // console.log({ queryOptions });
       const rawResults = await prisma.banner.findMany(queryOptions);
       const currentDate = moment();
       const entities = rawResults.map((rawResult) => {
@@ -271,8 +304,8 @@ export class BannerRepository {
         }
       });
 
-      console.log(expired_field);
-      console.log(entities);
+      // console.log(expired_field);
+      // console.log(entities);
 
       return entities;
     } catch (error) {

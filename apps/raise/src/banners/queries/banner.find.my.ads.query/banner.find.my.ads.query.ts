@@ -13,6 +13,7 @@ export class BannerFindMyAdsQuery {
   page?: number;
   sort_by?: string;
   sort_direction?: string;
+  include_relations?: string[];
 }
 
 export class BannerFindMyAdsQueryResult {

@@ -180,7 +180,6 @@ export class BannerHttpController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Query() dto: BannerFindManyQueryDto,
   ) {
-    console.log('masuk mine');
     const builder = Builder<BannerFindMyAdsQuery>(BannerFindMyAdsQuery, {
       ...dto,
       user: currentUser,
@@ -197,7 +196,7 @@ export class BannerHttpController {
       dto.page || 1,
       dto.limit || 10,
       HttpStatus.OK,
-      'Advertisement List Fetched Successfully!',
+      'Banner List Fetched Successfully!',
     );
   }
 
