@@ -81,7 +81,7 @@ function ClientCarousel() {
 
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
-    const url = `/advertisements/mine`;
+    const url = `/banners/mine`;
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },

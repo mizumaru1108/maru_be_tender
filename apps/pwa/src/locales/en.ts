@@ -639,6 +639,88 @@ const en = {
         },
         required: 'Project timeline is required',
       },
+      path: {
+        message: '',
+        required: 'Path is required!',
+      },
+      //
+      support_type: {
+        message: '',
+        required: 'Support type is required',
+      },
+      closing_report: {
+        message: '',
+        required: 'Closing report is required',
+      },
+      need_picture: {
+        message: '',
+        required: 'Need picture is required',
+      },
+      does_an_agreement: {
+        message: '',
+        required: 'Does an agreement is required',
+      },
+      support_outputs: {
+        message: '',
+        required: 'Support outputs is required',
+      },
+      vat: {
+        message: '',
+        required: 'Vat is required',
+      },
+      organizationName: {
+        message: '',
+        required: 'Organization Name is required',
+      },
+      date_of_esthablistmen: {
+        message: '',
+        required: 'Date of esthablistmen is required',
+      },
+      ceo: {
+        message: '',
+        required: 'CEO is required',
+      },
+      been_supported_before: {
+        message: '',
+        required: 'Been supported before is required',
+      },
+      most_clents_projects: {
+        message: '',
+        required: 'Most clients projects is required',
+      },
+      num_of_beneficiaries: {
+        message: '',
+        required: 'Number of beneficiaries is required',
+      },
+      added_value: {
+        message: '',
+        required: 'Added value is required',
+      },
+      reasons_to_accept: {
+        message: '',
+        required: 'Reasons to accept is required',
+      },
+      target_group_num: {
+        message: '',
+        required: 'Target group number is required',
+      },
+      target_group_type: {
+        message: '',
+        required: 'Target group type is required',
+      },
+      target_group_age: {
+        message: '',
+        required: 'Target group age is required',
+      },
+      been_made_before: {
+        message: '',
+        required: 'Been made before is required',
+      },
+      remote_or_insite: {
+        message: '',
+        required: 'Remote or insite is required',
+      },
+      //
       project_implement_date: {
         message: '',
         required: 'Project implementation date is required',

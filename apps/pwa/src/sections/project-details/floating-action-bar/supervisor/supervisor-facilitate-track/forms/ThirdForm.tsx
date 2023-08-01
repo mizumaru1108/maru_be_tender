@@ -17,22 +17,42 @@ function ThirdForm({ children, onSubmit }: any) {
   const { step3 } = useSelector((state) => state.supervisorAcceptingForm);
   const { translate } = useLocales();
   const validationSchema = Yup.object().shape({
-    project_name: Yup.string().required('Procedures is required!'),
-    project_idea: Yup.string().required('Procedures is required!'),
-    project_goals: Yup.string().required('Procedures is required!'),
-    amount_required_fsupport: Yup.number().required('Procedures is required!'),
-    added_value: Yup.string().required('Procedures is required!'),
-    reasons_to_accept: Yup.string().required('Procedures is required!'),
-    project_beneficiaries: Yup.string().required('Procedures is required!'),
-    target_group_num: Yup.number().required('Procedures is required!'),
-    target_group_type: Yup.string().required('Procedures is required!'),
+    project_name: Yup.string().required(translate('errors.cre_proposal.project_name.required')),
+    project_idea: Yup.string().required(translate('errors.cre_proposal.project_idea.required')),
+    project_goals: Yup.string().required(translate('errors.cre_proposal.project_goals.required')),
+    amount_required_fsupport: Yup.number().required(
+      translate('errors.cre_proposal.amount_required_fsupport.required')
+    ),
+    added_value: Yup.string().required(translate('errors.cre_proposal.added_value.required')),
+    reasons_to_accept: Yup.string().required(
+      translate('errors.cre_proposal.reasons_to_accept.required')
+    ),
+    project_beneficiaries: Yup.string().required(
+      translate('errors.cre_proposal.project_beneficiaries.required')
+    ),
+    target_group_num: Yup.number().required(
+      translate('errors.cre_proposal.target_group_num.required')
+    ),
+    target_group_type: Yup.string().required(
+      translate('errors.cre_proposal.target_group_type.required')
+    ),
     // target_group_age: Yup.number().required('Procedures is required!'),
-    target_group_age: Yup.string().required('Procedures is required!'),
-    project_implement_date: Yup.string().required('Procedures is required!'),
-    execution_time: Yup.number().required('Procedures is required!'),
-    project_location: Yup.string().required('Procedures is required!'),
-    been_made_before: Yup.boolean().required('Procedures is required!'),
-    remote_or_insite: Yup.string().required('Procedures is required!'),
+    target_group_age: Yup.string().required(
+      translate('errors.cre_proposal.target_group_age.required')
+    ),
+    project_implement_date: Yup.string().required(
+      translate('errors.cre_proposal.project_implement_date.required')
+    ),
+    execution_time: Yup.number().required(translate('errors.cre_proposal.execution_time.required')),
+    project_location: Yup.string().required(
+      translate('errors.cre_proposal.project_location.required')
+    ),
+    been_made_before: Yup.boolean().required(
+      translate('errors.cre_proposal.been_made_before.required')
+    ),
+    remote_or_insite: Yup.string().required(
+      translate('errors.cre_proposal.remote_or_insite.required')
+    ),
   });
 
   const methods = useForm<SupervisorStep3>({

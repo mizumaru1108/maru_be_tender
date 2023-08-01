@@ -192,7 +192,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
   useEffect(() => {
     if (proposal && proposal.proposal_item_budgets.length) {
       setBasedBudget(proposal.proposal_item_budgets);
-      setValue('proposal_item_budgets', proposal.proposal_item_budgets);
+      setValue('proposal_item_budgets', proposal?.proposal_item_budgets);
     } else {
       resetField('proposal_item_budgets');
     }
@@ -222,8 +222,6 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
       loopNumber = proposal.proposal_item_budgets.length - Number(paymentNumber);
       // console.log('masuk else', <loo></loo>pNumber);
       handleRemoveLoop(loopNumber);
-      // if (loopNumber >= proposal.proposal_item_budgets.length) {
-      // }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -238,7 +236,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
           size="small"
           label="support amount"
           // value={step1.fsupport_by_supervisor}
-          value={proposal?.amount_required_fsupport}
+          value={proposal?.fsupport_by_supervisor || proposal?.proposal_item_budgets || 0}
           InputLabelProps={{ shrink: true }}
           type="number"
           disabled={true}

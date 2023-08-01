@@ -379,6 +379,8 @@ function ProjectPath() {
                             item.action === 'step_back' ||
                             item.action === 'one_step_back' ||
                             item.action === 'rejected_by_project_manager' ||
+                            item.action === 'study_again' ||
+                            item.action === 'accept_and_ask_for_consultation' ||
                             (item.action === 'accept' && item.user_role === 'MODERATOR'))
                             ? translate(`review.notes`)
                             : null}

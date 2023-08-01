@@ -651,6 +651,86 @@ const ar = {
         },
         required: 'الجدول الزمني للمشروع مطلوب',
       },
+      path: {
+        message: '',
+        required: 'المسار مطلوب',
+      },
+      support_type: {
+        message: '',
+        required: 'نوع الدعم مطلوب',
+      },
+      closing_report: {
+        message: '',
+        required: 'مطلوب تقرير ختامي',
+      },
+      need_picture: {
+        message: '',
+        required: 'مطلوب صورة',
+      },
+      does_an_agreement: {
+        message: '',
+        required: 'هل مطلوب اتفاق',
+      },
+      support_outputs: {
+        message: '',
+        required: 'نواتج الدعم مطلوبة',
+      },
+      vat: {
+        message: '',
+        required: 'ضريبة القيمة المضافة مطلوبة',
+      },
+      organizationName: {
+        message: '',
+        required: 'اسم المنظمة مطلوب',
+      },
+      date_of_esthablistmen: {
+        message: '',
+        required: 'مطلوب تاريخ قائمة رجال الأعمال',
+      },
+      ceo: {
+        message: '',
+        required: 'مطلوب الرئيس التنفيذي',
+      },
+      been_supported_before: {
+        message: '',
+        required: 'تم دعمه من قبل مطلوب',
+      },
+      most_clents_projects: {
+        message: '',
+        required: 'مطلوب معظم مشاريع العملاء',
+      },
+      num_of_beneficiaries: {
+        message: '',
+        required: 'عدد المستفيدين مطلوب',
+      },
+      added_value: {
+        message: '',
+        required: 'القيمة المضافة مطلوبة',
+      },
+      reasons_to_accept: {
+        message: '',
+        required: 'أسباب القبول مطلوبة',
+      },
+      target_group_num: {
+        message: '',
+        required: 'رقم المجموعة المستهدفة مطلوب',
+      },
+      target_group_type: {
+        message: '',
+        required: 'نوع المجموعة المستهدفة مطلوب',
+      },
+      target_group_age: {
+        message: '',
+        required: 'العمر المجموعة المستهدفة مطلوب',
+      },
+      been_made_before: {
+        message: '',
+        required: 'تم صنعه من قبل مطلوب',
+      },
+      remote_or_insite: {
+        message: '',
+        required: 'مطلوب بعيد أو في الموقع',
+      },
       project_implement_date: {
         message: '',
         required: 'تاريخ تنفيذ المشروع مطلوب',

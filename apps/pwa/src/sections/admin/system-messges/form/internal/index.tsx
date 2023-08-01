@@ -33,7 +33,7 @@ export default function AdvertisingInternalForm({ defaultvalues = null }: Props)
     tmpDate.setDate(tmpDate.getDate() + 1);
     let payload: any = {
       ...rest,
-      advertisement_id: defaultvalues && defaultvalues?.id ? defaultvalues?.id : undefined,
+      banner_id: defaultvalues && defaultvalues?.id ? defaultvalues?.id : undefined,
       type: defaultvalues ? undefined : 'INTERNAL',
       expired_date: dayjs(tmpDate).format('YYYY-MM-DD'),
       expired_time: dayjs(tmpDate).format('hh:mm A'),
@@ -44,7 +44,7 @@ export default function AdvertisingInternalForm({ defaultvalues = null }: Props)
       formData.append(key, payload[key]);
     }
     try {
-      const url = defaultvalues ? '/advertisements/update' : '/advertisements/create';
+      const url = defaultvalues ? '/banners/update' : '/banners/create';
       if (defaultvalues) {
         const rest = await axiosInstance.patch(url, formData, {
           headers: { 'x-hasura-role': activeRole! },

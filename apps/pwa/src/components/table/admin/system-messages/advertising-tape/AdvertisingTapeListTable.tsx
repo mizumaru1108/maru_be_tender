@@ -98,7 +98,7 @@ export default function AdvertisingTapeListTable() {
     // const url = employeeName
     //   ? `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}&employee_name=${employeeName}`
     //   : `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}`;
-    const url = `advertisements?type=external&limit=${rowsPerPage}&page=${currentPage}`;
+    const url = `banners?type=external&limit=${rowsPerPage}&page=${currentPage}`;
     // console.log({ track_list });
     try {
       const response = await axiosInstance.get(`${url}`, {
@@ -153,7 +153,7 @@ export default function AdvertisingTapeListTable() {
   const handleDelete = React.useCallback(
     async (id: string) => {
       // setIsLoading(true);
-      const url = `/advertisements`;
+      const url = `/banners`;
       try {
         const response = await axiosInstance.delete(`${url}/${id}`, {
           headers: { 'x-hasura-role': activeRole! },

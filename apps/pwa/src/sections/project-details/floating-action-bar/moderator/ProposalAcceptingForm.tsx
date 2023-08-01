@@ -53,7 +53,7 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
   // const;
 
   const validationSchema = Yup.object().shape({
-    path: Yup.string().required('Path is required!'),
+    path: Yup.string().required(translate('errors.cre_proposal.path.required')),
     // supervisors: Yup.string().required('Supervisors is required!'),
     notes: Yup.string(),
   });

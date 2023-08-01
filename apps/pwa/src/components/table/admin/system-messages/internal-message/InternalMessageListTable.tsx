@@ -91,7 +91,7 @@ export default function SystemMessageListTable() {
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
     const currentPage = page + 1;
-    const url = `advertisements?type=internal&limit=${rowsPerPage}&page=${currentPage}`;
+    const url = `banners?type=internal&limit=${rowsPerPage}&page=${currentPage}`;
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
@@ -144,7 +144,7 @@ export default function SystemMessageListTable() {
   const handleDelete = React.useCallback(
     async (id: string) => {
       // setIsLoading(true);
-      const url = `/advertisements`;
+      const url = `/banners`;
       try {
         const response = await axiosInstance.delete(`${url}/${id}`, {
           headers: { 'x-hasura-role': activeRole! },
