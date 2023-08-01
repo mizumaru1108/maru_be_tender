@@ -13,7 +13,7 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-model Advertisements {
+model Banner {
   id           String    @id
   type         String // internal / external
   title        String
@@ -26,7 +26,7 @@ model Advertisements {
   created_at   DateTime? @default(now()) @db.Timestamptz(6)
   updated_at   DateTime? @default(now()) @db.Timestamptz(6)
 
-  @@map("advertisements")
+  @@map("banners")
 }
 
 model bank_information {
@@ -580,7 +580,7 @@ model track {
   proposal             proposal[]
   track_section        track_section[]
   user                 user[]
-  track_advertisements Advertisements[]
+  track_advertisements Banner[]
 }
 
 model track_section {

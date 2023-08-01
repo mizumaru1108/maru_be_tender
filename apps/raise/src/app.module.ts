@@ -68,7 +68,7 @@ import { TenderEventsModule } from './tender-events-gateway/tender-events.module
 import { TenderFileManagerModule } from './tender-file-manager/tender-file-manager.module';
 import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
 import { TenderStatisticsModule } from './tender-statistics/tender-statistics.module';
-import { AdvertisementsModule } from 'src/advertisements/advertisments.module';
+import { BannerModule } from 'src/banners/banner.module';
 import { HealthModule } from 'src/health/health.module';
 import { discordConfig } from 'src/commons/configs/discord.config';
 
@@ -243,7 +243,7 @@ const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
     PaymentPaytabsModule,
     BankModule,
     QaHelperModule,
-    AdvertisementsModule,
+    BannerModule,
     HealthModule,
   ],
   controllers: [],

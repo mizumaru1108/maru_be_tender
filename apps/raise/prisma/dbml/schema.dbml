@@ -2,7 +2,7 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
-Table advertisements {
+Table banners {
   id String [pk]
   type String [not null]
   title String [not null]
@@ -567,7 +567,7 @@ Table track {
   proposal proposal [not null]
   track_section track_section [not null]
   user user [not null]
-  track_advertisements advertisements [not null]
+  track_advertisements banners [not null]
 }
 
 Table track_section {
@@ -1507,7 +1507,7 @@ Table backup_client_data_latest {
   qid Int
 }
 
-Ref: advertisements.track_id > track.id
+Ref: banners.track_id > track.id
 
 Ref: bank_information.user_id > user.id [delete: Restrict]
 
