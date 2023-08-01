@@ -294,6 +294,7 @@ function PaymentsTable() {
               <>
                 <Grid item md={2}>
                   <Button
+                    data-cy={`content.administrative.project_details.payment.table.btn.exchange_permit_refuse_${index}`}
                     sx={{
                       backgroundColor: '#FF4842',
                       color: '#fff',
@@ -317,6 +318,7 @@ function PaymentsTable() {
                 </Grid>
                 <Grid item md={2}>
                   <Button
+                    data-cy={`content.administrative.project_details.payment.table.btn.exchange_permit_approve_${index}`}
                     sx={{
                       backgroundColor: '#0E8478',
                       color: '#fff',

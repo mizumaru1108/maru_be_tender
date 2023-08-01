@@ -298,6 +298,7 @@ function PaymentsTable() {
               {item.status === 'accepted_by_project_manager' ? (
                 <Grid item>
                   <LoadingButton
+                    data-cy={`content.administrative.project_details.payment.table.btn.exchange_permit_accept_finance_${index}`}
                     variant="contained"
                     loading={isLoading}
                     endIcon={<CheckIcon />}
@@ -335,7 +336,7 @@ function PaymentsTable() {
                 <>
                   <Grid item md={2}>
                     <LoadingButton
-                      data-cy="content.administrative.project_details.payment.table.btn.exchange_upload_refuse"
+                      data-cy={`content.administrative.project_details.payment.table.btn.exchange_upload_refuse_${index}`}
                       sx={{
                         backgroundColor: '#FF4842',
                         color: '#fff',
@@ -360,7 +361,7 @@ function PaymentsTable() {
                   </Grid>
                   <Grid item md={2}>
                     <LoadingButton
-                      data-cy="content.administrative.project_details.payment.table.btn.exchange_upload_approve"
+                      data-cy={`content.administrative.project_details.payment.table.btn.exchange_upload_approve_${index}`}
                       sx={{
                         backgroundColor: '#0E8478',
                         color: '#fff',
@@ -450,7 +451,7 @@ function PaymentsTable() {
                 item.cheques.length > 0 && (
                   <Grid item key={index} md={2} sx={{ textAlign: '-webkit-center' }}>
                     <Button
-                      data-cy="btn.view_transfer_receipt"
+                      data-cy={`btn.view_transfer_receipt_${index}`}
                       variant="text"
                       color="inherit"
                       sx={{

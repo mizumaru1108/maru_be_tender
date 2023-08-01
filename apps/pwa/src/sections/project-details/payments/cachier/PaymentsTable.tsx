@@ -212,6 +212,7 @@ function PaymentsTable() {
                 <>
                   <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                     <Button
+                      data-cy={`finance_pages.button.upload_receipt_${index}`}
                       sx={{
                         backgroundColor: 'transparent',
                         color: '#000',
