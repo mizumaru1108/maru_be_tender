@@ -20,8 +20,8 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import {
-  BannerCreateCommand as BannerCreateCommand,
-  BannerCreateCommandResult as BannerCreateCommandResult,
+  BannerCreateCommand,
+  BannerCreateCommandResult,
 } from 'src/banners/commands/banner.create/banner.create.command';
 import {
   BannerDeleteCommand,
@@ -31,8 +31,8 @@ import {
   BannerUpdateCommand,
   BannerUpdateCommandResult,
 } from 'src/banners/commands/banner.update/banner.update.command';
-import { AdvertisementFindManyQueryDto as BannerFindManyQueryDto } from 'src/banners/dtos/queries/advertisement.find.many.query.dto';
-import { BannerCreateDto as BannerCreateDto } from 'src/banners/dtos/requests/banner.create.dto';
+import { BannerFindManyQueryDto } from 'src/banners/dtos/queries/banner.find.many.query.dto';
+import { BannerCreateDto } from 'src/banners/dtos/requests/banner.create.dto';
 import { BannerUpdateDto } from 'src/banners/dtos/requests/banner.update.dto';
 import { BannerEntity } from 'src/banners/entities/banner.entity';
 import {
@@ -47,7 +47,7 @@ import {
   BannerFindMyAdsQuery,
   BannerFindMyAdsQueryResult,
 } from 'src/banners/queries/banner.find.my.ads.query/banner.find.my.ads.query';
-import { BannerFindManyResponse as BannerFindManyResponse } from 'src/banners/repositories/banner.repository';
+import { BannerFindManyResponse } from 'src/banners/repositories/banner.repository';
 import { BannerTypeEnum } from 'src/banners/types/enums/banner.type.enum';
 import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
 import { BasePaginationApiOkResponse } from 'src/commons/decorators/base.pagination.api.ok.response.decorator';

@@ -2,10 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ApiProperty } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
-import { execute } from 'graphql';
 import { nanoid } from 'nanoid';
-import { type } from 'os';
-import { async } from 'rxjs';
 import { BannerEntity } from 'src/banners/entities/banner.entity';
 import {
   BannerCreateProps,

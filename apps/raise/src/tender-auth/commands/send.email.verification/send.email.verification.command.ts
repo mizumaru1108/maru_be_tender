@@ -44,11 +44,12 @@ export class SendEmailVerificationClassCommandHandler
         const emailVerifiedToken =
           await this.fusionAuthService.passwordlessLoginStart(email);
 
+        // TODO: TO ARABIC
         this.emailService.sendMail({
           mailType: 'template',
           to: email,
           from: 'no-reply@hcharity.org',
-          subject: 'Verrify Your Email',
+          subject: 'قم بتأكيد بريدك الألكتروني', // 'Verify Your Email'
           templateContext: {
             name: `${email}`,
             verify_url: `${this.configService.get<string>(

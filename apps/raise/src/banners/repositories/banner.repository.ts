@@ -11,6 +11,7 @@ import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/
 import moment from 'moment';
 import { logUtil } from 'src/commons/utils/log-util';
 import { TrackEntity } from 'src/tender-track/track/entities/track.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class BannerCreateProps {
   content: string;
@@ -47,6 +48,7 @@ export class BannerFindManyProps {
 }
 
 export class BannerFindManyResponse extends BannerEntity {
+  @ApiProperty()
   is_expired?: boolean;
 }
 

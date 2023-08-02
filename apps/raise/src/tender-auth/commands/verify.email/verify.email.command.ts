@@ -49,21 +49,22 @@ export class VerifyEmailCommandHandler
 
       await this.fusionAuthService.verifyEmail(loginResponse.user.id);
 
-      this.emailService.sendMail({
-        mailType: 'template',
-        to: loginResponse.user.email,
-        from: 'no-reply@hcharity.org',
-        subject: 'Email Verified',
-        templateContext: {
-          user_email: loginResponse.user.email,
-          app_url: `${this.configService.get<string>(
-            'tenderAppConfig.baseUrl',
-          )}`,
-        },
-        templatePath: `tender/${
-          command.selectLang || 'ar'
-        }/account/email_verified`,
-      });
+      // DEPRECATED
+      // this.emailService.sendMail({
+      //   mailType: 'template',
+      //   to: loginResponse.user.email,
+      //   from: 'no-reply@hcharity.org',
+      //   subject: 'Email Verified',
+      //   templateContext: {
+      //     user_email: loginResponse.user.email,
+      //     app_url: `${this.configService.get<string>(
+      //       'tenderAppConfig.baseUrl',
+      //     )}`,
+      //   },
+      //   templatePath: `tender/${
+      //     command.selectLang || 'ar'
+      //   }/account/email_verified`,
+      // });
       return 'user verified';
     } catch (error) {
       this.logger.error(error);

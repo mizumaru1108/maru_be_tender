@@ -4,7 +4,7 @@ import { IsOptional, IsString, IsNotEmpty, IsEnum } from 'class-validator';
 import { BannerTypeEnum } from 'src/banners/types/enums/banner.type.enum';
 import { BaseFilterRequest } from 'src/commons/dtos/base-filter-request.dto';
 
-export class AdvertisementFindManyQueryDto extends BaseFilterRequest {
+export class BannerFindManyQueryDto extends BaseFilterRequest {
   @ApiPropertyOptional({
     examples: ['SUPERVISOR', 'MODERATOR'],
   })
