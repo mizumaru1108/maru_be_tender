@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
-import { AttachmentFile } from 'src/contacts/message.dto';
+import { AttachmentFile } from 'src/commons/dtos/message.dto';
 
 export class CommonNotificationMapperResponse {
   @ApiProperty()

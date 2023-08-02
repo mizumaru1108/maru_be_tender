@@ -16,7 +16,6 @@ import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
-import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
 import {
   ClientEditRequestFieldDto,
   EditRequestByIdDto,
@@ -26,6 +25,7 @@ import {
   SearchSpecificClientProposalFilter,
 } from '../dtos/requests';
 import { TenderClientService } from '../services/tender-client.service';
+import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
 
 @Controller('tender/client')
 export class TenderClientController {
@@ -35,7 +35,7 @@ export class TenderClientController {
   @TenderRoles('tender_client')
   @Post('edit-request/create')
   async createEditRequest(
-    @CurrentUser() user: ICurrentUser,
+    @CurrentUser() user: TenderCurrentUser,
     @Body() editRequest: ClientEditRequestFieldDto,
   ): Promise<BaseResponse<any>> {
     const response = await this.tenderClientService.createEditRequest(
@@ -53,7 +53,7 @@ export class TenderClientController {
   @UseGuards(TenderJwtGuard)
   @Get('current-user-track')
   async getCurrentUserTrack(
-    @CurrentUser() user: ICurrentUser,
+    @CurrentUser() user: TenderCurrentUser,
   ): Promise<BaseResponse<string | null>> {
     const track = await this.tenderClientService.getUserTrack(user.id);
     return baseResponseHelper(
@@ -67,7 +67,7 @@ export class TenderClientController {
   @TenderRoles('tender_client')
   @Get('my-profile')
   async getMyProfile(
-    @CurrentUser() user: ICurrentUser,
+    @CurrentUser() user: TenderCurrentUser,
   ): Promise<BaseResponse<any>> {
     const response = await this.tenderClientService.getMyProfile(user.id);
     return baseResponseHelper(
@@ -169,7 +169,7 @@ export class TenderClientController {
   @TenderRoles('tender_client')
   @Get('edit-request/my-pending-count')
   async getPendingCount(
-    @CurrentUser() currentUser: ICurrentUser,
+    @CurrentUser() currentUser: TenderCurrentUser,
   ): Promise<ManualPaginatedResponse<any>> {
     const response = await this.tenderClientService.findMyPendingLogCount(
       currentUser.id,
@@ -185,7 +185,7 @@ export class TenderClientController {
   @TenderRoles('tender_accounts_manager')
   @Patch('approve-edit-requests')
   async approveEditRequests(
-    @CurrentUser() user: ICurrentUser,
+    @CurrentUser() user: TenderCurrentUser,
     @Body() editRequest: EditRequestByIdDto,
   ): Promise<BaseResponse<any>> {
     const response = await this.tenderClientService.acceptEditRequests(
@@ -204,7 +204,7 @@ export class TenderClientController {
   @TenderRoles('tender_accounts_manager')
   @Patch('reject-edit-requests')
   async rejectEditRequests(
-    @CurrentUser() user: ICurrentUser,
+    @CurrentUser() user: TenderCurrentUser,
     @Body() request: RejectEditRequestDto,
   ): Promise<BaseResponse<any>> {
     const response = await this.tenderClientService.rejectEditRequests(

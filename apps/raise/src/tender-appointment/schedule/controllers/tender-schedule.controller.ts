@@ -14,11 +14,11 @@ import { baseResponseHelper } from '../../../commons/helpers/base-response-helpe
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
-import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
 import { CreateScheduleDto } from '../dtos/requests/create-schedule-request.dto';
 import { CreateScheduleResponseDto } from '../dtos/responses/create-schedule-response.dto';
 import { GetMyScheduleResponse } from '../dtos/responses/get-my-schedule-response.dto';
 import { TenderScheduleService } from '../services/tender-schedule.service';
+import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
 
 @Controller('tender/schedules')
 export class TenderScheduleController {
@@ -28,7 +28,7 @@ export class TenderScheduleController {
   @TenderRoles('tender_client')
   @Get('mine')
   async getMySchedules(
-    @CurrentUser() currentUser: ICurrentUser,
+    @CurrentUser() currentUser: TenderCurrentUser,
   ): Promise<BaseResponse<GetMyScheduleResponse['schedule']>> {
     const schedules = await this.tenderScheduleService.getMySchedules(
       currentUser.id,
@@ -58,7 +58,7 @@ export class TenderScheduleController {
   @TenderRoles('tender_client')
   @Post('upsert-schedules')
   async upsertSchedules(
-    @CurrentUser() currentUser: ICurrentUser,
+    @CurrentUser() currentUser: TenderCurrentUser,
     @Body() createRequest: CreateScheduleDto,
   ): Promise<BaseResponse<CreateScheduleResponseDto>> {
     const response = await this.tenderScheduleService.upsertSchedules(

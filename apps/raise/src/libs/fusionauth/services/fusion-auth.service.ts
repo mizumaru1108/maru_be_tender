@@ -1,12 +1,12 @@
 import FusionAuthClient, {
+  ChangePasswordRequest,
+  ForgotPasswordRequest,
   ChangePasswordRequest as IFusionAuthChangePasswordRequest,
-  LoginResponse,
   RegistrationRequest as IFusionAuthRegistrationRequest,
   User as IFusionAuthUser,
   UserRegistration as IFusionAuthUserRegistration,
+  LoginResponse,
   ValidateResponse,
-  ForgotPasswordRequest,
-  ChangePasswordRequest,
 } from '@fusionauth/typescript-client';
 import ClientResponse from '@fusionauth/typescript-client/build/src/ClientResponse';
 import {
@@ -15,39 +15,33 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
 import { ROOT_LOGGER } from 'src/libs/root-logger';
-import { LoginRequestDto } from '../../../auth/dtos/login-request.dto';
-import { RegisterRequestDto } from '../../../auth/dtos/register-request.dto';
 import { logUtil } from '../../../commons/utils/log-util';
 // import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import {
   appRoleToFusionAuthRoles,
   TenderAppRole,
 } from '../../../tender-commons/types';
-import { TenderCreateUserFusionAuthDto } from '../../../tender-user/user/dtos/requests/tender-create-user-fusion-auth.dto';
-import { UpdateUserPayload } from '../../../tender-user/user/interfaces/update-user-payload.interface';
 import { UpdateFusionAuthUserDto } from '../dtos/request/update-fusion-auth-user.dto';
 import {
-  IQueryAxiosVerify,
-  IVerifyEmailDto,
-  IUserVerifyCheck,
   ISendNewOrganization,
+  IUserVerifyCheck,
 } from '../dtos/response/validate-jwt-response';
 
-import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
 import moment from 'moment';
-import { RoleEnum } from 'src/user/enums/role-enum';
-import { FusionAuthRegisterError } from '../exceptions/fusion.auth.register.error.exception';
-import { FusionAuthPasswordlessStartError } from '../exceptions/fusion.auth.passwordless.start.error.exception';
-import { FusionAuthPasswordlessLoginErrorException } from '../exceptions/fusion.auth.passwordless.login.error.exception';
-import { FusionAuthVerifyEmailErrorException } from '../exceptions/fusion.auth.verify.email.error.exception';
-import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
+import { CommonNotificationMapperResponse } from 'src/tender-commons/dto/common-notification-mapper-response.dto';
 import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
+import { FusionAuthPasswordlessLoginErrorException } from '../exceptions/fusion.auth.passwordless.login.error.exception';
+import { FusionAuthPasswordlessStartError } from '../exceptions/fusion.auth.passwordless.start.error.exception';
+import { FusionAuthRegisterError } from '../exceptions/fusion.auth.register.error.exception';
+import { FusionAuthVerifyEmailErrorException } from '../exceptions/fusion.auth.verify.email.error.exception';
+import { LoginRequestDto } from 'src/auth/dtos';
 
 /**
  * Nest Fusion Auth Service
@@ -359,61 +353,61 @@ export class FusionAuthService {
    * why use raw axios post o fusion auth ?
    * reason, there's error on lib, ref: https://github.com/FusionAuth/fusionauth-typescript-client/issues/10
    */
-  async fusionAuthRegister(registerRequest: RegisterRequestDto) {
-    const baseUrl = this.fusionAuthUrl;
-    const registerUrl = baseUrl + '/api/user/registration/';
-    const user: IFusionAuthUser = {
-      email: registerRequest.email,
-      password: registerRequest.password,
-      firstName: registerRequest.firstName,
-      lastName: registerRequest.lastName,
-    };
-    const registration: IFusionAuthUserRegistration = {
-      applicationId: this.fusionAuthAppId,
-    };
+  // async fusionAuthRegister(registerRequest: RegisterRequestDto) {
+  //   const baseUrl = this.fusionAuthUrl;
+  //   const registerUrl = baseUrl + '/api/user/registration/';
+  //   const user: IFusionAuthUser = {
+  //     email: registerRequest.email,
+  //     password: registerRequest.password,
+  //     firstName: registerRequest.firstName,
+  //     lastName: registerRequest.lastName,
+  //   };
+  //   const registration: IFusionAuthUserRegistration = {
+  //     applicationId: this.fusionAuthAppId,
+  //   };
 
-    const registrationRequest: IFusionAuthRegistrationRequest = {
-      user,
-      registration,
-    };
+  //   const registrationRequest: IFusionAuthRegistrationRequest = {
+  //     user,
+  //     registration,
+  //   };
 
-    const options: AxiosRequestConfig<any> = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.fusionAuthAdminKey,
-        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
-      },
-      data: registrationRequest,
-      url: registerUrl,
-    };
+  //   const options: AxiosRequestConfig<any> = {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: this.fusionAuthAdminKey,
+  //       'X-FusionAuth-TenantId': this.fusionAuthTenantId,
+  //     },
+  //     data: registrationRequest,
+  //     url: registerUrl,
+  //   };
 
-    try {
-      const data = await axios(options);
+  //   try {
+  //     const data = await axios(options);
 
-      return data.data;
-    } catch (error) {
-      if (
-        error.response.data &&
-        error.response.data.fieldErrors &&
-        error.response.status < 500
-      ) {
-        this.logger.error('FusionAuth Error:', error.response.data);
-        throw new BadRequestException(
-          `Field error (${[
-            Object.keys(error.response.data.fieldErrors)[0],
-          ]}) : ${
-            error.response.data.fieldErrors[
-              Object.keys(error.response.data.fieldErrors)[0]
-            ][0].message
-          }`,
-        );
-      } else {
-        this.logger.error('FusionAuth Error:', error);
-        throw new Error('Something went wrong!');
-      }
-    }
-  }
+  //     return data.data;
+  //   } catch (error) {
+  //     if (
+  //       error.response.data &&
+  //       error.response.data.fieldErrors &&
+  //       error.response.status < 500
+  //     ) {
+  //       this.logger.error('FusionAuth Error:', error.response.data);
+  //       throw new BadRequestException(
+  //         `Field error (${[
+  //           Object.keys(error.response.data.fieldErrors)[0],
+  //         ]}) : ${
+  //           error.response.data.fieldErrors[
+  //             Object.keys(error.response.data.fieldErrors)[0]
+  //           ][0].message
+  //         }`,
+  //       );
+  //     } else {
+  //       this.logger.error('FusionAuth Error:', error);
+  //       throw new Error('Something went wrong!');
+  //     }
+  //   }
+  // }
 
   async fusionAuthVerifRegistration(token: string) {
     const baseUrl = this.fusionAuthUrl;
@@ -586,103 +580,6 @@ export class FusionAuthService {
       }
       this.logger.error('FusionAuth Error:', error);
       throw new Error('Something went wrong!');
-    }
-  }
-
-  async requestVerify(requestVerifyPayload: IVerifyEmailDto) {
-    const baseUrl = this.fusionAuthUrl;
-    const verifyUrl = baseUrl + '/api/user/verify-email';
-
-    const queryVerify: IQueryAxiosVerify = {
-      applicationId: this.fusionAuthAppId,
-      email: requestVerifyPayload.email,
-    };
-
-    const optionsVerify: AxiosRequestConfig<any> = {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.fusionAuthAdminKey,
-        'X-FusionAuth-TenantId': this.fusionAuthTenantId,
-      },
-      params: queryVerify,
-      url: verifyUrl,
-    };
-
-    try {
-      const { data } = await axios(optionsVerify);
-
-      if (data && data.verificationId) {
-        const notifPayload: CommonNotificationMapperResponse = {
-          logTime: moment(new Date().getTime()).format('llll'),
-          generalHostEmail: 'tmra',
-          clientSubject:
-            requestVerifyPayload.organizationId &&
-            requestVerifyPayload.organizationId === '62414373cf00cca3a830814a'
-              ? 'Welcome to Giving Sadaqah'
-              : 'Welcome to TMRA',
-          clientId: [],
-          clientEmail: [requestVerifyPayload.email],
-          clientMobileNumber: [],
-          clientEmailTemplatePath:
-            requestVerifyPayload.organizationId &&
-            requestVerifyPayload.organizationId === '62414373cf00cca3a830814a'
-              ? 'gs/en/register/request_verify'
-              : 'tmra/en/register/request_verify_tmra',
-          clientEmailTemplateContext: [
-            {
-              donor_email: requestVerifyPayload.email,
-              donor_name: requestVerifyPayload.fullName,
-              donor_redirect_link: `${requestVerifyPayload.domainUrl}/verif/${data.verificationId}`,
-            },
-          ],
-          clientContent: `We're excited to welcome you to ${
-            requestVerifyPayload.organizationId &&
-            requestVerifyPayload.organizationId === '62414373cf00cca3a830814a'
-              ? 'Giving Sadaqah'
-              : 'TMRA'
-          } and we're even more excited about what we've got planned.`,
-          reviewerId: [],
-          ...(requestVerifyPayload.role === RoleEnum.DONOR && {
-            reviewerEmail: [requestVerifyPayload.organizationEmail!],
-            reviewerContent: 'There is a new donor that you should check!',
-            reviewerMobileNumber: [],
-            reviwerSubject:
-              'Donor has sent you an Email! Please check your inbox...`',
-            reviewerEmailTemplatePath:
-              requestVerifyPayload.organizationId &&
-              requestVerifyPayload.organizationId === '62414373cf00cca3a830814a'
-                ? 'gs/en/register/new_donor_organization'
-                : 'tmra/en/register/new_donor_organization_tmra',
-            reviewerEmailTemplateContext: [
-              {
-                donor_email: requestVerifyPayload.email,
-                donor_name: requestVerifyPayload.fullName,
-              },
-            ],
-          }),
-          createManyWebNotifPayload: [],
-        };
-
-        await this.notificationService.sendSmsAndEmailBatch(notifPayload);
-
-        return data.verificationId;
-      }
-    } catch (error) {
-      this.logger.debug('Error', error);
-      if (error.response.status < 500) {
-        console.log(error.response.data);
-        throw new BadRequestException(
-          `Verify Failed, more details: ${
-            error.response.data.fieldErrors
-              ? JSON.stringify(error.response.data.fieldErrors)
-              : JSON.stringify(error.response.data)
-          }`,
-        );
-      } else {
-        console.log(error);
-        throw new Error('Something went wrong!');
-      }
     }
   }
 

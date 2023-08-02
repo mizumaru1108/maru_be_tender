@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { userSeeder } from './seeders/users/user.seeder';
+import { trackSeeder } from './seeders/track/track.seeder';
 
 const prisma = new PrismaClient();
 
@@ -7,7 +8,7 @@ async function seed() {
   console.log('load the seeders');
   // testSeed();
   await userSeeder(prisma);
-  // await userRoleSeeder();
+  await trackSeeder(prisma);
 }
 
 seed()

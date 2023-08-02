@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { ICurrentUser } from '../../../user/interfaces/current-user.interface';
 
 import { ConfigService } from '@nestjs/config';
 import { bank_information, client_data, Prisma, user } from '@prisma/client';
@@ -42,15 +41,16 @@ import { CreateClientMapper } from '../mappers/create-client.mapper';
 import { UserClientDataMapper } from '../mappers/user-client-data.mapper';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
 
+import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
 import { logUtil } from '../../../commons/utils/log-util';
 import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
+import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
+import { TenderNotificationRepository } from '../../../notification-management/notification/repository/tender-notification.repository';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-file-jsonb.dto';
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
-import { TenderNotificationRepository } from '../../../notification-management/notification/repository/tender-notification.repository';
-import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
-import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -591,7 +591,7 @@ export class TenderClientService {
   }
 
   async createEditRequest(
-    user: ICurrentUser,
+    user: TenderCurrentUser,
     editRequest: ClientEditRequestFieldDto,
   ): Promise<any> {
     let uploadedFilePath: string[] = [];
