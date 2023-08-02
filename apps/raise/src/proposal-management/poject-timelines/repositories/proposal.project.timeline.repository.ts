@@ -26,6 +26,10 @@ export class PoposalProjectTimelineFindManyProps {
   sort_by?: string;
 }
 
+export class TimelineDeleteManyProps {
+  proposal_id: string;
+}
+
 @Injectable()
 export class ProposalTimelinePostgresRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -168,6 +172,24 @@ export class ProposalTimelinePostgresRepository {
       return timelineEntities;
     } catch (error) {
       console.trace(error);
+      throw error;
+    }
+  }
+
+  async deleteMany(props: TimelineDeleteManyProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      const result = await prisma.project_timeline.deleteMany({
+        where: {
+          proposal_id: props.proposal_id,
+        },
+      });
+
+      return result.count;
+    } catch (error) {
+      this.logger.error(`error on deleting item budget ${error}`);
       throw error;
     }
   }

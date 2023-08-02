@@ -31,6 +31,10 @@ export interface FindManyItemBudgetProps {
   sort_by?: string;
 }
 
+export class ItemBudgetDeleteManyProps {
+  proposal_id: string;
+}
+
 @Injectable()
 export class ProposalItemBudgetRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -215,6 +219,24 @@ export class ProposalItemBudgetRepository {
       return itemBudgets;
     } catch (error) {
       console.trace(error);
+      throw error;
+    }
+  }
+
+  async deleteMany(props: ItemBudgetDeleteManyProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      const result = await prisma.proposal_item_budget.deleteMany({
+        where: {
+          proposal_id: props.proposal_id,
+        },
+      });
+
+      return result.count;
+    } catch (error) {
+      this.logger.error(`error on deleting item budget ${error}`);
       throw error;
     }
   }

@@ -25,14 +25,14 @@ import { QaProposalCreateSupervisorDto } from '../dto/requests/qa-proposal-creat
 import { QaProposalCreateDto } from '../dto/requests/qa-proposal-create.dto';
 import { QaProposalDeleteDto } from '../dto/requests/qa-proposal.delete.dto';
 
-@ApiTags('qa-helper')
-@Controller('qa-helper')
+@ApiTags('QAHelper Proposal')
+@Controller('qa-helper/proposal')
 export class QaHelperControllers {
   constructor(private readonly commandBus: CommandBus) {}
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
-  @Post('proposal/create-moderator')
+  @Post('create-moderator')
   async createProposal(@Body() request: QaProposalCreateDto) {
     console.log({ request });
     try {
@@ -54,7 +54,7 @@ export class QaHelperControllers {
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
-  @Post('proposal/create-supervisor')
+  @Post('create-supervisor')
   async createProposalSupervisor(
     @Body() request: QaProposalCreateSupervisorDto,
   ) {
@@ -84,7 +84,7 @@ export class QaHelperControllers {
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
-  @Delete('proposal/delete/:id')
+  @Delete('delete/:id')
   async deleteProposal(@Param() request: QaProposalDeleteDto) {
     try {
       const createProposalCommand = Builder<QaProposalDeleteCommand>(

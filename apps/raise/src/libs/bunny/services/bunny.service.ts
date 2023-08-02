@@ -342,7 +342,7 @@ export class BunnyService {
     }
   }
 
-  async uploadLogoMulter(
+  async uploadFileMulter(
     file: Express.Multer.File,
     uploadPath: string,
     AllowedFileTypes: FileMimeTypeEnum[],

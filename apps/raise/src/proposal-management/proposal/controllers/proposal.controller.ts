@@ -66,6 +66,10 @@ import {
 import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
 import { ProposalService } from '../services/proposal.service';
+import {
+  SendRevisionCommand,
+  SendRevisionCommandResult,
+} from 'src/proposal-management/proposal/commands/send.revision/send.revision.command';
 
 @ApiTags('ProposalModule')
 @Controller('tender-proposal')
@@ -627,7 +631,7 @@ export class TenderProposalController {
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
   @Patch('send-revision')
-  async sendRevision(
+  async sendRevisions(
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: SendRevisionDto,
   ) {
@@ -642,5 +646,46 @@ export class TenderProposalController {
       HttpStatus.OK,
       'Proposal updated successfully',
     );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'letter_ofsupport_req', maxCount: 1 },
+      { name: 'project_attachments', maxCount: 1 },
+    ]),
+  )
+  @Patch('send-revision-cqrs')
+  async sendRevision(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() request: SendRevisionDto,
+    @UploadedFiles()
+    files: {
+      letter_ofsupport_req?: Express.Multer.File[];
+      project_attachments?: Express.Multer.File[];
+    },
+  ) {
+    try {
+      const command = Builder<SendRevisionCommand>(SendRevisionCommand, {
+        userId: currentUser.id,
+        request,
+        letter_ofsupport_req: files.letter_ofsupport_req,
+        project_attachments: files.project_attachments,
+      }).build();
+
+      const result = await this.commandBus.execute<
+        SendRevisionCommand,
+        SendRevisionCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'Send Revision Submitted Successfully!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 }
