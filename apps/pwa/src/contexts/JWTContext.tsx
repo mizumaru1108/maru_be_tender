@@ -252,7 +252,8 @@ function AuthProvider({ children }: AuthProviderProps) {
       throw new Error(`User ${user?.id} does not have registrations`);
     }
     if (response?.response?.user?.verified === false) {
-      throw new Error(`User ${email} does not have verified`);
+      // throw new Error(`User ${email} does not have verified`);
+      throw new Error(`حساب الشريك ${email} لم يتم تفعيله بعد`);
     }
     const userRegistration = user.registrations?.[0];
     const activeRole = userRegistration.roles?.[activeRoleIndex];

@@ -45,11 +45,12 @@ function AppointmentsRequests({ defaultValues, refetch }: Props) {
           meetingTime: `${moment(item.date).format('DD-MM-YYYY')} ${item.start_time} - ${
             item.end_time
           }`,
-          employee: item.employee_name ?? 'Un Provide',
+          employee: item.employee_name ?? translate('appointments_row.un_provide'),
           appointmentLink: item.meeting_url,
         }));
       setAppointments(tmpValues);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLang, defaultValues]);
 
   const headerCells: AppointmentsTableHeader[] = [

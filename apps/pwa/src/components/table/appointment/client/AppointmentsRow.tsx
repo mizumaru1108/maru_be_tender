@@ -48,7 +48,8 @@ export default function AppointmentsTableRow({
       <TableRow>
         <TableCell align="left">
           <Typography variant="subtitle2" noWrap>
-            {row.id ?? '-'}
+            {/* {row.id ?? '-'} */}
+            {row.id ? translate(`appointments_row.status.${row.id.toLowerCase()}`) : '-'}
           </Typography>
         </TableCell>
         {/* <TableCell align="left">

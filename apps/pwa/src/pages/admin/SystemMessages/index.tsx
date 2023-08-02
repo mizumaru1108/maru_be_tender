@@ -20,9 +20,9 @@ function SystemMessagesPage() {
     rowGap: 40,
   }));
 
-  React.useEffect(() => {
-    dispatch(getTrackList(1, activeRole! as string));
-  }, [activeRole]);
+  // React.useEffect(() => {
+  //   dispatch(getTrackList(1, activeRole! as string));
+  // }, [activeRole]);
 
   return (
     // <Page title="System Messages">

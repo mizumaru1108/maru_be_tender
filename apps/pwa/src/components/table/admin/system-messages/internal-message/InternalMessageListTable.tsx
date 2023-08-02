@@ -91,7 +91,7 @@ export default function SystemMessageListTable() {
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
     const currentPage = page + 1;
-    const url = `banners?type=internal&limit=${rowsPerPage}&page=${currentPage}`;
+    const url = `banners?type=internal&limit=${rowsPerPage}&page=${currentPage}&include_relations=track`;
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
@@ -105,7 +105,8 @@ export default function SystemMessageListTable() {
             title: item.title || '',
             content: item.content || '',
             // desired_track: item.track_id || '',
-            desired_track: track_list.find((track) => track.id === item.track_id)?.name || '',
+            // desired_track: track_list.find((track) => track.id === item.track_id)?.name || '',
+            desired_track: item?.track?.name || '',
             status: item?.is_expired ? false : true,
           }))
         );

@@ -29,16 +29,17 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
     does_an_agreement: Yup.boolean().required(
       translate('errors.cre_proposal.does_an_agreement.required')
     ),
-    fsupport_by_supervisor: Yup.number(),
+    fsupport_by_supervisor: Yup.string().required(
+      translate('errors.cre_proposal.fsupport_by_supervisor.required')
+    ),
     // number_of_payments_by_supervisor: Yup.number(),
     notes: Yup.string(),
     support_outputs: Yup.string().required(
       translate('errors.cre_proposal.support_outputs.required')
     ),
     vat: Yup.boolean().required(translate('errors.cre_proposal.vat.required')),
-    vat_percentage: Yup.number()
-      .integer()
-      // .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
+    vat_percentage: Yup.string()
+      // .integer()
       .nullable()
       .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
         if (!val) return true;
@@ -79,7 +80,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   };
 
   useEffect(() => {
-    if (proposal && (proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport)) {
+    if (proposal) {
       setValue(
         'fsupport_by_supervisor',
         proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport
@@ -180,14 +181,16 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
               if (e && e.target.value) {
                 if (e.target.value === 'true') {
                   setIsVat(true);
+                  setValue('vat_percentage', '0');
                 } else {
                   setIsVat(false);
+                  setValue('vat_percentage', '');
                 }
               }
               // console.log('e.target.value', e.target.value);
             }}
             // label="هل يشمل المشروع ضريبة القيمة المضافة"
-            label="هل مبلغ السداد شامل لضريبة القيمة المضافة"
+            label="هل مبلغ السداد شامل لضريبة القيمة المضافة*"
             options={[
               { label: 'نعم', value: true },
               { label: 'لا', value: false },

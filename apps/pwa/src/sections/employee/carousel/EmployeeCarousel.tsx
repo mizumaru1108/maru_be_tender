@@ -129,7 +129,7 @@ function EmployeeCarousel() {
   return (
     <>
       {FEATURE_BANNER && carouselData.length > 0 ? (
-        <Box className="firstBox" sx={{ position: 'relative' }}>
+        <Box className="firstBox" sx={{ position: 'relative', direction: 'rtl' }}>
           <DetailBannerDialog
             open={open}
             handleClose={() => setOpen(!open)}

@@ -33,7 +33,7 @@ export default function ProjectManagementTableRow({
     const x = location.pathname.split('/');
     let url = '';
     // const url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;
-    if (activeRole === 'tender_project_manager') {
+    if (activeRole === 'tender_project_manager' || activeRole === 'tender_ceo') {
       url = `/${x[1]}/${x[2]}/rejection-list/${row.id}/reject-project`;
     } else {
       url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;

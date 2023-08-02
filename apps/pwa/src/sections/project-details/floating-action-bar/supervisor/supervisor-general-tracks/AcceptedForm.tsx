@@ -88,8 +88,8 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
       translate('errors.cre_proposal.support_outputs.required')
     ),
     vat: Yup.boolean().required(translate('errors.cre_proposal.vat.required')),
-    vat_percentage: Yup.number()
-      .integer()
+    vat_percentage: Yup.string()
+      // .integer()
       .nullable()
       .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
         if (!val) return true;
@@ -496,13 +496,17 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                 if (e && e.target.value) {
                   if (e.target.value === 'true') {
                     setIsVat(true);
+                    setValue('vat_percentage', '0');
+                    // console.log('test 1');
                   } else {
                     setIsVat(false);
+                    setValue('vat_percentage', '');
+                    // console.log('test 2');
                   }
                 }
                 console.log('e.target.value', e.target.value);
               }}
-              label="هل مبلغ السداد شامل لضريبة القيمة المضافة"
+              label="هل مبلغ السداد شامل لضريبة القيمة المضافة*"
               options={[
                 { label: 'نعم', value: true },
                 { label: 'لا', value: false },

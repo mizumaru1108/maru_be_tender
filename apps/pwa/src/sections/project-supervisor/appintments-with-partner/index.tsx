@@ -112,7 +112,7 @@ function AppointmentsEmployee() {
           meetingTime: `${moment(item.date).format('DD-MM-YYYY')} ${item.start_time} - ${
             item.end_time
           }`,
-          employee: item.employee_name ?? 'Un Provide',
+          employee: item.employee_name ?? translate('appointments_row.un_provide'),
           appointmentLink: item.meeting_url,
         }));
 
@@ -130,7 +130,7 @@ function AppointmentsEmployee() {
           meetingTime: `${moment(item.date).format('DD-MM-YYYY')} ${item.start_time} - ${
             item.end_time
           }`,
-          employee: item.employee_name ?? 'Un Provide',
+          employee: item.employee_name ?? translate('appointments_row.un_provide'),
           appointmentLink: item.meeting_url,
         }));
 

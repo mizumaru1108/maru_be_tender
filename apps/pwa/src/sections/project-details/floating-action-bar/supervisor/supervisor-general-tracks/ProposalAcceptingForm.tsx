@@ -36,6 +36,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
   const { enqueueSnackbar } = useSnackbar();
+  const [isVat, setIsVat] = useState<boolean>(false);
   const { id: pid } = useParams();
   const [basedBudget, setBasedBudget] = useState<
     | { id?: string; amount?: number | undefined | null; clause?: string; explanation?: string }[]
@@ -91,14 +92,21 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     // vat_percentage: Yup.number(translate('errors.cre_proposal.vat_percentage.greater_than_0'))
     //   .integer(translate('errors.cre_proposal.vat_percentage.greater_than_0'))
     //   .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
-    vat_percentage: Yup.mixed().test(
-      'vat_percentage',
-      translate('errors.cre_proposal.vat_percentage.greater_than_0'),
-      (value) => {
-        if (!value) return true;
-        return Number(value) > 0;
-      }
-    ),
+    // vat_percentage: Yup.mixed().test(
+    //   'vat_percentage',
+    //   translate('errors.cre_proposal.vat_percentage.greater_than_0'),
+    //   (value) => {
+    //     if (!value) return true;
+    //     return Number(value) > 0;
+    //   }
+    // ),
+    vat_percentage: Yup.string()
+      // .integer()
+      .nullable()
+      .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
+        if (!val) return true;
+        return Number(val) > 0;
+      }),
     inclu_or_exclu: Yup.boolean(),
     support_goal_id: Yup.string().required(
       translate('errors.cre_proposal.support_goal_id.required')
@@ -415,8 +423,19 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     data-cy="acc_form_non_consulation_vat"
                     type="radioGroup"
                     name="vat"
-                    // label="هل يشمل المشروع ضريبة القيمة المضافة"
-                    label="هل مبلغ السداد شامل لضريبة القيمة المضافة"
+                    onClick={(e) => {
+                      if (e && e.target.value) {
+                        if (e.target.value === 'true') {
+                          setIsVat(true);
+                          setValue('vat_percentage', '0');
+                        } else {
+                          setIsVat(false);
+                          setValue('vat_percentage', '');
+                        }
+                      }
+                      console.log('e.target.value', e.target.value || 'no data');
+                    }}
+                    label="هل مبلغ السداد شامل لضريبة القيمة المضافة*"
                     options={[
                       { label: 'نعم', value: true },
                       { label: 'لا', value: false },
@@ -489,7 +508,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     label="عدد الدفعات*"
                   />
                 </Grid>
-                {vat === 'true' && (
+                {isVat && (
                   <Grid item md={6} xs={12}>
                     <RHFTextField
                       data-cy="acc_form_non_consulation_vat_percentage"
@@ -502,7 +521,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     />
                   </Grid>
                 )}
-                {vat === 'true' && (
+                {isVat && (
                   <Grid item md={6} xs={12}>
                     <RHFRadioGroup
                       data-cy="acc_form_non_consulation_vat"

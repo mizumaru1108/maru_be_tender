@@ -1,3 +1,11 @@
+export interface TrackEntity {
+  id: string;
+  name?: string | null;
+  with_consultation?: boolean;
+  created_at?: Date | null;
+  is_deleted?: boolean;
+}
+
 export type InternalMessagesList = {
   id?: string;
   title: string;
@@ -7,6 +15,7 @@ export type InternalMessagesList = {
   content: string;
   status?: boolean;
   is_expired?: boolean;
+  track?: TrackEntity;
 };
 
 export interface InternalMessagesListsRow {
@@ -33,6 +42,8 @@ export type AdvertisingTapeList = {
   }[];
   date?: string;
   showTime?: string;
+  is_expired?: boolean;
+  track?: TrackEntity;
 };
 
 export interface AdevertisingTapeRow {

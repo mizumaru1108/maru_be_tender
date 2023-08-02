@@ -130,7 +130,7 @@ function ClientCarousel() {
   return (
     <>
       {FEATURE_BANNER ? (
-        <Box className="firstBox" sx={{ position: 'relative' }}>
+        <Box className="firstBox" sx={{ position: 'relative', direction: 'rtl' }}>
           <DetailBannerDialog
             open={open}
             handleClose={() => setOpen(!open)}
@@ -192,21 +192,25 @@ function ClientCarousel() {
                       >
                         {item.content}
                       </Typography>
-                      <Typography
-                        className={classes.multiLineEllipsis}
-                        sx={{
-                          textAlign: 'end',
-                          cursor: 'pointer',
-                          '&:hover': { color: '#0E8478', textDecoration: 'underline' },
-                        }}
-                        variant="h6"
-                        color="text.secondary"
-                        onClick={() => {
-                          handleOpenDetails(item);
-                        }}
-                      >
-                        {translate('system_messages.details')}
-                      </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'end' }}>
+                        <Typography
+                          className={classes.multiLineEllipsis}
+                          sx={{
+                            // maxWidth: '100px',
+                            display: 'inline-block',
+                            textAlign: 'end',
+                            cursor: 'pointer',
+                            '&:hover': { color: '#0E8478', textDecoration: 'underline' },
+                          }}
+                          variant="h6"
+                          color="text.secondary"
+                          onClick={() => {
+                            handleOpenDetails(item);
+                          }}
+                        >
+                          {translate('system_messages.details')}
+                        </Typography>
+                      </Box>
                     </Stack>
                   </Stack>
                 </Box>
