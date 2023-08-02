@@ -35,7 +35,7 @@ function AdvertisingInternalPage() {
 
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
-    const url = `/advertisements`;
+    const url = `/banners`;
     try {
       const response = await axiosInstance.get(`${url}/${id}`, {
         headers: { 'x-hasura-role': activeRole! },

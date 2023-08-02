@@ -61,10 +61,14 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   // const { data: proposalData, fetching: fetchingProposal, error: errorProposal } = proposalResult;
 
   const validationSchema = Yup.object().shape({
-    support_type: Yup.boolean().required('support_type is required!'),
-    closing_report: Yup.boolean().required('closing_report is required!'),
-    need_picture: Yup.boolean().required('need_picture is required!'),
-    does_an_agreement: Yup.boolean().required('does_an_agreement is required!'),
+    support_type: Yup.boolean().required(translate('errors.cre_proposal.support_type.required')),
+    closing_report: Yup.boolean().required(
+      translate('errors.cre_proposal.closing_report.required')
+    ),
+    need_picture: Yup.boolean().required(translate('errors.cre_proposal.need_picture.required')),
+    does_an_agreement: Yup.boolean().required(
+      translate('errors.cre_proposal.does_an_agreement.required')
+    ),
     detail_project_budgets: Yup.array().of(
       Yup.object().shape({
         clause: Yup.string().required(
@@ -80,8 +84,10 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       })
     ),
     notes: Yup.string(),
-    support_outputs: Yup.string().required('Procedures is required!'),
-    vat: Yup.boolean().required('Procedures is required!'),
+    support_outputs: Yup.string().required(
+      translate('errors.cre_proposal.support_outputs.required')
+    ),
+    vat: Yup.boolean().required(translate('errors.cre_proposal.vat.required')),
     // vat_percentage: Yup.number(translate('errors.cre_proposal.vat_percentage.greater_than_0'))
     //   .integer(translate('errors.cre_proposal.vat_percentage.greater_than_0'))
     //   .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
@@ -94,7 +100,9 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       }
     ),
     inclu_or_exclu: Yup.boolean(),
-    support_goal_id: Yup.string().required('Procedures is required!'),
+    support_goal_id: Yup.string().required(
+      translate('errors.cre_proposal.support_goal_id.required')
+    ),
     payment_number: Yup.string()
       .required(translate('errors.cre_proposal.payment_number.required'))
       .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {

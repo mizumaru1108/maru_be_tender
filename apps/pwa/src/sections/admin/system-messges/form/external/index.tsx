@@ -30,7 +30,7 @@ export default function AdvertisingExternalForm({ defaultvalues = null }: Props)
     const tmpDate = new Date();
     const tmpPayload: any = {
       ...rest,
-      advertisement_id: defaultvalues && defaultvalues?.id ? defaultvalues?.id : undefined,
+      banner_id: defaultvalues && defaultvalues?.id ? defaultvalues?.id : undefined,
       type: defaultvalues ? undefined : 'EXTERNAL',
       expired_date: dayjs(showTime).format('YYYY-MM-DD'),
       expired_time: dayjs(tmpDate).format('hh:mm A'),
@@ -56,7 +56,7 @@ export default function AdvertisingExternalForm({ defaultvalues = null }: Props)
     } else {
       formData.append('logo', data?.image?.file[0] as Blob);
     }
-    const url = defaultvalues ? '/advertisements/update' : '/advertisements/create';
+    const url = defaultvalues ? '/banners/update' : '/banners/create';
     try {
       if (defaultvalues) {
         const rest = await axiosInstance.patch(url, formData, {

@@ -21,15 +21,21 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   const validationSchema = Yup.object().shape({
     // clause: Yup.string().required('Procedures is required!'),
     // clasification_field: Yup.string().required('Procedures is required!'),
-    support_type: Yup.boolean().required('Procedures is required!'),
-    closing_report: Yup.boolean().required('Procedures is required!'),
-    need_picture: Yup.boolean().required('Procedures is required!'),
-    does_an_agreement: Yup.boolean().required('Procedures is required!'),
+    support_type: Yup.boolean().required(translate('errors.cre_proposal.support_type.required')),
+    closing_report: Yup.boolean().required(
+      translate('errors.cre_proposal.closing_report.required')
+    ),
+    need_picture: Yup.boolean().required(translate('errors.cre_proposal.need_picture.required')),
+    does_an_agreement: Yup.boolean().required(
+      translate('errors.cre_proposal.does_an_agreement.required')
+    ),
     fsupport_by_supervisor: Yup.number(),
     // number_of_payments_by_supervisor: Yup.number(),
     notes: Yup.string(),
-    support_outputs: Yup.string().required('Procedures is required!'),
-    vat: Yup.boolean().required('Procedures is required!'),
+    support_outputs: Yup.string().required(
+      translate('errors.cre_proposal.support_outputs.required')
+    ),
+    vat: Yup.boolean().required(translate('errors.cre_proposal.vat.required')),
     vat_percentage: Yup.number()
       .integer()
       // .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
@@ -73,8 +79,11 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   };
 
   useEffect(() => {
-    if (proposal && proposal?.amount_required_fsupport) {
-      setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
+    if (proposal && (proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport)) {
+      setValue(
+        'fsupport_by_supervisor',
+        proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport
+      );
       // if (proposal.fsupport_by_supervisor) {
       //   setValue('fsupport_by_supervisor', proposal.fsupport_by_supervisor);
       // } else {

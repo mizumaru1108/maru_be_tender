@@ -8,22 +8,35 @@ import { useMemo } from 'react';
 import { SecondFormData } from './form-data';
 import { useSelector } from 'redux/store';
 import { SupervisorStep2 } from '../../../../../../@types/supervisor-accepting-form';
+import useLocales from 'hooks/useLocales';
 
 function SecondForm({ children, onSubmit }: any) {
+  const { translate } = useLocales();
+
   const validationSchema = Yup.object().shape({
-    organizationName: Yup.string().required('Procedures is required!'),
-    region: Yup.string().required('Procedures is required!'),
-    governorate: Yup.string().required('Procedures is required!'),
-    date_of_esthablistmen: Yup.string().required('Procedures is required!'),
+    organizationName: Yup.string().required(
+      translate('errors.cre_proposal.organizationName.required')
+    ),
+    region: Yup.string().required(translate('errors.cre_proposal.region.required')),
+    governorate: Yup.string().required(translate('errors.cre_proposal.governorate.required')),
+    date_of_esthablistmen: Yup.string().required(
+      translate('errors.cre_proposal.date_of_esthablistmen.required')
+    ),
     chairman_of_board_of_directors: Yup.string(),
-    ceo: Yup.string().required('Procedures is required!'),
-    been_supported_before: Yup.boolean().required('Procedures is required!'),
-    most_clents_projects: Yup.string().required('Procedures is required!'),
-    num_of_beneficiaries: Yup.number().required('Procedures is required!'),
+    ceo: Yup.string().required(translate('errors.cre_proposal.ceo.required')),
+    been_supported_before: Yup.boolean().required(
+      translate('errors.cre_proposal.been_supported_before.required')
+    ),
+    most_clents_projects: Yup.string().required(
+      translate('errors.cre_proposal.most_clents_projects.required')
+    ),
+    num_of_beneficiaries: Yup.number().required(
+      translate('errors.cre_proposal.num_of_beneficiaries.required')
+    ),
   });
 
   const { step2 } = useSelector((state) => state.supervisorAcceptingForm);
-  console.log({ step2 });
+  // console.log({ step2 });
   const methods = useForm<SupervisorStep2>({
     resolver: yupResolver(validationSchema),
     defaultValues: useMemo(() => step2, [step2]),

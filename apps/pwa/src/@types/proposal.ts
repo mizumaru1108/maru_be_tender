@@ -420,7 +420,9 @@ export type Log = {
     | 'project_completed'
     | 'send_revised_version'
     | 'complete_payment'
-    | 'reject_cheque';
+    | 'reject_cheque'
+    | 'study_again'
+    | 'accept_and_ask_for_consultation';
   created_at: Date;
   updated_at: Date;
   user_role: Role;
