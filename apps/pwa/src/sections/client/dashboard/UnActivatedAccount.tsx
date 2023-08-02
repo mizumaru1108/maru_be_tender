@@ -16,9 +16,11 @@ import { getClientData } from 'redux/slices/clientData';
 import { useDispatch, useSelector } from 'redux/store';
 import OldProposalPage from 'pages/client/OldProposal';
 import axiosInstance from 'utils/axios';
+import useLocales from 'hooks/useLocales';
 
 function UnActivatedAccount() {
   const isMobile = useResponsive('down', 'sm');
+  const { translate } = useLocales();
   const { user, activeRole } = useAuth();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -83,7 +85,8 @@ function UnActivatedAccount() {
   };
 
   return (
-    <Page title="Un Activated Page">
+    // <Page title="Un Activated Page">
+    <Page title={translate('pages.common.unactivated_account')}>
       <ModalDialog
         styleContent={{ padding: '1em', backgroundColor: '#fff' }}
         isOpen={open}

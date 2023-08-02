@@ -1,4 +1,4 @@
-import { Button, Grid, TableCell, TableRow, Typography } from '@mui/material';
+import { Button, Chip, Grid, TableCell, TableRow, Typography } from '@mui/material';
 import Iconify from 'components/Iconify';
 import Image from 'components/Image';
 import Space from 'components/space/space';
@@ -74,6 +74,22 @@ export default function AdvertisingTapeRow({
         {/* <TableCell align="left" sx={{ maxWidth: 200 }}>
           <Typography variant="subtitle2">{row.track_id ?? '-'}</Typography>
         </TableCell> */}
+        <TableCell align="left" sx={{ maxWidth: 250 }}>
+          {/* <Typography variant="subtitle2">{row?.status ? 'active' : 'expired'}</Typography> */}
+          {row?.is_expired ? (
+            <Chip
+              label={translate('system_messages.status.active')}
+              color="primary"
+              sx={{ fontWeight: 'bold' }}
+            />
+          ) : (
+            <Chip
+              label={translate('system_messages.status.inactive')}
+              color="error"
+              sx={{ fontWeight: 'bold' }}
+            />
+          )}
+        </TableCell>
         <TableCell align="left">
           <Grid container display="flex" flexDirection="column">
             <Grid item md={6}>

@@ -9,6 +9,8 @@ const ar = {
   pages: {
     options_btn: 'أكثر',
     common: {
+      verify_code_expired: 'تم انتهاء صلاحية رابط التفعيل',
+      unactivated_account: 'صفحة غير مفعلة',
       no_project_timelines: 'لا يحتوي هذا المشروع على أي مخططات زمنية للمشروع',
       go_to_print_preview: 'معاينة قبل الطباعة',
       print_preview: 'طباعة الاقتراح',
@@ -654,6 +656,14 @@ const ar = {
       path: {
         message: '',
         required: 'المسار مطلوب',
+      },
+      support_goal_id: {
+        message: '',
+        required: 'هدف الدعم مطلوب',
+      },
+      fsupport_by_supervisor: {
+        message: '',
+        required: 'مقدار الدعم مطلوب',
       },
       support_type: {
         message: '',
@@ -2359,6 +2369,15 @@ const ar = {
     project_number: 'رقم المشروع',
     status_id: 'الحالة',
   },
+  appointments_row: {
+    un_provide: 'لم يتم التحديد',
+    status: {
+      confirmed: 'مؤكد',
+      tentative: 'غير مؤكد',
+      declined: 'انخفض',
+      done: 'منتهي',
+    },
+  },
   appointment_table: {
     today_headline: 'الحضور اليوم',
     upcoming_headline: 'الحضور المتبقية',
@@ -2383,6 +2402,7 @@ const ar = {
     no_schedule: 'لا توجد تقديمات',
     no_appointment: 'لا توجد تقديمات',
     success: 'تم إنشاء موعد بنجاح',
+    success_set_your_time: 'اضبط وقتك بنجاح',
   },
   old_proposal: {
     page_title: 'مشاريع المنصة',

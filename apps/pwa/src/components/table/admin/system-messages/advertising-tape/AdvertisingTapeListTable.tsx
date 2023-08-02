@@ -37,6 +37,8 @@ const TABLE_HEAD = [
   { id: 'message_content', label: 'system_messages.headercell.message_content' },
   { id: 'the_show_lenght', label: 'system_messages.headercell.the_show_lenght' },
   // { id: 'track', label: 'system_messages.headercell.track' },
+  { id: 'status', label: 'system_messages.headercell.status' },
+
   { id: 'construction', label: 'system_messages.headercell.construction' },
 ];
 
@@ -98,7 +100,7 @@ export default function AdvertisingTapeListTable() {
     // const url = employeeName
     //   ? `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}&employee_name=${employeeName}`
     //   : `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}`;
-    const url = `banners?type=external&limit=${rowsPerPage}&page=${currentPage}`;
+    const url = `banners?type=external&limit=${rowsPerPage}&page=${currentPage}&include_relations=track`;
     // console.log({ track_list });
     try {
       const response = await axiosInstance.get(`${url}`, {
@@ -115,6 +117,7 @@ export default function AdvertisingTapeListTable() {
             showTime: `${dayjs(item.expired_date).format('YYYY-MM-DD (hh:mm A)')}`,
             // track_id: track_list.find((track) => track.id === item.track_id)?.name || '',
             image: item?.logo && item?.logo?.length > 0 ? item?.logo[0].url : null,
+            is_expired: item?.is_expired ? false : true,
           }))
         );
         setTotal(Number(response?.data?.total));

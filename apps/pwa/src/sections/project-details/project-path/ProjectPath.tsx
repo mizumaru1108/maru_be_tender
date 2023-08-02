@@ -355,7 +355,9 @@ function ProjectPath() {
             {/*  */}
             <React.Fragment>
               {(isCompleted && activeStep === '-1') ||
-              (logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT')
+              (logs[logs.length - 1].id === activeStep &&
+                stepGeneralLog?.state === 'CLIENT' &&
+                stepGeneralLog?.user_role === 'CLIENT')
                 ? null
                 : // <Typography variant="h6">{translate(`review.notes`)}</Typography>
                   logs

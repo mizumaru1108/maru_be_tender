@@ -29,8 +29,14 @@ export default function VerirfyRegeistercode() {
         });
       }
     } catch (err) {
-      const statusCode = (err && err.statusCode) || 0;
-      const message = (err && err.message) || null;
+      const statusCode = (err && err?.response?.data?.statusCode) || 0;
+      let message = null;
+      console.log({ statusCode, err });
+      if (statusCode === 422) {
+        message = translate('pages.common.verify_code_expired');
+      } else {
+        message = (err && err.message) || null;
+      }
       enqueueSnackbar(
         `${
           statusCode < 500 && message ? message : translate('pages.common.internal_server_error')

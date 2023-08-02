@@ -1,3 +1,5 @@
+import { FEATURE_TAB_SPV_REVIEW } from 'config';
+
 export const Taps = {
   tender_client: {
     'show-details': [
@@ -352,9 +354,17 @@ export const Taps = {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
       },
+      // ...(FEATURE_TAB_SPV_REVIEW && {
+      // title: 'project_details.actions.supervisor_reviews',
+      // value: 'supervisor-revision',
+      // }),
       {
-        title: 'project_details.actions.supervisor_reviews',
-        value: 'supervisor-revision',
+        ...(FEATURE_TAB_SPV_REVIEW
+          ? ({
+              title: 'project_details.actions.supervisor_reviews',
+              value: 'supervisor-revision',
+            } as any)
+          : null),
       },
     ],
   },

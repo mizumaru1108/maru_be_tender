@@ -9,6 +9,8 @@ const en = {
   pages: {
     options_btn: 'More',
     common: {
+      verify_code_expired: 'Your verification link has expired',
+      unactivated_account: 'Un Activated Page',
       no_project_timelines: "This project does't have any project timelines",
       go_to_print_preview: 'Print Preview',
       print_preview: 'Print Proposal',
@@ -644,6 +646,14 @@ const en = {
         required: 'Path is required!',
       },
       //
+      support_goal_id: {
+        message: '',
+        required: 'Support goal is required',
+      },
+      fsupport_by_supervisor: {
+        message: '',
+        required: 'Amount of support is required',
+      },
       support_type: {
         message: '',
         required: 'Support type is required',
@@ -2341,6 +2351,15 @@ const en = {
     project_number: 'Project Id',
     status_id: 'Status',
   },
+  appointments_row: {
+    un_provide: 'Un Provide',
+    status: {
+      confirmed: 'Confirmed',
+      tentative: 'Tentative',
+      declined: 'Declined',
+      done: 'Done',
+    },
+  },
   appointment_table: {
     today_headline: 'Today Appointments',
     upcoming_headline: 'Upcoming Appointments',
@@ -2365,6 +2384,7 @@ const en = {
     no_schedule: 'No schedule available for this partner',
     no_appointment: 'There is no available appointments',
     success: 'Successfully created an appointment',
+    success_set_your_time: 'Successfully set your time',
   },
   //old proposal Table
   old_proposal: {

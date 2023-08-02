@@ -140,7 +140,7 @@ function AdjustClentAvailableTime() {
         }
       );
       if (rest) {
-        enqueueSnackbar('Successfully', {
+        enqueueSnackbar(translate('appointment.success_set_your_time'), {
           variant: 'success',
           preventDuplicate: true,
           autoHideDuration: 3000,
@@ -284,7 +284,7 @@ function AdjustClentAvailableTime() {
                 }}
               />
               <Typography data-cy={`title_availableTime.${index}.day`}>
-                {translate(DAYS[`${item as WeekDays}`])}
+                {translate(DAYS[`${item as WeekDays}`].toLowerCase())}
               </Typography>
             </Grid>
             <Grid item md={3} xs={12}>
