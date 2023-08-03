@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsNotEmpty,
@@ -73,6 +73,8 @@ export class SendRevisionDto {
   @Min(0.01)
   @Max(999999999999999999.99)
   @IsNotEmpty()
+  @Type(() => Number)
+  // @Transform(({ value }) => new Number(value))
   num_ofproject_binicficiaries?: number;
 
   @ApiPropertyOptional()
@@ -81,6 +83,7 @@ export class SendRevisionDto {
   @Min(0.01)
   @Max(999999999999999999.99)
   @IsNotEmpty()
+  @Transform(({ value }) => new Number(value))
   amount_required_fsupport?: number;
 
   @ApiPropertyOptional()
