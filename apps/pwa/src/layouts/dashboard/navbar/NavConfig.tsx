@@ -683,17 +683,17 @@ const navConfig = {
               path: PATH_ADMIN.authority,
               icon: ICONS.tender_admin.authority,
             },
-            // FEATURE_MENU_ADMIN_ENTITY_AREA &&
-            //   ({
-            //     title: 'entity_area',
-            //     path: PATH_ADMIN.entity_area,
-            //     icon: ICONS.tender_admin.entity_area,
-            //   } as any),
-            {
-              title: 'entity_area',
-              path: PATH_ADMIN.entity_area,
-              icon: ICONS.tender_admin.entity_area,
-            },
+            FEATURE_MENU_ADMIN_ENTITY_AREA &&
+              ({
+                title: 'entity_area',
+                path: PATH_ADMIN.entity_area,
+                icon: ICONS.tender_admin.entity_area,
+              } as any),
+            // {
+            //   title: 'entity_area',
+            //   path: PATH_ADMIN.entity_area,
+            //   icon: ICONS.tender_admin.entity_area,
+            // },
             {
               title: 'regions_project_location',
               path: PATH_ADMIN.regions_project_location,
