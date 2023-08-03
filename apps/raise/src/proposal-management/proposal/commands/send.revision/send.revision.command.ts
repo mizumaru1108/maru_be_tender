@@ -4,6 +4,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
 import { ITenderAppConfig } from 'src/commons/configs/tender-app-config';
 import { FileMimeTypeEnum } from 'src/commons/enums/file-mimetype.enum';
+import { removeUndefinedKeys } from 'src/commons/utils/remove.undefined.value';
 import { BunnyService } from 'src/libs/bunny/services/bunny.service';
 import { MsegatSendingMessageError } from 'src/libs/msegat/exceptions/send.message.error.exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -26,8 +27,8 @@ import { v4 as uuidv4 } from 'uuid';
 export class SendRevisionCommand {
   userId: string;
   request: SendRevisionDto;
-  letter_ofsupport_req?: Express.Multer.File[];
-  project_attachments?: Express.Multer.File[];
+  letter_ofsupport_req?: any; //Express.Multer.File[];
+  project_attachments?: any; //Express.Multer.File[];
 }
 
 export class SendRevisionCommandResult {}
@@ -115,9 +116,11 @@ export class SendRevisionCommandHandler
       const rawAllowedKeys = JSON.parse(editRequest.detail);
       const allowedKeys = Object.keys(rawAllowedKeys);
       const keySet = new Set(allowedKeys);
+      const currentKeys = removeUndefinedKeys(proposalUpdateProps);
       // console.log({ allowedKeys });
-      // console.log('update proposal key', Object.keys(updateProposalPayload));
-      for (const key of Object.keys(proposalUpdateProps)) {
+      // console.log('update proposal key', Object.keys(currentKeys));
+      // console.log('update proposal value', currentKeys);
+      for (const key of Object.keys(currentKeys)) {
         if (!keySet.has(key)) {
           throw new ForbiddenPermissionException(
             'You are just allowed to change what defined by the supervisor!',
@@ -203,6 +206,8 @@ export class SendRevisionCommandHandler
           }
         }
       }
+
+      proposalUpdateProps.id = request.proposal_id;
       proposalUpdateProps.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdateProps.state = 'PROJECT_SUPERVISOR';
 

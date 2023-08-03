@@ -70,6 +70,7 @@ import {
   SendRevisionCommand,
   SendRevisionCommandResult,
 } from 'src/proposal-management/proposal/commands/send.revision/send.revision.command';
+import { ForbiddenPermissionException } from 'src/tender-commons/exceptions/forbidden-permission-exception';
 
 @ApiTags('ProposalModule')
 @Controller('tender-proposal')
@@ -93,7 +94,10 @@ export class TenderProposalController {
     ) {
       return new BadRequestException(error.message);
     }
-    if (error instanceof ForbiddenChangeStateActionException) {
+    if (
+      error instanceof ForbiddenChangeStateActionException ||
+      error instanceof ForbiddenPermissionException
+    ) {
       return new ForbiddenException(error.message);
     }
     if (error instanceof RequestErrorException) {
@@ -662,8 +666,8 @@ export class TenderProposalController {
     @Body() request: SendRevisionDto,
     @UploadedFiles()
     files: {
-      letter_ofsupport_req?: Express.Multer.File[];
-      project_attachments?: Express.Multer.File[];
+      letter_ofsupport_req?: any; //Express.Multer.File[] | undefined;
+      project_attachments?: any; //Express.Multer.File[] | undefined;
     },
   ) {
     try {

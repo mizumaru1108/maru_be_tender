@@ -10,6 +10,8 @@ import { TenderProposalController } from './controllers/proposal.controller';
 import { ProposalRepository } from './repositories/proposal.repository';
 import { ProposalService } from './services/proposal.service';
 import { ProposalFindByIdQueryHandler } from 'src/proposal-management/proposal/queries/proposal.find.by.id.query/proposal.find.by.id.query';
+import { SendRevisionCommandHandler } from 'src/proposal-management/proposal/commands/send.revision/send.revision.command';
+import { ProposalProjectTimelineModule } from 'src/proposal-management/poject-timelines/proposal.project.timeline.module';
 
 const importedModule = [
   CqrsModule,
@@ -17,11 +19,13 @@ const importedModule = [
   TenderTrackModule,
   ProposalLogModule,
   ProposalItemBudgetModule,
+  ProposalProjectTimelineModule,
 ];
 
 const commands: Provider[] = [
   ChangeStateCommandHandler,
   SendAmandementCommandHandler,
+  SendRevisionCommandHandler,
 ];
 
 const queries: Provider[] = [ProposalFindByIdQueryHandler];
