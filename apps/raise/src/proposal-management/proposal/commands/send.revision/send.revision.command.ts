@@ -2,18 +2,25 @@ import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
+import moment from 'moment';
 import { ITenderAppConfig } from 'src/commons/configs/tender-app-config';
 import { FileMimeTypeEnum } from 'src/commons/enums/file-mimetype.enum';
+import { isExistAndValidPhone } from 'src/commons/utils/is-exist-and-valid-phone';
 import { removeUndefinedKeys } from 'src/commons/utils/remove.undefined.value';
 import { BunnyService } from 'src/libs/bunny/services/bunny.service';
+import { EmailService } from 'src/libs/email/email.service';
 import { MsegatSendingMessageError } from 'src/libs/msegat/exceptions/send.message.error.exceptions';
+import { MsegatService } from 'src/libs/msegat/services/msegat.service';
+import { TenderNotificationRepository } from 'src/notification-management/notification/repository/tender-notification.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProposalEditRequestRepository } from 'src/proposal-management/edit-requests/repositories/proposal.edit.request.repository';
 import { ProposalItemBudgetRepository } from 'src/proposal-management/item-budget/repositories/proposal.item.budget.repository';
 import { ProposalTimelinePostgresRepository } from 'src/proposal-management/poject-timelines/repositories/proposal.project.timeline.repository';
 import { SendRevisionDto } from 'src/proposal-management/proposal/dtos/requests';
+import { ISendNotificaitonEvent } from 'src/proposal-management/proposal/entities/proposal.entity';
 import { ProposalRepository } from 'src/proposal-management/proposal/repositories/proposal.repository';
 import { ProposalUpdateProps } from 'src/proposal-management/proposal/types';
+import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
 import { ForbiddenPermissionException } from 'src/tender-commons/exceptions/forbidden-permission-exception';
 import { RequestErrorException } from 'src/tender-commons/exceptions/request-error.exception';
 import { OutterStatusEnum } from 'src/tender-commons/types/proposal';
@@ -41,11 +48,14 @@ export class SendRevisionCommandHandler
     private readonly configService: ConfigService,
     private readonly bunnyService: BunnyService,
     private readonly prismaService: PrismaService,
+    private readonly emailService: EmailService,
+    private readonly msegatService: MsegatService,
     private readonly proposalRepo: ProposalRepository,
     private readonly editRequestRepo: ProposalEditRequestRepository,
     private readonly itemBudgetRepo: ProposalItemBudgetRepository,
     private readonly timelineRepo: ProposalTimelinePostgresRepository,
     private readonly fileManagerRepo: TenderFileManagerRepository,
+    private readonly notifRepo: TenderNotificationRepository,
   ) {}
 
   async execute(
@@ -65,10 +75,18 @@ export class SendRevisionCommandHandler
       const proposal = await this.proposalRepo.fetchById({
         id: proposalId,
       });
-      if (!proposal) throw new BadRequestException(`Proposal not found`);
+      if (!proposal) throw new DataNotFoundException(`Proposal not found`);
       if (proposal.submitter_user_id !== userId) {
         throw new ForbiddenPermissionException(
           `You are not allowed to edit this proposal`,
+        );
+      }
+      if (!proposal.supervisor_id) {
+        throw new RequestErrorException(`Unable to fetch supervisor data!`);
+      }
+      if (!proposal.user) {
+        throw new RequestErrorException(
+          `Unable to proposal submitter user data!`,
         );
       }
 
@@ -268,71 +286,101 @@ export class SendRevisionCommandHandler
               );
             }
           }
+
+          // web notif
+          await this.notifRepo.create(
+            {
+              user_id: proposal.supervisor_id!,
+              content: `تمت تعديل بيانات المشروع ${proposal.project_name} من قبل العميل \n\n${proposal.user?.employee_name} يرجى الدخول على المنصة لمراجعة التعديلات`,
+              subject: '',
+              type: 'PROPOSAL',
+              specific_type: 'NEW_FOLLOW_UP',
+              proposal_id: proposal.id,
+            },
+            session,
+          );
         },
         {
           timeout: 50000,
         },
       );
-      // if (!!request) {
-      //   try {
-      //     if (sendRevisionPayload.detail_project_budgets) {
-      //       proposal_item_budgets = CreateItemBudgetsMapper(
-      //         proposal.id,
-      //         sendRevisionPayload.detail_project_budgets,
-      //       );
-      //     }
 
-      //     if (
-      //       sendRevisionPayload.project_timeline &&
-      //       sendRevisionPayload.project_timeline.length > 0
-      //     ) {
-      //       proposalTimelinePayloads = sendRevisionPayload.project_timeline.map(
-      //         (timeline) => {
-      //           return {
-      //             id: uuidv4(),
-      //             proposal_id: proposal.id,
-      //             name: timeline.name,
-      //             start_date: timeline.start_date,
-      //             end_date: timeline.end_date,
-      //           };
-      //         },
-      //       );
-      //     }
-      //   } catch (err) {
-      //     if (uploadedFilePath.length > 0) {
-      //       this.logger.log('info', `error details \n ${logUtil(err)}`);
-      //       this.logger.log(
-      //         'info',
-      //         `error orccured during send revision, deleting all previous uploaded files`,
-      //       );
-      //       uploadedFilePath.forEach(async (path) => {
-      //         await this.bunnyService.deleteMedia(path, true);
-      //       });
-      //     }
-      //     throw err;
-      //   }
-      // }
+      // send notif sms and email to notify the supervisor about revbised version of the proposal has been sent by the user.
+      const notifPayloads: ISendNotificaitonEvent[] = [];
 
-      // // create proposal and the logs
-      // const updatedProposal = await this.proposalRepo.updateMyProposal(
-      //   proposal.id,
-      //   updateProposalPayload,
-      //   proposal_item_budgets,
-      //   proposalTimelinePayloads,
-      //   fileManagerCreateManyPayload,
-      //   deletedFileManagerUrls,
-      //   uploadedFilePath,
-      //   !!sendRevisionPayload ? true : false,
-      //   (this.configService.get('tenderAppConfig.baseUrl') as string) || '',
-      // );
+      notifPayloads.push({
+        notif_type: 'EMAIL',
+        user_id: proposal.user.id,
+        user_email: proposal.user.email,
+        subject: 'تم إرسال تعديل جديد من العميل',
+        content: `السلام عليكم ورحمة الله ${proposal.user.employee_name} 
+          تم تعديل المشروع ${
+            proposal.project_name
+          } من قبل العميل في تاريخ ${moment(new Date())
+            .locale('ar-sa')
+            .format('llll')}
+          يرجى زيارة منصة المنح لمراجعة المعلومات`,
+        email_type: 'plain',
+      });
 
-      // if (!!sendRevisionPayload && updatedProposal.notif) {
-      //   await this.notifService.sendSmsAndEmailBatch(updatedProposal.notif);
-      // }
+      notifPayloads.push({
+        notif_type: 'SMS',
+        user_id: proposal.user.id,
+        subject: 'تم إرسال تعديل جديد من العميل',
+        content: `السلام عليكم ورحمة الله ${proposal.user.employee_name} 
+          تم تعديل المشروع ${
+            proposal.project_name
+          } من قبل العميل في تاريخ ${moment(new Date())
+            .locale('ar-sa')
+            .format('llll')}
+          يرجى زيارة منصة المنح لمراجعة المعلومات`,
+        user_phone:
+          proposal.user.mobile_number !== null
+            ? proposal.user.mobile_number
+            : undefined,
+      });
 
-      // return updatedProposal.proposal;
+      if (notifPayloads && notifPayloads.length > 0) {
+        for (const notifPayload of notifPayloads) {
+          if (notifPayload.notif_type === 'SMS' && notifPayload.user_phone) {
+            const clientPhone = isExistAndValidPhone(notifPayload.user_phone);
+
+            // sms notif for follow up
+            if (clientPhone) {
+              await this.msegatService.sendSMSAsync({
+                numbers: clientPhone.includes('+')
+                  ? clientPhone.substring(1)
+                  : clientPhone,
+                msg: notifPayload.subject + notifPayload.content,
+              });
+            }
+          }
+
+          // email notif for follow up
+          if (
+            notifPayload.notif_type === 'EMAIL' &&
+            notifPayload.user_email &&
+            notifPayload.email_type
+          ) {
+            this.emailService.sendMail({
+              mailType: notifPayload.email_type,
+              to: notifPayload.user_email,
+              subject: notifPayload.subject,
+              content: notifPayload.content,
+              templateContext: notifPayload.emailTemplateContext,
+              templatePath: notifPayload.emailTemplatePath,
+            });
+          }
+        }
+      }
+
       return new SendRevisionCommandResult();
     } catch (error) {
+      if (fileManagerPayload && fileManagerPayload.length > 0) {
+        for (const file of fileManagerPayload) {
+          await this.bunnyService.deleteMedia(file.url, true);
+        }
+      }
       if (error instanceof MsegatSendingMessageError) {
         throw new BadRequestException(
           `Request might be success but sms notif may not be sented to the client details ${error.message}`,

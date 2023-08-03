@@ -101,7 +101,7 @@ export class TenderProposalController {
       return new ForbiddenException(error.message);
     }
     if (error instanceof RequestErrorException) {
-      return new UnprocessableEntityException(`${error}`);
+      return new UnprocessableEntityException(error.message);
     }
 
     if (error instanceof BasePrismaErrorException) {
