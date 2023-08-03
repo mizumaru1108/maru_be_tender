@@ -76,6 +76,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         base64Data: '',
         fileExtension: '',
         fullName: '',
+        file: undefined,
       },
       project_attachments: {
         url: '',
@@ -84,6 +85,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         base64Data: '',
         fileExtension: '',
         fullName: '',
+        file: undefined,
       },
       project_beneficiaries_specific_type: '',
     },
@@ -170,8 +172,8 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
       ...prevRegisterState,
       form4: {
         // ...prevRegisterState.form4,
-        ...data,
-        amount_required_fsupport: data.amount_required_fsupport,
+        // ...data,
+        amount_required_fsupport: String(data.amount_required_fsupport),
         detail_project_budgets: [...data.detail_project_budgets],
       },
     }));
@@ -189,6 +191,10 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
       ...requestState.form4,
       // timelines: data.project_timeline,
     };
+    console.log('newValue', newValue);
+    delete newValue.project_attachments;
+    delete newValue.letter_ofsupport_req;
+    delete newValue.project_timeline;
 
     let filteredValue = Object.keys(newValue)
       .filter((key) => Object.keys(tmpValues?.revised!).includes(key))
@@ -208,28 +214,89 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         detail_project_budgets: requestState.form4.detail_project_budgets,
       };
     }
-    if (tmpValues?.revised.hasOwnProperty('project_timeline')) {
-      delete filteredValue.project_timeline;
-      filteredValue = {
-        ...filteredValue,
-        project_timeline: data.project_timeline,
-      };
+    let formData = new FormData();
+    for (const key in filteredValue) {
+      formData.append(key, filteredValue[key]);
     }
 
+    if (tmpValues?.revised.hasOwnProperty('project_timeline')) {
+      for (let i = 0; i < data?.project_timeline?.length; i++) {
+        const timeline: {
+          name: string;
+          start_date: string;
+          end_date: string;
+        } = data?.project_timeline[i];
+        const index = i; // Get the index for appending to FormData
+
+        // Append the values for each object using template literals
+        formData.append(`project_timeline[${index}][name]`, timeline.name);
+        formData.append(`project_timeline[${index}][start_date]`, timeline.start_date);
+        formData.append(`project_timeline[${index}][end_date]`, timeline.end_date);
+      }
+    }
+    if (tmpValues?.revised.hasOwnProperty('project_attachments')) {
+      // console.log('masuk sini attachment', requestState?.form1);
+      if (requestState?.form1?.project_attachments?.file) {
+        formData.append(
+          'project_attachments',
+          requestState?.form1?.project_attachments?.file[0] as Blob
+        );
+      } else {
+        formData.append(
+          'project_attachments[url]',
+          requestState?.form1?.project_attachments?.url as string
+        );
+        formData.append(
+          'project_attachments[type]',
+          requestState?.form1?.project_attachments?.type as string
+        );
+        formData.append(
+          'project_attachments[size]',
+          requestState?.form1?.project_attachments?.size as any
+        );
+      }
+    }
+    if (tmpValues?.revised.hasOwnProperty('letter_ofsupport_req')) {
+      // console.log('masuk sini letter', requestState?.form1?.letter_ofsupport_req);
+      if (requestState?.form1?.letter_ofsupport_req?.file) {
+        formData.append(
+          'letter_ofsupport_req',
+          requestState?.form1?.letter_ofsupport_req?.file[0] as Blob
+        );
+      } else {
+        formData.append(
+          'letter_ofsupport_req[url]',
+          requestState?.form1?.letter_ofsupport_req?.url as string
+        );
+        formData.append(
+          'letter_ofsupport_req[type]',
+          requestState?.form1?.letter_ofsupport_req?.type as string
+        );
+        formData.append(
+          'letter_ofsupport_req[size]',
+          requestState?.form1?.letter_ofsupport_req?.size as any
+        );
+      }
+    }
+    // console.log('test', formData.get('proposal_id'));
+    // console.log('test', formData.getAll('proposal_id'));
+    // if (tmpValues?.revised.hasOwnProperty('project_timeline')) {
+    //   delete filteredValue.project_timeline;
+    //   filteredValue = {
+    //     ...filteredValue,
+    //     project_timeline: data.project_timeline,
+    //   };
+    // }
     // console.log({ filteredValue });
 
     try {
-      const rest = await axiosInstance.patch(
-        '/tender-proposal/send-revision',
-        {
-          ...filteredValue,
-        },
-        {
-          headers: { 'x-hasura-role': activeRole! },
-          maxBodyLength: Infinity,
-          maxContentLength: Infinity,
-        }
-      );
+      const url = '/tender-proposal/send-revision-cqrs';
+      //  const url = '/tender-proposal/send-revision';
+      const rest = await axiosInstance.patch(url, formData, {
+        headers: { 'x-hasura-role': activeRole! },
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
+      });
       if (rest) {
         const spreadUrl = location.pathname.split('/');
         enqueueSnackbar(translate('proposal_created'), {

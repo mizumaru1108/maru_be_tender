@@ -262,3 +262,9 @@ export const FEATURE_TAB_SPV_REVIEW: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_TAB_SPV_REVIEW === 'true'
     ? true
     : false;
+
+export const FEATURE_MENU_ADMIN_ENTITY_AREA: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_ENTITY_AREA &&
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_ENTITY_AREA === 'true'
+    ? true
+    : false;

@@ -26,6 +26,7 @@ type Props = {
 };
 
 const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
+  // console.log({ defaultValues });
   const { translate } = useLocales();
   const [budgetError, setBudgetError] = useState(false);
   const isDisabled =
@@ -57,7 +58,8 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props
     resolver: yupResolver(CreatingProposalForm4),
     defaultValues: {
       amount_required_fsupport: defaultValues.amount_required_fsupport,
-      detail_project_budgets: defaultValues.detail_project_budgets.data,
+      detail_project_budgets:
+        defaultValues?.detail_project_budgets?.data || defaultValues?.detail_project_budgets,
     },
   });
 

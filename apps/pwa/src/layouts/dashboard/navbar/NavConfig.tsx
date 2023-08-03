@@ -12,6 +12,7 @@ import {
   PATH_ADMIN,
 } from '../../../routes/paths';
 import SvgIconStyle from '../../../components/SvgIconStyle';
+import { FEATURE_MENU_ADMIN_ENTITY_AREA } from 'config';
 
 // ----------------------------------------------------------------------
 
@@ -682,6 +683,12 @@ const navConfig = {
               path: PATH_ADMIN.authority,
               icon: ICONS.tender_admin.authority,
             },
+            // FEATURE_MENU_ADMIN_ENTITY_AREA &&
+            //   ({
+            //     title: 'entity_area',
+            //     path: PATH_ADMIN.entity_area,
+            //     icon: ICONS.tender_admin.entity_area,
+            //   } as any),
             {
               title: 'entity_area',
               path: PATH_ADMIN.entity_area,
