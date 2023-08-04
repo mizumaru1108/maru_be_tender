@@ -197,29 +197,37 @@ export class BannerRepository {
     }
 
     if (only_active !== undefined) {
+      // expired_at: {
+      //   gte: Math.floor(Date.now() / 1000),
+      // },
       // find where expired_date + expired_time (xx:xx am/pm) < now
-      const currentDate = new Date();
       findManyWhereClause = {
         ...findManyWhereClause,
-        OR: [
-          {
-            // greater than this day
-            expired_date: {
-              gt: currentDate,
-            },
-          },
-          {
-            // same day
-            expired_date: {
-              equals: currentDate,
-            },
-            // expired time greater than now
-            expired_time: {
-              gte: moment(currentDate).format('hh:mm A'),
-            },
-          },
-        ],
+        expired_at: {
+          gte: Math.floor(Date.now() / 1000),
+        },
       };
+      // const currentDate = new Date();
+      //   ...findManyWhereClause,
+      //   OR: [
+      //     {
+      //       // greater than this day
+      //       expired_date: {
+      //         gt: currentDate,
+      //       },
+      //     },
+      //     {
+      //       // same day
+      //       expired_date: {
+      //         equals: currentDate,
+      //       },
+      //       // expired time greater than now
+      //       expired_time: {
+      //         gte: moment(currentDate).format('hh:mm A'),
+      //       },
+      //     },
+      //   ],
+      // };
     }
 
     if (include_relations && include_relations.length > 0) {
