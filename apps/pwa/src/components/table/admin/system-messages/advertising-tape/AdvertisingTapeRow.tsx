@@ -16,6 +16,7 @@ export default function AdvertisingTapeRow({
   onSelectRow,
   onDelete,
 }: AdevertisingTapeRow) {
+  // console.log({ row });
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
 

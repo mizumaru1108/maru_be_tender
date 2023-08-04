@@ -114,7 +114,7 @@ export default function AdvertisingTapeListTable() {
             title: item.title || '',
             content: item.content || '',
             // track_id: item.track_id || '',
-            showTime: `${dayjs(item.expired_date).format('YYYY-MM-DD (hh:mm A)')}`,
+            showTime: `${dayjs(item.expired_date).format('YYYY-MM-DD')} (${item.expired_time})`,
             // track_id: track_list.find((track) => track.id === item.track_id)?.name || '',
             image: item?.logo && item?.logo?.length > 0 ? item?.logo[0].url : null,
             is_expired: item?.is_expired ? false : true,

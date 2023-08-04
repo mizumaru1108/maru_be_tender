@@ -28,6 +28,7 @@ import { _supportGoalsArr } from '../../../../../_mock/_supportGoalsArr';
 import axiosInstance from '../../../../../utils/axios';
 import { FEATURE_PROPOSAL_COUNTING, REOPEN_TMRA_S568 } from 'config';
 import { getMissingItems } from '../../../../../utils/checkDeletedArray';
+import { removeEmptyKey } from 'utils/remove-empty-key';
 
 function AcceptedForm({ onEdit }: EditAccModalForm) {
   const { translate, currentLang } = useLocales();
