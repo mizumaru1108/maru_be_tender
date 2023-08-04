@@ -268,3 +268,21 @@ export const FEATURE_MENU_ADMIN_ENTITY_AREA: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_ENTITY_AREA === 'true'
     ? true
     : false;
+
+export const FEATURE_MENU_ADMIN_REGIONS: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_REGIONS &&
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_REGIONS === 'true'
+    ? true
+    : false;
+
+export const FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION &&
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION === 'true'
+    ? true
+    : false;
+
+export const FEATURE_MENU_ADMIN_ADD_AUTHORITY: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_ADD_AUTHORITY &&
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_ADD_AUTHORITY === 'true'
+    ? true
+    : false;

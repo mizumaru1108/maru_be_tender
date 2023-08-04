@@ -271,6 +271,11 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           },
         };
       }
+      if (data?.vat_percentage) {
+        payload.vat_percentage = Number(data.vat_percentage);
+      }
+      // onSubmit();
+      payload = removeEmptyKey(payload);
       // console.log({ payload });
       // onSubmit(newData);
 

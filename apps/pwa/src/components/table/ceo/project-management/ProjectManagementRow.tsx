@@ -7,7 +7,7 @@ import useLocales from 'hooks/useLocales';
 //
 import moment from 'moment';
 import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import { stringTruncate } from '../../../../utils/stringTruncate';
 import { ProjectManagementTableColumn } from './project-management';
@@ -22,6 +22,8 @@ export default function ProjectManagementTableRow({
   const navigate = useNavigate();
 
   const { activeRole } = useAuth();
+  // const params = useParams();
+  // console.log({ destination, row });
 
   const location = useLocation();
 
@@ -33,13 +35,16 @@ export default function ProjectManagementTableRow({
     const x = location.pathname.split('/');
     let url = '';
     // const url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;
-    if (activeRole === 'tender_project_manager' || activeRole === 'tender_ceo') {
+    if (
+      activeRole === 'tender_project_manager' ||
+      (activeRole === 'tender_ceo' && destination === 'reject-project')
+    ) {
       url = `/${x[1]}/${x[2]}/rejection-list/${row.id}/reject-project`;
     } else {
       url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;
     }
     console.log({ url });
-    if (destination && activeRole === 'tender_ceo') {
+    if (destination && activeRole === 'tender_ceo' && destination !== 'reject-project') {
       // navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${row.id}/show-details`);
       navigate(`/${x[1]}/${x[2]}/project-management/${row.id}/${destination}`);
     } else {

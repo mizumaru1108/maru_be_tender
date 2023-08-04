@@ -9,6 +9,12 @@ import ProjectOwnerDetails from 'pages/project-details/ProjectOwnerDetails';
 import ProjectDetails from 'pages/project-details/ProjectDetails';
 import ListTrack from 'sections/admin/transaction-progression/ListTrack';
 import ReviewOperationTrack from 'sections/admin/transaction-progression/ReviewOperationTrack';
+import {
+  FEATURE_MENU_ADMIN_ADD_AUTHORITY,
+  FEATURE_MENU_ADMIN_ENTITY_AREA,
+  FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
+  FEATURE_MENU_ADMIN_REGIONS,
+} from 'config';
 
 const Main = Loadable(lazy(() => import('pages/admin/MainPage')));
 const TransactionProgression = Loadable(lazy(() => import('pages/admin/TransactionProgression')));
@@ -162,10 +168,16 @@ export const adminRoute = {
             { path: 'edit/:userId', element: <UsersAndPermissionsEdit /> },
           ],
         },
-        { path: 'authority', element: <Authority /> },
-        { path: 'entity-area', element: <EntityArea /> },
-        { path: 'regions-project-location', element: <RegionsProjectLocation /> },
-        { path: 'entity-classification', element: <EntityClassification /> },
+        FEATURE_MENU_ADMIN_ADD_AUTHORITY && { path: 'authority', element: <Authority /> },
+        FEATURE_MENU_ADMIN_ENTITY_AREA && { path: 'entity-area', element: <EntityArea /> },
+        FEATURE_MENU_ADMIN_REGIONS && {
+          path: 'regions-project-location',
+          element: <RegionsProjectLocation />,
+        },
+        FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION && {
+          path: 'entity-classification',
+          element: <EntityClassification />,
+        },
         { path: 'bank-name', element: <BankName /> },
         { path: 'beneficiaries', element: <Beneficiaries /> },
         { path: 'portal-reports', element: <PortalReports /> },

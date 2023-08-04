@@ -12,6 +12,7 @@ import { SupervisorStep1 } from '../../../../../../@types/supervisor-accepting-f
 import useLocales from 'hooks/useLocales';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
+import { removeEmptyKey } from 'utils/remove-empty-key';
 
 function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   const { translate } = useLocales();
@@ -89,7 +90,13 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
 
   const onSubmitForm = async (data: SupervisorStep1) => {
     // console.log('data', data);
-    onSubmit(data);
+    const { vat_percentage, ...rest } = data;
+    const tmpValues = {
+      vat_percentage: Number(vat_percentage),
+      ...rest,
+    };
+    onSubmit(removeEmptyKey(tmpValues));
+    // onSubmit(tmpValues);
   };
 
   useEffect(() => {

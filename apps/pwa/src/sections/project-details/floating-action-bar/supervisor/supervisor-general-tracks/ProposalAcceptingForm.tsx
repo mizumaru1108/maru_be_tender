@@ -31,6 +31,7 @@ import { useSnackbar } from 'notistack';
 import useAuth from '../../../../../hooks/useAuth';
 import axiosInstance from '../../../../../utils/axios';
 import { _supportGoalsArr } from '../../../../../_mock/_supportGoalsArr';
+import { removeEmptyKey } from 'utils/remove-empty-key';
 
 function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType) {
   const { translate } = useLocales();
@@ -245,8 +246,10 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       }
 
       if (checkPassAmount) {
-        newData.vat_percentage = Number(data.vat_percentage);
-        onSubmit(newData);
+        if (data?.vat_percentage) {
+          newData.vat_percentage = Number(data.vat_percentage);
+        }
+        onSubmit(removeEmptyKey(newData));
         // console.log({ newData });
       } else {
         // console.log('false');

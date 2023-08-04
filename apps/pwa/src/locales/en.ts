@@ -2360,6 +2360,12 @@ const en = {
       done: 'Done',
     },
   },
+  appointments_modal: {
+    header: {
+      accept: 'Accept Appointment Meeting',
+      reject: 'Rejection Appointment Meeting',
+    },
+  },
   appointment_table: {
     today_headline: 'Today Appointments',
     upcoming_headline: 'Upcoming Appointments',

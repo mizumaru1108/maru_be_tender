@@ -12,7 +12,12 @@ import {
   PATH_ADMIN,
 } from '../../../routes/paths';
 import SvgIconStyle from '../../../components/SvgIconStyle';
-import { FEATURE_MENU_ADMIN_ENTITY_AREA } from 'config';
+import {
+  FEATURE_MENU_ADMIN_ADD_AUTHORITY,
+  FEATURE_MENU_ADMIN_ENTITY_AREA,
+  FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
+  FEATURE_MENU_ADMIN_REGIONS,
+} from 'config';
 
 // ----------------------------------------------------------------------
 
@@ -678,11 +683,17 @@ const navConfig = {
           path: '',
           icon: ICONS.tender_admin.customization_for_dropdown,
           children: [
-            {
-              title: 'authority',
-              path: PATH_ADMIN.authority,
-              icon: ICONS.tender_admin.authority,
-            },
+            FEATURE_MENU_ADMIN_ADD_AUTHORITY &&
+              ({
+                title: 'authority',
+                path: PATH_ADMIN.authority,
+                icon: ICONS.tender_admin.authority,
+              } as any),
+            // {
+            //   title: 'authority',
+            //   path: PATH_ADMIN.authority,
+            //   icon: ICONS.tender_admin.authority,
+            // },
             FEATURE_MENU_ADMIN_ENTITY_AREA &&
               ({
                 title: 'entity_area',
@@ -694,16 +705,28 @@ const navConfig = {
             //   path: PATH_ADMIN.entity_area,
             //   icon: ICONS.tender_admin.entity_area,
             // },
-            {
-              title: 'regions_project_location',
-              path: PATH_ADMIN.regions_project_location,
-              icon: ICONS.tender_admin.regions_project_location,
-            },
-            {
-              title: 'entity_classification',
-              path: PATH_ADMIN.entity_classification,
-              icon: ICONS.tender_admin.entity_classification,
-            },
+            FEATURE_MENU_ADMIN_REGIONS &&
+              ({
+                title: 'regions_project_location',
+                path: PATH_ADMIN.regions_project_location,
+                icon: ICONS.tender_admin.regions_project_location,
+              } as any),
+            // {
+            //   title: 'regions_project_location',
+            //   path: PATH_ADMIN.regions_project_location,
+            //   icon: ICONS.tender_admin.regions_project_location,
+            // },
+            FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION &&
+              ({
+                title: 'entity_classification',
+                path: PATH_ADMIN.entity_classification,
+                icon: ICONS.tender_admin.entity_classification,
+              } as any),
+            // {
+            //   title: 'entity_classification',
+            //   path: PATH_ADMIN.entity_classification,
+            //   icon: ICONS.tender_admin.entity_classification,
+            // },
             {
               title: 'bank_name',
               path: PATH_ADMIN.bank_name,

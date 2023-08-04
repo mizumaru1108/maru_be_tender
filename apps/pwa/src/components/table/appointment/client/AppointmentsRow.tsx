@@ -181,13 +181,13 @@ export default function AppointmentsTableRow({
         open={openAcc}
         handleClose={() => setOpenAcc(!openAcc)}
         onSumbit={handleAccept}
-        message={'Accept Appointment Meeting'}
+        message={translate('appointments_modal.header.accept')}
       />
       <RejectionModal
         open={openReject}
         handleClose={() => setOpenReject(!openReject)}
         onReject={(data) => handleReject(data)}
-        message={'Accept Appointment Meeting'}
+        message={translate('appointments_modal.header.reject')}
         key={'reject'}
       />
     </>
