@@ -39,12 +39,14 @@ export interface ProjectManagementTableProps {
 }
 
 type filter = 'track_id' | 'none' | 'project_number' | 'project_name' | 'project_section';
+type TCeoTable = 'show-details' | 'reject-project';
 export interface ProjectManagementTableBEProps {
   data: ProjectManagement[];
   headerCell: ProjectManagementTableHeader[];
   headline?: string;
   isLoading?: boolean;
   total: number;
+  table_type?: TCeoTable;
   onPageChange: (page: number) => void;
   onChangeRowsPage: (rowsPerPage: number) => void;
   onFilterChange: (filter: filter, value: string) => void;

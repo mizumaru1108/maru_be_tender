@@ -5,61 +5,75 @@ import { FormProvider, RHFRadioGroup, RHFSelect, RHFTextField } from 'components
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import BaseField from 'components/hook-form/BaseField';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { _supportGoals } from '_mock/_supportgoals';
 import { useSelector } from 'redux/store';
 import { SupervisorStep1 } from '../../../../../../@types/supervisor-accepting-form';
 import useLocales from 'hooks/useLocales';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
+import { removeEmptyKey } from 'utils/remove-empty-key';
 
 function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   const { translate } = useLocales();
 
   const { proposal } = useSelector((state) => state.proposal);
-
-  const validationSchema = Yup.object().shape({
-    // clause: Yup.string().required('Procedures is required!'),
-    // clasification_field: Yup.string().required('Procedures is required!'),
-    support_type: Yup.boolean().required(translate('errors.cre_proposal.support_type.required')),
-    closing_report: Yup.boolean().required(
-      translate('errors.cre_proposal.closing_report.required')
-    ),
-    need_picture: Yup.boolean().required(translate('errors.cre_proposal.need_picture.required')),
-    does_an_agreement: Yup.boolean().required(
-      translate('errors.cre_proposal.does_an_agreement.required')
-    ),
-    fsupport_by_supervisor: Yup.string().required(
-      translate('errors.cre_proposal.fsupport_by_supervisor.required')
-    ),
-    // number_of_payments_by_supervisor: Yup.number(),
-    notes: Yup.string(),
-    support_outputs: Yup.string().required(
-      translate('errors.cre_proposal.support_outputs.required')
-    ),
-    vat: Yup.boolean().required(translate('errors.cre_proposal.vat.required')),
-    vat_percentage: Yup.string()
-      // .integer()
-      .nullable()
-      .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
-        if (!val) return true;
-        return Number(val) > 0;
-      }),
-    inclu_or_exclu: Yup.boolean(),
-    payment_number: Yup.string()
-      .required(translate('errors.cre_proposal.payment_number.required'))
-      .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {
-        const number_of_payment = Number(val) > 0;
-        console.log('number_of_payment', number_of_payment);
-        return number_of_payment;
-      }),
-    // accreditation_type_id: Yup.string().required('Procedures is required!'),
-    // support_goal_id: Yup.string().required('Procedures is required!'),
-  });
-
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
-
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
+
+  const validationSchema = React.useMemo(() => {
+    const tmpIsVat = isVat;
+    return Yup.object().shape({
+      // clause: Yup.string().required('Procedures is required!'),
+      // clasification_field: Yup.string().required('Procedures is required!'),
+      support_type: Yup.boolean().required(translate('errors.cre_proposal.support_type.required')),
+      closing_report: Yup.boolean().required(
+        translate('errors.cre_proposal.closing_report.required')
+      ),
+      need_picture: Yup.boolean().required(translate('errors.cre_proposal.need_picture.required')),
+      does_an_agreement: Yup.boolean().required(
+        translate('errors.cre_proposal.does_an_agreement.required')
+      ),
+      fsupport_by_supervisor: Yup.string().required(
+        translate('errors.cre_proposal.fsupport_by_supervisor.required')
+      ),
+      // number_of_payments_by_supervisor: Yup.number(),
+      notes: Yup.string(),
+      support_outputs: Yup.string().required(
+        translate('errors.cre_proposal.support_outputs.required')
+      ),
+      vat: Yup.boolean().required(translate('errors.cre_proposal.vat.required')),
+      // vat_percentage: Yup.string()
+      //   // .integer()
+      //   .nullable()
+      //   .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
+      //     if (!val) return true;
+      //     return Number(val) > 0;
+      //   }),
+      ...(tmpIsVat && {
+        vat_percentage: Yup.string()
+          // .integer()
+          .required(translate('errors.cre_proposal.vat_percentage.greater_than_0'))
+          // .nullable()
+          .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
+            if (!val) return true;
+            return Number(val) > 0;
+          }),
+      }),
+      inclu_or_exclu: Yup.boolean(),
+      payment_number: Yup.string()
+        .required(translate('errors.cre_proposal.payment_number.required'))
+        .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {
+          const number_of_payment = Number(val) > 0;
+          console.log('number_of_payment', number_of_payment);
+          return number_of_payment;
+        }),
+      // accreditation_type_id: Yup.string().required('Procedures is required!'),
+      // support_goal_id: Yup.string().required('Procedures is required!'),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVat]);
+
   // const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
   const methods = useForm<SupervisorStep1>({
     resolver: yupResolver(validationSchema),
@@ -76,7 +90,13 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
 
   const onSubmitForm = async (data: SupervisorStep1) => {
     // console.log('data', data);
-    onSubmit(data);
+    const { vat_percentage, ...rest } = data;
+    const tmpValues = {
+      vat_percentage: Number(vat_percentage),
+      ...rest,
+    };
+    onSubmit(removeEmptyKey(tmpValues));
+    // onSubmit(tmpValues);
   };
 
   useEffect(() => {
@@ -109,7 +129,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             data-cy="acc_form_consulation_support_type"
             type="radioGroup"
             name="support_type"
-            label="نوع الدعم"
+            label="نوع الدعم*"
             onClick={(e) => {
               if (e && e.target.value) {
                 if (e.target.value === 'true') {
@@ -130,7 +150,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             data-cy="acc_form_consulation_closing_report"
             type="radioGroup"
             name="closing_report"
-            label="تقرير الإغلاق"
+            label="تقرير الإغلاق*"
             options={[
               { label: 'نعم', value: true },
               { label: 'لا', value: false },
@@ -143,7 +163,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             data-cy="acc_form_consulation_need_picture"
             type="radioGroup"
             name="need_picture"
-            label="هل يحتاج إلى صور"
+            label="هل يحتاج إلى صور*"
             options={[
               { label: 'نعم', value: true },
               { label: 'لا', value: false },
@@ -155,7 +175,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
             data-cy="acc_form_consulation_does_an_agreement"
             type="radioGroup"
             name="does_an_agreement"
-            label="هل يحتاج اتفاقية"
+            label="هل يحتاج اتفاقية*"
             options={[
               { label: 'نعم', value: true },
               { label: 'لا', value: false },
@@ -217,7 +237,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
               data-cy="acc_form_consulation_vat_percentage"
               type="numberField"
               name="vat_percentage"
-              label="النسبة المئوية من الضريبة"
+              label="النسبة المئوية من الضريبة*"
               placeholder="النسبة المئوية من الضريبة"
             />
           </Grid>

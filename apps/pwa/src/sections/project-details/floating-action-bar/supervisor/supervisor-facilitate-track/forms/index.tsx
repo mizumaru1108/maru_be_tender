@@ -60,6 +60,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   // console.log({ numberPayment });
 
   const handleSubmitFirstForm = (data: any) => {
+    // console.log({ data });
     setIsSubmitting(true);
     dispatch(setStepOne(data));
     setIsSubmitting(false);

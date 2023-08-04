@@ -247,8 +247,8 @@ const FundingProjectRequestForm = () => {
     delete payload.detail_project_budgets;
     delete payload.project_attachments;
     delete payload.letter_ofsupport_req;
-    delete payload.detail_project_budgets;
     delete payload.project_timeline;
+    delete payload.detail_project_budgets;
     const jsonData: any = {
       ...payload,
     };

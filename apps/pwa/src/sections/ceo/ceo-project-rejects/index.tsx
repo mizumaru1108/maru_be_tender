@@ -188,6 +188,7 @@ function CeoProjectRejects() {
       data={projectManagementData ?? []}
       headerCell={headerCells}
       total={total || 0}
+      table_type={'reject-project'}
       onChangeRowsPage={(rowPage: number) => {
         setLimit(rowPage);
       }}

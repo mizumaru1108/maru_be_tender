@@ -40,6 +40,7 @@ export default function ProjectManagementTableBE({
   headline,
   isLoading,
   total = 0,
+  table_type = 'show-details',
   onPageChange,
   onFilterChange,
   onChangeRowsPage,
@@ -238,7 +239,7 @@ export default function ProjectManagementTableBE({
                     row={projectManagement}
                     selected={selected.includes(projectManagement.id as string)}
                     onSelectRow={() => console.log('onSelectRow')}
-                    destination={''}
+                    destination={table_type}
                     needSelection={false}
                   />
                 ))}

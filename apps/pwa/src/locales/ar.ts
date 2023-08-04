@@ -2378,6 +2378,12 @@ const ar = {
       done: 'منتهي',
     },
   },
+  appointments_modal: {
+    header: {
+      accept: 'قبول موعد الاجتماع',
+      reject: 'اجتماع موعد الرفض',
+    },
+  },
   appointment_table: {
     today_headline: 'الحضور اليوم',
     upcoming_headline: 'الحضور المتبقية',

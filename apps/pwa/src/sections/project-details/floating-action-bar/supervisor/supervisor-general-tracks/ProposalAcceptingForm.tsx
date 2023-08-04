@@ -31,6 +31,7 @@ import { useSnackbar } from 'notistack';
 import useAuth from '../../../../../hooks/useAuth';
 import axiosInstance from '../../../../../utils/axios';
 import { _supportGoalsArr } from '../../../../../_mock/_supportGoalsArr';
+import { removeEmptyKey } from 'utils/remove-empty-key';
 
 function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType) {
   const { translate } = useLocales();
@@ -61,64 +62,61 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
 
   // const { data: proposalData, fetching: fetchingProposal, error: errorProposal } = proposalResult;
 
-  const validationSchema = Yup.object().shape({
-    support_type: Yup.boolean().required(translate('errors.cre_proposal.support_type.required')),
-    closing_report: Yup.boolean().required(
-      translate('errors.cre_proposal.closing_report.required')
-    ),
-    need_picture: Yup.boolean().required(translate('errors.cre_proposal.need_picture.required')),
-    does_an_agreement: Yup.boolean().required(
-      translate('errors.cre_proposal.does_an_agreement.required')
-    ),
-    detail_project_budgets: Yup.array().of(
-      Yup.object().shape({
-        clause: Yup.string().required(
-          translate('errors.cre_proposal.detail_project_budgets.clause.required')
-        ),
-        explanation: Yup.string().required(
-          translate('errors.cre_proposal.detail_project_budgets.explanation.required')
-        ),
-        amount: Yup.number()
-          .typeError(translate('errors.cre_proposal.detail_project_budgets.amount.message'))
-          .integer()
-          .required(translate('errors.cre_proposal.detail_project_budgets.amount.required')),
-      })
-    ),
-    notes: Yup.string(),
-    support_outputs: Yup.string().required(
-      translate('errors.cre_proposal.support_outputs.required')
-    ),
-    vat: Yup.boolean().required(translate('errors.cre_proposal.vat.required')),
-    // vat_percentage: Yup.number(translate('errors.cre_proposal.vat_percentage.greater_than_0'))
-    //   .integer(translate('errors.cre_proposal.vat_percentage.greater_than_0'))
-    //   .min(1, translate('errors.cre_proposal.vat_percentage.greater_than_0')),
-    // vat_percentage: Yup.mixed().test(
-    //   'vat_percentage',
-    //   translate('errors.cre_proposal.vat_percentage.greater_than_0'),
-    //   (value) => {
-    //     if (!value) return true;
-    //     return Number(value) > 0;
-    //   }
-    // ),
-    vat_percentage: Yup.string()
-      // .integer()
-      .nullable()
-      .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
-        if (!val) return true;
-        return Number(val) > 0;
+  const validationSchema = React.useMemo(() => {
+    const tmpIsVat = isVat;
+    return Yup.object().shape({
+      support_type: Yup.boolean().required(translate('errors.cre_proposal.support_type.required')),
+      closing_report: Yup.boolean().required(
+        translate('errors.cre_proposal.closing_report.required')
+      ),
+      need_picture: Yup.boolean().required(translate('errors.cre_proposal.need_picture.required')),
+      does_an_agreement: Yup.boolean().required(
+        translate('errors.cre_proposal.does_an_agreement.required')
+      ),
+      detail_project_budgets: Yup.array().of(
+        Yup.object().shape({
+          clause: Yup.string().required(
+            translate('errors.cre_proposal.detail_project_budgets.clause.required')
+          ),
+          explanation: Yup.string().required(
+            translate('errors.cre_proposal.detail_project_budgets.explanation.required')
+          ),
+          amount: Yup.number()
+            .typeError(translate('errors.cre_proposal.detail_project_budgets.amount.message'))
+            .integer()
+            .required(translate('errors.cre_proposal.detail_project_budgets.amount.required')),
+        })
+      ),
+      notes: Yup.string(),
+      support_outputs: Yup.string().required(
+        translate('errors.cre_proposal.support_outputs.required')
+      ),
+      vat: Yup.boolean().required(translate('errors.cre_proposal.vat.required')),
+      ...(tmpIsVat && {
+        vat_percentage: Yup.string()
+          // .integer()
+          .required(translate('errors.cre_proposal.vat_percentage.greater_than_0'))
+          // .nullable()
+          .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
+            if (!val) return true;
+            return Number(val) > 0;
+          }),
       }),
-    inclu_or_exclu: Yup.boolean(),
-    support_goal_id: Yup.string().required(
-      translate('errors.cre_proposal.support_goal_id.required')
-    ),
-    payment_number: Yup.string()
-      .required(translate('errors.cre_proposal.payment_number.required'))
-      .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {
-        const number_of_payment = Number(val) > 0;
-        console.log('number_of_payment', number_of_payment);
-        return number_of_payment;
-      }),
-  });
+      inclu_or_exclu: Yup.boolean(),
+      support_goal_id: Yup.string().required(
+        translate('errors.cre_proposal.support_goal_id.required')
+      ),
+      payment_number: Yup.string()
+        .required(translate('errors.cre_proposal.payment_number.required'))
+        .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {
+          const number_of_payment = Number(val) > 0;
+          console.log('number_of_payment', number_of_payment);
+          return number_of_payment;
+        }),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVat]);
+  // console.log({ validationSchema });
 
   const defaultValues = {
     clasification_field: 'عام',
@@ -248,8 +246,10 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
       }
 
       if (checkPassAmount) {
-        newData.vat_percentage = Number(data.vat_percentage);
-        onSubmit(newData);
+        if (data?.vat_percentage) {
+          newData.vat_percentage = Number(data.vat_percentage);
+        }
+        onSubmit(removeEmptyKey(newData));
         // console.log({ newData });
       } else {
         // console.log('false');
@@ -375,7 +375,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     data-cy="acc_form_non_consulation_support_type"
                     type="radioGroup"
                     name="support_type"
-                    label="نوع الدعم"
+                    label="نوع الدعم*"
                     options={[
                       { label: 'دعم جزئي', value: false },
                       { label: 'دعم كلي', value: true },
@@ -387,7 +387,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     data-cy="acc_form_non_consulation_closing_report"
                     type="radioGroup"
                     name="closing_report"
-                    label="تقرير الإغلاق"
+                    label="تقرير الإغلاق*"
                     options={[
                       { label: 'نعم', value: true },
                       { label: 'لا', value: false },
@@ -399,7 +399,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     data-cy="acc_form_non_consulation_need_picture"
                     type="radioGroup"
                     name="need_picture"
-                    label="هل يحتاج إلى صور"
+                    label="هل يحتاج إلى صور*"
                     options={[
                       { label: 'نعم', value: true },
                       { label: 'لا', value: false },
@@ -411,7 +411,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                     data-cy="acc_form_non_consulation_agreement"
                     type="radioGroup"
                     name="does_an_agreement"
-                    label="هل يحتاج اتفاقية"
+                    label="هل يحتاج اتفاقية*"
                     options={[
                       { label: 'نعم', value: true },
                       { label: 'لا', value: false },
@@ -515,7 +515,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                       type="number"
                       size="small"
                       name="vat_percentage"
-                      label="النسبة المئوية من الضريبة"
+                      label="النسبة المئوية من الضريبة*"
                       placeholder="النسبة المئوية من الضريبة"
                       InputProps={{ inputProps: { min: 1 } }}
                     />
@@ -557,7 +557,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
                   />
                 </Grid> */}
                 <Grid item xs={12}>
-                  <Typography sx={{ mb: 2 }}>الموازنة التفصيلية للمشروع</Typography>
+                  <Typography sx={{ mb: 2 }}>الموازنة التفصيلية للمشروع*</Typography>
                   {itemBudgets.map((v, i) => (
                     <Grid container key={v.id} spacing={2} sx={{ mb: 2 }}>
                       <Grid item xs={3}>
