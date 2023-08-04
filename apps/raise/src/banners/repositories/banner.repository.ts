@@ -1,6 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
 import { Builder } from 'builder-pattern';
+import moment from 'moment';
 import { nanoid } from 'nanoid';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { BannerEntity } from 'src/banners/entities/banner.entity';
@@ -8,10 +10,7 @@ import { BannerTypeEnum } from 'src/banners/types/enums/banner.type.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
 import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
-import moment from 'moment';
-import { logUtil } from 'src/commons/utils/log-util';
 import { TrackEntity } from 'src/tender-track/track/entities/track.entity';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class BannerCreateProps {
   content: string;
@@ -22,6 +21,7 @@ export class BannerCreateProps {
   track_id?: string;
   expired_date: Date;
   expired_time: string;
+  expired_at: number;
 }
 
 export class BannerUpdateProps {
@@ -33,6 +33,7 @@ export class BannerUpdateProps {
   track_id?: string;
   expired_date?: Date;
   expired_time?: string;
+  expired_at?: number;
 }
 
 export class BannerFindManyProps {
@@ -94,11 +95,13 @@ export class BannerRepository {
           track_id: props.track_id,
           expired_date: props.expired_date,
           expired_time: props.expired_time,
+          expired_at: props.expired_at,
         },
       });
 
       const createdEntity = Builder<BannerEntity>(BannerEntity, {
         ...rawCreated,
+        expired_at: Number(rawCreated.expired_at),
       }).build();
       return createdEntity;
     } catch (error) {
@@ -123,11 +126,13 @@ export class BannerRepository {
           track_id: props.track_id,
           expired_date: props.expired_date,
           expired_time: props.expired_time,
+          expired_at: props.expired_at,
         },
       });
 
       const updatedEntity = Builder<BannerEntity>(BannerEntity, {
         ...rawUpdated,
+        expired_at: Number(rawUpdated.expired_at),
       }).build();
       return updatedEntity;
     } catch (error) {
@@ -158,6 +163,7 @@ export class BannerRepository {
 
       const entity = Builder<BannerEntity>(BannerEntity, {
         ...result,
+        expired_at: Number(result.expired_at),
         track: newTrack,
       }).build();
 
@@ -273,34 +279,36 @@ export class BannerRepository {
       }
 
       const rawResults = await prisma.banner.findMany(queryOptions);
-      const currentDate = moment();
       const entities = rawResults.map((rawResult) => {
         if (expired_field) {
-          // Parse expired_date in ISO 8601 format (YYYY-MM-DD)
-          const expiredDate = moment(rawResult.expired_date, 'YYYY-MM-DD');
+          // // Parse expired_date in ISO 8601 format (YYYY-MM-DD)
+          // const expiredDate = moment(rawResult.expired_date, 'YYYY-MM-DD');
 
-          // Parse expired_time in 12-hour format with AM/PM
-          const expiredTime = moment(rawResult.expired_time, 'hh:mm A');
+          // // Parse expired_time in 12-hour format with AM/PM
+          // const expiredTime = moment(rawResult.expired_time, 'hh:mm A');
 
-          // Combine the date and time for comparison
-          const expiredDateTime = moment(expiredDate).set({
-            hour: expiredTime.get('hour'),
-            minute: expiredTime.get('minute'),
-            second: expiredTime.get('second'),
-          });
+          // // Combine the date and time for comparison
+          // const expiredDateTime = moment(expiredDate).set({
+          //   hour: expiredTime.get('hour'),
+          //   minute: expiredTime.get('minute'),
+          //   second: expiredTime.get('second'),
+          // });
 
-          const isExpired =
-            expiredDateTime.isBefore(currentDate) ||
-            (expiredDateTime.isSame(currentDate, 'day') &&
-              expiredDateTime.isSameOrBefore(currentDate, 'minute'));
+          // const isExpired =
+          //   expiredDateTime.isBefore(currentDate) ||
+          //   (expiredDateTime.isSame(currentDate, 'day') &&
+          //     expiredDateTime.isSameOrBefore(currentDate, 'minute'));
 
           return Builder<BannerFindManyResponse>(BannerFindManyResponse, {
             ...rawResult,
-            is_expired: isExpired, // Set the correct is_expired value directly
+            expired_at: Number(rawResult.expired_at),
+            is_expired:
+              Math.floor(Date.now() / 1000) >= Number(rawResult.expired_at),
           }).build();
         } else {
           return Builder<BannerFindManyResponse>(BannerFindManyResponse, {
             ...rawResult,
+            expired_at: Number(rawResult.expired_at),
             is_expired: undefined,
           }).build();
         }
@@ -341,6 +349,7 @@ export class BannerRepository {
       });
       return Builder<BannerEntity>(BannerEntity, {
         ...result,
+        expired_at: Number(result.expired_at),
       }).build();
     } catch (error) {
       throw this.errorMapper(error);

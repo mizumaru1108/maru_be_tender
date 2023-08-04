@@ -2,6 +2,8 @@ import { ConfigService } from '@nestjs/config';
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
 import { ITenderAppConfig } from 'src/commons/configs/tender-app-config';
+import { EmailService } from 'src/libs/email/email.service';
+import { MsegatService } from 'src/libs/msegat/services/msegat.service';
 import { isExistAndValidPhone } from '../../../../commons/utils/is-exist-and-valid-phone';
 import { TenderNotificationRepository } from '../../../../notification-management/notification/repository/tender-notification.repository';
 import { PrismaService } from '../../../../prisma/prisma.service';
@@ -25,8 +27,6 @@ import {
 } from '../../entities/proposal.entity';
 import { ProposalRepository } from '../../repositories/proposal.repository';
 import { ProposalUpdateProps } from '../../types';
-import { EmailService } from 'src/libs/email/email.service';
-import { MsegatService } from 'src/libs/msegat/services/msegat.service';
 
 export class SendAmandementCommand {
   currentUser: TenderCurrentUser;

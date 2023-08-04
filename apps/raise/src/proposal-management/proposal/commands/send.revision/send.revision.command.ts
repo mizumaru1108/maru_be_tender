@@ -9,7 +9,6 @@ import { isExistAndValidPhone } from 'src/commons/utils/is-exist-and-valid-phone
 import { removeUndefinedKeys } from 'src/commons/utils/remove.undefined.value';
 import { BunnyService } from 'src/libs/bunny/services/bunny.service';
 import { EmailService } from 'src/libs/email/email.service';
-import { MsegatSendingMessageError } from 'src/libs/msegat/exceptions/send.message.error.exceptions';
 import { MsegatService } from 'src/libs/msegat/services/msegat.service';
 import { TenderNotificationRepository } from 'src/notification-management/notification/repository/tender-notification.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -74,7 +73,9 @@ export class SendRevisionCommandHandler
       // find proposal by id
       const proposal = await this.proposalRepo.fetchById({
         id: proposalId,
+        includes_relation: ['user', 'supervisor'],
       });
+
       if (!proposal) throw new DataNotFoundException(`Proposal not found`);
       if (proposal.submitter_user_id !== userId) {
         throw new ForbiddenPermissionException(
@@ -380,11 +381,6 @@ export class SendRevisionCommandHandler
         for (const file of fileManagerPayload) {
           await this.bunnyService.deleteMedia(file.url, true);
         }
-      }
-      if (error instanceof MsegatSendingMessageError) {
-        throw new BadRequestException(
-          `Request might be success but sms notif may not be sented to the client details ${error.message}`,
-        );
       }
       throw error;
     }

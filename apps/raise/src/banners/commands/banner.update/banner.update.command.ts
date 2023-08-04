@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
+import moment from 'moment';
 import { BannerEntity } from 'src/banners/entities/banner.entity';
 import {
   BannerRepository,
@@ -105,6 +106,24 @@ export class BannerUpdateHandler
         throw new DataNotFoundException(`Ads with id of ${id} not found!`);
       }
 
+      const date = command.expired_date || ads.expired_date;
+      const time = command.expired_time || ads.expired_time;
+
+      // Parse expired_date in ISO 8601 format (YYYY-MM-DD)
+      const expiredDate = moment(date, 'YYYY-MM-DD');
+
+      // Parse expired_time in 12-hour format with AM/PM
+      const expiredTime = moment(time, 'hh:mm A');
+
+      // Combine the date and time for comparison
+      const expiredDateTime = moment(expiredDate).set({
+        hour: expiredTime.get('hour'),
+        minute: expiredTime.get('minute'),
+        second: expiredTime.get('second'),
+      });
+
+      const epoch = expiredDateTime.unix();
+
       const updatePayload = Builder<BannerUpdateProps>(BannerUpdateProps, {
         id: command.id,
         content: command.content,
@@ -112,6 +131,7 @@ export class BannerUpdateHandler
         track_id: command.track_id,
         expired_date: command.expired_date,
         expired_time: command.expired_time,
+        expired_at: epoch,
       }).build();
 
       if (ads.type === BannerTypeEnum.EXTERNAL && logos !== undefined) {
