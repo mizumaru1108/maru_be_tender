@@ -12,6 +12,7 @@ import axiosInstance from 'utils/axios';
 import { AdvertisingTapeList } from 'components/table/admin/system-messages/types';
 import DetailBannerDialog from 'components/modal-dialog/DetailBannerDialog';
 import { useSelector } from 'redux/store';
+import dayjs from 'dayjs';
 
 const data = [
   {
@@ -50,6 +51,14 @@ function ClientCarousel() {
   const [carouselData, setCarouselData] = React.useState<AdvertisingTapeList[]>([]);
   const [details, setDetails] = React.useState<AdvertisingTapeList | null>(null);
   // console.log({ carouselData });
+  // const currentTime = dayjs(new Date()).format('hh:mm A');
+  // const lastTime = dayjs(new Date()).subtract(1, 'hour').format('hh:mm A');
+  // const currentTime = dayjs('2023-08-04T06:15:58.593Z').format('hh:mm A'); // Get the current time using Day.js
+  // const lastTime = dayjs().subtract(1, 'hour').format('hh:mm A');
+  // console.log({ currentTime, lastTime });
+
+  // const isFastForward = currentTime.isAfter(lastTime);
+  // console.log('test fastforward: ', isFastForward);
 
   const settings = {
     speed: 5000,

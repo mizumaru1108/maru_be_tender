@@ -92,7 +92,8 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
     // console.log('data', data);
     const { vat_percentage, ...rest } = data;
     const tmpValues = {
-      vat_percentage: Number(vat_percentage),
+      vat_percentage: vat_percentage ? Number(vat_percentage) : undefined,
+      // vat_percentage: Number(vat_percentage),
       ...rest,
     };
     onSubmit(removeEmptyKey(tmpValues));
