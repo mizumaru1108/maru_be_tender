@@ -82,7 +82,7 @@ export class SendRevisionCommandHandler
           `You are not allowed to edit this proposal`,
         );
       }
-      if (!proposal.supervisor_id) {
+      if (!proposal.supervisor) {
         throw new RequestErrorException(`Unable to fetch supervisor data!`);
       }
       if (!proposal.user) {
@@ -311,8 +311,8 @@ export class SendRevisionCommandHandler
 
       notifPayloads.push({
         notif_type: 'EMAIL',
-        user_id: proposal.user.id,
-        user_email: proposal.user.email,
+        user_id: proposal.supervisor.id,
+        user_email: proposal.supervisor.email,
         subject: 'تم إرسال تعديل جديد من العميل',
         content: `السلام عليكم ورحمة الله ${proposal.user.employee_name} 
           تم تعديل المشروع ${
@@ -326,7 +326,7 @@ export class SendRevisionCommandHandler
 
       notifPayloads.push({
         notif_type: 'SMS',
-        user_id: proposal.user.id,
+        user_id: proposal.supervisor.id,
         subject: 'تم إرسال تعديل جديد من العميل',
         content: `السلام عليكم ورحمة الله ${proposal.user.employee_name} 
           تم تعديل المشروع ${
@@ -336,8 +336,8 @@ export class SendRevisionCommandHandler
             .format('llll')}
           يرجى زيارة منصة المنح لمراجعة المعلومات`,
         user_phone:
-          proposal.user.mobile_number !== null
-            ? proposal.user.mobile_number
+          proposal.supervisor.mobile_number !== null
+            ? proposal.supervisor.mobile_number
             : undefined,
       });
 

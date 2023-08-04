@@ -41,6 +41,7 @@ export class BannerFindManyProps {
   type?: BannerTypeEnum[];
   only_active?: boolean;
   expired_field?: boolean;
+  expired_at?: number;
   limit?: number;
   page?: number;
   sort_by?: string;
@@ -174,7 +175,7 @@ export class BannerRepository {
   }
 
   async findManyFilters(props: BannerFindManyProps) {
-    const { track_id, type, only_active, include_relations } = props;
+    const { track_id, type, expired_at, include_relations } = props;
     let queryOptions: Prisma.BannerFindManyArgs = {};
     let findManyWhereClause: Prisma.BannerWhereInput = {};
 
@@ -196,7 +197,7 @@ export class BannerRepository {
       };
     }
 
-    if (only_active !== undefined) {
+    if (expired_at !== undefined) {
       // expired_at: {
       //   gte: Math.floor(Date.now() / 1000),
       // },
@@ -204,7 +205,7 @@ export class BannerRepository {
       findManyWhereClause = {
         ...findManyWhereClause,
         expired_at: {
-          gte: Math.floor(Date.now() / 1000),
+          gte: expired_at,
         },
       };
       // const currentDate = new Date();
@@ -261,7 +262,7 @@ export class BannerRepository {
         page = 0,
         sort_by,
         sort_direction,
-        expired_field,
+        expired_at,
       } = props;
       const offset = (page - 1) * limit;
       const getSortBy = sort_by ? sort_by : 'created_at';
@@ -288,7 +289,7 @@ export class BannerRepository {
 
       const rawResults = await prisma.banner.findMany(queryOptions);
       const entities = rawResults.map((rawResult) => {
-        if (expired_field) {
+        if (expired_at) {
           // // Parse expired_date in ISO 8601 format (YYYY-MM-DD)
           // const expiredDate = moment(rawResult.expired_date, 'YYYY-MM-DD');
 

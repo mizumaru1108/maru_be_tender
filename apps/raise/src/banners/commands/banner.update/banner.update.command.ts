@@ -32,6 +32,7 @@ export class BannerUpdateCommand {
   track_id?: string;
   expired_date?: Date;
   expired_time?: string;
+  expired_at?: number;
   logos?: Express.Multer.File[];
   deleted_logo_urls?: string[];
 }
@@ -106,23 +107,23 @@ export class BannerUpdateHandler
         throw new DataNotFoundException(`Ads with id of ${id} not found!`);
       }
 
-      const date = command.expired_date || ads.expired_date;
-      const time = command.expired_time || ads.expired_time;
+      // const date = command.expired_date || ads.expired_date;
+      // const time = command.expired_time || ads.expired_time;
 
-      // Parse expired_date in ISO 8601 format (YYYY-MM-DD)
-      const expiredDate = moment(date, 'YYYY-MM-DD');
+      // // Parse expired_date in ISO 8601 format (YYYY-MM-DD)
+      // const expiredDate = moment(date, 'YYYY-MM-DD');
 
-      // Parse expired_time in 12-hour format with AM/PM
-      const expiredTime = moment(time, 'hh:mm A');
+      // // Parse expired_time in 12-hour format with AM/PM
+      // const expiredTime = moment(time, 'hh:mm A');
 
-      // Combine the date and time for comparison
-      const expiredDateTime = moment(expiredDate).set({
-        hour: expiredTime.get('hour'),
-        minute: expiredTime.get('minute'),
-        second: expiredTime.get('second'),
-      });
+      // // Combine the date and time for comparison
+      // const expiredDateTime = moment(expiredDate).set({
+      //   hour: expiredTime.get('hour'),
+      //   minute: expiredTime.get('minute'),
+      //   second: expiredTime.get('second'),
+      // });
 
-      const epoch = expiredDateTime.unix();
+      // const epoch = expiredDateTime.unix();
 
       const updatePayload = Builder<BannerUpdateProps>(BannerUpdateProps, {
         id: command.id,
@@ -131,7 +132,7 @@ export class BannerUpdateHandler
         track_id: command.track_id,
         expired_date: command.expired_date,
         expired_time: command.expired_time,
-        expired_at: epoch,
+        expired_at: command.expired_at,
       }).build();
 
       if (ads.type === BannerTypeEnum.EXTERNAL && logos !== undefined) {

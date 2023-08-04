@@ -3,6 +3,7 @@ import {
   IsDateString,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -50,6 +51,12 @@ export class BannerUpdateDto extends BannerDeleteDto {
   @IsString()
   @Validate12HourTimeFormat()
   expired_time?: string;
+
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @IsOptional()
+  expired_at?: number;
 
   @ApiPropertyOptional()
   @IsOptional()

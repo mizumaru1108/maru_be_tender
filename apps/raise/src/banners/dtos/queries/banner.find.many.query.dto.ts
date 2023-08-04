@@ -1,6 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsOptional, IsString, IsNotEmpty, IsEnum } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsNotEmpty,
+  IsEnum,
+  IsNumber,
+} from 'class-validator';
 import { BannerTypeEnum } from 'src/banners/types/enums/banner.type.enum';
 import { BaseFilterRequest } from 'src/commons/dtos/base-filter-request.dto';
 
@@ -34,4 +40,10 @@ export class BannerFindManyQueryDto extends BaseFilterRequest {
     return value;
   })
   include_relations?: string[];
+
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @IsOptional()
+  expired_at?: number;
 }

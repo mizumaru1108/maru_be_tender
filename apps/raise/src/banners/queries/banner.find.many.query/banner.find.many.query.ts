@@ -7,6 +7,7 @@ import {
 import { BannerTypeEnum } from 'src/banners/types/enums/banner.type.enum';
 export class BannerFindManyQuery {
   track_id: string[];
+  expired_at?: number;
   type: BannerTypeEnum[];
   limit?: number;
   page?: number;
