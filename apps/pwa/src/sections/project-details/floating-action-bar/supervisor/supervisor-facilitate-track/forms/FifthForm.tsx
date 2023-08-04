@@ -75,7 +75,11 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
   const onSubmitForm = (data: SupervisorStep4) => {
     // console.log(data, 'data test');
     let totalAmount: number | undefined = undefined;
-    const fSupportBySpv: number = Number(proposal?.amount_required_fsupport);
+    const fSupportBySpv: number = Number(
+      Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
+        ? step1?.fsupport_by_supervisor
+        : proposal?.amount_required_fsupport
+    );
     if (data.proposal_item_budgets.length) {
       totalAmount = Number(
         data
@@ -236,7 +240,11 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
           size="small"
           label="support amount"
           // value={step1.fsupport_by_supervisor}
-          value={proposal?.fsupport_by_supervisor || proposal?.proposal_item_budgets || 0}
+          value={
+            Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
+              ? step1?.fsupport_by_supervisor
+              : proposal?.amount_required_fsupport || 0
+          }
           InputLabelProps={{ shrink: true }}
           type="number"
           disabled={true}

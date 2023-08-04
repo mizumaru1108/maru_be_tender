@@ -3,7 +3,7 @@ import SvgIconStyle from 'components/SvgIconStyle';
 import useLocales from 'hooks/useLocales';
 import { useNavigate } from 'react-router';
 
-function SettingElem({ label, name }: { label: string; name: string }) {
+function SettingElem({ label, name }: { label?: string; name?: string }) {
   const { translate } = useLocales();
   const navigate = useNavigate();
   const handleOnClick = (event: React.MouseEvent<HTMLButtonElement>) => {
