@@ -12,6 +12,7 @@ Table banners {
   logo Json
   expired_date DateTime [not null]
   expired_time String [not null]
+  expired_at BigInt [not null, default: 0]
   created_at DateTime [default: `now()`]
   updated_at DateTime [default: `now()`]
 }

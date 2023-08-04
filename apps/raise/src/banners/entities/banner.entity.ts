@@ -8,6 +8,7 @@ export class BannerEntity {
   track_id?: string | null;
   track?: TrackEntity;
   logo?: any; // jsonb
+  expired_at: number;
   expired_date: Date;
   expired_time: string;
   created_at: Date | null = new Date();

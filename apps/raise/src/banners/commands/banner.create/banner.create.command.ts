@@ -2,6 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ApiProperty } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
+import moment from 'moment';
 import { nanoid } from 'nanoid';
 import { BannerEntity } from 'src/banners/entities/banner.entity';
 import {
@@ -114,6 +115,21 @@ export class BannerCreateHandler
         );
       }
 
+      // Parse expired_date in ISO 8601 format (YYYY-MM-DD)
+      const expiredDate = moment(command.expired_date, 'YYYY-MM-DD');
+
+      // Parse expired_time in 12-hour format with AM/PM
+      const expiredTime = moment(command.expired_time, 'hh:mm A');
+
+      // Combine the date and time for comparison
+      const expiredDateTime = moment(expiredDate).set({
+        hour: expiredTime.get('hour'),
+        minute: expiredTime.get('minute'),
+        second: expiredTime.get('second'),
+      });
+
+      const epoch = expiredDateTime.unix();
+
       const adsPayloads = Builder<BannerCreateProps>(BannerCreateProps, {
         id: nanoid(),
         content: command.content,
@@ -122,6 +138,7 @@ export class BannerCreateHandler
         track_id: command.track_id,
         expired_date: command.expired_date,
         expired_time: command.expired_time,
+        expired_at: epoch,
       }).build();
 
       if (logos !== undefined && logos.length > 0) {
