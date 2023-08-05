@@ -34,6 +34,11 @@ export default function AdvertisingExternalForm({ defaultvalues = null }: Props)
       type: defaultvalues ? undefined : 'EXTERNAL',
       expired_date: dayjs(showTime).format('YYYY-MM-DD'),
       expired_time: dayjs(tmpDate).format('hh:mm A'),
+      expired_at: dayjs(
+        `${dayjs(showTime).format('YYYY-MM-DD')} ${dayjs(tmpDate).format('hh:mm A')}`,
+        'YYYY-MM-DD hh:mm A'
+      ).valueOf(),
+      // expired_at: dayjs(showTime).valueOf(), // Adding the expired_at field with the Unix timestamp
       // date: dayjs(tmpDate).format('YYYY-MM-DD'),
     };
     let payload = removeEmptyKey(tmpPayload);
