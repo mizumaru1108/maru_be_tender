@@ -32,6 +32,7 @@ import useAuth from '../../../../../hooks/useAuth';
 import axiosInstance from '../../../../../utils/axios';
 import { _supportGoalsArr } from '../../../../../_mock/_supportGoalsArr';
 import { removeEmptyKey } from 'utils/remove-empty-key';
+import { getMissingItems } from 'utils/checkDeletedArray';
 
 function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType) {
   const { translate } = useLocales();
@@ -221,10 +222,23 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
           amount: Number(el.amount),
         }));
 
-      const deleted_proposal_budget = tempDeletedBudget.map((el) => ({
+      // const deleted_proposal_budget = basedBudget
+      //   .filter((item) => data.detail_project_budgets.find((i) => i.id !== item.id))
+      //   .map((el) => ({
+      //     ...el,
+      //     amount: Number(el.amount),
+      //   }));
+      const deleted_proposal_budget = getMissingItems(
+        proposal.proposal_item_budgets,
+        data.detail_project_budgets
+      ).map((el) => ({
         ...el,
         amount: Number(el.amount),
       }));
+      // const deleted_proposal_budget = tempDeletedBudget.map((el) => ({
+      //   ...el,
+      //   amount: Number(el.amount),
+      // }));
 
       const { length } = data.detail_project_budgets;
       const totalFSupport = data.detail_project_budgets
