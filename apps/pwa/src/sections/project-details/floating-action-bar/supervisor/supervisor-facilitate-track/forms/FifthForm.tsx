@@ -148,7 +148,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
             );
           }
         } else {
-          if (totalAmount < fSupportBySpv!) {
+          if (totalAmount <= fSupportBySpv!) {
             onSubmit(data);
           } else {
             enqueueSnackbar(`${translate('notification.error_exceeds_amount')}: ${fSupportBySpv}`, {

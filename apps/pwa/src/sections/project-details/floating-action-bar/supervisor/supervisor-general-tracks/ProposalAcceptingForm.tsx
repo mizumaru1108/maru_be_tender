@@ -250,7 +250,7 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
           newData.vat_percentage = Number(data.vat_percentage);
         }
         onSubmit(removeEmptyKey(newData));
-        // console.log({ newData });
+        // console.log('test :', removeEmptyKey(newData));
       } else {
         // console.log('false');
         enqueueSnackbar(

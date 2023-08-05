@@ -240,7 +240,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
 
       delete data.detail_project_budgets;
 
-      const newData = {
+      let newData = {
         fsupport_by_supervisor: totalFSupport,
         number_of_payments_by_supervisor: length,
         created_proposal_budget,
@@ -248,7 +248,11 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         deleted_proposal_budget,
         ...data,
       };
-      newData.vat_percentage = Number(data.vat_percentage);
+      if (data?.vat_percentage) {
+        newData.vat_percentage = Number(data.vat_percentage);
+      }
+      // newData.vat_percentage = Number(data.vat_percentage);
+      newData = removeEmptyKey(newData);
       const editedBy = location.pathname.split('/')[1];
 
       let payload = {
@@ -272,11 +276,12 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
           },
         };
       }
-      if (data?.vat_percentage) {
-        payload.vat_percentage = Number(data.vat_percentage);
-      }
+      // console.log('before :', { payload });
+      // if (data?.vat_percentage) {
+      //   payload.vat_percentage = Number(data.vat_percentage);
+      // }
       // onSubmit();
-      payload = removeEmptyKey(payload);
+      // payload.project_manager_payload = removeEmptyKey(payload);
       // console.log({ payload });
       // onSubmit(newData);
 
