@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
@@ -57,6 +57,7 @@ export class BannerCreateDto {
   expired_time: string;
 
   @ApiProperty()
+  @Type(() => Number)
   @IsNotEmpty()
   @IsNumber()
   expired_at: number;
