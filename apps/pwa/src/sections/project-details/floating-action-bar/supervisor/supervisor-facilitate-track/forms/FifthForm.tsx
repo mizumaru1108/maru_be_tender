@@ -115,7 +115,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
       }));
       // console.log('masuk sini', { step1, fSupportBySpv, totalAmount });
       if (step1 && fSupportBySpv && totalAmount) {
-        console.log('mausk if sini');
+        // console.log('mausk if sini');
         // if (step1.support_type && totalAmount <= proposal.amount_required_fsupport!) {
         //   onSubmit(data);
         // } else {
@@ -148,8 +148,9 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
             );
           }
         } else {
-          if (totalAmount <= fSupportBySpv!) {
+          if (totalAmount === fSupportBySpv!) {
             onSubmit(data);
+            // console.log('mausk else sini :', data);
           } else {
             enqueueSnackbar(`${translate('notification.error_exceeds_amount')}: ${fSupportBySpv}`, {
               variant: 'error',
