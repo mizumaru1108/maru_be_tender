@@ -171,6 +171,7 @@ const palette = {
     text: { primary: GREY[800], secondary: GREY[600], tertiary: '#0E8478', disabled: GREY[500] },
     background: {
       paper: '#0E8478',
+      // paper: '#fff',
       default: '#fff',
       neutral: '#F5F6FA',
     },

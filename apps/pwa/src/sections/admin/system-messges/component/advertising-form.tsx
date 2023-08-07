@@ -2,6 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Grid, MenuItem, Typography } from '@mui/material';
 import { MobileDateTimePicker } from '@mui/x-date-pickers';
 import { FormProvider, RHFDatePicker, RHFSelect, RHFTextField } from 'components/hook-form';
+import RHFTimePicker from 'components/hook-form/RHFTimePicker';
 import { CustomFile } from 'components/upload';
 import dayjs, { Dayjs } from 'dayjs';
 import useLocales from 'hooks/useLocales';
@@ -47,6 +48,7 @@ export default function AdvertisingForm({
   isLoading = false,
   defaultvalues = null,
 }: Props) {
+  // console.log('defaultvalues:', defaultvalues);
   const { translate } = useLocales();
   const { activeRole } = useAuth();
   const { loadingCount, track_list } = useSelector((state) => state.proposal);
@@ -64,6 +66,7 @@ export default function AdvertisingForm({
       title: Yup.string().required(translate('system_messages.form.errors.title')),
       content: Yup.string().required(translate('system_messages.form.errors.content')),
       showTime: Yup.string().required(translate('system_messages.form.errors.showTime')),
+      expiredTime: Yup.string().required(translate('system_messages.form.errors.expiredTime')),
       // track_id: Yup.string().required(translate('system_messages.form.errors.track')).nullable(),
       image: Yup.mixed()
         .test('size', translate('system_messages.form.errors.image.size'), (value) => {
@@ -108,6 +111,9 @@ export default function AdvertisingForm({
       content: defaultvalues ? defaultvalues?.content : '',
       // track_id: defaultvalues ? defaultvalues?.track_id : '',
       showTime: defaultvalues ? dayjs(defaultvalues?.expired_date).format('YYYY-MM-DD') : '',
+      expiredTime: defaultvalues
+        ? dayjs(defaultvalues?.expired_time, 'hh:mm A').format('HH:mm')
+        : '',
       image:
         defaultvalues && defaultvalues?.logo && defaultvalues?.logo.length > 0
           ? defaultvalues?.logo[defaultvalues?.logo.length - 1]
@@ -196,12 +202,12 @@ export default function AdvertisingForm({
 
           {advertisingType === TypeAdvertisingForm.external && (
             <>
-              <Grid item md={4} xs={12}>
+              <Grid item md={12} xs={12}>
                 <RHFDatePicker
                   name="showTime"
-                  data-cy="system_messages.form.showTime"
-                  label={translate('system_messages.form.showTime.label')}
-                  placeholder={translate('system_messages.form.showTime.placeholder')}
+                  data-cy="system_messages.form.showDate"
+                  label={translate('system_messages.form.showDate.label')}
+                  placeholder={translate('system_messages.form.showDate.placeholder')}
                   InputProps={{
                     inputProps: {
                       min: new Date(new Date().setDate(new Date().getDate() + 1))
@@ -209,6 +215,15 @@ export default function AdvertisingForm({
                         .split('T')[0],
                     },
                   }}
+                />
+              </Grid>
+              <Space direction="horizontal" size="small" />
+              <Grid item md={12} xs={12}>
+                <RHFTimePicker
+                  name="expiredTime"
+                  data-cy="system_messages.form.showTime"
+                  label={translate('system_messages.form.showTime.label')}
+                  placeholder={translate('system_messages.form.showTime.placeholder')}
                 />
               </Grid>
               <Space direction="horizontal" size="small" />
