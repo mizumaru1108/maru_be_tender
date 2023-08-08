@@ -2727,6 +2727,13 @@ export class ProposalRepository {
           },
           bank_information: true,
           project_timeline: true,
+          proposal_closing_report: {
+            include: {
+              genders: true,
+              beneficiaries: true,
+              execution_places: true,
+            },
+          },
         },
       });
       return proposal;
