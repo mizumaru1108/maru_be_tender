@@ -9,6 +9,7 @@ import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.
 
 export class BannerFindMyAdsQuery {
   user: TenderCurrentUser;
+  expired_at: number;
   limit?: number;
   page?: number;
   sort_by?: string;

@@ -45,5 +45,5 @@ export class BannerFindManyQueryDto extends BaseFilterRequest {
   @IsNotEmpty()
   @IsNumber()
   @IsOptional()
-  expired_at?: number;
+  current_time?: number;
 }

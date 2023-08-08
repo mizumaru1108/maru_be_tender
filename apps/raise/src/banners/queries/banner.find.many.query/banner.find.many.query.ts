@@ -34,7 +34,6 @@ export class BannerFindManyQueryHandler
   ): Promise<BannerFindManyQueryResult> {
     const result = await this.adsRepo.findMany({
       ...query,
-      expired_field: true,
     });
     const total = await this.adsRepo.countMany({ ...query });
     return {

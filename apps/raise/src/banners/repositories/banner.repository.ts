@@ -40,7 +40,6 @@ export class BannerFindManyProps {
   track_id?: string[];
   type?: BannerTypeEnum[];
   only_active?: boolean;
-  expired_field?: boolean;
   expired_at?: number;
   limit?: number;
   page?: number;

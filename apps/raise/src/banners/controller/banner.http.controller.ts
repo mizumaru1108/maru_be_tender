@@ -139,9 +139,10 @@ export class BannerHttpController {
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Get()
-  async findMany(@Query() dto: BannerFindManyQueryDto) {
+  async findMany(@Query() query: BannerFindManyQueryDto) {
     const builder = Builder<BannerFindManyQuery>(BannerFindManyQuery, {
-      ...dto,
+      ...query,
+      expired_at: query.current_time,
     });
 
     const { result, total } = await this.queryBus.execute<
@@ -152,8 +153,8 @@ export class BannerHttpController {
     return manualPaginationHelper(
       result,
       total,
-      dto.page || 1,
-      dto.limit || 10,
+      query.page || 1,
+      query.limit || 10,
       HttpStatus.OK,
       'Banner List Fetched Successfully!',
     );
@@ -178,11 +179,12 @@ export class BannerHttpController {
   @Get('mine')
   async findMyBanners(
     @CurrentUser() currentUser: TenderCurrentUser,
-    @Query() dto: BannerFindManyQueryDto,
+    @Query() query: BannerFindManyQueryDto,
   ) {
     const builder = Builder<BannerFindMyAdsQuery>(BannerFindMyAdsQuery, {
-      ...dto,
+      ...query,
       user: currentUser,
+      expired_at: query.current_time,
     });
 
     const { result, total } = await this.queryBus.execute<
@@ -193,8 +195,8 @@ export class BannerHttpController {
     return manualPaginationHelper(
       result,
       total,
-      dto.page || 1,
-      dto.limit || 10,
+      query.page || 1,
+      query.limit || 10,
       HttpStatus.OK,
       'Banner List Fetched Successfully!',
     );
