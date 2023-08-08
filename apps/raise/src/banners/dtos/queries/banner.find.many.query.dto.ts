@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsOptional,
   IsString,
@@ -43,6 +43,7 @@ export class BannerFindManyQueryDto extends BaseFilterRequest {
 
   @ApiPropertyOptional()
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   @IsOptional()
   current_time?: number;
