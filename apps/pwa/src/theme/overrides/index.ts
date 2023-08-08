@@ -44,6 +44,7 @@ import ControlLabel from './ControlLabel';
 import LoadingButton from './LoadingButton';
 import TextField from './TextField';
 import MuiCalendarPicker from './MuiCalendarPicker';
+import MobileTimePicker from './MobileTimePicker';
 // ----------------------------------------------------------------------
 
 export default function ComponentsOverrides(theme: Theme) {
@@ -91,6 +92,7 @@ export default function ComponentsOverrides(theme: Theme) {
     ControlLabel(theme),
     ToggleButton(theme),
     LoadingButton(theme),
-    MuiCalendarPicker(theme)
+    MuiCalendarPicker(theme),
+    MobileTimePicker(theme)
   );
 }

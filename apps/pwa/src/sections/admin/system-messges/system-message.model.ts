@@ -11,6 +11,7 @@ export interface FormInputAdvertisingForm {
   title?: string;
   content?: string;
   showTime?: Date | string;
+  expiredTime?: string;
   track_id?: string;
   // image: CustomFile | string | null;
   image?: any;

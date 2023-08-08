@@ -26,14 +26,14 @@ export default function AdvertisingExternalForm({ defaultvalues = null }: Props)
   const handleSubmit = async (data: FormInputAdvertisingForm) => {
     // console.log('data:', data);
     setIsLoading(true);
-    const { image, showTime, ...rest } = data;
+    const { image, showTime, expiredTime, ...rest } = data;
     const tmpDate = new Date();
     const tmpPayload: any = {
       ...rest,
       banner_id: defaultvalues && defaultvalues?.id ? defaultvalues?.id : undefined,
       type: defaultvalues ? undefined : 'EXTERNAL',
       expired_date: dayjs(showTime).format('YYYY-MM-DD'),
-      expired_time: dayjs(tmpDate).format('hh:mm A'),
+      expired_time: dayjs(expiredTime, 'HH:mm').format('hh:mm A'),
       expired_at: dayjs(
         `${dayjs(showTime).format('YYYY-MM-DD')} ${dayjs(tmpDate).format('hh:mm A')}`,
         'YYYY-MM-DD hh:mm A'
