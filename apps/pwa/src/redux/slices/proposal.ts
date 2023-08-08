@@ -271,6 +271,9 @@ const slice = createSlice({
     setLoadingCount(state, action) {
       state.loadingCount = action.payload;
     },
+    setLoadingFetchin(state, action) {
+      state.isLoading = action.payload;
+    },
     setLoadingPayment(state, action) {
       state.loadingPayment = action.payload;
     },
@@ -366,13 +369,15 @@ export const {
   setProposalCount,
   setUpdatedStatus,
   setLoadingPayment,
+  setLoadingFetchin,
 } = slice.actions;
 
 export const getProposal = (id: string, role: string) => async () => {
   // console.log('masuk sini', id, role);
   try {
-    dispatch(slice.actions.startLoading);
+    // dispatch(slice.actions.startLoading);
     dispatch(slice.actions.setLoadingPayment(true));
+    dispatch(slice.actions.setLoadingFetchin(true));
     // dispatch(slice.actions.setLoadingCount(true));
     if (
       role === 'tender_admin' ||
@@ -437,6 +442,7 @@ export const getProposal = (id: string, role: string) => async () => {
     dispatch(slice.actions.hasError(error));
   } finally {
     dispatch(slice.actions.setLoadingPayment(false));
+    dispatch(slice.actions.setLoadingFetchin(false));
     // dispatch(slice.actions.setLoadingCount(false));
   }
 };

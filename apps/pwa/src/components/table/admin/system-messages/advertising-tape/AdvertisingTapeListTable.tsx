@@ -97,10 +97,11 @@ export default function AdvertisingTapeListTable() {
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
     const currentPage = page + 1;
+    const curretTime = dayjs().valueOf();
     // const url = employeeName
     //   ? `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}&employee_name=${employeeName}`
     //   : `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}`;
-    const url = `banners?type=external&limit=${rowsPerPage}&page=${currentPage}&include_relations=track`;
+    const url = `banners?type=external&limit=${rowsPerPage}&page=${currentPage}&include_relations=track&current_time=${curretTime}`;
     // console.log({ track_list });
     try {
       const response = await axiosInstance.get(`${url}`, {

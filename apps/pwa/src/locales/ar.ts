@@ -47,6 +47,44 @@ const ar = {
           main_information: 'المعلومات الرئيسية',
           about_project: 'حول المشروع',
           form: {
+            number_project_duration: {
+              label: 'عدد مدة المشروع *',
+              placeholder: 'عدد مدة المشروع ',
+            },
+            number_project_repeated: {
+              label: 'عدد المشاريع المتكررة *',
+              placeholder: 'عدد المشاريع المتكررة ',
+            },
+            execution_places: {
+              selected_value: {
+                label: 'مكان تنفيذ المشروع *',
+                placeholder: 'مكان تنفيذ المشروع',
+              },
+              number: {
+                label: 'رقم مكان تنفيذ المشروع *',
+                placeholder: 'رقم مكان تنفيذ المشروع',
+              },
+            },
+            beneficiaries: {
+              selected_value: {
+                label: 'الشريحة المستهدفة من المشروع *',
+                placeholder: 'الجزء المستهدف من المشروع',
+              },
+              number: {
+                label: 'رقم الشريحة المستهدفة من المشروع *',
+                placeholder: 'رقم الجزء المستهدف من المشروع',
+              },
+            },
+            genders: {
+              selected_value: {
+                label: 'جنس المستفيدين *',
+                placeholder: 'جنس المستفيدين',
+              },
+              number: {
+                label: 'عدد جنس المستفيدين *',
+                placeholder: 'عدد جنس المستفيدين',
+              },
+            },
             number_of_beneficiaries: {
               label: '*عدد المستفيدين',
               placeholder: 'عدد المستفيدين',
@@ -133,6 +171,29 @@ const ar = {
             annual: 'سنوي',
             months: 'شهور',
             monthly: 'شهريا',
+            days: ' يوم',
+            weeks: 'شهر',
+            //
+            daily: 'أيام',
+            yearly: 'سنين',
+            execution_places: {
+              village: 'قرية',
+              center: 'مركز',
+              province: 'محافظة',
+              area: 'منطقة',
+            },
+            beneficiaries: {
+              children: 'أطفال',
+              general_education_students: 'طلاب التعليم العام',
+              female_students_of_general_education: 'طالبات التعليم العام',
+              college_students: 'طلاب الجامعات',
+              female_college_students: 'طالبات الجامعات',
+              mothers: 'الأمهات',
+              parents: 'الآباء',
+              notables: 'الوجهاء',
+              residents: 'المقيمين',
+              the_general_community: 'عموم المجتمع',
+            },
           },
         },
         btn: {
@@ -850,6 +911,13 @@ const ar = {
       },
       success_reset_password: 'تم تغيير كلمة المرور الخاصة بك بنجاح',
       something_wrong: 'هناك خطأ ما',
+    },
+    clo_report: {
+      number_value: { min: 'يجب أن تكون القيمة أكبر من 0' },
+      selected: { required: 'حدد خيارًا واحدًا على الأقل' },
+      value: { required: 'القيمة مطلوبة' },
+      attachments: { required: 'المرفقات مطلوبة' },
+      images: { required: 'الصور مطلوبة' },
     },
   },
   sorting: {
@@ -2494,10 +2562,15 @@ const ar = {
         content: 'محتوى الرسالة',
         showTime: 'وقت العرض مطلوب',
         track: 'المسار مطلوب',
+        expiredTime: 'الوقت المتبقي مطلوب',
         image: {
           size: 'يجب أن يكون حجم الملف أقل من 5 ميغا بايت',
           fileExtension: 'يجب أن يكون الملف صورة',
         },
+      },
+      showDate: {
+        label: 'التاريخ',
+        placeholder: 'الرجاء تحديد التاريخ',
       },
       image: {
         label: 'الصورة',
