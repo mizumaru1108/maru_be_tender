@@ -77,20 +77,20 @@ export class SubmitClosingReportDto {
   @IsNotEmpty()
   number_of_beneficiaries: number;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  target_beneficiaries: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // target_beneficiaries: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  execution_place: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // execution_place: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  gender: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // gender: string;
 
   @ApiProperty()
   @IsString()
