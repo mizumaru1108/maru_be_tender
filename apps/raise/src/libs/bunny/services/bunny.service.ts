@@ -445,17 +445,11 @@ export class BunnyService {
 
     try {
       this.logger.log(
-        'info',
         `Uploading [${fileName}] (${fileBuffer.length} bytes) to Bunny ${this.storageUrlMedia} ...`,
       );
-      const response = await axios(options);
+      await axios(options);
       this.logger.log(
-        'info',
-        `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}, ${JSON.stringify(
-          response.data,
-          null,
-          2,
-        )}`,
+        `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}`,
       );
       return cdnUrl; // TODO: change only to use path on next iteration.
     } catch (error) {

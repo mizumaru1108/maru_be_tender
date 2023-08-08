@@ -20,7 +20,9 @@ export class ProposalCloseReportCreateProps {
   number_of_staff: number;
   number_of_volunteer: number;
   project_duration: string;
+  number_project_duration: number;
   project_repeated: string;
+  number_project_repeated: number;
   target_beneficiaries: string;
   proposal_id: string;
   attachments: UploadFilesJsonbDto[];
@@ -45,6 +47,7 @@ export class ProposalCloseReportRepository {
     let prisma = this.prismaService;
     if (session) prisma = session;
     try {
+      // console.log('passed id', props.id);
       const rawCreated = await prisma.proposal_closing_report.create({
         data: {
           id: props.id || uuidv4(),
@@ -54,7 +57,9 @@ export class ProposalCloseReportRepository {
           number_of_staff: props.number_of_staff,
           number_of_volunteer: props.number_of_volunteer,
           project_duration: props.project_duration,
+          number_project_duration: props.number_project_duration,
           project_repeated: props.project_repeated,
+          number_project_repeated: props.number_project_repeated,
           target_beneficiaries: props.target_beneficiaries,
           proposal_id: props.proposal_id,
           attachments: props.attachments as unknown as Prisma.JsonArray,
@@ -68,6 +73,7 @@ export class ProposalCloseReportRepository {
           ...rawCreated,
         },
       ).build();
+      // console.log('created close report', createdEntity);
       return createdEntity;
     } catch (error) {
       console.trace(error);
@@ -120,11 +126,10 @@ export class ProposalCloseReportRepository {
     }
   }
 
-  async findOneFilter(
-    props: ProposalCloseReportFindOneProps,
-    session?: PrismaService,
-  ) {
+  async findOneFilter(props: ProposalCloseReportFindOneProps) {
+    // console.log('props', props);
     const { id, proposal_id, include_relations, method = 'AND' } = props;
+    // console.log('method', method);
     try {
       const args: Prisma.proposal_closing_reportFindFirstArgs = {};
       const whereClause: Prisma.proposal_closing_reportWhereInput = {};
@@ -132,11 +137,13 @@ export class ProposalCloseReportRepository {
         throw new PayloadErrorException('Please at least add one identifier');
       }
 
-      let clause: Prisma.proposal_follow_upWhereInput[] = [];
+      let clause: Prisma.proposal_closing_reportWhereInput[] = [];
       if (id) clause.push({ id });
       if (proposal_id) clause.push({ proposal_id });
       if (method === 'AND') whereClause.AND = clause;
       if (method === 'OR') whereClause.OR = clause;
+
+      args.where = whereClause;
 
       if (include_relations && include_relations.length > 0) {
         let include: Prisma.proposal_closing_reportInclude = {};
@@ -175,15 +182,20 @@ export class ProposalCloseReportRepository {
   async findOne(
     props: ProposalCloseReportFindOneProps,
     session?: PrismaService,
-  ): Promise<ProposalCloseReportEntity | null> {
+  ): Promise<any | null> {
     let prisma = this.prismaService;
     if (session) prisma = session;
     try {
       const queryOptions = await this.findOneFilter(props);
+      // console.log(
+      //   'queryOptions on find one closing report',
+      //   logUtil(queryOptions),
+      // );
       const result = await prisma.proposal_closing_report.findFirst(
         queryOptions,
       );
       if (!result) return null;
+      // console.log('raw find one closing report', result);
       return Builder<ProposalCloseReportEntity>(ProposalCloseReportEntity, {
         ...result,
       }).build();

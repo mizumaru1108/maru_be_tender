@@ -46,9 +46,34 @@ export class ClosingReportBeneficiaryRepository {
           ...rawCreated,
         },
       ).build();
+
+      // console.log('created beneficiary', createdEntity);
       return createdEntity;
     } catch (error) {
       console.trace(error);
+      throw error;
+    }
+  }
+
+  async findByCloseReportId(close_report_id: string) {
+    try {
+      const raw = await this.prismaService.closingReportBeneficiaries.findFirst(
+        {
+          where: {
+            closing_report_id: close_report_id,
+          },
+        },
+      );
+
+      if (!raw) return null;
+
+      const entity = Builder<ClosingReportBeneficiariesEntity>(
+        ClosingReportBeneficiariesEntity,
+        { ...raw },
+      ).build();
+
+      return entity;
+    } catch (error) {
       throw error;
     }
   }

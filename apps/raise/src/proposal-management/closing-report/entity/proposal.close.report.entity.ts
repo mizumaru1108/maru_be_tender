@@ -30,7 +30,9 @@ export class ProposalCloseReportEntity {
   gender?: string | null; // deprecated
   genders: ClosingReportGendersEntity[];
   project_duration: string;
+  number_project_duration: number = 0;
   project_repeated: string;
+  number_project_repeated: number = 0;
   number_of_volunteer: number;
   number_of_staff: number;
   attachments: any; // Json

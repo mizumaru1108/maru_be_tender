@@ -5,6 +5,7 @@ import { Builder } from 'builder-pattern';
 import { nanoid } from 'nanoid';
 import { ITenderAppConfig } from 'src/commons/configs/tender-app-config';
 import { FileMimeTypeEnum } from 'src/commons/enums/file-mimetype.enum';
+import { logUtil } from 'src/commons/utils/log-util';
 import { BunnyService } from 'src/libs/bunny/services/bunny.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProposalCloseReportEntity } from 'src/proposal-management/closing-report/entity/proposal.close.report.entity';
@@ -117,6 +118,7 @@ export class PaymentSubmitClosingReportCommandHandler
             type: uploadRes.type,
           };
 
+          closeReportPayload.attachments &&
           closeReportPayload.attachments.length > 0
             ? closeReportPayload.attachments.push(tmpPayload)
             : (closeReportPayload.attachments = [tmpPayload]);
@@ -155,7 +157,7 @@ export class PaymentSubmitClosingReportCommandHandler
             type: uploadRes.type,
           };
 
-          closeReportPayload.images.length > 0
+          closeReportPayload.images && closeReportPayload.images.length > 0
             ? closeReportPayload.images.push(tmpPayload)
             : (closeReportPayload.images = [tmpPayload]);
         }
@@ -172,9 +174,11 @@ export class PaymentSubmitClosingReportCommandHandler
             closeReportPayload,
             session,
           );
+          // console.log('createdCloseReport', createdCloseReport);
 
           // creating beneficiaries for the close report
           for (const beneficiary of dto.beneficiaries) {
+            // console.log("creating beneficiaries")
             await this.closeReportBeneficiaryRepo.create(
               {
                 id: nanoid(),
@@ -250,6 +254,8 @@ export class PaymentSubmitClosingReportCommandHandler
             session,
           );
 
+          // console.log(logUtil(updatedCloseReport));
+          // throw new Error('debug!');
           return {
             created_close_report: updatedCloseReport,
           };

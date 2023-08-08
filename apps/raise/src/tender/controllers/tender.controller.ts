@@ -11,18 +11,17 @@ import {
 // import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import { BaseHashuraWebhookPayload } from '../../commons/interfaces/base-hashura-webhook-payload';
 
-import { ROOT_LOGGER } from '../../libs/root-logger';
-import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
-import { TenderService } from '../services/tender.service';
+import { CommandBus } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
-import { PayloadErrorException } from 'src/tender-commons/exceptions/payload-error.exception';
+import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
 import {
   DiscordWebhookSendToChannelCommand,
   DiscordWebhookSendToChannelCommandResult,
 } from 'src/libs/discord/commands/webhook.send.to.channel/send.to.channel.command';
-import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
-import { CommandBus } from '@nestjs/cqrs';
-import { logUtil } from 'src/commons/utils/log-util';
+import { PayloadErrorException } from 'src/tender-commons/exceptions/payload-error.exception';
+import { ROOT_LOGGER } from '../../libs/root-logger';
+import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
+import { TenderService } from '../services/tender.service';
 
 @Controller('tender')
 export class TenderController {
@@ -163,6 +162,21 @@ export class TenderController {
   @UseGuards(TenderJwtGuard)
   @Post('msegat-test')
   async msegatTest(
+    @Body('phone_number') phoneNumber: string[],
+    @Body('message') message: string,
+  ) {
+    return await this.tenderService.testMsegat(phoneNumber, message);
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Post('msegat-otp-test')
+  async msegatOtpTest(@Body('phone_number') phoneNumber: string[]) {
+    return await this.tenderService.testOtp(phoneNumber);
+  }
+
+  @UseGuards(TenderJwtGuard)
+  @Post('msegat-verify-otp-test')
+  async msegatVerifyOtpTest(
     @Body('phone_number') phoneNumber: string[],
     @Body('message') message: string,
   ) {

@@ -185,4 +185,20 @@ export class TenderService {
     });
     return true;
   }
+
+  async testOtp(phoneNumber: string[]) {
+    if (!phoneNumber) {
+      throw new BadRequestException('Phone number are required');
+    }
+    // for each and send to all in phoneNumber array
+    phoneNumber.forEach(async (number) => {
+      const valid = isExistAndValidPhone(number);
+      if (valid) {
+        await this.msegatService.sendOtp({
+          number: number.substring(1),
+        });
+      }
+    });
+    return true;
+  }
 }

@@ -46,9 +46,32 @@ export class ClosingReportGendersRepository {
           ...rawCreated,
         },
       ).build();
+
+      // console.log('created genders', createdEntity);
       return createdEntity;
     } catch (error) {
       console.trace(error);
+      throw error;
+    }
+  }
+
+  async findByCloseReportId(close_report_id: string) {
+    try {
+      const raw = await this.prismaService.closingReportGenders.findFirst({
+        where: {
+          closing_report_id: close_report_id,
+        },
+      });
+
+      if (!raw) return null;
+
+      const entity = Builder<ClosingReportGendersEntity>(
+        ClosingReportGendersEntity,
+        { ...raw },
+      ).build();
+
+      return entity;
+    } catch (error) {
       throw error;
     }
   }

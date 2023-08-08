@@ -46,9 +46,33 @@ export class ClosingReportExecutionPlacesRepository {
           ...rawCreated,
         },
       ).build();
+
+      // console.log('created place', createdEntity);
       return createdEntity;
     } catch (error) {
       console.trace(error);
+      throw error;
+    }
+  }
+
+  async findByCloseReportId(close_report_id: string) {
+    try {
+      const raw =
+        await this.prismaService.closingReportExecutionPlaces.findFirst({
+          where: {
+            closing_report_id: close_report_id,
+          },
+        });
+
+      if (!raw) return null;
+
+      const entity = Builder<ClosingReportExecutionPlacesEntity>(
+        ClosingReportExecutionPlacesEntity,
+        { ...raw },
+      ).build();
+
+      return entity;
+    } catch (error) {
       throw error;
     }
   }

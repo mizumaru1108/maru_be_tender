@@ -802,7 +802,9 @@ model proposal_closing_report {
   gender                  String?    @db.VarChar // deprecated
   genders                  ClosingReportGenders[] 
   project_duration        String    @db.VarChar
+  number_project_duration Int       @default(0)
   project_repeated        String    @db.VarChar
+  number_project_repeated Int       @default(0)
   number_of_volunteer     Int
   number_of_staff         Int
   attachments             Json

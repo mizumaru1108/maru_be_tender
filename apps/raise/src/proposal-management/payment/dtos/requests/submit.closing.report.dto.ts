@@ -98,9 +98,19 @@ export class SubmitClosingReportDto {
   project_duration: string;
 
   @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  number_project_duration: number;
+
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   project_repeated: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  number_project_repeated: number;
 
   @ApiProperty()
   @IsNumber()

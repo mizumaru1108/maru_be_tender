@@ -786,7 +786,9 @@ Table proposal_closing_report {
   gender String
   genders closing_report_genders [not null]
   project_duration String [not null]
+  number_project_duration Int [not null, default: 0]
   project_repeated String [not null]
+  number_project_repeated Int [not null, default: 0]
   number_of_volunteer Int [not null]
   number_of_staff Int [not null]
   attachments Json [not null]
