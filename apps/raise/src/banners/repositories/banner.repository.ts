@@ -11,6 +11,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
 import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
 import { TrackEntity } from 'src/tender-track/track/entities/track.entity';
+import { logUtil } from '../../commons/utils/log-util';
 
 export class BannerCreateProps {
   content: string;
@@ -46,6 +47,7 @@ export class BannerFindManyProps {
   sort_by?: string;
   sort_direction?: string;
   include_relations?: string[];
+  specific_date?: Date;
 }
 
 export class BannerFindManyResponse extends BannerEntity {
@@ -174,7 +176,8 @@ export class BannerRepository {
   }
 
   async findManyFilters(props: BannerFindManyProps) {
-    const { track_id, type, expired_at, include_relations } = props;
+    const { track_id, type, expired_at, include_relations, specific_date } =
+      props;
     let queryOptions: Prisma.BannerFindManyArgs = {};
     let findManyWhereClause: Prisma.BannerWhereInput = {};
 
@@ -197,37 +200,19 @@ export class BannerRepository {
     }
 
     if (expired_at !== undefined) {
-      // expired_at: {
-      //   gte: Math.floor(Date.now() / 1000),
-      // },
-      // find where expired_date + expired_time (xx:xx am/pm) < now
       findManyWhereClause = {
         ...findManyWhereClause,
         expired_at: {
           gte: expired_at,
         },
       };
-      // const currentDate = new Date();
-      //   ...findManyWhereClause,
-      //   OR: [
-      //     {
-      //       // greater than this day
-      //       expired_date: {
-      //         gt: currentDate,
-      //       },
-      //     },
-      //     {
-      //       // same day
-      //       expired_date: {
-      //         equals: currentDate,
-      //       },
-      //       // expired time greater than now
-      //       expired_time: {
-      //         gte: moment(currentDate).format('hh:mm A'),
-      //       },
-      //     },
-      //   ],
-      // };
+    }
+
+    if (specific_date !== undefined) {
+      findManyWhereClause = {
+        ...findManyWhereClause,
+        expired_date: specific_date,
+      };
     }
 
     if (include_relations && include_relations.length > 0) {
@@ -286,27 +271,10 @@ export class BannerRepository {
         };
       }
 
+      // console.log(logUtil(queryOptions));
       const rawResults = await prisma.banner.findMany(queryOptions);
       const entities = rawResults.map((rawResult) => {
         if (expired_at) {
-          // // Parse expired_date in ISO 8601 format (YYYY-MM-DD)
-          // const expiredDate = moment(rawResult.expired_date, 'YYYY-MM-DD');
-
-          // // Parse expired_time in 12-hour format with AM/PM
-          // const expiredTime = moment(rawResult.expired_time, 'hh:mm A');
-
-          // // Combine the date and time for comparison
-          // const expiredDateTime = moment(expiredDate).set({
-          //   hour: expiredTime.get('hour'),
-          //   minute: expiredTime.get('minute'),
-          //   second: expiredTime.get('second'),
-          // });
-
-          // const isExpired =
-          //   expiredDateTime.isBefore(currentDate) ||
-          //   (expiredDateTime.isSame(currentDate, 'day') &&
-          //     expiredDateTime.isSameOrBefore(currentDate, 'minute'));
-
           return Builder<BannerFindManyResponse>(BannerFindManyResponse, {
             ...rawResult,
             expired_at: Number(rawResult.expired_at),
