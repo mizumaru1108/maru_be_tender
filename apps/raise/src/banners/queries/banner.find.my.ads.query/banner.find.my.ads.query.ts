@@ -42,6 +42,9 @@ export class BannerFindMyAdsQueryHandler
       // you can see the reference in TenderJwtGuard.
       appliedFilter.track_id = [query.user.track_id!];
     } else {
+      const date = query.expired_at ? new Date(query.expired_at) : undefined;
+      appliedFilter.specific_date = date;
+
       appliedFilter.type = [BannerTypeEnum.EXTERNAL];
     }
 
