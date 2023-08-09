@@ -1112,7 +1112,7 @@ export class TenderClientService {
         fileManagerCreateManyPayload,
       );
 
-      await this.sendEditRequestNotif(response);
+      // await this.sendEditRequestNotif(response);
 
       return response;
     } catch (error) {
@@ -1249,7 +1249,7 @@ export class TenderClientService {
       );
       // // console.log('response', response);
 
-      await this.sendResponseNotif(response);
+      // await this.sendResponseNotif(response);
       return response;
     } catch (error) {
       const theError = prismaErrorThrower(
