@@ -28,6 +28,7 @@ import TableInternalMessageSkeleton from './TableInternalMessageSkeleton';
 import { useSelector } from '../../../../../redux/store';
 import RejectionModal from '../../../../modal-dialog/RejectionModal';
 import dayjs from 'dayjs';
+import { hasExpired } from 'utils/checkIsExpired';
 
 const TABLE_HEAD = [
   { id: 'title', label: 'system_messages.headercell.title' },
@@ -109,7 +110,17 @@ export default function SystemMessageListTable() {
             // desired_track: item.track_id || '',
             // desired_track: track_list.find((track) => track.id === item.track_id)?.name || '',
             desired_track: item?.track?.name || '',
-            status: item?.is_expired ? false : true,
+            // status: item?.is_expired ? false : true,
+            status:
+              item &&
+              item.expired_date &&
+              item.expired_time &&
+              hasExpired({
+                expiredDate: item.expired_date,
+                expiredTime: item.expired_time,
+              })
+                ? false
+                : true,
           }))
         );
         setTotal(Number(response.data.total));

@@ -49,6 +49,7 @@ interface Props extends IProps {
   filled?: boolean;
   children?: ReactNode;
   customIcon?: IconifyIcon | string;
+  length?: number;
   onNext?: VoidFunction;
   onPrevious?: VoidFunction;
 }
@@ -56,6 +57,7 @@ interface Props extends IProps {
 export default function CarouselArrows({
   filled = false,
   customIcon, // Set icon right
+  length = 0,
   onNext,
   onPrevious,
   children,
@@ -75,17 +77,21 @@ export default function CarouselArrows({
     return (
       <Box {...other}>
         <Box className="arrow left" sx={{ ...style, left: 0 }}>
-          <ArrowStyle filled={filled} onClick={onPrevious}>
-            {leftIcon(customIcon, isRTL)}
-          </ArrowStyle>
+          {length > 1 && (
+            <ArrowStyle filled={filled} onClick={onPrevious}>
+              {leftIcon(customIcon, isRTL)}
+            </ArrowStyle>
+          )}
         </Box>
 
         {children}
 
         <Box className="arrow right" sx={{ ...style, right: 0 }}>
-          <ArrowStyle filled={filled} onClick={onNext}>
-            {rightIcon(customIcon, isRTL)}
-          </ArrowStyle>
+          {length > 1 && (
+            <ArrowStyle filled={filled} onClick={onNext}>
+              {rightIcon(customIcon, isRTL)}
+            </ArrowStyle>
+          )}
         </Box>
       </Box>
     );

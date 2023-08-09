@@ -35,7 +35,7 @@ export default function AdvertisingExternalForm({ defaultvalues = null }: Props)
       expired_date: dayjs(showTime).format('YYYY-MM-DD'),
       expired_time: dayjs(expiredTime, 'HH:mm').format('hh:mm A'),
       expired_at: dayjs(
-        `${dayjs(showTime).format('YYYY-MM-DD')} ${dayjs(tmpDate).format('hh:mm A')}`,
+        `${dayjs(showTime).format('YYYY-MM-DD')} ${dayjs(expiredTime, 'HH:mm').format('hh:mm A')}`,
         'YYYY-MM-DD hh:mm A'
       ).valueOf(),
       // expired_at: dayjs(showTime).valueOf(), // Adding the expired_at field with the Unix timestamp

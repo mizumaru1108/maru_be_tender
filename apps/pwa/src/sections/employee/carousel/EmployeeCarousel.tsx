@@ -14,6 +14,7 @@ import axiosInstance from 'utils/axios';
 import DetailBannerDialog from 'components/modal-dialog/DetailBannerDialog';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import dayjs from 'dayjs';
+import { hasExpired } from 'utils/checkIsExpired';
 
 const data = [
   {
@@ -38,7 +39,7 @@ const useStyles = makeStyles({
 });
 
 function EmployeeCarousel() {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { track_list } = useSelector((state) => state.proposal);
@@ -63,13 +64,21 @@ function EmployeeCarousel() {
   };
 
   const classes = useStyles();
-
   const handlePrevious = () => {
-    carouselRef.current?.slickPrev();
+    if (currentLang.value === 'en') {
+      carouselRef.current?.slickPrev();
+    } else {
+      carouselRef.current?.slickNext();
+    }
   };
 
   const handleNext = () => {
-    carouselRef.current?.slickNext();
+    // carouselRef.current?.slickNext();
+    if (currentLang.value === 'en') {
+      carouselRef.current?.slickNext();
+    } else {
+      carouselRef.current?.slickPrev();
+    }
   };
 
   const handleOpenDetails = (data?: AdvertisingTapeList) => {
@@ -90,7 +99,19 @@ function EmployeeCarousel() {
       // console.log({ response });
       if (response) {
         // console.log('test response', response?.data?.data);
-        setCarouselData(response?.data?.data);
+        // setCarouselData(response?.data?.data);
+        setCarouselData(
+          response?.data?.data.filter(
+            (item: AdvertisingTapeList) =>
+              item &&
+              item.expired_date &&
+              item.expired_time &&
+              !hasExpired({
+                expiredTime: item.expired_time,
+                expiredDate: item.expired_date,
+              })
+          )
+        );
       }
     } catch (err) {
       const statusCode = (err && err.statusCode) || 0;
@@ -142,6 +163,7 @@ function EmployeeCarousel() {
             filled
             onNext={handleNext}
             onPrevious={handlePrevious}
+            length={carouselData.length}
             sx={{
               '& .arrow button': {
                 p: 0,
@@ -159,7 +181,7 @@ function EmployeeCarousel() {
                     px: 1,
                     textAlign: 'center',
                     backgroundColor: 'rgba(147, 163, 176, 0.16)',
-                    height: '100',
+                    height: '182px',
                     borderRadius: '20px',
                   }}
                 >
@@ -190,21 +212,25 @@ function EmployeeCarousel() {
                         {/* {item.secondField} */}
                         {item.content}
                       </Typography>
-                      <Typography
-                        className={classes.multiLineEllipsis}
-                        sx={{
-                          textAlign: 'end',
-                          cursor: 'pointer',
-                          '&:hover': { color: '#0E8478', textDecoration: 'underline' },
-                        }}
-                        variant="h6"
-                        color="text.secondary"
-                        onClick={() => {
-                          handleOpenDetails(item);
-                        }}
-                      >
-                        {translate('system_messages.details')}
-                      </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'end' }}>
+                        <Typography
+                          className={classes.multiLineEllipsis}
+                          sx={{
+                            // maxWidth: '100px',
+                            display: 'inline-block',
+                            textAlign: 'end',
+                            cursor: 'pointer',
+                            '&:hover': { color: '#0E8478', textDecoration: 'underline' },
+                          }}
+                          variant="h6"
+                          color="text.secondary"
+                          onClick={() => {
+                            handleOpenDetails(item);
+                          }}
+                        >
+                          {translate('system_messages.details')}
+                        </Typography>
+                      </Box>
                     </Stack>
                   </Stack>
                 </Box>

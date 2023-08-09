@@ -16,6 +16,8 @@ export type InternalMessagesList = {
   status?: boolean;
   is_expired?: boolean;
   track?: TrackEntity;
+  expired_time?: string;
+  expired_date?: string;
 };
 
 export interface InternalMessagesListsRow {
@@ -32,6 +34,7 @@ export type AdvertisingTapeList = {
   expired_date?: string;
   // message_content: string;
   desired_track: string;
+  status?: boolean;
   track_id?: string;
   content: string;
   image?: string;

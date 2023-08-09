@@ -30,6 +30,7 @@ import { useSnackbar } from 'notistack';
 import { responsePathAsArray } from 'graphql';
 import { useSelector } from '../../../../../redux/store';
 import dayjs from 'dayjs';
+import { hasExpired } from 'utils/checkIsExpired';
 
 const TABLE_HEAD = [
   { id: 'image', label: 'system_messages.headercell.image' },
@@ -118,7 +119,18 @@ export default function AdvertisingTapeListTable() {
             showTime: `${dayjs(item.expired_date).format('YYYY-MM-DD')} (${item.expired_time})`,
             // track_id: track_list.find((track) => track.id === item.track_id)?.name || '',
             image: item?.logo && item?.logo?.length > 0 ? item?.logo[0].url : null,
-            is_expired: item?.is_expired ? false : true,
+            // is_expired: item?.is_expired ? false : true,
+            status:
+              item &&
+              item.expired_date &&
+              item.expired_time &&
+              hasExpired({
+                expiredDate: item.expired_date,
+                expiredTime: item.expired_time,
+              })
+                ? false
+                : true,
+            expired_date: item.expired_date,
           }))
         );
         setTotal(Number(response?.data?.total));

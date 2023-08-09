@@ -13,6 +13,7 @@ import { AdvertisingTapeList } from 'components/table/admin/system-messages/type
 import DetailBannerDialog from 'components/modal-dialog/DetailBannerDialog';
 import { useSelector } from 'redux/store';
 import dayjs from 'dayjs';
+import { hasExpired, isActiveToday } from 'utils/checkIsExpired';
 
 const data = [
   {
@@ -40,7 +41,7 @@ const useStyles = makeStyles({
 function ClientCarousel() {
   const classes = useStyles();
   const theme = useTheme();
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { track_list } = useSelector((state) => state.proposal);
@@ -73,11 +74,20 @@ function ClientCarousel() {
   };
 
   const handlePrevious = () => {
-    carouselRef.current?.slickPrev();
+    if (currentLang.value === 'en') {
+      carouselRef.current?.slickPrev();
+    } else {
+      carouselRef.current?.slickNext();
+    }
   };
 
   const handleNext = () => {
-    carouselRef.current?.slickNext();
+    // carouselRef.current?.slickNext();
+    if (currentLang.value === 'en') {
+      carouselRef.current?.slickNext();
+    } else {
+      carouselRef.current?.slickPrev();
+    }
   };
 
   const handleOpenDetails = (data?: AdvertisingTapeList) => {
@@ -99,7 +109,20 @@ function ClientCarousel() {
       // console.log({ response });
       if (response) {
         // console.log('test response', response?.data?.data);
-        setCarouselData(response?.data?.data);
+        // setCarouselData(response?.data?.data);
+        setCarouselData(
+          response?.data?.data.filter(
+            (item: AdvertisingTapeList) =>
+              item &&
+              item.expired_date &&
+              item.expired_time &&
+              !hasExpired({
+                expiredTime: item.expired_time,
+                expiredDate: item.expired_date,
+              }) &&
+              isActiveToday({ expiredDate: item.expired_date })
+          )
+        );
       }
     } catch (err) {
       const statusCode = (err && err.statusCode) || 0;
@@ -139,7 +162,7 @@ function ClientCarousel() {
 
   return (
     <>
-      {FEATURE_BANNER ? (
+      {FEATURE_BANNER && carouselData.length > 0 ? (
         <Box className="firstBox" sx={{ position: 'relative', direction: 'rtl' }}>
           <DetailBannerDialog
             open={open}
@@ -152,6 +175,7 @@ function ClientCarousel() {
             filled
             onNext={handleNext}
             onPrevious={handlePrevious}
+            length={carouselData.length}
             sx={{
               '& .arrow button': {
                 p: 0,
@@ -169,7 +193,7 @@ function ClientCarousel() {
                     px: 1,
                     textAlign: 'center',
                     backgroundColor: 'rgba(147, 163, 176, 0.16)',
-                    height: '100',
+                    height: '182px',
                     borderRadius: '20px',
                   }}
                 >
@@ -178,10 +202,14 @@ function ClientCarousel() {
                     justifyContent="space-around"
                     sx={{ p: '10px 25px 10px 25px', w: '100%', h: '100%' }}
                   >
-                    <Box flex={1} sx={{ alignSelf: 'center' }}>
+                    <Box
+                      flex={1}
+                      sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                    >
                       <img
                         src={item?.logo ? item.logo[0].url : `/icons/mosque-carousel-icon.svg`}
                         alt=""
+                        style={{ height: '160px' }}
                       />
                     </Box>
                     <Stack direction="column" gap={1} justifyContent="center" flex={4}>

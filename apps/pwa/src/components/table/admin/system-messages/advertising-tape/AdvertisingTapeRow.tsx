@@ -7,6 +7,7 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import React from 'react';
 import { useNavigate } from 'react-router';
+import { isActiveToday } from 'utils/checkIsExpired';
 import { role_url_map } from '../../../../../@types/commons';
 import ConfirmationModal from '../../../../modal-dialog/ConfirmationModal';
 
@@ -21,6 +22,9 @@ export default function AdvertisingTapeRow({
   const { activeRole } = useAuth();
 
   const navigate = useNavigate();
+
+  const isToday = row?.expired_date ? isActiveToday({ expiredDate: row?.expired_date }) : undefined;
+  // console.log({ test, row });
 
   const [openModalReject, setOpenModalReject] = React.useState(false);
 
@@ -77,7 +81,7 @@ export default function AdvertisingTapeRow({
         </TableCell> */}
         <TableCell align="left" sx={{ maxWidth: 250 }}>
           {/* <Typography variant="subtitle2">{row?.status ? 'active' : 'expired'}</Typography> */}
-          {row?.is_expired ? (
+          {row?.status && isToday ? (
             <Chip
               label={translate('system_messages.status.active')}
               color="primary"
