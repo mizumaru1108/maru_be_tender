@@ -2,8 +2,14 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { nanoid } from 'nanoid';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { ProposalItemBudgetRepository } from '../../../proposal-management/item-budget/repositories/proposal.item.budget.repository';
-import { ProposalLogRepository } from '../../../proposal-management/proposal-log/repositories/proposal.log.repository';
+import {
+  CreateItemBugetProps,
+  ProposalItemBudgetRepository,
+} from '../../../proposal-management/item-budget/repositories/proposal.item.budget.repository';
+import {
+  CreateProposalLogProps,
+  ProposalLogRepository,
+} from '../../../proposal-management/proposal-log/repositories/proposal.log.repository';
 import { ProposalTimelinePostgresRepository } from '../../../proposal-management/poject-timelines/repositories/proposal.project.timeline.repository';
 import { ProposalRepository } from '../../../proposal-management/proposal/repositories/proposal.repository';
 import {
@@ -12,6 +18,7 @@ import {
   projectTimelineMock,
   proposalLogModeratorMock,
 } from '../../mock/mock-data';
+import { ProposalItemBudgetEntity } from '../../../proposal-management/item-budget/entities/proposal.item.budget.entity';
 export class QaProposalCreateNewModeratorStateCommand {
   project_name: string;
   submitter_user_id: string;
@@ -113,27 +120,31 @@ export class QaProposalCreateNewModeratorStateCommandHandler
           session,
         );
 
-        await this.logRepo.createMany(
-          proposalLogModeratorMock.map((log) => {
-            return {
-              ...log,
-              id: nanoid(),
-              proposal_id: createdProposal.id,
-            };
-          }),
-          session,
-        );
+        // await this.itemBudgetRepo.createMany(
+        //   itemBudgetMock.map((budget) => {
+        //     return {
+        //       ...budget,
+        //       id: uuidv4(),
+        //       proposal_id: createdProposal.id,
+        //     };
+        //   }),
+        //   session,
+        // );
 
-        await this.itemBudgetRepo.createMany(
-          itemBudgetMock.map((budget) => {
-            return {
-              ...budget,
-              id: uuidv4(),
-              proposal_id: createdProposal.id,
-            };
-          }),
-          session,
-        );
+        let itemBugets: ProposalItemBudgetEntity[] = [];
+        for (let i = 0; i < itemBudgetMock.length; i++) {
+          let tmpBudget: CreateItemBugetProps = {
+            ...itemBudgetMock[i],
+            id: uuidv4(),
+            proposal_id: createdProposal.id,
+          };
+
+          const itemBudget = await this.itemBudgetRepo.create(
+            tmpBudget,
+            session,
+          );
+          itemBugets.push(itemBudget);
+        }
 
         await this.timelineRepo.createMany(
           projectTimelineMock.map((timeline) => {
@@ -145,6 +156,36 @@ export class QaProposalCreateNewModeratorStateCommandHandler
           }),
           session,
         );
+
+        for (let i = 0; i < proposalLogModeratorMock.length; i++) {
+          let tmp: CreateProposalLogProps = {
+            ...proposalLogModeratorMock[i],
+            id: nanoid(),
+            proposal_id: createdProposal.id,
+          };
+
+          if (i === 0) {
+            tmp = {
+              ...tmp,
+              new_values: {
+                ...createdProposal,
+                createdItemBudgetPayload: itemBugets,
+              },
+            };
+          }
+
+          await this.logRepo.create(tmp, session);
+        }
+        // await this.logRepo.createMany(
+        //   proposalLogModeratorMock.map((log) => {
+        //     return {
+        //       ...log,
+        //       id: nanoid(),
+        //       proposal_id: createdProposal.id,
+        //     };
+        //   }),
+        //   session,
+        // );
 
         const proposal = await this.proposalRepo.fetchById(
           {

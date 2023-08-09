@@ -224,8 +224,6 @@ export class ProposalPaymentController {
     }
   }
 
-  @ApiSecurity('x-hasura-role')
-  @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin', 'tender_ceo')
   @Get('find-track-budgets')

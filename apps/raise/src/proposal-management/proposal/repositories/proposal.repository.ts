@@ -604,6 +604,9 @@ export class ProposalRepository {
             data: {
               ...createProposalPayload,
             },
+            include: {
+              proposal_item_budgets: true,
+            },
           });
 
           if (proposal_item_budgets) {
@@ -654,6 +657,10 @@ export class ProposalRepository {
               proposal_id: proposal.id,
               state: 'CLIENT',
               user_role: 'CLIENT',
+              new_values: {
+                ...proposal,
+                createdItemBudgetPayload: proposal.proposal_item_budgets,
+              } as unknown as Prisma.JsonObject,
             },
           });
 

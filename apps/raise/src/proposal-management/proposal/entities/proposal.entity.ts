@@ -43,10 +43,7 @@ export class ProposalEntity extends AggregateRoot {
   follow_ups?: ProposalFollowUpEntity[];
   fsupport_by_supervisor?: number | null;
   governorate?: string | null;
-
-  @ApiProperty()
   id: string;
-
   inclu_or_exclu?: boolean | null = false;
   inner_status?: string | null = 'CREATED_BY_CLIENT';
   letter_ofsupport_req: any; //Json?
@@ -86,7 +83,7 @@ export class ProposalEntity extends AggregateRoot {
   proposal_bank_id?: string | null;
   proposal_beneficiaries?: BeneficiaryEntity[];
   proposal_item_budgets?: ProposalItemBudgetEntity[];
-  proposal_log?: ProposalLogEntity[];
+  proposal_logs?: ProposalLogEntity[];
   reasons_to_accept?: string | null;
   region?: string | null;
   remote_or_insite?: string | null;

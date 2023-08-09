@@ -325,12 +325,12 @@ export class TenderProposalController {
 
   // same as fetch by id but using cqrs
   @ApiBearerAuth()
-  @BaseApiOkResponse(ProposalEntity, 'object')
+  @BaseApiOkResponse(ProposalFindByIdQueryResult, 'object')
   @UseGuards(TenderJwtGuard)
   @Get('find-by-id')
   async findById(
     @Query() query: ProposalFindByIdQueryRequest,
-  ): Promise<BaseResponse<ProposalEntity>> {
+  ): Promise<BaseResponse<ProposalFindByIdQueryResult>> {
     try {
       const queries = Builder<ProposalFindByIdQuery>(ProposalFindByIdQuery, {
         ...query,
@@ -343,7 +343,7 @@ export class TenderProposalController {
       >(queries);
 
       return baseResponseHelper(
-        result.proposal,
+        result,
         HttpStatus.OK,
         'Proposal fetched successfully',
       );

@@ -20,7 +20,7 @@ export class ProposalFindByIdQueryRequest {
       'track',
       'proposal_item_budgets',
       'supervisor',
-      'poposal_log',
+      'proposal_logs',
       'payments',
       'bank_information',
       'project_timeline',
