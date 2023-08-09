@@ -362,9 +362,9 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         setBasedBudget(rest.data.data.proposal_item_budgets);
         setValue('detail_project_budgets', rest.data.data.proposal_item_budgets);
         // console.log('test', rest.data.data.proposal_item_budgets.length);
-        if (REOPEN_TMRA_S568) {
-          setValue('payment_number', rest.data.data.proposal_item_budgets.length);
-        }
+        // if (REOPEN_TMRA_S568) {
+        //   setValue('payment_number', rest.data.data.proposal_item_budgets.length);
+        // }
       }
     } catch (err) {
       console.log('err', err);

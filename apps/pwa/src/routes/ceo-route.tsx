@@ -5,6 +5,7 @@ import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
 import ProjectOwnerDetailsMainPage from 'sections/project-details/project-owner-details/ProjectOwnerDetailsMainPage';
+import { FEATURE_MENU_CLIENT_FILES } from 'config';
 
 const MainCeoPage = Loadable(lazy(() => import('pages/ceo/MainCeoPage')));
 const CeoMessagePage = Loadable(lazy(() => import('pages/ceo/CeoMessagePage')));
@@ -166,7 +167,7 @@ export const ceoRoute = {
           path: 'old-proposal',
           element: <OldProposal />,
         },
-        {
+        FEATURE_MENU_CLIENT_FILES && {
           path: 'client-files',
           element: <ClientFiles />,
         },

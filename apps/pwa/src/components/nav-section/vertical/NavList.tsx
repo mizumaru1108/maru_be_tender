@@ -115,7 +115,6 @@ type NavListSubProps = {
 };
 
 function NavSubList({ data, depth }: NavListSubProps) {
-  // console.log({ data, depth });
   return (
     <>
       {[...data]

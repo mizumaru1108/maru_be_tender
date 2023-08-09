@@ -30,18 +30,20 @@ export default function NavSectionVertical({ navConfig, isCollapse, ...other }: 
   if (loadingCount) return <>{translate('pages.common.loading')}</>;
   return (
     <Box {...other}>
-      {navConfig.map((group) => (
+      {[...navConfig].map((group) => (
         <List key={group.subheader} disablePadding sx={{ px: 2 }}>
-          {group.items.map((list: any) => (
-            <NavList
-              key={list.title + '-' + list.path}
-              data={list}
-              depth={1}
-              hasChildren={!!list.children}
-              isCollapse={isCollapse}
-              count={FEATURE_PROPOSAL_COUNTING ? proposalCount : undefined}
-            />
-          ))}
+          {[...group.items]
+            .filter((item) => item.title)
+            .map((list: any) => (
+              <NavList
+                key={list.title + '-' + list.path}
+                data={list}
+                depth={1}
+                hasChildren={!!list.children}
+                isCollapse={isCollapse}
+                count={FEATURE_PROPOSAL_COUNTING ? proposalCount : undefined}
+              />
+            ))}
         </List>
       ))}
     </Box>

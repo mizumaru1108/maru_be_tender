@@ -14,6 +14,7 @@ import {
   FEATURE_MENU_ADMIN_ENTITY_AREA,
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
   FEATURE_MENU_ADMIN_REGIONS,
+  FEATURE_MENU_CLIENT_FILES,
 } from 'config';
 
 const Main = Loadable(lazy(() => import('pages/admin/MainPage')));
@@ -186,7 +187,7 @@ export const adminRoute = {
           path: 'old-proposal',
           element: <OldProposal />,
         },
-        {
+        FEATURE_MENU_CLIENT_FILES && {
           path: 'client-files',
           element: <ClientFiles />,
         },

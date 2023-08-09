@@ -5,6 +5,7 @@ import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
 import CeoClientListPage from 'pages/ceo/CeoClientListPage';
+import { FEATURE_MENU_CLIENT_FILES } from 'config';
 
 const MainProjectManager = Loadable(lazy(() => import('pages/project-manager/MainPage')));
 const IncomingFundingRequestsProjectManager = Loadable(
@@ -192,7 +193,7 @@ export const projectManagerRoute = {
           path: 'old-proposal',
           element: <OldProposal />,
         },
-        {
+        FEATURE_MENU_CLIENT_FILES && {
           path: 'client-files',
           element: <ClientFiles />,
         },
