@@ -30,8 +30,13 @@ const RHFRepeater = ({
     const keys = Object.keys(restFields);
     const result = {} as any;
     for (let key of keys) {
-      result[key] = '';
+      if (key === 'selected_numbers') {
+        result[key] = 0;
+      } else {
+        result[key] = '';
+      }
     }
+    console.log({ result, fields });
     return result;
   };
 
@@ -46,7 +51,11 @@ const RHFRepeater = ({
 
   const objectEmpty = (obj: any, index: number) => {
     for (let key in obj) {
-      setValue(`${name}[${index}].${key}`, '');
+      if (key === 'selected_numbers') {
+        setValue(`${name}[${index}].${key}`, 0);
+      } else {
+        setValue(`${name}[${index}].${key}`, '');
+      }
     }
   };
 
@@ -84,6 +93,7 @@ const RHFRepeater = ({
                       {...other}
                       disabled={repeaterField.disabled ? true : false}
                       name={`${name}[${index}].${repeaterField.name}`}
+                      data-cy={`repeater_field_${name}[${index}].${repeaterField.name}`}
                     />
                   </Grid>
                 )}
@@ -99,6 +109,7 @@ const RHFRepeater = ({
                   // remove(index);
                   handleDelete(index);
                 }}
+                data-cy={`repeater_clear_button_${name}[${index}]`}
                 disabled={disabledValue}
                 // disabled={other.disabled}
               >
@@ -109,7 +120,7 @@ const RHFRepeater = ({
         </React.Fragment>
       ))}
 
-      {allDataFill && enableAddButton && (
+      {enableAddButton && (
         <Grid item md={12}>
           <Button
             type="button"
@@ -123,6 +134,9 @@ const RHFRepeater = ({
               append(cleanField());
             }}
             disabled={disabledValue}
+            data-cy={`repeater_add_button_${name}`}
+
+            // data-cy={`${name}[${index}].${repeaterField.name}`}
             // disabled={other.disabled}
           >
             {buttonRepeaterLabel ? buttonRepeaterLabel : translate('add_new_line')}

@@ -47,6 +47,44 @@ const en = {
           main_information: 'Main Information',
           about_project: 'About the Project',
           form: {
+            number_project_duration: {
+              label: 'Number of Project Duration*',
+              placeholder: 'Number of Project Duration',
+            },
+            number_project_repeated: {
+              label: 'Number of Project Repeated*',
+              placeholder: 'Number of Project Repeated',
+            },
+            execution_places: {
+              selected_value: {
+                label: 'Place of execution of the project*',
+                placeholder: 'Place of execution of the project',
+              },
+              number: {
+                label: 'Number of Place of execution of the project*',
+                placeholder: 'Number of Place of execution of the project',
+              },
+            },
+            beneficiaries: {
+              selected_value: {
+                label: 'The target segment of the project*',
+                placeholder: 'The target segment of the project',
+              },
+              number: {
+                label: 'Number of The target segment of the project*',
+                placeholder: 'Number of The target segment of the project',
+              },
+            },
+            genders: {
+              selected_value: {
+                label: 'The gender of the beneficiaries*',
+                placeholder: 'The gender of the beneficiaries',
+              },
+              number: {
+                label: 'Number of The gender of the beneficiaries*',
+                placeholder: 'Number of The gender of the beneficiaries',
+              },
+            },
             number_of_beneficiaries: {
               label: 'Number of Beneficiers*',
               placeholder: 'Number of Beneficiaries',
@@ -132,7 +170,30 @@ const en = {
             years: 'Years',
             annual: 'Annual',
             months: 'Months',
-            monthly: 'Monthly',
+            monthly: 'Months',
+            days: 'Days',
+            weeks: 'Weeks',
+            //
+            daily: 'Days',
+            yearly: 'Years',
+            execution_places: {
+              village: 'Village',
+              center: 'Center',
+              province: 'Province',
+              area: 'Area',
+            },
+            beneficiaries: {
+              children: 'Children',
+              general_education_students: 'General Education Students',
+              female_students_of_general_education: 'Female Students of General Education',
+              college_students: 'College Students',
+              female_college_students: 'Female College Students',
+              mothers: 'Mothers',
+              parents: 'Parents',
+              notables: 'Notables',
+              residents: 'Residents',
+              the_general_community: 'The General Community',
+            },
           },
         },
         btn: {
@@ -841,6 +902,14 @@ const en = {
       },
       success_reset_password: 'Your password has been changed successfully!',
       something_wrong: 'Opss, something went wrong.',
+    },
+
+    clo_report: {
+      number_value: { min: 'Value must be greater than 0' },
+      selected: { required: 'Select at least one option' },
+      value: { required: 'Value is required' },
+      attachments: { required: 'Attachments is required' },
+      images: { required: 'Images is required' },
     },
   },
   sorting: {
@@ -2477,10 +2546,15 @@ const en = {
         content: 'Content is required',
         showTime: 'Show time is required',
         track: 'Track is required',
+        expiredTime: 'Expired time is required',
         image: {
           size: 'The file size must be less than 5 MB',
           fileExtension: 'The file must be an image',
         },
+      },
+      showDate: {
+        label: 'Show Date',
+        placeholder: 'Please enter show date',
       },
       image: {
         label: 'Image',

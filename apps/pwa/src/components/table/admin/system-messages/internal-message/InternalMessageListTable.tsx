@@ -27,6 +27,7 @@ import InternalMessageListRow from './InternalMessageListRow';
 import TableInternalMessageSkeleton from './TableInternalMessageSkeleton';
 import { useSelector } from '../../../../../redux/store';
 import RejectionModal from '../../../../modal-dialog/RejectionModal';
+import dayjs from 'dayjs';
 
 const TABLE_HEAD = [
   { id: 'title', label: 'system_messages.headercell.title' },
@@ -90,8 +91,9 @@ export default function SystemMessageListTable() {
 
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
+    const curretTime = dayjs().valueOf();
     const currentPage = page + 1;
-    const url = `banners?type=internal&limit=${rowsPerPage}&page=${currentPage}&include_relations=track`;
+    const url = `banners?type=internal&limit=${rowsPerPage}&page=${currentPage}&include_relations=track&current_time=${curretTime}`;
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },

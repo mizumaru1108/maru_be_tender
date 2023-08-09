@@ -90,7 +90,8 @@ function ClientCarousel() {
 
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
-    const url = `/banners/mine`;
+    const currentTime = dayjs().valueOf();
+    const url = `/banners/mine?current_time=${currentTime}`;
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },

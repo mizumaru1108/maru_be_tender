@@ -7,19 +7,28 @@ export interface IPropFromProjectReport {
   isEdit?: boolean;
   loading?: boolean;
 }
+interface MultiFieldClosingForm {
+  selected_values: string;
+  selected_numbers: number;
+}
 
 export interface CloseReportForm {
   proposal_id: string;
   number_of_beneficiaries: number;
-  target_beneficiaries: string;
-  execution_place: string;
-  gender: string | undefined;
+  target_beneficiaries?: string;
+  execution_place?: string;
+  gender?: string | undefined;
   project_duration: string;
+  number_project_duration: number;
   project_repeated: string;
+  number_project_repeated: number;
   number_of_volunteer: number;
   number_of_staff: number;
   attachments: FileProp | FileProp[] | any;
   images: FileProp | FileProp[] | any;
+  genders?: MultiFieldClosingForm[];
+  execution_places?: MultiFieldClosingForm[];
+  beneficiaries?: MultiFieldClosingForm[];
 }
 
 export interface ClosingReportData {

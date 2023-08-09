@@ -13,6 +13,7 @@ import { AdvertisingTapeList } from 'components/table/admin/system-messages/type
 import axiosInstance from 'utils/axios';
 import DetailBannerDialog from 'components/modal-dialog/DetailBannerDialog';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
+import dayjs from 'dayjs';
 
 const data = [
   {
@@ -80,7 +81,8 @@ function EmployeeCarousel() {
 
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
-    const url = `/banners/mine`;
+    const currentTime = dayjs().valueOf();
+    const url = `/banners/mine?current_time=${currentTime}`;
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },

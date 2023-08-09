@@ -24,6 +24,8 @@ import { CloseReportForm } from 'sections/client/project-report/types';
 //
 import { useQuery } from 'urql';
 import { getProposalClosingReport } from 'queries/client/getProposalClosingReport';
+import SubmitProjectReportFormCqrs from 'sections/client/project-report/forms/SubmitProjectReportFormCqrs';
+import { FEATURE_NEW_CLOSING_REPORT_BY_CLIENT } from 'config';
 
 // ------------------------------------------------------------------------------------------
 
@@ -66,15 +68,12 @@ export default function ProjectReports() {
 
   const handleSubmitForm = async (formValues: CloseReportForm) => {
     setIsSubmitting(true);
-
+    // const url = `/tender/proposal/payment/submit-closing-report`;
+    const url = `/tender/proposal/payment/submit-closing-report-cqrs`;
     try {
-      const { status } = await axiosInstance.post(
-        '/tender/proposal/payment/submit-closing-report',
-        formValues,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-        }
-      );
+      const { status } = await axiosInstance.post(url, formValues, {
+        headers: { 'x-hasura-role': activeRole! },
+      });
 
       if (status === 201) {
         enqueueSnackbar(translate('pages.common.close_report.notification.succes_send'), {
@@ -127,25 +126,45 @@ export default function ProjectReports() {
 
   const initialValue: CloseReportForm = {
     proposal_id: proposal.id,
-    execution_place: '',
-    target_beneficiaries: '',
+    // execution_place: '',
+    // target_beneficiaries: '',
     number_of_beneficiaries: 0,
-    gender: undefined,
+    // gender: undefined,
     project_duration: '',
+    number_project_duration: 0,
     project_repeated: '',
+    number_project_repeated: 0,
     number_of_staff: 0,
     number_of_volunteer: 0,
     attachments: [],
     images: [],
+    genders: [
+      {
+        selected_values: '',
+        selected_numbers: 0,
+      },
+    ],
+    execution_places: [
+      {
+        selected_values: '',
+        selected_numbers: 0,
+      },
+    ],
+    beneficiaries: [
+      {
+        selected_values: '',
+        selected_numbers: 0,
+      },
+    ],
   };
 
   useEffect(() => {
     dispatch(getProposal(id as string, role as string));
   }, [dispatch, id, role]);
 
-  if (fetching || isLoading) return <>Loading ...</>;
+  if (fetching || isLoading) return <>{translate('pages.common.loading')}</>;
 
-  if (error || errorGetProposal) return <>{error ? error : errorGetProposal}</>;
+  // if (error || errorGetProposal) return <>{error ? error : errorGetProposal}</>;
 
   return (
     <Page title={translate('pages.common.close_report.text.project_report')}>
@@ -196,11 +215,21 @@ export default function ProjectReports() {
               </Typography>
             </Stack>
             {data && data.proposal_closing_report.length === 0 ? (
-              <SubmitProjectReportForm
-                onSubmit={handleSubmitForm}
-                defaultValues={initialValue}
-                loading={isSubmitting}
-              />
+              <>
+                {FEATURE_NEW_CLOSING_REPORT_BY_CLIENT ? (
+                  <SubmitProjectReportFormCqrs
+                    onSubmit={handleSubmitForm}
+                    defaultValues={initialValue}
+                    loading={isSubmitting}
+                  />
+                ) : (
+                  <SubmitProjectReportForm
+                    onSubmit={handleSubmitForm}
+                    defaultValues={initialValue}
+                    loading={isSubmitting}
+                  />
+                )}
+              </>
             ) : (
               <InfoClosingReport data={data.proposal_closing_report[0]} />
             )}

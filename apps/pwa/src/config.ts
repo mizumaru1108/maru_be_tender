@@ -286,3 +286,9 @@ export const FEATURE_MENU_ADMIN_ADD_AUTHORITY: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_ADD_AUTHORITY === 'true'
     ? true
     : false;
+
+export const FEATURE_NEW_CLOSING_REPORT_BY_CLIENT: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_NEW_CLOSING_REPORT_BY_CLIENT &&
+  process.env.REACT_APP_CONFIG_FEATURE_NEW_CLOSING_REPORT_BY_CLIENT === 'true'
+    ? true
+    : false;
