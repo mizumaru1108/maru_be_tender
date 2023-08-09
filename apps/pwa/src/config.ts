@@ -292,3 +292,9 @@ export const FEATURE_NEW_CLOSING_REPORT_BY_CLIENT: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_NEW_CLOSING_REPORT_BY_CLIENT === 'true'
     ? true
     : false;
+
+export const FEATURE_MENU_CLIENT_FILES: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_CLIENT_FILES &&
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_CLIENT_FILES === 'true'
+    ? true
+    : false;

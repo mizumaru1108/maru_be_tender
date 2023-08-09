@@ -17,6 +17,7 @@ import {
   FEATURE_MENU_ADMIN_ENTITY_AREA,
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
   FEATURE_MENU_ADMIN_REGIONS,
+  FEATURE_MENU_CLIENT_FILES,
 } from 'config';
 
 // ----------------------------------------------------------------------
@@ -186,11 +187,12 @@ const navConfig = {
           path: PATH_CLIENT.old_proposal,
           icon: ICONS.tender_client.old_proposal,
         },
-        {
-          title: 'client_files.title',
-          path: PATH_CLIENT.client_files,
-          icon: ICONS.tender_moderator.old_proposal,
-        },
+        FEATURE_MENU_CLIENT_FILES &&
+          ({
+            title: 'client_files.title',
+            path: PATH_CLIENT.client_files,
+            icon: ICONS.tender_moderator.old_proposal,
+          } as any),
         {
           title: 'pages.common.close_report.text.project_report',
           path: PATH_CLIENT.incoming_close_reports,
@@ -233,11 +235,13 @@ const navConfig = {
           path: PATH_CONSULTANT.old_proposal,
           icon: ICONS.tender_consultant.old_proposal,
         },
-        {
-          title: 'client_files.title',
-          path: PATH_CONSULTANT.client_files,
-          icon: ICONS.tender_moderator.old_proposal,
-        },
+
+        FEATURE_MENU_CLIENT_FILES &&
+          ({
+            title: 'client_files.title',
+            path: PATH_CONSULTANT.client_files,
+            icon: ICONS.tender_moderator.old_proposal,
+          } as any),
         {
           title: 'portal_reports',
           path: PATH_CONSULTANT.portal_reports,
@@ -290,11 +294,12 @@ const navConfig = {
           path: PATH_FINANCE.old_proposal,
           icon: ICONS.tender_finance.old_proposal,
         },
-        {
-          title: 'client_files.title',
-          path: PATH_FINANCE.client_files,
-          icon: ICONS.tender_moderator.old_proposal,
-        },
+        FEATURE_MENU_CLIENT_FILES &&
+          ({
+            title: 'client_files.title',
+            path: PATH_FINANCE.client_files,
+            icon: ICONS.tender_moderator.old_proposal,
+          } as any),
         {
           title: 'portal_reports',
           path: PATH_FINANCE.portal_reports,
@@ -337,11 +342,12 @@ const navConfig = {
           path: PATH_CASHIER.old_proposal,
           icon: ICONS.tender_cashier.old_proposal,
         },
-        {
-          title: 'client_files.title',
-          path: PATH_CASHIER.client_files,
-          icon: ICONS.tender_moderator.old_proposal,
-        },
+        FEATURE_MENU_CLIENT_FILES &&
+          ({
+            title: 'client_files.title',
+            path: PATH_CASHIER.client_files,
+            icon: ICONS.tender_moderator.old_proposal,
+          } as any),
         {
           title: 'portal_reports',
           path: PATH_CASHIER.portal_reports,
@@ -389,11 +395,12 @@ const navConfig = {
           path: PATH_CEO.old_proposal,
           icon: ICONS.tender_ceo.old_proposal,
         },
-        {
-          title: 'client_files.title',
-          path: PATH_CEO.client_files,
-          icon: ICONS.tender_moderator.old_proposal,
-        },
+        FEATURE_MENU_CLIENT_FILES &&
+          ({
+            title: 'client_files.title',
+            path: PATH_CEO.client_files,
+            icon: ICONS.tender_moderator.old_proposal,
+          } as any),
         {
           title: 'portal_reports',
           path: PATH_CEO.portal_reports,
@@ -441,11 +448,12 @@ const navConfig = {
           path: PATH_PROJECT_MANAGER.old_proposal,
           icon: ICONS.tender_project_manager.old_proposal,
         },
-        {
-          title: 'client_files.title',
-          path: PATH_PROJECT_MANAGER.client_files,
-          icon: ICONS.tender_moderator.old_proposal,
-        },
+        FEATURE_MENU_CLIENT_FILES &&
+          ({
+            title: 'client_files.title',
+            path: PATH_PROJECT_MANAGER.client_files,
+            icon: ICONS.tender_moderator.old_proposal,
+          } as any),
         {
           title: 'client_list',
           path: PATH_PROJECT_MANAGER.client_list,
@@ -503,11 +511,12 @@ const navConfig = {
           path: PATH_PROJECT_SUPERVISOR.old_proposal,
           icon: ICONS.tender_project_supervisor.old_proposal,
         },
-        {
-          title: 'client_files.title',
-          path: PATH_PROJECT_SUPERVISOR.client_files,
-          icon: ICONS.tender_moderator.old_proposal,
-        },
+        FEATURE_MENU_CLIENT_FILES &&
+          ({
+            title: 'client_files.title',
+            path: PATH_PROJECT_SUPERVISOR.client_files,
+            icon: ICONS.tender_moderator.old_proposal,
+          } as any),
         {
           title: 'payment_adjustment',
           path: PATH_PROJECT_SUPERVISOR.payment_adjustment,
@@ -604,11 +613,12 @@ const navConfig = {
           path: PATH_MODERATOR.old_proposal,
           icon: ICONS.tender_moderator.old_proposal,
         },
-        {
-          title: 'client_files.title',
-          path: PATH_MODERATOR.client_files,
-          icon: ICONS.tender_moderator.old_proposal,
-        },
+        FEATURE_MENU_CLIENT_FILES &&
+          ({
+            title: 'client_files.title',
+            path: PATH_MODERATOR.client_files,
+            icon: ICONS.tender_moderator.old_proposal,
+          } as any),
         {
           title: 'portal_reports',
           path: PATH_MODERATOR.portal_reports,
@@ -774,11 +784,12 @@ const navConfig = {
           path: PATH_ADMIN.old_proposal,
           icon: ICONS.tender_admin.old_proposal,
         },
-        {
-          title: 'client_files.title',
-          path: PATH_ADMIN.client_files,
-          icon: ICONS.tender_moderator.old_proposal,
-        },
+        FEATURE_MENU_CLIENT_FILES &&
+          ({
+            title: 'client_files.title',
+            path: PATH_ADMIN.client_files,
+            icon: ICONS.tender_moderator.old_proposal,
+          } as any),
         {
           title: 'portal_reports',
           path: PATH_ADMIN.portal_reports,

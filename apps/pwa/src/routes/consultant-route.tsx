@@ -4,6 +4,7 @@ import DashboardLayout from '../layouts/dashboard';
 import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
+import { FEATURE_MENU_CLIENT_FILES } from 'config';
 
 const MainConsultant = Loadable(lazy(() => import('pages/consultant/MainPage')));
 const IncomingFundingRequestConsultant = Loadable(
@@ -91,7 +92,7 @@ export const consultantRoute = {
           path: 'old-proposal',
           element: <OldProposal />,
         },
-        {
+        FEATURE_MENU_CLIENT_FILES && {
           path: 'client-files',
           element: <ClientFiles />,
         },
