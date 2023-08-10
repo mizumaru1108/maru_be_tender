@@ -1371,7 +1371,7 @@ export class TenderClientService {
         deletedFileManagerUrls,
       );
 
-      await this.sendResponseNotif(response);
+      // await this.sendResponseNotif(response);
     } catch (error) {
       const theError = prismaErrorThrower(
         error,

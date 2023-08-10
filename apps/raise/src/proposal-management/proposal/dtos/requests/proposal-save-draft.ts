@@ -48,7 +48,7 @@ export class ProposalSaveDraftDto extends ProposalDeleteDraftDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  project_beneficiaries: string;
+  beneficiary_id: string;
 
   @ApiPropertyOptional()
   @IsOptional()

@@ -71,6 +71,15 @@ import {
   SendRevisionCommandResult,
 } from 'src/proposal-management/proposal/commands/send.revision/send.revision.command';
 import { ForbiddenPermissionException } from 'src/tender-commons/exceptions/forbidden-permission-exception';
+import { BannerTypeEnum } from '../../../banners/types/enums/banner.type.enum';
+import {
+  ProposalCreateCommand,
+  ProposalCreateCommandResult,
+} from '../commands/proposal.create/proposal.create.command';
+import {
+  ProposalSaveDraftCommand,
+  ProposalSaveDraftCommandResult,
+} from '../commands/proposal.save.draft/proposal.save.draft.command';
 
 @ApiTags('ProposalModule')
 @Controller('tender-proposal')
@@ -136,23 +145,39 @@ export class TenderProposalController {
       project_attachments?: Express.Multer.File[];
     },
   ) {
-    if (files.letter_ofsupport_req === undefined) {
-      throw new BadRequestException('Letter of Support is Required!');
+    try {
+      if (files.letter_ofsupport_req === undefined) {
+        throw new BadRequestException('Letter of Support is Required!');
+      }
+      if (files.project_attachments === undefined) {
+        throw new BadRequestException('Project attachment is Required!');
+      }
+      // const createdProposal = await this.proposalService.interceptorCreate(
+      //   currentUser.id,
+      //   request,
+      //   files.letter_ofsupport_req,
+      //   files.project_attachments,
+      // );
+      const command = Builder<ProposalCreateCommand>(ProposalCreateCommand, {
+        userId: currentUser.id,
+        request,
+        letter_ofsupport_req: files.letter_ofsupport_req,
+        project_attachments: files.project_attachments,
+      }).build();
+
+      const result = await this.commandBus.execute<
+        ProposalCreateCommand,
+        ProposalCreateCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'Proposal created successfully',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
     }
-    if (files.project_attachments === undefined) {
-      throw new BadRequestException('Project attachment is Required!');
-    }
-    const createdProposal = await this.proposalService.interceptorCreate(
-      currentUser.id,
-      request,
-      files.letter_ofsupport_req,
-      files.project_attachments,
-    );
-    return baseResponseHelper(
-      createdProposal,
-      HttpStatus.CREATED,
-      'Proposal created successfully',
-    );
   }
 
   // supervisor asked to client for revision
@@ -616,19 +641,38 @@ export class TenderProposalController {
       project_attachments?: any;
     },
   ) {
-    const createdProposal =
-      await this.proposalService.clientUpdateProposalInterceptor(
-        currentUser.id,
-        request,
-        undefined,
-        files.letter_ofsupport_req,
-        files.project_attachments,
+    try {
+      // const createdProposal =
+      //   await this.proposalService.clientUpdateProposalInterceptor(
+      //     currentUser.id,
+      //     request,
+      //     undefined,
+      //     files.letter_ofsupport_req,
+      //     files.project_attachments,
+      //   );
+      const command = Builder<ProposalSaveDraftCommand>(
+        ProposalSaveDraftCommand,
+        {
+          userId: currentUser.id,
+          request,
+          letter_ofsupport_req: files.letter_ofsupport_req,
+          project_attachments: files.project_attachments,
+        },
+      ).build();
+
+      const result = await this.commandBus.execute<
+        ProposalSaveDraftCommand,
+        ProposalSaveDraftCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'Proposal created successfully',
       );
-    return baseResponseHelper(
-      createdProposal,
-      HttpStatus.CREATED,
-      'Proposal created successfully',
-    );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 
   // client send revised version of the proposal so it goes back to the flow (not reveied anymore)

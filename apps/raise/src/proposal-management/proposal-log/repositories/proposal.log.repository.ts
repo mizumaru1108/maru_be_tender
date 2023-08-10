@@ -35,6 +35,19 @@ export class CreateProposalLogProps {
   notes?: string | null;
   new_values?: Record<string, any>;
 }
+export class UpdateProposalLogProps {
+  id: string;
+  proposal_id?: string;
+  state?: string;
+  reviewer_id?: string | null;
+  user_role?: string | null;
+  action?: string | null;
+  response_time?: number | null;
+  reject_reason?: string | null;
+  message?: string | null;
+  notes?: string | null;
+  new_values?: Record<string, any>;
+}
 
 @Injectable()
 export class ProposalLogRepository {
@@ -224,6 +237,36 @@ export class ProposalLogRepository {
       return rawResults.count;
     } catch (error) {
       this.logger.info(`error on create many proposal logs ${error}`);
+      throw error;
+    }
+  }
+
+  async update(
+    props: UpdateProposalLogProps,
+    session?: PrismaService,
+  ): Promise<ProposalLogEntity> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawResult = await prisma.proposal_log.update({
+        where: { id: props.id },
+        data: {
+          proposal_id: props.proposal_id,
+          reviewer_id: props.reviewer_id,
+          response_time: props.response_time,
+          action: props.action,
+          state: props.state,
+          user_role: props.user_role,
+          reject_reason: props.reject_reason,
+          message: props.message,
+          notes: props.notes,
+          new_values: props.new_values,
+        },
+      });
+
+      return Builder<ProposalLogEntity>(ProposalLogEntity, rawResult).build();
+    } catch (error) {
+      this.logger.info(`error on creating proposal logs ${error}`);
       throw error;
     }
   }

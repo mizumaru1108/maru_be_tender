@@ -82,6 +82,8 @@ export class PaymentSubmitClosingReportCommandHandler
           number_of_volunteer: dto.number_of_volunteer,
           project_duration: dto.project_duration,
           project_repeated: dto.project_repeated,
+          number_project_duration: dto.number_project_duration,
+          number_project_repeated: dto.number_project_repeated,
           // target_beneficiaries: dto.target_beneficiaries,
         },
       ).build();
