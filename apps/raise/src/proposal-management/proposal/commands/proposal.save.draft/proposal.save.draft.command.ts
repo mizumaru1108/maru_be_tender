@@ -194,6 +194,29 @@ export class ProposalSaveDraftCommandHandler
         !!request.governorate &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets &&
+        !!request.project_timeline
+      ) {
+        proposalUpdateProps.step = 'FIFTH';
+      }
+
+      if (
+        !!request.project_idea &&
+        !!request.project_location &&
+        !!request.project_implement_date &&
+        !!request.execution_time &&
+        !!request.beneficiary_id &&
+        !!request.num_ofproject_binicficiaries &&
+        !!request.project_goals &&
+        !!request.project_outputs &&
+        !!request.project_strengths &&
+        !!request.project_risks &&
+        !!request.pm_name &&
+        !!request.pm_mobile &&
+        !!request.pm_email &&
+        !!request.region &&
+        !!request.governorate &&
+        !!request.amount_required_fsupport &&
+        !!request.detail_project_budgets &&
         !!request.proposal_bank_information_id
       ) {
         proposalUpdateProps.step = 'ZERO';
