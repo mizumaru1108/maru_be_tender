@@ -124,9 +124,9 @@ function PaymentsTable() {
     }
   };
 
-  useEffect(() => {
-    dispatch(getProposal(id as string, activeRole! as string));
-  }, [trigger, dispatch, id, activeRole]);
+  // useEffect(() => {
+  //   dispatch(getProposal(id as string, activeRole! as string));
+  // }, [trigger, dispatch, id, activeRole]);
 
   useEffect(() => {
     const payments = [...proposal.payments].sort(

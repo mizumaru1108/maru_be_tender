@@ -174,7 +174,7 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
     }
   };
 
-  useEffect(() => {}, [proposal]);
+  // useEffect(() => {}, [proposal]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(handleOnSubmit)}>
