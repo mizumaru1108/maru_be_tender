@@ -39,7 +39,15 @@ query MyQuery($id: String = "") {
       id
       is_deleted
     }
+    timelines {
+      name
+      id
+      end_date
+      proposal_id
+      start_date
+    }
   }
 }
+
 
 `;

@@ -221,7 +221,7 @@ const FundingProjectRequestForm = () => {
       }));
     }
   };
-  // console.log({ requestState });
+  // console.log({ step });
   // on submit for creating a new project
   const onSubmit = async (data: any) => {
     // console.log({ data });
@@ -469,7 +469,7 @@ const FundingProjectRequestForm = () => {
         data && data.project_timeline
           ? [...data.project_timeline]
           : [...requestState.project_timeline],
-      proposal_bank_information_id: step === 4 ? data : undefined,
+      proposal_bank_information_id: step === 5 ? data : undefined,
       proposal_id: id,
     };
     // FormData
@@ -935,12 +935,13 @@ const FundingProjectRequestForm = () => {
             amount_required_fsupport,
             proposal_item_budgets,
             project_timeline,
+            timelines,
             step,
             beneficiary_details,
           } = data.proposal_by_pk;
           setRequestState((prevRegisterState: any) => ({
             ...prevRegisterState,
-            project_timeline: project_timeline || [],
+            project_timeline: project_timeline || timelines || [],
             form1: {
               ...prevRegisterState.form1,
               ...{
@@ -1045,6 +1046,9 @@ const FundingProjectRequestForm = () => {
                   explanation: item.explanation.trim(),
                 })),
               },
+            }),
+            ...(STEP.indexOf(step.trim()) >= 4 && {
+              project_timeline: project_timeline || timelines || [],
             }),
           }));
           setStep(STEP.indexOf(step.trim()));
