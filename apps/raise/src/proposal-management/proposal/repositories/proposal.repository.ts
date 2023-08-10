@@ -494,9 +494,10 @@ export class ProposalRepository {
             : null,
       }).build();
 
+      // console.log('created entity', createdProposalEntity);
       return createdProposalEntity;
     } catch (error) {
-      this.logger.error('Error on updating proposal =%j', error);
+      this.logger.error('Error on creating proposal =%j', error);
       throw error;
     }
   }

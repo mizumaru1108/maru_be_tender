@@ -57,6 +57,8 @@ export class ProposalCreateCommandHandler
         ProposalCreateProps,
         {
           id: nanoid(),
+          project_name: request.project_name,
+          submitter_user_id: userId,
           // form 1
           project_idea: request.project_idea,
           project_location: request.project_location,
@@ -237,6 +239,7 @@ export class ProposalCreateCommandHandler
               : this.prismaService;
 
           // create proposal
+          // console.log('payload', proposalCreatePayload);
           const createdProposal = await this.proposalRepo.create(
             proposalCreatePayload,
             session,
