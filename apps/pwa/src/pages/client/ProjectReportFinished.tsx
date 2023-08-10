@@ -132,8 +132,8 @@ export default function ProjectReports() {
     // gender: undefined,
     project_duration: '',
     number_project_duration: 0,
-    project_repeated: '',
     number_project_repeated: 0,
+    project_repeated: '',
     number_of_staff: 0,
     number_of_volunteer: 0,
     attachments: [],
@@ -231,7 +231,13 @@ export default function ProjectReports() {
                 )}
               </>
             ) : (
-              <InfoClosingReport data={data.proposal_closing_report[0]} />
+              <InfoClosingReport
+                data={
+                  proposal?.proposal_closing_report && proposal?.proposal_closing_report.length > 0
+                    ? proposal?.proposal_closing_report[0]
+                    : data.proposal_closing_report[0]
+                }
+              />
             )}
           </Stack>
         </ContentStyle>
