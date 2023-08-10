@@ -34,6 +34,24 @@ export interface CloseReportForm {
 export interface ClosingReportData {
   id: string | null;
   proposal_id: string | null;
+  beneficiaries?: {
+    closing_report_id: string;
+    id: string;
+    selected_numbers: number;
+    selected_values: string;
+  }[];
+  genders?: {
+    closing_report_id: string;
+    id: string;
+    selected_numbers: number;
+    selected_values: string;
+  }[];
+  execution_places?: {
+    closing_report_id: string;
+    id: string;
+    selected_numbers: number;
+    selected_values: string;
+  }[];
   attachments:
     | {
         url?: string | '' | null;
@@ -63,6 +81,8 @@ export interface ClosingReportData {
   number_of_beneficiaries: number;
   number_of_staff: number;
   number_of_volunteer: number;
+  number_project_duration: number;
+  number_project_repeated: number;
   project_duration: string | null;
   project_repeated: string | null;
   target_beneficiaries: string | null;

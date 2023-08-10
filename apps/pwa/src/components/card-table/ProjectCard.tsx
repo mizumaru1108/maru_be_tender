@@ -133,11 +133,19 @@ const ProjectCard = ({
     if (FEATURE_PROPOSAL_COUNTING) {
       dispatch(getProposalCount(activeRole ?? 'test'));
     }
+    const url = location.pathname.split('/');
     if (destination) {
-      const x = location.pathname.split('/');
-      navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`);
+      navigate(
+        `/${url[1] + '/' + url[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`
+      );
     } else {
-      navigate(`${location.pathname}/${title.id}/${cardFooterButtonAction}`);
+      if (url.includes('searching')) {
+        const tmp = `/${url[1]}/dashboard/current-project/${title.id}/${cardFooterButtonAction}`;
+        // console.log('tmp', tmp);
+        navigate(tmp);
+      } else {
+        navigate(`${location.pathname}/${title.id}/${cardFooterButtonAction}`);
+      }
     }
   };
   React.useEffect(() => {

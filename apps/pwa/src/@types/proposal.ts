@@ -1,3 +1,4 @@
+import { ClosingReportData } from 'sections/client/project-report/types';
 import { InnerStatus, OutterStatus } from './commons';
 
 export interface BankInformation {
@@ -110,6 +111,7 @@ export interface Proposal {
   track_budget: TrackBudget;
   notes: string;
   createdItemBudgetPayload?: ItemBudget[];
+  proposal_closing_report?: ClosingReportData[];
   // proposal_logs: {
   //   id: string;
   //   proposal_id: string;

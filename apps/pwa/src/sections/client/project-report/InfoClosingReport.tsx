@@ -7,6 +7,8 @@ import ButtonDownloadFiles from 'components/button/ButtonDownloadFiles';
 import useLocales from 'hooks/useLocales';
 // types
 import { ClosingReportData } from './types';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
+import { useSelector } from 'redux/store';
 
 // ------------------------------------------------------------------------------------------
 
@@ -18,9 +20,12 @@ export interface IPropsInfoClosing {
 
 export default function InfoClosingReport({ data }: IPropsInfoClosing) {
   const theme = useTheme();
+  const { proposal } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
   const { id, actionType } = useParams();
   const navigate = useNavigate();
+  // console.log({ data });
+  // console.log('test', proposal.);
 
   return (
     <Stack direction="column" spacing={4} sx={{ pb: 10 }}>
@@ -52,10 +57,17 @@ export default function InfoClosingReport({ data }: IPropsInfoClosing) {
             >
               {translate('pages.common.close_report.text.details.target_beneficiaries.label')}:
             </Typography>
-            <Typography variant="body1">
-              {/* {translate(`pages.common.close_report.text.option.${data?.target_beneficiaries}`)} */}
-              {data?.target_beneficiaries}
-            </Typography>
+            {data?.beneficiaries && data?.beneficiaries?.length > 0
+              ? data?.beneficiaries?.map((item, index) => (
+                  <>
+                    <Typography variant="body1">
+                      {`${translate(
+                        `pages.common.close_report.text.option.beneficiaries.${item.selected_values}`
+                      )} ( ${item.selected_numbers > 0 ? Number(item.selected_numbers) : 0} )`}
+                    </Typography>
+                  </>
+                ))
+              : null}
           </Grid>
           <Grid item xs={3}>
             <Typography
@@ -67,9 +79,17 @@ export default function InfoClosingReport({ data }: IPropsInfoClosing) {
             >
               {translate('pages.common.close_report.text.details.execution_place.label')}:
             </Typography>
-            <Typography variant="body1">
-              {translate(`pages.common.close_report.text.option.${data?.execution_place}`)}
-            </Typography>
+            {data?.execution_places && data?.execution_places?.length > 0
+              ? data?.execution_places?.map((item, index) => (
+                  <>
+                    <Typography variant="body1">
+                      {`${translate(
+                        `pages.common.close_report.text.option.execution_places.${item.selected_values}`
+                      )} ( ${item.selected_numbers > 0 ? Number(item.selected_numbers) : 0} )`}
+                    </Typography>
+                  </>
+                ))
+              : null}
           </Grid>
           <Grid item xs={3}>
             <Typography
@@ -81,9 +101,17 @@ export default function InfoClosingReport({ data }: IPropsInfoClosing) {
             >
               {translate('pages.common.close_report.text.details.gender.label')}:
             </Typography>
-            <Typography variant="body1">
-              {translate(`section_portal_reports.heading.gender.${data?.gender}`)}
-            </Typography>
+            {data?.genders && data?.genders?.length > 0
+              ? data?.genders?.map((item, index) => (
+                  <>
+                    <Typography variant="body1">
+                      {`${formatCapitalizeText(
+                        translate(`project_beneficiaries.${item.selected_values}`)
+                      )} ( ${item.selected_numbers > 0 ? Number(item.selected_numbers) : 0} )`}
+                    </Typography>
+                  </>
+                ))
+              : null}
           </Grid>
         </Grid>
       </Box>
@@ -105,7 +133,11 @@ export default function InfoClosingReport({ data }: IPropsInfoClosing) {
               {translate('pages.common.close_report.text.details.project_duration.label')}:
             </Typography>
             <Typography variant="body1">
-              {translate(`pages.common.close_report.text.option.${data?.project_duration}`)}
+              {`${translate(`pages.common.close_report.text.option.${data?.project_duration}`)} ( ${
+                data?.number_project_duration && data?.number_project_duration > 0
+                  ? Number(data?.number_project_duration)
+                  : 0
+              } ) `}
             </Typography>
           </Grid>
           <Grid item xs={3}>
@@ -119,7 +151,11 @@ export default function InfoClosingReport({ data }: IPropsInfoClosing) {
               {translate('pages.common.close_report.text.details.project_repeated.label')}:
             </Typography>
             <Typography variant="body1">
-              {translate(`pages.common.close_report.text.option.${data?.project_repeated}`)}
+              {`${translate(`pages.common.close_report.text.option.${data?.project_repeated}`)} ( ${
+                data?.number_project_repeated && data?.number_project_repeated > 0
+                  ? Number(data?.number_project_repeated)
+                  : 0
+              } ) `}
             </Typography>
           </Grid>
           <Grid item xs={3}>
