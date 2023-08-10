@@ -80,7 +80,7 @@ function EmployeeFollowUpsPage() {
     } else {
       dispatch(setEmployeeOnly(false));
     }
-    dispatch(getProposal(id as string, role as string));
+    // dispatch(getProposal(id as string, role as string));
   }, [dispatch, id, switchState, role]);
 
   if (isLoading) return <>... Loading</>;

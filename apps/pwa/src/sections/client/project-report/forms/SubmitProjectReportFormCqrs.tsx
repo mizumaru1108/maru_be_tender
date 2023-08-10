@@ -188,7 +188,7 @@ export default function SubmitProjectReportFormCqrs({
         </Grid>
         <Grid item xs={12}>
           <RHFTextField
-            disabled={isEdit}
+            disabled={isEdit || loading}
             name="number_of_beneficiaries"
             type="number"
             size="medium"
@@ -206,11 +206,11 @@ export default function SubmitProjectReportFormCqrs({
         </Grid> */}
         <BaseField
           type="repeater"
-          disabled={isEdit}
+          disabled={isEdit || loading}
           name="genders"
           repeaterFields={[
             {
-              disabled: isEdit,
+              disabled: isEdit || loading,
               type: 'selectWithoutGenerator',
               name: 'selected_values',
               label: translate('pages.common.close_report.text.form.genders.selected_value.label'),
@@ -231,7 +231,7 @@ export default function SubmitProjectReportFormCqrs({
               ),
             },
             {
-              disabled: isEdit,
+              disabled: isEdit || loading,
               type: 'numberField',
               name: 'selected_numbers',
               label: translate('pages.common.close_report.text.form.genders.number.label'),
@@ -252,11 +252,11 @@ export default function SubmitProjectReportFormCqrs({
         </Grid> */}
         <BaseField
           type="repeater"
-          disabled={isEdit}
+          disabled={isEdit || loading}
           name="execution_places"
           repeaterFields={[
             {
-              disabled: isEdit,
+              disabled: isEdit || loading,
               type: 'selectWithoutGenerator',
               name: 'selected_values',
               label: translate(
@@ -293,7 +293,7 @@ export default function SubmitProjectReportFormCqrs({
               ),
             },
             {
-              disabled: isEdit,
+              disabled: isEdit || loading,
               type: 'numberField',
               name: 'selected_numbers',
               label: translate('pages.common.close_report.text.form.execution_places.number.label'),
@@ -370,6 +370,7 @@ export default function SubmitProjectReportFormCqrs({
         </Grid> */}
         <Grid item xs={12} md={6}>
           <RHFSelect
+            disabled={isEdit || loading}
             name="project_duration"
             size="medium"
             label={translate('pages.common.close_report.text.form.project_duration.label')}
@@ -391,7 +392,7 @@ export default function SubmitProjectReportFormCqrs({
         </Grid>
         <Grid item xs={12} md={6}>
           <RHFTextField
-            disabled={isEdit}
+            disabled={isEdit || loading}
             name="number_project_duration"
             type="number"
             size="medium"
@@ -404,6 +405,7 @@ export default function SubmitProjectReportFormCqrs({
         </Grid>
         <Grid item xs={12} md={6}>
           <RHFSelect
+            disabled={isEdit || loading}
             name="project_repeated"
             size="medium"
             label={translate('pages.common.close_report.text.form.project_repeated.label')}
@@ -425,7 +427,7 @@ export default function SubmitProjectReportFormCqrs({
         </Grid>
         <Grid item xs={12} md={6}>
           <RHFTextField
-            disabled={isEdit}
+            disabled={isEdit || loading}
             name="number_project_repeated"
             type="number"
             size="medium"
@@ -438,7 +440,7 @@ export default function SubmitProjectReportFormCqrs({
         </Grid>
         <Grid item xs={12} md={6}>
           <RHFTextField
-            disabled={isEdit}
+            disabled={isEdit || loading}
             name="number_of_volunteer"
             type="number"
             size="medium"
@@ -451,7 +453,7 @@ export default function SubmitProjectReportFormCqrs({
         </Grid>
         <Grid item xs={12} md={6}>
           <RHFTextField
-            disabled={isEdit}
+            disabled={isEdit || loading}
             name="number_of_staff"
             type="number"
             size="medium"
@@ -464,11 +466,11 @@ export default function SubmitProjectReportFormCqrs({
         </Grid>
         <BaseField
           type="repeater"
-          disabled={isEdit}
+          disabled={isEdit || loading}
           name="beneficiaries"
           repeaterFields={[
             {
-              disabled: isEdit,
+              disabled: isEdit || loading,
               type: 'selectWithoutGenerator',
               name: 'selected_values',
               label: translate(
@@ -548,7 +550,7 @@ export default function SubmitProjectReportFormCqrs({
               ),
             },
             {
-              disabled: isEdit,
+              disabled: isEdit || loading,
               type: 'numberField',
               name: 'selected_numbers',
               label: translate('pages.common.close_report.text.form.beneficiaries.number.label'),
@@ -566,13 +568,13 @@ export default function SubmitProjectReportFormCqrs({
           <Typography variant="body1" component="p" sx={{ mb: 1.5 }}>
             {translate('pages.common.close_report.text.form.attachments.label')}
           </Typography>
-          <BaseField type="uploadMulti" name="attachments" />
+          <BaseField disabled={isEdit || loading} type="uploadMulti" name="attachments" />
         </Grid>
         <Grid item xs={12} md={6}>
           <Typography variant="body1" component="p" sx={{ mb: 1.5 }}>
             {translate('pages.common.close_report.text.form.images.label')}
           </Typography>
-          <BaseField type="uploadMulti" name="images" />
+          <BaseField disabled={isEdit || loading} type="uploadMulti" name="images" />
         </Grid>
       </Grid>
 
