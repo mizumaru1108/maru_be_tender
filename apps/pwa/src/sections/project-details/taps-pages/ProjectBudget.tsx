@@ -13,16 +13,22 @@ function ProjectBudget() {
   const [itemBudgetsValue, setItemBudgetValue] = useState<ItemBudget[] | []>([]);
   const [summaryAmount, setSummaryAmount] = useState<number>(0);
 
+  // console.log(
+  //   'test log item budgets :',
+  //   proposal?.proposal_logs[0]?.new_values?.createdItemBudgetPayload
+  // );
+
   useEffect(() => {
     const projectTrack = proposal.project_track;
     let valueToItem: ItemBudget[], valueSummary: number;
+    const baseItemBugets =
+      proposal?.proposal_logs[0]?.new_values?.createdItemBudgetPayload ||
+      proposal?.proposal_item_budgets ||
+      [];
 
-    const totalAmount = proposal.proposal_item_budgets.reduce(
-      (acc, cur) => acc + Number(cur.amount),
-      0
-    );
+    const totalAmount = baseItemBugets.reduce((acc, cur) => acc + Number(cur.amount), 0);
 
-    valueToItem = proposal.proposal_item_budgets;
+    valueToItem = baseItemBugets;
     // .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
     valueToItem = [...valueToItem].sort(
       (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()

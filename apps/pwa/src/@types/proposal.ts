@@ -109,6 +109,7 @@ export interface Proposal {
   governorate: string;
   track_budget: TrackBudget;
   notes: string;
+  createdItemBudgetPayload?: ItemBudget[];
   // proposal_logs: {
   //   id: string;
   //   proposal_id: string;
@@ -434,5 +435,5 @@ export type Log = {
   reject_reason?: string;
   reviewer_id?: string;
   employee_name: string;
-  new_values?: any;
+  new_values?: Proposal;
 };

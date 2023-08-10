@@ -124,7 +124,7 @@ function ProjectPath() {
       const tmpData = { ...current };
       return {
         ...current,
-        new_values: tmpLogs[tmpLogs.length - 1]?.new_values || null,
+        new_values: tmpLogs[tmpLogs.length - 1]?.new_values,
         created_at: tmpLogs[tmpLogs.length - 1]?.created_at || '',
         state: tmpLogs[tmpLogs.length - 1]?.state || '',
         reviewer: tmpLogs[tmpLogs.length - 1]?.reviewer || '',
