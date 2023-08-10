@@ -8,7 +8,7 @@ export const SendRevisionMapper = (
     project_idea,
     project_location,
     project_implement_date,
-    project_beneficiaries,
+    beneficiary_id,
     num_ofproject_binicficiaries,
     project_goals,
     project_outputs,
@@ -25,8 +25,8 @@ export const SendRevisionMapper = (
   if (project_implement_date) {
     updatePayload.project_implement_date = new Date(project_implement_date);
   }
-  if (project_beneficiaries) {
-    updatePayload.project_beneficiaries = project_beneficiaries;
+  if (beneficiary_id) {
+    updatePayload.beneficiary_id = beneficiary_id;
   }
 
   /* form 2 */
