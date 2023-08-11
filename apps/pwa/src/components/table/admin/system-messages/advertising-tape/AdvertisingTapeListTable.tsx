@@ -30,7 +30,7 @@ import { useSnackbar } from 'notistack';
 import { responsePathAsArray } from 'graphql';
 import { useSelector } from '../../../../../redux/store';
 import dayjs from 'dayjs';
-import { hasExpired } from 'utils/checkIsExpired';
+import { hasActive, hasExpired, isActiveToday } from 'utils/checkIsExpired';
 
 const TABLE_HEAD = [
   { id: 'image', label: 'system_messages.headercell.image' },
@@ -124,12 +124,14 @@ export default function AdvertisingTapeListTable() {
               item &&
               item.expired_date &&
               item.expired_time &&
-              hasExpired({
+              hasActive({
+                startTime: item.expired_time,
+              }) &&
+              isActiveToday({
                 expiredDate: item.expired_date,
-                expiredTime: item.expired_time,
               })
-                ? false
-                : true,
+                ? true
+                : false,
             expired_date: item.expired_date,
           }))
         );

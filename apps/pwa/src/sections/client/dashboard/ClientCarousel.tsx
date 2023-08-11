@@ -100,8 +100,11 @@ function ClientCarousel() {
 
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
-    const currentTime = dayjs().valueOf();
-    const url = `/banners/mine?current_time=${currentTime}`;
+    // const currentTime = dayjs().valueOf();
+    const expired_at_gte = dayjs(new Date()).valueOf();
+    const expired_at_lte = dayjs(new Date(expired_at_gte).setHours(23, 59, 59, 999)).valueOf();
+    // const url = `/banners/mine?current_time=${currentTime}`;
+    const url = `/banners/mine?expired_at_gte=${expired_at_gte}&expired_at_lte=${expired_at_lte}`;
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
