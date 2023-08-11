@@ -221,7 +221,7 @@ const FundingProjectRequestForm = () => {
       }));
     }
   };
-  // console.log({ step });
+  // console.log({ requestState });
   // on submit for creating a new project
   const onSubmit = async (data: any) => {
     // console.log({ data });
@@ -444,6 +444,11 @@ const FundingProjectRequestForm = () => {
       ...(lastIndex < step && step >= 1 && { ...requestState.form2 }),
       ...(lastIndex < step && step >= 2 && { ...requestState.form3 }),
       ...(lastIndex < step &&
+        step >= 3 && {
+          amount_required_fsupport: requestState.form4.amount_required_fsupport,
+          detail_project_budgets: requestState.form4.detail_project_budgets.data || [],
+        }),
+      ...(lastIndex < step &&
         data &&
         step === 3 && {
           amount_required_fsupport: data.amount_required_fsupport,
@@ -460,14 +465,11 @@ const FundingProjectRequestForm = () => {
           detail_project_budgets: [...data.detail_project_budgets.data],
         }),
       // ...data,
-      ...(step !== 3 && step !== 4
-        ? { ...data }
-        : step === 3
-        ? {
-            amount_required_fsupport: data.amount_required_fsupport,
-            detail_project_budgets: [...data.detail_project_budgets.data],
-          }
-        : { ...data }),
+      ...(step !== 3 && step !== 4 ? { ...data } : null),
+      // ...(step >= 4 && {`
+      //   amount_required_fsupport: requestState.form4.amount_required_fsupport,
+      //   detail_project_budgets: requestState.form4.detail_project_budgets || [],
+      // }),
       project_timeline:
         data && data.project_timeline
           ? [...data.project_timeline]
@@ -487,6 +489,7 @@ const FundingProjectRequestForm = () => {
     const jsonData: any = {
       ...payload,
     };
+    console.log({ datas });
     for (const key in jsonData) {
       formData.append(key, jsonData[key]);
     }
