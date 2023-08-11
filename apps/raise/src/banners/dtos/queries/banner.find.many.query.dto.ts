@@ -47,4 +47,18 @@ export class BannerFindManyQueryDto extends BaseFilterRequest {
   @IsNumber()
   @IsOptional()
   current_time?: number;
+
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  @Type(() => Number)
+  @IsNumber()
+  @IsOptional()
+  expired_at_lte?: number;
+
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  @Type(() => Number)
+  @IsNumber()
+  @IsOptional()
+  expired_at_gte?: number;
 }

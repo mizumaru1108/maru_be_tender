@@ -110,7 +110,18 @@ export class ProposalFindByIdQueryHandler
   ): Promise<ProposalFindByIdQueryResult> {
     const res = await this.proposalRepo.fetchById({
       id: query.id,
-      includes_relation: query.relation,
+      includes_relation: query.relation || [
+        'user',
+        'beneficiary_details',
+        'follow_ups',
+        'track',
+        'proposal_item_budgets',
+        'supervisor',
+        'proposal_logs',
+        'payments',
+        'bank_information',
+        'project_timeline',
+      ],
     });
 
     if (!res) {

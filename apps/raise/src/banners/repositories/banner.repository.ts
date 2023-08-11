@@ -48,6 +48,8 @@ export class BannerFindManyProps {
   sort_direction?: string;
   include_relations?: string[];
   specific_date?: Date;
+  expired_at_lte?: number;
+  expired_at_gte?: number;
 }
 
 export class BannerFindManyResponse extends BannerEntity {
@@ -176,8 +178,15 @@ export class BannerRepository {
   }
 
   async findManyFilters(props: BannerFindManyProps) {
-    const { track_id, type, expired_at, include_relations, specific_date } =
-      props;
+    const {
+      track_id,
+      type,
+      expired_at,
+      include_relations,
+      specific_date,
+      expired_at_gte,
+      expired_at_lte,
+    } = props;
     let queryOptions: Prisma.BannerFindManyArgs = {};
     let findManyWhereClause: Prisma.BannerWhereInput = {};
 
@@ -199,11 +208,20 @@ export class BannerRepository {
       };
     }
 
-    if (expired_at !== undefined) {
+    if (expired_at_gte !== undefined) {
       findManyWhereClause = {
         ...findManyWhereClause,
         expired_at: {
-          gte: expired_at,
+          gte: expired_at_gte,
+        },
+      };
+    }
+
+    if (expired_at_lte !== undefined) {
+      findManyWhereClause = {
+        ...findManyWhereClause,
+        expired_at: {
+          lte: expired_at_lte,
         },
       };
     }
@@ -212,6 +230,16 @@ export class BannerRepository {
       findManyWhereClause = {
         ...findManyWhereClause,
         expired_date: specific_date,
+      };
+    }
+
+    if (expired_at_gte && expired_at_lte) {
+      findManyWhereClause = {
+        ...findManyWhereClause,
+        expired_at: {
+          gte: expired_at_gte,
+          lte: expired_at_lte,
+        },
       };
     }
 
@@ -253,6 +281,7 @@ export class BannerRepository {
       const getSortDirection = sort_direction ? sort_direction : 'desc';
 
       const options = await this.findManyFilters(props);
+      // console.log(logUtil(options));
       let queryOptions: Prisma.BannerFindManyArgs = {
         where: options.where,
 
