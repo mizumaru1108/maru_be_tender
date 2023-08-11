@@ -40,7 +40,7 @@ export default function AdvertisingTapeRow({
         open={openModalReject}
         handleClose={() => setOpenModalReject(!openModalReject)}
         onSumbit={handleDelete}
-        message={'Delete Banner'}
+        message={translate('system_messages.dialog.delete_banner')}
       />
       <TableRow hover selected={selected}>
         {/* <TableCell padding="checkbox">

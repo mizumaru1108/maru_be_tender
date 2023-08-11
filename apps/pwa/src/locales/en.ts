@@ -2529,6 +2529,7 @@ const en = {
       title: 'Title',
       track: 'Track',
       content: 'Content',
+      delete_banner: 'Delete Confirmation',
       banner_details: {
         internal: 'Internal Banner Details',
         external: 'External Banner Details',

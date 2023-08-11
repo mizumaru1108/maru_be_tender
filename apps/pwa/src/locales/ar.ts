@@ -2545,6 +2545,7 @@ const ar = {
       title: 'عنوان',
       track: 'المسار',
       content: 'المحتوى',
+      delete_banner: 'تأكيد الحذف',
       banner_details: {
         internal: 'تفاصيل البانر الداخلي',
         external: 'تفاصيل البانر الخارجي',
