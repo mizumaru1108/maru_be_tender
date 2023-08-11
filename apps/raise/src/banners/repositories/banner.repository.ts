@@ -274,7 +274,7 @@ export class BannerRepository {
         page = 0,
         sort_by,
         sort_direction,
-        expired_at,
+        expired_at_gte,
       } = props;
       const offset = (page - 1) * limit;
       const getSortBy = sort_by ? sort_by : 'created_at';
@@ -303,20 +303,20 @@ export class BannerRepository {
       // console.log(logUtil(queryOptions));
       const rawResults = await prisma.banner.findMany(queryOptions);
       const entities = rawResults.map((rawResult) => {
-        if (expired_at) {
-          return Builder<BannerFindManyResponse>(BannerFindManyResponse, {
-            ...rawResult,
-            expired_at: Number(rawResult.expired_at),
-            is_expired:
-              Math.floor(Date.now() / 1000) >= Number(rawResult.expired_at),
-          }).build();
-        } else {
-          return Builder<BannerFindManyResponse>(BannerFindManyResponse, {
-            ...rawResult,
-            expired_at: Number(rawResult.expired_at),
-            is_expired: undefined,
-          }).build();
-        }
+        // if (expired_at_gte) {
+        return Builder<BannerFindManyResponse>(BannerFindManyResponse, {
+          ...rawResult,
+          expired_at: Number(rawResult.expired_at),
+          is_expired:
+            Math.floor(Date.now() / 1000) >= Number(rawResult.expired_at),
+        }).build();
+        // } else {
+        //   return Builder<BannerFindManyResponse>(BannerFindManyResponse, {
+        //     ...rawResult,
+        //     expired_at: Number(rawResult.expired_at),
+        //     is_expired: undefined,
+        //   }).build();
+        // }
       });
 
       // console.log(expired_field);
