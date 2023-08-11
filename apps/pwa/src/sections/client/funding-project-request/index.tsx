@@ -34,7 +34,7 @@ const steps = [
   'funding_project_request_project_timeline.step',
   'funding_project_request_form5.step',
 ];
-const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
+const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH', 'FIFTH'];
 
 const FundingProjectRequestForm = () => {
   const location = useLocation();
@@ -374,6 +374,9 @@ const FundingProjectRequestForm = () => {
         }
       );
       setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+      setIsDraft(false);
     }
   };
 
@@ -441,6 +444,11 @@ const FundingProjectRequestForm = () => {
       ...(lastIndex < step && step >= 1 && { ...requestState.form2 }),
       ...(lastIndex < step && step >= 2 && { ...requestState.form3 }),
       ...(lastIndex < step &&
+        step >= 3 && {
+          amount_required_fsupport: requestState.form4.amount_required_fsupport,
+          detail_project_budgets: requestState.form4.detail_project_budgets.data || [],
+        }),
+      ...(lastIndex < step &&
         data &&
         step === 3 && {
           amount_required_fsupport: data.amount_required_fsupport,
@@ -457,19 +465,16 @@ const FundingProjectRequestForm = () => {
           detail_project_budgets: [...data.detail_project_budgets.data],
         }),
       // ...data,
-      ...(step !== 3 && step !== 4
-        ? { ...data }
-        : step === 3
-        ? {
-            amount_required_fsupport: data.amount_required_fsupport,
-            detail_project_budgets: [...data.detail_project_budgets.data],
-          }
-        : { ...data }),
+      ...(step !== 3 && step !== 4 ? { ...data } : null),
+      // ...(step >= 4 && {`
+      //   amount_required_fsupport: requestState.form4.amount_required_fsupport,
+      //   detail_project_budgets: requestState.form4.detail_project_budgets || [],
+      // }),
       project_timeline:
         data && data.project_timeline
           ? [...data.project_timeline]
           : [...requestState.project_timeline],
-      proposal_bank_information_id: step === 4 ? data : undefined,
+      proposal_bank_information_id: step === 5 ? data : undefined,
       proposal_id: id,
     };
     // FormData
@@ -484,6 +489,7 @@ const FundingProjectRequestForm = () => {
     const jsonData: any = {
       ...payload,
     };
+    console.log({ datas });
     for (const key in jsonData) {
       formData.append(key, jsonData[key]);
     }
@@ -623,6 +629,9 @@ const FundingProjectRequestForm = () => {
           }
         );
         setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+        setIsDraft(false);
       }
     }
   };
@@ -772,6 +781,9 @@ const FundingProjectRequestForm = () => {
         }
       );
       setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+      setIsDraft(false);
     }
 
     //using formData still develop
@@ -912,7 +924,7 @@ const FundingProjectRequestForm = () => {
     if (id) {
       const tuningTheState = () => {
         if (data?.proposal_by_pk) {
-          const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
+          const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH', 'FIFTH'];
           const {
             project_name,
             project_idea,
@@ -935,12 +947,13 @@ const FundingProjectRequestForm = () => {
             amount_required_fsupport,
             proposal_item_budgets,
             project_timeline,
+            timelines,
             step,
             beneficiary_details,
           } = data.proposal_by_pk;
           setRequestState((prevRegisterState: any) => ({
             ...prevRegisterState,
-            project_timeline: project_timeline || [],
+            project_timeline: project_timeline || timelines || [],
             form1: {
               ...prevRegisterState.form1,
               ...{
@@ -1046,6 +1059,9 @@ const FundingProjectRequestForm = () => {
                 })),
               },
             }),
+            // ...(STEP.indexOf(step.trim()) >= 4 && {
+            //   project_timeline: project_timeline || timelines || [],
+            // }),
           }));
           setStep(STEP.indexOf(step.trim()));
           setLastIndex(STEP.indexOf(step.trim()));

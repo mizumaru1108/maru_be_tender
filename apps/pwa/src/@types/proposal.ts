@@ -111,6 +111,7 @@ export interface Proposal {
   track_budget: TrackBudget;
   notes: string;
   createdItemBudgetPayload?: ItemBudget[];
+  default_item_budgets?: ItemBudget[];
   proposal_closing_report?: ClosingReportData[];
   // proposal_logs: {
   //   id: string;

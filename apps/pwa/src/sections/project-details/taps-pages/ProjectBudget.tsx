@@ -12,7 +12,7 @@ function ProjectBudget() {
 
   const [itemBudgetsValue, setItemBudgetValue] = useState<ItemBudget[] | []>([]);
   const [summaryAmount, setSummaryAmount] = useState<number>(0);
-
+  // console.log({ itemBudgetsValue });
   // console.log(
   //   'test log item budgets :',
   //   proposal?.proposal_logs[0]?.new_values?.createdItemBudgetPayload
@@ -22,7 +22,9 @@ function ProjectBudget() {
     const projectTrack = proposal.project_track;
     let valueToItem: ItemBudget[], valueSummary: number;
     const baseItemBugets =
-      proposal?.proposal_logs[0]?.new_values?.createdItemBudgetPayload ||
+      proposal?.default_item_budgets ||
+      proposal?.proposal_logs[proposal?.proposal_logs.length - 1]?.new_values
+        ?.createdItemBudgetPayload ||
       proposal?.proposal_item_budgets ||
       [];
 
