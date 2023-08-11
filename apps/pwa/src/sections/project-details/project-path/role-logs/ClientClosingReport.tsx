@@ -4,7 +4,9 @@ import moment from 'moment';
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useSelector } from 'redux/store';
+import { ClosingReportData } from 'sections/client/project-report/types';
 import { useQuery } from 'urql';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import { PropsalLogGrants } from '../../../../@types/proposal';
 import {
   BeneficiariesMap,
@@ -17,49 +19,49 @@ interface Props {
   stepGransLog: any;
 }
 
-interface ClosingReport {
-  execution_place: string;
-  gender: string;
-  id: string;
-  number_of_beneficiaries: number;
-  number_of_staff: number;
-  number_of_volunteer: number;
-  project_duration: string;
-  project_repeated: string;
-  target_beneficiaries: string;
-  attachments: {
-    size: number;
-    type: string;
-    url: string;
-  }[];
-  images: {
-    size: number;
-    type: string;
-    url: string;
-  }[];
-}
+// interface ClosingReport {
+//   execution_place: string;
+//   gender: string;
+//   id: string;
+//   number_of_beneficiaries: number;
+//   number_of_staff: number;
+//   number_of_volunteer: number;
+//   project_duration: string;
+//   project_repeated: string;
+//   target_beneficiaries: string;
+//   attachments: {
+//     size: number;
+//     type: string;
+//     url: string;
+//   }[];
+//   images: {
+//     size: number;
+//     type: string;
+//     url: string;
+//   }[];
+// }
 
 function ClientClosingReport({ stepGransLog }: Props) {
   const { proposal } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
   const { id: proposal_id } = useParams();
-  const [closingReport, setClosingReport] = React.useState<ClosingReport | null>(null);
+  const [closingReport, setClosingReport] = React.useState<ClosingReportData | null>(null);
 
-  const [result] = useQuery({
-    query: getOneClosingReport,
-    variables: { id: proposal_id },
-  });
+  // const [result] = useQuery({
+  //   query: getOneClosingReport,
+  //   variables: { id: proposal_id },
+  // });
 
-  const { data, fetching, error } = result;
+  // const { data, fetching, error } = result;
 
   useEffect(() => {
-    if (data && !fetching) {
-      setClosingReport(data.proposal_closing_report[0]);
+    if (proposal && proposal.proposal_closing_report) {
+      setClosingReport(proposal.proposal_closing_report[0]);
     }
-  }, [fetching, data]);
+  }, [proposal]);
 
-  if (fetching) return <>Loading...</>;
-  if (error) return <>Error...</>;
+  // if (fetching) return <>Loading...</>;
+  // if (error) return <>Error...</>;
 
   console.log(closingReport, 'proposal grant');
 
@@ -75,11 +77,22 @@ function ClientClosingReport({ stepGransLog }: Props) {
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {/* <Typography>{closingReport.execution_place}</Typography> */}
-                <Typography>
+                {/* <Typography>
                   {translate(
                     `pages.common.close_report.text.option.${closingReport.execution_place}`
                   )}
-                </Typography>
+                </Typography> */}
+                {closingReport?.execution_places && closingReport?.execution_places?.length > 0
+                  ? closingReport?.execution_places?.map((item, index) => (
+                      <>
+                        <Typography variant="body1">
+                          {`${translate(
+                            `pages.common.close_report.text.option.execution_places.${item.selected_values}`
+                          )} ( ${item.selected_numbers > 0 ? Number(item.selected_numbers) : 0} )`}
+                        </Typography>
+                      </>
+                    ))
+                  : null}
               </Stack>
             </Stack>
           </Grid>
@@ -113,9 +126,17 @@ function ClientClosingReport({ stepGransLog }: Props) {
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {/* <Typography>{closingReport.project_duration}</Typography> */}
                 <Typography>
-                  {translate(
+                  {/* {translate(
                     `pages.common.close_report.text.option${closingReport.project_duration}`
-                  )}
+                  )} */}
+                  {`${translate(
+                    `pages.common.close_report.text.option.${closingReport?.project_duration}`
+                  )} ( ${
+                    closingReport?.number_project_duration &&
+                    closingReport?.number_project_duration > 0
+                      ? Number(closingReport?.number_project_duration)
+                      : 0
+                  } ) `}
                 </Typography>
               </Stack>
             </Stack>
@@ -126,9 +147,17 @@ function ClientClosingReport({ stepGransLog }: Props) {
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {/* <Typography>{closingReport.project_repeated}</Typography> */}
                 <Typography>
-                  {translate(
+                  {/* {translate(
                     `pages.common.close_report.text.option.${closingReport.project_repeated}`
-                  )}
+                  )} */}
+                  {`${translate(
+                    `pages.common.close_report.text.option.${closingReport?.project_repeated}`
+                  )} ( ${
+                    closingReport?.number_project_repeated &&
+                    closingReport?.number_project_repeated > 0
+                      ? Number(closingReport?.number_project_repeated)
+                      : 0
+                  } ) `}
                 </Typography>
               </Stack>
             </Stack>
@@ -137,19 +166,22 @@ function ClientClosingReport({ stepGransLog }: Props) {
             <Typography variant="h6">{translate(`review.target_beneficiaries`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>
-                  {/* {translate(`review.target_group_type_enum.${closingReport.target_beneficiaries}`)} */}
+                {/* <Typography>
                   {translate(
                     `pages.common.close_report.text.option.${closingReport.target_beneficiaries}`
                   )}
-                  {/* {target_type_map[
-                    closingReport.target_beneficiaries.toUpperCase() as keyof BeneficiariesMap
-                  ]
-                    ? translate(
-                        `pages.common.close_report.text.option.${closingReport.target_beneficiaries}`
-                      )
-                    : closingReport.target_beneficiaries} */}
-                </Typography>
+                </Typography> */}
+                {closingReport?.beneficiaries && closingReport?.beneficiaries?.length > 0
+                  ? closingReport?.beneficiaries?.map((item, index) => (
+                      <>
+                        <Typography variant="body1">
+                          {`${translate(
+                            `pages.common.close_report.text.option.beneficiaries.${item.selected_values}`
+                          )} ( ${item.selected_numbers > 0 ? Number(item.selected_numbers) : 0} )`}
+                        </Typography>
+                      </>
+                    ))
+                  : null}
               </Stack>
             </Stack>
           </Grid>
@@ -160,9 +192,20 @@ function ClientClosingReport({ stepGransLog }: Props) {
                 {/* <Typography>
                   {closingReport.gender}
                 </Typography> */}
-                <Typography>
+                {/* <Typography>
                   {translate(`section_portal_reports.heading.gender.${closingReport.gender}`)}
-                </Typography>
+                </Typography> */}
+                {closingReport?.genders && closingReport?.genders?.length > 0
+                  ? closingReport?.genders?.map((item, index) => (
+                      <>
+                        <Typography variant="body1">
+                          {`${formatCapitalizeText(
+                            translate(`project_beneficiaries.${item.selected_values}`)
+                          )} ( ${item.selected_numbers > 0 ? Number(item.selected_numbers) : 0} )`}
+                        </Typography>
+                      </>
+                    ))
+                  : null}
               </Stack>
             </Stack>
           </Grid>
@@ -172,7 +215,7 @@ function ClientClosingReport({ stepGransLog }: Props) {
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {closingReport.attachments.length > 0 &&
                   closingReport.attachments.map((attachment, index) => (
-                    <Link key={index} href={attachment.url} target="_blank" rel="noopener">
+                    <Link key={index} href={attachment.url!} target="_blank" rel="noopener">
                       <Typography
                         variant={'subtitle1'}
                         sx={{
@@ -194,7 +237,7 @@ function ClientClosingReport({ stepGransLog }: Props) {
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 {closingReport.images.length > 0 &&
                   closingReport.images.map((image, index) => (
-                    <Link key={index} href={image.url} target="_blank" rel="noopener">
+                    <Link key={index} href={image.url!} target="_blank" rel="noopener">
                       <Typography
                         sx={{
                           color: '#1E1E1E',
