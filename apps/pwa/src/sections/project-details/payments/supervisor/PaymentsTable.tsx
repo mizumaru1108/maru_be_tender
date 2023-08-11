@@ -143,6 +143,7 @@ function PaymentsTable() {
       }
     }
   }, [proposal, trigger]);
+  // console.log('test', proposal.payments)
   if (isLoading) return <div>Loading...</div>;
   if (fetching) return <div>Loading...</div>;
   if (error) return <div>Error</div>;

@@ -401,12 +401,12 @@ export const getProposal = (id: string, role: string) => async () => {
         //   .catch((err) => {
         //     console.log(err);
         //   });
-        const response = await axiosInstance.get(
-          `tender-proposal/find-by-id?id=${id}&relations=user,beneficiary_details,follow_ups,track,proposal_item_budgets,supervisor,proposal_logs,payments,bank_information,project_timeline`,
-          {
-            headers: { 'x-hasura-role': role },
-          }
-        );
+        // const url = `tender-proposal/find-by-id?id=${id}&relations=user,beneficiary_details,follow_ups,track,proposal_item_budgets,supervisor,proposal_logs,payments,bank_information,project_timeline`;
+        const url = `tender-proposal/fetch-by-id?id=${id}`;
+
+        const response = await axiosInstance.get(url, {
+          headers: { 'x-hasura-role': role },
+        });
         if (response.data.statusCode === 200) {
           dispatch(slice.actions.setProposal(response.data.data));
           if (
