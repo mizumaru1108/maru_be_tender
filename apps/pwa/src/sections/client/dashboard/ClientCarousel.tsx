@@ -13,7 +13,7 @@ import { AdvertisingTapeList } from 'components/table/admin/system-messages/type
 import DetailBannerDialog from 'components/modal-dialog/DetailBannerDialog';
 import { useSelector } from 'redux/store';
 import dayjs from 'dayjs';
-import { hasExpired, isActiveToday } from 'utils/checkIsExpired';
+import { hasActive, hasExpired, isActiveToday } from 'utils/checkIsExpired';
 
 const data = [
   {
@@ -101,10 +101,10 @@ function ClientCarousel() {
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
     // const currentTime = dayjs().valueOf();
-    const expired_at_gte = dayjs(new Date()).valueOf();
-    const expired_at_lte = dayjs(new Date(expired_at_gte).setHours(23, 59, 59, 999)).valueOf();
+    const expired_at_lte = dayjs(new Date()).valueOf();
+    // const expired_at_lte = dayjs(new Date(expired_at_gte).setHours(23, 59, 59, 999)).valueOf();
     // const url = `/banners/mine?current_time=${currentTime}`;
-    const url = `/banners/mine?expired_at_gte=${expired_at_gte}&expired_at_lte=${expired_at_lte}`;
+    const url = `/banners/mine?expired_at_lte=${expired_at_lte}`;
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
@@ -119,9 +119,8 @@ function ClientCarousel() {
               item &&
               item.expired_date &&
               item.expired_time &&
-              !hasExpired({
-                expiredTime: item.expired_time,
-                expiredDate: item.expired_date,
+              hasActive({
+                startTime: item.expired_time,
               }) &&
               isActiveToday({ expiredDate: item.expired_date })
           )

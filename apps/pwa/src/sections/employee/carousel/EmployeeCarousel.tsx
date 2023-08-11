@@ -91,7 +91,11 @@ function EmployeeCarousel() {
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
     const currentTime = dayjs().valueOf();
+    // const expired_at_lte = dayjs(new Date()).valueOf();
+
     const url = `/banners/mine?current_time=${currentTime}`;
+    // const url = `/banners/mine?expired_at_lte=${expired_at_lte}`;
+
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
