@@ -34,7 +34,7 @@ const steps = [
   'funding_project_request_project_timeline.step',
   'funding_project_request_form5.step',
 ];
-const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
+const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH', 'FIFTH'];
 
 const FundingProjectRequestForm = () => {
   const location = useLocation();
@@ -374,6 +374,9 @@ const FundingProjectRequestForm = () => {
         }
       );
       setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+      setIsDraft(false);
     }
   };
 
@@ -623,6 +626,9 @@ const FundingProjectRequestForm = () => {
           }
         );
         setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+        setIsDraft(false);
       }
     }
   };
@@ -772,6 +778,9 @@ const FundingProjectRequestForm = () => {
         }
       );
       setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+      setIsDraft(false);
     }
 
     //using formData still develop
@@ -912,7 +921,7 @@ const FundingProjectRequestForm = () => {
     if (id) {
       const tuningTheState = () => {
         if (data?.proposal_by_pk) {
-          const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
+          const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH', 'FIFTH'];
           const {
             project_name,
             project_idea,
@@ -1047,9 +1056,9 @@ const FundingProjectRequestForm = () => {
                 })),
               },
             }),
-            ...(STEP.indexOf(step.trim()) >= 4 && {
-              project_timeline: project_timeline || timelines || [],
-            }),
+            // ...(STEP.indexOf(step.trim()) >= 4 && {
+            //   project_timeline: project_timeline || timelines || [],
+            // }),
           }));
           setStep(STEP.indexOf(step.trim()));
           setLastIndex(STEP.indexOf(step.trim()));
