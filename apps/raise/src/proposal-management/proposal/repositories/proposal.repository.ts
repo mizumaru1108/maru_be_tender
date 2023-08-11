@@ -2727,6 +2727,9 @@ export class ProposalRepository {
             include: {
               reviewer: true,
             },
+            orderBy: {
+              created_at: 'asc',
+            },
           },
           payments: {
             include: {
