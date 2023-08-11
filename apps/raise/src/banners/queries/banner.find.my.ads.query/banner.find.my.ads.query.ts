@@ -14,6 +14,8 @@ export class BannerFindMyAdsQuery {
   page?: number;
   sort_by?: string;
   sort_direction?: string;
+  expired_at_lte?: number;
+  expired_at_gte?: number;
   include_relations?: string[];
 }
 
@@ -42,7 +44,9 @@ export class BannerFindMyAdsQueryHandler
       // you can see the reference in TenderJwtGuard.
       appliedFilter.track_id = [query.user.track_id!];
     } else {
-      const date = query.expired_at ? new Date(query.expired_at) : undefined;
+      const date = query.expired_at_lte
+        ? new Date(query.expired_at_lte)
+        : undefined;
       appliedFilter.specific_date = date;
 
       appliedFilter.type = [BannerTypeEnum.EXTERNAL];
