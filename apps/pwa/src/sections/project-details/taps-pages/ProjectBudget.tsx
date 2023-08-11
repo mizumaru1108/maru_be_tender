@@ -22,7 +22,8 @@ function ProjectBudget() {
     const projectTrack = proposal.project_track;
     let valueToItem: ItemBudget[], valueSummary: number;
     const baseItemBugets =
-      proposal?.proposal_logs[0]?.new_values?.createdItemBudgetPayload ||
+      proposal?.proposal_logs[proposal?.proposal_logs.length - 1]?.new_values
+        ?.createdItemBudgetPayload ||
       proposal?.proposal_item_budgets ||
       [];
 
