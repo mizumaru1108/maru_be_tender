@@ -210,7 +210,7 @@ export default function AdvertisingForm({
                   placeholder={translate('system_messages.form.showDate.placeholder')}
                   InputProps={{
                     inputProps: {
-                      min: new Date(new Date().setDate(new Date().getDate() + 1))
+                      min: new Date(new Date().setDate(new Date().getDate()))
                         .toISOString()
                         .split('T')[0],
                     },
