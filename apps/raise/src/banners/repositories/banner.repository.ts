@@ -275,7 +275,7 @@ export class BannerRepository {
       const getSortDirection = sort_direction ? sort_direction : 'desc';
 
       const options = await this.findManyFilters(props);
-      console.log(logUtil(options));
+      // console.log(logUtil(options));
       let queryOptions: Prisma.BannerFindManyArgs = {
         where: options.where,
 
