@@ -311,6 +311,15 @@ export class SendRevisionCommandHandler
 
       notifPayloads.push({
         notif_type: 'EMAIL',
+        email_type: 'template',
+        emailTemplateContext: {
+          project_name: proposal.project_name,
+          name: proposal.supervisor.employee_name,
+          client_name: proposal.user.employee_name,
+          date: moment(new Date()).locale('ar-sa').format('llll'),
+          redirect_url: `${tenderAppConfig?.baseUrl}project-supervisor/dashboard/requests-in-process/${proposal.id}/show-details`,
+        },
+        emailTemplatePath: `tender/ar/proposal/submit_amandement_by_client_ar`,
         user_id: proposal.supervisor.id,
         user_email: proposal.supervisor.email,
         subject: 'تم إرسال تعديل جديد من العميل',
@@ -321,7 +330,6 @@ export class SendRevisionCommandHandler
             .locale('ar-sa')
             .format('llll')}
           يرجى زيارة منصة المنح لمراجعة المعلومات`,
-        email_type: 'plain',
       });
 
       notifPayloads.push({
