@@ -62,6 +62,7 @@ import { PayloadErrorException } from 'src/tender-commons/exceptions/payload-err
 import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
 import { manualPaginationHelper } from 'src/tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
+import { BannerFindMineQueryDto } from '../dtos/queries/banner.find.mine.query.dto';
 
 @ApiTags('BannerModule')
 @Controller('banners')
@@ -179,7 +180,7 @@ export class BannerHttpController {
   @Get('mine')
   async findMyBanners(
     @CurrentUser() currentUser: TenderCurrentUser,
-    @Query() query: BannerFindManyQueryDto,
+    @Query() query: BannerFindMineQueryDto,
   ) {
     const builder = Builder<BannerFindMyAdsQuery>(BannerFindMyAdsQuery, {
       ...query,

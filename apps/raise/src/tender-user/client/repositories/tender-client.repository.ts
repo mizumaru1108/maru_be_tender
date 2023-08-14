@@ -24,7 +24,9 @@ export class CreateClientDataProps {
   id?: string;
   user_id: string;
   entity?: string | null;
+  entity_id?: string | null;
   authority?: string | null;
+  authority_id?: string | null;
   headquarters?: string | null;
   date_of_esthablistmen?: Date | null;
   num_of_beneficiaries?: number | null;

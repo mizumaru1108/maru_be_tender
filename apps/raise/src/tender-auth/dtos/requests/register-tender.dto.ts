@@ -89,6 +89,12 @@ export class registerClient {
   @IsNotEmpty()
   authority: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  authority_id: string;
+
   @ApiProperty()
   @IsNotEmpty()
   @Type(() => TenderFilePayload)
@@ -206,6 +212,12 @@ export class registerClient {
   @ApiProperty()
   @IsNotEmpty()
   entity: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  entity_id: string;
 
   @ApiPropertyOptional()
   @IsOptional()

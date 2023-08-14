@@ -1,0 +1,5 @@
+export enum ContactUsInquiryEnum {
+  GENERAL = 'GENERAL',
+  VISITATION = 'VISITATION',
+  PROJECT_INQUIRIES = 'PROJECT_INQUIRIES',
+}

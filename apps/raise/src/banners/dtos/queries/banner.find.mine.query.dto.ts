@@ -10,7 +10,7 @@ import {
 import { BannerTypeEnum } from 'src/banners/types/enums/banner.type.enum';
 import { BaseFilterRequest } from 'src/commons/dtos/base-filter-request.dto';
 
-export class BannerFindManyQueryDto extends BaseFilterRequest {
+export class BannerFindMineQueryDto extends BaseFilterRequest {
   @ApiPropertyOptional({
     examples: ['SUPERVISOR', 'MODERATOR'],
   })
@@ -28,24 +28,6 @@ export class BannerFindManyQueryDto extends BaseFilterRequest {
     return value;
   })
   type?: BannerTypeEnum[];
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString({ each: true })
-  @IsNotEmpty({ each: true })
-  @Transform(({ value }) => {
-    if (value && typeof value === 'string') {
-      return value.split(',');
-    }
-    return value;
-  })
-  track_id?: string[];
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  title?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

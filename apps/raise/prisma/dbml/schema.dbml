@@ -2,6 +2,23 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
+Table authorities {
+  authority_id String [pk]
+  name String [not null]
+  is_deleted Boolean [not null, default: false]
+  entities entities [not null]
+  client_data client_data [not null]
+}
+
+Table entities {
+  entity_id String [pk]
+  name String [not null]
+  authority_id String [not null]
+  authority_detail authorities [not null]
+  is_deleted Boolean [not null, default: false]
+  client_data client_data [not null]
+}
+
 Table banners {
   id String [pk]
   type String [not null]
@@ -36,7 +53,11 @@ Table bank_information {
 Table client_data {
   id String [pk]
   entity String
+  entity_id String
+  entity_detail entities
   authority String
+  authority_id String
+  authority_detail authorities
   headquarters String
   date_of_esthablistmen DateTime
   num_of_beneficiaries Int
@@ -91,11 +112,6 @@ Table employees_permissions {
   project_supervisor Boolean [default: false]
   id String [pk]
   user user [not null]
-}
-
-Table inquiry_type {
-  id String [pk]
-  contact_us contact_us [not null]
 }
 
 Table message {
@@ -239,6 +255,7 @@ Table proposal {
   proposal_logs proposal_log [not null]
   recommended_support_consultant recommended_support_consultant [not null]
   payment_configuration supervisor [not null]
+  contact_us contact_us [not null]
 }
 
 Table proposal_comment {
@@ -312,8 +329,6 @@ Table user {
   bank_information bank_information [not null]
   client_data client_data
   client_log client_log [not null]
-  contact_us_contact_us_receiver_idTouser contact_us [not null]
-  contact_us_contact_us_sender_idTouser contact_us [not null]
   edit_requests_edit_requests_reviewer_idTouser edit_requests [not null]
   edit_requests_edit_requests_user_idTouser edit_requests [not null]
   email_record_email_record_receiver_idTouser email_record [not null]
@@ -341,6 +356,7 @@ Table user {
   roles user_role [not null]
   user_status_log_userTouser_status_log_account_manager_id user_status_log [not null]
   user_status_log_userTouser_status_log_user_id user_status_log [not null]
+  submitted_contact_us contact_us [not null]
 }
 
 Table user_type {
@@ -473,20 +489,18 @@ Table room_chat {
 }
 
 Table contact_us {
-  id String [pk]
-  sender_id String [not null]
-  receiver_id String [not null]
-  inquiry_type String
+  contact_us_id String [pk]
+  inquiry_type String [not null]
   title String
-  project_name String
   message String
-  date_of_visit DateTime
+  date_of_visit BigInt
   reason_visit String
+  submitter_user_id String [not null]
+  user user [not null]
+  proposal_id String
+  proposal proposal
   created_at DateTime [default: `now()`]
   updated_at DateTime [default: `now()`]
-  inquiry_type_contact_usToinquiry_type inquiry_type
-  user_contact_us_receiver_idTouser user [not null]
-  user_contact_us_sender_idTouser user [not null]
 }
 
 Table appointment {
@@ -528,11 +542,6 @@ Table email_record {
   updated_at DateTime [default: `now()`]
   receiver user [not null]
   sender user [not null]
-}
-
-Table authority {
-  id String [pk]
-  title String [not null]
 }
 
 Table banks {
@@ -1510,9 +1519,15 @@ Table backup_client_data_latest {
   qid Int
 }
 
+Ref: entities.authority_id > authorities.authority_id
+
 Ref: banners.track_id > track.id
 
 Ref: bank_information.user_id > user.id [delete: Restrict]
+
+Ref: client_data.entity_id > entities.entity_id
+
+Ref: client_data.authority_id > authorities.authority_id
 
 Ref: client_data.user_id - user.id [delete: Restrict]
 
@@ -1598,11 +1613,9 @@ Ref: room_chat.participant1_user_id > user.id [delete: Restrict]
 
 Ref: room_chat.participant2_user_id > user.id [delete: Restrict]
 
-Ref: contact_us.inquiry_type > inquiry_type.id [delete: Restrict]
+Ref: contact_us.submitter_user_id > user.id
 
-Ref: contact_us.receiver_id > user.id [delete: Restrict]
-
-Ref: contact_us.sender_id > user.id [delete: Restrict]
+Ref: contact_us.proposal_id > proposal.id
 
 Ref: appointment.employee_id > user.id [delete: Restrict]
 

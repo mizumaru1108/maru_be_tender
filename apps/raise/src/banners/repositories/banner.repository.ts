@@ -39,6 +39,7 @@ export class BannerUpdateProps {
 
 export class BannerFindManyProps {
   track_id?: string[];
+  title?: string;
   type?: BannerTypeEnum[];
   only_active?: boolean;
   expired_at?: number;
@@ -181,7 +182,7 @@ export class BannerRepository {
     const {
       track_id,
       type,
-      expired_at,
+      title,
       include_relations,
       specific_date,
       expired_at_gte,
@@ -195,6 +196,16 @@ export class BannerRepository {
         ...findManyWhereClause,
         track_id: {
           in: track_id,
+        },
+      };
+    }
+
+    if (title !== undefined) {
+      findManyWhereClause = {
+        ...findManyWhereClause,
+        title: {
+          contains: title,
+          mode: 'insensitive',
         },
       };
     }

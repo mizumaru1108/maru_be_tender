@@ -35,6 +35,8 @@ import { TenderEventsModule } from './tender-events-gateway/tender-events.module
 import { TenderFileManagerModule } from './tender-file-manager/tender-file-manager.module';
 import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
 import { TenderStatisticsModule } from './tender-statistics/tender-statistics.module';
+import { EntityManagementModule } from './entity-management/entity.management.module';
+import { ContactUsModule } from './contact-us/contact.us.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -161,6 +163,8 @@ const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
     QaHelperModule,
     BannerModule,
     HealthModule,
+    EntityManagementModule,
+    ContactUsModule,
   ],
   controllers: [],
 })
