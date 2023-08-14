@@ -11,6 +11,7 @@ import {
   TableBody,
   TableContainer,
   TablePagination,
+  TextField,
   Typography,
 } from '@mui/material';
 import Iconify from 'components/Iconify';
@@ -31,6 +32,7 @@ import { responsePathAsArray } from 'graphql';
 import { useSelector } from '../../../../../redux/store';
 import dayjs from 'dayjs';
 import { hasActive, hasExpired, isActiveToday } from 'utils/checkIsExpired';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 
 const TABLE_HEAD = [
   { id: 'image', label: 'system_messages.headercell.image' },
@@ -80,9 +82,9 @@ export default function AdvertisingTapeListTable() {
 
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('all');
 
-  const [sortValue, setSortValue] = useState<string>('track asc');
+  const [sortValue, setSortValue] = useState<string>();
 
-  const [employeeName, setEmployeeName] = useState('');
+  const [banerTitle, setBanerTitle] = useState('');
 
   const sortOptions = [
     {
@@ -102,7 +104,20 @@ export default function AdvertisingTapeListTable() {
     // const url = employeeName
     //   ? `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}&employee_name=${employeeName}`
     //   : `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}`;
-    const url = `banners?type=external&limit=${rowsPerPage}&page=${currentPage}&include_relations=track&current_time=${curretTime}`;
+    // const url = `banners?type=external&limit=${rowsPerPage}&page=${currentPage}&include_relations=track&current_time=${curretTime}`;
+    let filter = '';
+    if (sortValue) {
+      filter = `${filter}&track_id=${sortValue}`;
+    }
+    if (banerTitle) {
+      filter = `${filter}&title=${banerTitle}`;
+    }
+    let url;
+    if (filter) {
+      url = `banners?type=external&limit=${rowsPerPage}&page=${currentPage}&include_relations=track&current_time=${curretTime}${filter}`;
+    } else {
+      url = `banners?type=external&limit=${rowsPerPage}&page=${currentPage}&include_relations=track&current_time=${curretTime}`;
+    }
     // console.log({ track_list });
     try {
       const response = await axiosInstance.get(`${url}`, {
@@ -166,7 +181,7 @@ export default function AdvertisingTapeListTable() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, page, rowsPerPage]);
+  }, [activeRole, enqueueSnackbar, page, rowsPerPage, sortValue, banerTitle]);
 
   const handleDelete = React.useCallback(
     async (id: string) => {
@@ -236,22 +251,24 @@ export default function AdvertisingTapeListTable() {
     (!dataFiltered.length && !!filterStatus);
 
   const handleSortData = (event: any) => {
-    const { value } = event.target;
-    setSortValue(event.target.value as string);
-    const [key, order] = value.split(' ');
-    if (key === 'governorate') {
-      const newOrder = { client_data: { [key]: order } };
-      setSortOrder(newOrder);
-    } else {
-      const newOrder = { [key]: order };
+    setSortValue(event.target.value);
+    setPage(0);
+    // const { value } = event.target;
+    // setSortValue(event.target.value as string);
+    // const [key, order] = value.split(' ');
+    // if (key === 'governorate') {
+    //   const newOrder = { client_data: { [key]: order } };
+    //   setSortOrder(newOrder);
+    // } else {
+    //   const newOrder = { [key]: order };
 
-      setSortOrder(newOrder);
-    }
+    //   setSortOrder(newOrder);
+    // }
   };
 
   const handleChange = (name: string) => {
     // console.log(name);
-    setEmployeeName(name);
+    setBanerTitle(name);
     setPage(0);
   };
 
@@ -270,7 +287,8 @@ export default function AdvertisingTapeListTable() {
               isLoading={isLoading}
               onReturnSearch={handleChange}
               reFetch={() => {
-                console.log('re-fetch');
+                // console.log('re-fetch');
+                handleChange('');
               }}
             />
           </Box>
@@ -280,23 +298,21 @@ export default function AdvertisingTapeListTable() {
             <Typography variant="body2" sx={{ fontSize: '14px', color: 'grey.600' }}>
               {translate('table_filter.sortby_title')} &nbsp;
             </Typography>
-            <Select
-              data-cy={'table-filter-select'}
+            <TextField
+              select
               value={sortValue}
+              label={translate('system_messages.filter.track.label')}
+              // placeholder="Select Track"
               onChange={handleSortData}
               size="small"
-              sx={{ fontSize: '14px', width: 200 }}
+              sx={{ fontSize: '14px', width: 200, color: '#000' }}
             >
-              {sortOptions.map((item, index) => (
-                <MenuItem
-                  data-cy={`table-filter-select-option-${index}`}
-                  key={item.value}
-                  value={item.value}
-                >
-                  {item.title}
+              {track_list.map((item, index) => (
+                <MenuItem key={index} value={item.id}>
+                  {formatCapitalizeText(item.name)}
                 </MenuItem>
               ))}
-            </Select>
+            </TextField>
           </Box>
         </Grid> */}
       </Grid>

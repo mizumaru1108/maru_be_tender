@@ -75,7 +75,7 @@ function ClientClosingReport({ stepGransLog }: Props) {
           <Grid item xs={6}>
             <Typography variant="h6">{translate(`review.execution_place`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Stack direction="column" sx={{ pb: 2 }}>
                 {/* <Typography>{closingReport.execution_place}</Typography> */}
                 {/* <Typography>
                   {translate(
@@ -165,7 +165,7 @@ function ClientClosingReport({ stepGransLog }: Props) {
           <Grid item xs={6}>
             <Typography variant="h6">{translate(`review.target_beneficiaries`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Stack direction="column" sx={{ pb: 2 }}>
                 {/* <Typography>
                   {translate(
                     `pages.common.close_report.text.option.${closingReport.target_beneficiaries}`
@@ -188,7 +188,7 @@ function ClientClosingReport({ stepGransLog }: Props) {
           <Grid item xs={6}>
             <Typography variant="h6">{translate(`review.gender`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Stack direction="column" sx={{ pb: 2 }}>
                 {/* <Typography>
                   {closingReport.gender}
                 </Typography> */}
