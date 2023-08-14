@@ -2521,6 +2521,11 @@ const en = {
   system_messages: {
     add_new_advertising: 'Add New Advertising',
     details: 'Details',
+    filter: {
+      track: {
+        label: 'Filter By Track',
+      },
+    },
     status: {
       active: 'Active',
       inactive: 'Inactive',

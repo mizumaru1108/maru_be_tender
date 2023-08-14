@@ -90,11 +90,11 @@ const ar = {
               placeholder: 'عدد المستفيدين',
             },
             target_beneficiaries: {
-              label: '*المستفيدون المستهدفون',
+              label: 'الشريحة المستهدفة من المشروع *',
               placeholder: 'يرجى تحديد جميع المستفيدين المستهدفين من المشروع',
             },
             execution_place: {
-              label: '*مكان التنفيذ',
+              label: '*مكان تنفيذ المشروع',
               placeholder: 'الرجاء تحديد أماكن للمشروع',
             },
             gender: {
@@ -131,10 +131,10 @@ const ar = {
               label: 'عدد المستفيدين',
             },
             target_beneficiaries: {
-              label: 'المستفيدون المستهدفون',
+              label: 'الشريحة المستهدفة من المشروع',
             },
             execution_place: {
-              label: 'مكان التنفيذ',
+              label: 'مكان تنفيذ المشروع',
             },
             gender: {
               label: 'جنس المستفيدين',
@@ -2090,7 +2090,7 @@ const ar = {
     payment_insert: 'إدخال دفعة',
     payment: 'دفعة',
     Batch: 'المجموعة',
-    execution_place: 'مكان التنفيذ',
+    execution_place: 'مكان تنفيذ المشروع',
     number_of_beneficiaries: 'عدد المستفيدين',
     number_of_staff: 'عدد الموظفين',
     number_of_volunteers: 'عدد المتطوعين',
@@ -2537,6 +2537,11 @@ const ar = {
   system_messages: {
     add_new_advertising: 'اضافة رسالة التفاعلية جديدة',
     details: 'تفاصيل',
+    filter: {
+      track: {
+        label: 'تصفية حسب المسار',
+      },
+    },
     status: {
       active: 'نشيط',
       inactive: 'غير نشط',

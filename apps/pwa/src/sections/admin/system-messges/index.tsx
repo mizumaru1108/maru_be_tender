@@ -6,6 +6,8 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import React from 'react';
 import { useNavigate } from 'react-router';
+import { getTrackList } from 'redux/slices/proposal';
+import { dispatch, useSelector } from 'redux/store';
 import TabOptionSystemMessages from 'sections/admin/system-messges/tab-options';
 import TabPanelSystemMessages from 'sections/admin/system-messges/tab-panel';
 import { role_url_map } from '../../../@types/commons';
@@ -15,6 +17,7 @@ export default function SystemMessages() {
   const { translate } = useLocales();
   const navigate = useNavigate();
   const { activeRole } = useAuth();
+  const { isLoading } = useSelector((state) => state.proposal);
 
   const [value, setValue] = React.useState(0);
 
@@ -29,7 +32,13 @@ export default function SystemMessages() {
       navigate(`/${role_url_map[activeRole!]}/dashboard/system-messages/external`);
     }
   };
+  React.useEffect(() => {
+    dispatch(getTrackList(1, activeRole! as string));
+  }, [activeRole]);
+
   // console.log({ value });
+  if (isLoading) return <>{translate('pages.common.loading')}</>;
+
   return (
     <React.Fragment>
       <Grid container display="flex" justifyContent="center">
@@ -47,7 +56,7 @@ export default function SystemMessages() {
 
         <Grid item md={12} xs={12} display="flex" justifyContent={'space-between'}>
           <Grid item md={4} xs={12} display="flex" justifyContent={'flex-start'}>
-            <Typography variant="h5">{translate('system_messages.current_slides')}</Typography>
+            {/* <Typography variant="h5">{translate('system_messages.current_slides')}</Typography> */}
           </Grid>
           <Grid item md={3} xs={12} display="flex" justifyContent={'flex-end'}>
             <Button variant="contained" size="medium" onClick={handleAddForm}>

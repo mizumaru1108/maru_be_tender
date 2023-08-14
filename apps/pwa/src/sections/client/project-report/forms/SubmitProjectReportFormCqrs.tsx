@@ -18,6 +18,7 @@ import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import { useSnackbar } from 'notistack';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
+import Space from 'components/space/space';
 
 // ------------------------------------------------------------------------------------------
 
@@ -119,7 +120,11 @@ export default function SubmitProjectReportFormCqrs({
     defaultValues: useMemo(() => defaultValues, [defaultValues]),
   });
 
-  const { handleSubmit } = methods;
+  const { handleSubmit, watch } = methods;
+  const tmpGenders = watch('genders');
+  const tmpExecutionPlaces = watch('execution_places');
+  const tmpBeneficiaries = watch('beneficiaries');
+  console.log({ tmpGenders, tmpExecutionPlaces, tmpBeneficiaries });
 
   const onSubmitForm = async (data: CloseReportForm) => {
     // console.log({ data });
@@ -242,7 +247,7 @@ export default function SubmitProjectReportFormCqrs({
               xs: 12,
             },
           ]}
-          enableAddButton={true}
+          enableAddButton={tmpGenders && tmpGenders?.length < 2 ? true : false}
           enableRemoveButton={true}
         />
         {/* <Grid item xs={12}>
@@ -250,6 +255,7 @@ export default function SubmitProjectReportFormCqrs({
             {translate('pages.common.close_report.text.form.execution_places.label')}
           </Typography>
         </Grid> */}
+        <Space direction="horizontal" size="small" />
         <BaseField
           type="repeater"
           disabled={isEdit || loading}
@@ -304,9 +310,10 @@ export default function SubmitProjectReportFormCqrs({
               xs: 12,
             },
           ]}
-          enableAddButton={true}
+          enableAddButton={tmpExecutionPlaces && tmpExecutionPlaces?.length < 4 ? true : false}
           enableRemoveButton={true}
         />
+        <Space direction="horizontal" size="small" />
         {/* <Grid item xs={12} md={6}>
           <RHFSelect
             name="target_beneficiaries"
@@ -561,7 +568,7 @@ export default function SubmitProjectReportFormCqrs({
               xs: 12,
             },
           ]}
-          enableAddButton={true}
+          enableAddButton={tmpBeneficiaries && tmpBeneficiaries?.length < 10 ? true : false}
           enableRemoveButton={true}
         />
         <Grid item xs={12} md={6}>

@@ -10,6 +10,7 @@ import {
   TableBody,
   TableContainer,
   TablePagination,
+  TextField,
   Typography,
 } from '@mui/material';
 import Scrollbar from 'components/Scrollbar';
@@ -29,6 +30,7 @@ import { useSelector } from '../../../../../redux/store';
 import RejectionModal from '../../../../modal-dialog/RejectionModal';
 import dayjs from 'dayjs';
 import { hasExpired } from 'utils/checkIsExpired';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 
 const TABLE_HEAD = [
   { id: 'title', label: 'system_messages.headercell.title' },
@@ -74,27 +76,29 @@ export default function SystemMessageListTable() {
 
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('all');
 
-  const [sortValue, setSortValue] = useState<string>('track asc');
+  const [sortValue, setSortValue] = useState<string>('');
 
-  const [employeeName, setEmployeeName] = useState('');
+  const [banerTitle, setBanerTitle] = useState('');
 
-  const sortOptions = [
-    {
-      value: 'track asc',
-      title: translate('table_filter.sortby_options.track_az'),
-    },
-    {
-      value: 'track desc',
-      title: translate('table_filter.sortby_options.track_za'),
-    },
-  ];
   // console.debug({ track_list });
 
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
     const curretTime = dayjs().valueOf();
     const currentPage = page + 1;
-    const url = `banners?type=internal&limit=${rowsPerPage}&page=${currentPage}&include_relations=track&current_time=${curretTime}`;
+    let filter = '';
+    if (sortValue) {
+      filter = `${filter}&track_id=${sortValue}`;
+    }
+    if (banerTitle) {
+      filter = `${filter}&title=${banerTitle}`;
+    }
+    let url;
+    if (filter) {
+      url = `banners?type=internal&limit=${rowsPerPage}&page=${currentPage}&include_relations=track&current_time=${curretTime}${filter}`;
+    } else {
+      url = `banners?type=internal&limit=${rowsPerPage}&page=${currentPage}&include_relations=track&current_time=${curretTime}`;
+    }
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
@@ -153,7 +157,7 @@ export default function SystemMessageListTable() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, page, rowsPerPage]);
+  }, [activeRole, enqueueSnackbar, page, rowsPerPage, sortValue, banerTitle]);
 
   const handleDelete = React.useCallback(
     async (id: string) => {
@@ -222,23 +226,26 @@ export default function SystemMessageListTable() {
     (!dataFiltered.length && !!filterRole) ||
     (!dataFiltered.length && !!filterStatus);
 
+  // console.log({ sortValue });
   const handleSortData = (event: any) => {
-    const { value } = event.target;
-    setSortValue(event.target.value as string);
-    const [key, order] = value.split(' ');
-    if (key === 'governorate') {
-      const newOrder = { client_data: { [key]: order } };
-      setSortOrder(newOrder);
-    } else {
-      const newOrder = { [key]: order };
+    setSortValue(event.target.value);
+    setPage(0);
+    // const { value } = event.target;
+    // setSortValue(event.target.value as string);
+    // const [key, order] = value.split(' ');
+    // if (key === 'governorate') {
+    //   const newOrder = { client_data: { [key]: order } };
+    //   setSortOrder(newOrder);
+    // } else {
+    //   const newOrder = { [key]: order };
 
-      setSortOrder(newOrder);
-    }
+    //   setSortOrder(newOrder);
+    // }
   };
 
   const handleChange = (name: string) => {
     // console.log(name);
-    setEmployeeName(name);
+    setBanerTitle(name);
     setPage(0);
   };
 
@@ -257,7 +264,8 @@ export default function SystemMessageListTable() {
               isLoading={isLoading}
               onReturnSearch={handleChange}
               reFetch={() => {
-                console.log('re-fetch');
+                // console.log('re-fetch');
+                handleChange('');
               }}
             />
           </Box>
@@ -267,18 +275,21 @@ export default function SystemMessageListTable() {
             <Typography variant="body2" sx={{ fontSize: '14px', color: 'grey.600' }}>
               {translate('table_filter.sortby_title')} &nbsp;
             </Typography>
-            <Select
+            <TextField
+              select
               value={sortValue}
+              label={translate('system_messages.filter.track.label')}
+              // placeholder="Select Track"
               onChange={handleSortData}
               size="small"
-              sx={{ fontSize: '14px', width: 200 }}
+              sx={{ fontSize: '14px', width: 200, color: '#000' }}
             >
-              {sortOptions.map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  {item.title}
+              {track_list.map((item, index) => (
+                <MenuItem key={index} value={item.id}>
+                  {formatCapitalizeText(item.name)}
                 </MenuItem>
               ))}
-            </Select>
+            </TextField>
           </Box>
         </Grid>
       </Grid>
