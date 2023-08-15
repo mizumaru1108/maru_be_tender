@@ -44,14 +44,23 @@ CardTablePropsByBE) {
         headers: { 'x-hasura-role': activeRole! },
       });
       if (rest) {
-        const tmpTotalPage = Math.ceil(rest.data.total / limit);
         // console.log('rest.data.data', rest.data.data);
+        const tmpTotalPage = Math.ceil(rest.data.total / limit);
         setTotalPage(tmpTotalPage);
-        setCardData(
-          rest.data.data.map((item: any) => ({
-            ...item,
-          }))
-        );
+        if (destination === 'incoming-amandment-requests') {
+          setCardData(
+            rest.data.data.map((item: any) => ({
+              ...item.proposal,
+              user: item.proposal.user,
+            }))
+          );
+        } else {
+          setCardData(
+            rest.data.data.map((item: any) => ({
+              ...item,
+            }))
+          );
+        }
       }
     } catch (err) {
       const statusCode = (err && err.statusCode) || 0;
@@ -118,7 +127,18 @@ CardTablePropsByBE) {
           // api={!typeRequest ? `${endPoint}` : `${endPoint}`}
           api={endPoint ? endPoint : ''}
           addCustomFilter={addCustomFilter}
-          returnData={setCardData}
+          returnData={(data) => {
+            if (destination === 'incoming-amandment-requests') {
+              setCardData(
+                data.map((item: any) => ({
+                  ...item.proposal,
+                  user: item.proposal.user,
+                }))
+              );
+            } else {
+              setCardData(data);
+            }
+          }}
           loadingState={setIsLoading}
         />
       </Grid>
@@ -134,7 +154,13 @@ CardTablePropsByBE) {
             <ProjectTableBE
               {...item}
               created_at={new Date(item.created_at)}
-              cardFooterButtonAction={cardFooterButtonAction}
+              // cardFooterButtonAction={cardFooterButtonAction}
+              cardFooterButtonAction={
+                destination === 'incoming-amandment-requests' &&
+                item.outter_status === 'ASKED_FOR_AMANDEMENT'
+                  ? 'show-details'
+                  : cardFooterButtonAction
+              }
               destination={destination}
             />
           </Grid>

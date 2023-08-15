@@ -14,6 +14,7 @@ import FloatingClientSubmit from '../floating-close-report/FloatingClientSubmit'
 //
 import { useQuery } from 'urql';
 import { getProposalClosingReport } from 'queries/client/getProposalClosingReport';
+import FinanceFloatingActionBar from 'sections/project-details/floating-action-bar/finance';
 
 //
 
@@ -105,6 +106,16 @@ function FloatinActonBar() {
                   ['PROJECT_COMPLETED'].includes(proposal.inner_status) && <FloatingClientSubmit />}
               </React.Fragment>
             ) : null)}
+
+          {activeTap &&
+            ['project-path', 'payments'].includes(activeTap) &&
+            ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR', 'DONE_BY_CASHIER'].includes(
+              proposal.inner_status
+            ) &&
+            ['tender_finance'].includes(role) && <FinanceFloatingActionBar />}
+          {/* {activeTap &&
+            ['project-path', 'payments'].includes(activeTap) &&
+            ['tender_finance'].includes(role) && <FinanceFloatingActionBar />} */}
         </React.Fragment>
       )}
     </>

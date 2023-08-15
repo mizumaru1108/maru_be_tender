@@ -53,7 +53,8 @@ export type ProjectCardProps = {
     | 'current-project'
     | 'payment-adjustment'
     | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
-    | 'project-report';
+    | 'project-report'
+    | 'incoming-amandment-requests';
 };
 
 export type ClientCardProps = {
@@ -193,7 +194,8 @@ export type CardTablePropsByBE = {
     | 'current-project'
     | 'payment-adjustment'
     | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
-    | 'project-report';
+    | 'project-report'
+    | 'incoming-amandment-requests';
   addCustomFilter?: '&vat=false' | '&vat=true' | undefined;
   // staticFilters?: any;
   // baseFilters?: any;

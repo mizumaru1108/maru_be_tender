@@ -13,30 +13,14 @@ import EmptyContent from 'components/EmptyContent';
 import SortingCardTable from 'components/sorting/sorting';
 
 function ProposalOnAmandement() {
-  const navigate = useNavigate();
   const { translate } = useLocales();
   const { user } = useAuth();
-  const [result] = useQuery({
-    query: getProposals,
-    variables: {
-      limit: 4,
-      order_by: { updated_at: 'desc' },
-      where: {
-        supervisor_id: { _eq: user?.id },
-        _and: {
-          outter_status: {
-            _eq: 'ON_REVISION',
-          },
-        },
-      },
-    },
-  });
-  const { data, fetching, error } = result;
 
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
   const [cardData, setCardData] = React.useState([]);
+  const [tmpCardData, setTmpCardData] = React.useState([]);
 
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
@@ -44,6 +28,7 @@ function ProposalOnAmandement() {
       const rest = await axiosInstance.get(`tender-proposal/amandement-lists?limit=4`, {
         headers: { 'x-hasura-role': activeRole! },
       });
+      // console.log('test', rest.data.data);
       if (rest) {
         setCardData(
           rest.data.data
@@ -81,17 +66,23 @@ function ProposalOnAmandement() {
 
   React.useEffect(() => {
     fetchingIncoming();
-    // fetchingPrevious();
   }, [fetchingIncoming]);
-  // if (fetching)
-  //   return (
-  //     <Grid item md={12}>
-  //       {translate('pages.common.loading')}
-  //     </Grid>
-  //   );
-  // console.log({ cardData });
-  // const props = data?.data ?? [];
-  // if (!props || props.length === 0) return null;
+
+  React.useEffect(() => {
+    // fetchingIncoming();
+    if (cardData.length > 0) {
+      const tmpVal: any = cardData.map((item: any) => {
+        if (item.proposal) {
+          return { ...item.proposal, ...item.user };
+        }
+        return { ...item, user: item.user };
+      });
+      if (tmpVal.length > 0) {
+        setTmpCardData(tmpVal);
+      }
+      // setTmpCardData((prev: any) => [...prev, ...cardData]);
+    }
+  }, [cardData]);
   return (
     <Grid item md={12}>
       <Stack direction="row" justifyContent="space-between">
@@ -123,8 +114,8 @@ function ProposalOnAmandement() {
       </Stack>
       <Grid container spacing={2}>
         {isLoading && translate('pages.common.loading')}
-        {!isLoading && cardData.length > 0 ? (
-          cardData.map((item: any, index: any) => (
+        {!isLoading && tmpCardData && tmpCardData.length > 0 ? (
+          tmpCardData.map((item: any, index: any) => (
             <Grid item md={6} key={index}>
               <ProjectCard
                 title={{
@@ -151,8 +142,11 @@ function ProposalOnAmandement() {
                   createdAtClient: new Date(item.created_at),
                 }}
                 footer={{ createdAt: new Date(item.updated_at) }}
-                cardFooterButtonAction="show-project"
-                destination="incoming-funding-requests"
+                // cardFooterButtonAction="show-project"
+                cardFooterButtonAction={
+                  item.outter_status === 'ON_REVISION' ? 'show-project' : 'show-details'
+                }
+                destination="requests-in-process"
               />
             </Grid>
           ))

@@ -9,6 +9,7 @@ const en = {
   pages: {
     options_btn: 'More',
     common: {
+      incoming_amandement_requests: 'Incoming Amandement Requests',
       verify_code_expired: 'Your verification link has expired',
       unactivated_account: 'Un Activated Page',
       no_project_timelines: "This project does't have any project timelines",
@@ -1758,7 +1759,7 @@ const en = {
       board_ofdec_file: 'Board ofdec file',
       btn_amndreq_back: 'Back',
       form: {
-        amndreq_label: 'Notes on account information*',
+        amndreq_label: 'Notes on order*',
         amndreq_placeholder: 'Please write notes here',
       },
       notification: {

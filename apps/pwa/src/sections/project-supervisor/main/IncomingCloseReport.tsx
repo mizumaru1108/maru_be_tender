@@ -13,6 +13,7 @@ import React from 'react';
 import { useSnackbar } from 'notistack';
 import axiosInstance from 'utils/axios';
 import SortingCardTable from 'components/sorting/sorting';
+import EmptyContent from '../../../components/EmptyContent';
 
 // ------------------------------------------------------------------------------------------
 
@@ -110,8 +111,7 @@ export default function IncomingCloseReport() {
       </Stack>
       <Grid container spacing={3}>
         {isLoading && translate('pages.common.loading')}
-        {!isLoading &&
-          cardData.length > 0 &&
+        {!isLoading && cardData.length > 0 ? (
           cardData?.map((item: any, index: any) => (
             <Grid item md={6} key={index}>
               <ProjectCard
@@ -143,7 +143,17 @@ export default function IncomingCloseReport() {
                 destination="project-report"
               />
             </Grid>
-          ))}
+          ))
+        ) : (
+          <Grid item md={12}>
+            <EmptyContent
+              title="لا يوجد بيانات"
+              sx={{
+                '& span.MuiBox-root': { height: 160 },
+              }}
+            />
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );

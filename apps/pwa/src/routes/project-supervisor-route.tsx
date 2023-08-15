@@ -23,6 +23,9 @@ const PreviousFundingRequestsProjectSupervisor = Loadable(
 const PaymentAdjustmenProjectSupervisor = Loadable(
   lazy(() => import('pages/project-supervisor/PaymentAdjustment'))
 );
+const IncomingAmandementProjectSupervisor = Loadable(
+  lazy(() => import('pages/project-supervisor/IncomingAmandementRequest'))
+);
 const OldProposal = Loadable(lazy(() => import('pages/project-supervisor/OldProposal')));
 const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
 const PortalReportsProjectSupervisor = Loadable(lazy(() => import('pages/PortalReports')));
@@ -149,6 +152,16 @@ export const projectSupervisorRoute = {
           path: 'payment-adjustment',
           children: [
             { path: '', element: <PaymentAdjustmenProjectSupervisor /> },
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
+          path: 'incoming-amandment-requests',
+          children: [
+            { path: '', element: <IncomingAmandementProjectSupervisor /> },
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,

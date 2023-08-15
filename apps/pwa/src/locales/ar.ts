@@ -9,6 +9,7 @@ const ar = {
   pages: {
     options_btn: 'أكثر',
     common: {
+      incoming_amandement_requests: 'طلبات التعديل الواردة',
       verify_code_expired: 'تم انتهاء صلاحية رابط التفعيل',
       unactivated_account: 'صفحة غير مفعلة',
       no_project_timelines: 'لا يحتوي هذا المشروع على أي مخططات زمنية للمشروع',
@@ -1770,7 +1771,7 @@ const ar = {
       btn_amndreq_send_request: 'ارسال الطلب',
       btn_amndreq_back: 'رجوع',
       form: {
-        amndreq_label: 'ملاحظات على معلومات الحساب*',
+        amndreq_label: 'ملاحظات على الطلب*',
         amndreq_placeholder: 'الرجاء كتابة الملاحظات هنا',
       },
       notification: {
