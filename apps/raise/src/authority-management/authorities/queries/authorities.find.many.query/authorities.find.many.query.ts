@@ -5,6 +5,7 @@ import { AuthoritiesRepository } from '../../repositories/authorities.repository
 export class AuthoritiesFindManyQuery {
   name?: string;
   client_field_id?: string;
+  include_relations?: string[];
   limit?: number;
   page?: number;
   sort_by?: string;

@@ -15,6 +15,7 @@ export class AuthoritiesUpdateProps {}
 export class AuthoritiesFindManyProps {
   name?: string;
   client_field_id?: string;
+  include_relations?: string[];
   limit?: number;
   page?: number;
   sort_by?: string;
@@ -93,7 +94,7 @@ export class AuthoritiesRepository {
   }
 
   async findManyFilter(props: AuthoritiesFindManyProps) {
-    const { name, client_field_id } = props;
+    const { name, client_field_id, include_relations } = props;
     let args: Prisma.AuthoritiesFindManyArgs = {};
     let whereClause: Prisma.AuthoritiesWhereInput = {};
 
@@ -112,6 +113,21 @@ export class AuthoritiesRepository {
         ...whereClause,
         client_field_id: client_field_id,
       };
+    }
+
+    if (include_relations && include_relations.length > 0) {
+      let include: Prisma.AuthoritiesInclude = {};
+
+      for (const relation of include_relations) {
+        if (relation === 'client_field_details') {
+          include = {
+            ...include,
+            client_field_details: true,
+          };
+        }
+      }
+
+      args.include = include;
     }
 
     args.where = whereClause;
