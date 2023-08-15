@@ -134,6 +134,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
     does_an_agreement: proposal.does_an_agreement,
     // fsupport_by_supervisor: undefined,
     // number_of_payments_by_supervisor: undefined,
+    payment_number: proposal.proposal_item_budgets.length,
     detail_project_budgets: [
       {
         clause: '',

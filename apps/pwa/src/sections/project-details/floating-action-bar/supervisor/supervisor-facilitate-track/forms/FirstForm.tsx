@@ -13,10 +13,11 @@ import useLocales from 'hooks/useLocales';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
 import { removeEmptyKey } from 'utils/remove-empty-key';
+import useAuth from 'hooks/useAuth';
 
 function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   const { translate } = useLocales();
-
+  const { activeRole } = useAuth();
   const { proposal } = useSelector((state) => state.proposal);
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
@@ -121,6 +122,15 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
     }
   }, [paymentNum, setPaymentNumber]);
   // console.log({ proposal });
+
+  useEffect(() => {
+    if (
+      proposal.proposal_item_budgets &&
+      (activeRole! === 'tender_project_manager' || activeRole! === 'tender_ceo')
+    ) {
+      setValue('payment_number', proposal.proposal_item_budgets.length);
+    }
+  }, [proposal, setValue, activeRole]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>

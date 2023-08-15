@@ -96,7 +96,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   const handleSubmit = async (data: any) => {
     const { notes, ...restStep1 } = step1;
     const editedBy = location.pathname.split('/')[1];
-    console.log(data, 'data');
+    // console.log(data, 'data');
     setIsSubmitting(true);
 
     try {
