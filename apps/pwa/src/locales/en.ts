@@ -293,9 +293,12 @@ const en = {
           add_bank: 'Add Bank',
           search_form: 'Type a name to search for',
           list_of_beneficiaries: 'Beneficiaries',
+          list_of_authorities: 'Authorities',
           add_beneficiaries: 'Add Beneficiaries',
+          add_authorities: 'Add Authorities',
           table: {
             name: 'Name',
+            client_field_name: 'Client Field Name',
             permissions: 'Permissions',
             amendment: 'Amendment',
             modify: 'Modify',
@@ -310,11 +313,22 @@ const en = {
             success_add_new_beneficiaries: 'New beneficiaries added successfully',
             edit_beneficiaries: 'Edit beneficiaries',
             add_beneficiaries: 'Add beneficiaries',
+            add_authorities: 'Add Authorities',
+            edit_authorities: 'Edit Authorities',
+            delete_authorities: 'Delete Authorities',
           },
           form: {
             beneficiaries: {
               label: 'Beneficiaries',
               placeholder: 'Beneficiaries',
+            },
+            authorities: {
+              label: {
+                name: 'Name',
+              },
+              placeholder: {
+                name: 'Name',
+              },
             },
             bank_name: {
               required: 'Bank name is required',
@@ -2318,6 +2332,7 @@ const en = {
     btn_create_proposal: 'Send',
     btn_next_save_as_draft: 'Next',
     confirm: 'Confirm',
+    delete: 'Delete',
     cancel: 'Cancel',
     re_edit: 'Re-Edit',
     save: 'Save',

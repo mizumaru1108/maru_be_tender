@@ -11,9 +11,7 @@ import useSettings from 'hooks/useSettings';
 import { useSnackbar } from 'notistack';
 import FormModalBeneficiaries from 'sections/admin/beneficiaries/list/FormModalBeneficiaries';
 import axiosInstance from 'utils/axios';
-import { useDispatch } from '../../../redux/store';
 import BeneficiariesTableContent from './list/BeneficiariesTableContent';
-import { FormInput } from './list/types';
 
 // --------------------------------------------------------------------------------------------------
 
@@ -30,7 +28,6 @@ export default function BeneficiariesTable() {
   const { enqueueSnackbar } = useSnackbar();
   const [refetch, setRefetch] = useState<boolean>(false);
   // const [bankValue, setBankValue] = useState<AuthorityInterface[] | []>([]);
-  const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

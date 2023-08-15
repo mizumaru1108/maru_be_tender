@@ -296,9 +296,12 @@ const ar = {
           add_bank: 'اضافة بنك',
           search_form: 'اكتب اسم للبحث عنه',
           list_of_beneficiaries: 'قائمة المستفيدين',
+          list_of_authorities: 'سلطات',
           add_beneficiaries: 'اضافة مستفيد',
+          add_authorities: 'إضافة مراجع',
           table: {
             name: 'الاسم',
+            client_field_name: 'اسم حقل العميل',
             permissions: 'سماحيات',
             amendment: 'تعديل',
             modify: 'يُعدِّل',
@@ -313,11 +316,22 @@ const ar = {
             success_add_new_beneficiaries: 'تمت اضافة مستفيد جديد بنجاح',
             edit_beneficiaries: 'تحرير المستفيدين',
             add_beneficiaries: 'اضافة مستفيد',
+            add_authorities: 'إضافة مراجع',
+            edit_authorities: 'تحرير المصادر',
+            delete_authorities: 'حذف المراجع',
           },
           form: {
             beneficiaries: {
               label: 'المستفيدين',
               placeholder: 'الرجاء كتابة الاسم',
+            },
+            authorities: {
+              label: {
+                name: 'اسم',
+              },
+              placeholder: {
+                name: 'اسم',
+              },
             },
             bank_name: {
               required: 'اسم البنك مطلوب',
@@ -2334,6 +2348,7 @@ const ar = {
     btn_create_proposal: ' انهاء',
     btn_next_save_as_draft: 'التالي',
     confirm: 'تأكيد',
+    delete: 'يمسح',
     cancel: 'إلغاء',
     re_edit: 'تعديل',
     save: 'حفظ',

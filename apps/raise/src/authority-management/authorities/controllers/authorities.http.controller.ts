@@ -4,6 +4,7 @@ import {
   Get,
   HttpStatus,
   InternalServerErrorException,
+  Patch,
   Post,
   Query,
   Res,
@@ -106,6 +107,38 @@ export class AuthoritiesHttpController {
     }
   }
 
+  @ApiOperation({
+    summary: 'updating banner either for internal or external',
+  })
+  @BaseApiOkResponse(BannerUpdateCommandResult, 'object')
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Patch('update')
+  async update(
+    @Body() dto: BannerUpdateDto,
+  ): Promise<BaseResponse<BannerUpdateCommandResult>> {
+    try {
+      const command = Builder<BannerUpdateCommand>(BannerUpdateCommand, {
+        ...dto,
+        id: dto.banner_id,
+        expired_date: dto.expired_date ? new Date(dto.expired_date) : undefined,
+        logos: files.logo,
+        current_user: currentUser,
+      }).build();
+      const result = await this.commandBus.execute<
+        BannerUpdateCommand,
+        BannerUpdateCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.OK,
+        'Banner Updated Successfully!',
+      );
+    } catch (e) {
+      throw this.errorMapper(e);
+    }
+  }
   // @Get(':id')
   // async findById(@Res() res: Response, @Param('id') id: string) {
   //   const responseBuilder =
@@ -128,30 +161,4 @@ export class AuthoritiesHttpController {
 
   //   return baseHttpResponseHelper(res, responseBuilder.build());
   // }
-
-  //   @UseGuards(TenderJwtGuard)
-  //   @Post('update')
-  //   async update(@Res() res: Response, @Body() dto: AuthoritiesUpdateDto) {
-  //     try {
-  //          const command = Builder<AuthoritiesCommand>(
-  //              AuthoritiesUpdateCommand,
-  //          {
-  //               ...dto,
-  //          },
-  //          ).build();
-
-  //      const result = await this.commandBus.execute<
-  //          AuthoritiesUpdateCommand,
-  //          AuthoritiesUpdateCommandResult
-  //      >(command);
-
-  //      return baseHttpResponseHelper(res, {
-  //          data: result,
-  //          message: 'Authority Updated Successfully!',
-  //          statusCode: HttpStatus.OK,
-  //      });
-  //        } catch (e) {
-  //          throw e;
-  //        }
-  //  }
 }

@@ -1,259 +1,238 @@
-import { paramCase } from 'change-case';
-import { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 // @mui
-import {
-  Box,
-  Card,
-  Table,
-  Button,
-  Tooltip,
-  TableBody,
-  Container,
-  IconButton,
-  TableContainer,
-  TablePagination,
-  Typography,
-  Stack,
-} from '@mui/material';
+import { Button, Container, Stack, Typography } from '@mui/material';
 // routes
-import { PATH_DASHBOARD } from '../../../routes/paths';
-import useTable, { emptyRows, getComparator } from 'hooks/useTable';
 import useSettings from 'hooks/useSettings';
-import Page from 'components/Page';
-import Iconify from 'components/Iconify';
-import { AuthorityTableRow, AuthorityTableToolbar } from './list';
-import Scrollbar from 'components/Scrollbar';
-import {
-  TableEmptyRows,
-  TableHeadCustom,
-  TableNoData,
-  TableSelectedActions,
-} from 'components/table';
-import useTabs from 'hooks/useTabs';
+import { useSnackbar } from 'notistack';
+import axiosInstance from 'utils/axios';
+import useAuth from '../../../hooks/useAuth';
+import useLocales from '../../../hooks/useLocales';
+import AuthorityTableContent from './list/AuthorityTableContent';
+import FormModalAuthority from './list/FormModalAuthority';
 import { AuthorityInterface } from './list/types';
-import AddAuthorityModal from './list/AddAuthorityModal';
 
-const mockData = [
-  {
-    id: '1',
-    name: 'آخرى',
-  },
-  {
-    id: '2',
-    name: 'المؤسسة العامة للتدريب التقني والمهني',
-  },
-  {
-    id: '3',
-    name: 'هيئة الأوقاف',
-  },
-  {
-    id: '4',
-    name: 'وزارة التجارة والاستثمار',
-  },
-  {
-    id: '5',
-    name: 'وزارة التعليم',
-  },
-  {
-    id: '6',
-    name: 'وزارة الشؤون الإسلامية',
-  },
-  {
-    id: '7',
-    name: 'وزارة العدل',
-  },
-  {
-    id: '8',
-    name: 'وزارة الموارد البشرية والتنمية الاجتماعية',
-  },
-];
-const TABLE_HEAD = [
-  { id: 'name', label: 'الاسم', align: 'left' },
-  { id: 'permissions', label: 'سماحيات', align: 'left' },
-];
+type ISubmit = {
+  authority_id?: string | string[];
+  client_field_id?: string;
+  name?: string;
+  is_deleted?: boolean;
+};
 
 export default function AuthorityTable() {
-  const {
-    dense,
-    page,
-    order,
-    orderBy,
-    rowsPerPage,
-    setPage,
-    //
-    selected,
-    setSelected,
-    onSelectRow,
-    onSelectAllRows,
-    //
-    onSort,
-    onChangePage,
-    onChangeRowsPerPage,
-  } = useTable();
-
+  // hooks
+  const { translate } = useLocales();
   const { themeStretch } = useSettings();
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
 
-  const navigate = useNavigate();
-
-  const [tableData, setTableData] = useState(mockData);
-
-  const [filterName, setFilterName] = useState('');
-
-  const [filterRole, setFilterRole] = useState('all');
-
-  const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('all');
-
-  const handleFilterName = (filterName: string) => {
-    setFilterName(filterName);
-    setPage(0);
-  };
-
-  const handleFilterRole = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterRole(event.target.value);
-  };
-
-  const handleDeleteRow = (id: string) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
-    setTableData(deleteRow);
-  };
-
-  const handleDeleteRows = (selected: string[]) => {
-    const deleteRows = tableData.filter((row) => !selected.includes(row.id));
-    setSelected([]);
-    setTableData(deleteRows);
-  };
-
-  const handleEditRow = (id: string) => {
-    navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
-  };
-
-  const dataFiltered = applySortFilter({
-    tableData,
-    comparator: getComparator(order, orderBy),
-    filterName,
-    filterRole,
-    filterStatus,
-  });
-
+  // State
+  const [refetch, setRefetch] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
-  const handleAddBeneficiare = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [authorities, setAuthorities] = useState<any[] | []>([]);
+  const [clientFields, setClientFields] = useState<any[] | []>([]);
+  const [isFetchingAuthoritites, setIsFetchingAuthorities] = useState<boolean>(false);
+  const [isFetchingClientFields, setIsFetchingClientFields] = useState<boolean>(false);
+
+  const handleOpenModal = () => {
     setOpen(true);
   };
-  const handleCloseAddBeneficiare = () => {
+
+  const handleCloseAddBeneficiaries = () => {
     setOpen(false);
   };
 
-  const denseHeight = dense ? 52 : 72;
+  const getAuthorities = async () => {
+    setIsFetchingAuthorities(true);
+    try {
+      const response = await axiosInstance.get(
+        `/authority-management/authorities?include_relations=client_field_details&limit=0`
+      );
+      if (response) {
+        const mappedRes = response.data.data
+          // .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
+          .map((authority: any) => authority);
+        setAuthorities(mappedRes);
+      }
+    } catch (error) {
+      // console.error(error.message);
+      setAuthorities([]);
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
+    } finally {
+      setIsFetchingAuthorities(false);
+    }
+  };
 
-  const isNotFound =
-    (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterRole) ||
-    (!dataFiltered.length && !!filterStatus);
+  const getClientFields = async () => {
+    setIsFetchingClientFields(true);
+    try {
+      const response = await axiosInstance.get(`/authority-management/client-fields?limit=0`);
+      if (response) {
+        const mappedRes = response.data.data
+          .filter(
+            (client_field: any) =>
+              client_field.is_deleted === false || client_field.is_deleted === null
+          )
+          .map((client_field: any) => client_field);
+        setClientFields(mappedRes);
+      }
+    } catch (error) {
+      // console.error(error.message);
+      setAuthorities([]);
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
+    } finally {
+      setIsFetchingClientFields(false);
+    }
+  };
+
+  const handleSubmit = async (formValue: ISubmit) => {
+    setIsSubmitting(true);
+
+    try {
+      const { status } = await axiosInstance.post(
+        'authority-management/authorities/create',
+        { ...formValue },
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+
+      if (status === 201) {
+        enqueueSnackbar(
+          translate('pages.admin.settings.label.modal.success_add_new_beneficiaries'),
+          {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          }
+        );
+
+        setIsSubmitting(false);
+        setOpen(false);
+        // window.location.reload();
+      }
+    } catch (err) {
+      if (typeof err.message === 'object') {
+        err.message.forEach((el: any) => {
+          enqueueSnackbar(el, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
+        });
+      } else {
+        const statusCode = (err && err.statusCode) || 0;
+        const message = (err && err.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
+      }
+
+      setIsSubmitting(false);
+      setOpen(false);
+      // window.location.reload();
+    } finally {
+      setRefetch(!refetch);
+    }
+  };
+
+  useEffect(() => {
+    getAuthorities();
+    getClientFields();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refetch]);
+
+  // console.log('authorities', authorities);
+  // console.log('clientFields', clientFields);
+
+  if (isFetchingAuthoritites || isFetchingClientFields)
+    return <>{translate('pages.common.loading')}</>;
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
-      <AddAuthorityModal open={open} handleClose={handleCloseAddBeneficiare} />
-      <Stack direction="row" justifyContent="space-between" sx={{ mb: '40px' }}>
-        <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
-          <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
-            الجهة المشرفة
-          </Typography>
-        </Box>
-        <Button
-          variant="contained"
-          onClick={handleAddBeneficiare}
-          sx={{ px: '50px', fontSize: '16px' }}
-        >
-          اضافة جهة
+      <FormModalAuthority
+        clientFieldList={clientFields}
+        type="add"
+        loading={isSubmitting}
+        open={open}
+        handleClose={handleCloseAddBeneficiaries}
+        handleSubmitProps={handleSubmit}
+      />
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 5, mt: 1 }}
+      >
+        <Typography variant="h4" sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
+          {translate('pages.admin.settings.label.list_of_authorities')}
+        </Typography>
+        <Button variant="contained" onClick={handleOpenModal} sx={{ px: '50px', fontSize: '16px' }}>
+          {translate('pages.admin.settings.label.add_authorities')}
         </Button>
       </Stack>
-      <Card sx={{ backgroundColor: '#fff' }}>
-        {/* done */}
-        <AuthorityTableToolbar
-          filterName={filterName}
-          filterRole={filterRole}
-          onFilterName={handleFilterName}
-          onFilterRole={handleFilterRole}
-        />
-
-        <Scrollbar>
-          <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
-            {selected.length > 0 && (
-              <TableSelectedActions
-                dense={dense}
-                numSelected={selected.length}
-                rowCount={tableData.length}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    tableData.map((row) => row.id)
-                  )
-                }
-                actions={
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={() => handleDeleteRows(selected)}>
-                      <Iconify icon={'eva:trash-2-outline'} />
-                    </IconButton>
-                  </Tooltip>
-                }
-              />
-            )}
-
-            <Table size={dense ? 'small' : 'medium'}>
-              <TableHeadCustom
-                order={order}
-                orderBy={orderBy}
-                headLabel={TABLE_HEAD}
-                rowCount={tableData.length}
-                numSelected={selected.length}
-                onSort={onSort}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    tableData.map((row) => row.id)
-                  )
-                }
-              />
-
-              <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <AuthorityTableRow
-                      key={row.id}
-                      row={row}
-                      selected={selected.includes(row.id)}
-                      onSelectRow={() => onSelectRow(row.id)}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
-                      onEditRow={() => handleEditRow(row.name)}
-                    />
-                  ))}
-
-                <TableEmptyRows
-                  height={denseHeight}
-                  emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                />
-
-                <TableNoData isNotFound={isNotFound} />
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
-
-        <Box sx={{ position: 'relative' }}>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={dataFiltered.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
-          />
-        </Box>
-      </Card>
+      <AuthorityTableContent
+        trigger={() => {
+          setRefetch(!refetch);
+        }}
+        clientFieldList={clientFields}
+        data={!isFetchingAuthoritites && !isFetchingClientFields && authorities ? authorities : []}
+      />
     </Container>
   );
 }
