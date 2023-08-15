@@ -33,19 +33,31 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
+import {
+  SendRevisionCommand,
+  SendRevisionCommandResult,
+} from 'src/proposal-management/proposal/commands/send.revision/send.revision.command';
 import { ProposalFindByIdQueryRequest } from 'src/proposal-management/proposal/dtos/queries/proposal.find.by.id.query.dto';
-import { ProposalEntity } from 'src/proposal-management/proposal/entities/proposal.entity';
 import {
   ProposalFindByIdQuery,
   ProposalFindByIdQueryResult,
 } from 'src/proposal-management/proposal/queries/proposal.find.by.id.query/proposal.find.by.id.query';
 import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
+import { ForbiddenPermissionException } from 'src/tender-commons/exceptions/forbidden-permission-exception';
 import { BasePrismaErrorException } from 'src/tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { RequestErrorException } from 'src/tender-commons/exceptions/request-error.exception';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
 import { InvalidTrackIdException } from '../../../tender-track/track/exceptions/invalid-track-id.excception';
 import { ChangeStateCommand } from '../commands/change.state/change.state.command';
+import {
+  ProposalCreateCommand,
+  ProposalCreateCommandResult,
+} from '../commands/proposal.create/proposal.create.command';
+import {
+  ProposalSaveDraftCommand,
+  ProposalSaveDraftCommandResult,
+} from '../commands/proposal.save.draft/proposal.save.draft.command';
 import { SendAmandementCommand } from '../commands/send.amandement/send.amandement.command';
 import {
   AskAmandementRequestDto,
@@ -66,20 +78,6 @@ import {
 import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
 import { ProposalService } from '../services/proposal.service';
-import {
-  SendRevisionCommand,
-  SendRevisionCommandResult,
-} from 'src/proposal-management/proposal/commands/send.revision/send.revision.command';
-import { ForbiddenPermissionException } from 'src/tender-commons/exceptions/forbidden-permission-exception';
-import { BannerTypeEnum } from '../../../banners/types/enums/banner.type.enum';
-import {
-  ProposalCreateCommand,
-  ProposalCreateCommandResult,
-} from '../commands/proposal.create/proposal.create.command';
-import {
-  ProposalSaveDraftCommand,
-  ProposalSaveDraftCommandResult,
-} from '../commands/proposal.save.draft/proposal.save.draft.command';
 
 @ApiTags('ProposalModule')
 @Controller('tender-proposal')
@@ -152,12 +150,6 @@ export class TenderProposalController {
       if (files.project_attachments === undefined) {
         throw new BadRequestException('Project attachment is Required!');
       }
-      // const createdProposal = await this.proposalService.interceptorCreate(
-      //   currentUser.id,
-      //   request,
-      //   files.letter_ofsupport_req,
-      //   files.project_attachments,
-      // );
       const command = Builder<ProposalCreateCommand>(ProposalCreateCommand, {
         userId: currentUser.id,
         request,
@@ -178,25 +170,6 @@ export class TenderProposalController {
     } catch (error) {
       throw this.errorMapper(error);
     }
-  }
-
-  // supervisor asked to client for revision
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_project_supervisor')
-  @Post('send-amandement')
-  async sendAmandement(
-    @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() payload: SendAmandementDto,
-  ) {
-    const createdProposal = await this.proposalService.sendAmandement(
-      currentUser.id,
-      payload,
-    );
-    return baseResponseHelper(
-      createdProposal,
-      HttpStatus.CREATED,
-      'Proposal amandement has been sended successfully',
-    );
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
@@ -240,17 +213,9 @@ export class TenderProposalController {
     );
   }
 
-  // DEPRECARED (all roles asked supervisor to send a request to edit the proposal to user)
+  // DEPRECARED (some roles asked supervisor to send a request to edit the proposal to user)
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles(
-    'tender_admin',
-    'tender_cashier',
-    'tender_ceo',
-    'tender_consultant',
-    'tender_finance',
-    'tender_moderator',
-    'tender_project_manager',
-  )
+  @TenderRoles('tender_finance')
   @Post('ask-amandement-request')
   async askForAmandementRequest(
     @CurrentUser() currentUser: TenderCurrentUser,
@@ -642,14 +607,6 @@ export class TenderProposalController {
     },
   ) {
     try {
-      // const createdProposal =
-      //   await this.proposalService.clientUpdateProposalInterceptor(
-      //     currentUser.id,
-      //     request,
-      //     undefined,
-      //     files.letter_ofsupport_req,
-      //     files.project_attachments,
-      //   );
       const command = Builder<ProposalSaveDraftCommand>(
         ProposalSaveDraftCommand,
         {
@@ -676,26 +633,6 @@ export class TenderProposalController {
   }
 
   // client send revised version of the proposal so it goes back to the flow (not reveied anymore)
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_client')
-  @Patch('send-revision')
-  async sendRevisions(
-    @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() request: SendRevisionDto,
-  ) {
-    const updateResponse =
-      await this.proposalService.clientUpdateProposalInterceptor(
-        currentUser.id,
-        undefined,
-        request,
-      );
-    return baseResponseHelper(
-      updateResponse,
-      HttpStatus.OK,
-      'Proposal updated successfully',
-    );
-  }
-
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
   @UseInterceptors(

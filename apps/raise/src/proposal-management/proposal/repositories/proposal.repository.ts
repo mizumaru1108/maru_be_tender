@@ -4,6 +4,7 @@ import { Prisma, proposal_item_budget } from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { nanoid } from 'nanoid';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+import { PaymentStatusEnum } from 'src/proposal-management/payment/types/enums/payment.status.enum';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -31,10 +32,8 @@ import {
 import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
 import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
-import { UpdateMyProposalResponseDto } from '../dtos/responses/update-my-proposal-response.dto';
 import { ProposalEntity } from '../entities/proposal.entity';
 import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
-import { SendRevisionNotifMapper } from '../mappers/send-revision-notif-mapper';
 import {
   ProposalCreateProps,
   ProposalDeleteProps,
@@ -42,7 +41,6 @@ import {
   ProposalFindManyProps,
   ProposalUpdateProps,
 } from '../types';
-import { PaymentStatusEnum } from 'src/proposal-management/payment/types/enums/payment.status.enum';
 
 @Injectable()
 export class ProposalRepository {
@@ -590,316 +588,6 @@ export class ProposalRepository {
     }
   }
 
-  async createProposal(
-    createProposalPayload: Prisma.proposalUncheckedCreateInput,
-    proposal_item_budgets:
-      | Prisma.proposal_item_budgetCreateManyInput[]
-      | undefined,
-    proposalTimelinesPayloads: Prisma.project_timelineCreateManyInput[] = [],
-    fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
-    uploadedFilePath: string[],
-  ) {
-    this.logger.info(
-      `Creating proposal with payload: \n ${logUtil(createProposalPayload)}`,
-    );
-    try {
-      return await this.prismaService.$transaction(
-        async (prisma) => {
-          this.logger.info('creating proposal...');
-          const proposal = await prisma.proposal.create({
-            data: {
-              ...createProposalPayload,
-            },
-            include: {
-              proposal_item_budgets: true,
-            },
-          });
-
-          if (proposal_item_budgets) {
-            this.logger.info(
-              `Creating item budget with payload: \n ${logUtil(
-                proposal_item_budgets,
-              )}`,
-            );
-            await prisma.proposal_item_budget.createMany({
-              data: proposal_item_budgets,
-            });
-          }
-
-          if (
-            proposalTimelinesPayloads &&
-            proposalTimelinesPayloads.length > 0
-          ) {
-            this.logger.info(
-              `Creating timeline with payload: \n ${logUtil(
-                proposalTimelinesPayloads,
-              )}`,
-            );
-
-            await prisma.project_timeline.createMany({
-              data: proposalTimelinesPayloads,
-            });
-          }
-
-          if (
-            fileManagerCreateManyPayload &&
-            fileManagerCreateManyPayload.length > 0
-          ) {
-            this.logger.info(
-              `Creating file manager history with payload: \n ${logUtil(
-                fileManagerCreateManyPayload,
-              )}`,
-            );
-
-            await prisma.file_manager.createMany({
-              data: fileManagerCreateManyPayload,
-            });
-          }
-
-          this.logger.info(`Creating proposal log`);
-          await prisma.proposal_log.create({
-            data: {
-              id: nanoid(),
-              proposal_id: proposal.id,
-              state: 'CLIENT',
-              user_role: 'CLIENT',
-              new_values: {
-                ...proposal,
-                createdItemBudgetPayload: proposal.proposal_item_budgets,
-              } as unknown as Prisma.JsonObject,
-            },
-          });
-
-          // console.log({ proposal });
-          // throw new BadRequestException('debug');
-          return proposal;
-        },
-        { maxWait: 50000, timeout: 150000 },
-      );
-    } catch (error) {
-      this.logger.error(`error on prisma occured deleting all uploaded files`);
-      if (uploadedFilePath && uploadedFilePath.length > 0) {
-        uploadedFilePath.forEach(async (path) => {
-          await this.bunnyService.deleteMedia(path, true);
-        });
-      }
-      const theError = prismaErrorThrower(
-        error,
-        ProposalRepository.name,
-        'fetchProposalById error details: ',
-        'finding proposal!',
-      );
-      throw theError;
-    }
-  }
-
-  async updateMyProposal(
-    proposal_id: string,
-    updateProposalPayload: Prisma.proposalUncheckedUpdateInput,
-    proposal_item_budgets:
-      | Prisma.proposal_item_budgetCreateManyInput[]
-      | undefined,
-    proposalTimelinePayloads: Prisma.project_timelineCreateManyInput[] = [],
-    fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
-    deletedFileManagerUrls: string[],
-    uploadedFilePath: string[],
-    createLog: boolean,
-    redirectUrl: string,
-  ): Promise<UpdateMyProposalResponseDto> {
-    try {
-      return await this.prismaService.$transaction(
-        async (prisma) => {
-          this.logger.info(
-            `updating proposal ${proposal_id} with payload of: \n ${logUtil(
-              updateProposalPayload,
-            )}`,
-          );
-          const proposal = await prisma.proposal.update({
-            where: {
-              id: proposal_id,
-            },
-            data: {
-              ...updateProposalPayload,
-            },
-          });
-
-          if (proposal_item_budgets && proposal_item_budgets.length > 0) {
-            this.logger.info('info', `deleteing previous item budget`);
-            await prisma.proposal_item_budget.deleteMany({
-              where: {
-                proposal_id: proposal.id,
-              },
-            });
-
-            this.logger.info(
-              `creating new item budgets with payload of: \n ${logUtil(
-                proposal_item_budgets,
-              )}`,
-            );
-            await prisma.proposal_item_budget.createMany({
-              data: proposal_item_budgets,
-            });
-          }
-
-          if (
-            fileManagerCreateManyPayload &&
-            fileManagerCreateManyPayload.length > 0
-          ) {
-            this.logger.info(
-              `Creating file manager history with payload: \n ${logUtil(
-                fileManagerCreateManyPayload,
-              )}`,
-            );
-
-            await prisma.file_manager.createMany({
-              data: fileManagerCreateManyPayload,
-            });
-          }
-
-          if (deletedFileManagerUrls && deletedFileManagerUrls.length > 0) {
-            this.logger.info(
-              `There's a file that unused / deleted, setting flags delete to: \n${logUtil(
-                deletedFileManagerUrls,
-              )}`,
-            );
-            for (let i = 0; i < deletedFileManagerUrls.length; i++) {
-              const theFile = await prisma.file_manager.findUnique({
-                where: {
-                  url: deletedFileManagerUrls[i],
-                },
-              });
-
-              if (theFile) {
-                await prisma.file_manager.update({
-                  where: {
-                    id: theFile.id,
-                  },
-                  data: {
-                    is_deleted: true,
-                  },
-                });
-              }
-            }
-          }
-
-          // save draft not a revision
-          if (proposalTimelinePayloads && proposalTimelinePayloads.length > 0) {
-            this.logger.info(
-              `deleting all timeline on proposal ${proposal.id}`,
-            );
-
-            await prisma.project_timeline.deleteMany({
-              where: { proposal_id: proposal.id },
-            });
-
-            this.logger.info(
-              `creating new timeline on proposal ${proposal.id}`,
-            );
-
-            await prisma.project_timeline.createMany({
-              data: proposalTimelinePayloads,
-            });
-          }
-
-          // send
-          if (createLog) {
-            const createdLog = await prisma.proposal_log.create({
-              data: {
-                id: nanoid(),
-                proposal_id,
-                user_role: TenderAppRoleEnum.CLIENT,
-                action: ProposalAction.SEND_REVISED_VERSION, //revised
-                state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
-                notes: 'Proposal has been revised',
-              },
-              select: {
-                action: true,
-                created_at: true,
-                proposal: {
-                  select: {
-                    project_name: true,
-                    user: {
-                      select: {
-                        id: true,
-                        employee_name: true,
-                        email: true,
-                        mobile_number: true,
-                      },
-                    },
-                    supervisor: {
-                      select: {
-                        id: true,
-                        employee_name: true,
-                        email: true,
-                        mobile_number: true,
-                      },
-                    },
-                  },
-                },
-              },
-            });
-
-            const sendRevisionNotif = SendRevisionNotifMapper(
-              proposal.id,
-              {
-                ...createdLog,
-                reviewer: createdLog.proposal.supervisor,
-              },
-              redirectUrl || '',
-            );
-
-            if (
-              sendRevisionNotif.createManyWebNotifPayload &&
-              sendRevisionNotif.createManyWebNotifPayload.length > 0
-            ) {
-              this.logger.info(
-                `Creating new notification for revision sent, with payload of \n${sendRevisionNotif.createManyWebNotifPayload}`,
-              );
-              await prisma.notification.createMany({
-                data: sendRevisionNotif.createManyWebNotifPayload,
-              });
-            }
-
-            this.logger.info(
-              `deleting proposal edit request for proposal ${proposal_id}`,
-            );
-
-            // deleting the edit request history
-            // await prisma.proposal_edit_request.deleteMany({
-            //   where: { proposal_id },
-            // });
-            return {
-              proposal,
-              notif: sendRevisionNotif,
-            };
-          }
-
-          return {
-            proposal,
-            notif: undefined,
-          };
-        },
-        { maxWait: 50000, timeout: 150000 },
-      );
-    } catch (error) {
-      this.logger.error(
-        'saving data on db failed, deleting all uploaded files for this proposal',
-      );
-      if (uploadedFilePath.length > 0) {
-        uploadedFilePath.forEach(async (path) => {
-          await this.bunnyService.deleteMedia(path, true);
-        });
-      }
-      const theError = prismaErrorThrower(
-        error,
-        ProposalRepository.name,
-        'Asking for supervisor amandement error details: ',
-        'Asking for supervisor amandement!',
-      );
-      throw theError;
-    }
-  }
-
   async deleteProposal(proposal_id: string, deletedFileManagerUrls: string[]) {
     try {
       return await this.prismaService.$transaction(async (prisma) => {
@@ -1036,147 +724,6 @@ export class ProposalRepository {
         ProposalRepository.name,
         'Saving Draft Proposal error details: ',
         'Saving Proposal Draft!',
-      );
-      throw theError;
-    }
-  }
-
-  async sendAmandement(
-    id: string,
-    reviewer_id: string,
-    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
-    createProposalEditRequestPayload: Prisma.proposal_edit_requestUncheckedCreateInput,
-    notes: string,
-    selectLang?: 'ar' | 'en',
-  ) {
-    try {
-      return await this.prismaService.$transaction(
-        async (prisma) => {
-          this.logger.info(
-            `Updating proposal ${id}, with payload of\n${logUtil(
-              proposalUpdatePayload,
-            )}`,
-          );
-          const updatedProposal = await prisma.proposal.update({
-            where: { id },
-            data: proposalUpdatePayload,
-          });
-
-          this.logger.info(
-            `Creating new proposal edit request with payload of \n${logUtil(
-              createProposalEditRequestPayload,
-            )}`,
-          );
-
-          this.logger.info(
-            `Find existing edit request by proposal id of ${id}`,
-          );
-          const oldData = await prisma.proposal_edit_request.findFirst({
-            where: { proposal_id: id },
-          });
-          if (oldData) {
-            this.logger.info(
-              `deleting old proposal edit request with porposal id of ${id}`,
-            );
-            await prisma.proposal_edit_request.delete({
-              where: { proposal_id: id },
-            });
-          }
-
-          this.logger.info(
-            `creating new proposal edit request with payload of ${createProposalEditRequestPayload}`,
-          );
-          await prisma.proposal_edit_request.create({
-            data: createProposalEditRequestPayload,
-          });
-
-          const lastLog = await prisma.proposal_log.findFirst({
-            where: { proposal_id: id },
-            select: {
-              created_at: true,
-            },
-            orderBy: {
-              created_at: 'desc',
-            },
-            take: 1,
-          });
-
-          const createdLog = await prisma.proposal_log.create({
-            data: {
-              id: nanoid(),
-              proposal_id: id,
-              user_role: TenderAppRoleEnum.PROJECT_SUPERVISOR,
-              reviewer_id,
-              action: ProposalAction.SEND_BACK_FOR_REVISION, //revised
-              state: TenderAppRoleEnum.CLIENT,
-              notes: notes,
-              response_time: lastLog?.created_at
-                ? Math.round(
-                    (new Date().getTime() - lastLog.created_at.getTime()) /
-                      60000,
-                  )
-                : null,
-            },
-            select: {
-              action: true,
-              created_at: true,
-              reviewer: {
-                select: {
-                  id: true,
-                  employee_name: true,
-                  email: true,
-                  mobile_number: true,
-                },
-              },
-              proposal: {
-                select: {
-                  project_name: true,
-                  user: {
-                    select: {
-                      id: true,
-                      employee_name: true,
-                      email: true,
-                      mobile_number: true,
-                    },
-                  },
-                },
-              },
-            },
-          });
-
-          const sendAmandementNotif = NewAmandementNotifMapper(
-            id,
-            createdLog,
-            this.configService.get('tenderAppConfig.baseUrl') as string,
-            selectLang,
-          );
-          if (
-            sendAmandementNotif.createManyWebNotifPayload &&
-            sendAmandementNotif.createManyWebNotifPayload.length > 0
-          ) {
-            this.logger.info(
-              `Creating new notification with payload of \n${logUtil(
-                sendAmandementNotif.createManyWebNotifPayload,
-              )}`,
-            );
-            await prisma.notification.createMany({
-              data: sendAmandementNotif.createManyWebNotifPayload,
-            });
-          }
-
-          return {
-            updatedProposal,
-            sendAmandementNotif,
-          };
-        },
-        { maxWait: 500000, timeout: 1500000 },
-      );
-    } catch (err) {
-      const theError = prismaErrorThrower(
-        err,
-        ProposalRepository.name,
-        'Send Amandement error details: ',
-        'Sending Amandement!',
       );
       throw theError;
     }
@@ -2666,6 +2213,16 @@ export class ProposalRepository {
               select: {
                 id: true,
                 project_name: true,
+                project_number: true,
+                created_at: true,
+                updated_at: true,
+                outter_status: true,
+                state: true,
+                user: {
+                  select: {
+                    employee_name: true,
+                  },
+                },
               },
             },
           },
