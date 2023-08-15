@@ -4,10 +4,12 @@ export interface ProposalFetchByIdProps {
 }
 
 export interface ProposalFindManyProps {
+  submitter_user_id?: string;
   limit?: number;
   page?: number;
   sort_by?: string;
   sort_direction?: string;
+  include_relations?: string[];
 }
 
 export interface ProposalDeleteProps {

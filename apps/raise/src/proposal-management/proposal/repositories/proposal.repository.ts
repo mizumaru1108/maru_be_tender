@@ -1,12 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Prisma, proposal_item_budget } from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { nanoid } from 'nanoid';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { PaymentStatusEnum } from 'src/proposal-management/payment/types/enums/payment.status.enum';
 import { logUtil } from '../../../commons/utils/log-util';
-import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { DataNotFoundException } from '../../../tender-commons/exceptions/data-not-found.exception';
 import {
@@ -33,7 +31,6 @@ import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-
 import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
 import { ProposalEntity } from '../entities/proposal.entity';
-import { NewAmandementNotifMapper } from '../mappers/new-amandement-notif-mapper';
 import {
   ProposalCreateProps,
   ProposalDeleteProps,
@@ -46,8 +43,6 @@ import {
 export class ProposalRepository {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly bunnyService: BunnyService,
-    private readonly configService: ConfigService,
     @InjectPinoLogger(ProposalRepository.name) private logger: PinoLogger,
   ) {}
 
@@ -164,6 +159,19 @@ export class ProposalRepository {
             project_timeline: true,
           };
         }
+
+        if (relation === 'proposal_closing_report') {
+          include = {
+            ...include,
+            proposal_closing_report: {
+              include: {
+                beneficiaries: true,
+                execution_places: true,
+                genders: true,
+              },
+            },
+          };
+        }
       }
 
       findByIdFilter.include = include;
@@ -222,6 +230,7 @@ export class ProposalRepository {
           tmpProposal.payments && tmpProposal.payments.length > 0
             ? tmpProposal.payments.map((payment: ProposalPaymentEntity) =>
                 Builder<ProposalPaymentEntity>(ProposalPaymentEntity, {
+                  ...payment,
                   payment_amount: !!payment.payment_amount
                     ? parseFloat(payment.payment_amount.toString())
                     : null,
@@ -562,10 +571,259 @@ export class ProposalRepository {
     }
   }
 
-  async findMany(props: ProposalFindManyProps, session?: PrismaService) {
-    const prisma = session || this.prismaService;
+  /* Latest, already able to do passing session, and return entity instead of prisma model*/
+  async findManyFilter(props: ProposalFindManyProps) {
+    const { include_relations } = props;
+    let args: Prisma.proposalFindManyArgs = {};
+    let whereClause: Prisma.proposalWhereInput = {};
+
+    if (include_relations && include_relations.length > 0) {
+      let include: Prisma.proposalInclude = {};
+
+      for (const relation of include_relations) {
+        if (relation === 'user') {
+          include = {
+            ...include,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                mobile_number: true,
+                employee_name: true,
+                client_data: {
+                  include: {
+                    authority_detail: true,
+                    client_field_details: true,
+                  },
+                },
+                roles: true,
+                bank_information: true,
+              },
+            },
+          };
+        }
+
+        if (relation === 'beneficiary_details') {
+          include = {
+            ...include,
+            beneficiary_details: true,
+          };
+        }
+
+        if (relation === 'follow_ups') {
+          include = {
+            ...include,
+            follow_ups: {
+              include: {
+                user: {
+                  include: {
+                    roles: true,
+                  },
+                },
+              },
+            },
+          };
+        }
+
+        if (relation === 'track') {
+          include = {
+            ...include,
+            track: true,
+          };
+        }
+
+        if (relation === 'proposal_item_budgets') {
+          include = {
+            ...include,
+            proposal_item_budgets: true,
+          };
+        }
+
+        if (relation === 'supervisor') {
+          include = {
+            ...include,
+            supervisor: true,
+          };
+        }
+
+        if (relation === 'proposal_logs') {
+          include = {
+            ...include,
+            proposal_logs: {
+              include: {
+                reviewer: true,
+              },
+            },
+          };
+        }
+
+        if (relation === 'payments') {
+          include = {
+            ...include,
+            payments: {
+              include: {
+                cheques: true,
+              },
+            },
+          };
+        }
+
+        if (relation === 'bank_information') {
+          include = {
+            ...include,
+            bank_information: true,
+          };
+        }
+
+        if (relation === 'project_timeline') {
+          include = {
+            ...include,
+            project_timeline: true,
+          };
+        }
+
+        if (relation === 'proposal_closing_report') {
+          include = {
+            ...include,
+            proposal_closing_report: {
+              include: {
+                beneficiaries: true,
+                execution_places: true,
+                genders: true,
+              },
+            },
+          };
+        }
+      }
+
+      args.include = include;
+    }
+
+    args.where = whereClause;
+    return args;
+  }
+
+  async findMany(
+    props: ProposalFindManyProps,
+    session?: PrismaService,
+  ): Promise<ProposalEntity[]> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
     try {
-    } catch (error) {}
+      const { limit = 0, page = 0, sort_by, sort_direction } = props;
+      const offset = (page - 1) * limit;
+      const getSortBy = sort_by ? sort_by : 'created_at';
+      const getSortDirection = sort_direction ? sort_direction : 'desc';
+
+      const args = await this.findManyFilter(props);
+      let queryOptions: Prisma.proposalFindManyArgs = {
+        where: args.where,
+        include: args.include,
+        orderBy: {
+          [getSortBy]: getSortDirection,
+        },
+      };
+
+      if (limit > 0) {
+        queryOptions = {
+          ...queryOptions,
+          skip: offset,
+          take: limit,
+        };
+      }
+
+      const rawResult = await prisma.proposal.findMany(queryOptions);
+      const entities = rawResult.map((rawResult) => {
+        const tmpProposal = rawResult as any;
+        return Builder<ProposalEntity>(ProposalEntity, {
+          ...rawResult,
+          amount_required_fsupport:
+            rawResult.amount_required_fsupport !== null
+              ? parseFloat(rawResult.amount_required_fsupport.toString())
+              : null,
+          whole_budget:
+            rawResult.whole_budget !== null
+              ? parseFloat(rawResult.whole_budget.toString())
+              : null,
+          number_of_payments:
+            rawResult.number_of_payments !== null
+              ? parseFloat(rawResult.number_of_payments.toString())
+              : null,
+          partial_support_amount:
+            rawResult.partial_support_amount !== null
+              ? parseFloat(rawResult.partial_support_amount.toString())
+              : null,
+          fsupport_by_supervisor:
+            rawResult.fsupport_by_supervisor !== null
+              ? parseFloat(rawResult.fsupport_by_supervisor.toString())
+              : null,
+          number_of_payments_by_supervisor:
+            rawResult.number_of_payments_by_supervisor !== null
+              ? parseFloat(
+                  rawResult.number_of_payments_by_supervisor.toString(),
+                )
+              : null,
+          execution_time:
+            rawResult.execution_time !== null
+              ? parseFloat(rawResult.execution_time.toString())
+              : null,
+          payments:
+            tmpProposal.payments && tmpProposal.payments.length > 0
+              ? tmpProposal.payments.map((payment: ProposalPaymentEntity) =>
+                  Builder<ProposalPaymentEntity>(ProposalPaymentEntity, {
+                    ...payment,
+                    payment_amount: !!payment.payment_amount
+                      ? parseFloat(payment.payment_amount.toString())
+                      : null,
+                    order: !!payment.order
+                      ? parseInt(payment.order.toString())
+                      : null,
+                    number_of_payments: !!payment.number_of_payments
+                      ? parseInt(payment.number_of_payments.toString())
+                      : null,
+                  }).build(),
+                )
+              : undefined,
+          proposal_item_budgets:
+            tmpProposal.proposal_item_budgets &&
+            tmpProposal.proposal_item_budgets.length > 0
+              ? tmpProposal.proposal_item_budgets.map(
+                  (rawBudget: ProposalItemBudgetEntity) => {
+                    return Builder<ProposalItemBudgetEntity>(
+                      ProposalItemBudgetEntity,
+                      {
+                        ...rawBudget,
+                        amount: parseFloat(rawBudget.amount.toString()),
+                      },
+                    ).build();
+                  },
+                )
+              : undefined,
+        }).build();
+      });
+
+      return entities;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
+  async countMany(
+    props: ProposalFindManyProps,
+    session?: PrismaService,
+  ): Promise<number> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const args = await this.findManyFilter(props);
+      return await prisma.proposal.count({
+        where: args.where,
+      });
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
   }
 
   async validateOwnBankAccount(user_id: string, bank_id: string) {

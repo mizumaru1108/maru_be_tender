@@ -5,15 +5,36 @@ import { BeneficiaryEntity } from '../../../../beneficiary/entity/beneficiary.en
 import { TrackEntity } from '../../../../tender-track/track/entities/track.entity';
 import { UserEntity } from '../../../../tender-user/user/entities/user.entity';
 import { ProposalFollowUpEntity } from '../../../follow-up/entities/proposal.follow.up.entity';
-import { ProposalItemBudgetEntity } from '../../../item-budget/entities/proposal.item.budget.entity';
-import { ProposalPaymentEntity } from '../../../payment/entities/proposal-payment.entity';
+import { ChequeEntity } from '../../../payment/entities/cheque.entity';
+import { PaymentStatusEntity } from '../../../payment/entities/payment-status.entity';
 import { ProposalProjectTimelineEntity } from '../../../poject-timelines/entities/proposal.project.timeline.entity';
 import { ProposalLogEntity } from '../../../proposal-log/entities/proposal-log.entity';
 export class ProposalFindByIdQuery {
   id: string;
   relation: string[];
 }
-
+class ProposalItemBudgetEntityFindByIdResponse {
+  id: string;
+  amount: string;
+  explanation: string;
+  clause: string;
+  proposal_id: string;
+  created_at?: Date | null = new Date();
+  updated_at?: Date | null = new Date();
+}
+class ProposalPaymentEntityFindByIdResponse {
+  id: string;
+  payment_amount?: string | null;
+  proposal_id: string;
+  payment_date?: Date | null;
+  status?: string | null = 'SET_BY_SUPERVISOR';
+  number_of_payments?: number | null;
+  order?: string | null;
+  created_at?: Date | null = new Date();
+  updated_at?: Date | null = new Date();
+  cheques?: ChequeEntity[];
+  payment_status?: PaymentStatusEntity;
+}
 export class ProposalFindByIdQueryResult {
   accreditation_type_id?: string | null;
   added_value?: string | null;
@@ -50,7 +71,7 @@ export class ProposalFindByIdQueryResult {
   on_revision?: boolean | null = false;
   outter_status?: string | null = 'ONGOING';
   partial_support_amount?: number | null;
-  payments?: ProposalPaymentEntity[];
+  payments?: ProposalPaymentEntityFindByIdResponse[];
   pm_email?: string | null;
   pm_mobile?: string | null;
   pm_name?: string | null;
@@ -73,7 +94,7 @@ export class ProposalFindByIdQueryResult {
   project_track?: string | null; // deprecated, use track_id and refer to track entity
   proposal_bank_id?: string | null;
   proposal_beneficiaries?: BeneficiaryEntity[];
-  proposal_item_budgets?: ProposalItemBudgetEntity[];
+  proposal_item_budgets?: ProposalItemBudgetEntityFindByIdResponse[];
   proposal_log?: ProposalLogEntity[];
   reasons_to_accept?: string | null;
   region?: string | null;
@@ -121,6 +142,7 @@ export class ProposalFindByIdQueryHandler
         'payments',
         'bank_information',
         'project_timeline',
+        'proposal_closing_report',
       ],
     });
 
@@ -143,6 +165,23 @@ export class ProposalFindByIdQueryHandler
         res.proposal_logs[0].new_values.createdItemBudgetPayload
           ? res.proposal_logs[0].new_values.createdItemBudgetPayload
           : null,
+      payments: res.payments
+        ? res.payments.map((payment) => {
+            return {
+              ...payment,
+              order: payment.order?.toString() || null,
+              payment_amount: payment.payment_amount?.toString() || null,
+            };
+          })
+        : undefined,
+      proposal_item_budgets: res.proposal_item_budgets
+        ? res.proposal_item_budgets.map((itemBudget) => {
+            return {
+              ...itemBudget,
+              amount: itemBudget.amount.toString(),
+            };
+          })
+        : undefined,
     };
   }
 }

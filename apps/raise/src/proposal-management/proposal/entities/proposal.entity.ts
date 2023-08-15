@@ -1,15 +1,15 @@
-import { TrackEntity } from '../../../tender-track/track/entities/track.entity';
-import { BeneficiaryEntity } from '../../../beneficiary/entity/beneficiary.entity';
-import { ProposalFollowUpEntity } from '../../follow-up/entities/proposal.follow.up.entity';
-import { ProposalLogEntity } from '../../proposal-log/entities/proposal-log.entity';
-import { ProposalPaymentEntity } from '../../payment/entities/proposal-payment.entity';
-import { ProposalProjectTimelineEntity } from '../../poject-timelines/entities/proposal.project.timeline.entity';
-import { ProposalItemBudgetEntity } from '../../item-budget/entities/proposal.item.budget.entity';
-import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 import { AggregateRoot } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
+import { BeneficiaryEntity } from '../../../beneficiary/entity/beneficiary.entity';
 import { CreateNotificationEvent } from '../../../notification-management/notification/event/create.notification.event';
-import { ApiProperty } from '@nestjs/swagger';
+import { TrackEntity } from '../../../tender-track/track/entities/track.entity';
+import { UserEntity } from '../../../tender-user/user/entities/user.entity';
+import { ProposalCloseReportEntity } from '../../closing-report/entity/proposal.close.report.entity';
+import { ProposalFollowUpEntity } from '../../follow-up/entities/proposal.follow.up.entity';
+import { ProposalItemBudgetEntity } from '../../item-budget/entities/proposal.item.budget.entity';
+import { ProposalPaymentEntity } from '../../payment/entities/proposal-payment.entity';
+import { ProposalProjectTimelineEntity } from '../../poject-timelines/entities/proposal.project.timeline.entity';
+import { ProposalLogEntity } from '../../proposal-log/entities/proposal-log.entity';
 
 export interface ISendNotificaitonEvent {
   notif_type: 'EMAIL' | 'SMS';
@@ -105,6 +105,7 @@ export class ProposalEntity extends AggregateRoot {
   whole_budget?: number | null;
   user?: UserEntity;
   supervisor?: UserEntity;
+  proposal_closing_report?: ProposalCloseReportEntity[];
   // accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   // project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   // project_manager                     user?                            @relation("proposal_project_manager_idTouser", fields: [project_manager_id], references: [id], onDelete: Cascade)
@@ -116,7 +117,6 @@ export class ProposalEntity extends AggregateRoot {
   // support_goal                        support_goal?                    @relation(fields: [support_goal_id], references: [id])
   // proposal_asked_edit_request         proposal_asked_edit_request[]
   // proposal_assign                     proposal_assign[]
-  // proposal_closing_report             proposal_closing_report[]
   // proposal_comment                    proposal_comment[]
   // proposal_edit_request               proposal_edit_request?
   // recommended_support_consultant      recommended_support_consultant[]

@@ -30,7 +30,7 @@ import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 // import { FileFieldsInterceptor } from '@webundsoehne/nest-fastify-file-upload';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
 import {
@@ -78,6 +78,13 @@ import {
 import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
 import { ProposalService } from '../services/proposal.service';
+import { BasePaginationApiOkResponse } from '../../../commons/decorators/base.pagination.api.ok.response.decorator';
+import { ProposalEntity } from '../entities/proposal.entity';
+import { ProposalFindMineQueryDto } from '../dtos/queries/proposal.find.mine.query.dto';
+import {
+  ProposalFindMineQuery,
+  ProposalFindMineQueryResult,
+} from '../queries/proposal.find.mine.query/proposal.find.mine.query';
 
 @ApiTags('ProposalModule')
 @Controller('tender-proposal')
@@ -336,6 +343,41 @@ export class TenderProposalController {
         result,
         HttpStatus.OK,
         'Proposal fetched successfully',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'find proposal that client has.',
+  })
+  @BasePaginationApiOkResponse(ProposalEntity)
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Get('mine')
+  async findMyProposal(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Query() query: ProposalFindMineQueryDto,
+  ) {
+    try {
+      const builder = Builder<ProposalFindMineQuery>(ProposalFindMineQuery, {
+        ...query,
+        submitter_user_id: currentUser.id,
+      });
+
+      const { result, total } = await this.queryBus.execute<
+        ProposalFindMineQuery,
+        ProposalFindMineQueryResult
+      >(builder.build());
+
+      return manualPaginationHelper(
+        result,
+        total,
+        query.page || 1,
+        query.limit || 10,
+        HttpStatus.OK,
+        'Proposal List Fetched Successfully!',
       );
     } catch (error) {
       throw this.errorMapper(error);
