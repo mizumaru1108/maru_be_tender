@@ -10,7 +10,12 @@ export class AuthoritiesCreateProps {
   name: string;
   client_field_id: string;
 }
-export class AuthoritiesUpdateProps {}
+export class AuthoritiesUpdateProps {
+  authority_id: string;
+  name?: string;
+  client_field_id?: string;
+  is_deleted?: boolean;
+}
 
 export class AuthoritiesFindManyProps {
   name?: string;
@@ -51,27 +56,33 @@ export class AuthoritiesRepository {
     }
   }
 
-  // async update(
-  //   props: AuthoritiesUpdateProps,
-  //   session?: PrismaService,
-  // ): Promise<AuthoritiesEntity> {
-  //   let prisma = this.prismaService;
-  //   if (session) prisma = session;
-  //   try {
-  //     const rawUpdated = await prisma.authorities.update({
-  //       where: {},
-  //       data: {},
-  //     });
+  async update(
+    props: AuthoritiesUpdateProps,
+    session?: PrismaService,
+  ): Promise<AuthoritiesEntity> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      // console.log('update props', props);
+      const rawUpdated = await prisma.authorities.update({
+        where: { authority_id: props.authority_id },
+        data: {
+          name: props.name,
+          client_field_id: props.client_field_id,
+          is_deleted: props.is_deleted,
+        },
+      });
 
-  //     const updatedEntity = Builder<AuthoritiesEntity>(AuthoritiesEntity, {
-  //       ...rawUpdated,
-  //     }).build();
-  //     return updatedEntity;
-  //   } catch (error) {
-  //     console.trace(error);
-  //     throw error;
-  //   }
-  // }
+      const updatedEntity = Builder<AuthoritiesEntity>(AuthoritiesEntity, {
+        ...rawUpdated,
+      }).build();
+      // console.log('updated entity', updatedEntity);
+      return updatedEntity;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
 
   async findById(
     authority_id: string,
@@ -188,6 +199,26 @@ export class AuthoritiesRepository {
       return await prisma.clientFields.count({
         where: args.where,
       });
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
+  async deleteMany(
+    authorities_id: string[],
+    session?: PrismaService,
+  ): Promise<number> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawResult = await prisma.authorities.updateMany({
+        where: {
+          authority_id: { in: authorities_id },
+        },
+        data: { is_deleted: true },
+      });
+      return rawResult.count;
     } catch (error) {
       console.trace(error);
       throw error;

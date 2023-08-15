@@ -4,11 +4,17 @@ import { AuthoritiesHttpController } from './controllers/authorities.http.contro
 import { AuthoritiesRepository } from './repositories/authorities.repository';
 import { AuthoritiesCreateCommandHandler } from './commands/authorities.create.command/authorities.create.command';
 import { AuthoritiesFindManyQueryHandler } from './queries/authorities.find.many.query/authorities.find.many.query';
+import { AuthoritiesUpdateCommandHandler } from './commands/authorities.update.command/authorities.update.command';
+import { AuthoritiesDeleteCommandHandler } from './commands/authorities.delete.command/authorities.delete.command';
 
 const importedModule = [CqrsModule];
 const controllers = [AuthoritiesHttpController];
 const repositories: Provider[] = [AuthoritiesRepository];
-const commands: Provider[] = [AuthoritiesCreateCommandHandler];
+const commands: Provider[] = [
+  AuthoritiesCreateCommandHandler,
+  AuthoritiesUpdateCommandHandler,
+  AuthoritiesDeleteCommandHandler,
+];
 const queries: Provider[] = [AuthoritiesFindManyQueryHandler];
 const exportedProviders: Provider[] = [];
 @Module({

@@ -32,6 +32,17 @@ import {
   AuthoritiesFindManyQueryResult,
 } from '../queries/authorities.find.many.query/authorities.find.many.query';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
+import { AuthoritiesUpdateDto } from '../dto/requests/authorities.update.dto';
+import { BaseResponse } from '../../../commons/dtos/base-response';
+import {
+  AuthoritiesUpdateCommandResult,
+  AuthoritiesUpdateCommand,
+} from '../commands/authorities.update.command/authorities.update.command';
+import { AuthoritiesDeleteDto } from '../dto/requests/authorities.delete.dto';
+import {
+  AuthoritiesDeleteCommandResult,
+  AuthoritiesDeleteCommand,
+} from '../commands/authorities.delete.command/authorities.delete.command';
 
 @Controller('authority-management/authorities')
 export class AuthoritiesHttpController {
@@ -108,32 +119,63 @@ export class AuthoritiesHttpController {
   }
 
   @ApiOperation({
-    summary: 'updating banner either for internal or external',
+    summary: 'updating authority data (admin only)',
   })
-  @BaseApiOkResponse(BannerUpdateCommandResult, 'object')
+  @BaseApiOkResponse(AuthoritiesEntity, 'object')
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Patch('update')
   async update(
-    @Body() dto: BannerUpdateDto,
-  ): Promise<BaseResponse<BannerUpdateCommandResult>> {
+    @Body() dto: AuthoritiesUpdateDto,
+  ): Promise<BaseResponse<AuthoritiesEntity>> {
     try {
-      const command = Builder<BannerUpdateCommand>(BannerUpdateCommand, {
-        ...dto,
-        id: dto.banner_id,
-        expired_date: dto.expired_date ? new Date(dto.expired_date) : undefined,
-        logos: files.logo,
-        current_user: currentUser,
-      }).build();
+      const command = Builder<AuthoritiesUpdateCommand>(
+        AuthoritiesUpdateCommand,
+        {
+          ...dto,
+        },
+      ).build();
       const result = await this.commandBus.execute<
-        BannerUpdateCommand,
-        BannerUpdateCommandResult
+        AuthoritiesUpdateCommand,
+        AuthoritiesUpdateCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result.updated_authorities,
+        HttpStatus.OK,
+        'Authority Updated Successfully!',
+      );
+    } catch (e) {
+      throw this.errorMapper(e);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'updating authority data (admin only)',
+  })
+  @BaseApiOkResponse(AuthoritiesDeleteCommandResult, 'object')
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Patch('delete')
+  async delete(
+    @Body() dto: AuthoritiesDeleteDto,
+  ): Promise<BaseResponse<AuthoritiesDeleteCommandResult>> {
+    try {
+      const command = Builder<AuthoritiesDeleteCommand>(
+        AuthoritiesDeleteCommand,
+        {
+          ...dto,
+        },
+      ).build();
+      const result = await this.commandBus.execute<
+        AuthoritiesDeleteCommand,
+        AuthoritiesDeleteCommandResult
       >(command);
 
       return baseResponseHelper(
         result,
         HttpStatus.OK,
-        'Banner Updated Successfully!',
+        'Authority Deleted Successfully!',
       );
     } catch (e) {
       throw this.errorMapper(e);
