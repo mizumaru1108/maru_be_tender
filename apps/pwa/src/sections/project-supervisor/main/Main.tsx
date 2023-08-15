@@ -54,7 +54,7 @@ function Main() {
       <PaymentAdjustment />
       <IncomingCloseReport />
       <ProposalOnAmandement />
-      {/* <IncomingAmandementRequest /> */}
+      <IncomingAmandementRequest />
     </Grid>
   );
 }

@@ -65,9 +65,9 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
     }
   }, [stepGransLog, proposal]);
 
-  console.log({ newProposal });
+  // console.log({ newProposal });
 
-  console.log({ stepGransLog });
+  // console.log({ stepGransLog });
   // console.log(target_age_map, 'tesat');
   // console.log('proposal.payments', proposal.payments);
 

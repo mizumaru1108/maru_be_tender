@@ -150,8 +150,11 @@ const ProjectCard = ({
   };
   React.useEffect(() => {
     if (title.inquiryStatus) {
+      // console.log('title.inquiryStatus', title.inquiryStatus);
       if (
-        (destination === 'incoming-funding-requests' || destination === 'requests-in-process') &&
+        (destination === 'incoming-funding-requests' ||
+          destination === 'requests-in-process' ||
+          destination === 'incoming-amandment-requests') &&
         role !== 'tender_finance' &&
         role !== 'tender_cashier'
       ) {

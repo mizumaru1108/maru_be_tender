@@ -30,6 +30,7 @@ import useLocales from '../../hooks/useLocales';
 import { LoadingButton } from '@mui/lab';
 import ConfirmationModal from '../../components/modal-dialog/ConfirmationModal';
 import axiosInstance from '../../utils/axios';
+import { role_url_map } from '../../@types/commons';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -143,6 +144,7 @@ export default function AmandementRequest() {
       }
     }
   };
+  // console.log('masuk sini');
   return (
     <Page title={translate(`proposal_amandement.${role}.page_name`)}>
       <Container>
@@ -208,7 +210,16 @@ export default function AmandementRequest() {
                     variant="contained"
                     endIcon={<Iconify icon="eva:diagonal-arrow-right-up-outline" />}
                     sx={{ backgroundColor: '#000000', ':hover': { backgroundColor: '#000' } }}
-                    onClick={() => navigate(PATH_ACCOUNTS_MANAGER.infoUpdateRequest)}
+                    onClick={() => {
+                      const url = `/${
+                        role_url_map[activeRole!]
+                      }/dashboard/requests-in-process/${id}/${
+                        activeRole! === 'tender_finance'
+                          ? 'completing-exchange-permission'
+                          : 'show-details'
+                      }`;
+                      navigate(url);
+                    }}
                     disabled={isSubmitting || isLoad}
                   >
                     {translate('account_manager.partner_details.btn_amndreq_back')}
