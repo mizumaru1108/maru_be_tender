@@ -12,12 +12,13 @@ export class ContactUsCreateProps {
   submitter_user_id: string;
   title?: string;
   message?: string;
-  date_of_visit?: number;
-  reason_visit?: string;
+  date_of_visit?: Date;
+  visit_reason?: string;
   proposal_id?: string;
 }
 export class ContactUsUpdateProps {}
 export class ContactUsFindManyProps {
+  inquiry_type?: ContactUsInquiryEnum[];
   limit?: number;
   page?: number;
   sort_by?: string;
@@ -43,14 +44,13 @@ export class ContactUsRepository {
           title: props.title,
           message: props.message,
           date_of_visit: props.date_of_visit,
-          reason_visit: props.reason_visit,
+          visit_reason: props.visit_reason,
           proposal_id: props.proposal_id,
         },
       });
 
       const createdEntity = Builder<ContactUsEntity>(ContactUsEntity, {
         ...rawCreated,
-        date_of_visit: Number(rawCreated.date_of_visit),
       }).build();
       return createdEntity;
     } catch (error) {
@@ -73,7 +73,6 @@ export class ContactUsRepository {
 
       const updatedEntity = Builder<ContactUsEntity>(ContactUsEntity, {
         ...rawUpdated,
-        date_of_visit: Number(rawUpdated.date_of_visit),
       }).build();
       return updatedEntity;
     } catch (error) {
@@ -95,7 +94,6 @@ export class ContactUsRepository {
       if (!result) return null;
       return Builder<ContactUsEntity>(ContactUsEntity, {
         ...result,
-        date_of_visit: Number(result.date_of_visit),
       }).build();
     } catch (error) {
       console.trace(error);
@@ -104,7 +102,19 @@ export class ContactUsRepository {
   }
 
   async findManyFilter(props: ContactUsFindManyProps) {
-    const args: Prisma.ContactUsFindManyArgs = {};
+    let args: Prisma.ContactUsFindManyArgs = {};
+    let whereArgs: Prisma.ContactUsWhereInput = {};
+
+    if (props.inquiry_type !== undefined) {
+      whereArgs = {
+        ...whereArgs,
+        inquiry_type: {
+          in: props.inquiry_type,
+        },
+      };
+    }
+
+    args.where = whereArgs;
     return args;
   }
   async findMany(
@@ -140,7 +150,6 @@ export class ContactUsRepository {
       const entities = rawProducts.map((rawProducts) => {
         return Builder<ContactUsEntity>(ContactUsEntity, {
           ...rawProducts,
-          date_of_visit: Number(rawProducts.date_of_visit),
         }).build();
       });
       return entities;
@@ -150,16 +159,20 @@ export class ContactUsRepository {
     }
   }
 
-  // async countMany(
-  //   props: ContactUsFindManyProps,
-  //   session?: PrismaService,
-  // ): Promise<number> {
-  //   let prisma = this.prismaService;
-  //   if (session) prisma = session;
-  //   try {
-  //   } catch (error) {
-  //     console.trace(error);
-  //     throw error;
-  //   }
-  // }
+  async countMany(
+    props: ContactUsFindManyProps,
+    session?: PrismaService,
+  ): Promise<number> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const args = await this.findManyFilter(props);
+      return await prisma.contactUs.count({
+        where: args.where,
+      });
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
 }

@@ -6,17 +6,17 @@ Table authorities {
   authority_id String [pk]
   name String [not null]
   is_deleted Boolean [not null, default: false]
-  entities entities [not null]
+  client_field_id String [not null]
+  client_field_details client_fields [not null]
   client_data client_data [not null]
 }
 
-Table entities {
-  entity_id String [pk]
+Table client_fields {
+  client_field_id String [pk]
   name String [not null]
-  authority_id String [not null]
-  authority_detail authorities [not null]
   is_deleted Boolean [not null, default: false]
   client_data client_data [not null]
+  authorities authorities [not null]
 }
 
 Table banners {
@@ -53,8 +53,6 @@ Table bank_information {
 Table client_data {
   id String [pk]
   entity String
-  entity_id String
-  entity_detail entities
   authority String
   authority_id String
   authority_detail authorities
@@ -81,6 +79,8 @@ Table client_data {
   created_at DateTime [default: `now()`]
   updated_at DateTime [default: `now()`]
   client_field String
+  client_field_id String
+  client_field_details client_fields
   user_id String [unique, not null]
   license_file Json
   board_ofdec_file Json
@@ -493,8 +493,8 @@ Table contact_us {
   inquiry_type String [not null]
   title String
   message String
-  date_of_visit BigInt
-  reason_visit String
+  date_of_visit DateTime
+  visit_reason String
   submitter_user_id String [not null]
   user user [not null]
   proposal_id String
@@ -1519,15 +1519,15 @@ Table backup_client_data_latest {
   qid Int
 }
 
-Ref: entities.authority_id > authorities.authority_id
+Ref: authorities.client_field_id > client_fields.client_field_id
 
 Ref: banners.track_id > track.id
 
 Ref: bank_information.user_id > user.id [delete: Restrict]
 
-Ref: client_data.entity_id > entities.entity_id
-
 Ref: client_data.authority_id > authorities.authority_id
+
+Ref: client_data.client_field_id > client_fields.client_field_id
 
 Ref: client_data.user_id - user.id [delete: Restrict]
 

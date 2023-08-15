@@ -217,7 +217,7 @@ export class registerClient {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  entity_id: string;
+  client_field_id: string;
 
   @ApiPropertyOptional()
   @IsOptional()

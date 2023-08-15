@@ -12,8 +12,8 @@ export class ContactUsCreateCommand {
   submitter_user_id: string;
   title?: string;
   message?: string;
-  date_of_visit?: number;
-  reason_visit?: string;
+  date_of_visit?: Date;
+  visit_reason?: string;
   proposal_id?: string;
 }
 
@@ -36,7 +36,7 @@ export class ContactUsCreateCommandHandler
       title,
       message,
       date_of_visit,
-      reason_visit,
+      visit_reason,
       submitter_user_id,
       proposal_id,
     } = command;
@@ -51,20 +51,19 @@ export class ContactUsCreateCommandHandler
       }
 
       if (
-        [
-          ContactUsInquiryEnum.PROJECT_INQUIRIES,
-          ContactUsInquiryEnum.GENERAL,
-        ].indexOf(inquiry_type) > 0
-      )
+        inquiry_type === ContactUsInquiryEnum.GENERAL ||
+        inquiry_type === ContactUsInquiryEnum.PROJECT_INQUIRIES
+      ) {
         if (title === undefined) {
           throw new PayloadErrorException(
-            `Proposal Id is Required when type is PROJECT_INQUIRIES/GENERAL!`,
+            `Title is Required when type is PROJECT_INQUIRIES/GENERAL!`,
           );
         }
-      if (message === undefined) {
-        throw new PayloadErrorException(
-          `Proposal Id is Required when type is PROJECT_INQUIRIES/GENERAL!`,
-        );
+        if (message === undefined) {
+          throw new PayloadErrorException(
+            `Message is Required when type is PROJECT_INQUIRIES/GENERAL!`,
+          );
+        }
       }
 
       if (inquiry_type === ContactUsInquiryEnum.VISITATION) {
@@ -73,7 +72,7 @@ export class ContactUsCreateCommandHandler
             `Date of visit is Required when type is VISITATION!`,
           );
         }
-        if (reason_visit === undefined) {
+        if (visit_reason === undefined) {
           throw new PayloadErrorException(
             `Reason is Required when type is VISITATION!`,
           );
@@ -89,7 +88,7 @@ export class ContactUsCreateCommandHandler
           title,
           message,
           date_of_visit,
-          reason_visit,
+          visit_reason,
         },
       ).build();
 

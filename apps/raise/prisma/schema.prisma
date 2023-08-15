@@ -16,21 +16,21 @@ model Authorities {
     authority_id String @id
     name String
     is_deleted Boolean @default(false)
+    client_field_id String
+    client_field_details ClientFields @relation(fields: [client_field_id], references: [client_field_id])
 
-    entities    Entities[]
     client_data client_data[]
     @@map("authorities")
 }
 
-model Entities {
-    entity_id String @id
+model ClientFields {
+    client_field_id String @id
     name String
-    authority_id String
-    authority_detail Authorities @relation(fields: [authority_id], references: [authority_id])
     is_deleted Boolean @default(false)
 
     client_data    client_data[]
-    @@map("entities")
+    authorities    Authorities[]
+    @@map("client_fields")
 }
 model Banner {
   id           String    @id
@@ -68,8 +68,6 @@ model bank_information {
 model client_data {
   id                       String       @id(map: "users_pkey")
   entity                   String?      @db.VarChar
-  entity_id                String?
-  entity_detail            Entities?    @relation(fields: [entity_id], references: [entity_id])
   authority                String?      @db.VarChar
   authority_id             String?
   authority_detail         Authorities? @relation(fields: [authority_id], references: [authority_id])
@@ -96,6 +94,8 @@ model client_data {
   created_at               DateTime?    @default(now()) @db.Timestamp(6)
   updated_at               DateTime?    @default(now()) @db.Timestamp(6)
   client_field             String?      @db.VarChar
+  client_field_id          String?
+  client_field_details     ClientFields? @relation(fields: [client_field_id], references: [client_field_id])
   user_id                  String       @unique
   license_file             Json?
   board_ofdec_file         Json?
@@ -508,8 +508,8 @@ model ContactUs {
   inquiry_type                          String       
   title                                 String?        @db.VarChar()
   message                               String?        @db.VarChar()
-  date_of_visit                         BigInt?        // epoch time of visitation time
-  reason_visit                          String?
+  date_of_visit                         DateTime?
+  visit_reason                          String?
   submitter_user_id                     String
   user                                  user           @relation(fields: [submitter_user_id], references: [id])
   proposal_id                           String?

@@ -5,13 +5,18 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 // import './traces'; // MUST be the first one! because of instrumentations
-import { ValidationPipe } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 
 import { json, urlencoded } from 'express';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
+import { validationFormaterResponse } from './commons/helpers/validation.formater.response.helper';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -24,8 +29,16 @@ async function bootstrap() {
   // Validation Pipe
   app.useGlobalPipes(
     new ValidationPipe({
+      disableErrorMessages: false,
       transform: true,
       whitelist: true,
+      // exceptionFactory: (errors) => {
+      //   return new BadRequestException({
+      //     statusCode: HttpStatus.BAD_REQUEST,
+      //     message: validationFormaterResponse(errors),
+      //     error: 'BAD_REQUEST',
+      //   });
+      // },
     }),
   );
 

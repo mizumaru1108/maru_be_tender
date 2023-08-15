@@ -312,7 +312,12 @@ export class TenderUserRepository {
         where: { id: userId },
         include: {
           roles: true,
-          client_data: true,
+          client_data: {
+            include: {
+              authority_detail: true,
+              client_field_details: true,
+            },
+          },
         },
       });
     } catch (error) {

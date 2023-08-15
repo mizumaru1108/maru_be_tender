@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsDateString,
   IsEnum,
   IsIn,
   IsNotEmpty,
@@ -35,15 +36,16 @@ export class ContactUsCreateDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber()
   @IsNotEmpty()
-  date_of_visit?: number;
+  @IsString()
+  @IsDateString()
+  date_of_visit: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  reason_visit?: string;
+  visit_reason?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

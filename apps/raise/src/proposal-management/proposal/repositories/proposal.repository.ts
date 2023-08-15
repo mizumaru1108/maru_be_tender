@@ -75,7 +75,12 @@ export class ProposalRepository {
                 email: true,
                 mobile_number: true,
                 employee_name: true,
-                client_data: true,
+                client_data: {
+                  include: {
+                    authority_detail: true,
+                    client_field_details: true,
+                  },
+                },
                 roles: true,
                 bank_information: true,
               },
@@ -2706,7 +2711,12 @@ export class ProposalRepository {
               email: true,
               mobile_number: true,
               employee_name: true,
-              client_data: true,
+              client_data: {
+                include: {
+                  authority_detail: true,
+                  client_field_details: true,
+                },
+              },
               roles: true,
               bank_information: true,
             },

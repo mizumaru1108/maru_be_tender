@@ -24,7 +24,6 @@ export class CreateClientDataProps {
   id?: string;
   user_id: string;
   entity?: string | null;
-  entity_id?: string | null;
   authority?: string | null;
   authority_id?: string | null;
   headquarters?: string | null;
@@ -48,6 +47,7 @@ export class CreateClientDataProps {
   data_entry_name?: string | null;
   data_entry_mail?: string | null;
   client_field?: string | null;
+  client_field_id?: string | null;
   license_file?: any; // json
   board_ofdec_file?: any; // json
   chairman_name?: string | null;
@@ -76,6 +76,7 @@ export class TenderClientRepository {
           user_id: props.user_id,
           entity: props.entity,
           authority: props.authority,
+          authority_id: props.authority_id,
           headquarters: props.headquarters,
           date_of_esthablistmen: props.date_of_esthablistmen,
           num_of_beneficiaries: props.num_of_beneficiaries,
@@ -97,6 +98,7 @@ export class TenderClientRepository {
           data_entry_name: props.data_entry_name,
           data_entry_mail: props.data_entry_mail,
           client_field: props.client_field,
+          client_field_id: props.client_field_id,
           license_file: props.license_file, // json
           board_ofdec_file: props.board_ofdec_file, // json
           chairman_name: props.chairman_name,
@@ -418,7 +420,12 @@ export class TenderClientRepository {
           user: {
             select: {
               employee_name: true,
-              client_data: true,
+              client_data: {
+                include: {
+                  authority_detail: true,
+                  client_field_details: true,
+                },
+              },
               roles: true,
             },
           },

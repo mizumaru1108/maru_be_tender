@@ -32,12 +32,15 @@
 // qid                      Int?
 // user                     user         @relation("client_data_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade)
 
+import { AuthoritiesEntity } from '../../../authority-management/authorities/entities/authorities.entity';
+import { ClientFieldEntity } from '../../../authority-management/client-fields/entities/client.field.entity';
 import { UserEntity } from '../../user/entities/user.entity';
 
 export class ClientDataEntity {
   id: string;
   entity?: string | null;
   authority?: string | null;
+  authority_detail?: AuthoritiesEntity;
   headquarters?: string | null;
   date_of_esthablistmen?: Date | null = new Date();
   num_of_beneficiaries?: number | null;
@@ -61,6 +64,8 @@ export class ClientDataEntity {
   created_at?: Date | null = new Date();
   updated_at?: Date | null = new Date();
   client_field?: string | null;
+  client_field_id?: string | null;
+  client_field_details?: ClientFieldEntity;
   user_id: string;
   license_file?: any; // json
   board_ofdec_file?: any; // json
