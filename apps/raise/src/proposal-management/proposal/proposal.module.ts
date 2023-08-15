@@ -14,6 +14,7 @@ import { TenderProposalController } from './controllers/proposal.controller';
 import { ProposalRepository } from './repositories/proposal.repository';
 import { ProposalService } from './services/proposal.service';
 import { ProposalSaveDraftCommandHandler } from './commands/proposal.save.draft/proposal.save.draft.command';
+import { ProposalFindMineQueryHandler } from './queries/proposal.find.mine.query/proposal.find.mine.query';
 
 const importedModule = [
   CqrsModule,
@@ -32,7 +33,10 @@ const commands: Provider[] = [
   ProposalSaveDraftCommandHandler,
 ];
 
-const queries: Provider[] = [ProposalFindByIdQueryHandler];
+const queries: Provider[] = [
+  ProposalFindByIdQueryHandler,
+  ProposalFindMineQueryHandler,
+];
 
 const repositories: Provider[] = [ProposalRepository];
 

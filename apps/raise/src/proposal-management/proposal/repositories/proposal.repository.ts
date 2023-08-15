@@ -573,9 +573,16 @@ export class ProposalRepository {
 
   /* Latest, already able to do passing session, and return entity instead of prisma model*/
   async findManyFilter(props: ProposalFindManyProps) {
-    const { include_relations } = props;
+    const { submitter_user_id, include_relations } = props;
     let args: Prisma.proposalFindManyArgs = {};
     let whereClause: Prisma.proposalWhereInput = {};
+
+    if (submitter_user_id) {
+      whereClause = {
+        ...whereClause,
+        submitter_user_id,
+      };
+    }
 
     if (include_relations && include_relations.length > 0) {
       let include: Prisma.proposalInclude = {};
