@@ -16,6 +16,7 @@ import { useQuery } from 'urql';
 import { getProposalClosingReport } from 'queries/client/getProposalClosingReport';
 import FinanceFloatingActionBar from 'sections/project-details/floating-action-bar/finance';
 import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
+import PaymentAmandementFloatingActionBar from './supervisor/SendPaymentAmandement';
 
 //
 
@@ -133,6 +134,14 @@ function FloatinActonBar() {
             ) &&
             proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
             ['tender_finance'].includes(role) && <FinanceFloatingActionBar />}
+          {FEATURE_AMANDEMENT_FROM_FINANCE &&
+            activeTap &&
+            ['project-path'].includes(activeTap) &&
+            ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR', 'DONE_BY_CASHIER'].includes(
+              proposal.inner_status
+            ) &&
+            proposal.outter_status === 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
+            ['tender_project_supervisor'].includes(role) && <PaymentAmandementFloatingActionBar />}
           {/* {activeTap &&
             ['project-path', 'payments'].includes(activeTap) &&
             ['tender_finance'].includes(role) && <FinanceFloatingActionBar />} */}
