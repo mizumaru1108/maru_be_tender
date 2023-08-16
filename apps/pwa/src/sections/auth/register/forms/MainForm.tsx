@@ -163,25 +163,20 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     onSubmit(data);
   };
 
-  const client_field: string = watch('client_field');
+  const handleChangeClientField = (client_field_id: string) => {
+    fetchAuthorities(client_field_id);
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
     reset(defaultValues);
-    fetchClientFields();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultValues, fetchClientFields]);
+  }, [defaultValues]);
 
   React.useEffect(() => {
-    if (client_field !== '') {
-      fetchAuthorities(client_field);
-    }
+    fetchClientFields();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client_field, fetchAuthorities]);
-
-  // console.log({ authorities });
-  // console.log({ clientFields });
-  // console.log({ client_field });
+  }, []);
 
   if (isFetchingClientFields) {
     return <>{translate('pages.common.loading')}</>;
@@ -202,6 +197,14 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             name="client_field"
             label={translate('register_form1.entity_area.label')}
             placeholder={translate('register_form1.entity_area.placeholder')}
+            onChange={(e) => {
+              // console.log(e.target.value);
+              if (e.target.value !== '') {
+                // console.log('masuk if');
+                handleChangeClientField(e.target.value);
+              }
+              setValue('client_field', e.target.value);
+            }}
           >
             {/* <MenuItem value="main">
               {translate('register_form1.entity_area.options.sub_entity_area')}
