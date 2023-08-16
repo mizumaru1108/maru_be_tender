@@ -69,6 +69,12 @@ export class SendRevisionDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  proposal_bank_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0.01)
   @Max(999999999999999999.99)

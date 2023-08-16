@@ -100,5 +100,5 @@ export class SendAmandementDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  bank_information?: string;
+  proposal_bank_id?: string;
 }

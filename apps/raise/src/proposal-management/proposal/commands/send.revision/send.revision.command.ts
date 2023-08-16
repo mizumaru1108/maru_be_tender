@@ -107,6 +107,7 @@ export class SendRevisionCommandHandler
           project_risks: request.project_risks,
           //form 4
           amount_required_fsupport: request.amount_required_fsupport,
+          proposal_bank_id: request.proposal_bank_id,
         },
       ).build();
 
