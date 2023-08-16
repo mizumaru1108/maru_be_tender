@@ -36,7 +36,7 @@ const AmandementRequest = () => {
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const [tmpValues, setTmpValues] = React.useState<ITmpValues | null>(null);
-
+  // console.log({ tmpValues });
   const formatingFieldName = (fieldName: string) => {
     const nameField = fieldName.split('_');
     return nameField.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');

@@ -15,6 +15,9 @@ import { useParams } from 'react-router';
 import { LeftField, RightField } from './FormFieldData';
 import BaseField from 'components/hook-form/BaseField';
 import moment from 'moment';
+import BankImageComp from '../../../sections/shared/BankImageComp';
+import { useSelector } from '../../../redux/store';
+import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
 
 type Props = {
   // onSubmit: (data: any) => void;
@@ -23,16 +26,19 @@ type Props = {
   selectedLength: (length: number) => void;
   openConfirm: () => void;
   onSubmit: (data: AmandementFields) => void;
+  isPaymentamandement?: boolean;
 };
 const AmandementForms = ({
   children,
   defaultValues,
+  isPaymentamandement = false,
   selectedLength,
   openConfirm,
   onSubmit,
 }: Props) => {
   const { translate } = useLocales();
   const params = useParams();
+  const { proposal } = useSelector((state) => state.proposal);
   const [selectedCheckbox, setSelectedCheckbox] = useState<string[]>([]);
   const CreatingProposalForm2 = Yup.object().shape({
     num_ofproject_binicficiaries: Yup.string().required(
@@ -67,6 +73,9 @@ const AmandementForms = ({
     ),
     notes: Yup.string().required(translate('errors.cre_proposal.notes.required')),
     timelines: Yup.string().required(translate('errors.cre_proposal.project_timeline.required')),
+    proposal_bank_id: Yup.string().required(
+      translate('errors.cre_proposal.bank_information.required')
+    ),
   });
 
   const methods = useForm<AmandementFields>({
@@ -87,7 +96,8 @@ const AmandementForms = ({
     if (
       field !== 'letter_ofsupport_req' &&
       field !== 'project_attachments' &&
-      field !== 'timelines'
+      field !== 'timelines' &&
+      field !== 'proposal_bank_id'
     ) {
       setValue(field, newValues[field]);
     } else {
@@ -115,6 +125,7 @@ const AmandementForms = ({
         project_strengths: newValues.project_strengths,
         timelines: '-',
         notes: '',
+        proposal_bank_id: '-',
       });
     }
   }, [defaultValues, reset]);
@@ -152,6 +163,7 @@ const AmandementForms = ({
     }
     openConfirm();
     // setTmpValues(selectedData as AmandementFields);
+    // console.log({ selectedData });
     onSubmit(selectedData as AmandementFields);
     // console.log({ selectedData });
   };
@@ -168,6 +180,8 @@ const AmandementForms = ({
                   }
                   onChange={(e) => handleChange(e)}
                   value={item.name}
+                  disabled={FEATURE_AMANDEMENT_FROM_FINANCE && isPaymentamandement}
+                  data-cy={`${item.name}-checkbox-$${index}`}
                 />
               </Grid>
               <Grid item xs={11} md={11}>
@@ -176,6 +190,7 @@ const AmandementForms = ({
                   disabled={selectedCheckbox.includes(item.name) ? false : true}
                   label={translate(`${item.label}`)}
                   placeholder={translate(`${item.placeholder}`)}
+                  data-cy={`${item.name}-textField-$${index}`}
                 />
               </Grid>
             </Stack>
@@ -191,6 +206,8 @@ const AmandementForms = ({
                   }
                   onChange={(e) => handleChange(e)}
                   value={item.name}
+                  disabled={FEATURE_AMANDEMENT_FROM_FINANCE && isPaymentamandement}
+                  data-cy={`${item.name}-checkbox-$${index}`}
                 />
               </Grid>
               <Grid item xs={11} md={11}>
@@ -200,6 +217,7 @@ const AmandementForms = ({
                   disabled={selectedCheckbox.includes(item.name) ? false : true}
                   label={translate(`${item.label}`)}
                   placeholder={translate(`${item.placeholder}`)}
+                  data-cy={`${item.name}-textField-$${index}`}
                 />
               </Grid>
             </Stack>
@@ -228,6 +246,8 @@ const AmandementForms = ({
                     }
                     onChange={(e) => handleChange(e)}
                     value={'project_attachments'}
+                    data-cy={`project_attachments-checkbox`}
+                    disabled={FEATURE_AMANDEMENT_FROM_FINANCE && isPaymentamandement}
                   />
                 </Grid>
                 <Grid item xs={11} md={11}>
@@ -253,6 +273,7 @@ const AmandementForms = ({
                         : false
                     }
                     onChange={(e) => handleChange(e)}
+                    disabled={FEATURE_AMANDEMENT_FROM_FINANCE && isPaymentamandement}
                     value={'letter_ofsupport_req'}
                   />
                 </Grid>
@@ -282,6 +303,7 @@ const AmandementForms = ({
               checked={selectedCheckbox.length > 0 ? selectedCheckbox.includes('timelines') : false}
               onChange={(e) => handleChange(e)}
               value={'timelines'}
+              disabled={FEATURE_AMANDEMENT_FROM_FINANCE && isPaymentamandement}
             />
           </Stack>
           {/* </Grid> */}
@@ -413,6 +435,43 @@ const AmandementForms = ({
           )}
         </Grid>
         {/* {defaultValues?.timelines && defaultValues?.timelines.length > 0 ? <>test</> : <>test</>} */}
+        {FEATURE_AMANDEMENT_FROM_FINANCE && isPaymentamandement ? (
+          <Grid item xs={12} md={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Grid item xs={1} md={1}>
+              <Checkbox
+                checked={
+                  selectedCheckbox.length > 0
+                    ? selectedCheckbox.includes('proposal_bank_id')
+                    : false
+                }
+                onChange={(e) => handleChange(e)}
+                value={'proposal_bank_id'}
+              />
+            </Grid>
+            <Grid item xs={11} md={11}>
+              {selectedCheckbox.includes('proposal_bank_id') ? (
+                <RHFTextField
+                  name={'proposal_bank_id'}
+                  label={translate('funding_project_request_form1.bank_information.label')}
+                  placeholder={translate(
+                    'funding_project_request_form1.bank_information.placeholder'
+                  )}
+                />
+              ) : (
+                <BankImageComp
+                  enableButton={true}
+                  bankName={proposal.bank_information?.bank_name}
+                  accountNumber={proposal.bank_information?.bank_account_number}
+                  bankAccountName={proposal.bank_information?.bank_account_name}
+                  imageUrl={proposal.bank_information?.card_image.url}
+                  size={proposal.bank_information?.card_image.size}
+                  type={proposal.bank_information?.card_image.type}
+                  borderColor={proposal.bank_information?.card_image.border_color ?? 'transparent'}
+                />
+              )}
+            </Grid>
+          </Grid>
+        ) : null}
         <Grid item xs={12} md={12} sx={{ mb: 4, mt: 2 }}>
           <RHFTextArea
             name={'notes'}

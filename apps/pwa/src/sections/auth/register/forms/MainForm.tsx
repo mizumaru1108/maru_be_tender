@@ -55,50 +55,54 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     defaultValues: useMemo(() => defaultValues, [defaultValues]),
   });
 
-  const fetchAuthorities = async (client_field_id: string) => {
-    setIsFetchingAuthorities(true);
-    try {
-      const url = `${TMRA_RAISE_URL}/authority-management/authorities?client_field_id=${client_field_id}&limit=0`;
-      // console.log({ url });
-      const response = await axios.get(url);
-      if (response) {
-        const mappedRes = response.data.data
-          .filter(
-            (authority: any) => authority.is_deleted === false || authority.is_deleted === null
-          )
-          .map((authority: any) => authority);
-        setAuthorities(mappedRes);
+  const fetchAuthorities = React.useCallback(
+    async (client_field: string) => {
+      setIsFetchingAuthorities(true);
+      try {
+        const url = `${TMRA_RAISE_URL}/authority-management/authorities?client_field_id=${client_field}&limit=0`;
+        // console.log({ url });
+        const response = await axios.get(url);
+        if (response) {
+          const mappedRes = response.data.data
+            .filter(
+              (authority: any) => authority.is_deleted === false || authority.is_deleted === null
+            )
+            .map((authority: any) => authority);
+          setAuthorities(mappedRes);
+        }
+      } catch (error) {
+        // console.error(error.message);
+        setAuthorities([]);
+        const statusCode = (error && error.statusCode) || 0;
+        const message = (error && error.message) || null;
+        if (message && statusCode !== 0) {
+          enqueueSnackbar(error.message, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+        } else {
+          enqueueSnackbar(translate('pages.common.internal_server_error'), {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+        }
+      } finally {
+        setIsFetchingAuthorities(false);
       }
-    } catch (error) {
-      // console.error(error.message);
-      setAuthorities([]);
-      const statusCode = (error && error.statusCode) || 0;
-      const message = (error && error.message) || null;
-      if (message && statusCode !== 0) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      } else {
-        enqueueSnackbar(translate('pages.common.internal_server_error'), {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      }
-    } finally {
-      setIsFetchingAuthorities(false);
-    }
-  };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [enqueueSnackbar]
+  );
 
   const fetchClientFields = async () => {
     setIsFetchingClientFields(true);
@@ -166,13 +170,14 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     reset(defaultValues);
     fetchClientFields();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultValues]);
+  }, [defaultValues, fetchClientFields]);
 
   React.useEffect(() => {
     if (client_field !== '') {
       fetchAuthorities(client_field);
     }
-  }, [client_field]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client_field, fetchAuthorities]);
 
   // console.log({ authorities });
   // console.log({ clientFields });

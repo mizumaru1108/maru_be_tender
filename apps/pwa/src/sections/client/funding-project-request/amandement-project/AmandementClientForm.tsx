@@ -23,6 +23,7 @@ import {
   SupportingDurationInfoForm,
 } from '../forms';
 import ActionBox from '../forms/ActionBox';
+import ProposalBankInformation from '../forms/ProposalBankInformation';
 import AmandementActionBox from './AmandementActionBox';
 
 const steps = [
@@ -31,6 +32,7 @@ const steps = [
   'funding_project_request_form3.step',
   'funding_project_request_form4.step',
   'funding_project_request_project_timeline.step',
+  'funding_project_request_bank_information.step',
   // 'funding_project_request_form5.step',
 ];
 // const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH'];
@@ -166,7 +168,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
 
   // on submit for the fourth step
   const onSubmitform4 = (data: any) => {
-    console.log('data form 4', data);
+    // console.log('data form 4', data);
     setStep((prevStep) => prevStep + 1);
     setRequestState((prevRegisterState: any) => ({
       ...prevRegisterState,
@@ -179,7 +181,16 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
     }));
   };
 
-  const onSubmitform5 = async (data: any) => {
+  // on submit for the Fifth step
+  const onSubmitform5 = (data: any) => {
+    // console.log('data form 5', data);
+    setStep((prevStep) => prevStep + 1);
+    setRequestState((prevRegisterState: any) => ({
+      ...prevRegisterState,
+      project_timeline: [...data?.project_timeline],
+    }));
+  };
+  const onSubmitform6 = async (data: any) => {
     // console.log('data form 5', data.project_timeline);
     setIsLoading(true);
     let newValue: any = {};
@@ -189,9 +200,10 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
       ...requestState.form2,
       ...requestState.form3,
       ...requestState.form4,
+      proposal_bank_id: data.proposal_bank_id,
       // timelines: data.project_timeline,
     };
-    console.log('newValue', newValue);
+    // console.log('newValue', newValue);
     delete newValue.project_attachments;
     delete newValue.letter_ofsupport_req;
     delete newValue.project_timeline;
@@ -220,7 +232,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
     }
 
     if (tmpValues?.revised.hasOwnProperty('project_timeline')) {
-      for (let i = 0; i < data?.project_timeline?.length; i++) {
+      for (let i = 0; i < requestState?.project_timeline.length; i++) {
         const timeline: {
           name: string;
           start_date: string;
@@ -349,6 +361,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         if (tmpValues.data) {
           setRequestState((prevRegisterState: any) => ({
             ...prevRegisterState,
+            proposal_bank_id: tmpValues?.data?.proposal_bank_id,
             project_timeline: tmpValues?.data?.project_timeline || [],
             form1: {
               ...prevRegisterState.form1,
@@ -492,6 +505,15 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
           >
             <AmandementActionBox step={step} onReturn={onReturn} isLoad={isLoading} />
           </ProjectTimeLine>
+        )}
+        {step === 5 && (
+          <ProposalBankInformation
+            onSubmit={onSubmitform6}
+            defaultValues={{ proposal_bank_id: requestState?.proposal_bank_id }}
+            revised={tmpValues?.revised}
+          >
+            <AmandementActionBox step={step} onReturn={onReturn} isLoad={isLoading} />
+          </ProposalBankInformation>
         )}
         <Toast
           variant="outlined"

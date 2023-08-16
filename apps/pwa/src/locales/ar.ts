@@ -706,6 +706,14 @@ const ar = {
       },
     },
     cre_proposal: {
+      notes: {
+        message: '',
+        required: 'الملاحظات مطلوبة',
+      },
+      bank_information: {
+        message: '',
+        required: 'المعلومات المصرفية مطلوبة',
+      },
       project_name: {
         message: '',
         required: 'اسم المشروع مطلوب',
@@ -967,6 +975,7 @@ const ar = {
     chip_completed: 'الطلب كامل',
     chip_pending: 'الطلب معلق',
     chip_asked_for_amandement: 'تم طلب تعديلات',
+    chip_asked_for_amandement_payment: 'طلب تعديل الدفع',
     chip_on_revision: 'الطلب قيد المراجعة',
     maintenance_feature_flag: 'هذه الميزة لا تزال قيد الصيانة',
     view_license_file: 'اضغط هنا لرؤية ملف الترخيص',
@@ -1250,6 +1259,10 @@ const ar = {
     },
   },
   funding_project_request_form1: {
+    bank_information: {
+      label: 'المعلومات المصرفية',
+      placeholder: 'المعلومات المصرفية',
+    },
     step: 'معلومات عامة',
     project_name: {
       label: 'اسم المشروع*',
@@ -1368,6 +1381,9 @@ const ar = {
       label: 'تاريخ الانتهاء*',
       placeholder: 'الرجاء تحديد تاريخ الانتهاء',
     },
+  },
+  funding_project_request_bank_information: {
+    step: 'المعلومات المصرفية',
   },
   funding_project_request_form5: {
     step: 'معلومات الحساب البنكي',
@@ -2558,6 +2574,7 @@ const ar = {
   amandement: {
     client: {
       amandement_request: {
+        proposal_bank_id: 'رقم تعريف بنك الاقتراح',
         amount_required_fsupport: 'المبلغ المطلوب للدعم',
         letter_ofsupport_req: 'خطاب طلب الدعم',
         num_ofproject_binicficiaries: 'عدد المستفيدين من المشروع',

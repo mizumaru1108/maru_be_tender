@@ -279,6 +279,7 @@ export interface AmandmentRequestForm extends AmandementProposal {
   region: string;
   governorate: string;
   proposal_item_budgets: ItemBudget[];
+  proposal_bank_id: string;
   // timelines: FormValuesProps;
 }
 
@@ -314,6 +315,7 @@ export type AmandementFields = {
   project_strengths: string;
   notes: string;
   timelines: string;
+  proposal_bank_id: string;
 };
 
 export type ActiveTap =

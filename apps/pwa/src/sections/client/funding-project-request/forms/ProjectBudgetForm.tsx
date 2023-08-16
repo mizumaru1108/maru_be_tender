@@ -53,11 +53,14 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props
       })
     ),
   });
+  const tmpArrayBudgets =
+    defaultValues?.detail_project_budgets?.data || defaultValues?.detail_project_budgets;
+  const totalPayments = tmpArrayBudgets.reduce((a: any, b: any) => Number(a) + Number(b.amount), 0);
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(CreatingProposalForm4),
     defaultValues: {
-      amount_required_fsupport: defaultValues.amount_required_fsupport,
+      amount_required_fsupport: totalPayments,
       detail_project_budgets:
         defaultValues?.detail_project_budgets?.data || defaultValues?.detail_project_budgets,
     },

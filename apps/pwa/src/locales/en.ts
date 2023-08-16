@@ -694,6 +694,14 @@ const en = {
     },
 
     cre_proposal: {
+      notes: {
+        message: '',
+        required: 'Notes is required',
+      },
+      bank_information: {
+        message: '',
+        required: 'Bank Information is required',
+      },
       project_name: {
         message: '',
         required: 'Project name is required',
@@ -960,6 +968,7 @@ const en = {
     chip_pending: 'The request is pending',
     chip_on_revision: 'The request is on revision',
     chip_asked_for_amandement: 'The request is asked for amandement',
+    chip_asked_for_amandement_payment: 'The request is asked for payment amandement',
     maintenance_feature_flag: 'This feature is still in maintenance',
     view_license_file: 'Click here to view the license file',
   },
@@ -1245,6 +1254,10 @@ const en = {
     },
   },
   funding_project_request_form1: {
+    bank_information: {
+      label: 'Bank Information',
+      placeholder: 'Bank Information',
+    },
     step: 'general information',
     project_name: {
       label: 'Project name*',
@@ -1363,6 +1376,9 @@ const en = {
       label: 'End date*',
       placeholder: 'Please select an end date',
     },
+  },
+  funding_project_request_bank_information: {
+    step: 'Bank Information',
   },
   funding_project_request_form5: {
     step: 'Detailed project budget',
@@ -2546,6 +2562,7 @@ const en = {
   amandement: {
     client: {
       amandement_request: {
+        proposal_bank_id: 'Proposal Bank Id',
         amount_required_fsupport: 'Amount required for support',
         letter_ofsupport_req: 'Letter of support requirment',
         num_ofproject_binicficiaries: 'Number of project biniciaries',

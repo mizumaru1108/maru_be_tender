@@ -54,6 +54,8 @@ function AmandementRequestProposal() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { proposal, isLoading } = useSelector((state) => state.proposal);
+  const isPaymentAmandement: boolean =
+    proposal.outter_status === 'ASKED_FOR_AMANDEMENT_PAYMENT' ? true : false;
 
   // state for handling
   const [open, setOpen] = useState(false);
@@ -147,6 +149,7 @@ function AmandementRequestProposal() {
           <Container sx={{ padding: '10px' }}>
             <AmandementForms
               defaultValues={AmandementProposal}
+              isPaymentamandement={isPaymentAmandement}
               selectedLength={(length) => {
                 setSelectedLength(length);
               }}

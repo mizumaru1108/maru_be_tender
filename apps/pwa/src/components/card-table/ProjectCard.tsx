@@ -37,6 +37,7 @@ const inquiryStatusStyle = {
   pending: { color: '#FFC107', backgroundColor: '#FFC10729' },
   on_revision: { color: '#FFC107', backgroundColor: '#FFC10729' }, // this is the same as pending
   asked_for_amandement: { color: '#FFC107', backgroundColor: '#FFC10729' }, // this is the same as pending
+  asked_for_amandement_payment: { color: '#FFC107', backgroundColor: '#FFC10729' }, // this is the same as pending
   ongoing: { color: '#0E8478', backgroundColor: '#0E847829' },
 };
 
