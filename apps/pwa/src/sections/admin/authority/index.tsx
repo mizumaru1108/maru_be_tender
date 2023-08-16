@@ -131,7 +131,6 @@ export default function AuthorityTable() {
 
   const handleSubmit = async (formValue: ISubmit) => {
     setIsSubmitting(true);
-
     try {
       const { status } = await axiosInstance.post(
         'authority-management/authorities/create',

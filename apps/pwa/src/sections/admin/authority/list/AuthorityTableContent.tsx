@@ -136,7 +136,7 @@ export default function AuthorityTableContent({
   // console.log({ data, tableData });
   const handleDelete = async (authority_id: string[]) => {
     // setIsSubmitting(true);
-    console.log(authority_id);
+    console.log({ authority_id });
     // try {
     //   const { status } = await axiosInstance.patch(
     //     'authority-management/authorities/delete',

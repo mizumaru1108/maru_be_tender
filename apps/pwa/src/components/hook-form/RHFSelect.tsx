@@ -87,6 +87,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
             'project_repeated',
             'track',
             'track_id',
+            'proposal_id',
           ].includes(name) ? (
             <TextField
               {...field}

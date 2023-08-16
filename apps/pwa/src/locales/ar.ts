@@ -18,6 +18,7 @@ const ar = {
       old_proposal: 'المشاريع السابقة',
       get_auth_code_google: 'أدخل رمز التأكيد الخاص بك',
       loading: 'تحميل…',
+      error: 'خطأ',
       messages: 'الرسائل',
       portal_reports: 'تقارير البوابة',
       mobile_settings: 'إعدادات الجوال',
@@ -327,6 +328,9 @@ const ar = {
               placeholder: 'الرجاء كتابة الاسم',
             },
             authorities: {
+              confirmation: {
+                delete: 'هل أنت متأكد من أنك تريد الحذف',
+              },
               label: {
                 name: 'اسم',
               },
@@ -1405,22 +1409,56 @@ const ar = {
   send: 'إرسال',
   add: 'إضافة',
   contact_support_form: {
+    errors: {
+      title: {
+        required: 'العنوان مطلوب',
+      },
+      message: {
+        required: 'الرسالة مطلوبة',
+      },
+      proposal_id: {
+        required: 'العرض مطلوب',
+      },
+      date_of_visit: {
+        required: 'تاريخ الزيارة مطلوب',
+      },
+      visit_reason: {
+        required: 'سبب الزيارة مطلوب',
+      },
+    },
+    option: {
+      general_inquiry: 'معلومات عامة',
+      project_inquiry: 'معلومات تفصيلية عن المشروع',
+      visit_inquiry: 'معلومات تفصيلية عن الزيارة',
+    },
+    proposal: {
+      label: 'المقترح',
+      placeholder: 'الرجاء كتابة المقترح',
+    },
+    message_title: {
+      label: 'عنوان الرسالة',
+      placeholder: 'الرجاء كتابة عنوان الرسالة',
+    },
+    date_of_visit: {
+      label: 'تاريخ الزيارة',
+      placeholder: 'الرجاء اختيار تاريخ الزيارة',
+    },
+    visit_reason: {
+      label: 'سبب الزيارة',
+      placeholder: 'الرجاء كتابة سبب الزيارة',
+    },
     inquiry_type: {
       label: 'نوع الاستفسار',
       placeholder: 'الرجاء اختيار نوع الاستفسار',
-      options: {
-        general_inquiry: 'استفسار عام',
-        project_inquiry: 'استفسار عن مشروع',
-        appointment_inquiry: 'طلب زيارة',
-      },
+      // options: {
+      //   general_inquiry: 'استفسار عام',
+      //   project_inquiry: 'استفسار عن مشروع',
+      //   appointment_inquiry: 'طلب زيارة',
+      // },
     },
     message: {
       label: 'الرسالة*',
       placeholder: 'الرجاء كتابة رسالتك هنا',
-    },
-    message_title: {
-      label: 'عنوان الرسالة*',
-      placeholder: 'الرجاء كتابة عنوان الرسالة',
     },
     project_name: {
       label: 'اسم المشروع*',
@@ -2288,6 +2326,7 @@ const ar = {
     CANCELED: 'ملغي',
     ON_REVISION: 'في المراجعة',
     ASKED_FOR_AMANDEMENT: 'طلب تعديل',
+    ASKED_FOR_AMANDEMENT_PAYMENT: 'طلب تعديل الدفع',
   },
   project_beneficiaries: {
     KIDS: 'أطفال',
@@ -2319,6 +2358,7 @@ const ar = {
     client: 'شريك',
   },
   nothing_payment: 'لم يتم تعيين المدفوعات حتى الآن',
+  amandement_payment: 'المدفوعات قيد المراجعة',
   notification: {
     today: 'اليوم',
     previous: 'سابق',

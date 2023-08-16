@@ -298,3 +298,15 @@ export const FEATURE_MENU_CLIENT_FILES: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_MENU_CLIENT_FILES === 'true'
     ? true
     : false;
+
+export const FEATURE_CONTACT_US_BY_CLIENT: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_CONTACT_US_BY_CLIENT &&
+  process.env.REACT_APP_CONFIG_FEATURE_CONTACT_US_BY_CLIENT === 'true'
+    ? true
+    : false;
+
+export const FEATURE_AMANDEMENT_FROM_FINANCE: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_AMANDEMENT_FROM_FINANCE &&
+  process.env.REACT_APP_CONFIG_FEATURE_AMANDEMENT_FROM_FINANCE === 'true'
+    ? true
+    : false;

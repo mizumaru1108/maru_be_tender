@@ -19,6 +19,7 @@ import { useSnackbar } from 'notistack';
 import { dispatch, useSelector } from 'redux/store';
 import { getTrackList } from 'redux/slices/proposal';
 import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
+import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
 
 function Main() {
   const { translate } = useLocales();
@@ -54,7 +55,7 @@ function Main() {
       <PaymentAdjustment />
       <IncomingCloseReport />
       <ProposalOnAmandement />
-      <IncomingAmandementRequest />
+      {FEATURE_AMANDEMENT_FROM_FINANCE ? <IncomingAmandementRequest /> : null}
     </Grid>
   );
 }
