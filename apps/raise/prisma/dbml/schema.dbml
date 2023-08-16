@@ -1450,6 +1450,18 @@ Table proposal3 {
   oid Int
 }
 
+Table sms_gateways {
+  id String [pk]
+  api_key String [not null]
+  user_sender String [not null]
+  username String [not null]
+  is_active Boolean [not null, default: false]
+  is_default Boolean [not null, default: false]
+  is_deleted Boolean [not null, default: false]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
+}
+
 Table type_reg_cont {
   nid String [pk]
   cont_mang_name String

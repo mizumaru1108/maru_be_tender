@@ -23,7 +23,7 @@ import { AuthoritiesCreateDto } from '../dto/requests/authorities.create.dto';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { BaseApiOkResponse } from '../../../commons/decorators/base.api.ok.response.decorator';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthoritiesEntity } from '../entities/authorities.entity';
 import { BasePaginationApiOkResponse } from '../../../commons/decorators/base.pagination.api.ok.response.decorator';
 import { AuthoritiesFindManyQueryDto } from '../dto/queries/authorities.find.many.query.dto';
@@ -43,7 +43,7 @@ import {
   AuthoritiesDeleteCommandResult,
   AuthoritiesDeleteCommand,
 } from '../commands/authorities.delete.command/authorities.delete.command';
-
+@ApiTags('AuthorityModule')
 @Controller('authority-management/authorities')
 export class AuthoritiesHttpController {
   constructor(

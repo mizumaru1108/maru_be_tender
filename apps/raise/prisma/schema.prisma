@@ -1558,6 +1558,19 @@ model proposal3 {
   oid                                 Int?
 }
 
+model SmsGateway {
+    id  String @id
+    api_key String
+    user_sender String
+    username    String
+    is_active   Boolean @default(false)
+    is_default Boolean @default(false)
+    is_deleted  Boolean @default(false)
+    created_at          DateTime @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime @default(now()) @db.Timestamptz(6)
+    @@map("sms_gateways")
+}
+
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model type_reg {
   nid              Int?

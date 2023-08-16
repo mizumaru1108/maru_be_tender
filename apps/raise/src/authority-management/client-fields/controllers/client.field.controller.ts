@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { BaseApiOkResponse } from '../../../commons/decorators/base.api.ok.response.decorator';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
@@ -29,7 +29,7 @@ import {
 } from '../queries/client.field.find.many.query.ts/client.field.find.many.query';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { BasePaginationApiOkResponse } from '../../../commons/decorators/base.pagination.api.ok.response.decorator';
-
+@ApiTags('ClientFieldModule')
 @Controller('authority-management/client-fields')
 export class ClientFieldHttpController {
   constructor(
