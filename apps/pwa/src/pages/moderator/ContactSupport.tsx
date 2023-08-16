@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 import { Box, Container } from '@mui/system';
 import Page from 'components/Page';
 import ContactSupportForm from 'sections/client/contact-and-support/ContactSupportForm';
+import { FEATURE_CONTACT_US_BY_CLIENT } from '../../config';
 
 const ContactSupport = () => {
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -28,7 +29,7 @@ const ContactSupport = () => {
               },
             }}
           >
-            <ContactSupportForm />
+            {FEATURE_CONTACT_US_BY_CLIENT ? <ContactSupportForm /> : null}
           </Container>
         </ContentStyle>
       </Container>

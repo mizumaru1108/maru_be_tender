@@ -4,6 +4,7 @@ import { Box, Container } from '@mui/system';
 import Page from 'components/Page';
 import ContactSupportForm from 'sections/client/contact-and-support/ContactSupportForm';
 import useLocales from '../../hooks/useLocales';
+import { FEATURE_CONTACT_US_BY_CLIENT } from '../../config';
 
 const ContactSupport = () => {
   const { translate } = useLocales();
@@ -21,7 +22,7 @@ const ContactSupport = () => {
         <ContentStyle>
           <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
             <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
-              تواصل معنا
+              {translate('pages.client.contact_and_support')}
             </Typography>
           </Box>
           <Container
@@ -31,7 +32,7 @@ const ContactSupport = () => {
               },
             }}
           >
-            <ContactSupportForm />
+            {FEATURE_CONTACT_US_BY_CLIENT ? <ContactSupportForm /> : null}
           </Container>
         </ContentStyle>
       </Container>

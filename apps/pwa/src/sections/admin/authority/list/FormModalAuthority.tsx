@@ -1,5 +1,5 @@
 // @mui
-import { Button, Grid, MenuItem, Stack, Typography } from '@mui/material';
+import { Button, Grid, MenuItem, Stack, Typography, TextField } from '@mui/material';
 // component
 import { LoadingButton } from '@mui/lab';
 import { FormProvider, RHFTextField } from 'components/hook-form';
@@ -8,7 +8,6 @@ import ModalDialog from 'components/modal-dialog';
 import useLocales from 'hooks/useLocales';
 //
 import { yupResolver } from '@hookform/resolvers/yup';
-import { TextField } from '@mui/material';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
@@ -162,7 +161,7 @@ function FormModalAuthority({
               </Grid>
             ) : (
               <Typography>
-                {`Are you sure want to delete`}{' '}
+                {translate('pages.admin.settings.label.form.authorities.confirmation.delete')}{' '}
                 <span style={{ fontWeight: 700 }}>{`${formatCapitalizeText(watch('name'))}`}</span>?
               </Typography>
             )}

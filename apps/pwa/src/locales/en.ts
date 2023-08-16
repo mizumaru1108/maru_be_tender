@@ -18,6 +18,7 @@ const en = {
       old_proposal: 'Old Proposal',
       get_auth_code_google: 'Get Auth Code',
       loading: 'Loading...',
+      error: 'Error',
       messages: 'Messages',
       portal_reports: 'Portal Reports',
       mobile_settings: 'Mobile Settings',
@@ -324,6 +325,9 @@ const en = {
               placeholder: 'Beneficiaries',
             },
             authorities: {
+              confirmation: {
+                delete: 'Are you sure want to delete',
+              },
               label: {
                 name: 'Name',
               },
@@ -1401,18 +1405,56 @@ const en = {
   send: 'send',
   add: 'Add',
   contact_support_form: {
-    inquiry_type: {
-      label: 'نوع الاستفسار',
-      placeholder: 'الرجاء اختيار نوع الاستفسار',
-      options: {
-        general_inquiry: 'استفسار عام',
-        project_inquiry: 'استفسار عن مشروع',
-        appointment_inquiry: 'طلب زيارة',
+    errors: {
+      title: {
+        required: 'Title is required',
+      },
+      message: {
+        required: 'Message is required',
+      },
+      proposal_id: {
+        required: 'Proposal is required',
+      },
+      date_of_visit: {
+        required: 'Date of visit is required',
+      },
+      visit_reason: {
+        required: 'Visit reason is required',
       },
     },
+    option: {
+      general_inquiry: 'General Inquiry',
+      project_inquiry: 'Project Inquiry',
+      visit_inquiry: 'Visit Inquiry',
+    },
+    proposal: {
+      label: 'Proposal',
+      placeholder: 'Proposal',
+    },
+    message_title: {
+      label: 'Message Title',
+      placeholder: 'Message Title',
+    },
+    date_of_visit: {
+      label: 'Date of Visit',
+      placeholder: 'Date of Visit',
+    },
+    visit_reason: {
+      label: 'Visit Reason',
+      placeholder: 'Visit Reason',
+    },
+    inquiry_type: {
+      label: 'Inquiry Type',
+      placeholder: 'Inquiry Type',
+      // options: {
+      //   general_inquiry: 'استفسار عام',
+      //   project_inquiry: 'استفسار عن مشروع',
+      //   appointment_inquiry: 'طلب زيارة',
+      // },
+    },
     message: {
-      label: 'الرسالة*',
-      placeholder: 'الرجاء كتابة رسالتك هنا',
+      label: 'Message',
+      placeholder: 'Message',
     },
     message_type: {
       label: 'عنوان الرسالة*',
@@ -2272,6 +2314,7 @@ const en = {
     CANCELED: 'CANCELED',
     ON_REVISION: 'ON REVISION',
     ASKED_FOR_AMANDEMENT: 'ASKED FOR AMANDEMENT',
+    ASKED_FOR_AMANDEMENT_PAYMENT: 'ASKED FOR PAYMENT AMANDEMENT',
   },
   project_beneficiaries: {
     KIDS: 'KIDS',
@@ -2303,6 +2346,7 @@ const en = {
     client: 'Client',
   },
   nothing_payment: 'The Payments haven’t been set yet',
+  amandement_payment: 'The Payments is on revision',
   notification: {
     today: 'Today',
     previous: 'Previous',

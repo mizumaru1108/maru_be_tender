@@ -1,13 +1,12 @@
 import { useState } from 'react';
 // @mui
-import { Button, Checkbox, Stack, TableCell, TableRow } from '@mui/material';
+import { Button, Checkbox, Stack, TableCell, TableRow, Chip } from '@mui/material';
 import Iconify from 'components/Iconify';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { AuthorityInterface, ClientFieldInterface } from './types';
 // component
 //
-import { Chip } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import axiosInstance from 'utils/axios';
 import FormModalAuthority from './FormModalAuthority';
