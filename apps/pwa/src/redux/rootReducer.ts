@@ -1,22 +1,17 @@
 import { combineReducers } from 'redux';
-import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 // slices
-import mailReducer from './slices/mail';
-import chatReducer from './slices/chat';
 import authReducer from './slices/auth';
-import wschatReducer from './slices/wschat';
-import productReducer from './slices/product';
-import calendarReducer from './slices/calendar';
-import kanbanReducer from './slices/kanban';
-import branchReducer from './slices/branch';
-import proposal from './slices/proposal';
-import supervisorAcceptingForm from './slices/supervisorAcceptingForm';
-import notification from './slices/notification';
-import searching from './slices/searching';
-import tracks from './slices/track';
-import clientData from './slices/clientData';
+import authority from './slices/authority';
 import banks from './slices/banks';
+import clientData from './slices/clientData';
+import clientField from './slices/clientField';
+import notification from './slices/notification';
+import proposal from './slices/proposal';
+import searching from './slices/searching';
+import supervisorAcceptingForm from './slices/supervisorAcceptingForm';
+import tracks from './slices/track';
+import wschatReducer from './slices/wschat';
 
 // ----------------------------------------------------------------------
 
@@ -49,6 +44,8 @@ const rootReducer = combineReducers({
   tracks: tracks,
   clientData: clientData,
   banks: banks,
+  clientFields: clientField,
+  authorities: authority,
   supervisorAcceptingForm: supervisorAcceptingForm,
 });
 

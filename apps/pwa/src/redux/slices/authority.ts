@@ -2,36 +2,27 @@ import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { TMRA_RAISE_URL } from 'config';
 import { dispatch } from 'redux/store';
-import { BankReduxProps } from '../../@types/commons';
+import { AuthorityReduxProps } from '../../@types/commons';
 // ----------------------------------------------------------------------
 
 interface FilteredState {
-  banks: BankReduxProps[];
+  authorities: AuthorityReduxProps[];
   isLoading: boolean;
   error: Error | string | null;
 }
 
 const initialState: FilteredState = {
-  banks: [
-    // {
-    //   id: '-1',
-    //   bank_name: 'test',
-    //   is_deleted: false,
-    //   created_at: new Date('2022-01-01'),
-    //   updated_at: new Date('2022-01-01'),
-    // },
-  ],
+  authorities: [],
   isLoading: false,
   error: null,
-  // sort: 'asc',
 };
 
 const slice = createSlice({
-  name: 'banks',
+  name: 'authorities',
   initialState,
   reducers: {
-    setBankList: (state, action) => {
-      state.banks = action.payload;
+    setAuthorityFields: (state, action) => {
+      state.authorities = action.payload;
     },
     // START LOADING
     startLoading(state, action) {
@@ -45,18 +36,16 @@ const slice = createSlice({
 });
 
 // ACTIONS
-export const { setBankList } = slice.actions;
+export const { setAuthorityFields } = slice.actions;
 
-export const getBankList = () => async () => {
+export const getAuthorityList = () => async () => {
   try {
     dispatch(slice.actions.startLoading(true));
 
-    const response = await axios.get(
-      `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list?limit=0`
-    );
+    const response = await axios.get(`${TMRA_RAISE_URL}/authority-management/authorities?limit=0`);
     // console.log({ response });
     if (response.data.statusCode === 200 || response.data.statusCode === 201) {
-      dispatch(slice.actions.setBankList(response.data.data));
+      dispatch(slice.actions.setAuthorityFields(response.data.data));
     }
   } catch (error) {
     dispatch(slice.actions.hasError(error));

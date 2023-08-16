@@ -2,36 +2,32 @@ import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { TMRA_RAISE_URL } from 'config';
 import { dispatch } from 'redux/store';
-import { BankReduxProps } from '../../@types/commons';
+import { ClientFieldReduxProps } from '../../@types/commons';
 // ----------------------------------------------------------------------
 
 interface FilteredState {
-  banks: BankReduxProps[];
+  clientFields: ClientFieldReduxProps[];
+  selectedClientFields: string;
   isLoading: boolean;
   error: Error | string | null;
 }
 
 const initialState: FilteredState = {
-  banks: [
-    // {
-    //   id: '-1',
-    //   bank_name: 'test',
-    //   is_deleted: false,
-    //   created_at: new Date('2022-01-01'),
-    //   updated_at: new Date('2022-01-01'),
-    // },
-  ],
+  clientFields: [],
+  selectedClientFields: '',
   isLoading: false,
   error: null,
-  // sort: 'asc',
 };
 
 const slice = createSlice({
-  name: 'banks',
+  name: 'clientFields',
   initialState,
   reducers: {
-    setBankList: (state, action) => {
-      state.banks = action.payload;
+    setClientFields: (state, action) => {
+      state.clientFields = action.payload;
+    },
+    setSelectedClientFields: (state, action) => {
+      state.selectedClientFields = action.payload;
     },
     // START LOADING
     startLoading(state, action) {
@@ -45,18 +41,18 @@ const slice = createSlice({
 });
 
 // ACTIONS
-export const { setBankList } = slice.actions;
+export const { setClientFields } = slice.actions;
 
-export const getBankList = () => async () => {
+export const getClientFieldList = () => async () => {
   try {
     dispatch(slice.actions.startLoading(true));
 
     const response = await axios.get(
-      `${TMRA_RAISE_URL}/tender/proposal/payment/find-bank-list?limit=0`
+      `${TMRA_RAISE_URL}/authority-management/client-fields?limit=0`
     );
     // console.log({ response });
     if (response.data.statusCode === 200 || response.data.statusCode === 201) {
-      dispatch(slice.actions.setBankList(response.data.data));
+      dispatch(slice.actions.setClientFields(response.data.data));
     }
   } catch (error) {
     dispatch(slice.actions.hasError(error));

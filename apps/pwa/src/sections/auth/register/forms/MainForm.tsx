@@ -1,23 +1,33 @@
-import * as Yup from 'yup';
-import { Grid, MenuItem } from '@mui/material';
-import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Grid, MenuItem } from '@mui/material';
+import { AUTHORITY } from '_mock/authority';
+import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import RHFDatePicker from 'components/hook-form/RHFDatePicker';
 import useLocales from 'hooks/useLocales';
-import { REGIONS } from 'sections/auth/register/RegisterFormData';
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
 import { MainValuesProps } from '../../../../@types/register';
-import BaseField from 'components/hook-form/BaseField';
-import { AUTHORITY } from '_mock/authority';
+import axiosInstance from '../../../../utils/axios';
+import { useSnackbar } from 'notistack';
+import axios from 'axios';
+import { TMRA_RAISE_URL } from '../../../../config';
+import { AuthorityInterface, ClientFieldInterface } from '../../../admin/authority/list/types';
 
 type FormProps = {
   children?: React.ReactNode;
   onSubmit: (data: any) => void;
   defaultValues: any;
 };
+
 const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) => {
   const { translate } = useLocales();
+  const { enqueueSnackbar } = useSnackbar();
+  const [authorities, setAuthorities] = React.useState<AuthorityInterface[] | []>([]);
+  const [clientFields, setClientFields] = React.useState<ClientFieldInterface[] | []>([]);
+  const [isFetchingAuthoritites, setIsFetchingAuthorities] = React.useState<boolean>(false);
+  const [isFetchingClientFields, setIsFetchingClientFields] = React.useState<boolean>(false);
+
   const RegisterSchemaFirstForm = Yup.object().shape({
     entity: Yup.string().required(translate('errors.register.entity.required')),
     client_field: Yup.string().required(translate('errors.register.client_field.required')),
@@ -45,6 +55,97 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     defaultValues: useMemo(() => defaultValues, [defaultValues]),
   });
 
+  const fetchAuthorities = async (client_field_id: string) => {
+    setIsFetchingAuthorities(true);
+    try {
+      const url = `${TMRA_RAISE_URL}/authority-management/authorities?client_field_id=${client_field_id}&limit=0`;
+      // console.log({ url });
+      const response = await axios.get(url);
+      if (response) {
+        const mappedRes = response.data.data
+          .filter(
+            (authority: any) => authority.is_deleted === false || authority.is_deleted === null
+          )
+          .map((authority: any) => authority);
+        setAuthorities(mappedRes);
+      }
+    } catch (error) {
+      // console.error(error.message);
+      setAuthorities([]);
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
+    } finally {
+      setIsFetchingAuthorities(false);
+    }
+  };
+
+  const fetchClientFields = async () => {
+    setIsFetchingClientFields(true);
+    try {
+      const response = await axios.get(
+        `${TMRA_RAISE_URL}/authority-management/client-fields?limit=0`
+      );
+      if (response) {
+        const mappedRes = response.data.data
+          .filter(
+            (client_field: any) =>
+              client_field.is_deleted === false || client_field.is_deleted === null
+          )
+          .map((client_field: any) => client_field);
+        setClientFields(mappedRes);
+      }
+    } catch (error) {
+      // console.error(error.message);
+      setAuthorities([]);
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
+    } finally {
+      setIsFetchingClientFields(false);
+    }
+  };
+
   const {
     watch,
     handleSubmit,
@@ -57,12 +158,30 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     reset({ ...data });
     onSubmit(data);
   };
+
+  const client_field: string = watch('client_field');
+
   useEffect(() => {
     window.scrollTo(0, 0);
     reset(defaultValues);
+    fetchClientFields();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
-  const client_field = watch('client_field');
+
+  React.useEffect(() => {
+    if (client_field !== '') {
+      fetchAuthorities(client_field);
+    }
+  }, [client_field]);
+
+  // console.log({ authorities });
+  // console.log({ clientFields });
+  // console.log({ client_field });
+
+  if (isFetchingClientFields) {
+    return <>{translate('pages.common.loading')}</>;
+  }
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
@@ -79,15 +198,33 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             label={translate('register_form1.entity_area.label')}
             placeholder={translate('register_form1.entity_area.placeholder')}
           >
-            <MenuItem value="main">
+            {/* <MenuItem value="main">
               {translate('register_form1.entity_area.options.sub_entity_area')}
             </MenuItem>
             <MenuItem value="sub">
               {translate('register_form1.entity_area.options.main_entity_area')}
-            </MenuItem>
+            </MenuItem> */}
+            {clientFields.map((option, i) => (
+              <MenuItem key={i} value={option.client_field_id}>
+                {option.name}
+              </MenuItem>
+            ))}
           </RHFSelect>
         </Grid>
-        {client_field !== '' && client_field === 'main' && (
+        <Grid item md={12} xs={12}>
+          <RHFSelect
+            name="authority"
+            label={translate('register_form1.authority.label')}
+            placeholder={translate('register_form1.authority.placeholder')}
+          >
+            {authorities.map((option, i) => (
+              <MenuItem key={i} value={option.authority_id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </RHFSelect>
+        </Grid>
+        {/* {client_field !== '' && client_field === 'main' && (
           <Grid item md={12} xs={12}>
             <RHFSelect
               name="authority"
@@ -106,7 +243,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
           <Grid item md={12} xs={12}>
             <RHFTextField name="authority" label={translate('register_form1.authority.label')} />
           </Grid>
-        )}
+        )} */}
         <Grid item md={6} xs={12}>
           <RHFDatePicker
             name="date_of_esthablistmen"

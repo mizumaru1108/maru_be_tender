@@ -163,3 +163,14 @@ export interface BankReduxProps {
   created_at: Date;
   updated_at: Date;
 }
+export interface AuthorityReduxProps {
+  authority_id: string;
+  name: string;
+  is_deleted: boolean;
+  client_field_id: string;
+}
+export interface ClientFieldReduxProps {
+  client_field_id: string;
+  name: string;
+  is_deleted: boolean;
+}
