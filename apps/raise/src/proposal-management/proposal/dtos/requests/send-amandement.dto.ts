@@ -1,13 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
-import { CreateProjectTimelineDto } from './create-project-timeline.dto';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class SendAmandementDto {
   @ApiPropertyOptional()
@@ -103,4 +95,10 @@ export class SendAmandementDto {
   @IsString()
   @IsNotEmpty()
   timelines?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  bank_information?: string;
 }

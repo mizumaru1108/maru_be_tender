@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
 import { ITenderAppConfig } from 'src/commons/configs/tender-app-config';
 import { EmailService } from 'src/libs/email/email.service';
@@ -54,8 +54,7 @@ export class SendAmandementCommandHandler
     private readonly proposalRepo: ProposalRepository,
     private readonly logRepo: ProposalLogRepository,
     private readonly editRequestRepo: ProposalEditRequestRepository,
-    private readonly notifRepo: TenderNotificationRepository,
-    private readonly eventPublisher: EventPublisher,
+    private readonly notifRepo: TenderNotificationRepository, // private readonly eventPublisher: EventPublisher,
   ) {}
   async execute(command: SendAmandementCommand): Promise<any> {
     const appConfig =
@@ -77,7 +76,10 @@ export class SendAmandementCommandHandler
           }
 
           const proposal = await this.proposalRepo.fetchById(
-            { id: proposal_id, includes_relation: ['user'] },
+            {
+              id: proposal_id,
+              includes_relation: ['user', 'bank_information'],
+            },
             session,
           );
           if (!proposal) {
@@ -237,9 +239,9 @@ export class SendAmandementCommandHandler
         },
       );
 
-      const publisher = this.eventPublisher.mergeObjectContext(
-        result.db_result.updated_proposal,
-      );
+      // const publisher = this.eventPublisher.mergeObjectContext(
+      //   result.db_result.updated_proposal,
+      // );
 
       for (const notifPayload of result.notif_payload) {
         if (notifPayload.notif_type === 'SMS' && notifPayload.user_phone) {
@@ -288,7 +290,7 @@ export class SendAmandementCommandHandler
         // }
       }
 
-      publisher.commit();
+      // publisher.commit();
       return result;
     } catch (error) {
       throw error;
