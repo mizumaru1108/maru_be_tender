@@ -1032,6 +1032,8 @@ export class ProposalRepository {
               proposal_item_budgets: true,
               project_timeline: true,
               beneficiary_id: true,
+              proposal_bank_id: true,
+              bank_information: true,
             },
           },
         },
