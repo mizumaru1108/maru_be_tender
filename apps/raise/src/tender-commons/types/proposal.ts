@@ -86,6 +86,7 @@ export enum OutterStatusEnum {
   ONGOING = 'ONGOING',
   ON_REVISION = 'ON_REVISION',
   ASKED_FOR_AMANDEMENT = 'ASKED_FOR_AMANDEMENT',
+  ASKED_FOR_AMANDEMENT_PAYMENT = 'ASKED_FOR_AMANDEMENT_PAYMENT',
 }
 
 /* enum for proposal action and proposal_log action */
