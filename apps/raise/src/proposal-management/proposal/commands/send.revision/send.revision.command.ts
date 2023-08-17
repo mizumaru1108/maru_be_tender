@@ -318,7 +318,7 @@ export class SendRevisionCommandHandler
           name: proposal.supervisor.employee_name,
           client_name: proposal.user.employee_name,
           date: moment(new Date()).locale('ar-sa').format('llll'),
-          redirect_url: `${tenderAppConfig?.baseUrl}project-supervisor/dashboard/requests-in-process/${proposal.id}/show-details`,
+          redirect_url: `${tenderAppConfig?.baseUrl}/project-supervisor/dashboard/requests-in-process/${proposal.id}/show-details`,
         },
         emailTemplatePath: `tender/ar/proposal/submit_amandement_by_client_ar`,
         user_id: proposal.supervisor.id,
