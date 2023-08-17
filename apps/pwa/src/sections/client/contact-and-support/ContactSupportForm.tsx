@@ -52,7 +52,7 @@ const ContactSupportForm = () => {
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      enqueueSnackbar('Amandement request has been sent', {
+      enqueueSnackbar(translate('snackbar.client.sent_success_contact_support'), {
         variant: 'success',
         preventDuplicate: true,
         autoHideDuration: 3000,
@@ -106,7 +106,7 @@ const ContactSupportForm = () => {
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      enqueueSnackbar('Amandement request has been sent', {
+      enqueueSnackbar(translate('snackbar.client.sent_success_contact_support'), {
         variant: 'success',
         preventDuplicate: true,
         autoHideDuration: 3000,
@@ -158,7 +158,7 @@ const ContactSupportForm = () => {
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      enqueueSnackbar('Amandement request has been sent', {
+      enqueueSnackbar(translate('snackbar.client.sent_success_contact_support'), {
         variant: 'success',
         preventDuplicate: true,
         autoHideDuration: 3000,

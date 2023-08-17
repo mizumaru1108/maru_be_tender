@@ -428,7 +428,8 @@ export type Log = {
     | 'complete_payment'
     | 'reject_cheque'
     | 'study_again'
-    | 'accept_and_ask_for_consultation';
+    | 'accept_and_ask_for_consultation'
+    | 'ask_for_amandement_request';
   created_at: Date;
   updated_at: Date;
   user_role: Role;

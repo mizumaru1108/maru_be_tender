@@ -159,8 +159,22 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
   } = methods;
 
   const onSubmitForm = async (data: MainValuesProps) => {
+    const tmpClientField =
+      clientFields.find(
+        (client_field: ClientFieldInterface) => client_field.client_field_id === data.client_field
+      )?.name || '-';
+    const tmpAuthority =
+      authorities.find((authority: AuthorityInterface) => authority.authority_id === data.authority)
+        ?.name || '-';
+    const tmpValue: MainValuesProps = {
+      ...data,
+      authority: tmpAuthority,
+      authority_id: data.authority,
+      client_field: tmpClientField,
+      client_field_id: data.client_field,
+    };
     reset({ ...data });
-    onSubmit(data);
+    onSubmit(tmpValue);
   };
 
   const handleChangeClientField = (client_field_id: string) => {

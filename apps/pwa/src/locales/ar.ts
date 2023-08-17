@@ -2596,6 +2596,9 @@ const ar = {
     supervisor: {
       sent_success_amandement: 'تم قبول طلب التعديل',
     },
+    client: {
+      sent_success_contact_support: 'تم إرسال الرسالة بنجاح',
+    },
     auth: {
       register: {
         send_verify_email: {

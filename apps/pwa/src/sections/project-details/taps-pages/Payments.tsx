@@ -19,7 +19,7 @@ function Payments() {
       'DONE_BY_CASHIER',
     ].includes(proposal.inner_status) &&
     activeRole === 'tender_project_supervisor'! &&
-    !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status)
+    !['ASKED_FOR_AMANDEMENT_PAYMENT', 'ON_REVISION'].includes(proposal.outter_status)
   )
     return <SupervisorPaymentsPage />;
 
@@ -31,7 +31,7 @@ function Payments() {
     ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR', 'DONE_BY_CASHIER'].includes(
       proposal.inner_status
     ) &&
-    !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status)
+    !['ASKED_FOR_AMANDEMENT_PAYMENT', 'ON_REVISION'].includes(proposal.outter_status)
   ) {
     return (
       <div>
@@ -45,11 +45,11 @@ function Payments() {
 
   if (
     ['REQUESTING_CLOSING_FORM', 'PROJECT_COMPLETED'].includes(proposal.inner_status) &&
-    !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status)
+    !['ASKED_FOR_AMANDEMENT_PAYMENT', 'ON_REVISION'].includes(proposal.outter_status)
   ) {
     return <ClientPaymentsPage />;
   }
-  if (['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status)) {
+  if (['ASKED_FOR_AMANDEMENT_PAYMENT', 'ON_REVISION'].includes(proposal.outter_status)) {
     return <>{translate('amandement_payment')}</>;
   }
   return <>{translate('nothing_payment')}</>;

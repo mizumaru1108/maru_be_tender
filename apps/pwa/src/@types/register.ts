@@ -64,8 +64,10 @@ export type UserInfoFormProps = {
 
 export type MainValuesProps = {
   client_field: string;
+  client_field_id?: string;
   entity: string;
   authority: string;
+  authority_id?: string;
   date_of_esthablistmen: string;
   headquarters: string;
   num_of_employed_facility: number | undefined;

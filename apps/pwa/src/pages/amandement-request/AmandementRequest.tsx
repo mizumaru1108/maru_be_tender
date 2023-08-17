@@ -107,7 +107,7 @@ export default function AmandementRequest() {
             headers: { 'x-hasura-role': activeRole! },
           }
         );
-        enqueueSnackbar('Amandement request has been sent', {
+        enqueueSnackbar(translate('snackbar.supervisor.sent_success_amandement'), {
           variant: 'success',
           preventDuplicate: true,
           autoHideDuration: 3000,

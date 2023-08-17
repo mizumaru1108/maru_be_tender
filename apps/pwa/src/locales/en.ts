@@ -2584,6 +2584,9 @@ const en = {
     supervisor: {
       sent_success_amandement: 'The amandement request has been sent successfully',
     },
+    client: {
+      sent_success_contact_support: 'The message has been sent successfully',
+    },
     auth: {
       register: {
         send_verify_email: {

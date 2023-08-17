@@ -383,6 +383,7 @@ function ProjectPath() {
                             item.action === 'rejected_by_project_manager' ||
                             item.action === 'study_again' ||
                             item.action === 'accept_and_ask_for_consultation' ||
+                            item.action === 'ask_for_amandement_request' ||
                             (item.action === 'accept' && item.user_role === 'MODERATOR'))
                             ? translate(`review.notes`)
                             : null}
