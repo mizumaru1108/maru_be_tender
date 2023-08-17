@@ -133,6 +133,7 @@ function FloatinActonBar() {
               proposal.inner_status
             ) &&
             proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
+            proposal.outter_status !== 'ON_REVISION' &&
             ['tender_finance'].includes(role) && <FinanceFloatingActionBar />}
           {FEATURE_AMANDEMENT_FROM_FINANCE &&
             activeTap &&
