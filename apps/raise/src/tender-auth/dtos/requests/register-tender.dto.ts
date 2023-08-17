@@ -3,7 +3,6 @@ import { Transform, Type } from 'class-transformer';
 import {
   IsDate,
   IsEmail,
-  IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -232,9 +231,10 @@ export class registerClient {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @IsIn(['main', 'sub'], {
-    message: 'client_field must be either main or sub',
-  })
+  // TODO: please check this, it should be either main or sub, or it is unneeded property?
+  // @IsIn(['main', 'sub'], {
+  //   message: 'client_field must be either main or sub',
+  // })
   client_field: string;
 
   @ApiProperty()
