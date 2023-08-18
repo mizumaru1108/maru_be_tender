@@ -2442,11 +2442,16 @@ export class ProposalRepository {
           },
         };
       }
-
       if (project_name) {
         whereClause = {
           ...whereClause,
           proposal: {
+            outter_status: {
+              in: [
+                OutterStatusEnum.ASKED_FOR_AMANDEMENT,
+                OutterStatusEnum.ASKED_FOR_AMANDEMENT_PAYMENT,
+              ],
+            },
             project_name: {
               contains: project_name,
               mode: 'insensitive',
