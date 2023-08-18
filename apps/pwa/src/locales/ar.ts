@@ -308,6 +308,10 @@ const ar = {
             amendment: 'تعديل',
             modify: 'يُعدِّل',
             delete: 'حذف',
+            client_field: {
+              main: 'رئيسي',
+              sub: 'فرعي',
+            },
           },
           modal: {
             add_new_bank: 'اضافة بنك جديد',

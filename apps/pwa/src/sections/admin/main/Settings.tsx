@@ -60,7 +60,7 @@ function Settings() {
     { name: 'bank-name', label: 'bank_name' },
     { name: 'beneficiaries', label: 'beneficiaries' },
   ];
-  console.log({ data });
+  // console.log({ data });
   return (
     <Grid container spacing={3}>
       <Grid item md={12} xs={12}>

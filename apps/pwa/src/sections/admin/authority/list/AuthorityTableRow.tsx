@@ -148,7 +148,10 @@ export default function AuthoritiesTableRow({
       </TableCell>
 
       <TableCell align="left">{name}</TableCell>
-      <TableCell align="left">{client_field_details.name}</TableCell>
+      <TableCell align="left">
+        {/* pages.admin.settings.label.table.client_field_name */}
+        {translate(`pages.admin.settings.label.table.client_field.${client_field_details.name}`)}
+      </TableCell>
       {/* <TableCell align="left">{is_deleted ? 'true' : 'false'}</TableCell> */}
       <TableCell align="left">
         {is_deleted ? (

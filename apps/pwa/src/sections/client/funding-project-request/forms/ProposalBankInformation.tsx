@@ -22,8 +22,15 @@ type Props = {
   children?: React.ReactNode;
   defaultValues: any;
   revised?: AmandementFields;
+  isLoading?: boolean;
 };
-const ProposalBankInformation = ({ onSubmit, children, defaultValues, revised }: Props) => {
+const ProposalBankInformation = ({
+  onSubmit,
+  children,
+  defaultValues,
+  revised,
+  isLoading = false,
+}: Props) => {
   // console.log('test proposal id:', defaultValues?.proposal_bank_id);
   const { user } = useAuth();
   const { translate } = useLocales();
@@ -102,10 +109,10 @@ const ProposalBankInformation = ({ onSubmit, children, defaultValues, revised }:
 
   // console.log({ isSelected });
   React.useEffect(() => {
-    if (data && defaultValues?.proposal_bank_id) {
+    if (data && defaultValues?.proposal_bank_id && !isLoading) {
       setSelectedCard(defaultValues?.proposal_bank_id);
     }
-  }, [data, defaultValues]);
+  }, [data, defaultValues, isLoading]);
 
   if (fetching) return <>...Loading</>;
 

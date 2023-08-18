@@ -511,6 +511,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
             onSubmit={onSubmitform6}
             defaultValues={{ proposal_bank_id: requestState?.proposal_bank_id }}
             revised={tmpValues?.revised}
+            isLoading={isLoading}
           >
             <AmandementActionBox step={step} onReturn={onReturn} isLoad={isLoading} />
           </ProposalBankInformation>

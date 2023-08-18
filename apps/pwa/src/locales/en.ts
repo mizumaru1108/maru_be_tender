@@ -305,6 +305,10 @@ const en = {
             amendment: 'Amendment',
             modify: 'Modify',
             delete: 'Delete',
+            client_field: {
+              main: 'Main',
+              sub: 'Sub',
+            },
           },
           modal: {
             add_new_bank: 'Add a new bank',
