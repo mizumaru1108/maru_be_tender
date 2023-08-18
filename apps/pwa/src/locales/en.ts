@@ -1096,8 +1096,8 @@ const en = {
       label: 'Entity area*',
       placeholder: 'Please choose the Entity Area',
       options: {
-        sub_entity_area: 'main',
-        main_entity_area: 'sub-main',
+        main_entity_area: 'main',
+        sub_entity_area: 'sub-main',
       },
     },
     authority: {

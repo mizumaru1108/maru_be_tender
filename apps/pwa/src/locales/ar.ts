@@ -1102,8 +1102,8 @@ const ar = {
       label: 'مجال الجهة*',
       placeholder: 'الرجاء اختيار مجال الجهة',
       options: {
-        sub_entity_area: 'رئيسي',
-        main_entity_area: 'فرعي',
+        sub_entity_area: 'فرعي',
+        main_entity_area: 'رئيسي',
       },
     },
     authority: {
