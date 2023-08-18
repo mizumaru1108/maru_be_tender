@@ -1040,6 +1040,7 @@ const en = {
   incoming_support_requests: 'Incoming support requests',
   previous_support_requests: 'Previous support requests',
   portal_reports: 'Portal reports',
+  contact_us: 'Contact us',
   drafts: 'Drafts',
   previous_funding_requests: 'Previous funding requests',
   messages: 'Messages',

@@ -45,6 +45,7 @@ export const PATH_ADMIN = {
   client_list: path(ROOTS_ADMIN, '/dashboard/client-list'),
   old_proposal: path(ROOTS_ADMIN, '/dashboard/old-proposal'),
   client_files: path(ROOTS_ADMIN, '/dashboard/client-files'),
+  contact_us: path(ROOTS_ADMIN, '/dashboard/contact-us'),
 };
 export const PATH_CLIENT = {
   root: ROOTS_CLIENT,

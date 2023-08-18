@@ -13,6 +13,7 @@ import {
 } from '../../../routes/paths';
 import SvgIconStyle from '../../../components/SvgIconStyle';
 import {
+  FEATURE_CONTACT_US_BY_CLIENT,
   FEATURE_MENU_ADMIN_ADD_AUTHORITY,
   FEATURE_MENU_ADMIN_ENTITY_AREA,
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
@@ -153,6 +154,7 @@ const ICONS = {
     messages: getIcon('message-bar'),
     customization_for_dropdown: getIcon('drop-down-white'),
     old_proposal: getIcon('previous-request'),
+    contact_us: getIcon('system-messages'),
   },
 };
 
@@ -795,6 +797,12 @@ const navConfig = {
           path: PATH_ADMIN.portal_reports,
           icon: ICONS.tender_admin.portal_reports,
         },
+        FEATURE_CONTACT_US_BY_CLIENT &&
+          ({
+            title: 'contact_us',
+            path: PATH_ADMIN.contact_us,
+            icon: ICONS.tender_admin.contact_us,
+          } as any),
         {
           title: 'messages',
           path: PATH_ADMIN.messages,

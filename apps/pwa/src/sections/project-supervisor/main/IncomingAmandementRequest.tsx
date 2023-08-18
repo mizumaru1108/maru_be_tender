@@ -104,7 +104,7 @@ function IncomingAmandementRequest() {
             returnData={setCardData}
             loadingState={setIsLoading}
           />
-          <Button
+          {/* <Button
             sx={{
               backgroundColor: 'transparent',
               color: '#93A3B0',
@@ -118,7 +118,7 @@ function IncomingAmandementRequest() {
             }}
           >
             {translate('view_all')}
-          </Button>
+          </Button> */}
         </Box>
       </Stack>
       <Grid container spacing={2}>

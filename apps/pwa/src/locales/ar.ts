@@ -1048,6 +1048,7 @@ const ar = {
   incoming_support_requests: 'طلبات الدعم الواردة',
   previous_support_requests: 'طلبات الدعم السابقة',
   portal_reports: 'تقارير البوابة',
+  contact_us: 'اتصل بنا',
   drafts: 'طلبات دعم مسودة ',
   previous_funding_requests: 'طلبات دعم سابقة',
   messages: 'الرسائل',

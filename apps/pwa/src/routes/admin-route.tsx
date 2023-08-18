@@ -10,6 +10,7 @@ import ProjectDetails from 'pages/project-details/ProjectDetails';
 import ListTrack from 'sections/admin/transaction-progression/ListTrack';
 import ReviewOperationTrack from 'sections/admin/transaction-progression/ReviewOperationTrack';
 import {
+  FEATURE_CONTACT_US_BY_CLIENT,
   FEATURE_MENU_ADMIN_ADD_AUTHORITY,
   FEATURE_MENU_ADMIN_ENTITY_AREA,
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
@@ -59,6 +60,7 @@ const Searching = Loadable(lazy(() => import('pages/searching')));
 
 const OldProposal = Loadable(lazy(() => import('pages/admin/OldProposal')));
 const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
+const ContactUs = Loadable(lazy(() => import('pages/admin/ContactUs')));
 
 export const adminRoute = {
   path: 'admin',
@@ -190,6 +192,10 @@ export const adminRoute = {
         FEATURE_MENU_CLIENT_FILES && {
           path: 'client-files',
           element: <ClientFiles />,
+        },
+        FEATURE_CONTACT_US_BY_CLIENT && {
+          path: 'contact-us',
+          element: <ContactUs />,
         },
       ],
     },

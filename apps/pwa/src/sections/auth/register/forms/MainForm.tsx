@@ -11,8 +11,20 @@ import { MainValuesProps } from '../../../../@types/register';
 import axiosInstance from '../../../../utils/axios';
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
-import { TMRA_RAISE_URL } from '../../../../config';
+import { FEATURE_MENU_ADMIN_ADD_AUTHORITY, TMRA_RAISE_URL } from '../../../../config';
 import { AuthorityInterface, ClientFieldInterface } from '../../../admin/authority/list/types';
+import { removeEmptyKey } from '../../../../utils/remove-empty-key';
+
+const AuthoityArray = [
+  {
+    value: 'main',
+    label: 'register_form1.entity_area.options.main_entity_area',
+  },
+  {
+    value: 'sub',
+    label: 'register_form1.entity_area.options.sub_entity_area',
+  },
+];
 
 type FormProps = {
   children?: React.ReactNode;
@@ -157,24 +169,27 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     setValue,
     reset,
   } = methods;
+  const client_field = watch('client_field');
+  // console.log({ client_field });
 
   const onSubmitForm = async (data: MainValuesProps) => {
     const tmpClientField =
       clientFields.find(
         (client_field: ClientFieldInterface) => client_field.client_field_id === data.client_field
-      )?.name || '-';
+      )?.name || undefined;
     const tmpAuthority =
       authorities.find((authority: AuthorityInterface) => authority.authority_id === data.authority)
-        ?.name || '-';
+        ?.name || undefined;
     const tmpValue: MainValuesProps = {
       ...data,
-      authority: tmpAuthority,
-      authority_id: data.authority,
-      client_field: tmpClientField,
-      client_field_id: data.client_field,
+      authority: tmpAuthority || data.authority,
+      authority_id: tmpAuthority ? data.authority : undefined,
+      client_field: tmpClientField || data.client_field,
+      client_field_id: tmpClientField ? data.client_field : undefined,
     };
-    reset({ ...data });
-    onSubmit(tmpValue);
+    // reset({ ...data });
+    onSubmit(removeEmptyKey(tmpValue));
+    // console.log('test ting', );
   };
 
   const handleChangeClientField = (client_field_id: string) => {
@@ -188,9 +203,11 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
   }, [defaultValues]);
 
   React.useEffect(() => {
-    fetchClientFields();
+    if (FEATURE_MENU_ADMIN_ADD_AUTHORITY) {
+      fetchClientFields();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [FEATURE_MENU_ADMIN_ADD_AUTHORITY]);
 
   if (isFetchingClientFields) {
     return <>{translate('pages.common.loading')}</>;
@@ -212,41 +229,44 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             label={translate('register_form1.entity_area.label')}
             placeholder={translate('register_form1.entity_area.placeholder')}
             onChange={(e) => {
-              // console.log(e.target.value);
               if (e.target.value !== '') {
-                // console.log('masuk if');
-                handleChangeClientField(e.target.value);
+                if (FEATURE_MENU_ADMIN_ADD_AUTHORITY) {
+                  handleChangeClientField(e.target.value);
+                }
               }
+              // console.log('test:', e.target.value);
               setValue('client_field', e.target.value);
             }}
           >
-            {/* <MenuItem value="main">
-              {translate('register_form1.entity_area.options.sub_entity_area')}
-            </MenuItem>
-            <MenuItem value="sub">
-              {translate('register_form1.entity_area.options.main_entity_area')}
-            </MenuItem> */}
-            {clientFields.map((option, i) => (
-              <MenuItem key={i} value={option.client_field_id}>
-                {option.name}
-              </MenuItem>
-            ))}
+            {FEATURE_MENU_ADMIN_ADD_AUTHORITY
+              ? clientFields.map((option, i) => (
+                  <MenuItem key={i} value={option.client_field_id}>
+                    {option.name}
+                  </MenuItem>
+                ))
+              : AuthoityArray.map((option, i) => (
+                  <MenuItem key={i} value={option.value}>
+                    {translate(`${option.label}`)}
+                  </MenuItem>
+                ))}
           </RHFSelect>
         </Grid>
-        <Grid item md={12} xs={12}>
-          <RHFSelect
-            name="authority"
-            label={translate('register_form1.authority.label')}
-            placeholder={translate('register_form1.authority.placeholder')}
-          >
-            {authorities.map((option, i) => (
-              <MenuItem key={i} value={option.authority_id}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </RHFSelect>
-        </Grid>
-        {/* {client_field !== '' && client_field === 'main' && (
+        {FEATURE_MENU_ADMIN_ADD_AUTHORITY && (
+          <Grid item md={12} xs={12}>
+            <RHFSelect
+              name="authority"
+              label={translate('register_form1.authority.label')}
+              placeholder={translate('register_form1.authority.placeholder')}
+            >
+              {authorities.map((option, i) => (
+                <MenuItem key={i} value={option.authority_id}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </RHFSelect>
+          </Grid>
+        )}
+        {!FEATURE_MENU_ADMIN_ADD_AUTHORITY && client_field !== '' && client_field === 'main' && (
           <Grid item md={12} xs={12}>
             <RHFSelect
               name="authority"
@@ -261,11 +281,11 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             </RHFSelect>
           </Grid>
         )}
-        {client_field !== '' && client_field === 'sub' && (
+        {!FEATURE_MENU_ADMIN_ADD_AUTHORITY && client_field !== '' && client_field === 'sub' && (
           <Grid item md={12} xs={12}>
             <RHFTextField name="authority" label={translate('register_form1.authority.label')} />
           </Grid>
-        )} */}
+        )}
         <Grid item md={6} xs={12}>
           <RHFDatePicker
             name="date_of_esthablistmen"
