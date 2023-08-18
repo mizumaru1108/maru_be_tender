@@ -10,7 +10,7 @@ import { useParams } from 'react-router';
 import Iconify from 'components/Iconify';
 import CheckIcon from '@mui/icons-material/Check';
 import { LoadingButton } from '@mui/lab';
-import { getProposalCount, insertPaymentsBySupervisor } from 'redux/slices/proposal';
+import { getProposal, getProposalCount, insertPaymentsBySupervisor } from 'redux/slices/proposal';
 import { useSnackbar } from 'notistack';
 //
 import uuidv4 from 'utils/uuidv4';
@@ -36,7 +36,7 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
   const { id: proposal_id } = useParams();
   const { proposal } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
-  console.log('value lang');
+  // console.log('value lang');
 
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
@@ -133,6 +133,7 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
           refetch();
           if (FEATURE_PROPOSAL_COUNTING) {
             dispatch(getProposalCount(activeRole ?? 'test'));
+            dispatch(getProposal(proposal_id as string, activeRole as string));
           }
           // window.location.reload();
         }
