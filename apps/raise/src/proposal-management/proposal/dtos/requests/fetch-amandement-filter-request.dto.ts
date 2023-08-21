@@ -24,9 +24,15 @@ export class FetchAmandementFilterRequest extends BaseFilterRequest {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  status?: string;
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  @Transform(({ value }) => {
+    if (value && typeof value === 'string') {
+      return value.split(',');
+    }
+    return value;
+  })
+  status?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()

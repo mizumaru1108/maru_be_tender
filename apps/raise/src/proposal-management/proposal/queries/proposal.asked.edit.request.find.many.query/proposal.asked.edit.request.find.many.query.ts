@@ -7,7 +7,7 @@ import { ProposalAskedEditRequestEntity } from '../../../asked-edit-request/enti
 export class ProposalAskedEditRequestFindManyQuery {
   employee_name?: string;
   project_name?: string;
-  status?: string;
+  status?: string[];
   limit?: number;
   page?: number;
   sort_by?: string;

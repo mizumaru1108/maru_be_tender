@@ -23,7 +23,7 @@ export class ProposalAskedEditRequestUpdateProps {
 
 export class ProposalAskedEditRequestFindManyProps {
   include_relations?: string[];
-  status?: string;
+  status?: string[];
   project_name?: string;
   employee_name?: string;
   limit?: number;
@@ -182,7 +182,9 @@ export class ProposalAskedEditRequestRepository {
     if (status) {
       findManyWhereClause = {
         ...findManyWhereClause,
-        status,
+        status: {
+          in: status,
+        },
       };
     }
 
