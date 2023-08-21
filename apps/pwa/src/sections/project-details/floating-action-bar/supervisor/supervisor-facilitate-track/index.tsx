@@ -26,6 +26,7 @@ import { Conversation } from '../../../../../@types/wschat';
 
 import { LoadingButton } from '@mui/lab';
 import { getProposalCount } from '../../../../../redux/slices/proposal';
+import { FusionAuthRoles } from '../../../../../@types/commons';
 
 function FloatinActionBar() {
   const dispatch = useDispatch();
@@ -422,8 +423,8 @@ function FloatinActionBar() {
   // }, [dispatch, proposal]);
 
   React.useEffect(() => {
-    dispatch(setStepsData(proposal));
-  }, [proposal, dispatch]);
+    dispatch(setStepsData(proposal, activeRole! as FusionAuthRoles));
+  }, [proposal, dispatch, activeRole]);
 
   return (
     <>

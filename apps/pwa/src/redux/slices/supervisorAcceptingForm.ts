@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { dispatch } from 'redux/store';
+import { FusionAuthRoles } from '../../@types/commons';
 import {
   SupervisorStep1,
   SupervisorStep2,
@@ -107,7 +108,8 @@ const slice = createSlice({
     },
     // SET STEPS DATA
     setStepsData(state, action) {
-      // console.log(action.payload);
+      // console.log('test action`: ', action.payload);
+
       // step 1
       state.step1.clause = action.payload.clause ?? '';
       state.step1.clasification_field = action.payload.clasification_field ?? '';
@@ -222,7 +224,7 @@ export default slice.reducer;
 // Actions
 export const { stepBackOne, stepResetActive } = slice.actions;
 
-export const setStepsData = (data: any) => async () => {
+export const setStepsData = (data: any, role: FusionAuthRoles) => async () => {
   dispatch(slice.actions.setStepsData(data));
 };
 

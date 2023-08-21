@@ -27,6 +27,7 @@ import FacilitateSupervisorAcceptingForm from '../supervisor/supervisor-facilita
 import { setStepsData, stepResetActive } from '../../../../redux/slices/supervisorAcceptingForm';
 import { getProposalCount } from '../../../../redux/slices/proposal';
 import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { FusionAuthRoles } from '../../../../@types/commons';
 
 function FloatingActionBar() {
   const { id: proposal_id } = useParams();
@@ -563,8 +564,8 @@ function FloatingActionBar() {
   };
 
   React.useEffect(() => {
-    dispatch(setStepsData(proposal));
-  }, [proposal]);
+    dispatch(setStepsData(proposal, activeRole! as FusionAuthRoles));
+  }, [proposal, activeRole]);
 
   if (fetching) return <>... Loading</>;
 

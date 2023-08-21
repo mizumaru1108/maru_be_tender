@@ -1228,7 +1228,7 @@ const ar = {
       placeholder: 'الرجاء كتابة اسم الرئيس',
     },
     chairman_mobile: {
-      label: 'جوال رئيس مجلس الإدارة*',
+      label: '*جوال رئيس مجلس الإدارة',
       placeholder: 'الرجاء كتابة رقم هاتف رئيس مجلس الإدارة',
     },
     entery_data_name: {

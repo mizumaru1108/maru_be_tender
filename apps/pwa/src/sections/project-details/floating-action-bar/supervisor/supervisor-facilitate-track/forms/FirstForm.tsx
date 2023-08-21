@@ -74,11 +74,11 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isVat]);
-
+  const tmpStep1 = useMemo(() => step1, [step1]);
   // const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
   const methods = useForm<SupervisorStep1>({
     resolver: yupResolver(validationSchema),
-    defaultValues: useMemo(() => step1, [step1]),
+    defaultValues: activeRole === 'tender_project_supervisor' ? null : tmpStep1,
   });
 
   const { handleSubmit, watch, setValue, resetField, reset } = methods;
