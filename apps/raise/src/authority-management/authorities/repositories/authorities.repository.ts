@@ -20,6 +20,7 @@ export class AuthoritiesUpdateProps {
 export class AuthoritiesFindManyProps {
   name?: string;
   client_field_id?: string;
+  is_deleted?: 'Y' | 'N';
   include_relations?: string[];
   limit?: number;
   page?: number;
@@ -105,7 +106,7 @@ export class AuthoritiesRepository {
   }
 
   async findManyFilter(props: AuthoritiesFindManyProps) {
-    const { name, client_field_id, include_relations } = props;
+    const { name, client_field_id, is_deleted, include_relations } = props;
     let args: Prisma.AuthoritiesFindManyArgs = {};
     let whereClause: Prisma.AuthoritiesWhereInput = {};
 
@@ -124,6 +125,21 @@ export class AuthoritiesRepository {
         ...whereClause,
         client_field_id: client_field_id,
       };
+    }
+
+    if (is_deleted !== undefined) {
+      if (is_deleted === 'Y') {
+        whereClause = {
+          ...whereClause,
+          is_deleted: true,
+        };
+      }
+      if (is_deleted === 'N') {
+        whereClause = {
+          ...whereClause,
+          is_deleted: false,
+        };
+      }
     }
 
     if (include_relations && include_relations.length > 0) {

@@ -93,6 +93,8 @@ export class AuthoritiesHttpController {
   @Get()
   async findMany(@Query() query: AuthoritiesFindManyQueryDto) {
     try {
+      // console.log({ query });
+      // console.log(typeof query.is_deleted);
       const builder = Builder<AuthoritiesFindManyQuery>(
         AuthoritiesFindManyQuery,
         {

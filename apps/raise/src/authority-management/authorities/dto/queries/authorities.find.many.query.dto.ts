@@ -1,7 +1,15 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsBooleanString,
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { BaseFilterRequest } from '../../../../commons/dtos/base-filter-request.dto';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
+import { boolean } from 'joi';
 
 export class AuthoritiesFindManyQueryDto extends BaseFilterRequest {
   @ApiPropertyOptional()
@@ -15,6 +23,18 @@ export class AuthoritiesFindManyQueryDto extends BaseFilterRequest {
   @IsNotEmpty()
   @IsString()
   client_field_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }) => {
+    if (value && typeof value === 'string') {
+      return value.toUpperCase();
+    }
+    return value;
+  })
+  is_deleted?: 'Y' | 'N';
 
   @ApiPropertyOptional()
   @IsOptional()
