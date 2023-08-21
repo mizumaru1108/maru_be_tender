@@ -9,9 +9,11 @@ import { ProposalProjectTimelineModule } from './poject-timelines/proposal.proje
 import { ProposalLogModule } from './proposal-log/proposal.log.module';
 import { ProposalModule } from './proposal/proposal.module';
 import { ProposalCloseReportModule } from 'src/proposal-management/closing-report/close.report.module';
+import { ProposalAskedEditRequestModule } from './asked-edit-request/proposal.asked.edit.request.module';
 
 const importedModules = [
   CqrsModule,
+  ProposalAskedEditRequestModule,
   ProposalEditRequestModule,
   ProposalFollowUpModule,
   ProposalItemBudgetModule,

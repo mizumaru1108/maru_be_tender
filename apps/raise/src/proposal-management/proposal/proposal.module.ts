@@ -15,9 +15,13 @@ import { ProposalRepository } from './repositories/proposal.repository';
 import { ProposalService } from './services/proposal.service';
 import { ProposalSaveDraftCommandHandler } from './commands/proposal.save.draft/proposal.save.draft.command';
 import { ProposalFindMineQueryHandler } from './queries/proposal.find.mine.query/proposal.find.mine.query';
+import { ProposalAskedEditRequestModule } from '../asked-edit-request/proposal.asked.edit.request.module';
+import { AskAmandementRequestCommandHandler } from './commands/ask.amandement.request/ask.amandement.request.command';
+import { ProposalAskedEditRequestFindManyQueryHandler } from './queries/proposal.asked.edit.request.find.many.query/proposal.asked.edit.request.find.many.query';
 
 const importedModule = [
   CqrsModule,
+  ProposalAskedEditRequestModule,
   ProposalEditRequestModule,
   TenderTrackModule,
   ProposalLogModule,
@@ -31,11 +35,13 @@ const commands: Provider[] = [
   SendRevisionCommandHandler,
   ProposalCreateCommandHandler,
   ProposalSaveDraftCommandHandler,
+  AskAmandementRequestCommandHandler,
 ];
 
 const queries: Provider[] = [
   ProposalFindByIdQueryHandler,
   ProposalFindMineQueryHandler,
+  ProposalAskedEditRequestFindManyQueryHandler,
 ];
 
 const repositories: Provider[] = [ProposalRepository];

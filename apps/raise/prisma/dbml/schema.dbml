@@ -778,6 +778,7 @@ Table proposal_asked_edit_request {
   sender_role String [not null]
   proposal_id String [not null]
   created_at DateTime [default: `now()`, not null]
+  status String [not null, default: 'PENDING']
   supervisor_id String
   proposal proposal [not null]
   sender user [not null]

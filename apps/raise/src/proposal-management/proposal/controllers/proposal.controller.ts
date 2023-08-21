@@ -46,10 +46,16 @@ import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-fo
 import { ForbiddenPermissionException } from 'src/tender-commons/exceptions/forbidden-permission-exception';
 import { BasePrismaErrorException } from 'src/tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { RequestErrorException } from 'src/tender-commons/exceptions/request-error.exception';
+import { query } from 'winston';
 import { BasePaginationApiOkResponse } from '../../../commons/decorators/base.pagination.api.ok.response.decorator';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
 import { InvalidTrackIdException } from '../../../tender-track/track/exceptions/invalid-track-id.excception';
+import { ProposalAskedEditRequestEntity } from '../../asked-edit-request/entities/proposal.asked.edit.request.entity';
+import {
+  AskAmandementRequestCommand,
+  AskAmandementRequestCommandResult,
+} from '../commands/ask.amandement.request/ask.amandement.request.command';
 import { ChangeStateCommand } from '../commands/change.state/change.state.command';
 import {
   ProposalCreateCommand,
@@ -80,6 +86,10 @@ import {
 import { ProposalEntity } from '../entities/proposal.entity';
 import { ForbiddenChangeStateActionException } from '../exceptions/forbidden-change-state-action.exception';
 import { ProposalNotFoundException } from '../exceptions/proposal-not-found.exception';
+import {
+  ProposalAskedEditRequestFindManyQuery,
+  ProposalAskedEditRequestFindManyQueryResult,
+} from '../queries/proposal.asked.edit.request.find.many.query/proposal.asked.edit.request.find.many.query';
 import {
   ProposalFindMineQuery,
   ProposalFindMineQueryResult,
@@ -220,7 +230,11 @@ export class TenderProposalController {
     );
   }
 
-  // DEPRECARED (some roles asked supervisor to send a request to edit the proposal to user)
+  @ApiOperation({
+    summary:
+      'some roles asked supervisor to send a request to edit the proposal to user',
+  })
+  @BaseApiOkResponse(ProposalAskedEditRequestEntity, 'object')
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_finance')
   @Post('ask-amandement-request')
@@ -228,15 +242,37 @@ export class TenderProposalController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: AskAmandementRequestDto,
   ) {
-    const result = await this.proposalService.askAmandementRequest(
-      currentUser,
-      request,
-    );
-    return baseResponseHelper(
-      result,
-      HttpStatus.OK,
-      'Draft deleted successfully',
-    );
+    // const result = await this.proposalService.askAmandementRequest(
+    //   currentUser,
+    //   request,
+    // );
+    // return baseResponseHelper(
+    //   result,
+    //   HttpStatus.OK,
+    //   'Draft deleted successfully',
+    // );
+    try {
+      const command = Builder<AskAmandementRequestCommand>(
+        AskAmandementRequestCommand,
+        {
+          currentUser,
+          request,
+        },
+      ).build();
+
+      const result = await this.commandBus.execute<
+        AskAmandementRequestCommand,
+        AskAmandementRequestCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result.data,
+        HttpStatus.CREATED,
+        'Amandement Request Submitted to Supervisor Successfully!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 
   @UseGuards(TenderJwtGuard)
@@ -460,27 +496,54 @@ export class TenderProposalController {
     );
   }
 
-  // DEPRECATED (supervisor can see all roles that asked supervisor to send an amandement)
+  @ApiOperation({
+    summary:
+      'supervisor can see all roles that asked supervisor to send an amandement',
+  })
+  @BasePaginationApiOkResponse(ProposalAskedEditRequestEntity)
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_project_supervisor')
   @Get('amandement-request-lists')
   async fetchAmandementRequestList(
-    @CurrentUser() currentUser: TenderCurrentUser,
-    @Query() payload: FetchAmandementFilterRequest,
+    @Query() query: FetchAmandementFilterRequest,
   ) {
-    const result = await this.proposalService.fetchAmandementRequestList(
-      currentUser,
-      payload,
-    );
+    try {
+      const builder = Builder<ProposalAskedEditRequestFindManyQuery>(
+        ProposalAskedEditRequestFindManyQuery,
+        {
+          ...query,
+        },
+      );
 
-    return manualPaginationHelper(
-      result.data,
-      result.total,
-      payload.page || 1,
-      payload.limit || 10,
-      HttpStatus.OK,
-      'Success',
-    );
+      const { result, total } = await this.queryBus.execute<
+        ProposalAskedEditRequestFindManyQuery,
+        ProposalAskedEditRequestFindManyQueryResult
+      >(builder.build());
+
+      return manualPaginationHelper(
+        result,
+        total,
+        query.page || 1,
+        query.limit || 10,
+        HttpStatus.OK,
+        'Amandement Request List Fetched Successfully!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
+    // const result = await this.proposalService.fetchAmandementRequestList(
+    //   currentUser,
+    //   payload,
+    // );
+
+    // return manualPaginationHelper(
+    //   result.data,
+    //   result.total,
+    //   payload.page || 1,
+    //   payload.limit || 10,
+    //   HttpStatus.OK,
+    //   'Success',
+    // );
   }
 
   @UseGuards(TenderJwtGuard)
