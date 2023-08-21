@@ -189,8 +189,8 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
       client_field_id: tmpClientField ? data.client_field : undefined,
     };
     // reset({ ...data });
-    // onSubmit(removeEmptyKey(tmpValue));
-    console.log('test ting', removeEmptyKey(tmpValue));
+    onSubmit(removeEmptyKey(tmpValue));
+    // console.log('test ting', removeEmptyKey(tmpValue));
   };
 
   // console.log('test clientField: ', clientFields);
