@@ -18,7 +18,7 @@ function ContactUsPage() {
   }));
 
   return (
-    <Page title={translate('contact_us')}>
+    <Page title={translate('contact_support_title')}>
       <Container>
         <ContentStyle>
           {/* Under constraction ... */}

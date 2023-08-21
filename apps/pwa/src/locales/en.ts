@@ -1044,7 +1044,7 @@ const en = {
   drafts: 'Drafts',
   previous_funding_requests: 'Previous funding requests',
   messages: 'Messages',
-  contact_support: 'Contact Support',
+  contact_support_title: 'Contact Support',
   register_first_tap: 'Main info',
   register_second_tap: 'Contact info',
   register_third_tap: 'License info',
@@ -1492,6 +1492,24 @@ const en = {
     appointment_cause: {
       title: 'سبب الزيارة*',
       placeholer: 'الرجاء كتابة سبب الزيارة هنا ',
+    },
+  },
+  contact_support: {
+    table: {
+      headerCell: {
+        number: 'Number',
+        id_number: 'ID Number',
+        inquiry_type: 'Inquiry Type',
+        date_of_visit: 'Date of Visit',
+        reason_of_visit: 'Reason of Visit',
+      },
+      tableRow: {
+        inquiry_type: {
+          GENERAL: 'General',
+          PROJECT_INQUIRIES: 'Project Inquiries',
+          VISITATION: 'Visitation',
+        },
+      },
     },
   },
   incoming_funding_requests: 'Incoming Funding Requests',

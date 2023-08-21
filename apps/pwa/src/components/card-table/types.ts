@@ -196,7 +196,7 @@ export type CardTablePropsByBE = {
     | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
     | 'project-report'
     | 'incoming-amandment-requests';
-  addCustomFilter?: '&vat=false' | '&vat=true' | undefined;
+  addCustomFilter?: '&vat=false' | '&vat=true' | '&status=PENDING' | undefined;
   // staticFilters?: any;
   // baseFilters?: any;
 };

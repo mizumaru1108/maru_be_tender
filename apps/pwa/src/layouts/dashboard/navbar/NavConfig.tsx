@@ -206,7 +206,7 @@ const navConfig = {
           icon: ICONS.tender_client.messages,
         },
         {
-          title: 'contact_support',
+          title: 'contact_support_title',
           path: PATH_CLIENT.contact_support,
           icon: ICONS.tender_client.support,
         },

@@ -153,7 +153,7 @@ export default function AuthoritiesTableRow({
         {translate(`pages.admin.settings.label.table.client_field.${client_field_details.name}`)}
       </TableCell>
       {/* <TableCell align="left">{is_deleted ? 'true' : 'false'}</TableCell> */}
-      <TableCell align="left">
+      {/* <TableCell align="left">
         {is_deleted ? (
           <Chip
             label={translate('system_messages.status.inactive')}
@@ -167,7 +167,7 @@ export default function AuthoritiesTableRow({
             sx={{ fontWeight: 'bold' }}
           />
         )}
-      </TableCell>
+      </TableCell> */}
       <TableCell align="left">
         <Stack direction="row" gap={2}>
           <Button

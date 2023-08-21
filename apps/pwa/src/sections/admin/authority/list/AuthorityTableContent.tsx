@@ -58,11 +58,11 @@ export default function AuthorityTableContent({
       label: translate('pages.admin.settings.label.table.client_field_name'),
       align: 'left',
     },
-    {
-      id: 'status',
-      label: translate('system_messages.headercell.status'),
-      align: 'left',
-    },
+    // {
+    //   id: 'status',
+    //   label: translate('system_messages.headercell.status'),
+    //   align: 'left',
+    // },
     {
       id: 'permissions',
       label: translate('pages.admin.settings.label.table.permissions'),

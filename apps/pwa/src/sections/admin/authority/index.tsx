@@ -46,7 +46,7 @@ export default function AuthorityTable() {
     setIsFetchingAuthorities(true);
     try {
       const response = await axiosInstance.get(
-        `/authority-management/authorities?include_relations=client_field_details&limit=0`
+        `/authority-management/authorities?include_relations=client_field_details&limit=0&is_deleted=n`
       );
       if (response) {
         const mappedRes = response.data.data
@@ -86,6 +86,7 @@ export default function AuthorityTable() {
   };
 
   const getClientFields = async () => {
+    // console.log('masuk fetching client fields');
     setIsFetchingClientFields(true);
     try {
       const response = await axiosInstance.get(`/authority-management/client-fields?limit=0`);
@@ -97,6 +98,7 @@ export default function AuthorityTable() {
           )
           .map((client_field: any) => client_field);
         setClientFields(mappedRes);
+        // console.log('masuk fetching client fields', mappedRes);
       }
     } catch (error) {
       // console.error(error.message);

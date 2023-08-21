@@ -7,7 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Box, Stack, TablePagination, Typography } from '@mui/material';
+import { Box, Card, Stack, TablePagination, Typography } from '@mui/material';
 import useLocales from '../../../../hooks/useLocales';
 import useAuth from '../../../../hooks/useAuth';
 import { useSnackbar } from 'notistack';
@@ -16,6 +16,7 @@ import EmptyContent from '../../../EmptyContent';
 import { generateHeader } from '../../../../utils/generateProposalNumber';
 import dayjs from 'dayjs';
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
+import { ICustomHeaderCell } from './contact-us';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -43,16 +44,44 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(name: string, calories: number, fat: number, carbs: number) {
-  return { name, calories, fat, carbs };
-}
+// function createData(name: string, calories: number, fat: number, carbs: number) {
+//   return { name, calories, fat, carbs };
+// }
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24),
-  createData('Ice cream sandwich', 237, 9.0, 37),
-  createData('Eclair', 262, 16.0, 24),
-  createData('Cupcake', 305, 3.7, 67),
-  createData('Gingerbread', 356, 16.0, 49),
+// const rows = [
+//   createData('Frozen yoghurt', 159, 6.0, 24),
+//   createData('Ice cream sandwich', 237, 9.0, 37),
+//   createData('Eclair', 262, 16.0, 24),
+//   createData('Cupcake', 305, 3.7, 67),
+//   createData('Gingerbread', 356, 16.0, 49),
+// ];
+
+const CustomHeaderCell: ICustomHeaderCell[] = [
+  {
+    value: 'contact_support.table.headerCell.number',
+    label: 'contact_support.table.headerCell.number',
+    align: 'left',
+  },
+  // {
+  //   value: 'contact_support.table.headerCell.id_number',
+  //   label: 'contact_support.table.headerCell.id_number',
+  //   align: 'left',
+  // },
+  {
+    value: 'contact_support.table.headerCell.inquiry_type',
+    label: 'contact_support.table.headerCell.inquiry_type',
+    align: 'left',
+  },
+  {
+    value: 'contact_support.table.headerCell.date_of_visit',
+    label: 'contact_support.table.headerCell.date_of_visit',
+    align: 'left',
+  },
+  {
+    value: 'contact_support.table.headerCell.reason_of_visit',
+    label: 'contact_support.table.headerCell.reason_of_visit',
+    align: 'left',
+  },
 ];
 
 interface ContactUsTableData {
@@ -79,7 +108,7 @@ export default function BaseContactSupportTable() {
   const [error, setError] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [tableData, setTableData] = React.useState<ContactUsTableData[]>([]);
-
+  // console.log({ page });
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
     const tmpPage = page + 1;
@@ -94,7 +123,7 @@ export default function BaseContactSupportTable() {
           setTotal(response.data.total);
         }
         if (response.data.data) {
-          console.log('test data:', response.data.data);
+          // console.log('test data:', response.data.data);
           setTableData(response.data.data);
         }
       }
@@ -140,66 +169,96 @@ export default function BaseContactSupportTable() {
       <Typography variant="h3" gutterBottom sx={{ marginBottom: '50px' }}>
         {translate('contact_us')}
       </Typography>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>{'Id Number'}</StyledTableCell>
-              <StyledTableCell align="left">{'Inquiry Type'}</StyledTableCell>
-              <StyledTableCell align="left">{'Date of Visit'}</StyledTableCell>
-              <StyledTableCell align="left">{'Reason of Visit'}</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <StyledTableBody>
-            {tableData.length > 0
-              ? tableData.map((row, index) => (
-                  <StyledTableRow key={row.title}>
-                    <StyledTableCell component="th" scope="row">
-                      <Typography>
-                        {/* {row.contact_us_id ? generateHeader(row.contact_us_id) : '-'} */}
-                        {row.contact_us_id ? generateHeader(rowsPerPage * page + index + 1) : '-'}
-                      </Typography>
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {row?.inquiry_type ? formatCapitalizeText(row?.inquiry_type) : '-'}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {row?.date_of_visit ? dayjs(row?.date_of_visit).format('YYYY-MM-DD') : '-'}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {row?.visit_reason ? formatCapitalizeText(row?.visit_reason) : '-'}
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))
-              : null}
-          </StyledTableBody>
-        </Table>
-        {tableData.length === 0 ? (
-          <Stack display={'flex'} sx={{ backgroundColor: '#fff' }}>
-            <EmptyContent
-              title="لا يوجد بيانات"
-              sx={{
-                '& span.MuiBox-root': { height: 160 },
+      <Card sx={{ bgcolor: '#fff' }}>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                {/* <StyledTableCell>{'Id Number'}</StyledTableCell> */}
+                {CustomHeaderCell.map((item, index) => (
+                  <StyledTableCell
+                    sx={{ minWidth: 150 }}
+                    key={index}
+                    align={item.align}
+                    data-cy={`${item.label}-${index}`}
+                  >
+                    {translate(item.label)}
+                  </StyledTableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <StyledTableBody>
+              {tableData.length > 0
+                ? tableData.map((row, index) => (
+                    <StyledTableRow key={row.title}>
+                      <StyledTableCell component="th" scope="row">
+                        <Typography noWrap={false} data-cy={`contact_us_id-${index}`}>
+                          {/* {row.contact_us_id ? generateHeader(row.contact_us_id) : '-'} */}
+                          {row.contact_us_id ? generateHeader(rowsPerPage * page + index + 1) : '-'}
+                        </Typography>
+                      </StyledTableCell>
+                      <StyledTableCell align="left">
+                        <Typography noWrap={false} data-cy={`inquiry_type-${index}`}>
+                          {/* {row?.inquiry_type ? formatCapitalizeText(row?.inquiry_type) : '-'} */}
+                          {row?.inquiry_type
+                            ? translate(
+                                `contact_support.table.tableRow.inquiry_type.${row?.inquiry_type.toUpperCase()}`
+                              )
+                            : '-'}
+                        </Typography>
+                      </StyledTableCell>
+                      <StyledTableCell align="left">
+                        <Typography noWrap={false} data-cy={`date_of_visit-${index}`}>
+                          {row?.date_of_visit
+                            ? dayjs(row?.date_of_visit).format('YYYY-MM-DD')
+                            : '-'}
+                        </Typography>
+                      </StyledTableCell>
+                      <StyledTableCell align="left">
+                        <Typography noWrap={false} data-cy={`visit_reason-${index}`}>
+                          {row?.visit_reason ? formatCapitalizeText(row?.visit_reason) : '-'}
+                        </Typography>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))
+                : null}
+            </StyledTableBody>
+          </Table>
+          {tableData.length === 0 ? (
+            <Stack display={'flex'} sx={{ backgroundColor: '#fff' }}>
+              <EmptyContent
+                title="لا يوجد بيانات"
+                sx={{
+                  '& span.MuiBox-root': { height: 160 },
+                }}
+              />
+            </Stack>
+          ) : null}
+          <Box sx={{ position: 'relative', backgroundColor: '#fff' }}>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={total}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={(e, newPage) => {
+                // console.log({ newPage });
+                if (!!newPage) {
+                  setPage(Number(newPage));
+                } else {
+                  setPage(0);
+                }
+              }}
+              onRowsPerPageChange={(e) => {
+                // console.log(e);
+                if (e.target.value) {
+                  setRowsPerPage(Number(e.target.value));
+                }
               }}
             />
-          </Stack>
-        ) : null}
-        <Box sx={{ position: 'relative', backgroundColor: '#fff' }}>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={total}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(e) => {
-              console.log(e);
-            }}
-            onRowsPerPageChange={(e) => {
-              console.log(e);
-            }}
-          />
-        </Box>
-      </TableContainer>
+          </Box>
+        </TableContainer>
+      </Card>
     </Box>
   );
 }

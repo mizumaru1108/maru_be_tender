@@ -24,9 +24,12 @@ function IncomingAmandementRequest() {
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
     try {
-      const rest = await axiosInstance.get(`tender-proposal/amandement-request-lists?limit=4`, {
-        headers: { 'x-hasura-role': activeRole! },
-      });
+      const rest = await axiosInstance.get(
+        `tender-proposal/amandement-request-lists?limit=4&status=PENDING`,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
       // console.log('test', rest.data.data);
       if (rest) {
         // setCardData(
@@ -103,6 +106,7 @@ function IncomingAmandementRequest() {
             api={'tender-proposal/amandement-request-lists'}
             returnData={setCardData}
             loadingState={setIsLoading}
+            addCustomFilter={'&status=PENDING'}
           />
           {/* <Button
             sx={{

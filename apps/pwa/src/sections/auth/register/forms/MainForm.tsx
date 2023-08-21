@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid, MenuItem } from '@mui/material';
+import { Button, Grid, MenuItem } from '@mui/material';
 import { AUTHORITY } from '_mock/authority';
 import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import RHFDatePicker from 'components/hook-form/RHFDatePicker';
@@ -14,6 +14,7 @@ import axios from 'axios';
 import { FEATURE_MENU_ADMIN_ADD_AUTHORITY, TMRA_RAISE_URL } from '../../../../config';
 import { AuthorityInterface, ClientFieldInterface } from '../../../admin/authority/list/types';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
+import ReplayIcon from '@mui/icons-material/Replay';
 
 const AuthoityArray = [
   {
@@ -39,7 +40,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
   const [clientFields, setClientFields] = React.useState<ClientFieldInterface[] | []>([]);
   const [isFetchingAuthoritites, setIsFetchingAuthorities] = React.useState<boolean>(false);
   const [isFetchingClientFields, setIsFetchingClientFields] = React.useState<boolean>(false);
-
+  const [clientFieldId, setClientFieldId] = React.useState<string>('');
   const RegisterSchemaFirstForm = Yup.object().shape({
     entity: Yup.string().required(translate('errors.register.entity.required')),
     client_field: Yup.string().required(translate('errors.register.client_field.required')),
@@ -188,12 +189,24 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
       client_field_id: tmpClientField ? data.client_field : undefined,
     };
     // reset({ ...data });
-    onSubmit(removeEmptyKey(tmpValue));
-    // console.log('test ting', );
+    // onSubmit(removeEmptyKey(tmpValue));
+    console.log('test ting', removeEmptyKey(tmpValue));
   };
 
+  // console.log('test clientField: ', clientFields);
   const handleChangeClientField = (client_field_id: string) => {
-    fetchAuthorities(client_field_id);
+    const tmpClientId = clientFields.find(
+      (client_field: ClientFieldInterface) => String(client_field.name) === String(client_field_id)
+    )?.client_field_id;
+    // console.log('finding client Id:', tmpClientId);
+    if (tmpClientId) {
+      fetchAuthorities(tmpClientId);
+      setClientFieldId(tmpClientId);
+    } else {
+      setClientFieldId('');
+      setValue('authority', '');
+      // alert('failed get client_field_id');
+    }
   };
 
   useEffect(() => {
@@ -225,6 +238,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
         </Grid>
         <Grid item md={12} xs={12}>
           <RHFSelect
+            disabled={isFetchingClientFields || isFetchingAuthoritites}
             name="client_field"
             label={translate('register_form1.entity_area.label')}
             placeholder={translate('register_form1.entity_area.placeholder')}
@@ -238,7 +252,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
               setValue('client_field', e.target.value);
             }}
           >
-            {FEATURE_MENU_ADMIN_ADD_AUTHORITY
+            {/* {FEATURE_MENU_ADMIN_ADD_AUTHORITY
               ? clientFields.map((option, i) => (
                   <MenuItem key={i} value={option.client_field_id}>
                     {option.name}
@@ -248,25 +262,58 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
                   <MenuItem key={i} value={option.value}>
                     {translate(`${option.label}`)}
                   </MenuItem>
-                ))}
+                ))} */}
+            {AuthoityArray.map((option, i) => (
+              <MenuItem key={i} value={option.value}>
+                {translate(`${option.label}`)}
+              </MenuItem>
+            ))}
           </RHFSelect>
         </Grid>
-        {FEATURE_MENU_ADMIN_ADD_AUTHORITY && (
+        {FEATURE_MENU_ADMIN_ADD_AUTHORITY &&
+          client_field !== '' &&
+          client_field === 'main' &&
+          clientFieldId && (
+            <Grid item md={12} xs={12}>
+              <RHFSelect
+                disabled={isFetchingAuthoritites}
+                name="authority"
+                label={translate('register_form1.authority.label')}
+                placeholder={translate('register_form1.authority.placeholder')}
+              >
+                {authorities.length > 0 &&
+                  !isFetchingAuthoritites &&
+                  authorities.map((option, i) => (
+                    <MenuItem key={i} value={option.authority_id}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+              </RHFSelect>
+              {authorities.length === 0 && (
+                <Button
+                  disabled={isFetchingAuthoritites}
+                  data-cy={`button-retry-fetching-bank`}
+                  variant="outlined"
+                  onClick={() => {
+                    if (clientFieldId) {
+                      fetchAuthorities(clientFieldId);
+                    } else {
+                      alert('clientFieldId is empty or null');
+                    }
+                  }}
+                  endIcon={<ReplayIcon />}
+                >
+                  Re-try Fetching Authorities
+                </Button>
+              )}
+            </Grid>
+          )}
+        {FEATURE_MENU_ADMIN_ADD_AUTHORITY && client_field !== '' && client_field === 'sub' && (
           <Grid item md={12} xs={12}>
-            <RHFSelect
-              name="authority"
-              label={translate('register_form1.authority.label')}
-              placeholder={translate('register_form1.authority.placeholder')}
-            >
-              {authorities.map((option, i) => (
-                <MenuItem key={i} value={option.authority_id}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </RHFSelect>
+            <RHFTextField name="authority" label={translate('register_form1.authority.label')} />
           </Grid>
         )}
-        {!FEATURE_MENU_ADMIN_ADD_AUTHORITY && client_field !== '' && client_field === 'main' && (
+        {/* {!FEATURE_MENU_ADMIN_ADD_AUTHORITY && client_field !== '' && client_field === 'main' && (
           <Grid item md={12} xs={12}>
             <RHFSelect
               name="authority"
@@ -285,7 +332,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
           <Grid item md={12} xs={12}>
             <RHFTextField name="authority" label={translate('register_form1.authority.label')} />
           </Grid>
-        )}
+        )} */}
         <Grid item md={6} xs={12}>
           <RHFDatePicker
             name="date_of_esthablistmen"

@@ -1052,7 +1052,7 @@ const ar = {
   drafts: 'طلبات دعم مسودة ',
   previous_funding_requests: 'طلبات دعم سابقة',
   messages: 'الرسائل',
-  contact_support: 'تواصل مع الدعم ',
+  contact_support_title: 'تواصل مع الدعم ',
   register_first_tap: 'المعلومات الرئيسية',
   register_second_tap: 'معلومات الاتصال',
   register_third_tap: 'اسم مدير المشروع',
@@ -1492,6 +1492,24 @@ const ar = {
     appointment_cause: {
       title: 'سبب الزيارة*',
       placeholer: 'الرجاء كتابة سبب الزيارة هنا ',
+    },
+  },
+  contact_support: {
+    table: {
+      headerCell: {
+        number: 'رقم الطلب',
+        id_number: 'رقم الهوية',
+        inquiry_type: 'نوع الاستفسار',
+        date_of_visit: 'تاريخ الزيارة',
+        reason_of_visit: 'سبب الزيارة',
+      },
+      tableRow: {
+        inquiry_type: {
+          GENERAL: 'عام',
+          PROJECT_INQUIRIES: 'تفصيلية عن المشروع',
+          VISITATION: 'تفصيلية عن الزيارة',
+        },
+      },
     },
   },
   incoming_funding_requests: 'الطلبات الواردة',

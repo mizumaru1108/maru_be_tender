@@ -15,7 +15,7 @@ type SortingCardTableProps = {
   type?: 'incoming' | 'inprocess';
   page?: number;
   typeRequest?: string;
-  addCustomFilter?: '&vat=false' | '&vat=true' | undefined;
+  addCustomFilter?: '&vat=false' | '&vat=true' | '&status=PENDING' | undefined;
 };
 
 export default function SortingCardTable({

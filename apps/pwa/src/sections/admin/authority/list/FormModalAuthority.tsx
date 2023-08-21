@@ -69,18 +69,22 @@ function FormModalAuthority({
   const { handleSubmit, reset, watch } = methods;
 
   const onSubmitForm = (formValue: AuthorityInterface) => {
-    const newValue: ISubmit = {};
+    let newValue: ISubmit = {};
 
     if (type === 'add') {
       newValue.client_field_id = clientFieldId;
       newValue.name = formValue.name;
     }
 
-    if (type === 'edit') newValue.authority_id = formValue.authority_id;
+    if (type === 'edit') {
+      newValue = { ...formValue };
+      newValue.authority_id = formValue.authority_id;
+    }
 
     if (type === 'delete') {
       newValue.authority_id = [formValue.authority_id];
     }
+    // console.log({ newValue });
     handleSubmitProps(newValue);
   };
 
