@@ -55,9 +55,12 @@ export class AskAmandementRequestCommandHandler
   ): Promise<AskAmandementRequestCommandResult> {
     try {
       const { request, currentUser } = command;
+      // console.log({ request });
+      // console.log({ currentUser });
       const proposal = await this.proposalRepo.fetchById({
         id: request.proposal_id,
       });
+      // console.log({ proposal });
       if (!proposal) throw new DataNotFoundException('Proposal Not Found!');
       if (!proposal.supervisor_id) {
         throw new RequestErrorException(`Unable to fetch supervisor data!`);
@@ -112,22 +115,26 @@ export class AskAmandementRequestCommandHandler
             },
             session,
           );
+          // console.log({ lastLog });
 
-          await this.logRepo.create({
-            id: nanoid(),
-            proposal_id: proposal.id,
-            user_role: appRoleMappers[currentUser.choosenRole],
-            reviewer_id: currentUser.id,
-            action: ProposalAction.ASK_FOR_AMANDEMENT_REQUEST, //ask to supervisor for amandement request
-            state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
-            notes: request.notes,
-            response_time: lastLog[0].created_at
-              ? Math.round(
-                  (new Date().getTime() - lastLog[0].created_at.getTime()) /
-                    60000,
-                )
-              : null,
-          });
+          await this.logRepo.create(
+            {
+              id: nanoid(),
+              proposal_id: proposal.id,
+              user_role: appRoleMappers[currentUser.choosenRole],
+              reviewer_id: currentUser.id,
+              action: ProposalAction.ASK_FOR_AMANDEMENT_REQUEST, //ask to supervisor for amandement request
+              state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+              notes: request.notes,
+              response_time: lastLog[0].created_at
+                ? Math.round(
+                    (new Date().getTime() - lastLog[0].created_at.getTime()) /
+                      60000,
+                  )
+                : null,
+            },
+            session,
+          );
 
           const createdAskedEditRequest =
             await this.proposalAskedEditRequestRepo.create(
@@ -142,12 +149,14 @@ export class AskAmandementRequestCommandHandler
               session,
             );
 
-          console.log({ createdAskedEditRequest });
+          // console.log({ createdAskedEditRequest });
+          // throw new Error('debug');
           return {
             created_asked_edit_request: createdAskedEditRequest,
           };
         },
         {
+          maxWait: 50000,
           timeout: 50000,
         },
       );

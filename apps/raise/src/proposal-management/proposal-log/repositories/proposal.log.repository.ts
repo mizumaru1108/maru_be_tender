@@ -188,6 +188,7 @@ export class ProposalLogRepository {
     let prisma = this.prismaService;
     if (session) prisma = session;
     try {
+      // console.log({ props });
       const rawResult = await prisma.proposal_log.create({
         data: {
           id: props.id || nanoid(),
@@ -203,7 +204,7 @@ export class ProposalLogRepository {
           new_values: props.new_values,
         },
       });
-
+      // console.log({ rawResult });
       return Builder<ProposalLogEntity>(ProposalLogEntity, rawResult).build();
     } catch (error) {
       this.logger.info(`error on creating proposal logs ${error}`);

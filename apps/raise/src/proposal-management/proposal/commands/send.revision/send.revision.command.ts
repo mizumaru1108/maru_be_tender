@@ -29,6 +29,7 @@ import {
   TenderFileManagerRepository,
 } from 'src/tender-file-manager/repositories/tender-file-manager.repository';
 import { v4 as uuidv4 } from 'uuid';
+import { ProposalAskedEditRequestRepository } from '../../../asked-edit-request/repositories/proposal.asked.edit.request.repository';
 
 export class SendRevisionCommand {
   userId: string;
@@ -51,6 +52,7 @@ export class SendRevisionCommandHandler
     private readonly msegatService: MsegatService,
     private readonly proposalRepo: ProposalRepository,
     private readonly editRequestRepo: ProposalEditRequestRepository,
+    private readonly proposalAskedEditRequestRepo: ProposalAskedEditRequestRepository,
     private readonly itemBudgetRepo: ProposalItemBudgetRepository,
     private readonly timelineRepo: ProposalTimelinePostgresRepository,
     private readonly fileManagerRepo: TenderFileManagerRepository,
@@ -287,6 +289,28 @@ export class SendRevisionCommandHandler
                 session,
               );
             }
+          }
+
+          // see if there's asked edit request
+          const askedEditRequest =
+            await this.proposalAskedEditRequestRepo.findOne(
+              {
+                proposal_id: request.proposal_id,
+                status: 'PENDING',
+                method: 'AND',
+              },
+              session,
+            );
+
+          // if exist then update it to SUCCESS
+          if (askedEditRequest) {
+            await this.proposalAskedEditRequestRepo.update(
+              {
+                id: askedEditRequest.id,
+                status: 'SUCCESS',
+              },
+              session,
+            );
           }
 
           // web notif
