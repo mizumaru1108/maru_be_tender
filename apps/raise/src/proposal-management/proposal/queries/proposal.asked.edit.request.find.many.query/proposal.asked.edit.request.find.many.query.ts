@@ -37,6 +37,7 @@ export class ProposalAskedEditRequestFindManyQueryHandler
   async execute(
     query: ProposalAskedEditRequestFindManyQuery,
   ): Promise<ProposalAskedEditRequestFindManyQueryResult> {
+    // console.log({ query });
     const result = await this.askedEditRequestRepo.findMany({
       ...query,
     });

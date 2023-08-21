@@ -245,7 +245,7 @@ export class ProposalAskedEditRequestRepository {
       let args = await this.findManyFilters(props);
       let queryOptions: Prisma.proposal_asked_edit_requestFindManyArgs = {
         where: args.where,
-
+        include: args.include,
         orderBy: {
           [getSortBy]: getSortDirection,
         },
