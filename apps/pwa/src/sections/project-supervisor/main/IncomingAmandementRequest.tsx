@@ -25,7 +25,7 @@ function IncomingAmandementRequest() {
     setIsLoading(true);
     try {
       const rest = await axiosInstance.get(
-        `tender-proposal/amandement-request-lists?limit=4&status=PENDING`,
+        `tender-proposal/amandement-request-lists?limit=4&status=PENDING&include_relations=supervisor,sender,proposal`,
         {
           headers: { 'x-hasura-role': activeRole! },
         }

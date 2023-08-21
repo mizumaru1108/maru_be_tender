@@ -190,7 +190,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     };
     // reset({ ...data });
     onSubmit(removeEmptyKey(tmpValue));
-    // console.log('test ting', removeEmptyKey(tmpValue));
+    console.log('test ting', removeEmptyKey(tmpValue));
   };
 
   // console.log('test clientField: ', clientFields);
@@ -270,45 +270,42 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             ))}
           </RHFSelect>
         </Grid>
-        {FEATURE_MENU_ADMIN_ADD_AUTHORITY &&
-          client_field !== '' &&
-          client_field === 'main' &&
-          clientFieldId && (
-            <Grid item md={12} xs={12}>
-              <RHFSelect
+        {client_field !== '' && client_field === 'main' && clientFieldId && (
+          <Grid item md={12} xs={12}>
+            <RHFSelect
+              disabled={isFetchingAuthoritites}
+              name="authority"
+              label={translate('register_form1.authority.label')}
+              placeholder={translate('register_form1.authority.placeholder')}
+            >
+              {authorities.length > 0 &&
+                !isFetchingAuthoritites &&
+                authorities.map((option, i) => (
+                  <MenuItem key={i} value={option.authority_id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+            </RHFSelect>
+            {authorities.length === 0 && (
+              <Button
                 disabled={isFetchingAuthoritites}
-                name="authority"
-                label={translate('register_form1.authority.label')}
-                placeholder={translate('register_form1.authority.placeholder')}
+                data-cy={`button-retry-fetching-bank`}
+                variant="outlined"
+                onClick={() => {
+                  if (clientFieldId) {
+                    fetchAuthorities(clientFieldId);
+                  } else {
+                    alert('clientFieldId is empty or null');
+                  }
+                }}
+                endIcon={<ReplayIcon />}
               >
-                {authorities.length > 0 &&
-                  !isFetchingAuthoritites &&
-                  authorities.map((option, i) => (
-                    <MenuItem key={i} value={option.authority_id}>
-                      {option.name}
-                    </MenuItem>
-                  ))}
-              </RHFSelect>
-              {authorities.length === 0 && (
-                <Button
-                  disabled={isFetchingAuthoritites}
-                  data-cy={`button-retry-fetching-bank`}
-                  variant="outlined"
-                  onClick={() => {
-                    if (clientFieldId) {
-                      fetchAuthorities(clientFieldId);
-                    } else {
-                      alert('clientFieldId is empty or null');
-                    }
-                  }}
-                  endIcon={<ReplayIcon />}
-                >
-                  Re-try Fetching Authorities
-                </Button>
-              )}
-            </Grid>
-          )}
-        {FEATURE_MENU_ADMIN_ADD_AUTHORITY && client_field !== '' && client_field === 'sub' && (
+                Re-try Fetching Authorities
+              </Button>
+            )}
+          </Grid>
+        )}
+        {client_field !== '' && client_field === 'sub' && (
           <Grid item md={12} xs={12}>
             <RHFTextField name="authority" label={translate('register_form1.authority.label')} />
           </Grid>
