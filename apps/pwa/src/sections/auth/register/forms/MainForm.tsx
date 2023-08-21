@@ -190,7 +190,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     };
     // reset({ ...data });
     onSubmit(removeEmptyKey(tmpValue));
-    console.log('test ting', removeEmptyKey(tmpValue));
+    // console.log('test ting', removeEmptyKey(tmpValue));
   };
 
   // console.log('test clientField: ', clientFields);

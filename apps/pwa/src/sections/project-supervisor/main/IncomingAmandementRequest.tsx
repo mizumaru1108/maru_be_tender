@@ -20,7 +20,7 @@ function IncomingAmandementRequest() {
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const [cardData, setCardData] = React.useState([]);
-
+  // console.log({ cardData });
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
     try {
@@ -128,46 +128,52 @@ function IncomingAmandementRequest() {
       <Grid container spacing={2}>
         {isLoading && translate('pages.common.loading')}
         {!isLoading && cardData && cardData.length > 0 ? (
-          cardData.map((item: any, index: any) => (
-            <Grid item md={6} key={index}>
-              <ProjectCard
-                title={{
-                  id: item.proposal.id,
-                  project_number: generateHeader(
-                    item && item.proposal.project_number && item.proposal.project_number
-                      ? item.proposal.project_number
-                      : item.id
-                  ),
-                  inquiryStatus:
-                    (item &&
-                      item.proposal.outter_status &&
-                      item.proposal.outter_status.toLowerCase()) ||
-                    undefined,
-                }}
-                content={{
-                  projectName: item.proposal.project_name || '-',
-                  organizationName: item.sender.employee_name || '-',
-                  sentSection: item.proposal.state,
-                  // employee: item.user.employee_name,
-                  employee: item.sender.employee_name,
-                  // createdAtClient: new Date(item.user.client_data.created_at),
-                  createdAtClient: item.proposal.created_at
-                    ? new Date(item.proposal.created_at)
-                    : new Date(),
-                }}
-                footer={{
-                  createdAt: item.updated_at ? new Date(item.updated_at) : new Date(),
-                }}
-                // cardFooterButtonAction="show-project"
-                cardFooterButtonAction={
-                  item.proposal.outter_status === 'ASKED_FOR_AMANDEMENT'
-                    ? 'show-details'
-                    : 'show-project'
-                }
-                destination="incoming-amandment-requests"
-              />
-            </Grid>
-          ))
+          cardData.map((item: any, index: any) => {
+            const tmpItem = item;
+            if (tmpItem && tmpItem?.proposal && tmpItem?.sender) {
+              return (
+                <Grid item md={6} key={index}>
+                  <ProjectCard
+                    title={{
+                      id: item?.proposal?.id || '-',
+                      project_number: generateHeader(
+                        item && item.proposal.project_number && item.proposal.project_number
+                          ? item.proposal.project_number
+                          : item.id
+                      ),
+                      inquiryStatus:
+                        (item &&
+                          item.proposal.outter_status &&
+                          item.proposal.outter_status.toLowerCase()) ||
+                        undefined,
+                    }}
+                    content={{
+                      projectName: item.proposal.project_name || '-',
+                      organizationName: item.sender.employee_name || '-',
+                      sentSection: item.proposal.state,
+                      // employee: item.user.employee_name,
+                      employee: item.sender.employee_name,
+                      // createdAtClient: new Date(item.user.client_data.created_at),
+                      createdAtClient: item.proposal.created_at
+                        ? new Date(item.proposal.created_at)
+                        : new Date(),
+                    }}
+                    footer={{
+                      createdAt: item.updated_at ? new Date(item.updated_at) : new Date(),
+                    }}
+                    // cardFooterButtonAction="show-project"
+                    cardFooterButtonAction={
+                      item.proposal.outter_status === 'ASKED_FOR_AMANDEMENT'
+                        ? 'show-details'
+                        : 'show-project'
+                    }
+                    destination="incoming-amandment-requests"
+                  />
+                </Grid>
+              );
+            }
+            return null;
+          })
         ) : (
           <Grid item md={12}>
             <EmptyContent
