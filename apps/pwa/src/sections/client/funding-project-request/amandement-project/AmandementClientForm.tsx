@@ -207,6 +207,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
     delete newValue.project_attachments;
     delete newValue.letter_ofsupport_req;
     delete newValue.project_timeline;
+    // delete newValue.detail_project_budgets;
 
     let filteredValue = Object.keys(newValue)
       .filter((key) => Object.keys(tmpValues?.revised!).includes(key))
@@ -221,25 +222,45 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
     };
 
     if (tmpValues?.revised.hasOwnProperty('amount_required_fsupport')) {
-      filteredValue = {
-        ...filteredValue,
-        detail_project_budgets: requestState.form4.detail_project_budgets,
-      };
+      // filteredValue = {
+      //   ...filteredValue,
+      //   detail_project_budgets: requestState.form4.detail_project_budgets,
+      // };
+      filteredValue.amount_required_fsupport = requestState.form4.amount_required_fsupport;
     }
     let formData = new FormData();
     for (const key in filteredValue) {
       formData.append(key, filteredValue[key]);
     }
-
-    if (tmpValues?.revised.hasOwnProperty('project_timeline')) {
+    // console.log({ requestState });
+    if (requestState.form4.detail_project_budgets.data.length > 0) {
+      for (let i = 0; i < requestState.form4.detail_project_budgets.data.length; i++) {
+        const budget: {
+          amount: number;
+          explanation: string;
+          clause: string;
+        } = requestState.form4.detail_project_budgets.data[i];
+        // console.log('masuk sini', data?.project_timeline[i]);
+        const index = i; // Get the index for appending to FormData
+        // Append the values for each object using template literals
+        formData.append(`detail_project_budgets[${index}][amount]`, budget.amount as any);
+        formData.append(`detail_project_budgets[${index}][explanation]`, budget.explanation);
+        formData.append(`detail_project_budgets[${index}][clause]`, budget.clause);
+      }
+    }
+    if (
+      (tmpValues?.revised.hasOwnProperty('project_timeline') ||
+        tmpValues?.revised.hasOwnProperty('timelines')) &&
+      requestState?.project_timeline.length > 0
+    ) {
       for (let i = 0; i < requestState?.project_timeline.length; i++) {
         const timeline: {
           name: string;
           start_date: string;
           end_date: string;
-        } = data?.project_timeline[i];
+        } = requestState?.project_timeline[i];
+        // console.log('masuk sini', data?.project_timeline[i]);
         const index = i; // Get the index for appending to FormData
-
         // Append the values for each object using template literals
         formData.append(`project_timeline[${index}][name]`, timeline.name);
         formData.append(`project_timeline[${index}][start_date]`, timeline.start_date);

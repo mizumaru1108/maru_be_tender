@@ -2120,6 +2120,10 @@ const en = {
   },
   closing_project_by_client: 'Closing Project By Client',
   review: {
+    project_timeline: 'Project Timeline',
+    letter_ofsupport_req: 'Letter of support requirment',
+    project_attachments: 'Project attachments',
+    num_ofproject_binicficiaries: 'Number of Beneficiaries',
     revised_by_client: 'Revised by Client',
     waiting: 'Waiting Review...',
     order_status: 'Order Status',

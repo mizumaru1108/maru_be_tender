@@ -1,12 +1,16 @@
 import { Grid, Stack, Typography } from '@mui/material';
-import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'redux/store';
-import { bank_information } from '../../../../@types/commons';
-import { BankInformation, Log } from '../../../../@types/proposal';
-import { FEATURE_PROJECT_PATH_NEW } from '../../../../config';
+import {
+  BankInformation,
+  BaseAttachement,
+  ItemBudget,
+  timeline,
+} from '../../../../@types/proposal';
+import ButtonDownloadFiles from '../../../../components/button/ButtonDownloadFiles';
+import { RHFDatePicker, RHFTextField } from '../../../../components/hook-form';
 import BankImageComp from '../../../shared/BankImageComp';
 
 interface Props {
@@ -37,6 +41,7 @@ function RevisionLog({ stepGeneralLog }: Props) {
           updated_at: stepGeneralLog?.updated_at || '',
           user_role: stepGeneralLog?.user_role || '',
           proposal: {
+            ...stepGeneralLog?.new_values,
             bank_informations: stepGeneralLog?.new_values?.bank_informations
               ? stepGeneralLog?.new_values?.bank_informations
               : {},
@@ -54,13 +59,43 @@ function RevisionLog({ stepGeneralLog }: Props) {
     return tmpBankInformation;
   }, [dataGrants]);
 
+  const latterOfSupport = React.useMemo(() => {
+    let tmpLatterOfSupport: BaseAttachement | undefined = undefined;
+    if (dataGrants?.proposal && dataGrants?.proposal?.letter_ofsupport_req) {
+      tmpLatterOfSupport = dataGrants?.proposal?.letter_ofsupport_req as BaseAttachement;
+    }
+    return tmpLatterOfSupport;
+  }, [dataGrants]);
+
+  const projectAttachment = React.useMemo(() => {
+    let tmpProjectAttachment: BaseAttachement | undefined = undefined;
+    if (dataGrants?.proposal && dataGrants?.proposal?.project_attachments) {
+      tmpProjectAttachment = dataGrants?.proposal?.project_attachments as BaseAttachement;
+    }
+    return tmpProjectAttachment;
+  }, [dataGrants]);
+
+  const projectTimelines = React.useMemo(() => {
+    let tmpProjectTimelines: timeline[] | [] = [];
+    if (dataGrants?.proposal && dataGrants?.proposal?.project_timeline.length > 0) {
+      tmpProjectTimelines = dataGrants?.proposal?.project_timeline as timeline[];
+    }
+    return tmpProjectTimelines;
+  }, [dataGrants]);
+
+  const proposalItemBudgets = React.useMemo(() => {
+    let tmpProposalItemBudgets: ItemBudget[] | [] = [];
+    if (dataGrants?.proposal && dataGrants?.proposal?.proposal_item_budgets.length > 0) {
+      tmpProposalItemBudgets = dataGrants?.proposal?.proposal_item_budgets as ItemBudget[];
+    }
+    return tmpProposalItemBudgets;
+  }, [dataGrants]);
+
   // console.log('dataGrants', dataGrants);
-  // console.log('dataGrants: ', dataGrants);
 
   return (
     <React.Fragment>
-      {(stepGeneralLog.action === 'send_revision_for_finance_amandement' ||
-        stepGeneralLog.action === 'send_revision_for_supervisor_amandement') &&
+      {stepGeneralLog.action === 'send_revision_for_finance_amandement' &&
       bankInfromation?.card_image?.url ? (
         <Grid container spacing={2}>
           <Grid item md={12} xs={12}>
@@ -88,6 +123,171 @@ function RevisionLog({ stepGeneralLog }: Props) {
               />
             ) : null}
           </Grid>
+        </Grid>
+      ) : null}
+      {stepGeneralLog.action === 'send_revision_for_supervisor_amandement' ? (
+        <Grid container spacing={2}>
+          <Grid item md={12} xs={12}>
+            <Typography variant="h6">{translate('review.revised_by_client')}</Typography>
+            <Typography>
+              {translate('project_already_revised_by_client')}{' '}
+              {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
+            </Typography>
+          </Grid>
+          {dataGrants &&
+            dataGrants.proposal &&
+            Object.entries(dataGrants.proposal)
+              .filter(
+                ([key]) =>
+                  key !== 'bank_informations' &&
+                  key !== 'outter_status' &&
+                  key !== 'state' &&
+                  key !== 'id' &&
+                  key !== 'letter_ofsupport_req' &&
+                  key !== 'project_attachments' &&
+                  key !== 'project_timeline' &&
+                  key !== 'timelines' &&
+                  key !== 'proposal_item_budgets'
+              )
+              .map(([key, value]: any) => {
+                const tmpValue = value || '';
+                return (
+                  <Grid key={key} item md={6} xs={12}>
+                    <Typography variant="h6">{translate(`review.${key}`)}</Typography>
+                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                      <Typography>{tmpValue}</Typography>
+                    </Stack>
+                  </Grid>
+                );
+              })}
+          {latterOfSupport && latterOfSupport?.url ? (
+            <Grid item md={6} xs={12}>
+              <Typography variant="h6">{translate(`review.letter_ofsupport_req`)}</Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <ButtonDownloadFiles files={latterOfSupport} />
+              </Stack>
+            </Grid>
+          ) : null}
+          {projectAttachment && projectAttachment?.url ? (
+            <Grid item md={6} xs={12}>
+              <Typography variant="h6">{translate(`review.project_attachments`)}</Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <ButtonDownloadFiles files={projectAttachment} />
+              </Stack>
+            </Grid>
+          ) : null}
+          {projectTimelines && projectTimelines.length > 0 ? (
+            <Grid item md={12} xs={12}>
+              <Typography variant="h6">{translate(`review.project_timeline`)}</Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <Grid container>
+                  {projectTimelines.map((item: timeline, index: number) => (
+                    <React.Fragment key={index}>
+                      <Grid item xs={12} md={6} sx={{ margin: '0 4px' }}>
+                        <RHFTextField
+                          disabled={true}
+                          type={'textField'}
+                          value={item.name}
+                          name={'name'}
+                          label={translate(
+                            `funding_project_request_project_timeline.activity.label`
+                          )}
+                          placeholder={translate(
+                            `funding_project_request_project_timeline.activity.placeholder`
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={3} sx={{ margin: '0 4px' }}>
+                        <RHFDatePicker
+                          disabled={true}
+                          value={moment(item.start_date).format('LLL')}
+                          type={'datePicker'}
+                          name={'start_date'}
+                          label={translate(
+                            `funding_project_request_project_timeline.start_date.label`
+                          )}
+                          placeholder={translate(
+                            `funding_project_request_project_timeline.start_date.placeholder`
+                          )}
+                          minDate={
+                            new Date(new Date().setDate(new Date().getDate() + 1))
+                              .toISOString()
+                              .split('T')[0]
+                          }
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={3} sx={{ margin: '0 4px' }}>
+                        <RHFDatePicker
+                          disabled={true}
+                          type={'datePicker'}
+                          value={moment(item.end_date).format('LLL')}
+                          name={'end_date'}
+                          label={translate(
+                            `funding_project_request_project_timeline.end_date.label`
+                          )}
+                          placeholder={translate(
+                            `funding_project_request_project_timeline.start_date.placeholder`
+                          )}
+                          minDate={
+                            new Date(new Date().setDate(new Date().getDate() + 1))
+                              .toISOString()
+                              .split('T')[0]
+                          }
+                        />
+                      </Grid>
+                    </React.Fragment>
+                  ))}
+                </Grid>
+              </Stack>
+            </Grid>
+          ) : null}
+          {proposalItemBudgets && proposalItemBudgets.length > 0 ? (
+            <Grid item md={12} xs={12}>
+              <Typography variant="h6">{translate(`review.project_timeline`)}</Typography>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <Grid container>
+                  {proposalItemBudgets.map((item: ItemBudget, index: number) => (
+                    <React.Fragment key={index}>
+                      <Grid item xs={12} md={6} sx={{ margin: '0 4px' }}>
+                        <RHFTextField
+                          disabled={true}
+                          type={'textField'}
+                          value={item.clause}
+                          name={'name'}
+                          label={translate(`funding_project_request_form4.item.label`)}
+                          placeholder={translate(`funding_project_request_form4.item.placeholder`)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6} sx={{ margin: '0 4px' }}>
+                        <RHFTextField
+                          disabled={true}
+                          type={'textField'}
+                          value={item.explanation}
+                          name={'explanation'}
+                          label={translate(`funding_project_request_form4.explanation.label`)}
+                          placeholder={translate(
+                            `funding_project_request_form4.explanation.placeholder`
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6} sx={{ margin: '0 4px' }}>
+                        <RHFTextField
+                          disabled={true}
+                          type={'textField'}
+                          value={item.amount}
+                          name={'amount'}
+                          label={translate(`funding_project_request_form4.amount.label`)}
+                          placeholder={translate(
+                            `funding_project_request_form4.amount.placeholder`
+                          )}
+                        />
+                      </Grid>
+                    </React.Fragment>
+                  ))}
+                </Grid>
+              </Stack>
+            </Grid>
+          ) : null}
         </Grid>
       ) : null}
     </React.Fragment>

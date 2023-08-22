@@ -25,10 +25,13 @@ type Props = {
 };
 
 const ProjectTimeLine = ({ onSubmit, children, defaultValues, revised }: Props) => {
-  // console.log({ defaultValues });
+  // console.log({ defaultValues, revised });
   const { translate } = useLocales();
   const [budgetError, setBudgetError] = useState(false);
-  const isDisabled = !!revised && revised.hasOwnProperty('project_timeline') ? false : true;
+  const isDisabled =
+    !!revised && (revised.hasOwnProperty('timelines') || revised.hasOwnProperty('project_timeline'))
+      ? false
+      : true;
   const tmpDefaultValues =
     (defaultValues?.length &&
       defaultValues.map((item: any) => {

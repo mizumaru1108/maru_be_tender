@@ -87,6 +87,12 @@ export interface BeneficiaryDetail {
   is_deleted: boolean;
 }
 
+export interface BaseAttachement {
+  url: string;
+  size: number | undefined;
+  type: string;
+}
+
 export interface Proposal {
   id: string;
   project_name: string;
@@ -175,8 +181,8 @@ export interface Proposal {
   bank_information?: BankInformation;
   amount_required_fsupport: number;
   fsupport_by_supervisor: number;
-  letter_ofsupport_req: { url: string; size: number | undefined; type: string };
-  project_attachments: { url: string; size: number | undefined; type: string };
+  letter_ofsupport_req: BaseAttachement;
+  project_attachments: BaseAttachement;
   pm_email: string;
   pm_name: String;
   pm_mobile: string;
