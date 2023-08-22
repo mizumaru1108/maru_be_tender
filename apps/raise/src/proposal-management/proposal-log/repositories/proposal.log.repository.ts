@@ -204,6 +204,7 @@ export class ProposalLogRepository {
           message: props.message,
           notes: props.notes,
           new_values: props.new_values,
+          old_values: props.old_values,
         },
       });
       // console.log({ rawResult });
@@ -264,6 +265,7 @@ export class ProposalLogRepository {
           message: props.message,
           notes: props.notes,
           new_values: props.new_values,
+          old_values: props.old_values,
         },
       });
 

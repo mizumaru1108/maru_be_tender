@@ -10,6 +10,7 @@ import { ProposalItemBudgetEntity } from '../../item-budget/entities/proposal.it
 import { ProposalPaymentEntity } from '../../payment/entities/proposal-payment.entity';
 import { ProposalProjectTimelineEntity } from '../../poject-timelines/entities/proposal.project.timeline.entity';
 import { ProposalLogEntity } from '../../proposal-log/entities/proposal-log.entity';
+import { BankInformationEntity } from '../../../bank/entities/bank-information.entity';
 
 export interface ISendNotificaitonEvent {
   notif_type: 'EMAIL' | 'SMS';
@@ -106,10 +107,10 @@ export class ProposalEntity extends AggregateRoot {
   user?: UserEntity;
   supervisor?: UserEntity;
   proposal_closing_report?: ProposalCloseReportEntity[];
+  bank_information?: BankInformationEntity;
   // accreditation_type                  accreditation_type?              @relation(fields: [accreditation_type_id], references: [id])
   // project_tracks                      project_tracks?                  @relation(fields: [project_track], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "proposal_project_kind_id_fkey")
   // project_manager                     user?                            @relation("proposal_project_manager_idTouser", fields: [project_manager_id], references: [id], onDelete: Cascade)
-  // bank_information                    bank_information?                @relation("bank_informationToproposal_proposal_bank_id", fields: [proposal_bank_id], references: [id], onDelete: Cascade)
   // proposal_request                    proposal_request?                @relation(fields: [outter_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_requested_fkey")
   // user_type                           user_type?                       @relation(fields: [state], references: [id], onDelete: NoAction, onUpdate: NoAction)
   // proposal_status                     proposal_status?                 @relation(fields: [inner_status], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proposal_status_fkey")
