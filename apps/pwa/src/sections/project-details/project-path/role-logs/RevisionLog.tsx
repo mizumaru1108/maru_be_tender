@@ -77,7 +77,11 @@ function RevisionLog({ stepGeneralLog }: Props) {
 
   const projectTimelines = React.useMemo(() => {
     let tmpProjectTimelines: timeline[] | [] = [];
-    if (dataGrants?.proposal && dataGrants?.proposal?.project_timeline.length > 0) {
+    if (
+      dataGrants?.proposal &&
+      dataGrants?.proposal?.project_timeline &&
+      dataGrants?.proposal?.project_timeline.length > 0
+    ) {
       tmpProjectTimelines = dataGrants?.proposal?.project_timeline as timeline[];
     }
     return tmpProjectTimelines;
@@ -85,7 +89,11 @@ function RevisionLog({ stepGeneralLog }: Props) {
 
   const proposalItemBudgets = React.useMemo(() => {
     let tmpProposalItemBudgets: ItemBudget[] | [] = [];
-    if (dataGrants?.proposal && dataGrants?.proposal?.proposal_item_budgets.length > 0) {
+    if (
+      dataGrants?.proposal &&
+      dataGrants?.proposal?.proposal_item_budgets &&
+      dataGrants?.proposal?.proposal_item_budgets.length > 0
+    ) {
       tmpProposalItemBudgets = dataGrants?.proposal?.proposal_item_budgets as ItemBudget[];
     }
     return tmpProposalItemBudgets;
