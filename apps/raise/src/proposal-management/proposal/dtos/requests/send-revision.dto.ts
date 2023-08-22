@@ -75,7 +75,11 @@ export class SendRevisionDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsNumber({
+    allowInfinity: false,
+    allowNaN: false,
+    maxDecimalPlaces: 2,
+  })
   @Min(0.01)
   @Max(999999999999999999.99)
   @IsNotEmpty()
@@ -85,11 +89,15 @@ export class SendRevisionDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsNumber({
+    allowInfinity: false,
+    allowNaN: false,
+    maxDecimalPlaces: 2,
+  })
   @Min(0.01)
   @Max(999999999999999999.99)
   @IsNotEmpty()
-  @Transform(({ value }) => new Number(value))
+  @Transform(() => Number)
   amount_required_fsupport?: number;
 
   @ApiPropertyOptional()
