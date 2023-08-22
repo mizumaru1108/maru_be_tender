@@ -22,7 +22,10 @@ import { ProposalUpdateProps } from 'src/proposal-management/proposal/types';
 import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
 import { ForbiddenPermissionException } from 'src/tender-commons/exceptions/forbidden-permission-exception';
 import { RequestErrorException } from 'src/tender-commons/exceptions/request-error.exception';
-import { OutterStatusEnum } from 'src/tender-commons/types/proposal';
+import {
+  OutterStatusEnum,
+  ProposalAction,
+} from 'src/tender-commons/types/proposal';
 import { isUploadFileJsonb } from 'src/tender-commons/utils/is-upload-file-jsonb';
 import {
   CreateFileManagerProps,
@@ -30,6 +33,8 @@ import {
 } from 'src/tender-file-manager/repositories/tender-file-manager.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { ProposalAskedEditRequestRepository } from '../../../asked-edit-request/repositories/proposal.asked.edit.request.repository';
+import { ProposalLogRepository } from '../../../proposal-log/repositories/proposal.log.repository';
+import { TenderAppRoleEnum } from '../../../../tender-commons/types';
 
 export class SendRevisionCommand {
   userId: string;
@@ -51,6 +56,7 @@ export class SendRevisionCommandHandler
     private readonly emailService: EmailService,
     private readonly msegatService: MsegatService,
     private readonly proposalRepo: ProposalRepository,
+    private readonly logRepo: ProposalLogRepository,
     private readonly editRequestRepo: ProposalEditRequestRepository,
     private readonly proposalAskedEditRequestRepo: ProposalAskedEditRequestRepository,
     private readonly itemBudgetRepo: ProposalItemBudgetRepository,
@@ -75,7 +81,7 @@ export class SendRevisionCommandHandler
       // find proposal by id
       const proposal = await this.proposalRepo.fetchById({
         id: proposalId,
-        includes_relation: ['user', 'supervisor'],
+        includes_relation: ['user', 'supervisor', 'proposal_item_budgets'],
       });
 
       if (!proposal) throw new DataNotFoundException(`Proposal not found`);
@@ -233,6 +239,9 @@ export class SendRevisionCommandHandler
       proposalUpdateProps.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdateProps.state = 'PROJECT_SUPERVISOR';
 
+      let proposalAction =
+        ProposalAction.SEND_REVISION_FOR_SUPERVISOR_AMANDEMNT;
+
       const dbRes = await this.prismaService.$transaction(
         async (prismaSession) => {
           const session =
@@ -311,7 +320,40 @@ export class SendRevisionCommandHandler
               },
               session,
             );
+
+            proposalAction =
+              `send_revision_for_${askedEditRequest.sender_role.toLowerCase()}_amandement` as ProposalAction;
           }
+
+          // get the last log for response time
+          const lastLog = await this.logRepo.findMany(
+            {
+              proposal_id: proposal.id,
+              page: 1,
+              limit: 1,
+              sort_by: 'created_at',
+              sort_direction: 'desc',
+            },
+            session,
+          );
+
+          // creating proposal logs
+          await this.logRepo.create(
+            {
+              proposal_id: proposal.id,
+              action: proposalAction,
+              reviewer_id: proposal.submitter_user_id,
+              state: TenderAppRoleEnum.CLIENT,
+              user_role: TenderAppRoleEnum.CLIENT,
+              response_time: lastLog[0].created_at
+                ? Math.round(
+                    (new Date().getTime() - lastLog[0].created_at.getTime()) /
+                      60000,
+                  )
+                : null,
+            },
+            session,
+          );
 
           // web notif
           await this.notifRepo.create(

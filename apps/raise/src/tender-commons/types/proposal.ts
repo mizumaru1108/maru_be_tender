@@ -112,6 +112,8 @@ export enum ProposalAction {
   SET_BY_SUPERVISOR = 'set_by_supervisor',
   DONE = 'done',
   REJECT_CHEQUE = 'reject_cheque',
+  SEND_REVISION_FOR_SUPERVISOR_AMANDEMNT = 'send_revision_for_supervisor_amandement',
+  SEND_REVISION_FOR_FINANCE_AMANDEMNT = 'send_revision_for_finance_amandement',
 }
 
 export type ProposalItemBudget = {
