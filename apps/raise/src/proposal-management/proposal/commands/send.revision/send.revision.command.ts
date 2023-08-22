@@ -374,10 +374,10 @@ export class SendRevisionCommandHandler
                 bank_informations: updatedProposal?.bank_information
                   ? updatedProposal?.bank_information
                   : undefined,
-                createdItemBudgetPayload: request.detail_project_budgets
+                proposal_item_budgets: request.detail_project_budgets
                   ? updatedProposal?.proposal_item_budgets
                   : undefined,
-                createdTimeline: request.project_timeline
+                project_timeline: request.project_timeline
                   ? updatedProposal?.project_timeline
                   : undefined,
               },
