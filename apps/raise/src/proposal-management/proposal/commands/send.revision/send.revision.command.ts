@@ -325,6 +325,15 @@ export class SendRevisionCommandHandler
               `send_revision_for_${askedEditRequest.sender_role.toLowerCase()}_amandement` as ProposalAction;
           }
 
+          // refetch the proposal for getting the updated result
+          const updatedProposal = await this.proposalRepo.fetchById(
+            {
+              id: proposalId,
+              includes_relation: ['proposal_item_budgets', 'project_timeline'],
+            },
+            session,
+          );
+
           // get the last log for response time
           const lastLog = await this.logRepo.findMany(
             {
@@ -345,6 +354,18 @@ export class SendRevisionCommandHandler
               reviewer_id: proposal.submitter_user_id,
               state: TenderAppRoleEnum.CLIENT,
               user_role: TenderAppRoleEnum.CLIENT,
+              new_values: {
+                ...proposalUpdateProps,
+                createdItemBudgetPayload: request.detail_project_budgets
+                  ? proposal.proposal_item_budgets
+                  : undefined,
+                createdTimeline: request.project_timeline
+                  ? proposal.project_timeline
+                  : undefined,
+              },
+              old_values: {
+                ...proposal,
+              },
               response_time: lastLog[0].created_at
                 ? Math.round(
                     (new Date().getTime() - lastLog[0].created_at.getTime()) /

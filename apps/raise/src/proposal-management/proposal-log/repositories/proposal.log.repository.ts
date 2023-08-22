@@ -34,6 +34,7 @@ export class CreateProposalLogProps {
   message?: string | null;
   notes?: string | null;
   new_values?: Record<string, any>;
+  old_values?: Record<string, any>;
 }
 export class UpdateProposalLogProps {
   id: string;
@@ -47,6 +48,7 @@ export class UpdateProposalLogProps {
   message?: string | null;
   notes?: string | null;
   new_values?: Record<string, any>;
+  old_values?: Record<string, any>;
 }
 
 @Injectable()
