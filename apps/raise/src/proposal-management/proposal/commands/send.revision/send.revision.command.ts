@@ -16,7 +16,10 @@ import { ProposalEditRequestRepository } from 'src/proposal-management/edit-requ
 import { ProposalItemBudgetRepository } from 'src/proposal-management/item-budget/repositories/proposal.item.budget.repository';
 import { ProposalTimelinePostgresRepository } from 'src/proposal-management/poject-timelines/repositories/proposal.project.timeline.repository';
 import { SendRevisionDto } from 'src/proposal-management/proposal/dtos/requests';
-import { ISendNotificaitonEvent } from 'src/proposal-management/proposal/entities/proposal.entity';
+import {
+  ISendNotificaitonEvent,
+  ProposalEntity,
+} from 'src/proposal-management/proposal/entities/proposal.entity';
 import { ProposalRepository } from 'src/proposal-management/proposal/repositories/proposal.repository';
 import { ProposalUpdateProps } from 'src/proposal-management/proposal/types';
 import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
@@ -43,7 +46,9 @@ export class SendRevisionCommand {
   project_attachments?: any; //Express.Multer.File[];
 }
 
-export class SendRevisionCommandResult {}
+export class SendRevisionCommandResult {
+  proposal: ProposalEntity | null;
+}
 
 @CommandHandler(SendRevisionCommand)
 export class SendRevisionCommandHandler
@@ -81,7 +86,12 @@ export class SendRevisionCommandHandler
       // find proposal by id
       const proposal = await this.proposalRepo.fetchById({
         id: proposalId,
-        includes_relation: ['user', 'supervisor', 'proposal_item_budgets'],
+        includes_relation: [
+          'user',
+          'supervisor',
+          'proposal_item_budgets',
+          'bank_information',
+        ],
       });
 
       if (!proposal) throw new DataNotFoundException(`Proposal not found`);
@@ -329,7 +339,11 @@ export class SendRevisionCommandHandler
           const updatedProposal = await this.proposalRepo.fetchById(
             {
               id: proposalId,
-              includes_relation: ['proposal_item_budgets', 'project_timeline'],
+              includes_relation: [
+                'proposal_item_budgets',
+                'project_timeline',
+                'bank_information',
+              ],
             },
             session,
           );
@@ -346,6 +360,7 @@ export class SendRevisionCommandHandler
             session,
           );
 
+          // console.log({ proposal });
           // creating proposal logs
           await this.logRepo.create(
             {
@@ -356,11 +371,14 @@ export class SendRevisionCommandHandler
               user_role: TenderAppRoleEnum.CLIENT,
               new_values: {
                 ...proposalUpdateProps,
+                bank_informations: updatedProposal?.bank_information
+                  ? updatedProposal?.bank_information
+                  : undefined,
                 createdItemBudgetPayload: request.detail_project_budgets
-                  ? proposal.proposal_item_budgets
+                  ? updatedProposal?.proposal_item_budgets
                   : undefined,
                 createdTimeline: request.project_timeline
-                  ? proposal.project_timeline
+                  ? updatedProposal?.project_timeline
                   : undefined,
               },
               old_values: {
@@ -375,6 +393,7 @@ export class SendRevisionCommandHandler
             },
             session,
           );
+          // console.log({ logs });
 
           // web notif
           await this.notifRepo.create(
@@ -388,6 +407,8 @@ export class SendRevisionCommandHandler
             },
             session,
           );
+
+          return updatedProposal;
         },
         {
           timeout: 50000,
@@ -471,7 +492,9 @@ export class SendRevisionCommandHandler
         }
       }
 
-      return new SendRevisionCommandResult();
+      return {
+        proposal: dbRes,
+      };
     } catch (error) {
       if (fileManagerPayload && fileManagerPayload.length > 0) {
         for (const file of fileManagerPayload) {

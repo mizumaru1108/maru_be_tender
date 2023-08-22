@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { OutterStatusEnum } from '../../../tender-commons/types/proposal';
 import { ProposalAskedEditRequestEntity } from '../entities/proposal.asked.edit.request.entity';
+import { logUtil } from '../../../commons/utils/log-util';
 
 export class ProposalAskedEditRequestCreateProps {
   id?: string;
@@ -109,23 +110,19 @@ export class ProposalAskedEditRequestRepository {
   }
 
   async findOneFilter(props: ProposalAskedEditRequestFindOneProps) {
-    const { proposal_id, id, method } = props;
-    try {
-      const args: Prisma.proposal_asked_edit_requestFindFirstArgs = {};
-      const whereClause: Prisma.proposal_asked_edit_requestWhereInput = {};
+    const { proposal_id, status, id, method = 'AND' } = props;
+    const args: Prisma.proposal_asked_edit_requestFindFirstArgs = {};
+    const whereClause: Prisma.proposal_asked_edit_requestWhereInput = {};
 
-      let clause: Prisma.proposal_asked_edit_requestWhereInput[] = [];
-      if (id) clause.push({ id });
-      if (proposal_id) clause.push({ proposal_id });
-      if (method === 'AND') whereClause.AND = clause;
-      if (method === 'OR') whereClause.OR = clause;
+    let clause: Prisma.proposal_asked_edit_requestWhereInput[] = [];
+    if (id) clause.push({ id });
+    if (proposal_id) clause.push({ proposal_id });
+    if (status) clause.push({ status });
+    if (method === 'AND') whereClause.AND = clause;
+    if (method === 'OR') whereClause.OR = clause;
 
-      args.where = whereClause;
-      return args;
-    } catch (error) {
-      console.trace(error);
-      throw error;
-    }
+    args.where = whereClause;
+    return args;
   }
 
   async findOne(
@@ -136,6 +133,7 @@ export class ProposalAskedEditRequestRepository {
     if (session) prisma = session;
     try {
       const args = await this.findOneFilter(props);
+      // console.log(logUtil(args));
       const result = await prisma.proposal_asked_edit_request.findFirst({
         where: args.where,
       });

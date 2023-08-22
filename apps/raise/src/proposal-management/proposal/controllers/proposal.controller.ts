@@ -772,7 +772,7 @@ export class TenderProposalController {
       >(command);
 
       return baseResponseHelper(
-        result,
+        result.proposal,
         HttpStatus.CREATED,
         'Send Revision Submitted Successfully!',
       );

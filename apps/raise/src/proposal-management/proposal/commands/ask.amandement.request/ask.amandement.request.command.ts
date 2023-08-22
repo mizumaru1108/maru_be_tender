@@ -70,6 +70,7 @@ export class AskAmandementRequestCommandHandler
         proposal_id: proposal.id,
         status: 'PENDING',
       });
+      // console.log({ alreadyExist });
       if (alreadyExist) {
         throw new RequestErrorException(
           `Cannot proceed, proposal already asked for revision, (Has another pending request)`,
