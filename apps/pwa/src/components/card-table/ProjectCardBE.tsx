@@ -111,6 +111,11 @@ const ProjectCardBE = ({
       backgroundColor: '#0E847829',
       title: 'commons.chip_ongoing',
     },
+    ASKED_FOR_AMANDEMENT_PAYMENT: {
+      color: '#FFC107',
+      backgroundColor: '#FFC10729',
+      title: 'commons.chip_asked_for_amandement_payment',
+    },
   };
 
   const onDeleteDraftClick = async () => {

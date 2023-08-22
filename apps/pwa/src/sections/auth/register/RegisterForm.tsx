@@ -115,6 +115,7 @@ export default function RegisterForm() {
 
   const onSubmit1 = (data: MainValuesProps) => {
     // console.log({ data });
+    // setStep(5);
     setStep((prevStep) => prevStep + 1);
     setRegisterState((prevRegisterState: AccountValuesProps) => ({
       ...prevRegisterState,

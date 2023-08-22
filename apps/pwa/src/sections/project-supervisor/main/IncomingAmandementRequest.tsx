@@ -31,7 +31,7 @@ function IncomingAmandementRequest() {
         }
       );
       // console.log('test', rest.data.data);
-      if (rest) {
+      if (rest.data.data) {
         // setCardData(
         //   rest.data.data
         //     // .filter((item: any) => item.proposal.outter_status === 'ON_REVISION')
@@ -106,7 +106,7 @@ function IncomingAmandementRequest() {
             api={'tender-proposal/amandement-request-lists'}
             returnData={setCardData}
             loadingState={setIsLoading}
-            addCustomFilter={'&status=PENDING'}
+            addCustomFilter={'&status=PENDING&include_relations=supervisor,sender,proposal'}
           />
           {/* <Button
             sx={{

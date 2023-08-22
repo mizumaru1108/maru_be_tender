@@ -15,7 +15,8 @@ type SortingCardTableProps = {
   type?: 'incoming' | 'inprocess';
   page?: number;
   typeRequest?: string;
-  addCustomFilter?: '&vat=false' | '&vat=true' | '&status=PENDING' | undefined;
+  // addCustomFilter?: '&vat=false' | '&vat=true' | '&status=PENDING' | undefined;
+  addCustomFilter?: string;
 };
 
 export default function SortingCardTable({
@@ -76,7 +77,8 @@ export default function SortingCardTable({
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      if (rest) {
+      // console.log('test: ', rest.data.data);
+      if (rest.data.data) {
         const cardData = rest.data.data.map((item: any) => ({
           ...item,
         }));

@@ -157,7 +157,8 @@ function FormModalAuthority({
                   >
                     {clientFieldList.map((item, index) => (
                       <MenuItem key={index} value={item.client_field_id}>
-                        {formatCapitalizeText(item.name)}
+                        {/* {formatCapitalizeText(item.name)} */}
+                        {translate(`pages.admin.settings.label.table.client_field.${item.name}`)}
                       </MenuItem>
                     ))}
                   </TextField>

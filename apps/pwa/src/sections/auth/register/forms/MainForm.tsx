@@ -212,8 +212,25 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
   useEffect(() => {
     window.scrollTo(0, 0);
     reset(defaultValues);
+    if (defaultValues.client_field === 'main' && clientFields.length > 0) {
+      if (defaultValues.authority_id) {
+        setValue('authority', defaultValues.authority_id);
+      } else {
+        setValue('authority', defaultValues.authority);
+      }
+      const tmpClientId = clientFields.find(
+        (client_field: ClientFieldInterface) =>
+          String(client_field.name) === String(defaultValues.client_field)
+      )?.client_field_id;
+      if (tmpClientId) {
+        fetchAuthorities(tmpClientId);
+        setClientFieldId(tmpClientId);
+      } else {
+        alert('tmpClientId not found');
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultValues]);
+  }, [defaultValues, clientFields]);
 
   React.useEffect(() => {
     if (FEATURE_MENU_ADMIN_ADD_AUTHORITY) {
