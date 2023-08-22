@@ -192,7 +192,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
   };
   const onSubmitform6 = async (data: any) => {
     // console.log('data form 5', data.project_timeline);
-    setIsLoading(true);
+    // setIsLoading(true);
     let newValue: any = {};
     newValue = {
       ...newValue,
@@ -233,19 +233,34 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
       formData.append(key, filteredValue[key]);
     }
     // console.log({ requestState });
-    if (requestState.form4.detail_project_budgets.data.length > 0) {
-      for (let i = 0; i < requestState.form4.detail_project_budgets.data.length; i++) {
-        const budget: {
-          amount: number;
-          explanation: string;
-          clause: string;
-        } = requestState.form4.detail_project_budgets.data[i];
-        // console.log('masuk sini', data?.project_timeline[i]);
-        const index = i; // Get the index for appending to FormData
-        // Append the values for each object using template literals
-        formData.append(`detail_project_budgets[${index}][amount]`, budget.amount as any);
-        formData.append(`detail_project_budgets[${index}][explanation]`, budget.explanation);
-        formData.append(`detail_project_budgets[${index}][clause]`, budget.clause);
+    if (tmpValues?.revised.hasOwnProperty('amount_required_fsupport')) {
+      const tmpBudget: any = requestState.form4.detail_project_budgets;
+      if (tmpBudget.data && tmpBudget.data.length > 0) {
+        for (let i = 0; i < requestState.form4.detail_project_budgets.data.length; i++) {
+          const budget: {
+            amount: number;
+            explanation: string;
+            clause: string;
+          } = requestState.form4.detail_project_budgets.data[i];
+          const index = i; // Get the index for appending to FormData
+          formData.append(`detail_project_budgets[${index}][amount]`, budget.amount as any);
+          formData.append(`detail_project_budgets[${index}][explanation]`, budget.explanation);
+          formData.append(`detail_project_budgets[${index}][clause]`, budget.clause);
+        }
+      } else {
+        if (tmpBudget && tmpBudget.length > 0) {
+          for (let i = 0; i < tmpBudget.length; i++) {
+            const budget: {
+              amount: number;
+              explanation: string;
+              clause: string;
+            } = tmpBudget[i];
+            const index = i; // Get the index for appending to FormData
+            formData.append(`detail_project_budgets[${index}][amount]`, budget.amount as any);
+            formData.append(`detail_project_budgets[${index}][explanation]`, budget.explanation);
+            formData.append(`detail_project_budgets[${index}][clause]`, budget.clause);
+          }
+        }
       }
     }
     if (
