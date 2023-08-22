@@ -97,7 +97,7 @@ export class SendRevisionDto {
   @Min(0.01)
   @Max(999999999999999999.99)
   @IsNotEmpty()
-  @Transform(() => Number)
+  @Type(() => Number)
   amount_required_fsupport?: number;
 
   @ApiPropertyOptional()

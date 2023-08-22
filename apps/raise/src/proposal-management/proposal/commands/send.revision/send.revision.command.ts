@@ -73,6 +73,7 @@ export class SendRevisionCommandHandler
   async execute(
     command: SendRevisionCommand,
   ): Promise<SendRevisionCommandResult> {
+    // console.log(command.request);
     const { userId, request, project_attachments, letter_ofsupport_req } =
       command;
     let fileManagerPayload: CreateFileManagerProps[] = [];
@@ -407,6 +408,8 @@ export class SendRevisionCommandHandler
             },
             session,
           );
+
+          // throw new Error('debug!');
 
           return updatedProposal;
         },
