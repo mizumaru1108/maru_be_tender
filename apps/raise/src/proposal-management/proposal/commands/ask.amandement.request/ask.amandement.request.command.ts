@@ -66,6 +66,16 @@ export class AskAmandementRequestCommandHandler
         throw new RequestErrorException(`Unable to fetch supervisor data!`);
       }
 
+      const alreadyExist = await this.proposalAskedEditRequestRepo.findOne({
+        proposal_id: proposal.id,
+        status: 'PENDING',
+      });
+      if (alreadyExist) {
+        throw new RequestErrorException(
+          `Cannot proceed, proposal already asked for revision, (Has another pending request)`,
+        );
+      }
+
       if (proposal.outter_status === OutterStatusEnum.ON_REVISION) {
         throw new RequestErrorException(
           'Proposal aready asked for client to be revised!',
