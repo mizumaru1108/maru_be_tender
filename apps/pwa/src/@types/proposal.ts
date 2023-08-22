@@ -429,7 +429,9 @@ export type Log = {
     | 'reject_cheque'
     | 'study_again'
     | 'accept_and_ask_for_consultation'
-    | 'ask_for_amandement_request';
+    | 'ask_for_amandement_request'
+    | 'send_revision_for_supervisor_amandement'
+    | 'send_revision_for_finance_amandement';
   created_at: Date;
   updated_at: Date;
   user_role: Role;

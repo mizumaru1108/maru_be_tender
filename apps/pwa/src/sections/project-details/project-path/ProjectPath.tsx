@@ -15,6 +15,7 @@ import SupervisorGrants from './role-logs/SupervisorGrants';
 // import { getProposal, getTrackBudget } from '../../../redux/slices/proposal';
 import { getTracks } from 'queries/commons/getTracks';
 import {
+  FEATURE_AMANDEMENT_FROM_FINANCE,
   FEATURE_PROJECT_PATH_NEW,
   REOPEN_TMRA_f92ada8c1019457c874d79fc6d592d2c,
 } from '../../../config';
@@ -29,6 +30,7 @@ import SupervisorGrantsRev from './role-logs/SupervisorGrantsRev';
 import { IsPaymentAction } from 'utils/checkIsPaymentAction';
 import { CheckType, LogAction, LogActionCheck } from 'utils/logActionCheck';
 import Space from '../../../components/space/space';
+import RevisionLog from './role-logs/RevisionLog';
 
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
@@ -599,6 +601,21 @@ function ProjectPath() {
             ).length > 0 &&
             (stepGeneralLog || stepGransLog) ? (
               <ClientClosingReport stepGransLog={stepGransLog ?? stepGeneralLog} />
+            ) : null}
+            {FEATURE_AMANDEMENT_FROM_FINANCE &&
+            logs.filter(
+              (item: Log, index: number) =>
+                activeStep === item.id &&
+                // (item.user_role === 'CASHIER' || item.state === 'CASHIER') &&
+                // item.action !== 'send_back_for_revision' &&
+                // item.action !== 'step_back' &&
+                // item.action !== 'sending_closing_report' &&
+                // (item.action === 'done' || item.action === 'uploaded_by_cashier')
+                (item.action === 'send_revision_for_finance_amandement' ||
+                  item.action === 'send_revision_for_supervisor_amandement')
+            ).length > 0 &&
+            stepGeneralLog ? (
+              <RevisionLog stepGeneralLog={stepGeneralLog} />
             ) : null}
             {/*  */}
           </Stack>
