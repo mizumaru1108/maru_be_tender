@@ -2120,6 +2120,7 @@ const en = {
   },
   closing_project_by_client: 'Closing Project By Client',
   review: {
+    revised_by_client: 'Revised by Client',
     waiting: 'Waiting Review...',
     order_status: 'Order Status',
     notes: 'Notes',
@@ -2228,6 +2229,8 @@ const en = {
       proposal_created: 'PROPOSAL CREATED',
       uploaded_by_cashier: 'PAYMENT UPLOADED BY CASHIER',
       rejected_by_project_manager: 'PAYMENT REJECTED BY PROJECT MANAGER',
+      send_revision_for_finance_amandement: 'Send Revision for Finance Amandement',
+      send_revision_for_supervisor_amandement: 'Send Revision for Supervisor Amandement',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'Age 1 to 13',
@@ -2250,6 +2253,7 @@ const en = {
       CHARITABLE_WORKERS: 'Charitable Workers',
     },
   },
+  project_already_revised_by_client: 'This project already revised by Client',
   project_already_reviewed_by_supervisor: 'This project already reviewed by Supervisor',
   project_already_reviewed_by_project_manager: 'This project already reviewed by Project Manager',
   project_already_reviewed_by_ceo: 'This project already reviewed by CEO',

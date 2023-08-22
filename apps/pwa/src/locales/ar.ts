@@ -2134,6 +2134,7 @@ const ar = {
   },
   closing_project_by_client: 'إغلاق مشروع',
   review: {
+    revised_by_client: 'تمت المراجعة من قبل العميل',
     waiting: 'بانتظار المراجعة',
     order_status: 'حالة الطلب',
     notes: 'ملحوظة',
@@ -2242,6 +2243,8 @@ const ar = {
       proposal_created: 'تم انشاء المشروع',
       uploaded_by_cashier: 'دفعة تم تحميلها بواسطة كاشير',
       rejected_by_project_manager: 'تم رفض المشروع',
+      send_revision_for_finance_amandement: 'إرسال مراجعة لتعديل المالية',
+      send_revision_for_supervisor_amandement: 'إرسال مراجعة لتعديل المشرف',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'من 1 سنة إلى 13',
@@ -2264,6 +2267,7 @@ const ar = {
       CHARITABLE_WORKERS: 'عاملين في الجهات الخيرية',
     },
   },
+  project_already_revised_by_client: 'تمت مراجعة هذا المشروع بالفعل من قبل العميل',
   project_already_reviewed_by_supervisor: 'تمت مراجعة هذا المشروع بالفعل من قبل المشرف',
   project_already_reviewed_by_project_manager: 'تمت مراجعة هذا المشروع بالفعل من قبل مدير المشروع',
   project_already_reviewed_by_ceo: 'تمت مراجعة هذا المشروع بالفعل من قبل الرئيس التنفيذي',
