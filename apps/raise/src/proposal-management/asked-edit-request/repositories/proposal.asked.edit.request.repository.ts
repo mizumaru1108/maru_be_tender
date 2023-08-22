@@ -26,6 +26,7 @@ export class ProposalAskedEditRequestFindManyProps {
   status?: string[];
   project_name?: string;
   employee_name?: string;
+  supervisor_track_id?: string;
   limit?: number;
   page?: number;
   sort_by?: string;
@@ -126,6 +127,7 @@ export class ProposalAskedEditRequestRepository {
       throw error;
     }
   }
+
   async findOne(
     props: ProposalAskedEditRequestFindOneProps,
     session?: PrismaService,
@@ -151,7 +153,13 @@ export class ProposalAskedEditRequestRepository {
   }
 
   async findManyFilters(props: ProposalAskedEditRequestFindManyProps) {
-    const { status, employee_name, project_name, include_relations } = props;
+    const {
+      status,
+      employee_name,
+      project_name,
+      supervisor_track_id,
+      include_relations,
+    } = props;
     let queryOptions: Prisma.proposal_asked_edit_requestFindManyArgs = {};
     let findManyWhereClause: Prisma.proposal_asked_edit_requestWhereInput = {};
 
@@ -175,6 +183,15 @@ export class ProposalAskedEditRequestRepository {
             contains: project_name,
             mode: 'insensitive',
           },
+        },
+      };
+    }
+
+    if (supervisor_track_id) {
+      findManyWhereClause = {
+        ...findManyWhereClause,
+        proposal: {
+          track_id: supervisor_track_id,
         },
       };
     }

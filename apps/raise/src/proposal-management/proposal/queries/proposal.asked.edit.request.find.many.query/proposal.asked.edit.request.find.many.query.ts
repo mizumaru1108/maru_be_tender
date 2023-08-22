@@ -1,10 +1,10 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ApiProperty } from '@nestjs/swagger';
-import { BannerFindManyResponse } from 'src/banners/repositories/banner.repository';
-import { ProposalAskedEditRequestRepository } from '../../../asked-edit-request/repositories/proposal.asked.edit.request.repository';
 import { ProposalAskedEditRequestEntity } from '../../../asked-edit-request/entities/proposal.asked.edit.request.entity';
+import { ProposalAskedEditRequestRepository } from '../../../asked-edit-request/repositories/proposal.asked.edit.request.repository';
 
 export class ProposalAskedEditRequestFindManyQuery {
+  supervisor_track_id?: string;
   employee_name?: string;
   project_name?: string;
   status?: string[];

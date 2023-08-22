@@ -505,6 +505,7 @@ export class TenderProposalController {
   @TenderRoles('tender_project_supervisor')
   @Get('amandement-request-lists')
   async fetchAmandementRequestList(
+    @CurrentUser() currentUser: TenderCurrentUser,
     @Query() query: FetchAmandementFilterRequest,
   ) {
     try {
@@ -512,6 +513,7 @@ export class TenderProposalController {
         ProposalAskedEditRequestFindManyQuery,
         {
           ...query,
+          supervisor_track_id: currentUser.track_id,
         },
       );
 
