@@ -68,6 +68,7 @@ function ClientProfileEditForm() {
       client_field: '',
       entity: '',
       authority: '',
+      authority_id: '',
       date_of_esthablistmen: '',
       headquarters: '',
       num_of_employed_facility: undefined,
@@ -168,6 +169,7 @@ function ClientProfileEditForm() {
         client_field,
         entity,
         authority,
+        authority_id,
         date_of_esthablistmen,
         headquarters,
         num_of_beneficiaries,
@@ -214,6 +216,7 @@ function ClientProfileEditForm() {
           headquarters,
           num_of_beneficiaries,
           num_of_employed_facility,
+          authority_id,
         },
         form2: {
           ...prevState.form2,
@@ -267,6 +270,7 @@ function ClientProfileEditForm() {
           entity: startedValue && startedValue.entity && startedValue.entity,
           client_field: startedValue && startedValue.client_field && startedValue.client_field,
           authority: startedValue && startedValue.authority && startedValue.authority,
+          authority_id: startedValue && startedValue.authority_id && startedValue.authority_id,
           date_of_esthablistmen:
             startedValue &&
             startedValue.date_of_esthablistmen &&

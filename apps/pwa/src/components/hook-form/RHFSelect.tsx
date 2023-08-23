@@ -36,6 +36,7 @@ type IProps = {
 type Props = IProps & TextFieldProps;
 
 export default function RHFSelect({ name, children, placeholder, ...other }: Props) {
+  // console.log('masuk sini');
   const { control } = useFormContext();
   const theme = useTheme();
   const { activeRole } = useAuth();
@@ -106,6 +107,9 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
                 '& > .MuiFormHelperText-root': {
                   backgroundColor: 'transparent',
                 },
+                // '& .MuiPaper-root': {
+                //   maxHeight: 300,
+                // },
                 ...(!other.disabled && {
                   '& label.Mui-focused': {
                     color: theme.palette.grey[800],

@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'redux/store';
 import * as Yup from 'yup';
 import { PaymentsData } from './form-data';
-import { useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import Iconify from 'components/Iconify';
 import CheckIcon from '@mui/icons-material/Check';
 import { LoadingButton } from '@mui/lab';
@@ -19,6 +19,9 @@ import { useState, useEffect } from 'react';
 import moment from 'moment';
 import useLocales from 'hooks/useLocales';
 import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { Conversation } from '../../../../@types/wschat';
+import { addConversation, setActiveConversationId } from '../../../../redux/slices/wschat';
+import axiosInstance from '../../../../utils/axios';
 
 type FormValuesProps = {
   payments: {
@@ -35,13 +38,16 @@ interface Props {
 function PaymentsSetForm({ refetch, fetching }: Props) {
   const { id: proposal_id } = useParams();
   const { proposal } = useSelector((state) => state.proposal);
+  const { conversations } = useSelector((state) => state.wschat);
   const { translate, currentLang } = useLocales();
   // console.log('value lang');
-
   const { enqueueSnackbar } = useSnackbar();
-  const { activeRole } = useAuth();
+  const { activeRole, user } = useAuth();
+  const location = useLocation();
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const PaymentsSchema = Yup.object().shape({
@@ -175,6 +181,82 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
     }
   };
 
+  const handleReadMessages = async (conversationId: string) => {
+    await axiosInstance.patch(
+      '/tender/messages/toogle-read',
+      {
+        roomId: conversationId,
+      },
+      {
+        headers: { 'x-hasura-role': `tender_${proposal.state.toLowerCase()}` },
+      }
+    );
+  };
+
+  const handleMessage = () => {
+    const proposalSubmitter = proposal.user;
+    const proposalStateRole = proposal.state;
+    const x = location.pathname.split('/');
+    const urlToMessage = `/${x[1]}/${x[2]}/messages`;
+
+    const valueToConversation: Conversation = {
+      id: uuidv4(),
+      correspondance_category_id: 'INTERNAL',
+      messages: [
+        {
+          content: null,
+          attachment: null,
+          content_title: null,
+          content_type_id: 'TEXT',
+          receiver_id: proposalSubmitter.id,
+          owner_id: user?.id,
+          receiver_role_as: `tender_${proposalSubmitter.roles[
+            activeRoleIndex
+          ]?.user_type_id.toLowerCase()}`,
+          sender_role_as: `tender_${proposalStateRole.toLowerCase()}`,
+          created_at: moment().toISOString(),
+          updated_at: moment().toISOString(),
+          read_status: false,
+          receiver: {
+            employee_name: proposalSubmitter.employee_name,
+          },
+          sender: {
+            employee_name: user?.firstName,
+          },
+        },
+      ],
+    };
+
+    const valueNewConversation = conversations;
+    let hasConversationId: string | undefined = undefined;
+
+    if (valueNewConversation.length) {
+      for (let index = 0; index < valueNewConversation.length; index++) {
+        const { messages } = valueNewConversation[index];
+        const findReceiverId = messages.find(
+          (el) =>
+            el.owner_id === valueToConversation.messages[0].receiver_id ||
+            el.receiver_id === valueToConversation.messages[0].receiver_id
+        );
+
+        if (findReceiverId) {
+          hasConversationId = valueNewConversation[index].id;
+        }
+      }
+    }
+
+    if (hasConversationId) {
+      dispatch(setActiveConversationId(hasConversationId));
+      handleReadMessages(hasConversationId);
+      navigate(urlToMessage);
+    } else {
+      dispatch(addConversation(valueToConversation));
+      dispatch(setActiveConversationId(valueToConversation.id!));
+      handleReadMessages(valueToConversation.id!);
+      navigate(urlToMessage);
+    }
+  };
+
   // useEffect(() => {}, [proposal]);
 
   return (
@@ -195,13 +277,13 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
           >
             <Stack direction={{ sm: 'column', md: 'row' }} justifyContent="space-between">
               <Stack flexDirection={{ sm: 'column', md: 'row' }} gap={3}>
-                <Button
+                {/* <Button
                   variant="contained"
                   startIcon={<Iconify icon="eva:edit-2-outline" />}
                   sx={{ ':hover': { backgroundColor: '#1482FE' }, backgroundColor: '#0169DE' }}
                 >
                   ارسال طلب تعديل
-                </Button>
+                </Button> */}
                 <Button
                   variant="contained"
                   sx={{
@@ -213,7 +295,7 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
                     ':hover': { backgroundColor: '#C4CDD5' },
                   }}
                   onClick={() => {
-                    console.log('asdasd');
+                    handleMessage();
                   }}
                   startIcon={
                     <svg
