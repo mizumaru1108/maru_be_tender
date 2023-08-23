@@ -1,11 +1,17 @@
 import {
+  BadRequestException,
   Body,
   Controller,
+  ForbiddenException,
   Get,
+  HttpException,
   HttpStatus,
+  InternalServerErrorException,
+  NotFoundException,
   Patch,
   Post,
   Query,
+  UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
@@ -17,22 +23,66 @@ import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import {
-  TenderCreateUserDto,
   SearchUserFilterRequest,
+  TenderCreateUserDto,
   TenderDeleteUserDto,
+  UpdateProfileDto,
   UpdateUserDto,
   UserStatusUpdateDto,
-  UpdateProfileDto,
 } from '../dtos/requests';
 import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
 import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 
+import { CommandBus } from '@nestjs/cqrs';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Builder } from 'builder-pattern';
+import { BaseApiOkResponse } from '../../../commons/decorators/base.api.ok.response.decorator';
+import { DataNotFoundException } from '../../../tender-commons/exceptions/data-not-found.exception';
+import { ForbiddenPermissionException } from '../../../tender-commons/exceptions/forbidden-permission-exception';
+import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
+import { BasePrismaErrorException } from '../../../tender-commons/exceptions/prisma-error/base.prisma.error.exception';
+import { RequestErrorException } from '../../../tender-commons/exceptions/request-error.exception';
+import {
+  UserUpdateStatusCommand,
+  UserUpdateStatusCommandResult,
+} from '../commands/user.update.status/user.update.status.command';
 import { TenderCurrentUser } from '../interfaces/current-user.interface';
 import { TenderUserService } from '../services/tender-user.service';
-
+@ApiTags('UserModule')
 @Controller('tender-user')
 export class TenderUserController {
-  constructor(private readonly tenderUserService: TenderUserService) {}
+  constructor(
+    private readonly tenderUserService: TenderUserService,
+    private readonly commandBus: CommandBus,
+  ) {}
+
+  errorMapper(error: any) {
+    if (error instanceof DataNotFoundException) {
+      return new NotFoundException(error.message);
+    }
+    if (error instanceof PayloadErrorException) {
+      return new BadRequestException(error.message);
+    }
+    if (error instanceof ForbiddenPermissionException) {
+      return new ForbiddenException(error.message);
+    }
+    if (error instanceof RequestErrorException) {
+      return new UnprocessableEntityException(error.message);
+    }
+
+    if (error instanceof BasePrismaErrorException) {
+      return new HttpException(
+        {
+          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          message: error.message,
+          error: error.stack ? JSON.parse(error.stack) : error.message,
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    return new InternalServerErrorException(error);
+  }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
@@ -115,22 +165,56 @@ export class TenderUserController {
     );
   }
 
+  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  // @TenderRoles('tender_accounts_manager')
+  // @Patch('update-status')
+  // async updateStatus(
+  //   @CurrentUser() currentUser: TenderCurrentUser,
+  //   @Body() request: UserStatusUpdateDto,
+  // ): Promise<BaseResponse<any>> {
+  //   const status = await this.tenderUserService.updateUserStatus(
+  //     currentUser.id,
+  //     request,
+  //   );
+  //   return baseResponseHelper(
+  //     status,
+  //     HttpStatus.CREATED,
+  //     'User updated successfully!',
+  //   );
+  // }
+  @ApiOperation({
+    summary: 'Updating user status (admin only)',
+  })
+  @BaseApiOkResponse(UserUpdateStatusCommandResult, 'object')
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_accounts_manager')
   @Patch('update-status')
   async updateStatus(
     @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() request: UserStatusUpdateDto,
+    @Body() dto: UserStatusUpdateDto,
   ): Promise<BaseResponse<any>> {
-    const status = await this.tenderUserService.updateUserStatus(
-      currentUser.id,
-      request,
-    );
-    return baseResponseHelper(
-      status,
-      HttpStatus.CREATED,
-      'User updated successfully!',
-    );
+    try {
+      const command = Builder<UserUpdateStatusCommand>(
+        UserUpdateStatusCommand,
+        {
+          acc_manager_id: currentUser.id,
+          request: dto,
+        },
+      ).build();
+
+      const result = await this.commandBus.execute<
+        UserUpdateStatusCommand,
+        UserUpdateStatusCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.OK,
+        'User updated successfully!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)

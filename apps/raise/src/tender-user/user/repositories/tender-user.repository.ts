@@ -1,26 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, project_tracks, track, user_type, user } from '@prisma/client';
+import { Prisma, project_tracks, track, user, user_type } from '@prisma/client';
+import { Builder } from 'builder-pattern';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+import { v4 as uuidv4 } from 'uuid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
-import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TenderAppRole } from '../../../tender-commons/types';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { SearchUserFilterRequest } from '../dtos/requests';
 import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
+import { UserEntity } from '../entities/user.entity';
 import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
 import { UserStatus } from '../types/user_status';
-import { v4 as uuidv4 } from 'uuid';
-import { Builder } from 'builder-pattern';
-import { UserEntity } from '../entities/user.entity';
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 export class CreateUserProps {
   id?: string;
   employee_name: string;
   mobile_number: string;
   email: string;
   status_id: string;
+  address?: string;
+}
+export class UpdateUserProps {
+  id: string;
+  employee_name?: string;
+  mobile_number?: string;
+  email?: string;
+  status_id?: string;
   address?: string;
 }
 
@@ -112,6 +119,31 @@ export class TenderUserRepository {
       }).build();
 
       return createdUserEntity;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async update(props: UpdateUserProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawUpdatedUser = await prisma.user.update({
+        where: { id: props.id },
+        data: {
+          employee_name: props.employee_name,
+          mobile_number: props.mobile_number,
+          email: props.email,
+          status_id: props.status_id,
+          address: props.address,
+        },
+      });
+
+      const entity = Builder<UserEntity>(UserEntity, {
+        ...rawUpdatedUser,
+      }).build();
+
+      return entity;
     } catch (error) {
       throw error;
     }

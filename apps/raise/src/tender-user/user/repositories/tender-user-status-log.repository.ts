@@ -3,10 +3,11 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { UserStatusLogEntity } from '../entities/user-status-log.entity';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { Builder } from 'builder-pattern';
+import { v4 as uuidv4 } from 'uuid';
 export class CreateUserStatusLogProps {
+  id?: string; // optional if it's predefined,
   status_id: string;
   user_id: string;
-  id?: string; // optional if it's predefined,
   notes?: string | null;
   account_manager_id?: string;
 }
@@ -27,7 +28,7 @@ export class TenderUserStatusLogRepository {
     try {
       const rawCreatedUserStatusLog = await prisma.user_status_log.create({
         data: {
-          id: props.id || '',
+          id: props.id || uuidv4(),
           notes: props.notes,
           account_manager_id: props.account_manager_id,
           status_id: props.status_id,

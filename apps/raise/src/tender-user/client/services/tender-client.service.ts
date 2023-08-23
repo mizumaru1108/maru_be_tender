@@ -67,7 +67,7 @@ export class TenderClientService {
     private readonly notificationService: TenderNotificationService,
     private readonly twilioService: TwilioService,
     private readonly tenderNotifRepo: TenderNotificationRepository,
-    private tenderUserRepository: TenderUserRepository,
+    private readonly tenderUserRepository: TenderUserRepository,
     private tenderClientRepository: TenderClientRepository,
   ) {
     const environment = this.configService.get('APP_ENV');

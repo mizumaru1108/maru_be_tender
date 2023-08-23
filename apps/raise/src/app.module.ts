@@ -9,7 +9,6 @@ import { SharedModule } from './shared/shared.module';
 import { TenderAppointmentModule } from './tender-appointment/tender-appointment.module';
 import { TenderAuthModule } from './tender-auth/tender-auth.module';
 import { TenderTrackModule } from './tender-track/track.module';
-import { TenderUserModule } from './tender-user/tender-user.module';
 import { TenderModule } from './tender/tender.module';
 /* Environment Config */
 import { bunnyConfig } from './commons/configs/bunny-config';
@@ -22,22 +21,23 @@ import { LoggerModule } from 'nestjs-pino';
 import { BannerModule } from 'src/banners/banner.module';
 import { discordConfig } from 'src/commons/configs/discord.config';
 import { HealthModule } from 'src/health/health.module';
+import { AuthorityManagementModule } from './authority-management/authority.management.module';
 import { BankModule } from './bank/bank.module';
 import { BeneficiaryModule } from './beneficiary/beneficiary.module';
 import { gapiConfig } from './commons/configs/gapi-config';
 import { mseGatConfig } from './commons/configs/msegat-config';
 import { tenderAppConfig } from './commons/configs/tender-app-config';
 import { twilioConfig } from './commons/configs/twilio-config';
+import { ContactUsModule } from './contact-us/contact.us.module';
 import { NotificationManagementModule } from './notification-management/notification.management.module';
 import { QaHelperModule } from './qa-helper/qa-helper.module';
+import { SmsConfigModule } from './sms-config/sms.config.module';
 import { TenderCommentsModule } from './tender-comments/tender-comments.module';
 import { TenderEventsModule } from './tender-events-gateway/tender-events.module';
 import { TenderFileManagerModule } from './tender-file-manager/tender-file-manager.module';
 import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
 import { TenderStatisticsModule } from './tender-statistics/tender-statistics.module';
-import { AuthorityManagementModule } from './authority-management/authority.management.module';
-import { ContactUsModule } from './contact-us/contact.us.module';
-import { SmsConfigModule } from './sms-config/sms.config.module';
+import { UserManagementModule } from './tender-user/user.management.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -152,7 +152,6 @@ const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
     ProposalManagementModule,
     TenderAppointmentModule,
     TenderAuthModule,
-    TenderUserModule,
     TenderTrackModule,
     TenderCommentsModule,
     TenderMessagesModule,
@@ -167,6 +166,7 @@ const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
     AuthorityManagementModule,
     ContactUsModule,
     SmsConfigModule,
+    UserManagementModule,
   ],
   controllers: [],
 })

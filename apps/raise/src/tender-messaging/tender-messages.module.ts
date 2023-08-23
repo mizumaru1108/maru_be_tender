@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TenderUserModule } from '../tender-user/tender-user.module';
+import { UserModule } from '../tender-user/user/user.module';
 import { TenderMessagesController } from './tender-message/controllers/tender-messages.controller';
 import { TenderMessagesRepository } from './tender-message/repositories/tender-messages.repository';
 import { TenderMessagesService } from './tender-message/services/tender-messages.service';
@@ -17,7 +17,7 @@ import { TenderRoomChatService } from './tender-room-chat/services/tender-room-c
     TenderRoomChatService,
     TenderRoomChatRepository,
   ],
-  imports: [TenderUserModule],
+  imports: [UserModule],
   exports: [TenderMessagesService, TenderRoomChatService],
 })
 export class TenderMessagesModule {}
