@@ -184,22 +184,43 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
   };
 
   const onSubmitForm = async (data: MainValuesProps) => {
-    const tmpClientField =
-      clientFields.find(
-        (client_field: ClientFieldInterface) => client_field.client_field_id === data.client_field
-      )?.name || undefined;
+    // console.log('test data:', data);
+    const tmpClientField = clientFields.find(
+      (client_field: ClientFieldInterface) =>
+        String(client_field.name) === String(data.client_field)
+    );
     const tmpAuthority =
       authorities.find((authority: AuthorityInterface) => authority.authority_id === data.authority)
         ?.name || undefined;
     const tmpValue: MainValuesProps = {
       ...data,
-      authority: tmpAuthority || data.authority,
+      // authority: tmpAuthority || data.authority,
+      authority: tmpAuthority ? tmpAuthority : '',
       authority_id: tmpAuthority ? data.authority : undefined,
-      client_field: tmpClientField || data.client_field,
-      client_field_id: tmpClientField ? data.client_field : undefined,
+      client_field: data.client_field || '',
+      client_field_id: tmpClientField ? tmpClientField.client_field_id : undefined,
     };
     // console.log('test ting', removeEmptyKey(tmpValue));
     onSubmit(removeEmptyKey(tmpValue));
+  };
+
+  const handleScrollPagination = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    // console.log('test:', e.target);
+    const selectElement = e.target as HTMLDivElement;
+    const isAtBottom =
+      selectElement.scrollTop + selectElement.clientHeight === selectElement.scrollHeight;
+
+    // Check if the scroll position is at the top
+    const isAtTop = selectElement.scrollTop === 0;
+    if (isAtBottom) {
+      // Do something when scrolling to the bottom
+      console.log('Scrolled to the bottom');
+    }
+
+    if (isAtTop) {
+      // Do something when scrolling to the top
+      console.log('Scrolled to the top');
+    }
   };
 
   React.useEffect(() => {
@@ -232,7 +253,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
   }, [fetchClientFields]);
   // console.log({ defaultValues, clientFields, authorities });
   const client_field = watch('client_field');
-  if (isFetchingClientFields || isFetchingAuthoritites) {
+  if (isFetchingClientFields) {
     return <>{translate('pages.common.loading')}</>;
   }
   return (
@@ -338,8 +359,12 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
               placeholder={translate('register_form1.authority.placeholder')}
               sx={{ overflow: 'auto' }}
               onChange={(e) => {
-                // console.log('test:', e.target.value);
                 setValue('authority', e.target.value);
+              }}
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: { style: { maxHeight: 300 }, onScroll: handleScrollPagination },
+                },
               }}
             >
               {authorities.length > 0 &&

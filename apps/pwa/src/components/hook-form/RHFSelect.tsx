@@ -95,7 +95,10 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
               InputLabelProps={{ shrink: true }}
               select
               fullWidth
-              SelectProps={{ native: true }}
+              SelectProps={{
+                native: true,
+                MenuProps: { PaperProps: { style: { maxHeight: 300 } } },
+              }}
               error={!!error}
               helperText={
                 <Typography component="span" sx={{ backgroundColor: 'transparent' }}>
