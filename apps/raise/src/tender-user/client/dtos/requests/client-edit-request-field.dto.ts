@@ -31,7 +31,7 @@ export class ClientEditRequestFieldDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  authority?: string;
+  authority_id?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -158,11 +158,12 @@ export class ClientEditRequestFieldDto {
   @IsNotEmpty()
   @IsString()
   data_entry_mail?: string;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  client_field?: string;
+  client_field_id?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
