@@ -513,7 +513,8 @@ export class TenderProposalController {
         ProposalAskedEditRequestFindManyQuery,
         {
           ...query,
-          supervisor_track_id: currentUser.track_id,
+          supervisor_id: currentUser.id,
+          // supervisor_track_id: currentUser.track_id,
         },
       );
 
