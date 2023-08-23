@@ -28,6 +28,7 @@ export class ProposalAskedEditRequestFindManyProps {
   project_name?: string;
   employee_name?: string;
   supervisor_track_id?: string;
+  supervisor_id?: string;
   limit?: number;
   page?: number;
   sort_by?: string;
@@ -156,6 +157,7 @@ export class ProposalAskedEditRequestRepository {
       employee_name,
       project_name,
       supervisor_track_id,
+      supervisor_id,
       include_relations,
     } = props;
     let queryOptions: Prisma.proposal_asked_edit_requestFindManyArgs = {};
@@ -191,6 +193,13 @@ export class ProposalAskedEditRequestRepository {
         proposal: {
           track_id: supervisor_track_id,
         },
+      };
+    }
+
+    if (supervisor_id) {
+      findManyWhereClause = {
+        ...findManyWhereClause,
+        supervisor_id,
       };
     }
 

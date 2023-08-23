@@ -4,6 +4,7 @@ import { ProposalAskedEditRequestEntity } from '../../../asked-edit-request/enti
 import { ProposalAskedEditRequestRepository } from '../../../asked-edit-request/repositories/proposal.asked.edit.request.repository';
 
 export class ProposalAskedEditRequestFindManyQuery {
+  supervisor_id?: string;
   supervisor_track_id?: string;
   employee_name?: string;
   project_name?: string;

@@ -607,6 +607,7 @@ export class TenderClientService {
         entity_mobile,
         selectLang,
       } = editRequest;
+
       if (entity_mobile) {
         const isNumExist =
           await this.tenderClientRepository.findClientByMobileNum(
