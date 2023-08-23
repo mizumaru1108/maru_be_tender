@@ -420,10 +420,6 @@ function FloatingActionBar() {
           content_type_id: 'TEXT',
           receiver_id: proposalSubmitter.id,
           owner_id: user?.id,
-          // receiver_role_as: proposalSubmitter.roles[0].role.id,
-          // receiver_role_as: `tender_${proposalSubmitter.roles[
-          //   activeRoleIndex
-          // ].role.id.toLowerCase()}`,
           receiver_role_as: `tender_${proposalSubmitter.roles[
             activeRoleIndex
           ]?.user_type_id.toLowerCase()}`,

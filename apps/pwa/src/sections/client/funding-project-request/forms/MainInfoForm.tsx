@@ -18,6 +18,7 @@ import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'redux/store';
+import { removeEmptyKey } from '../../../../utils/remove-empty-key';
 
 type FormValuesProps = {
   project_name: string;
@@ -28,6 +29,7 @@ type FormValuesProps = {
   project_beneficiaries: string;
   letter_ofsupport_req: CustomFile | string | null;
   project_attachments: CustomFile | string | null;
+  beneficiary_id: string;
   // project_beneficiaries_specific_type: string;
 };
 
@@ -191,10 +193,18 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues]);
 
+  const handleSubmitForm = async (data: FormValuesProps) => {
+    let tmpValue = { ...data };
+    const tmpBeneficiaries =
+      beneficiaries_list.find((bank: any) => bank.id === data.beneficiary_id)?.name || '';
+    tmpValue.project_beneficiaries = tmpBeneficiaries;
+    onSubmit(removeEmptyKey(tmpValue));
+  };
+
   if (loading) return <>{translate('pages.common.loading')}</>;
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+    <FormProvider methods={methods} onSubmit={handleSubmit(handleSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
         {/* <FormGenerator data={MainFormData} /> */}
         <Grid item md={12} xs={12}>

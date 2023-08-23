@@ -4,7 +4,7 @@ import { AUTHORITY } from '_mock/authority';
 import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import RHFDatePicker from 'components/hook-form/RHFDatePicker';
 import useLocales from 'hooks/useLocales';
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { MainValuesProps } from '../../../../@types/register';
@@ -38,8 +38,8 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
   const { enqueueSnackbar } = useSnackbar();
   const [authorities, setAuthorities] = React.useState<AuthorityInterface[] | []>([]);
   const [clientFields, setClientFields] = React.useState<ClientFieldInterface[] | []>([]);
-  const [isFetchingAuthoritites, setIsFetchingAuthorities] = React.useState<boolean>(false);
   const [isFetchingClientFields, setIsFetchingClientFields] = React.useState<boolean>(false);
+  const [isFetchingAuthoritites, setIsFetchingAuthorities] = React.useState<boolean>(false);
   const [clientFieldId, setClientFieldId] = React.useState<string>('');
   const RegisterSchemaFirstForm = Yup.object().shape({
     entity: Yup.string().required(translate('errors.register.entity.required')),
@@ -65,7 +65,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
 
   const methods = useForm<MainValuesProps>({
     resolver: yupResolver(RegisterSchemaFirstForm),
-    defaultValues: useMemo(() => defaultValues, [defaultValues]),
+    defaultValues: React.useMemo(() => defaultValues, [defaultValues]),
   });
 
   const fetchAuthorities = React.useCallback(
@@ -209,7 +209,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     window.scrollTo(0, 0);
     reset(defaultValues);
     if (defaultValues.client_field === 'main' && clientFields.length > 0) {
@@ -239,7 +239,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [FEATURE_MENU_ADMIN_ADD_AUTHORITY]);
 
-  if (isFetchingClientFields) {
+  if (isFetchingClientFields || isFetchingAuthoritites) {
     return <>{translate('pages.common.loading')}</>;
   }
 
