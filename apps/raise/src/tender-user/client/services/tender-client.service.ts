@@ -629,14 +629,6 @@ export class TenderClientService {
       if (!clientData) throw new NotFoundException('Client data not found!');
 
       if (clientData.user.status_id !== 'ACTIVE_ACCOUNT') {
-        // if (!!editRequest.updated_banks || !!editRequest.deleted_banks) {
-        //   // if one of them / both of them exist will not throw error
-        // } else {
-        //   throw new BadRequestException(
-        //     'User have to be ACTIVE to perform an edit request!',
-        //   );
-        // }
-
         // if one of them /both of them not exist then throw error
         if (!(editRequest.updated_banks || editRequest.deleted_banks)) {
           throw new BadRequestException(

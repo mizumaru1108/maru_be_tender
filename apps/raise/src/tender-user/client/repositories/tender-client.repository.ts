@@ -195,6 +195,7 @@ export class TenderClientRepository {
         },
         select: {
           authority: true,
+          authority_id: true,
           board_ofdec_file: true,
           center_administration: true,
           ceo_mobile: true,
@@ -202,6 +203,7 @@ export class TenderClientRepository {
           chairman_mobile: true,
           chairman_name: true,
           client_field: true,
+          client_field_id: true,
           data_entry_mail: true,
           data_entry_mobile: true,
           data_entry_name: true,

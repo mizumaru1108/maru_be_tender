@@ -7,12 +7,14 @@ export function ApproveEditRequestMapper(
 ) {
   const {
     authority,
+    authority_id,
     center_administration,
     ceo_mobile,
     ceo_name,
     chairman_mobile,
     chairman_name,
     client_field,
+    client_field_id,
     data_entry_mail,
     data_entry_mobile,
     data_entry_name,
@@ -38,6 +40,10 @@ export function ApproveEditRequestMapper(
 
   if (authority && authority !== oldClientData.authority) {
     updateClientPayload.authority = authority;
+  }
+
+  if (authority_id && authority_id !== oldClientData.authority_id) {
+    updateClientPayload.authority_id = authority_id;
   }
 
   if (
@@ -161,6 +167,10 @@ export function ApproveEditRequestMapper(
 
   if (client_field && client_field !== oldClientData.client_field) {
     updateClientPayload.client_field = client_field;
+  }
+
+  if (client_field_id && client_field_id !== oldClientData.client_field_id) {
+    updateClientPayload.client_field_id = client_field_id;
   }
 
   return {
