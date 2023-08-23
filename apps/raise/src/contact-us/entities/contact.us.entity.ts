@@ -1,5 +1,5 @@
 export class ContactUsEntity {
-  id: string;
+  id: number;
   inquiry_type: string;
   title?: string | null;
   message?: string | null;

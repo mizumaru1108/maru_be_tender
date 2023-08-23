@@ -46,7 +46,6 @@ import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-fo
 import { ForbiddenPermissionException } from 'src/tender-commons/exceptions/forbidden-permission-exception';
 import { BasePrismaErrorException } from 'src/tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { RequestErrorException } from 'src/tender-commons/exceptions/request-error.exception';
-import { query } from 'winston';
 import { BasePaginationApiOkResponse } from '../../../commons/decorators/base.pagination.api.ok.response.decorator';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';

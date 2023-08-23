@@ -504,7 +504,7 @@ model room_chat {
 }
 
 model ContactUs {
-  contact_us_id                                    String        @id
+  contact_us_id                         Int        @id @default(autoincrement())
   inquiry_type                          String       
   title                                 String?        @db.VarChar()
   message                               String?        @db.VarChar()

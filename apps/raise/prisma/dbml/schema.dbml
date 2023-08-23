@@ -489,7 +489,7 @@ Table room_chat {
 }
 
 Table contact_us {
-  contact_us_id String [pk]
+  contact_us_id Int [pk, increment]
   inquiry_type String [not null]
   title String
   message String

@@ -7,7 +7,7 @@ import { ContactUsInquiryEnum } from '../types/contact.us.type';
 import { nanoid } from 'nanoid';
 
 export class ContactUsCreateProps {
-  contact_us_id?: string;
+  contact_us_id?: number;
   inquiry_type: ContactUsInquiryEnum;
   submitter_user_id: string;
   title?: string;
@@ -38,7 +38,6 @@ export class ContactUsRepository {
     try {
       const rawCreated = await prisma.contactUs.create({
         data: {
-          contact_us_id: props.contact_us_id || nanoid(),
           inquiry_type: props.inquiry_type,
           submitter_user_id: props.submitter_user_id,
           title: props.title,
@@ -82,7 +81,7 @@ export class ContactUsRepository {
   }
 
   async findById(
-    contact_us_id: string,
+    contact_us_id: number,
     session?: PrismaService,
   ): Promise<ContactUsEntity | null> {
     let prisma = this.prismaService;
