@@ -192,7 +192,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
   };
   const onSubmitform6 = async (data: any) => {
     // console.log('data form 5', data.project_timeline);
-    // setIsLoading(true);
+    setIsLoading(true);
     let newValue: any = {};
     newValue = {
       ...newValue,
