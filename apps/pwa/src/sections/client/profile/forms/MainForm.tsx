@@ -363,7 +363,8 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
               }}
               SelectProps={{
                 MenuProps: {
-                  PaperProps: { style: { maxHeight: 300 }, onScroll: handleScrollPagination },
+                  // PaperProps: { style: { maxHeight: 300 }, onScroll: handleScrollPagination },
+                  PaperProps: { style: { maxHeight: 300 } },
                 },
               }}
             >

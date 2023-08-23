@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid, MenuItem, TextField } from '@mui/material';
-import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
+import { FormProvider, RHFDatePicker, RHFSelect, RHFTextField } from 'components/hook-form';
 import RHFTextArea from 'components/hook-form/RHFTextArea';
 import useLocales from 'hooks/useLocales';
 import React from 'react';
@@ -52,13 +52,34 @@ const VisitationForm = ({ onSubmitForm, defaultValuesForm, children, isLoading }
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container rowSpacing={4} columnSpacing={7}>
           <Grid item md={12} xs={12}>
-            <BaseField
+            {/* <BaseField
               type="datePicker"
               name="date_of_visit"
               label={translate('contact_support_form.date_of_visit.label')}
               data-cy="contact_support_form.date_of_visit"
               placeholder={translate('contact_support_form.date_of_visit.placeholder')}
               disabled={isLoading}
+              InputProps={{
+                inputProps: {
+                  min: new Date(new Date().setDate(new Date().getDate()))
+                    .toISOString()
+                    .split('T')[0],
+                },
+              }}
+            /> */}
+            <RHFDatePicker
+              disabled={isLoading}
+              name="date_of_visit"
+              label={translate('contact_support_form.date_of_visit.label')}
+              data-cy="contact_support_form.date_of_visit"
+              placeholder={translate('contact_support_form.date_of_visit.placeholder')}
+              InputProps={{
+                inputProps: {
+                  min: new Date(new Date().setDate(new Date().getDate()))
+                    .toISOString()
+                    .split('T')[0],
+                },
+              }}
             />
           </Grid>
           <Grid item md={12} xs={12}>

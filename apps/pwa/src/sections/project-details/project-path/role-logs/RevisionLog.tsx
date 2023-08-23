@@ -1,7 +1,9 @@
 import { Grid, Stack, Typography } from '@mui/material';
+import dayjs from 'dayjs';
 import useLocales from 'hooks/useLocales';
 import moment from 'moment';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 import { useSelector } from 'redux/store';
 import {
   BankInformation,
@@ -10,7 +12,8 @@ import {
   timeline,
 } from '../../../../@types/proposal';
 import ButtonDownloadFiles from '../../../../components/button/ButtonDownloadFiles';
-import { RHFDatePicker, RHFTextField } from '../../../../components/hook-form';
+import { FormProvider, RHFDatePicker, RHFTextField } from '../../../../components/hook-form';
+import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
 import BankImageComp from '../../../shared/BankImageComp';
 
 interface Props {
@@ -99,99 +102,131 @@ function RevisionLog({ stepGeneralLog }: Props) {
     return tmpProposalItemBudgets;
   }, [dataGrants]);
 
+  const methods = useForm<any>({
+    defaultValues: {},
+  });
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
   // console.log('dataGrants', dataGrants);
 
   return (
     <React.Fragment>
-      {stepGeneralLog.action === 'send_revision_for_finance_amandement' &&
-      bankInfromation?.card_image?.url ? (
-        <Grid container spacing={2}>
-          <Grid item md={12} xs={12}>
-            <Typography variant="h6">
-              {/* {translate(`review.review_by_supervisor`)} */}
-              {translate('review.revised_by_client')}
-            </Typography>
-            <Typography>
-              {translate('project_already_revised_by_client')}{' '}
-              {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
-            </Typography>
+      <FormProvider
+        methods={methods}
+        onSubmit={handleSubmit((data) => {
+          console.log('data', data);
+        })}
+      >
+        {stepGeneralLog.action === 'send_revision_for_finance_amandement' &&
+        bankInfromation?.card_image?.url ? (
+          <Grid container spacing={2}>
+            <Grid item md={12} xs={12}>
+              <Typography variant="h6">
+                {/* {translate(`review.review_by_supervisor`)} */}
+                {translate('review.revised_by_client')}
+              </Typography>
+              <Typography>
+                {translate('project_already_revised_by_client')}{' '}
+                {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
+              </Typography>
+            </Grid>
+            <Grid item md={6} xs={12}>
+              {/* {'test'} */}
+              {bankInfromation ? (
+                <BankImageComp
+                  enableButton={true}
+                  bankName={bankInfromation?.bank_name || ''}
+                  accountNumber={bankInfromation?.bank_account_number || ''}
+                  bankAccountName={bankInfromation?.bank_account_name || ''}
+                  imageUrl={bankInfromation?.card_image?.url || '#'}
+                  size={bankInfromation?.card_image.size || undefined}
+                  type={bankInfromation?.card_image.type || ''}
+                  borderColor={bankInfromation?.card_image.border_color ?? 'transparent'}
+                />
+              ) : null}
+            </Grid>
           </Grid>
-          <Grid item md={6} xs={12}>
-            {/* {'test'} */}
-            {bankInfromation ? (
-              <BankImageComp
-                enableButton={true}
-                bankName={bankInfromation?.bank_name || ''}
-                accountNumber={bankInfromation?.bank_account_number || ''}
-                bankAccountName={bankInfromation?.bank_account_name || ''}
-                imageUrl={bankInfromation?.card_image?.url || '#'}
-                size={bankInfromation?.card_image.size || undefined}
-                type={bankInfromation?.card_image.type || ''}
-                borderColor={bankInfromation?.card_image.border_color ?? 'transparent'}
-              />
-            ) : null}
-          </Grid>
-        </Grid>
-      ) : null}
-      {stepGeneralLog.action === 'send_revision_for_supervisor_amandement' ? (
-        <Grid container spacing={2}>
-          <Grid item md={12} xs={12}>
-            <Typography variant="h6">{translate('review.revised_by_client')}</Typography>
-            <Typography>
-              {translate('project_already_revised_by_client')}{' '}
-              {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
-            </Typography>
-          </Grid>
-          {dataGrants &&
-            dataGrants.proposal &&
-            Object.entries(dataGrants.proposal)
-              .filter(
-                ([key]) =>
-                  key !== 'bank_informations' &&
-                  key !== 'outter_status' &&
-                  key !== 'state' &&
-                  key !== 'id' &&
-                  key !== 'letter_ofsupport_req' &&
-                  key !== 'project_attachments' &&
-                  key !== 'project_timeline' &&
-                  key !== 'timelines' &&
-                  key !== 'proposal_item_budgets'
-              )
-              .map(([key, value]: any) => {
-                const tmpValue = value || '';
-                return (
-                  <Grid key={key} item md={6} xs={12}>
-                    <Typography variant="h6">{translate(`review.${key}`)}</Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>{tmpValue}</Typography>
+        ) : null}
+        {stepGeneralLog.action === 'send_revision_for_supervisor_amandement' ? (
+          <Grid container spacing={2}>
+            <Grid item md={12} xs={12}>
+              <Typography variant="h6">{translate('review.revised_by_client')}</Typography>
+              <Typography>
+                {translate('project_already_revised_by_client')}{' '}
+                {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
+              </Typography>
+            </Grid>
+            {dataGrants &&
+              dataGrants.proposal &&
+              Object.entries(dataGrants.proposal)
+                .filter(
+                  ([key]) =>
+                    key !== 'bank_informations' &&
+                    key !== 'outter_status' &&
+                    key !== 'state' &&
+                    key !== 'id' &&
+                    key !== 'letter_ofsupport_req' &&
+                    key !== 'project_attachments' &&
+                    key !== 'project_timeline' &&
+                    key !== 'timelines' &&
+                    key !== 'proposal_item_budgets'
+                )
+                .map(([key, value]: any) => {
+                  const tmpValue = value || '';
+                  if (!tmpValue) return null;
+                  if (key === 'project_implement_date' && tmpValue) {
+                    return (
+                      <Grid key={key} item md={6} xs={12}>
+                        <Typography variant="h6">{translate(`review.${key}`)}</Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>{dayjs(tmpValue).format('YYYY-MM-DD')}</Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                  return (
+                    <Grid key={key} item md={6} xs={12}>
+                      <Typography variant="h6">{translate(`review.${key}`)}</Typography>
+                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                        <Typography>{formatCapitalizeText(String(tmpValue))}</Typography>
+                      </Stack>
+                    </Grid>
+                  );
+                })}
+            <Grid item md={12} xs={12}>
+              <Grid container>
+                {latterOfSupport && latterOfSupport?.url ? (
+                  <Grid item md={6} xs={12}>
+                    <Typography variant="h6">{translate(`review.letter_ofsupport_req`)}</Typography>
+                    <Stack direction="column" gap={2} sx={{ padding: '0 0 8px 0' }}>
+                      <ButtonDownloadFiles files={latterOfSupport} />
                     </Stack>
                   </Grid>
-                );
-              })}
-          {latterOfSupport && latterOfSupport?.url ? (
-            <Grid item md={6} xs={12}>
-              <Typography variant="h6">{translate(`review.letter_ofsupport_req`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <ButtonDownloadFiles files={latterOfSupport} />
-              </Stack>
+                ) : null}
+                {projectAttachment && projectAttachment?.url ? (
+                  <Grid item md={6} xs={12}>
+                    <Typography variant="h6" sx={{ padding: '0 0 0 8px' }}>
+                      {translate(`review.project_attachments`)}
+                    </Typography>
+                    <Stack direction="column" gap={2} sx={{ padding: '0 0 8px 8px' }}>
+                      <ButtonDownloadFiles files={projectAttachment} />
+                    </Stack>
+                  </Grid>
+                ) : null}
+              </Grid>
             </Grid>
-          ) : null}
-          {projectAttachment && projectAttachment?.url ? (
-            <Grid item md={6} xs={12}>
-              <Typography variant="h6">{translate(`review.project_attachments`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <ButtonDownloadFiles files={projectAttachment} />
-              </Stack>
-            </Grid>
-          ) : null}
-          {projectTimelines && projectTimelines.length > 0 ? (
-            <Grid item md={12} xs={12}>
-              <Typography variant="h6">{translate(`review.project_timeline`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+            {projectTimelines && projectTimelines.length > 0 ? (
+              <Grid item md={12} xs={12}>
+                <Typography variant="h6" sx={{ padding: '0 0 16px 0' }}>
+                  {translate(`review.project_timeline`)}
+                </Typography>
                 <Grid container>
                   {projectTimelines.map((item: timeline, index: number) => (
                     <React.Fragment key={index}>
-                      <Grid item xs={12} md={6} sx={{ margin: '0 4px' }}>
+                      <Grid item xs={12} md={5} sx={{ margin: '8px 8px' }}>
                         <RHFTextField
                           disabled={true}
                           type={'textField'}
@@ -205,7 +240,7 @@ function RevisionLog({ stepGeneralLog }: Props) {
                           )}
                         />
                       </Grid>
-                      <Grid item xs={12} md={3} sx={{ margin: '0 4px' }}>
+                      <Grid item xs={12} md={3} sx={{ margin: '8px 8px' }}>
                         <RHFDatePicker
                           disabled={true}
                           value={moment(item.start_date).format('LLL')}
@@ -224,7 +259,7 @@ function RevisionLog({ stepGeneralLog }: Props) {
                           }
                         />
                       </Grid>
-                      <Grid item xs={12} md={3} sx={{ margin: '0 4px' }}>
+                      <Grid item xs={12} md={3} sx={{ margin: '8px 8px' }}>
                         <RHFDatePicker
                           disabled={true}
                           type={'datePicker'}
@@ -246,17 +281,17 @@ function RevisionLog({ stepGeneralLog }: Props) {
                     </React.Fragment>
                   ))}
                 </Grid>
-              </Stack>
-            </Grid>
-          ) : null}
-          {proposalItemBudgets && proposalItemBudgets.length > 0 ? (
-            <Grid item md={12} xs={12}>
-              <Typography variant="h6">{translate(`review.project_timeline`)}</Typography>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              </Grid>
+            ) : null}
+            {proposalItemBudgets && proposalItemBudgets.length > 0 ? (
+              <Grid item md={12} xs={12}>
+                <Typography variant="h6" sx={{ padding: '0 0 16px 0' }}>
+                  {translate(`review.item_budgets`)}
+                </Typography>
                 <Grid container>
                   {proposalItemBudgets.map((item: ItemBudget, index: number) => (
                     <React.Fragment key={index}>
-                      <Grid item xs={12} md={6} sx={{ margin: '0 4px' }}>
+                      <Grid item xs={12} md={4} sx={{ margin: '8px 4px' }}>
                         <RHFTextField
                           disabled={true}
                           type={'textField'}
@@ -266,7 +301,7 @@ function RevisionLog({ stepGeneralLog }: Props) {
                           placeholder={translate(`funding_project_request_form4.item.placeholder`)}
                         />
                       </Grid>
-                      <Grid item xs={12} md={6} sx={{ margin: '0 4px' }}>
+                      <Grid item xs={12} md={4} sx={{ margin: '8px 4px' }}>
                         <RHFTextField
                           disabled={true}
                           type={'textField'}
@@ -278,7 +313,7 @@ function RevisionLog({ stepGeneralLog }: Props) {
                           )}
                         />
                       </Grid>
-                      <Grid item xs={12} md={6} sx={{ margin: '0 4px' }}>
+                      <Grid item xs={12} md={3} sx={{ margin: '8px 4px' }}>
                         <RHFTextField
                           disabled={true}
                           type={'textField'}
@@ -293,11 +328,11 @@ function RevisionLog({ stepGeneralLog }: Props) {
                     </React.Fragment>
                   ))}
                 </Grid>
-              </Stack>
-            </Grid>
-          ) : null}
-        </Grid>
-      ) : null}
+              </Grid>
+            ) : null}
+          </Grid>
+        ) : null}
+      </FormProvider>
     </React.Fragment>
   );
 }

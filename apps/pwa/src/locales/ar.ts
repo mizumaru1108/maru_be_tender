@@ -1502,6 +1502,9 @@ const ar = {
         inquiry_type: 'نوع الاستفسار',
         date_of_visit: 'تاريخ الزيارة',
         reason_of_visit: 'سبب الزيارة',
+        title_message: 'عنوان الرسالة',
+        message: 'الرسالة',
+        employee_name: 'اسم الموظف',
       },
       tableRow: {
         inquiry_type: {
@@ -2134,6 +2137,14 @@ const ar = {
   },
   closing_project_by_client: 'إغلاق مشروع',
   review: {
+    project_idea: 'مفهوم المشروع',
+    project_goals: 'مهام المشروع',
+    project_risks: 'مخاطر المشروع',
+    project_outputs: 'مخرجات المشروع',
+    project_location: 'موقع المشروع',
+    project_strengths: 'الطاقات المميزة',
+    project_implement_date: 'تاريخ التنفيذ',
+    item_budgets: 'ميزانيات بند المشروع',
     project_timeline: 'الخطة الزمنية',
     letter_ofsupport_req: 'خطاب طلب الدعم',
     project_attachments: 'مرفقات المشروع',

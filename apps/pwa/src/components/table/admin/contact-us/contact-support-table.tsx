@@ -17,6 +17,7 @@ import { generateHeader } from '../../../../utils/generateProposalNumber';
 import dayjs from 'dayjs';
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
 import { ICustomHeaderCell } from './contact-us';
+import { UserInfoFormProps } from '../../../../@types/register';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -65,22 +66,37 @@ const CustomHeaderCell: ICustomHeaderCell[] = [
   // {
   //   value: 'contact_support.table.headerCell.id_number',
   //   label: 'contact_support.table.headerCell.id_number',
-  //   align: 'left',
+  //   align: 'center',
   // },
+  {
+    value: 'contact_support.table.headerCell.employee_name',
+    label: 'contact_support.table.headerCell.employee_name',
+    align: 'center',
+  },
   {
     value: 'contact_support.table.headerCell.inquiry_type',
     label: 'contact_support.table.headerCell.inquiry_type',
-    align: 'left',
+    align: 'center',
   },
   {
     value: 'contact_support.table.headerCell.date_of_visit',
     label: 'contact_support.table.headerCell.date_of_visit',
-    align: 'left',
+    align: 'center',
   },
   {
     value: 'contact_support.table.headerCell.reason_of_visit',
     label: 'contact_support.table.headerCell.reason_of_visit',
-    align: 'left',
+    align: 'center',
+  },
+  {
+    value: 'contact_support.table.headerCell.title_message',
+    label: 'contact_support.table.headerCell.title_message',
+    align: 'center',
+  },
+  {
+    value: 'contact_support.table.headerCell.message',
+    label: 'contact_support.table.headerCell.message',
+    align: 'center',
   },
 ];
 
@@ -96,6 +112,7 @@ interface ContactUsTableData {
   submitter_user_id?: string;
   proposal_id?: string;
   updated_at?: Date;
+  user?: UserInfoFormProps;
 }
 
 export default function BaseContactSupportTable() {
@@ -113,7 +130,7 @@ export default function BaseContactSupportTable() {
     setIsLoading(true);
     const tmpPage = page + 1;
     // const url = `/contact-us?inquiry_type=GENERAL,VISITATION&page=${tmpPage}&limit=${rowsPerPage}`;
-    const url = `/contact-us?page=${tmpPage}&limit=${rowsPerPage}`;
+    const url = `/contact-us?page=${tmpPage}&limit=${rowsPerPage}&include_relations=user`;
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
@@ -192,13 +209,30 @@ export default function BaseContactSupportTable() {
                 ? tableData.map((row, index) => (
                     <StyledTableRow key={row.title}>
                       <StyledTableCell component="th" scope="row">
-                        <Typography noWrap={false} data-cy={`contact_us_id-${index}`}>
+                        <Typography
+                          noWrap={false}
+                          data-cy={`contact_us_id-${index}`}
+                          sx={{ fontWeight: 550 }}
+                        >
                           {/* {row.contact_us_id ? generateHeader(row.contact_us_id) : '-'} */}
-                          {row.contact_us_id ? generateHeader(rowsPerPage * page + index + 1) : '-'}
+                          {row?.contact_us_id ? generateHeader(Number(row?.contact_us_id)) : '-'}
                         </Typography>
                       </StyledTableCell>
-                      <StyledTableCell align="left">
-                        <Typography noWrap={false} data-cy={`inquiry_type-${index}`}>
+                      <StyledTableCell align="center">
+                        <Typography
+                          noWrap={false}
+                          data-cy={`employee-name-${index}`}
+                          sx={{ fontWeight: 550 }}
+                        >
+                          {row?.user?.employee_name ? row?.user?.employee_name : '-'}
+                        </Typography>
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Typography
+                          noWrap={false}
+                          data-cy={`inquiry_type-${index}`}
+                          sx={{ fontWeight: 550 }}
+                        >
                           {/* {row?.inquiry_type ? formatCapitalizeText(row?.inquiry_type) : '-'} */}
                           {row?.inquiry_type
                             ? translate(
@@ -207,16 +241,26 @@ export default function BaseContactSupportTable() {
                             : '-'}
                         </Typography>
                       </StyledTableCell>
-                      <StyledTableCell align="left">
+                      <StyledTableCell align="center">
                         <Typography noWrap={false} data-cy={`date_of_visit-${index}`}>
                           {row?.date_of_visit
                             ? dayjs(row?.date_of_visit).format('YYYY-MM-DD')
                             : '-'}
                         </Typography>
                       </StyledTableCell>
-                      <StyledTableCell align="left">
+                      <StyledTableCell align="center">
                         <Typography noWrap={false} data-cy={`visit_reason-${index}`}>
                           {row?.visit_reason ? formatCapitalizeText(row?.visit_reason) : '-'}
+                        </Typography>
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Typography noWrap={false} data-cy={`title-message-${index}`}>
+                          {row?.title ? formatCapitalizeText(row?.title) : '-'}
+                        </Typography>
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Typography noWrap={false} data-cy={`title-message-${index}`}>
+                          {row?.message ? formatCapitalizeText(row?.message) : '-'}
                         </Typography>
                       </StyledTableCell>
                     </StyledTableRow>

@@ -1502,6 +1502,9 @@ const en = {
         inquiry_type: 'Inquiry Type',
         date_of_visit: 'Date of Visit',
         reason_of_visit: 'Reason of Visit',
+        title_message: 'Title Message',
+        message: 'Message',
+        employee_name: 'Employee Name',
       },
       tableRow: {
         inquiry_type: {
@@ -2120,6 +2123,15 @@ const en = {
   },
   closing_project_by_client: 'Closing Project By Client',
   review: {
+    project_idea: 'Project Idea',
+    project_goals: 'Project Goals',
+    project_risks: 'Project Risks',
+    project_outputs: 'Project Outputs',
+    project_location: 'Project Location',
+    project_strengths: 'Project Strengths',
+    project_implement_date: 'Project Implement Date',
+    amount_required_fsupport: 'Amount Required',
+    item_budgets: 'Project Item Budgets',
     project_timeline: 'Project Timeline',
     letter_ofsupport_req: 'Letter of support requirment',
     project_attachments: 'Project attachments',

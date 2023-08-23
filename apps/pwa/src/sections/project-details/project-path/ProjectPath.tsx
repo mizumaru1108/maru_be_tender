@@ -606,11 +606,6 @@ function ProjectPath() {
             logs.filter(
               (item: Log, index: number) =>
                 activeStep === item.id &&
-                // (item.user_role === 'CASHIER' || item.state === 'CASHIER') &&
-                // item.action !== 'send_back_for_revision' &&
-                // item.action !== 'step_back' &&
-                // item.action !== 'sending_closing_report' &&
-                // (item.action === 'done' || item.action === 'uploaded_by_cashier')
                 (item.action === 'send_revision_for_finance_amandement' ||
                   item.action === 'send_revision_for_supervisor_amandement')
             ).length > 0 &&

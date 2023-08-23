@@ -14,7 +14,7 @@ function ContactUsPage() {
     display: 'flex',
     justifyContent: 'start',
     flexDirection: 'column',
-    gap: 20,
+    gap: 10,
   }));
 
   return (

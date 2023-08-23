@@ -37,7 +37,8 @@ const ContactSupportForm = () => {
   const handleSubmitGeneralForm = async (data: ContactUsGeneral) => {
     setIsLoading(true);
     const tmpValue: ContactUsGeneral = {
-      inquiry_type: formType,
+      // inquiry_type: formType.toUpperCase(),
+      inquiry_type: 'GENERAL',
       message: data.message,
       title: data.title,
     };
@@ -90,7 +91,8 @@ const ContactSupportForm = () => {
   const handleSubmitProjectInquiryForm = async (data: ContactUsInquiry) => {
     setIsLoading(true);
     const tmpValue: ContactUsInquiry = {
-      inquiry_type: formType,
+      // inquiry_type: formType.toUpperCase(),
+      inquiry_type: 'PROJECT_INQUIRIES',
       message: data.message,
       title: data.title,
       proposal_id: data.proposal_id,
@@ -143,7 +145,8 @@ const ContactSupportForm = () => {
   const handleSubmitVisitationForm = async (data: ContactUsVisit) => {
     setIsLoading(true);
     const tmpValue: ContactUsVisit = {
-      inquiry_type: formType,
+      // inquiry_type: formType.toUpperCase(),
+      inquiry_type: 'VISITATION',
       date_of_visit: dayjs(data.date_of_visit).format('YYYY-MM-DD'),
       visit_reason: data.visit_reason,
     };
