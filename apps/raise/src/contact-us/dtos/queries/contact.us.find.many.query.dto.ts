@@ -25,4 +25,16 @@ export class ContactUsFindmanyQueryDto extends BaseFilterRequest {
     return value;
   })
   inquiry_type: ContactUsInquiryEnum[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  @Transform(({ value }) => {
+    if (value && typeof value === 'string') {
+      return value.split(',');
+    }
+    return value;
+  })
+  include_relations?: string[];
 }

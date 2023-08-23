@@ -3,6 +3,7 @@ import { ContactUsEntity } from '../../entities/contact.us.entity';
 import { ContactUsRepository } from '../../repositories/contact.us.repository';
 import { ContactUsInquiryEnum } from '../../types/contact.us.type';
 export class ContactUsFindManyQuery {
+  include_relations?: string[];
   inquiry_type?: ContactUsInquiryEnum[];
   limit?: number;
   page?: number;

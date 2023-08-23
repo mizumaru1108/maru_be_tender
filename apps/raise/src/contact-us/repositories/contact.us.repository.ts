@@ -18,6 +18,7 @@ export class ContactUsCreateProps {
 }
 export class ContactUsUpdateProps {}
 export class ContactUsFindManyProps {
+  include_relations?: string[];
   inquiry_type?: ContactUsInquiryEnum[];
   limit?: number;
   page?: number;
@@ -101,6 +102,7 @@ export class ContactUsRepository {
   }
 
   async findManyFilter(props: ContactUsFindManyProps) {
+    const { include_relations } = props;
     let args: Prisma.ContactUsFindManyArgs = {};
     let whereArgs: Prisma.ContactUsWhereInput = {};
 
@@ -113,6 +115,20 @@ export class ContactUsRepository {
       };
     }
 
+    if (include_relations && include_relations.length > 0) {
+      let include: Prisma.ContactUsInclude = {};
+
+      for (const relation of include_relations) {
+        if (relation === 'user') {
+          include = {
+            ...include,
+            user: true,
+          };
+        }
+      }
+
+      args.include = include;
+    }
     args.where = whereArgs;
     return args;
   }
@@ -131,7 +147,7 @@ export class ContactUsRepository {
       const args = await this.findManyFilter(props);
       let queryOptions: Prisma.ContactUsFindManyArgs = {
         where: args.where,
-
+        include: args.include,
         orderBy: {
           [getSortBy]: getSortDirection,
         },
