@@ -116,7 +116,9 @@ export class SendRevisionCommandHandler
           // form 1
           project_idea: request.project_idea,
           project_location: request.project_location,
-          project_implement_date: request.project_implement_date,
+          project_implement_date: request.project_implement_date
+            ? new Date(request.project_implement_date)
+            : undefined,
           beneficiary_id: request.beneficiary_id,
           // form 2
           num_ofproject_binicficiaries: request.num_ofproject_binicficiaries,
