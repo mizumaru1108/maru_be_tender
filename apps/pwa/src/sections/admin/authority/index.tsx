@@ -92,10 +92,7 @@ export default function AuthorityTable() {
       const response = await axiosInstance.get(`/authority-management/client-fields?limit=0`);
       if (response) {
         const mappedRes = response.data.data
-          .filter(
-            (client_field: any) =>
-              client_field.is_deleted === false || client_field.is_deleted === null
-          )
+          .filter((client_field: any) => client_field.name === 'main')
           .map((client_field: any) => client_field);
         setClientFields(mappedRes);
         // console.log('masuk fetching client fields', mappedRes);

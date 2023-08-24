@@ -33,6 +33,8 @@ type FormProps = {
   defaultValues: any;
 };
 
+type ClientFieldName = 'main' | 'sub';
+
 const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) => {
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
@@ -41,6 +43,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
   const [isFetchingClientFields, setIsFetchingClientFields] = React.useState<boolean>(false);
   const [isFetchingAuthoritites, setIsFetchingAuthorities] = React.useState<boolean>(false);
   const [clientFieldId, setClientFieldId] = React.useState<string>('');
+  const [clientFieldName, setClientFieldName] = React.useState<ClientFieldName>('main');
   const RegisterSchemaFirstForm = Yup.object().shape({
     entity: Yup.string().required(translate('errors.register.entity.required')),
     client_field: Yup.string().required(translate('errors.register.client_field.required')),
@@ -125,10 +128,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
       );
       if (response) {
         const mappedRes = response.data.data
-          .filter(
-            (client_field: any) =>
-              client_field.is_deleted === false || client_field.is_deleted === null
-          )
+          .sort((a: ClientFieldInterface, b: ClientFieldInterface) => a.name.localeCompare(b.name))
           .map((client_field: any) => client_field);
         setClientFields(mappedRes);
       }
@@ -192,20 +192,38 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     onSubmit(removeEmptyKey(tmpValue));
     // console.log('test ting', removeEmptyKey(tmpValue));
   };
-
+  // console.log({ clientFields });
   // console.log('test clientField: ', clientFields);
   const handleChangeClientField = (client_field_id: string) => {
-    const tmpClientId = clientFields.find(
-      (client_field: ClientFieldInterface) => String(client_field.name) === String(client_field_id)
-    )?.client_field_id;
-    // console.log('finding client Id:', tmpClientId);
+    const tmpClientId =
+      clientFields.find(
+        (client_field: ClientFieldInterface) =>
+          String(client_field.name) === String(client_field_id)
+      ) || undefined;
+
+    const checkClientId =
+      clientFields.find(
+        (client_field: ClientFieldInterface) =>
+          String(client_field.client_field_id) === String(client_field_id)
+      ) || undefined;
+
     if (tmpClientId) {
-      fetchAuthorities(tmpClientId);
-      setClientFieldId(tmpClientId);
+      fetchAuthorities(tmpClientId.client_field_id);
+      setClientFieldId(tmpClientId.client_field_id);
+      setClientFieldName(tmpClientId.name as ClientFieldName);
     } else {
-      setClientFieldId('');
-      setValue('authority', '');
-      // alert('failed get client_field_id');
+      if (checkClientId) {
+        setClientFieldName(checkClientId.name as ClientFieldName);
+        if (checkClientId.name !== 'sub') {
+          fetchAuthorities(checkClientId.client_field_id);
+          setClientFieldId(checkClientId.client_field_id);
+        } else {
+          setValue('authority', '');
+        }
+      } else {
+        setClientFieldId('');
+        setValue('authority', '');
+      }
     }
   };
 
@@ -239,7 +257,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [FEATURE_MENU_ADMIN_ADD_AUTHORITY]);
 
-  if (isFetchingClientFields || isFetchingAuthoritites) {
+  if (isFetchingClientFields) {
     return <>{translate('pages.common.loading')}</>;
   }
 
@@ -269,7 +287,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
               setValue('client_field', e.target.value);
             }}
           >
-            {/* {FEATURE_MENU_ADMIN_ADD_AUTHORITY
+            {FEATURE_MENU_ADMIN_ADD_AUTHORITY
               ? clientFields.map((option, i) => (
                   <MenuItem key={i} value={option.client_field_id}>
                     {option.name}
@@ -279,18 +297,18 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
                   <MenuItem key={i} value={option.value}>
                     {translate(`${option.label}`)}
                   </MenuItem>
-                ))} */}
-            {AuthoityArray.map((option, i) => (
+                ))}
+            {/* {AuthoityArray.map((option, i) => (
               <MenuItem key={i} value={option.value}>
                 {translate(`${option.label}`)}
               </MenuItem>
-            ))}
+            ))} */}
           </RHFSelect>
         </Grid>
-        {client_field !== '' && client_field === 'main' && clientFieldId && (
+        {client_field !== '' && clientFieldName === 'main' && clientFieldId && (
           <Grid item md={12} xs={12}>
             <RHFSelect
-              disabled={isFetchingAuthoritites}
+              disabled={isFetchingClientFields || isFetchingAuthoritites}
               name="authority"
               label={translate('register_form1.authority.label')}
               placeholder={translate('register_form1.authority.placeholder')}
@@ -305,7 +323,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             </RHFSelect>
             {authorities.length === 0 && (
               <Button
-                disabled={isFetchingAuthoritites}
+                disabled={isFetchingClientFields || isFetchingAuthoritites}
                 data-cy={`button-retry-fetching-bank`}
                 variant="outlined"
                 onClick={() => {
@@ -322,9 +340,13 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             )}
           </Grid>
         )}
-        {client_field !== '' && client_field === 'sub' && (
+        {client_field !== '' && clientFieldName === 'sub' && (
           <Grid item md={12} xs={12}>
-            <RHFTextField name="authority" label={translate('register_form1.authority.label')} />
+            <RHFTextField
+              disabled={isFetchingClientFields || isFetchingAuthoritites}
+              name="authority"
+              label={translate('register_form1.authority.label')}
+            />
           </Grid>
         )}
         {/* {!FEATURE_MENU_ADMIN_ADD_AUTHORITY && client_field !== '' && client_field === 'main' && (

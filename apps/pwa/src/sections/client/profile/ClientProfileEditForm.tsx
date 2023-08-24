@@ -500,8 +500,13 @@ function ClientProfileEditForm() {
     const updateBank = {
       ...newBankInformation,
     };
-    const payload = {
+    const tpmForm1 = {
       ...profileState.form1,
+      authority_id:
+        profileState.form1.client_field === 'main' ? profileState.form1.authority_id : undefined,
+    };
+    const payload = {
+      ...tpmForm1,
       ...profileState.form2,
       ...profileState.form3,
       ...profileState.form4,
