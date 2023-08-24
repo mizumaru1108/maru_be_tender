@@ -330,7 +330,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
             {FEATURE_MENU_ADMIN_ADD_AUTHORITY
               ? clientFields.map((option, i) => (
                   <MenuItem key={i} value={option.client_field_id}>
-                    {option.name}
+                    {translate(`pages.admin.settings.label.table.client_field.${option.name}`)}
                   </MenuItem>
                 ))
               : AuthoityArray.map((option, i) => (
