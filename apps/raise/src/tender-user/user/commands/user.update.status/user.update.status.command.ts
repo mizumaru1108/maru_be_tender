@@ -30,7 +30,9 @@ export class UserUpdateStatusCommandHandler
     private readonly userRepo: TenderUserRepository,
     private readonly statusLogRepo: TenderUserStatusLogRepository,
   ) {}
-  async execute(command: UserUpdateStatusCommand): Promise<any> {
+  async execute(
+    command: UserUpdateStatusCommand,
+  ): Promise<UserUpdateStatusCommandResult> {
     const { request, acc_manager_id } = command;
     try {
       if (request.status === UserStatusEnum.SUSPENDED_ACCOUNT) {
@@ -184,7 +186,10 @@ export class UserUpdateStatusCommandHandler
       //     }
       //   }
       // }
-      return {};
+      return {
+        updated_user: dbRes.updated_user,
+        created_status_log: dbRes.created_status_log,
+      };
     } catch (error) {
       throw error;
     }
