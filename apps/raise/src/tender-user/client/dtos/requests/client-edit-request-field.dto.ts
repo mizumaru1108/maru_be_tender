@@ -169,6 +169,12 @@ export class ClientEditRequestFieldDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
+  client_field?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
   client_field_id?: string;
 
   @ApiPropertyOptional()
