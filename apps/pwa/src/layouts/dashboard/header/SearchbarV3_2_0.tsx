@@ -471,12 +471,12 @@ export default function Searchbar() {
                         }
                         label={translate('search_component.by_client_name')}
                       />
-                      <FormControlLabel
+                      {/* <FormControlLabel
                         control={
                           <Checkbox checked={number} onChange={handleChange} name="number" />
                         }
                         label={translate('search_component.by_project_number')}
-                      />
+                      /> */}
                       {advancedOptions && (
                         <Box>
                           <Stack direction="row" alignItems="center">
