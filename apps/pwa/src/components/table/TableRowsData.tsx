@@ -265,6 +265,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
     user,
     email,
   } = row;
+  // console.log({ id });
   return (
     <React.Fragment>
       <TableRow hover selected={selected}>

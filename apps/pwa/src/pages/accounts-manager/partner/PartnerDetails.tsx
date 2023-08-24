@@ -76,6 +76,7 @@ function AccountPartnerDetails() {
 
   // Routes
   const params = useParams();
+  const partnerId = params.partnerId as string;
   const navigate = useNavigate();
 
   // Language
@@ -84,7 +85,7 @@ function AccountPartnerDetails() {
   const [resultDetailsClient, reexecuteDetailsClient] = useQuery({
     query: detailsClientData,
     variables: {
-      id: params.partnerId as string,
+      id: partnerId as string,
     },
   });
 
@@ -907,7 +908,7 @@ function AccountPartnerDetails() {
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={() => handleChangeStatus(user?.id!, 'CANCELED_ACCOUNT')}
+                      onClick={() => handleChangeStatus(partnerId || '', 'CANCELED_ACCOUNT')}
                       disabled={dynamicState === 'CANCELED_ACCOUNT' ? true : false}
                     >
                       {translate('account_manager.partner_details.btn_deleted_account')}
