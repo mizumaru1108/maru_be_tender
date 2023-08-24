@@ -35,7 +35,16 @@ export class UserUpdateStatusCommandHandler
   ): Promise<UserUpdateStatusCommandResult> {
     const { request, acc_manager_id } = command;
     try {
-      if (request.status === UserStatusEnum.SUSPENDED_ACCOUNT) {
+      if (
+        request.status === UserStatusEnum.SUSPENDED_ACCOUNT ||
+        request.status === UserStatusEnum.CANCELED_ACCOUNT
+      ) {
+        if (request.user_id === acc_manager_id) {
+          throw new RequestErrorException(
+            'You cant suspend / cancel your own account!',
+          );
+        }
+
         const haveProposal = await this.userRepo.isUserHasProposal(
           request.user_id,
         );
