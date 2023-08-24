@@ -250,17 +250,20 @@ export default function BaseContactSupportTable() {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         <Typography noWrap={false} data-cy={`visit_reason-${index}`}>
-                          {row?.visit_reason ? formatCapitalizeText(row?.visit_reason) : '-'}
+                          {/* {row?.visit_reason ? formatCapitalizeText(row?.visit_reason) : '-'} */}
+                          {row?.visit_reason ? row?.visit_reason : '-'}
                         </Typography>
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         <Typography noWrap={false} data-cy={`title-message-${index}`}>
-                          {row?.title ? formatCapitalizeText(row?.title) : '-'}
+                          {/* {row?.title ? formatCapitalizeText(row?.title) : '-'} */}
+                          {row?.title ? row?.title : '-'}
                         </Typography>
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         <Typography noWrap={false} data-cy={`title-message-${index}`}>
-                          {row?.message ? formatCapitalizeText(row?.message) : '-'}
+                          {/* {row?.message ? formatCapitalizeText(row?.message) : '-'} */}
+                          {row?.message ? row?.message : '-'}
                         </Typography>
                       </StyledTableCell>
                     </StyledTableRow>

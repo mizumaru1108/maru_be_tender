@@ -26,7 +26,7 @@ interface Props {
 }
 
 const ProjectIncuiryForm = ({ onSubmitForm, defaultValuesForm, children, loading }: Props) => {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const { user, activeRole } = useAuth();
   const tmpUser: any = { ...user };
   const { enqueueSnackbar } = useSnackbar();
@@ -156,8 +156,15 @@ const ProjectIncuiryForm = ({ onSubmitForm, defaultValuesForm, children, loading
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container rowSpacing={4} columnSpacing={7}>
-          <Grid item md={6} xs={12}>
-            {/* <RHFSelect
+          <Grid item md={12} xs={12}>
+            <Grid
+              container
+              rowSpacing={4}
+              columnSpacing={7}
+              direction={currentLang.value === 'ar' ? 'row-reverse' : 'row'}
+            >
+              <Grid item md={6} xs={12}>
+                {/* <RHFSelect
               name="proposal_id"
               label={translate('contact_support_form.project_name.label')}
             >
@@ -165,48 +172,50 @@ const ProjectIncuiryForm = ({ onSubmitForm, defaultValuesForm, children, loading
                 {translate('contact_support_form.project_name.placeholder')}
               </option>
             </RHFSelect> */}
-            <RHFSelect
-              // disabled={loading || isLoading}
-              name="proposal_id"
-              label={translate('contact_support_form.proposal.label')}
-              data-cy="contact_support_form.proposal"
-              placeholder={translate('contact_support_form.proposal.placeholder')}
-              sx={{ overflow: 'auto' }}
-              onChange={(e) => {
-                setValue('proposal_id', e.target.value);
-              }}
-              SelectProps={{
-                MenuProps: {
-                  PaperProps: { style: { maxHeight: 500 }, onScroll: handleScrollPagination },
-                },
-              }}
-            >
-              {!loading && !isLoading && proposalOption.length > 0
-                ? proposalOption.map((option, i) => (
-                    <MenuItem key={i} value={option.proposal_id}>
-                      {option.project_name}
+                <RHFSelect
+                  // disabled={loading || isLoading}
+                  name="proposal_id"
+                  label={translate('contact_support_form.proposal.label')}
+                  data-cy="contact_support_form.proposal"
+                  placeholder={translate('contact_support_form.proposal.placeholder')}
+                  sx={{ overflow: 'auto' }}
+                  onChange={(e) => {
+                    setValue('proposal_id', e.target.value);
+                  }}
+                  SelectProps={{
+                    MenuProps: {
+                      PaperProps: { style: { maxHeight: 500 }, onScroll: handleScrollPagination },
+                    },
+                  }}
+                >
+                  {!loading && !isLoading && proposalOption.length > 0
+                    ? proposalOption.map((option, i) => (
+                        <MenuItem key={i} value={option.proposal_id}>
+                          {option.project_name}
+                        </MenuItem>
+                      ))
+                    : null}
+                  {(loading || isLoading) && (
+                    <MenuItem value="" disabled>
+                      <CircularProgress size={20} sx={{ color: 'white' }} thickness={4} />
+                      {translate('pages.common.loading')}
                     </MenuItem>
-                  ))
-                : null}
-              {(loading || isLoading) && (
-                <MenuItem value="" disabled>
-                  <CircularProgress size={20} sx={{ color: 'white' }} thickness={4} />
-                  {translate('pages.common.loading')}
-                </MenuItem>
-              )}
-              {/* <Box sx={{ maxHeight: 300, overflow: 'auto' }}>
+                  )}
+                  {/* <Box sx={{ maxHeight: 300, overflow: 'auto' }}>
               </Box> */}
-            </RHFSelect>
-          </Grid>
-          <Grid item md={6} xs={12}>
-            <BaseField
-              type="textField"
-              name="title"
-              label={translate('contact_support_form.message_title.label')}
-              data-cy="contact_support_form.message_title"
-              placeholder={translate('contact_support_form.message_title.placeholder')}
-              disabled={loading || isLoading}
-            />
+                </RHFSelect>
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <BaseField
+                  type="textField"
+                  name="title"
+                  label={translate('contact_support_form.message_title.label')}
+                  data-cy="contact_support_form.message_title"
+                  placeholder={translate('contact_support_form.message_title.placeholder')}
+                  disabled={loading || isLoading}
+                />
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item md={12} xs={12}>
             <BaseField

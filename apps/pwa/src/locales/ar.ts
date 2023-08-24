@@ -1453,19 +1453,19 @@ const ar = {
       visit_inquiry: 'معلومات تفصيلية عن الزيارة',
     },
     proposal: {
-      label: 'المقترح',
+      label: 'المقترح*',
       placeholder: 'الرجاء كتابة المقترح',
     },
     message_title: {
-      label: 'عنوان الرسالة',
+      label: 'عنوان الرسالة*',
       placeholder: 'الرجاء كتابة عنوان الرسالة',
     },
     date_of_visit: {
-      label: 'تاريخ الزيارة',
+      label: 'تاريخ الزيارة*',
       placeholder: 'الرجاء اختيار تاريخ الزيارة',
     },
     visit_reason: {
-      label: 'سبب الزيارة',
+      label: 'سبب الزيارة*',
       placeholder: 'الرجاء كتابة سبب الزيارة',
     },
     inquiry_type: {

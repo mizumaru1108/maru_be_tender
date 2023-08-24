@@ -1449,19 +1449,19 @@ const en = {
       visit_inquiry: 'Visit Inquiry',
     },
     proposal: {
-      label: 'Proposal',
+      label: 'Proposal*',
       placeholder: 'Proposal',
     },
     message_title: {
-      label: 'Message Title',
+      label: 'Message Title*',
       placeholder: 'Message Title',
     },
     date_of_visit: {
-      label: 'Date of Visit',
+      label: 'Date of Visit*',
       placeholder: 'Date of Visit',
     },
     visit_reason: {
-      label: 'Visit Reason',
+      label: 'Visit Reason*',
       placeholder: 'Visit Reason',
     },
     inquiry_type: {
@@ -1474,7 +1474,7 @@ const en = {
       // },
     },
     message: {
-      label: 'Message',
+      label: 'Message*',
       placeholder: 'Message',
     },
     message_type: {
