@@ -31,6 +31,12 @@ export class ClientEditRequestFieldDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
+  authority?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
   authority_id?: string;
 
   @ApiPropertyOptional()
