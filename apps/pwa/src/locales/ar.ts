@@ -2144,6 +2144,7 @@ const ar = {
     project_location: 'موقع المشروع',
     project_strengths: 'الطاقات المميزة',
     project_implement_date: 'تاريخ التنفيذ',
+    amount_required_fsupport: 'المبلغ المطلوب',
     item_budgets: 'ميزانيات بند المشروع',
     project_timeline: 'الخطة الزمنية',
     letter_ofsupport_req: 'خطاب طلب الدعم',

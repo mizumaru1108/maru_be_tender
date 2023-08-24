@@ -191,7 +191,8 @@ function RevisionLog({ stepGeneralLog }: Props) {
                     <Grid key={key} item md={6} xs={12}>
                       <Typography variant="h6">{translate(`review.${key}`)}</Typography>
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>{formatCapitalizeText(String(tmpValue))}</Typography>
+                        {/* <Typography>{formatCapitalizeText(String(tmpValue))}</Typography> */}
+                        <Typography>{tmpValue}</Typography>
                       </Stack>
                     </Grid>
                   );
