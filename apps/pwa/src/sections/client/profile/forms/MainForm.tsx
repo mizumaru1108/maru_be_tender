@@ -37,6 +37,7 @@ type FormProps = {
 type ClientFieldName = 'main' | 'sub';
 
 const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEdit }) => {
+  // console.log({ defaultValues });
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
   const [authorities, setAuthorities] = React.useState<AuthorityInterface[] | []>([]);
@@ -244,8 +245,20 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
   React.useEffect(() => {
     window.scrollTo(0, 0);
     reset(defaultValues);
-    if (defaultValues.client_field === 'main' && clientFields.length > 0) {
-      if (defaultValues.authority_id) {
+    if (defaultValues && clientFields.length > 0) {
+      if (defaultValues.client_field) {
+        setClientFieldName(defaultValues.client_field as ClientFieldName);
+      }
+      if (defaultValues.client_field !== 'sub' && defaultValues.client_field_id) {
+        setValue('client_field', defaultValues.client_field_id);
+      } else {
+        if (defaultValues.client_field === 'sub' && defaultValues.client_field_id) {
+          setValue('client_field', defaultValues.client_field_id);
+        } else {
+          setValue('client_field', defaultValues.client_field);
+        }
+      }
+      if (defaultValues.client_field === 'main' && defaultValues.authority_id) {
         setValue('authority', defaultValues.authority_id);
       } else {
         setValue('authority', defaultValues.authority);
@@ -255,9 +268,11 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
           String(client_field.name) === String(defaultValues.client_field)
       )?.client_field_id;
       if (tmpClientId) {
-        fetchAuthorities(tmpClientId);
+        if (defaultValues.client_field !== 'sub') {
+          fetchAuthorities(tmpClientId);
+        }
         setClientFieldId(tmpClientId);
-        setValue('client_field', tmpClientId);
+        // setValue('client_field', tmpClientId);
       } else {
         alert('tmpClientId not found');
       }
@@ -270,7 +285,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
       fetchClientFields();
     }
   }, [fetchClientFields]);
-  // console.log({ defaultValues, clientFields, authorities });
+  // console.log({ clientFieldName });
   const client_field = watch('client_field');
   if (isFetchingClientFields) {
     return <>{translate('pages.common.loading')}</>;

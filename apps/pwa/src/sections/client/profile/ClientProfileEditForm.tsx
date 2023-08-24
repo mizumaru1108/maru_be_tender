@@ -167,6 +167,7 @@ function ClientProfileEditForm() {
       }
       const {
         client_field,
+        client_field_id,
         entity,
         authority,
         authority_id,
@@ -197,6 +198,9 @@ function ClientProfileEditForm() {
         data_entry_mail,
         chairman_name,
         chairman_mobile,
+        //
+        authority_detail,
+        client_field_details,
       } = client;
       setStartedValue({ bank_informations, ...client });
       let newval: any = [];
@@ -210,13 +214,14 @@ function ClientProfileEditForm() {
         form1: {
           ...prevState.form1,
           client_field,
+          client_field_id,
           entity,
-          authority,
+          authority: authority,
           date_of_esthablistmen,
           headquarters,
           num_of_beneficiaries,
           num_of_employed_facility,
-          authority_id,
+          authority_id: authority_id,
         },
         form2: {
           ...prevState.form2,
