@@ -146,7 +146,78 @@ function ClientProfileEditForm() {
     window.scrollTo(0, 0);
   };
   const handleTapChange = (event: React.SyntheticEvent, newValue: number) => {
+    // set active tab
     setStep(newValue);
+
+    // set state to origin data every change tab
+    let defaultBoardofDec: FileProp[] = [];
+    defaultBoardofDec.push(
+      ...(startedValue && startedValue.board_ofdec_file && startedValue.board_ofdec_file)
+    );
+    let defaultBank: BankingValuesProps[] = [];
+    defaultBank.push(
+      ...(startedValue && startedValue.bank_informations && startedValue.bank_informations)
+    );
+    setProfileState((prevProfileState: any) => ({
+      ...prevProfileState,
+      form1: {
+        ...prevProfileState.form1,
+        entity: startedValue && startedValue.entity && startedValue.entity,
+        client_field: startedValue && startedValue.client_field && startedValue.client_field,
+        authority: startedValue && startedValue.authority && startedValue.authority,
+        authority_id: startedValue && startedValue.authority_id && startedValue.authority_id,
+        date_of_esthablistmen:
+          startedValue && startedValue.date_of_esthablistmen && startedValue.date_of_esthablistmen,
+        headquarters: startedValue && startedValue.headquarters && startedValue.headquarters,
+        num_of_beneficiaries:
+          startedValue && startedValue.num_of_beneficiaries && startedValue.num_of_beneficiaries,
+        num_of_employed_facility:
+          startedValue &&
+          startedValue.num_of_employed_facility &&
+          startedValue.num_of_employed_facility,
+      },
+      form2: {
+        ...prevProfileState.form2,
+        region: startedValue && startedValue.region && startedValue.region,
+        governorate: startedValue && startedValue.governorate && startedValue.governorate,
+        center_administration:
+          startedValue && startedValue.center_administration && startedValue.center_administration,
+        entity_mobile: startedValue && startedValue.entity_mobile && startedValue.entity_mobile,
+        phone: startedValue && startedValue.phone && startedValue.phone,
+        twitter_acount: startedValue && startedValue.twitter_acount && startedValue.twitter_acount,
+        website: startedValue && startedValue.website && startedValue.website,
+        email: startedValue && startedValue.email && startedValue.email,
+        // password: startedValue && startedValue.password && startedValue.password,
+      },
+      form3: {
+        ...prevProfileState.form3,
+        license_number: startedValue && startedValue.license_number && startedValue.license_number,
+        license_issue_date:
+          startedValue && startedValue.license_issue_date && startedValue.license_issue_date,
+        license_expired:
+          startedValue && startedValue.license_expired && startedValue.license_expired,
+        license_file: {
+          ...(startedValue && startedValue.license_file && { ...startedValue.license_file }),
+        },
+        board_ofdec_file: defaultBoardofDec,
+      },
+      form4: {
+        ...prevProfileState.form4,
+        region: startedValue && startedValue.region && startedValue.region,
+        ceo_name: startedValue && startedValue.ceo_name && startedValue.ceo_name,
+        ceo_mobile: startedValue && startedValue.ceo_mobile && startedValue.ceo_mobile,
+        data_entry_name:
+          startedValue && startedValue.data_entry_name && startedValue.data_entry_name,
+        data_entry_mobile:
+          startedValue && startedValue.data_entry_mobile && startedValue.data_entry_mobile,
+        data_entry_mail:
+          startedValue && startedValue.data_entry_mail && startedValue.data_entry_mail,
+        chairman_name: startedValue && startedValue.chairman_name && startedValue.chairman_name,
+        chairman_mobile:
+          startedValue && startedValue.chairman_mobile && startedValue.chairman_mobile,
+      },
+      form5: [...defaultBank],
+    }));
   };
   useEffect(() => {
     if (data?.user_by_pk?.client_data && data?.user_by_pk?.email) {
@@ -268,27 +339,28 @@ function ClientProfileEditForm() {
         ...prevIsEdit,
         form1: false,
       }));
-      setProfileState((prevProfileState: any) => ({
-        ...prevProfileState,
-        form1: {
-          ...prevProfileState.form1,
-          entity: startedValue && startedValue.entity && startedValue.entity,
-          client_field: startedValue && startedValue.client_field && startedValue.client_field,
-          authority: startedValue && startedValue.authority && startedValue.authority,
-          authority_id: startedValue && startedValue.authority_id && startedValue.authority_id,
-          date_of_esthablistmen:
-            startedValue &&
-            startedValue.date_of_esthablistmen &&
-            startedValue.date_of_esthablistmen,
-          headquarters: startedValue && startedValue.headquarters && startedValue.headquarters,
-          num_of_beneficiaries:
-            startedValue && startedValue.num_of_beneficiaries && startedValue.num_of_beneficiaries,
-          num_of_employed_facility:
-            startedValue &&
-            startedValue.num_of_employed_facility &&
-            startedValue.num_of_employed_facility,
-        },
-      }));
+      // revert state to origin data of active tab, before user can edit the data
+      // setProfileState((prevProfileState: any) => ({
+      //   ...prevProfileState,
+      //   form1: {
+      //     ...prevProfileState.form1,
+      //     entity: startedValue && startedValue.entity && startedValue.entity,
+      //     client_field: startedValue && startedValue.client_field && startedValue.client_field,
+      //     authority: startedValue && startedValue.authority && startedValue.authority,
+      //     authority_id: startedValue && startedValue.authority_id && startedValue.authority_id,
+      //     date_of_esthablistmen:
+      //       startedValue &&
+      //       startedValue.date_of_esthablistmen &&
+      //       startedValue.date_of_esthablistmen,
+      //     headquarters: startedValue && startedValue.headquarters && startedValue.headquarters,
+      //     num_of_beneficiaries:
+      //       startedValue && startedValue.num_of_beneficiaries && startedValue.num_of_beneficiaries,
+      //     num_of_employed_facility:
+      //       startedValue &&
+      //       startedValue.num_of_employed_facility &&
+      //       startedValue.num_of_employed_facility,
+      //   },
+      // }));
     }
     if (isEdit && !isEdit.form1) {
       setOpen(true);
@@ -313,25 +385,26 @@ function ClientProfileEditForm() {
         ...prevIsEdit,
         form2: false,
       }));
-      setProfileState((prevProfileState: any) => ({
-        ...prevProfileState,
-        form2: {
-          ...prevProfileState.form2,
-          region: startedValue && startedValue.region && startedValue.region,
-          governorate: startedValue && startedValue.governorate && startedValue.governorate,
-          center_administration:
-            startedValue &&
-            startedValue.center_administration &&
-            startedValue.center_administration,
-          entity_mobile: startedValue && startedValue.entity_mobile && startedValue.entity_mobile,
-          phone: startedValue && startedValue.phone && startedValue.phone,
-          twitter_acount:
-            startedValue && startedValue.twitter_acount && startedValue.twitter_acount,
-          website: startedValue && startedValue.website && startedValue.website,
-          email: startedValue && startedValue.email && startedValue.email,
-          // password: startedValue && startedValue.password && startedValue.password,
-        },
-      }));
+      // revert state to origin data of active tab, before user can edit the data
+      // setProfileState((prevProfileState: any) => ({
+      //   ...prevProfileState,
+      // form2: {
+      //   ...prevProfileState.form2,
+      //   region: startedValue && startedValue.region && startedValue.region,
+      //   governorate: startedValue && startedValue.governorate && startedValue.governorate,
+      //   center_administration:
+      //     startedValue &&
+      //     startedValue.center_administration &&
+      //     startedValue.center_administration,
+      //   entity_mobile: startedValue && startedValue.entity_mobile && startedValue.entity_mobile,
+      //   phone: startedValue && startedValue.phone && startedValue.phone,
+      //   twitter_acount:
+      //     startedValue && startedValue.twitter_acount && startedValue.twitter_acount,
+      //   website: startedValue && startedValue.website && startedValue.website,
+      //   email: startedValue && startedValue.email && startedValue.email,
+      //   // password: startedValue && startedValue.password && startedValue.password,
+      // },
+      // }));
     }
     if (isEdit && !isEdit.form2) {
       setOpen(true);
@@ -361,22 +434,23 @@ function ClientProfileEditForm() {
         ...prevIsEdit,
         form3: false,
       }));
-      setProfileState((prevProfileState: any) => ({
-        ...prevProfileState,
-        form3: {
-          ...prevProfileState.form3,
-          license_number:
-            startedValue && startedValue.license_number && startedValue.license_number,
-          license_issue_date:
-            startedValue && startedValue.license_issue_date && startedValue.license_issue_date,
-          license_expired:
-            startedValue && startedValue.license_expired && startedValue.license_expired,
-          license_file: {
-            ...(startedValue && startedValue.license_file && { ...startedValue.license_file }),
-          },
-          board_ofdec_file: defaultBoardofDec,
-        },
-      }));
+      // revert state to origin data of active tab, before user can edit the data
+      // setProfileState((prevProfileState: any) => ({
+      //   ...prevProfileState,
+      // form3: {
+      //   ...prevProfileState.form3,
+      //   license_number:
+      //     startedValue && startedValue.license_number && startedValue.license_number,
+      //   license_issue_date:
+      //     startedValue && startedValue.license_issue_date && startedValue.license_issue_date,
+      //   license_expired:
+      //     startedValue && startedValue.license_expired && startedValue.license_expired,
+      //   license_file: {
+      //     ...(startedValue && startedValue.license_file && { ...startedValue.license_file }),
+      //   },
+      //   board_ofdec_file: defaultBoardofDec,
+      // },
+      // }));
     }
     if (isEdit && !isEdit.form3) {
       setOpen(true);
@@ -401,24 +475,25 @@ function ClientProfileEditForm() {
         ...prevIsEdit,
         form4: false,
       }));
-      setProfileState((prevProfileState: any) => ({
-        ...prevProfileState,
-        form4: {
-          ...prevProfileState.form4,
-          region: startedValue && startedValue.region && startedValue.region,
-          ceo_name: startedValue && startedValue.ceo_name && startedValue.ceo_name,
-          ceo_mobile: startedValue && startedValue.ceo_mobile && startedValue.ceo_mobile,
-          data_entry_name:
-            startedValue && startedValue.data_entry_name && startedValue.data_entry_name,
-          data_entry_mobile:
-            startedValue && startedValue.data_entry_mobile && startedValue.data_entry_mobile,
-          data_entry_mail:
-            startedValue && startedValue.data_entry_mail && startedValue.data_entry_mail,
-          chairman_name: startedValue && startedValue.chairman_name && startedValue.chairman_name,
-          chairman_mobile:
-            startedValue && startedValue.chairman_mobile && startedValue.chairman_mobile,
-        },
-      }));
+      // revert state to origin data of active tab, before user can edit the data
+      // setProfileState((prevProfileState: any) => ({
+      //   ...prevProfileState,
+      // form4: {
+      //   ...prevProfileState.form4,
+      //   region: startedValue && startedValue.region && startedValue.region,
+      //   ceo_name: startedValue && startedValue.ceo_name && startedValue.ceo_name,
+      //   ceo_mobile: startedValue && startedValue.ceo_mobile && startedValue.ceo_mobile,
+      //   data_entry_name:
+      //     startedValue && startedValue.data_entry_name && startedValue.data_entry_name,
+      //   data_entry_mobile:
+      //     startedValue && startedValue.data_entry_mobile && startedValue.data_entry_mobile,
+      //   data_entry_mail:
+      //     startedValue && startedValue.data_entry_mail && startedValue.data_entry_mail,
+      //   chairman_name: startedValue && startedValue.chairman_name && startedValue.chairman_name,
+      //   chairman_mobile:
+      //     startedValue && startedValue.chairman_mobile && startedValue.chairman_mobile,
+      // },
+      // }));
     }
     if (isEdit && !isEdit.form4) {
       setOpen(true);
@@ -444,16 +519,15 @@ function ClientProfileEditForm() {
       defaultBank.push(
         ...(startedValue && startedValue.bank_informations && startedValue.bank_informations)
       );
-      // console.log({ defaultBank });
-      // console.log('startedValue.bank_information', startedValue);
       setIsEdit((prevIsEdit: any) => ({
         ...prevIsEdit,
         form5: false,
       }));
-      setProfileState((prevProfileState: any) => ({
-        ...prevProfileState,
-        form5: [...defaultBank],
-      }));
+      // revert state to origin data of active tab, before user can edit the data
+      // setProfileState((prevProfileState: any) => ({
+      //   ...prevProfileState,
+      //   form5: [...defaultBank],
+      // }));
     }
     if (isEdit && !isEdit.form5) {
       setOpen(true);

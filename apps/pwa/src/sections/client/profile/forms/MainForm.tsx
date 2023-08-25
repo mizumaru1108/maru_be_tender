@@ -37,7 +37,7 @@ type FormProps = {
 type ClientFieldName = 'main' | 'sub';
 
 const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEdit }) => {
-  // console.log({ defaultValues });
+  console.log({ defaultValues });
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
   const [authorities, setAuthorities] = React.useState<AuthorityInterface[] | []>([]);
