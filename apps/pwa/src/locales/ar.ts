@@ -2744,6 +2744,12 @@ const ar = {
     },
     current_slides: 'الصفحات الحالية',
   },
+  select_loginId: {
+    email: 'بالبريد الالكتروني',
+    phone: 'عن طريق رقم الهاتف',
+    label: 'حدد معرف تسجيل الدخول',
+    placeholder: 'حدد معرف تسجيل الدخول',
+  },
 };
 
 export default ar;

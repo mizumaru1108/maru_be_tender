@@ -310,3 +310,9 @@ export const FEATURE_AMANDEMENT_FROM_FINANCE: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_AMANDEMENT_FROM_FINANCE === 'true'
     ? true
     : false;
+
+export const FEATURE_LOGIN_BY_PHONE: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_LOGIN_BY_PHONE &&
+  process.env.REACT_APP_CONFIG_FEATURE_LOGIN_BY_PHONE === 'true'
+    ? true
+    : false;
