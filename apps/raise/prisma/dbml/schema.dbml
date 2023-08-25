@@ -304,11 +304,6 @@ Table proposal_state {
   id String [pk]
 }
 
-Table region {
-  id String [pk]
-  region String [not null]
-}
-
 Table user {
   id String [pk]
   employee_name String
@@ -1532,6 +1527,21 @@ Table backup_client_data_latest {
   qid Int
 }
 
+Table regions {
+  region_id String [pk]
+  name String [not null]
+  is_deleted Boolean [not null, default: false]
+  governorate governorates [not null]
+}
+
+Table governorates {
+  governorate_id String [pk]
+  name String [not null]
+  region_id String [not null]
+  region_detail regions [not null]
+  is_deleted Boolean [not null, default: false]
+}
+
 Ref: authorities.client_field_id > client_fields.client_field_id
 
 Ref: banners.track_id > track.id
@@ -1695,3 +1705,5 @@ Ref: closing_report_beneficiaries.closing_report_id > proposal_closing_report.id
 Ref: closing_report_execution_places.closing_report_id > proposal_closing_report.id
 
 Ref: closing_report_genders.closing_report_id > proposal_closing_report.id
+
+Ref: governorates.region_id > regions.region_id

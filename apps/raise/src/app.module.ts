@@ -38,6 +38,7 @@ import { TenderFileManagerModule } from './tender-file-manager/tender-file-manag
 import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
 import { TenderStatisticsModule } from './tender-statistics/tender-statistics.module';
 import { UserManagementModule } from './tender-user/user.management.module';
+import { RegionManagementModule } from './region-management/region.management.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -167,6 +168,7 @@ const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
     ContactUsModule,
     SmsConfigModule,
     UserManagementModule,
+    RegionManagementModule,
   ],
   controllers: [],
 })
