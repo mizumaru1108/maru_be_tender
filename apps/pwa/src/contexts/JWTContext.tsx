@@ -2,10 +2,11 @@ import { createContext, ReactNode, useEffect, useReducer } from 'react';
 import { isValidToken, setSession } from '../utils/jwt';
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
-import { FUSIONAUTH_API } from 'config';
+import { FEATURE_LOGIN_BY_PHONE, FUSIONAUTH_API, TMRA_RAISE_URL } from 'config';
 import { fusionAuthClient } from 'utils/fusionAuth';
 import { FusionAuthRoles } from '../@types/commons';
 import { datadogRum } from '@datadog/browser-rum';
+import axios from 'axios';
 
 enum Types {
   Initial = 'INITIALIZE',
@@ -235,23 +236,40 @@ function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await fusionAuthClient.login({
-      loginId: email,
-      password: password,
-      applicationId: FUSIONAUTH_API.appId,
-    });
+    // let response: any = undefined;
+    const url = `${TMRA_RAISE_URL}/tender-auth/login`;
+    const response: any = {
+      ...(FEATURE_LOGIN_BY_PHONE
+        ? await axios.post(url, {
+            loginId: email,
+            password: password,
+          })
+        : await fusionAuthClient.login({
+            loginId: email,
+            password: password,
+            applicationId: FUSIONAUTH_API.appId,
+          })),
+    };
+
     // console.log('cek response:', response);
-    const { token: accessToken, user, refreshToken } = response.response;
+    // console.log('cek response:', response.data.data.fusionAuthResponse.response);
+
+    // const { token: accessToken, user, refreshToken } = response.response;
+    const {
+      token: accessToken,
+      user,
+      refreshToken,
+    } = FEATURE_LOGIN_BY_PHONE ? response.data.data.fusionAuthResponse.response : response.response;
     const activeRoleIndex = 0;
     localStorage.setItem('activeRoleIndex', activeRoleIndex.toString());
-    // console.log('cek response:', response?.response);
+    // console.log('cek response:', accessToken, user, refreshToken);
     if (!user) {
       throw new Error(`Error getting currently active user`);
     }
     if (!user.registrations) {
       throw new Error(`User ${user?.id} does not have registrations`);
     }
-    if (response?.response?.user?.verified === false) {
+    if (user?.verified === false) {
       // throw new Error(`User ${email} does not have verified`);
       throw new Error(`حساب الشريك ${email} لم يتم تفعيله بعد`);
     }
@@ -261,6 +279,9 @@ function AuthProvider({ children }: AuthProviderProps) {
       throw new Error(`User ${user?.id} must have valid activeRole`);
     }
 
+    // if (response) {
+    //   throw new Error(`Debuggin`);
+    // }
     setSession(accessToken!, refreshToken!);
 
     // Datadog RUM

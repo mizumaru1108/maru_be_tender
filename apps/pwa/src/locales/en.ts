@@ -2732,6 +2732,12 @@ const en = {
     },
     current_slides: 'Current slides',
   },
+  select_loginId: {
+    email: 'By Email',
+    phone: 'By Phone Number',
+    label: 'Select Login Id',
+    placeholder: 'Select Login Id',
+  },
 };
 
 export default en;
