@@ -14,7 +14,7 @@ import { Proposal } from '../../../@types/proposal';
 import { useSelector } from 'redux/store';
 import { getOneNameCashier } from 'queries/Cashier/getOneNameCashier';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
-import { getFinanceName } from 'queries/commons/getOneProposal';
+import { getFinanceName, getGeneratePaymentData } from 'queries/commons/getOneProposal';
 
 // -------------------------------------------------------------------------------------------------
 
@@ -33,12 +33,60 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
   const params = useParams();
   const theme = useTheme();
 
+  // const [{ data, fetching, error }] = useQuery({
+  //   query: getFinanceName,
+  //   variables: {
+  //     id: proposalData?.finance_id,
+  //   },
+  // });
+
   const [{ data, fetching, error }] = useQuery({
-    query: getFinanceName,
+    query: getGeneratePaymentData,
     variables: {
-      id: proposalData?.finance_id,
+      proposal_id: params?.id,
+      submitter_user_id: proposalData?.submitter_user_id,
+      supervisor_id: proposalData?.supervisor_id,
+      project_manager_id: proposalData?.project_manager_id,
+      finance_id: proposalData?.finance_id,
+      payment_id: params?.paymentId,
     },
   });
+
+  const Employee = React.useMemo(() => {
+    let tmpEmployee = {
+      ceo: 'no data',
+      spv: 'no data',
+      pm: 'no data',
+      cashier: 'no data',
+      finance: 'no data',
+    };
+    if (data) {
+      if (data?.cashier_name?.employee_name) {
+        tmpEmployee.cashier = data?.cashier_name?.employee_name;
+      }
+      if (data?.finance_name?.employee_name) {
+        tmpEmployee.finance = data?.finance_name?.employee_name;
+      }
+      if (data?.project_manager_name?.employee_name) {
+        tmpEmployee.pm = data?.project_manager_name?.employee_name;
+      }
+      if (data?.supervisor_name?.employee_name) {
+        tmpEmployee.spv = data?.supervisor_name?.employee_name;
+      }
+      if (data?.finance_name?.employee_name) {
+        tmpEmployee.ceo = data?.finance_name?.employee_name;
+      }
+      if (
+        data?.ceo_name &&
+        data?.ceo_name.length > 0 &&
+        data?.ceo_name[0]?.reviewer &&
+        data?.ceo_name[0]?.reviewer?.employee_name
+      ) {
+        tmpEmployee.ceo = data?.ceo_name[0]?.reviewer?.employee_name;
+      }
+    }
+    return tmpEmployee;
+  }, [data]);
 
   // const [{ data, fetching, error }] = useQuery({
   //   query: getOneNameCashier,
@@ -54,9 +102,9 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
   // console.log('cashierName', data.user_by_pk.employee_name);
   // console.log('role', activeRole);
 
-  const financeName = data?.user_by_pk?.employee_name ?? 'test';
+  // const financeName = data?.user_by_pk?.employee_name ?? 'test';
 
-  // console.log({ financeName });
+  // console.log({ Employee });
 
   if (fetching) return <>Loading...</>;
   if (error) return <>Oops Something went wrong!</>;
@@ -202,9 +250,37 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
               <Grid container justifyContent={'center'} sx={{ textAlign: 'center', mt: 10 }}>
                 <Grid item xs={12} md={4}>
                   <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                    {/* {data.cashier_name.employee_name} */}
-                    {/* Nama Finance Here */}
-                    {financeName}
+                    {`${Employee.finance} (${translate('project_card.finance')})`}
+                  </Typography>
+                  <Divider color="#000" variant="fullWidth" sx={{ margin: '8px 0 8px 0' }} />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={6}>
+              <Grid container justifyContent={'center'} sx={{ textAlign: 'center', mt: 10 }}>
+                <Grid item xs={12} md={8}>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    {`${Employee.spv} (${translate('project_card.project_supervisor')})`}
+                  </Typography>
+                  <Divider color="#000" variant="fullWidth" sx={{ margin: '8px 0 8px 0' }} />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={6}>
+              <Grid container justifyContent={'center'} sx={{ textAlign: 'center', mt: 10 }}>
+                <Grid item xs={12} md={8}>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    {`${Employee.pm} (${translate('project_card.project_manager')})`}
+                  </Typography>
+                  <Divider color="#000" variant="fullWidth" sx={{ margin: '8px 0 8px 0' }} />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid container justifyContent={'center'} sx={{ textAlign: 'center', mt: 10 }}>
+                <Grid item xs={12} md={4}>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    {`${Employee.ceo} (${translate('project_card.ceo')})`}
                   </Typography>
                   <Divider color="#000" variant="fullWidth" sx={{ margin: '8px 0 8px 0' }} />
                 </Grid>

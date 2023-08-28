@@ -46,6 +46,43 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
   const paymentNumber =
     proposalData?.payments.find((payment) => payment.id === params.paymentId)?.order ?? 'test';
 
+  const Employee = React.useMemo(() => {
+    let tmpEmployee = {
+      ceo: 'no data',
+      spv: 'no data',
+      pm: 'no data',
+      cashier: 'no data',
+      finance: 'no data',
+    };
+    if (data) {
+      if (data?.cashier_name?.employee_name) {
+        tmpEmployee.cashier = data?.cashier_name?.employee_name;
+      }
+      if (data?.finance_name?.employee_name) {
+        tmpEmployee.finance = data?.finance_name?.employee_name;
+      }
+      if (data?.project_manager_name?.employee_name) {
+        tmpEmployee.pm = data?.project_manager_name?.employee_name;
+      }
+      if (data?.supervisor_name?.employee_name) {
+        tmpEmployee.spv = data?.supervisor_name?.employee_name;
+      }
+      if (data?.finance_name?.employee_name) {
+        tmpEmployee.ceo = data?.finance_name?.employee_name;
+      }
+      if (
+        data?.ceo_name &&
+        data?.ceo_name.length > 0 &&
+        data?.ceo_name[0]?.reviewer &&
+        data?.ceo_name[0]?.reviewer?.employee_name
+      ) {
+        tmpEmployee.ceo = data?.ceo_name[0]?.reviewer?.employee_name;
+      }
+    }
+    return tmpEmployee;
+  }, [data]);
+  // console.log({ Employee, data });
+
   if (fetching)
     return (
       <Grid item xs={12}>
@@ -59,7 +96,8 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
         Opss, something went wrong ...
       </Grid>
     );
-  // console.log({ receiptType });
+  // console.log({ data });
+
   return (
     <React.Fragment>
       <>
@@ -69,7 +107,7 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
           </Typography>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={12}>
           <Card sx={{ p: 2.5, margin: '0 0 30px 0', backgroundColor: theme.palette.common.white }}>
             <Grid container rowSpacing={1} columnSpacing={2}>
               <Grid item xs={12} md={5}>
@@ -158,11 +196,41 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
                 </Grid>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <Grid container justifyContent={'center'} sx={{ textAlign: 'center', mt: 10 }}>
                   <Grid item xs={12} md={8}>
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                      {data.cashier_name.employee_name}
+                      {`${Employee.cashier} (${translate('project_card.cashier')})`}
+                    </Typography>
+                    <Divider color="#000" variant="fullWidth" sx={{ margin: '8px 0 8px 0' }} />
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item xs={6}>
+                <Grid container justifyContent={'center'} sx={{ textAlign: 'center', mt: 10 }}>
+                  <Grid item xs={12} md={8}>
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                      {`${Employee.spv} (${translate('project_card.project_supervisor')})`}
+                    </Typography>
+                    <Divider color="#000" variant="fullWidth" sx={{ margin: '8px 0 8px 0' }} />
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item xs={6}>
+                <Grid container justifyContent={'center'} sx={{ textAlign: 'center', mt: 10 }}>
+                  <Grid item xs={12} md={8}>
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                      {`${Employee.spv} (${translate('project_card.project_manager')})`}
+                    </Typography>
+                    <Divider color="#000" variant="fullWidth" sx={{ margin: '8px 0 8px 0' }} />
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item xs={6}>
+                <Grid container justifyContent={'center'} sx={{ textAlign: 'center', mt: 10 }}>
+                  <Grid item xs={12} md={8}>
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                      {`${Employee.ceo} (${translate('project_card.ceo')})`}
                     </Typography>
                     <Divider color="#000" variant="fullWidth" sx={{ margin: '8px 0 8px 0' }} />
                   </Grid>

@@ -45,6 +45,7 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
   const paymentNumber =
     proposalData?.payments.find((payment) => payment.id === params.paymentId)?.order ?? 'test';
 
+  // console.log({ data, Employee });
   if (fetching)
     return (
       <Grid item xs={12}>
@@ -58,7 +59,6 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
         Opss, something went wrong ...
       </Grid>
     );
-  // console.log({ receiptType });
   return (
     <React.Fragment>
       <>
@@ -135,7 +135,7 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
 }
 
 export default function CardPaymentGenerate({ proposalData, loading }: IPropsData) {
-  console.log('masuk sini');
+  // console.log('masuk sini');
   if (!proposalData && loading) {
     return (
       <Grid item xs={12}>
