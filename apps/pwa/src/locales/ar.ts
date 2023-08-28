@@ -349,6 +349,25 @@ const ar = {
               placeholder: 'يرجى ملء اسم البنك',
             },
           },
+          regions: {
+            list_of_regions: 'المناطق',
+            add_regions: 'اضافة منطقة',
+            modal: {
+              success_edit_regions: 'المناطق تم تحديثها بنجاح',
+              success_delete_regions: 'تم حذف المناطق بنجاح',
+              add_regions: 'اضافة منطقة',
+              edit_regions: 'تحرير المناطق',
+            },
+            form: {
+              region_name: {
+                required: 'اسم المنطقة مطلوب',
+              },
+              regions: {
+                label: '*اسم المنطقة',
+                placeholder: 'اسم المنطقة',
+              },
+            },
+          },
         },
       },
     },

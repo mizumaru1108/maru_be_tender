@@ -31,6 +31,7 @@ function ConfirmationModal({ open, handleClose, onSumbit, message }: Props) {
       actionBtn={
         <Stack direction="row" justifyContent="space-around" gap={4}>
           <Button
+            data-cy="button.cancel"
             sx={{
               color: '#000',
               size: 'large',
@@ -44,6 +45,7 @@ function ConfirmationModal({ open, handleClose, onSumbit, message }: Props) {
             {translate('button.cancel')}
           </Button>
           <LoadingButton
+            data-cy="button.confirm"
             onClick={handleAccepted}
             sx={{
               color: '#fff',

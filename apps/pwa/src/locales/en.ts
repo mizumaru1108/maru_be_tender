@@ -345,6 +345,25 @@ const en = {
               placeholder: 'Please fill in the name of the bank',
             },
           },
+          regions: {
+            list_of_regions: 'Regions',
+            add_regions: 'Add Regions',
+            modal: {
+              success_edit_regions: 'Regions edited successfully',
+              success_delete_regions: 'Regions deleted successfully',
+              add_regions: 'Add Regions',
+              edit_regions: 'Edit Regions',
+            },
+            form: {
+              region_name: {
+                required: 'Region name is required',
+              },
+              regions: {
+                label: 'Region Name*',
+                placeholder: 'Region Name',
+              },
+            },
+          },
         },
       },
     },

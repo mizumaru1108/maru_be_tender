@@ -1,5 +1,6 @@
 import { Box, styled } from '@mui/material';
 import Page from 'components/Page';
+import RegionsTable from 'sections/admin/region';
 import RegionsProjectLocationTable from 'sections/admin/regions-project-location';
 import useLocales from '../../hooks/useLocales';
 
@@ -18,7 +19,10 @@ function RegionsProjectLocation() {
     // <Page title="Regions Project Location : Table">
     <Page title={translate('pages.admin.regions_project_location_table')}>
       <ContentStyle>
-        <Box sx={{ px: '30px' }}>{/* <RegionsProjectLocationTable /> */}</Box>
+        <Box sx={{ px: '30px' }}>
+          <RegionsTable />
+          {/* <RegionsProjectLocationTable /> */}
+        </Box>
       </ContentStyle>
     </Page>
   );
