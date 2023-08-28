@@ -1214,7 +1214,6 @@ export class ProposalRepository {
           if (reviewer.employee_path !== 'GENERAL') {
             whereClause = {
               ...whereClause,
-              // project_track: reviewer.employee_path,
               OR: [
                 { project_track: reviewer.employee_path },
                 { project_track: null },
@@ -1257,17 +1256,12 @@ export class ProposalRepository {
         if (currentUser.choosenRole === 'tender_ceo') {
           whereClause = {
             ...whereClause,
-            // OR: [
-            //   { outter_status: OutterStatusEnum.CANCELED },
-            // {
             inner_status: {
               in: [
                 InnerStatusEnum.ACCEPTED_BY_CONSULTANT,
                 InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
               ],
             },
-            //   },
-            // ],
           };
         }
 
@@ -1320,17 +1314,15 @@ export class ProposalRepository {
       }
 
       // commented for a while untill merge data between staging ad prod done
-      // if (project_number) {
-      //   orClauses.push({
-      //     project_number: {
-      //       contains: project_number.toString(),
-      //       mode: 'insensitive',
-      //     },
-      //   });
-      // }
+      if (project_number) {
+        orClauses.push({
+          project_number,
+        });
+      }
 
-      // console.log(logUtil(orClauses));
-      // console.log(logUtil(whereClause));
+      console.log('outter', logUtil(outterClauses));
+      console.log('where', logUtil(whereClause));
+      console.log('or', logUtil(orClauses));
 
       const data = await this.prismaService.proposal.findMany({
         where: {
