@@ -360,6 +360,9 @@ const en = {
       reset_password: 'Reset Password',
       verify_code: 'Verify Code',
       email: 'Email address',
+      error: {
+        wrong_credential: 'Wrong login ID or password',
+      },
     },
     cashier: {
       previous_funding_request: 'Previous Funding Requests',

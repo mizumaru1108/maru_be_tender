@@ -361,6 +361,9 @@ const ar = {
       reset_password: 'إعادة تعيين كلمة المرور',
       verify_code: 'تحقق من الرمز',
       email: 'عنوان البريد الإلكتروني',
+      error: {
+        wrong_credential: 'معرف تسجيل الدخول أو كلمة المرور خاطئة',
+      },
     },
     cashier: {
       previous_funding_request: 'طلبات الدعم السابقة',

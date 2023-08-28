@@ -153,10 +153,16 @@ export default function NewLoginForm() {
       dispatch(setActiveConversationId(null));
       dispatch(setConversation([]));
       dispatch(setMessageGrouped([]));
-    } catch (error) {
-      // console.log('cek error: ', { message: error.message });
+    } catch (err) {
+      const { error, message, statusCode } = err.response.data;
+      console.log('cek err: ', { message: err.message });
+      console.log('test 401', statusCode, statusCode === 401);
       reset();
-      setError('afterSubmit', { message: error.message || translate('login_message_error') });
+      if (statusCode === 401) {
+        setError('afterSubmit', { message: translate('pages.auth.error.wrong_credential') });
+      } else {
+        setError('afterSubmit', { message: message || translate('login_message_error') });
+      }
       // setError('afterSubmit', { ...error, message: translate('login_message_error') });
     }
   };

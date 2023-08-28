@@ -237,6 +237,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   const login = async (email: string, password: string) => {
     // let response: any = undefined;
+    console.log('masuk sini');
     const url = `${TMRA_RAISE_URL}/tender-auth/login`;
     const response: any = {
       ...(FEATURE_LOGIN_BY_PHONE
@@ -250,7 +251,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             applicationId: FUSIONAUTH_API.appId,
           })),
     };
-
+    console.log('cek response:', response);
     // console.log('cek response:', response);
     // console.log('cek response:', response.data.data.fusionAuthResponse.response);
 
