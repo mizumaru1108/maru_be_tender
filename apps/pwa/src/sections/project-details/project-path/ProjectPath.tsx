@@ -550,7 +550,10 @@ function ProjectPath() {
                 item.action !== 'sending_closing_report' &&
                 item.action !== 'send_revised_version' &&
                 item.action !== 'complete_payment' &&
-                item.action !== 'reject'
+                item.action !== 'reject' &&
+                item.action !== 'ask_for_amandement_request' &&
+                item.action !== 'send_revision_for_finance_amandement' &&
+                item.action !== 'send_revision_for_supervisor_amandement'
             ).length > 0 &&
             isConsultation === false &&
             stepGeneralLog ? (
@@ -575,7 +578,10 @@ function ProjectPath() {
                 item.action !== 'sending_closing_report' &&
                 item.action !== 'complete_payment' &&
                 item.action !== 'send_revised_version' &&
-                item.action !== 'reject'
+                item.action !== 'reject' &&
+                item.action !== 'ask_for_amandement_request' &&
+                item.action !== 'send_revision_for_finance_amandement' &&
+                item.action !== 'send_revision_for_supervisor_amandement'
             ).length > 0 &&
             isConsultation &&
             stepGransLog ? (
