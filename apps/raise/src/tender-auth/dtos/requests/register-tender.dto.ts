@@ -149,6 +149,11 @@ export class registerClient {
   @IsNotEmpty()
   governorate: string;
 
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  @IsString()
+  governorate_id?: string;
+
   @ApiProperty()
   @IsNotEmpty()
   headquarters: string;
@@ -197,6 +202,11 @@ export class registerClient {
   @ApiProperty()
   @IsNotEmpty()
   region: string;
+
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  @IsString()
+  region_id?: string;
 
   @ApiProperty()
   @IsOptional()

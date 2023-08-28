@@ -66,6 +66,7 @@ import {
 } from '../commands/proposal.save.draft/proposal.save.draft.command';
 import { SendAmandementCommand } from '../commands/send.amandement/send.amandement.command';
 import { ProposalFindMineQueryDto } from '../dtos/queries/proposal.find.mine.query.dto';
+import { ProposalReportListQueryDto } from '../dtos/queries/proposal.report.list.query.dto';
 import {
   AskAmandementRequestDto,
   ChangeProposalStateDto,
@@ -93,6 +94,10 @@ import {
   ProposalFindMineQuery,
   ProposalFindMineQueryResult,
 } from '../queries/proposal.find.mine.query/proposal.find.mine.query';
+import {
+  ProposalReportListQuery,
+  ProposalReportListQueryResult,
+} from '../queries/proposal.report.list/proposal.report.list.query';
 import { ProposalService } from '../services/proposal.service';
 
 @ApiTags('ProposalModule')
@@ -272,6 +277,33 @@ export class TenderProposalController {
     } catch (error) {
       throw this.errorMapper(error);
     }
+  }
+
+  @ApiOperation({
+    summary: 'Find Proposal for generating report (admin only)',
+  })
+  @BasePaginationApiOkResponse(ProposalEntity)
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Get('report-list')
+  async findMany(@Query() query: ProposalReportListQueryDto) {
+    const builder = Builder<ProposalReportListQuery>(ProposalReportListQuery, {
+      ...query,
+    });
+
+    const { result, total } = await this.queryBus.execute<
+      ProposalReportListQuery,
+      ProposalReportListQueryResult
+    >(builder.build());
+
+    return manualPaginationHelper(
+      result,
+      total,
+      query.page || 1,
+      query.limit || 10,
+      HttpStatus.OK,
+      'Proposal List Fetched Successfully!',
+    );
   }
 
   @UseGuards(TenderJwtGuard)

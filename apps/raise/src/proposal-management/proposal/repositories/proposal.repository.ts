@@ -573,9 +573,58 @@ export class ProposalRepository {
 
   /* Latest, already able to do passing session, and return entity instead of prisma model*/
   async findManyFilter(props: ProposalFindManyProps) {
-    const { submitter_user_id, include_relations } = props;
+    const {
+      partner_name,
+      track_id,
+      governorate_id,
+      region_id,
+      submitter_user_id,
+      include_relations,
+    } = props;
     let args: Prisma.proposalFindManyArgs = {};
     let whereClause: Prisma.proposalWhereInput = {};
+
+    if (track_id) {
+      whereClause = {
+        ...whereClause,
+        track_id: {
+          in: track_id,
+        },
+      };
+    }
+
+    if (partner_name) {
+      whereClause = {
+        ...whereClause,
+        user: {
+          employee_name: {
+            in: partner_name,
+          },
+        },
+      };
+    }
+
+    if (region_id) {
+      whereClause = {
+        ...whereClause,
+        user: {
+          client_data: {
+            region_id: { in: region_id },
+          },
+        },
+      };
+    }
+
+    if (governorate_id) {
+      whereClause = {
+        ...whereClause,
+        user: {
+          client_data: {
+            governorate_id: { in: governorate_id },
+          },
+        },
+      };
+    }
 
     if (submitter_user_id) {
       whereClause = {

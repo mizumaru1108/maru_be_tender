@@ -61,7 +61,11 @@ Table client_data {
   num_of_beneficiaries Int
   num_of_employed_facility Int
   governorate String
+  governorate_id String
+  governorate_detail governorates
   region String
+  region_id String
+  region_detail regions
   entity_mobile String
   center_administration String
   twitter_acount String
@@ -1532,6 +1536,7 @@ Table regions {
   name String [not null]
   is_deleted Boolean [not null, default: false]
   governorate governorates [not null]
+  client_data client_data [not null]
 }
 
 Table governorates {
@@ -1540,6 +1545,7 @@ Table governorates {
   region_id String [not null]
   region_detail regions [not null]
   is_deleted Boolean [not null, default: false]
+  client_data client_data [not null]
 }
 
 Ref: authorities.client_field_id > client_fields.client_field_id
@@ -1549,6 +1555,10 @@ Ref: banners.track_id > track.id
 Ref: bank_information.user_id > user.id [delete: Restrict]
 
 Ref: client_data.authority_id > authorities.authority_id
+
+Ref: client_data.governorate_id > governorates.governorate_id
+
+Ref: client_data.region_id > regions.region_id
 
 Ref: client_data.client_field_id > client_fields.client_field_id
 
