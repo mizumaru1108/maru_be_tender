@@ -76,7 +76,11 @@ model client_data {
   num_of_beneficiaries     Int?
   num_of_employed_facility Int?
   governorate              String?
+  governorate_id           String?
+  governorate_detail       Governorate?  @relation(fields: [governorate_id], references: [governorate_id])
   region                   String?      @db.VarChar
+  region_id                String?  
+  region_detail            Region?       @relation(fields: [region_id], references: [region_id])
   entity_mobile            String?      @db.VarChar
   center_administration    String?      @db.VarChar
   twitter_acount           String?      @db.VarChar
@@ -1662,6 +1666,7 @@ model Region {
     name String
     is_deleted Boolean @default(false)
     governorate Governorate[]
+    client_data client_data[]
 
     @@map("regions")
 }
@@ -1671,6 +1676,7 @@ model Governorate {
     region_id    String
     region_detail Region @relation(fields: [region_id], references: [region_id])
     is_deleted Boolean @default(false)
-    
+
+    client_data client_data[]
     @@map("governorates")
 }

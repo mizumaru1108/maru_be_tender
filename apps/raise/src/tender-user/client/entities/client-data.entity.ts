@@ -34,6 +34,8 @@
 
 import { AuthoritiesEntity } from '../../../authority-management/authorities/entities/authorities.entity';
 import { ClientFieldEntity } from '../../../authority-management/client-fields/entities/client.field.entity';
+import { GovernorateEntity } from '../../../region-management/governorate/entities/governorate.entity';
+import { RegionEntity } from '../../../region-management/region/entities/region.entity';
 import { UserEntity } from '../../user/entities/user.entity';
 
 export class ClientDataEntity {
@@ -46,7 +48,11 @@ export class ClientDataEntity {
   num_of_beneficiaries?: number | null;
   num_of_employed_facility?: number | null;
   governorate?: string | null;
+  governorate_id?: string | null;
+  governorate_detail?: GovernorateEntity;
   region?: string | null;
+  region_id?: string | null;
+  region_detail?: RegionEntity;
   entity_mobile?: string | null;
   center_administration?: string | null;
   twitter_acount?: string | null;

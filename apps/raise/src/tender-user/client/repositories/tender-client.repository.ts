@@ -31,7 +31,9 @@ export class CreateClientDataProps {
   num_of_beneficiaries?: number | null;
   num_of_employed_facility?: number | null;
   governorate?: string | null;
+  governorate_id?: string | null;
   region?: string | null;
+  region_id?: string | null;
   entity_mobile?: string | null;
   center_administration?: string | null;
   twitter_acount?: string | null;
@@ -82,7 +84,9 @@ export class TenderClientRepository {
           num_of_beneficiaries: props.num_of_beneficiaries,
           num_of_employed_facility: props.num_of_employed_facility,
           governorate: props.governorate,
+          governorate_id: props.governorate_id,
           region: props.region,
+          region_id: props.region_id,
           entity_mobile: props.entity_mobile,
           center_administration: props.center_administration,
           twitter_acount: props.twitter_acount,

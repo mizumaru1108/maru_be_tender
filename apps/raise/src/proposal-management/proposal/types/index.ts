@@ -4,6 +4,10 @@ export interface ProposalFetchByIdProps {
 }
 
 export interface ProposalFindManyProps {
+  partner_name?: string[];
+  region_id?: string[];
+  governorate_id?: string[];
+  track_id?: string[];
   submitter_user_id?: string;
   limit?: number;
   page?: number;
