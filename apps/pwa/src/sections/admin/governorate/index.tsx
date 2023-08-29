@@ -9,27 +9,20 @@ import useSettings from 'hooks/useSettings';
 // component
 //
 import { useSnackbar } from 'notistack';
-import FormModalBeneficiaries from 'sections/admin/beneficiaries/list/FormModalBeneficiaries';
+import { GovernorateFormInput, IGovernorate } from 'sections/admin/governorate/list/types';
 import axiosInstance from 'utils/axios';
-import RegionsTableContent from './list/RegionsTableContent';
+import GovernoratesTableContent from './list/GovernoratesTableContent';
+import FormModalGovernorates from 'sections/admin/governorate/list/FormModalGovernorates';
 import { IRegions } from 'sections/admin/region/list/types';
-import FormModalRegions from 'sections/admin/region/list/FormModalRegions';
 
 // --------------------------------------------------------------------------------------------------
 
-type ISubmit = {
-  id?: string;
-  name?: string;
-  is_deleted?: boolean;
-};
-
-export default function RegionsTable() {
+export default function GovernoratesTable() {
   const { translate } = useLocales();
   const { themeStretch } = useSettings();
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const [refetch, setRefetch] = useState<boolean>(false);
-  // const [bankValue, setBankValue] = useState<AuthorityInterface[] | []>([]);
 
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,10 +35,57 @@ export default function RegionsTable() {
     setOpen(false);
   };
 
+  const [governorate, setGovernorate] = useState<IGovernorate[] | []>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const getGovernorates = async () => {
+    setLoading(true);
+    try {
+      const rest = await axiosInstance.get(
+        `/region-management/governorates?include_relations=region_detail&limit=0`,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
+      if (rest) {
+        const test = rest.data.data
+          .filter((region: any) => region.is_deleted === false || region.is_deleted === null)
+          .map((region: any) => region);
+        setGovernorate(test);
+      }
+    } catch (error) {
+      // console.error(error.message);
+      setGovernorate([]);
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+  const [isLoadingRegions, setIsLoadingRegions] = useState(false);
   const [regions, setRegions] = useState<IRegions[] | []>([]);
   const getRegions = async () => {
-    setLoading(true);
+    setIsLoadingRegions(true);
     try {
       const rest = await axiosInstance.get(
         `/region-management/regions?include_relations=governorate&limit=0`,
@@ -86,16 +126,16 @@ export default function RegionsTable() {
         });
       }
     } finally {
-      setLoading(false);
+      setIsLoadingRegions(false);
     }
   };
 
-  const handleSubmit = async (formValue: ISubmit) => {
+  const handleSubmit = async (formValue: GovernorateFormInput) => {
     setIsSubmitting(true);
 
     try {
       const { status } = await axiosInstance.post(
-        '/region-management/regions/create',
+        '/region-management/governorates/create',
         { ...formValue },
         {
           headers: { 'x-hasura-role': activeRole! },
@@ -153,20 +193,26 @@ export default function RegionsTable() {
   };
 
   useEffect(() => {
-    getRegions();
+    getGovernorates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
 
-  if (loading) return <>{translate('pages.common.loading')}</>;
+  useEffect(() => {
+    getRegions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (loading || isLoadingRegions) return <>{translate('pages.common.loading')}</>;
   // if (error) return <>{error.message}</>;
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
-      <FormModalRegions
+      <FormModalGovernorates
         type="add"
         loading={isSubmitting}
         open={open}
         handleClose={handleCloseAddBeneficiaries}
         handleSubmitProps={handleSubmit}
+        regionList={regions}
       />
       <Stack
         direction="row"
@@ -175,22 +221,23 @@ export default function RegionsTable() {
         sx={{ mb: 5, mt: 1 }}
       >
         <Typography variant="h4" sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
-          {translate('pages.admin.settings.label.regions.list_of_regions')}
+          {translate('pages.admin.settings.label.governorate.list_of_governorate')}
         </Typography>
         <Button
           variant="contained"
           onClick={handleOpenModal}
           sx={{ px: '50px', fontSize: '16px' }}
-          data-cy="pages.admin.settings.label.regions.add_regions"
+          data-cy="pages.admin.settings.label.governorate.add_governorate"
         >
-          {translate('pages.admin.settings.label.regions.add_regions')}
+          {translate('pages.admin.settings.label.governorate.add_governorate')}
         </Button>
       </Stack>
-      <RegionsTableContent
+      <GovernoratesTableContent
         trigger={() => {
           setRefetch(!refetch);
         }}
-        data={!loading && regions.length > 0 ? regions : []}
+        regionList={regions}
+        data={!loading && !isLoadingRegions && governorate.length > 0 ? governorate : []}
       />
     </Container>
   );

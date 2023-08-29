@@ -364,6 +364,30 @@ const en = {
               },
             },
           },
+          governorate: {
+            list_of_governorate: 'Governorate',
+            add_governorate: 'Add governorate',
+            modal: {
+              success_edit_governorate: 'Governorate edited successfully',
+              success_delete_governorate: 'Governorate deleted successfully',
+              add_governorate: 'Add Governorate',
+              edit_governorate: 'Edit Governorate',
+            },
+            form: {
+              governorate_name: {
+                required: 'Governorate name is required',
+              },
+              region_id: {
+                required: 'Region name is required',
+                label: 'Region Name*',
+                placeholder: 'Region Name',
+              },
+              governorate: {
+                label: 'Governorate Name*',
+                placeholder: 'Governorate Name',
+              },
+            },
+          },
         },
       },
     },

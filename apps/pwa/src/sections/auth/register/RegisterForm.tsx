@@ -53,7 +53,9 @@ const initialValue = {
   },
   form2: {
     region: '',
+    region_id: '',
     governorate: '',
+    governorate_id: '',
     center_administration: '',
     entity_mobile: '',
     phone: '',
@@ -129,6 +131,7 @@ export default function RegisterForm() {
 
   const onSubmit2 = (data: ConnectingValuesProps) => {
     setStep((prevStep) => prevStep + 1);
+    // setStep(5);
     setRegisterState((prevRegisterState: AccountValuesProps) => ({
       ...prevRegisterState,
       form2: {

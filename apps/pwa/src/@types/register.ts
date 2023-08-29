@@ -39,7 +39,9 @@ export type LicenseValuesProps = {
 };
 export type ConnectingValuesProps = {
   region: string;
+  region_id?: string;
   governorate: string;
+  governorate_id?: string;
   center_administration: string;
   entity_mobile: string;
   phone?: string;

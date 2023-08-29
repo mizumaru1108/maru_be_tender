@@ -1,20 +1,10 @@
-// export type AuthorityInterface = {
-//   id: string;
-//   bank_name: string;
-//   is_deleted?: boolean;
-// };
-
-export type IBeneficiaries = {
-  id: string;
-  name: string;
-  is_deleted?: boolean;
-};
+import { IGovernorate } from 'sections/admin/governorate/list/types';
 
 export type IRegions = {
   region_id: string;
   name: string;
   is_deleted?: boolean;
-  // governorate: IGovernorate[];
+  governorate: IGovernorate[];
 };
 
 export interface RegionsFormInput {

@@ -181,12 +181,6 @@ export default function NewLoginForm() {
             placeholder={translate('select_loginId.placeholder')}
             size="medium"
           >
-            {/* <MenuItem data-cy={`select-option.select_loginId-`} value={'1'}>
-              {'test'}
-            </MenuItem>
-            <MenuItem data-cy={`select-option.select_loginId-`} value={'2'}>
-              {'test'}
-            </MenuItem> */}
             {OptionLoginId.map((option, index) => (
               <MenuItem
                 data-cy={`select-option.select_loginId-${index}`}

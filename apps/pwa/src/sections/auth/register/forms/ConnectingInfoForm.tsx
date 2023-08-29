@@ -1,15 +1,23 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid } from '@mui/material';
-import { FormProvider, RHFTextField } from 'components/hook-form';
+import { Button, Grid, MenuItem } from '@mui/material';
+import axios from 'axios';
+import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import RHFPassword from 'components/hook-form/RHFPassword';
+import { FEATURE_MENU_ADMIN_ENTITY_AREA, TMRA_RAISE_URL } from 'config';
 import useLocales from 'hooks/useLocales';
-import { useEffect, useMemo } from 'react';
+import { useSnackbar } from 'notistack';
+import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { IRegions } from 'sections/admin/region/list/types';
+import { CatchError } from 'utils/catchError';
 import * as Yup from 'yup';
 import { REGION } from '_mock/region';
 import { RegionNames } from '../../../../@types/region';
 import { ConnectingValuesProps } from '../../../../@types/register';
 import BaseField from '../../../../components/hook-form/BaseField';
+import ReplayIcon from '@mui/icons-material/Replay';
+import { IGovernorate } from 'sections/admin/governorate/list/types';
+import { removeEmptyKey } from 'utils/remove-empty-key';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -22,18 +30,48 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
   const tmpUsedNumbers: string[] = usedNumbers ?? [];
   // console.log('tmpUsedNumbers', usedNumbers);
   const { translate } = useLocales();
+  const { enqueueSnackbar } = useSnackbar();
+  //
+  const [isLoadingRegions, setIsLoadingRegions] = React.useState(false);
+  const [regions, setRegions] = React.useState<IRegions[]>([]);
+  const [governorates, setGovernorates] = React.useState<IGovernorate[]>([]);
+  const [area, setArea] = React.useState<{
+    region?: IRegions;
+    governorate?: IGovernorate;
+  } | null>(null);
+  // const [regionId, setRegionId] = React.useState<string>('');
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    let newValues = { ...defaultValues };
-    const newEntityMobile = defaultValues.entity_mobile?.replace('+966', '');
-    const newPhone = defaultValues.phone?.replace('+966', '');
-    newValues = { ...newValues, entity_mobile: newEntityMobile, phone: newPhone };
-    if (!!newValues.entity_mobile) {
-      reset(newValues);
+  const fetchRegions = React.useCallback(async () => {
+    setIsLoadingRegions(true);
+    try {
+      const response = await axios.get(
+        `${TMRA_RAISE_URL}/region-management/regions?include_relations=governorate&limit=0`
+      );
+      if (response) {
+        const mappedRes = response.data.data
+          .filter((item: IRegions) => item.is_deleted !== true)
+          .sort((a: IRegions, b: IRegions) => a.name.localeCompare(b.name))
+          .map((item: IRegions) => item);
+        setRegions(mappedRes);
+      }
+    } catch (error) {
+      setRegions([]);
+      const tmpError = await CatchError(error);
+      enqueueSnackbar(tmpError.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
+    } finally {
+      setIsLoadingRegions(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultValues]);
+  }, []);
+
   const phoneNumberValidation = Yup.string()
     // .required(translate('errors.register.phone.required'))
     .nullable()
@@ -44,10 +82,6 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
       }
       return val?.length === 0 || val!.length === 9;
     });
-  // .test('used', translate('errors.register.phone.exist'), (val) => {
-  //   const isUsed = tmpUsedNumbers.includes(`+966${val ?? ''}`);
-  //   return !isUsed;
-  // });
   const entityMobileValidation = Yup.string()
     .required(translate('errors.register.entity_mobile.required'))
     .test('len', translate('errors.register.entity_mobile.length'), (val) => {
@@ -91,6 +125,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
     formState: { isSubmitting },
     watch,
     reset,
+    setValue,
     getValues,
   } = methods;
 
@@ -113,28 +148,110 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
     }
     const payload: ConnectingValuesProps = {
       ...data,
+      region: area?.region?.name || data.region,
+      region_id: area?.region?.region_id,
+      governorate: area?.governorate?.name || data.governorate,
+      governorate_id: area?.governorate?.governorate_id,
       phone: newPhoneValues!,
       entity_mobile: newEntityMobile!,
       used_numbers: [...newTmpNumbers],
     };
-    // console.log('payload', payload);
+    // console.log('payload', removeEmptyKey(payload));
     // reset({ ...payload });
     onSubmit(payload);
   };
 
-  // useEffect(() => {
-  //   window.scrollTo(0, 0);
-  //   reset(defaultValues);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [defaultValues]);
+  const handleChangeRegion = (id: string) => {
+    if (id) {
+      const tmpRegion: IRegions = [...regions].find((item) => item.region_id === id) as IRegions;
+      const tmpGovernorates: IGovernorate[] = tmpRegion.governorate;
+      setGovernorates(tmpGovernorates);
+      setArea((prevState: any) => ({
+        ...prevState,
+        region: tmpRegion,
+        governorate: null,
+      }));
+      setValue('governorate', '');
+    }
+  };
+
+  const handleChangeGovernorate = (id: string) => {
+    if (id) {
+      const tmpGovernorate: IGovernorate = [...governorates].find(
+        (item) => item.governorate_id === id
+      ) as IGovernorate;
+      setArea((prevState: any) => ({
+        ...prevState,
+        governorate: tmpGovernorate,
+      }));
+    }
+  };
+  // console.log({ area });
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    if (!isLoadingRegions && regions.length > 0 && defaultValues) {
+      let newValues = { ...defaultValues };
+      const newEntityMobile = defaultValues.entity_mobile?.replace('+966', '');
+      const newPhone = defaultValues.phone?.replace('+966', '');
+      newValues = { ...newValues, entity_mobile: newEntityMobile, phone: newPhone };
+      if (defaultValues.region_id && defaultValues.governorate_id) {
+        const tmpRegion: IRegions = [...regions].find(
+          (item) => item.region_id === defaultValues.region_id
+        ) as IRegions;
+        setGovernorates(tmpRegion.governorate);
+        const tmpGovernorate: IGovernorate = [...tmpRegion.governorate].find(
+          (item) => item.governorate_id === defaultValues.governorate_id
+        ) as IGovernorate;
+        newValues = {
+          ...newValues,
+          region: tmpRegion.region_id,
+          governorate: tmpGovernorate.governorate_id,
+        };
+        setArea((prevState: any) => ({
+          ...prevState,
+          region: tmpRegion,
+          governorate: tmpGovernorate,
+        }));
+      } else {
+        newValues = {
+          ...newValues,
+          region: defaultValues.region,
+          governorate: defaultValues.governorate,
+        };
+      }
+      if (!!newValues.entity_mobile) {
+        reset({
+          center_administration: newValues.center_administration,
+          website: newValues.website,
+          twitter_acount: newValues.twitter_acount,
+          email: newValues.email,
+          entity_mobile: newValues.entity_mobile,
+          governorate: newValues.governorate,
+          password: newValues.password,
+          phone: newValues.phone,
+          region: newValues.region,
+        });
+        // setValue('region', newValues.region);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues, regions, isLoadingRegions]);
+
+  React.useEffect(() => {
+    fetchRegions();
+  }, [fetchRegions]);
+  // console.log({ regions });
+
   const region = watch('region') as RegionNames | '';
-  // console.log('region', region);
+
+  if (isLoadingRegions) return <>{translate('pages.common.loading')}</>;
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
         <Grid item md={6} xs={12}>
-          <BaseField
+          {/* <BaseField
             type="selectWithoutGenerator"
             name="region"
             label="funding_project_request_form3.region.label"
@@ -147,10 +264,57 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
                 </option>
               ))}
             </>
-          </BaseField>
+          </BaseField> */}
+          <RHFSelect
+            disabled={isLoadingRegions}
+            name="region"
+            label={translate('funding_project_request_form3.region.label')}
+            placeholder={translate('funding_project_request_form3.region.placeholder')}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: { style: { maxHeight: 500 } },
+              },
+            }}
+            onChange={(e) => {
+              if (e.target.value !== '') {
+                if (FEATURE_MENU_ADMIN_ENTITY_AREA) {
+                  handleChangeRegion(e.target.value as string);
+                }
+              }
+              setValue('region', e.target.value);
+            }}
+          >
+            {FEATURE_MENU_ADMIN_ENTITY_AREA && regions.length > 0 && !isLoadingRegions
+              ? regions.map((option, i) => (
+                  <MenuItem key={i} value={option.region_id}>
+                    {option.name}
+                  </MenuItem>
+                ))
+              : null}
+            {!FEATURE_MENU_ADMIN_ENTITY_AREA && !isLoadingRegions
+              ? Object.keys(REGION).map((item, index) => (
+                  <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
+                    {item}
+                  </MenuItem>
+                ))
+              : null}
+          </RHFSelect>
+          {FEATURE_MENU_ADMIN_ENTITY_AREA && regions.length === 0 && (
+            <Button
+              disabled={isLoadingRegions}
+              data-cy={`button-retry-fetching-bank`}
+              variant="outlined"
+              onClick={() => {
+                fetchRegions();
+              }}
+              endIcon={<ReplayIcon />}
+            >
+              Re-try Fetching Region
+            </Button>
+          )}
         </Grid>
         <Grid item md={6} xs={12}>
-          <BaseField
+          {/* <BaseField
             type="selectWithoutGenerator"
             name="governorate"
             label="funding_project_request_form3.city.label"
@@ -170,7 +334,47 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
                 {translate('funding_project_request_form3.city.placeholder')}
               </option>
             )}
-          </BaseField>
+          </BaseField> */}
+          <RHFSelect
+            disabled={isLoadingRegions}
+            name="governorate"
+            label={translate('funding_project_request_form3.city.label')}
+            placeholder={translate('funding_project_request_form3.city.placeholder')}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: { style: { maxHeight: 500 } },
+              },
+            }}
+            onChange={(e) => {
+              if (e.target.value !== '') {
+                if (FEATURE_MENU_ADMIN_ENTITY_AREA) {
+                  handleChangeGovernorate(e.target.value as string);
+                }
+              }
+              // console.log('test:', e.target.value);
+              setValue('governorate', e.target.value);
+            }}
+          >
+            {FEATURE_MENU_ADMIN_ENTITY_AREA && governorates.length > 0 && !isLoadingRegions
+              ? governorates.map((option, i) => (
+                  <MenuItem key={i} value={option.governorate_id}>
+                    {option.name}
+                  </MenuItem>
+                ))
+              : null}
+            {!FEATURE_MENU_ADMIN_ENTITY_AREA && region !== ''
+              ? REGION[`${region}`].map((item: any, index: any) => (
+                  <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
+                    {item}
+                  </MenuItem>
+                ))
+              : null}
+            {!FEATURE_MENU_ADMIN_ENTITY_AREA && region === '' ? (
+              <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
+                {translate('funding_project_request_form3.city.placeholder')}
+              </option>
+            ) : null}
+          </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField

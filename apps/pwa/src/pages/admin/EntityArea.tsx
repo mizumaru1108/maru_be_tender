@@ -1,5 +1,6 @@
 import { Box, styled } from '@mui/material';
 import React from 'react';
+import GovernoratesTable from 'sections/admin/governorate';
 import Page from '../../components/Page';
 import useLocales from '../../hooks/useLocales';
 
@@ -19,8 +20,7 @@ function EntityArea() {
     <Page title={translate('pages.admin.entity_area_table')}>
       <ContentStyle>
         <Box sx={{ px: '30px' }}>
-          {/* <EntityClassificationTable /> */}
-          entity area
+          <GovernoratesTable />
         </Box>
       </ContentStyle>
     </Page>

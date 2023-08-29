@@ -15,6 +15,7 @@ import { FEATURE_MENU_ADMIN_ADD_AUTHORITY, TMRA_RAISE_URL } from '../../../../co
 import { AuthorityInterface, ClientFieldInterface } from '../../../admin/authority/list/types';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
 import ReplayIcon from '@mui/icons-material/Replay';
+import { CatchError } from 'utils/catchError';
 
 const AuthoityArray = [
   {
@@ -87,31 +88,17 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
           setAuthorities(mappedRes);
         }
       } catch (error) {
-        // console.error(error.message);
         setAuthorities([]);
-        const statusCode = (error && error.statusCode) || 0;
-        const message = (error && error.message) || null;
-        if (message && statusCode !== 0) {
-          enqueueSnackbar(error.message, {
-            variant: 'error',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'center',
-            },
-          });
-        } else {
-          enqueueSnackbar(translate('pages.common.internal_server_error'), {
-            variant: 'error',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'center',
-            },
-          });
-        }
+        const tmpError = await CatchError(error);
+        enqueueSnackbar(tmpError.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
       } finally {
         setIsFetchingAuthorities(false);
       }
@@ -133,31 +120,17 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
         setClientFields(mappedRes);
       }
     } catch (error) {
-      // console.error(error.message);
       setAuthorities([]);
-      const statusCode = (error && error.statusCode) || 0;
-      const message = (error && error.message) || null;
-      if (message && statusCode !== 0) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      } else {
-        enqueueSnackbar(translate('pages.common.internal_server_error'), {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      }
+      const tmpError = await CatchError(error);
+      enqueueSnackbar(tmpError.message, {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
     } finally {
       setIsFetchingClientFields(false);
     }
@@ -286,6 +259,11 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
               // console.log('test:', e.target.value);
               setValue('client_field', e.target.value);
             }}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: { style: { maxHeight: 500 } },
+              },
+            }}
           >
             {FEATURE_MENU_ADMIN_ADD_AUTHORITY
               ? clientFields.map((option, i) => (
@@ -313,6 +291,11 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
               name="authority"
               label={translate('register_form1.authority.label')}
               placeholder={translate('register_form1.authority.placeholder')}
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: { style: { maxHeight: 500 } },
+                },
+              }}
             >
               {authorities.length > 0 &&
                 !isFetchingAuthoritites &&

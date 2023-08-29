@@ -368,6 +368,30 @@ const ar = {
               },
             },
           },
+          governorate: {
+            list_of_governorate: 'المناطق',
+            add_governorate: 'اضافة منطقة',
+            modal: {
+              success_edit_governorate: 'المناطق تم تحديثها بنجاح',
+              success_delete_governorate: 'تم حذف المناطق بنجاح',
+              add_governorate: 'اضافة منطقة',
+              edit_governorate: 'تحرير المناطق',
+            },
+            form: {
+              governorate_name: {
+                required: 'اسم المنطقة مطلوب',
+              },
+              region_id: {
+                required: 'اسم المنطقة مطلوب',
+                label: '*اسم المنطقة',
+                placeholder: 'اسم المنطقة',
+              },
+              governorate: {
+                label: 'اسم المحافظة*',
+                placeholder: 'اسم المحافظة',
+              },
+            },
+          },
         },
       },
     },
