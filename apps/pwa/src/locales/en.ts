@@ -2670,6 +2670,12 @@ const en = {
     },
   },
   snackbar: {
+    account_manager: {
+      edit_request: {
+        approved: 'Edit request has been approved',
+        rejected: 'Edit request has been rejected',
+      },
+    },
     supervisor: {
       sent_success_amandement: 'The amandement request has been sent successfully',
     },

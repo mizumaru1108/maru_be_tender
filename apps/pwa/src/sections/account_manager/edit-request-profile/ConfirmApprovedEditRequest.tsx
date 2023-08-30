@@ -37,9 +37,8 @@ function ConfirmApprovedEditRequest({ open, handleClose }: Props) {
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      // console.log({ rest });
       if (rest) {
-        enqueueSnackbar('Edit request has been approved', {
+        enqueueSnackbar(translate('snackbar.account_manager.edit_request.approved'), {
           variant: 'success',
           preventDuplicate: true,
           autoHideDuration: 3000,

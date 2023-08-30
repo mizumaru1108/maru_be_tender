@@ -2682,6 +2682,12 @@ const ar = {
     },
   },
   snackbar: {
+    account_manager: {
+      edit_request: {
+        approved: 'تمت الموافقة على طلب التعديل',
+        rejected: 'تم رفض طلب التعديل',
+      },
+    },
     supervisor: {
       sent_success_amandement: 'تم قبول طلب التعديل',
     },

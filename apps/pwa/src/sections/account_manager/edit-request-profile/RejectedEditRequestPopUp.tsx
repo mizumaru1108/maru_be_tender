@@ -13,6 +13,7 @@ import { addFollowups } from 'redux/slices/proposal';
 import { useDispatch } from 'redux/store';
 import { useSnackbar } from 'notistack';
 import axiosInstance from '../../../utils/axios';
+import useLocales from 'hooks/useLocales';
 
 type Props = {
   open: boolean;
@@ -28,9 +29,10 @@ function RejectedEditRequestPopUp({ open, handleClose, requestId }: Props) {
   const { user, activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
+  const { translate } = useLocales();
 
   const validationSchema = Yup.object().shape({
-    reject_reason: Yup.string().required('Action is required!'),
+    reject_reason: Yup.string().required(translate('errors.notes')),
   });
 
   const defaultValues = {
@@ -64,10 +66,10 @@ function RejectedEditRequestPopUp({ open, handleClose, requestId }: Props) {
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      console.log({ rest });
+      // console.log({ rest });
       if (rest) {
         // mutate();
-        enqueueSnackbar('Edit request has been rejected', {
+        enqueueSnackbar(translate('snackbar.account_manager.edit_request.rejected'), {
           variant: 'success',
           preventDuplicate: true,
           autoHideDuration: 3000,
