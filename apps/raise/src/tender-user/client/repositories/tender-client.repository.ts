@@ -7,6 +7,8 @@ import {
   user_status,
 } from '@prisma/client';
 import { Sql } from '@prisma/client/runtime';
+import { Builder } from 'builder-pattern';
+import { v4 as uuidv4 } from 'uuid';
 import { logUtil } from '../../../commons/utils/log-util';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
@@ -17,9 +19,7 @@ import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-t
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
 import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
-import { v4 as uuidv4 } from 'uuid';
 import { ClientDataEntity } from '../entities/client-data.entity';
-import { Builder } from 'builder-pattern';
 export class CreateClientDataProps {
   id?: string;
   user_id: string;
@@ -215,6 +215,8 @@ export class TenderClientRepository {
           entity: true,
           entity_mobile: true,
           governorate: true,
+          governorate_id: true,
+          governorate_detail: true,
           headquarters: true,
           license_expired: true,
           license_file: true,
@@ -224,6 +226,8 @@ export class TenderClientRepository {
           num_of_employed_facility: true,
           phone: true,
           region: true,
+          region_id: true,
+          region_detail: true,
           twitter_acount: true,
           website: true,
           user: {

@@ -22,6 +22,7 @@ export function ApproveEditRequestMapper(
     entity,
     entity_mobile,
     governorate,
+    governorate_id,
     headquarters,
     license_expired,
     license_file,
@@ -31,6 +32,7 @@ export function ApproveEditRequestMapper(
     num_of_employed_facility,
     phone,
     region,
+    region_id,
     twitter_acount,
     website,
   } = newClientData;
@@ -100,8 +102,12 @@ export function ApproveEditRequestMapper(
     updateClientPayload.governorate = governorate;
   }
 
-  if (region && region !== oldClientData.region) {
-    updateClientPayload.region = region;
+  if (governorate_id && governorate_id !== oldClientData.governorate_id) {
+    updateClientPayload.governorate_id = governorate_id;
+  }
+
+  if (region_id && region_id !== oldClientData.region_id) {
+    updateClientPayload.region_id = region_id;
   }
 
   if (twitter_acount && twitter_acount !== oldClientData.twitter_acount) {

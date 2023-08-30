@@ -73,7 +73,19 @@ export class ClientEditRequestFieldDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
+  governorate_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
   region?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  region_id?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
