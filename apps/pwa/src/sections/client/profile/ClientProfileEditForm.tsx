@@ -76,7 +76,9 @@ function ClientProfileEditForm() {
     },
     form2: {
       region: '',
+      region_id: '',
       governorate: '',
+      governorate_id: '',
       center_administration: '',
       phone: '',
       twitter_acount: '',
@@ -149,6 +151,16 @@ function ClientProfileEditForm() {
     // set active tab
     setStep(newValue);
 
+    // set is edit to be false
+    setIsEdit((prevIsEdit: any) => ({
+      ...prevIsEdit,
+      form1: false,
+      form2: false,
+      form3: false,
+      form4: false,
+      form5: false,
+    }));
+
     // set state to origin data every change tab
     let defaultBoardofDec: FileProp[] = [];
     defaultBoardofDec.push(
@@ -161,7 +173,7 @@ function ClientProfileEditForm() {
     setProfileState((prevProfileState: any) => ({
       ...prevProfileState,
       form1: {
-        ...prevProfileState.form1,
+        // ...prevProfileState.form1,
         entity: startedValue && startedValue.entity && startedValue.entity,
         client_field: startedValue && startedValue.client_field && startedValue.client_field,
         authority: startedValue && startedValue.authority && startedValue.authority,
@@ -177,9 +189,11 @@ function ClientProfileEditForm() {
           startedValue.num_of_employed_facility,
       },
       form2: {
-        ...prevProfileState.form2,
+        // ...prevProfileState.form2,
         region: startedValue && startedValue.region && startedValue.region,
+        region_id: startedValue && startedValue.region_id && startedValue.region_id,
         governorate: startedValue && startedValue.governorate && startedValue.governorate,
+        governorate_id: startedValue && startedValue.governorate_id && startedValue.governorate_id,
         center_administration:
           startedValue && startedValue.center_administration && startedValue.center_administration,
         entity_mobile: startedValue && startedValue.entity_mobile && startedValue.entity_mobile,
@@ -187,10 +201,9 @@ function ClientProfileEditForm() {
         twitter_acount: startedValue && startedValue.twitter_acount && startedValue.twitter_acount,
         website: startedValue && startedValue.website && startedValue.website,
         email: startedValue && startedValue.email && startedValue.email,
-        // password: startedValue && startedValue.password && startedValue.password,
       },
       form3: {
-        ...prevProfileState.form3,
+        // ...prevProfileState.form3,
         license_number: startedValue && startedValue.license_number && startedValue.license_number,
         license_issue_date:
           startedValue && startedValue.license_issue_date && startedValue.license_issue_date,
@@ -202,8 +215,7 @@ function ClientProfileEditForm() {
         board_ofdec_file: defaultBoardofDec,
       },
       form4: {
-        ...prevProfileState.form4,
-        region: startedValue && startedValue.region && startedValue.region,
+        // ...prevProfileState.form4,
         ceo_name: startedValue && startedValue.ceo_name && startedValue.ceo_name,
         ceo_mobile: startedValue && startedValue.ceo_mobile && startedValue.ceo_mobile,
         data_entry_name:
@@ -248,7 +260,9 @@ function ClientProfileEditForm() {
         num_of_employed_facility,
         // second form
         region,
+        region_id,
         governorate,
+        governorate_id,
         center_administration,
         entity_mobile,
         phone,
@@ -297,7 +311,9 @@ function ClientProfileEditForm() {
         form2: {
           ...prevState.form2,
           region,
+          region_id,
           governorate,
+          governorate_id,
           center_administration,
           entity_mobile,
           phone,
@@ -331,6 +347,8 @@ function ClientProfileEditForm() {
       }));
     }
   }, [data]);
+
+  // console.log({ profileState });
 
   const onSubmit1 = (data: MainValuesProps) => {
     window.scrollTo(0, 0);
@@ -379,6 +397,7 @@ function ClientProfileEditForm() {
   };
 
   const onSubmit2 = (data: ConnectingValuesProps) => {
+    // console.log({ data });
     window.scrollTo(0, 0);
     if (isEdit && isEdit.form2) {
       setIsEdit((prevIsEdit: any) => ({
@@ -415,12 +434,13 @@ function ClientProfileEditForm() {
       setProfileState((prevProfileState: any) => ({
         ...prevProfileState,
         form2: {
-          ...prevProfileState.form2,
+          // ...prevProfileState.form2,
           ...data,
         },
       }));
     }
   };
+  // console.log('test form 2', profileState.form2);
 
   const onSubmit3 = (data: LicenseValuesProps) => {
     window.scrollTo(0, 0);
@@ -480,7 +500,6 @@ function ClientProfileEditForm() {
       //   ...prevProfileState,
       // form4: {
       //   ...prevProfileState.form4,
-      //   region: startedValue && startedValue.region && startedValue.region,
       //   ceo_name: startedValue && startedValue.ceo_name && startedValue.ceo_name,
       //   ceo_mobile: startedValue && startedValue.ceo_mobile && startedValue.ceo_mobile,
       //   data_entry_name:
@@ -541,7 +560,6 @@ function ClientProfileEditForm() {
       }));
     }
   };
-  // console.log({ profileState });
 
   const onDeleteBankInformation = (index: number) => {
     setProfileState((prevProfileState: any) => ({
@@ -584,22 +602,26 @@ function ClientProfileEditForm() {
       authority_id:
         profileState.form1.client_field === 'main' ? profileState.form1.authority_id : undefined,
     };
+    const tpmForm2 = {
+      ...profileState.form2,
+    };
+    // const tmpForm4 = {
+    //   ...profileState.form4,
+    // };
     const payload = {
       ...tpmForm1,
-      ...profileState.form2,
+      ...tpmForm2,
       ...profileState.form3,
       ...profileState.form4,
       ...newBankInformation,
     };
     // console.log({ payload });
     const filteredObj = Object.fromEntries(Object.entries(payload).filter(([key, value]) => value));
-    // console.log('startedValue.entity_mobile', startedValue.entity_mobile);
-    // console.log('filteredObj.entity_mobile', filteredObj.entity_mobile);
     if (filteredObj.entity_mobile === startedValue.entity_mobile) {
       delete filteredObj.entity_mobile;
     }
-    const newPayload = editedTabs.form5 ? updateBank : filteredObj;
-    // console.log({ filteredObj });
+    // const newPayload = editedTabs.form5 ? updateBank : filteredObj;
+    // console.log({ payload, tpmForm2, tmpForm4 });
     try {
       // const url = editedTabs.form5
       //   ? 'tender/client/edit-request/create'
