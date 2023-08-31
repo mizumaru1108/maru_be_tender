@@ -1405,9 +1405,9 @@ export class ProposalRepository {
         });
       }
 
-      console.log('outter', logUtil(outterClauses));
-      console.log('where', logUtil(whereClause));
-      console.log('or', logUtil(orClauses));
+      // console.log('outter', logUtil(outterClauses));
+      // console.log('where', logUtil(whereClause));
+      // console.log('or', logUtil(orClauses));
 
       const data = await this.prismaService.proposal.findMany({
         where: {
