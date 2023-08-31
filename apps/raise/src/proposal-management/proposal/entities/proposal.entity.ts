@@ -11,6 +11,8 @@ import { ProposalPaymentEntity } from '../../payment/entities/proposal-payment.e
 import { ProposalProjectTimelineEntity } from '../../poject-timelines/entities/proposal.project.timeline.entity';
 import { ProposalLogEntity } from '../../proposal-log/entities/proposal-log.entity';
 import { BankInformationEntity } from '../../../bank/entities/bank-information.entity';
+import { RegionEntity } from '../../../region-management/region/entities/region.entity';
+import { GovernorateEntity } from '../../../region-management/governorate/entities/governorate.entity';
 
 export interface ISendNotificaitonEvent {
   notif_type: 'EMAIL' | 'SMS';
@@ -44,6 +46,8 @@ export class ProposalEntity extends AggregateRoot {
   follow_ups?: ProposalFollowUpEntity[];
   fsupport_by_supervisor?: number | null;
   governorate?: string | null;
+  governorate_id?: string | null;
+  governorate_detail?: GovernorateEntity;
   id: string;
   inclu_or_exclu?: boolean | null = false;
   inner_status?: string | null = 'CREATED_BY_CLIENT';
@@ -87,6 +91,8 @@ export class ProposalEntity extends AggregateRoot {
   proposal_logs?: ProposalLogEntity[];
   reasons_to_accept?: string | null;
   region?: string | null;
+  region_id?: string | null;
+  region_detail?: RegionEntity;
   remote_or_insite?: string | null;
   state?: string | null = 'MODERATOR';
   step?: string | null;

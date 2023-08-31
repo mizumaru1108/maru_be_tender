@@ -193,7 +193,11 @@ model proposal {
   pm_email                            String?                          @db.VarChar
   pm_mobile                           String?                          @db.VarChar
   governorate                         String?
+  governorate_id                      String?
+  governorate_detail                  Governorate?  @relation(fields: [governorate_id], references: [governorate_id])
   region                              String?                          @db.VarChar
+  region_id                           String?  
+  region_detail                       Region?       @relation(fields: [region_id], references: [region_id])
   amount_required_fsupport            Decimal?                         @db.Decimal
   need_consultant                     Boolean?                         @default(false)
   step                                String?                          @default("ZERO")
@@ -1667,6 +1671,7 @@ model Region {
     is_deleted Boolean @default(false)
     governorate Governorate[]
     client_data client_data[]
+    proposal    proposal[]
 
     @@map("regions")
 }
@@ -1678,5 +1683,6 @@ model Governorate {
     is_deleted Boolean @default(false)
 
     client_data client_data[]
+    proposal    proposal[]
     @@map("governorates")
 }

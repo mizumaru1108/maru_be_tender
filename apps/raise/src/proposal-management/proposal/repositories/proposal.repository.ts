@@ -160,6 +160,20 @@ export class ProposalRepository {
           };
         }
 
+        if (relation === 'governorate_detail') {
+          include = {
+            ...include,
+            governorate_detail: true,
+          };
+        }
+
+        if (relation === 'region_detail') {
+          include = {
+            ...include,
+            region_detail: true,
+          };
+        }
+
         if (relation === 'proposal_closing_report') {
           include = {
             ...include,
@@ -294,6 +308,7 @@ export class ProposalRepository {
           finance_id: props.finance_id,
           fsupport_by_supervisor: props.fsupport_by_supervisor,
           governorate: props.governorate,
+          governorate_id: props.governorate_id,
           id: props.id || nanoid(),
           inclu_or_exclu: props.inclu_or_exclu,
           inner_status: props.inner_status,
@@ -331,6 +346,7 @@ export class ProposalRepository {
           proposal_bank_id: props.proposal_bank_id,
           reasons_to_accept: props.reasons_to_accept,
           region: props.region,
+          region_id: props.region_id,
           remote_or_insite: props.remote_or_insite,
           state: props.state,
           step: props.step,
@@ -417,6 +433,7 @@ export class ProposalRepository {
           finance_id: props.finance_id,
           fsupport_by_supervisor: props.fsupport_by_supervisor,
           governorate: props.governorate,
+          governorate_id: props.governorate_id,
           id: props.id || nanoid(),
           inclu_or_exclu: props.inclu_or_exclu,
           inner_status: props.inner_status,
@@ -454,6 +471,7 @@ export class ProposalRepository {
           proposal_bank_id: props.proposal_bank_id,
           reasons_to_accept: props.reasons_to_accept,
           region: props.region,
+          region_id: props.region_id,
           remote_or_insite: props.remote_or_insite,
           state: props.state,
           step: props.step,
@@ -748,6 +766,20 @@ export class ProposalRepository {
                 genders: true,
               },
             },
+          };
+        }
+
+        if (relation === 'governorate_detail') {
+          include = {
+            ...include,
+            governorate_detail: true,
+          };
+        }
+
+        if (relation === 'region_detail') {
+          include = {
+            ...include,
+            region_detail: true,
           };
         }
       }
@@ -1077,7 +1109,11 @@ export class ProposalRepository {
               pm_mobile: true,
               pm_email: true,
               region: true,
+              region_id: true,
+              region_detail: true,
               governorate: true,
+              governorate_id: true,
+              governorate_detail: true,
               proposal_item_budgets: true,
               project_timeline: true,
               beneficiary_id: true,
@@ -1381,6 +1417,8 @@ export class ProposalRepository {
         skip: offset,
         include: {
           user: true,
+          region_detail: true,
+          governorate_detail: true,
         },
         orderBy: {
           project_name: sort,
@@ -1507,6 +1545,8 @@ export class ProposalRepository {
         skip: offset,
         include: {
           user: true,
+          governorate_detail: true,
+          region_detail: true,
         },
         orderBy: {
           project_name: sort,
@@ -2114,8 +2154,8 @@ export class ProposalRepository {
         };
       }
 
-      console.log(logUtil(whereClause));
-      console.log({ queryOptions });
+      // console.log(logUtil(whereClause));
+      // console.log({ queryOptions });
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
@@ -2213,8 +2253,8 @@ export class ProposalRepository {
         };
       }
 
-      console.log(logUtil(whereClause));
-      console.log({ queryOptions });
+      // console.log(logUtil(whereClause));
+      // console.log({ queryOptions });
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
@@ -2632,6 +2672,8 @@ export class ProposalRepository {
               execution_places: true,
             },
           },
+          region_detail: true,
+          governorate_detail: true,
         },
       });
       return proposal;

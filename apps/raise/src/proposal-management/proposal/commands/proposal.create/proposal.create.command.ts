@@ -78,7 +78,9 @@ export class ProposalCreateCommandHandler
           pm_mobile: request.pm_mobile,
           pm_email: request.pm_email,
           region: request.region,
+          region_id: request.region_id,
           governorate: request.governorate,
+          governorate_id: request.governorate_id,
           amount_required_fsupport: request.amount_required_fsupport,
         },
       ).build();
