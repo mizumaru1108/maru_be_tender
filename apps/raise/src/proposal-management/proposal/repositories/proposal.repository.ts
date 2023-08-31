@@ -1291,12 +1291,15 @@ export class ProposalRepository {
             where: {
               id: currentUser.id,
             },
+            include: {
+              track: true,
+            },
           });
-          if (!reviewer || !reviewer.employee_path) {
+          if (!reviewer || !reviewer.track) {
             throw new BadRequestException('cant find track of this user');
           }
 
-          if (reviewer.employee_path !== 'GENERAL') {
+          if (reviewer.track.name !== 'GENERAL') {
             whereClause = {
               ...whereClause,
               OR: [
