@@ -129,7 +129,19 @@ export class ProposalSaveDraftInterceptorDto extends ProposalDeleteDraftDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  region_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   governorate?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  governorate_id?: string;
   /* third form ---------------------------------------------------- */
 
   /* fourth form ---------------------------------------------------- */

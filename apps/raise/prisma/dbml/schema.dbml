@@ -178,7 +178,11 @@ Table proposal {
   pm_email String
   pm_mobile String
   governorate String
+  governorate_id String
+  governorate_detail governorates
   region String
+  region_id String
+  region_detail regions
   amount_required_fsupport Decimal
   need_consultant Boolean [default: false]
   step String [default: 'ZERO']
@@ -1537,6 +1541,7 @@ Table regions {
   is_deleted Boolean [not null, default: false]
   governorate governorates [not null]
   client_data client_data [not null]
+  proposal proposal [not null]
 }
 
 Table governorates {
@@ -1546,6 +1551,7 @@ Table governorates {
   region_detail regions [not null]
   is_deleted Boolean [not null, default: false]
   client_data client_data [not null]
+  proposal proposal [not null]
 }
 
 Ref: authorities.client_field_id > client_fields.client_field_id
@@ -1577,6 +1583,10 @@ Ref: message.room_id > room_chat.id [delete: Cascade]
 Ref: payment.proposal_id > proposal.id [delete: Cascade]
 
 Ref: payment.status > payment_status.id [delete: Cascade]
+
+Ref: proposal.governorate_id > governorates.governorate_id
+
+Ref: proposal.region_id > regions.region_id
 
 Ref: proposal.beneficiary_id > beneficiaries.id
 

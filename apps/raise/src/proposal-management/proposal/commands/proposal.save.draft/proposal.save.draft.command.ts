@@ -103,7 +103,9 @@ export class ProposalSaveDraftCommandHandler
           pm_mobile: request.pm_mobile,
           pm_email: request.pm_email,
           region: request.region,
+          region_id: request.region_id,
           governorate: request.governorate,
+          governorate_id: request.governorate_id,
           amount_required_fsupport: request.amount_required_fsupport,
         },
       ).build();
@@ -149,7 +151,9 @@ export class ProposalSaveDraftCommandHandler
         !!request.pm_mobile &&
         !!request.pm_email &&
         !!request.region &&
-        !!request.governorate
+        !!request.region_id &&
+        !!request.governorate &&
+        !!request.governorate_id
       ) {
         proposalUpdateProps.step = 'THIRD';
       }
@@ -169,7 +173,9 @@ export class ProposalSaveDraftCommandHandler
         !!request.pm_mobile &&
         !!request.pm_email &&
         !!request.region &&
+        !!request.region_id &&
         !!request.governorate &&
+        !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets
       ) {
@@ -191,7 +197,9 @@ export class ProposalSaveDraftCommandHandler
         !!request.pm_mobile &&
         !!request.pm_email &&
         !!request.region &&
+        !!request.region_id &&
         !!request.governorate &&
+        !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets &&
         !!request.project_timeline
@@ -214,7 +222,9 @@ export class ProposalSaveDraftCommandHandler
         !!request.pm_mobile &&
         !!request.pm_email &&
         !!request.region &&
+        !!request.region_id &&
         !!request.governorate &&
+        !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets &&
         !!request.proposal_bank_information_id

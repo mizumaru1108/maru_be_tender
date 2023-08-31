@@ -38,6 +38,7 @@ export class ProposalCreateProps {
   finance_id?: string | null;
   fsupport_by_supervisor?: number | null;
   governorate?: string | null;
+  governorate_id?: string | null;
   id?: string; // optional in case you want to predefine it or use the default value
   inclu_or_exclu?: boolean | null = false;
   inner_status?: string | null = 'CREATED_BY_CLIENT';
@@ -75,6 +76,7 @@ export class ProposalCreateProps {
   proposal_bank_id?: string | null;
   reasons_to_accept?: string | null;
   region?: string | null;
+  region_id?: string | null;
   remote_or_insite?: string | null;
   state?: string | null = 'MODERATOR';
   step?: string | null;
@@ -111,6 +113,7 @@ export class ProposalUpdateProps {
   finance_id?: string | null;
   fsupport_by_supervisor?: number | null;
   governorate?: string | null;
+  governorate_id?: string | null;
   id: string;
   inclu_or_exclu?: boolean | null;
   inner_status?: string | null;
@@ -148,6 +151,7 @@ export class ProposalUpdateProps {
   proposal_bank_id?: string | null;
   reasons_to_accept?: string | null;
   region?: string | null;
+  region_id?: string | null;
   remote_or_insite?: string | null;
   state?: string | null;
   step?: string | null;
