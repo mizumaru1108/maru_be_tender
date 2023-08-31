@@ -264,6 +264,8 @@ export type AmandementProposal = Omit<
   | 'proposal_item_budgets'
   | 'proposal_item_budgets_aggregate'
   | 'follow_ups'
+  | 'region_id'
+  | 'governorate_id'
   // | 'timelines'
 >;
 
@@ -283,7 +285,9 @@ export interface AmandmentRequestForm extends AmandementProposal {
   pm_mobile: string;
   pm_email: string;
   region: string;
+  region_id: string;
   governorate: string;
+  governorate_id: string;
   proposal_item_budgets: ItemBudget[];
   proposal_bank_id: string;
   // timelines: FormValuesProps;

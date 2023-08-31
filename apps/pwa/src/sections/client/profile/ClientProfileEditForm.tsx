@@ -176,6 +176,8 @@ function ClientProfileEditForm() {
         // ...prevProfileState.form1,
         entity: startedValue && startedValue.entity && startedValue.entity,
         client_field: startedValue && startedValue.client_field && startedValue.client_field,
+        client_field_id:
+          startedValue && startedValue.client_field_id && startedValue.client_field_id,
         authority: startedValue && startedValue.authority && startedValue.authority,
         authority_id: startedValue && startedValue.authority_id && startedValue.authority_id,
         date_of_esthablistmen:
@@ -687,7 +689,7 @@ function ClientProfileEditForm() {
     // console.log({ newBankInformation });
     // console.log({ profileState });
   };
-  // console.log('profileState.form5', profileState.form5);
+  // console.log('profileState', profileState);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row">

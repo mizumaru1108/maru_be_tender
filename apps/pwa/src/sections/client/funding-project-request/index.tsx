@@ -66,7 +66,7 @@ const FundingProjectRequestForm = () => {
       project_location: '',
       project_implement_date: '',
       execution_time: '',
-      // project_beneficiaries: '',
+      project_beneficiaries: '',
       beneficiary_id: '',
       letter_ofsupport_req: {
         url: '',
@@ -95,7 +95,15 @@ const FundingProjectRequestForm = () => {
       project_strengths: '',
       project_risks: '',
     },
-    form3: { pm_name: '', pm_mobile: '', pm_email: '', region: '', governorate: '' },
+    form3: {
+      pm_name: '',
+      pm_mobile: '',
+      pm_email: '',
+      region: '',
+      governorate: '',
+      region_id: '',
+      governorate_id: '',
+    },
     form4: {
       amount_required_fsupport: undefined,
       detail_project_budgets: {
@@ -150,6 +158,8 @@ const FundingProjectRequestForm = () => {
     }
   };
 
+  // console.log('requestState', requestState);
+
   // on submit for the second step
   const onSubmitform2 = (data: any) => {
     if (isDraft) {
@@ -182,6 +192,7 @@ const FundingProjectRequestForm = () => {
       }));
     }
   };
+  // console.log('test requestState form 3 ', requestState.form3);
 
   // on submit for the fourth step
   const onSubmitform4 = (data: any) => {
@@ -425,18 +436,18 @@ const FundingProjectRequestForm = () => {
         amount_required_fsupport: requestState.form4.amount_required_fsupport,
         detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
       }),
-      ...(lastIndex === step && step >= 0
+      ...(step >= 0
         ? {
-            ...data,
+            // ...data,
             project_attachments: {
               ...(!!newAttachment && Object.keys(newAttachment).length > 0
                 ? { ...newAttachment }
-                : { ...data.project_attachments }),
+                : { ...requestState.form1.project_attachments }),
             },
             letter_ofsupport_req: {
               ...(!!newLetteSupport && Object.keys(newLetteSupport).length > 0
                 ? { ...newLetteSupport }
-                : { ...data.letter_ofsupport_req }),
+                : { ...requestState.form1.letter_ofsupport_req }),
             },
           }
         : {}),
@@ -489,7 +500,8 @@ const FundingProjectRequestForm = () => {
     const jsonData: any = {
       ...payload,
     };
-    console.log({ datas });
+    console.log({ datas, requestState });
+
     for (const key in jsonData) {
       formData.append(key, jsonData[key]);
     }
@@ -943,7 +955,9 @@ const FundingProjectRequestForm = () => {
             pm_mobile,
             pm_email,
             region,
+            region_id,
             governorate,
+            governorate_id,
             amount_required_fsupport,
             proposal_item_budgets,
             project_timeline,
@@ -995,7 +1009,9 @@ const FundingProjectRequestForm = () => {
                 pm_mobile: pm_mobile.trim(),
                 pm_email: pm_email.trim(),
                 region: region.trim(),
+                region_id,
                 governorate,
+                governorate_id,
               }),
             },
             form4: {
@@ -1048,6 +1064,8 @@ const FundingProjectRequestForm = () => {
               pm_email: pm_email.trim(),
               region: region.trim(),
               governorate,
+              region_id,
+              governorate_id,
             }),
             ...(STEP.indexOf(step.trim()) >= 3 && {
               amount_required_fsupport,

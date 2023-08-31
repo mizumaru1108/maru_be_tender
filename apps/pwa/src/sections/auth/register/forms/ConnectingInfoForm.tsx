@@ -3,7 +3,7 @@ import { Button, Grid, MenuItem } from '@mui/material';
 import axios from 'axios';
 import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import RHFPassword from 'components/hook-form/RHFPassword';
-import { FEATURE_MENU_ADMIN_ENTITY_AREA, TMRA_RAISE_URL } from 'config';
+import { FEATURE_MENU_ADMIN_ENTITY_AREA, FEATURE_MENU_ADMIN_REGIONS, TMRA_RAISE_URL } from 'config';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import React, { useMemo } from 'react';
@@ -164,7 +164,9 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
   const handleChangeRegion = (id: string) => {
     if (id) {
       const tmpRegion: IRegions = [...regions].find((item) => item.region_id === id) as IRegions;
-      const tmpGovernorates: IGovernorate[] = tmpRegion.governorate;
+      const tmpGovernorates: IGovernorate[] = tmpRegion.governorate.filter(
+        (item) => item.is_deleted !== true
+      );
       setGovernorates(tmpGovernorates);
       setArea((prevState: any) => ({
         ...prevState,
@@ -195,7 +197,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
       const newEntityMobile = defaultValues.entity_mobile?.replace('+966', '');
       const newPhone = defaultValues.phone?.replace('+966', '');
       newValues = { ...newValues, entity_mobile: newEntityMobile, phone: newPhone };
-      if (defaultValues.region_id && defaultValues.governorate_id) {
+      if (defaultValues.region_id && defaultValues.governorate_id && regions.length > 0) {
         const tmpRegion: IRegions = [...regions].find(
           (item) => item.region_id === defaultValues.region_id
         ) as IRegions;
@@ -239,7 +241,9 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
   }, [defaultValues, regions, isLoadingRegions]);
 
   React.useEffect(() => {
-    fetchRegions();
+    if (FEATURE_MENU_ADMIN_ENTITY_AREA && FEATURE_MENU_ADMIN_REGIONS) {
+      fetchRegions();
+    }
   }, [fetchRegions]);
   // console.log({ regions });
 
@@ -277,21 +281,24 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
             }}
             onChange={(e) => {
               if (e.target.value !== '') {
-                if (FEATURE_MENU_ADMIN_ENTITY_AREA) {
+                if (FEATURE_MENU_ADMIN_ENTITY_AREA && FEATURE_MENU_ADMIN_REGIONS) {
                   handleChangeRegion(e.target.value as string);
                 }
               }
               setValue('region', e.target.value);
             }}
           >
-            {FEATURE_MENU_ADMIN_ENTITY_AREA && regions.length > 0 && !isLoadingRegions
+            {FEATURE_MENU_ADMIN_ENTITY_AREA &&
+            FEATURE_MENU_ADMIN_REGIONS &&
+            regions.length > 0 &&
+            !isLoadingRegions
               ? regions.map((option, i) => (
                   <MenuItem key={i} value={option.region_id}>
                     {option.name}
                   </MenuItem>
                 ))
               : null}
-            {!FEATURE_MENU_ADMIN_ENTITY_AREA && !isLoadingRegions
+            {!FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS && !isLoadingRegions
               ? Object.keys(REGION).map((item, index) => (
                   <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
                     {item}
@@ -299,7 +306,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
                 ))
               : null}
           </RHFSelect>
-          {FEATURE_MENU_ADMIN_ENTITY_AREA && regions.length === 0 && (
+          {FEATURE_MENU_ADMIN_ENTITY_AREA && FEATURE_MENU_ADMIN_REGIONS && regions.length === 0 && (
             <Button
               disabled={isLoadingRegions}
               data-cy={`button-retry-fetching-bank`}
@@ -347,7 +354,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
             }}
             onChange={(e) => {
               if (e.target.value !== '') {
-                if (FEATURE_MENU_ADMIN_ENTITY_AREA) {
+                if (FEATURE_MENU_ADMIN_ENTITY_AREA && FEATURE_MENU_ADMIN_REGIONS) {
                   handleChangeGovernorate(e.target.value as string);
                 }
               }
@@ -355,21 +362,24 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
               setValue('governorate', e.target.value);
             }}
           >
-            {FEATURE_MENU_ADMIN_ENTITY_AREA && governorates.length > 0 && !isLoadingRegions
+            {FEATURE_MENU_ADMIN_ENTITY_AREA &&
+            FEATURE_MENU_ADMIN_REGIONS &&
+            governorates.length > 0 &&
+            !isLoadingRegions
               ? governorates.map((option, i) => (
                   <MenuItem key={i} value={option.governorate_id}>
                     {option.name}
                   </MenuItem>
                 ))
               : null}
-            {!FEATURE_MENU_ADMIN_ENTITY_AREA && region !== ''
+            {!FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS && region !== ''
               ? REGION[`${region}`].map((item: any, index: any) => (
                   <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
                     {item}
                   </MenuItem>
                 ))
               : null}
-            {!FEATURE_MENU_ADMIN_ENTITY_AREA && region === '' ? (
+            {!FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS && region === '' ? (
               <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
                 {translate('funding_project_request_form3.city.placeholder')}
               </option>

@@ -46,8 +46,12 @@ query MyQuery($id: String = "") {
       proposal_id
       start_date
     }
+    beneficiary_id
+    governorate_id
+    region_id
   }
 }
+
 
 
 `;

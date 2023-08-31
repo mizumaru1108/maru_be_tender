@@ -98,7 +98,15 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
       project_strengths: '',
       project_risks: '',
     },
-    form3: { pm_name: '', pm_mobile: '', pm_email: '', region: '', governorate: '' },
+    form3: {
+      pm_name: '',
+      pm_mobile: '',
+      pm_email: '',
+      region: '',
+      governorate: '',
+      region_id: '',
+      governorate_id: '',
+    },
     form4: {
       amount_required_fsupport: undefined,
       detail_project_budgets: {
@@ -435,6 +443,8 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
                 pm_email: tmpValues?.data.pm_email,
                 region: tmpValues?.data.region,
                 governorate: tmpValues?.data.governorate,
+                region_id: tmpValues?.data.region_id,
+                governorate_id: tmpValues?.data.governorate_id,
               },
             },
             form4: {

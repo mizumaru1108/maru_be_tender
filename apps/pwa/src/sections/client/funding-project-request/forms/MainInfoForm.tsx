@@ -196,7 +196,9 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
   const handleSubmitForm = async (data: FormValuesProps) => {
     let tmpValue = { ...data };
     const tmpBeneficiaries =
-      beneficiaries_list.find((bank: any) => bank.id === data.beneficiary_id)?.name || '';
+      beneficiaries_list.find((beneficiaries: any) => beneficiaries.id === data.beneficiary_id)
+        ?.name || '';
+    // console.log({ tmpBeneficiaries });
     tmpValue.project_beneficiaries = tmpBeneficiaries;
     onSubmit(removeEmptyKey(tmpValue));
   };

@@ -13,7 +13,7 @@ import { useSnackbar } from 'notistack';
 import { IRegions } from 'sections/admin/region/list/types';
 import { IGovernorate } from 'sections/admin/governorate/list/types';
 import axios from 'axios';
-import { FEATURE_MENU_ADMIN_ENTITY_AREA, TMRA_RAISE_URL } from 'config';
+import { FEATURE_MENU_ADMIN_ENTITY_AREA, FEATURE_MENU_ADMIN_REGIONS, TMRA_RAISE_URL } from 'config';
 import { CatchError } from 'utils/catchError';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { REGION } from '_mock/region';
@@ -124,7 +124,9 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
   const handleChangeRegion = (id: string) => {
     if (id) {
       const tmpRegion: IRegions = [...regions].find((item) => item.region_id === id) as IRegions;
-      const tmpGovernorates: IGovernorate[] = tmpRegion.governorate;
+      const tmpGovernorates: IGovernorate[] = tmpRegion.governorate.filter(
+        (item) => item.is_deleted !== true
+      );
       setGovernorates(tmpGovernorates);
       setArea((prevState: any) => ({
         ...prevState,
@@ -184,8 +186,11 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
         const region = Object.keys(REGION).includes(newValues.region) ? newValues.region : '';
         newValues = {
           ...newValues,
-          region: !FEATURE_MENU_ADMIN_ENTITY_AREA ? region : '',
-          governorate: !FEATURE_MENU_ADMIN_ENTITY_AREA ? defaultValues.governorate : '',
+          region: !FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS ? region : '',
+          governorate:
+            !FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS
+              ? defaultValues.governorate
+              : '',
         };
       }
       // console.log({ region });
@@ -209,15 +214,15 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
   }, [defaultValues, reset, isLoadingRegions]);
 
   React.useEffect(() => {
-    fetchRegions();
+    if (FEATURE_MENU_ADMIN_ENTITY_AREA && FEATURE_MENU_ADMIN_REGIONS) {
+      fetchRegions();
+    }
   }, [fetchRegions]);
 
   const region = watch('region') as RegionNames | '';
   const tmpGovernorate = (watch('governorate') as string) || null;
 
-  // console.log({ area });
-  if (isLoadingRegions || (!tmpGovernorate && regions.length === 0))
-    return <>{translate('pages.common.loading')}</>;
+  if (isLoadingRegions || !tmpGovernorate) return <>{translate('pages.common.loading')}</>;
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
@@ -249,21 +254,24 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
             }}
             onChange={(e) => {
               if (e.target.value !== '') {
-                if (FEATURE_MENU_ADMIN_ENTITY_AREA) {
+                if (FEATURE_MENU_ADMIN_ENTITY_AREA && FEATURE_MENU_ADMIN_REGIONS) {
                   handleChangeRegion(e.target.value as string);
                 }
               }
               setValue('region', e.target.value);
             }}
           >
-            {FEATURE_MENU_ADMIN_ENTITY_AREA && regions.length > 0 && !isLoadingRegions
+            {FEATURE_MENU_ADMIN_ENTITY_AREA &&
+            FEATURE_MENU_ADMIN_REGIONS &&
+            regions.length > 0 &&
+            !isLoadingRegions
               ? regions.map((option, i) => (
                   <MenuItem key={i} value={option.region_id}>
                     {option.name}
                   </MenuItem>
                 ))
               : null}
-            {!FEATURE_MENU_ADMIN_ENTITY_AREA && !isLoadingRegions
+            {!FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS && !isLoadingRegions
               ? Object.keys(REGION).map((item, index) => (
                   <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
                     {item}
@@ -271,7 +279,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
                 ))
               : null}
           </RHFSelect>
-          {FEATURE_MENU_ADMIN_ENTITY_AREA && regions.length === 0 && (
+          {FEATURE_MENU_ADMIN_ENTITY_AREA && FEATURE_MENU_ADMIN_REGIONS && regions.length === 0 && (
             <Button
               disabled={isLoadingRegions || isEdit}
               data-cy={`button-retry-fetching-bank`}
@@ -298,7 +306,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
             }}
             onChange={(e) => {
               if (e.target.value !== '') {
-                if (FEATURE_MENU_ADMIN_ENTITY_AREA) {
+                if (FEATURE_MENU_ADMIN_ENTITY_AREA && FEATURE_MENU_ADMIN_REGIONS) {
                   handleChangeGovernorate(e.target.value as string);
                 }
               }
@@ -307,6 +315,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
             }}
           >
             {FEATURE_MENU_ADMIN_ENTITY_AREA &&
+            FEATURE_MENU_ADMIN_REGIONS &&
             governorates &&
             governorates.length > 0 &&
             !isLoadingRegions
@@ -316,14 +325,17 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
                   </MenuItem>
                 ))
               : null}
-            {!FEATURE_MENU_ADMIN_ENTITY_AREA && region !== ''
+            {!FEATURE_MENU_ADMIN_ENTITY_AREA &&
+            !FEATURE_MENU_ADMIN_REGIONS &&
+            region !== '' &&
+            REGION
               ? REGION[`${region}`].map((item: any, index: any) => (
                   <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
                     {item}
                   </MenuItem>
                 ))
               : null}
-            {!FEATURE_MENU_ADMIN_ENTITY_AREA && region === '' ? (
+            {!FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS && region === '' ? (
               <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
                 {translate('funding_project_request_form3.city.placeholder')}
               </option>
