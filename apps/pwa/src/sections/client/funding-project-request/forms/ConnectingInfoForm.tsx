@@ -36,8 +36,10 @@ type Props = {
 
 const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const tmpDefaultValues = removeEmptyKey(defaultValues);
+  const isOldProps =
+    revised && tmpDefaultValues.region_id && tmpDefaultValues.governorate_id ? false : true;
   // console.log({ revised });
-  // console.log({ tmpDefaultValues });
+  // console.log({ tmpDefaultValues, defaultValues });
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -103,7 +105,13 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(CreatingProposalForm3),
-    defaultValues: tmpDefaultValues,
+    defaultValues: {
+      ...tmpDefaultValues,
+      pm_email:
+        tmpDefaultValues?.pm_email && tmpDefaultValues?.pm_email !== ''
+          ? removeNewLineCharacters(tmpDefaultValues.pm_email)
+          : '',
+    },
   });
   const {
     handleSubmit,
@@ -129,29 +137,31 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
       governorate_id: area?.governorate?.governorate_id || '',
       pm_mobile: newEntityMobile!,
     };
-
+    // console.log('payload:', removeEmptyKey(payload));
     // reset({ ...payload });
     onSubmit(removeEmptyKey(payload));
   };
 
   const handleChangeRegion = (id: string) => {
-    if (id) {
+    if (id && regions && regions.length > 0) {
       const tmpRegion: IRegions = [...regions].find((item) => item.region_id === id) as IRegions;
-      const tmpGovernorates: IGovernorate[] = tmpRegion.governorate.filter(
-        (item) => item.is_deleted !== true
-      );
-      setGovernorates(tmpGovernorates);
-      setArea((prevState: any) => ({
-        ...prevState,
-        region: tmpRegion,
-        governorate: null,
-      }));
+      if (tmpRegion) {
+        const tmpGovernorates: IGovernorate[] = tmpRegion.governorate.filter(
+          (item) => item.is_deleted !== true
+        );
+        setGovernorates(tmpGovernorates);
+        setArea((prevState: any) => ({
+          ...prevState,
+          region: tmpRegion,
+          governorate: null,
+        }));
+      }
       setValue('governorate', '');
     }
   };
 
   const handleChangeGovernorate = (id: string) => {
-    if (id) {
+    if (id && governorates && governorates.length > 0) {
       const tmpGovernorate: IGovernorate = [...governorates].find(
         (item) => item.governorate_id === id
       ) as IGovernorate;
@@ -200,7 +210,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
             .filter((item) => item.is_deleted !== true)
             .find((item) => item.governorate_id === defaultValues.governorate_id) as IGovernorate;
         }
-        console.log({ tmpGovernorate });
+        // console.log({ tmpGovernorate });
 
         newValues = {
           ...newValues,
@@ -218,11 +228,14 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
           ...newValues,
           // region: !FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS ? region : '',
           // governorate:
-          //   !FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS
-          //     ? tmpDefaultValues.governorate
-          //     : '',
+          // !FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS
+          //   ? tmpDefaultValues.governorate
+          //   : '',
           region: region,
-          governorate: tmpDefaultValues.governorate,
+          governorate:
+            !FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS
+              ? tmpDefaultValues.governorate
+              : '',
         };
       }
       // console.log({ newValues });
@@ -240,7 +253,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
   const region = watch('region') as RegionNames | '';
   const tmpGovernorate = (watch('governorate') as string) || '';
 
-  // console.log({ region, tmpGovernorate });
+  // console.log({ region, tmpGovernorate, area });
   if (isLoadingRegions) return <>{translate('pages.common.loading')}</>;
 
   return (
@@ -306,16 +319,18 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
             }}
             onChange={(e) => {
               if (e.target.value !== '') {
-                if (FEATURE_MENU_ADMIN_ENTITY_AREA && FEATURE_MENU_ADMIN_REGIONS) {
+                if (
+                  FEATURE_MENU_ADMIN_ENTITY_AREA &&
+                  FEATURE_MENU_ADMIN_REGIONS &&
+                  regions.length > 0
+                ) {
                   handleChangeRegion(e.target.value as string);
                 }
+                setValue('region', e.target.value);
               }
-              setValue('region', e.target.value);
             }}
           >
             {revised &&
-            tmpDefaultValues.region_id &&
-            tmpDefaultValues.governorate_id &&
             FEATURE_MENU_ADMIN_ENTITY_AREA &&
             FEATURE_MENU_ADMIN_REGIONS &&
             regions.length > 0 &&
@@ -337,7 +352,9 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
                   </MenuItem>
                 ))
               : null}
-            {((!FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS) || revised) &&
+            {(area === null || !area.region) &&
+            !FEATURE_MENU_ADMIN_ENTITY_AREA &&
+            !FEATURE_MENU_ADMIN_REGIONS &&
             !isLoadingRegions
               ? Object.keys(REGION).map((item, index) => (
                   <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
@@ -385,11 +402,9 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
           <RHFSelect
             disabled={
               isLoadingRegions ||
-              (!!revised && revised.hasOwnProperty('governorate')
+              (!!revised && revised.hasOwnProperty('region')
                 ? false
-                : !!revised &&
-                  (!(tmpGovernorate === '' || !tmpGovernorate) || !(region === '' || !region)) &&
-                  true)
+                : !!revised && !(tmpGovernorate === '' || !tmpGovernorate) && true)
             }
             name="governorate"
             label={translate('funding_project_request_form3.city.label')}
@@ -401,16 +416,21 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
             }}
             onChange={(e) => {
               if (e.target.value !== '') {
-                if (FEATURE_MENU_ADMIN_ENTITY_AREA && FEATURE_MENU_ADMIN_REGIONS) {
+                if (
+                  area &&
+                  area.region &&
+                  FEATURE_MENU_ADMIN_ENTITY_AREA &&
+                  FEATURE_MENU_ADMIN_REGIONS
+                ) {
                   handleChangeGovernorate(e.target.value as string);
                 }
+                setValue('governorate', e.target.value);
               }
-              setValue('governorate', e.target.value);
             }}
           >
             {!revised &&
-            FEATURE_MENU_ADMIN_ENTITY_AREA &&
-            FEATURE_MENU_ADMIN_REGIONS &&
+            area &&
+            area.region &&
             governorates &&
             governorates.length > 0 &&
             !isLoadingRegions
@@ -422,10 +442,8 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
               : null}
             {revised &&
             !isLoadingRegions &&
-            tmpDefaultValues.region_id &&
-            tmpDefaultValues.governorate_id &&
-            FEATURE_MENU_ADMIN_ENTITY_AREA &&
-            FEATURE_MENU_ADMIN_REGIONS &&
+            area &&
+            area.region &&
             governorates &&
             governorates.length > 0
               ? governorates.map((option, i) => (
@@ -434,12 +452,11 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
                   </MenuItem>
                 ))
               : null}
-            {!((!FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS) || revised) &&
+            {(area === null || !area.region) &&
             region !== '' &&
-            region !== undefined &&
             !isLoadingRegions &&
             tmpRegions &&
-            tmpRegions.length > 0
+            tmpRegions[`${removeNewLineCharacters(region) as RegionNames}`]
               ? tmpRegions[`${removeNewLineCharacters(region) as RegionNames}`].map(
                   (item: any, index: any) => (
                     <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
@@ -448,8 +465,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
                   )
                 )
               : null}
-            {((!FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS) || revised) &&
-            region === '' ? (
+            {(area === null || !area.region) && region === '' ? (
               <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
                 {translate('funding_project_request_form3.city.placeholder')}
               </option>

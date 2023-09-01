@@ -188,7 +188,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
       },
     }));
   };
-
+  // console.log('tmpValues?.revised', tmpValues?.revised);
   // on submit for the Fifth step
   const onSubmitform5 = (data: any) => {
     // console.log('data form 5', data);
@@ -223,6 +223,37 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         obj[key] = newValue[key];
         return obj;
       }, {});
+
+    if (
+      tmpValues?.revised?.project_beneficiaries &&
+      filteredValue &&
+      !filteredValue.beneficiary_id
+    ) {
+      filteredValue = {
+        ...filteredValue,
+        beneficiary_id: newValue.beneficiary_id,
+      };
+    }
+    if (filteredValue && (!filteredValue.region_id || !filteredValue.governorate_id)) {
+      if (
+        tmpValues?.data?.region !== newValue?.region ||
+        tmpValues?.data?.region_id !== newValue?.region_id
+      ) {
+        if (!!newValue.region_id) {
+          filteredValue.region = newValue.region;
+          filteredValue.region_id = newValue.region_id;
+        }
+      }
+      if (
+        tmpValues?.data?.governorate !== newValue?.governorate ||
+        tmpValues?.data?.governorate_id !== newValue?.governorate_id
+      ) {
+        if (!!newValue.governorate_id) {
+          filteredValue.governorate = newValue.governorate;
+          filteredValue.governorate_id = newValue.governorate_id;
+        }
+      }
+    }
 
     filteredValue = {
       ...filteredValue,
