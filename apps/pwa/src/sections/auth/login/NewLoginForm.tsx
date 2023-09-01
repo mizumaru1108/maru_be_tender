@@ -23,6 +23,7 @@ import useAuth from 'hooks/useAuth';
 import { useDispatch } from 'redux/store';
 import { setConversation, setMessageGrouped, setActiveConversationId } from 'redux/slices/wschat';
 import { SxProps, Theme } from '@mui/material/styles';
+import { FEATURE_LOGIN_BY_PHONE } from 'config';
 
 // ----------------------------------------------------------------------
 
@@ -154,11 +155,13 @@ export default function NewLoginForm() {
       dispatch(setConversation([]));
       dispatch(setMessageGrouped([]));
     } catch (err) {
-      const { error, message, statusCode } = err.response.data;
-      console.log('cek err: ', { message: err.message });
-      console.log('test 401', statusCode, statusCode === 401);
+      // console.log({ err });
+      const { error, message } = FEATURE_LOGIN_BY_PHONE ? err : err.response.data;
+      const statusCode = err?.response?.data?.statusCode || undefined;
+      // console.log('cek err: ', { err: err });
+      // console.log('test 401', statusCode, statusCode === 401);
       reset();
-      if (statusCode === 401) {
+      if (statusCode === 401 && statusCode !== undefined) {
         setError('afterSubmit', { message: translate('pages.auth.error.wrong_credential') });
       } else {
         setError('afterSubmit', { message: message || translate('login_message_error') });

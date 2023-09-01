@@ -263,7 +263,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     } = FEATURE_LOGIN_BY_PHONE ? response.data.data.fusionAuthResponse.response : response.response;
     const activeRoleIndex = 0;
     localStorage.setItem('activeRoleIndex', activeRoleIndex.toString());
-    // console.log('cek response:', accessToken, user, refreshToken);
+    // console.log({ user, accessToken, refreshToken });
     if (!user) {
       throw new Error(`Error getting currently active user`);
     }
