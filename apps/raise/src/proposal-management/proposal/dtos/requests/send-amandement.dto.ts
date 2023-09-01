@@ -70,6 +70,12 @@ export class SendAmandementDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  beneficiary_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   num_ofproject_binicficiaries?: string;
 
   @ApiPropertyOptional()
