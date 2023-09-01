@@ -1,3 +1,6 @@
+import { IGovernorate } from 'sections/admin/governorate/list/types';
+import { IRegions } from 'sections/admin/region/list/types';
+
 export type ActiveStep = 'STEP1' | 'STEP2' | 'STEP3' | 'STEP4' | 'STEP5';
 
 export type BeneficiariesMap = {
@@ -64,7 +67,11 @@ export interface SupervisorStep1 {
 export interface SupervisorStep2 {
   organizationName: string;
   region: string;
+  region_id?: string;
+  region_detail?: IRegions;
   governorate: string;
+  governorate_id?: string;
+  governorate_detail?: IGovernorate;
   date_of_esthablistmen: Date;
   chairman_of_board_of_directors: string;
   ceo: string;

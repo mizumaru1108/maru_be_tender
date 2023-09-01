@@ -2,7 +2,12 @@ import { createContext, ReactNode, useEffect, useReducer } from 'react';
 import { isValidToken, setSession } from '../utils/jwt';
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
-import { FEATURE_LOGIN_BY_PHONE, FUSIONAUTH_API, TMRA_RAISE_URL } from 'config';
+import {
+  FEATURE_LOGIN_BY_LICENSE,
+  FEATURE_LOGIN_BY_PHONE,
+  FUSIONAUTH_API,
+  TMRA_RAISE_URL,
+} from 'config';
 import { fusionAuthClient } from 'utils/fusionAuth';
 import { FusionAuthRoles } from '../@types/commons';
 import { datadogRum } from '@datadog/browser-rum';
@@ -240,7 +245,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     console.log('masuk sini');
     const url = `${TMRA_RAISE_URL}/tender-auth/login`;
     const response: any = {
-      ...(FEATURE_LOGIN_BY_PHONE
+      ...(FEATURE_LOGIN_BY_PHONE || FEATURE_LOGIN_BY_LICENSE
         ? await axios.post(url, {
             loginId: email,
             password: password,
@@ -260,10 +265,12 @@ function AuthProvider({ children }: AuthProviderProps) {
       token: accessToken,
       user,
       refreshToken,
-    } = FEATURE_LOGIN_BY_PHONE ? response.data.data.fusionAuthResponse.response : response.response;
+    } = FEATURE_LOGIN_BY_PHONE || FEATURE_LOGIN_BY_LICENSE
+      ? response.data.data.fusionAuthResponse.response
+      : response.response;
     const activeRoleIndex = 0;
     localStorage.setItem('activeRoleIndex', activeRoleIndex.toString());
-    // console.log('cek response:', accessToken, user, refreshToken);
+    // console.log({ user, accessToken, refreshToken });
     if (!user) {
       throw new Error(`Error getting currently active user`);
     }

@@ -2789,6 +2789,7 @@ const en = {
     phone: 'By Phone Number',
     label: 'Select Login Id',
     placeholder: 'Select Login Id',
+    license: 'By License Number',
   },
 };
 

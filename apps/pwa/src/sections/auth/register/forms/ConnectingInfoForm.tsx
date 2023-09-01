@@ -31,6 +31,8 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
   // console.log('tmpUsedNumbers', usedNumbers);
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
+  const tmpRegions: any = REGION;
+
   //
   const [isLoadingRegions, setIsLoadingRegions] = React.useState(false);
   const [regions, setRegions] = React.useState<IRegions[]>([]);
@@ -198,29 +200,42 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
       const newPhone = defaultValues.phone?.replace('+966', '');
       newValues = { ...newValues, entity_mobile: newEntityMobile, phone: newPhone };
       if (defaultValues.region_id && defaultValues.governorate_id && regions.length > 0) {
-        const tmpRegion: IRegions = [...regions].find(
-          (item) => item.region_id === defaultValues.region_id
-        ) as IRegions;
-        setGovernorates(tmpRegion.governorate);
-        const tmpGovernorate: IGovernorate = [...tmpRegion.governorate].find(
-          (item) => item.governorate_id === defaultValues.governorate_id
-        ) as IGovernorate;
+        let tmpRegion: IRegions | undefined = undefined;
+        if (regions.length > 0) {
+          tmpRegion = [...regions].find(
+            (item) => item.region_id === defaultValues.region_id
+          ) as IRegions;
+        }
+        if (tmpRegion?.governorate && tmpRegion?.governorate?.length > 0) {
+          const tmpGovernorates = [...tmpRegion.governorate].filter(
+            (item) => item.is_deleted !== true
+          );
+          if (tmpGovernorates && tmpGovernorates.length > 0) {
+            setGovernorates(tmpGovernorates);
+          } else {
+            setGovernorates([]);
+          }
+        } else {
+          setGovernorates([]);
+        }
+        let tmpGovernorate: IGovernorate | undefined = undefined;
+        if (tmpRegion && tmpRegion?.governorate?.length > 0) {
+          tmpGovernorate = [...tmpRegion.governorate]
+          .filter((item) => item.is_deleted !== true)
+          .find(
+            (item) => item.governorate_id === defaultValues.governorate_id
+          ) as IGovernorate;
+        }
         newValues = {
           ...newValues,
-          region: tmpRegion.region_id,
-          governorate: tmpGovernorate.governorate_id,
+          region: tmpRegion ? tmpRegion.region_id : '',
+          governorate: tmpGovernorate ? tmpGovernorate.governorate_id : '',
         };
         setArea((prevState: any) => ({
           ...prevState,
-          region: tmpRegion,
-          governorate: tmpGovernorate,
+          region: tmpRegion ? tmpRegion : null,
+          governorate: tmpGovernorate ? tmpGovernorate : null,
         }));
-      } else {
-        newValues = {
-          ...newValues,
-          region: defaultValues.region,
-          governorate: defaultValues.governorate,
-        };
       }
       if (!!newValues.entity_mobile) {
         reset({
@@ -372,8 +387,12 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
                   </MenuItem>
                 ))
               : null}
-            {!FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS && region !== ''
-              ? REGION[`${region}`].map((item: any, index: any) => (
+            {!FEATURE_MENU_ADMIN_ENTITY_AREA &&
+            !FEATURE_MENU_ADMIN_REGIONS &&
+            region !== '' &&
+            tmpRegions &&
+            tmpRegions.length > 0
+              ? tmpRegions[`${region}`].map((item: any, index: any) => (
                   <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
                     {item}
                   </MenuItem>

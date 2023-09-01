@@ -11,7 +11,7 @@ import { ReactComponent as Logo } from '../../assets/new_logo.svg';
 import { LoginForm } from '../../sections/auth/login';
 import useLocales from 'hooks/useLocales';
 import Image from './background.jpg';
-import { FEATURE_LOGIN_BY_PHONE, FEATURE_SIGNUP } from '../../config';
+import { FEATURE_LOGIN_BY_LICENSE, FEATURE_LOGIN_BY_PHONE, FEATURE_SIGNUP } from '../../config';
 import NewLoginForm from 'sections/auth/login/NewLoginForm';
 // ----------------------------------------------------------------------
 
@@ -70,7 +70,7 @@ export default function Login() {
             >
               {translate('the_login_message')}
             </Typography>
-            {FEATURE_LOGIN_BY_PHONE ? <NewLoginForm /> : <LoginForm />}
+            {FEATURE_LOGIN_BY_LICENSE || FEATURE_LOGIN_BY_PHONE ? <NewLoginForm /> : <LoginForm />}
 
             <Typography variant="body2" align="center" sx={{ mt: 3 }}>
               {translate('dont_have_account')}&nbsp;

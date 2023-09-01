@@ -1,3 +1,5 @@
+import { IGovernorate } from 'sections/admin/governorate/list/types';
+import { IRegions } from 'sections/admin/region/list/types';
 import { ClosingReportData } from 'sections/client/project-report/types';
 import { InnerStatus, OutterStatus } from './commons';
 
@@ -114,6 +116,8 @@ export interface Proposal {
   project_timeline: timeline[];
   beneficiary_details: BeneficiaryDetail | null;
   governorate: string;
+  governorate_id?: string;
+  governorate_detail?: IGovernorate;
   track_budget: TrackBudget;
   notes: string;
   createdItemBudgetPayload?: ItemBudget[];
@@ -171,6 +175,8 @@ export interface Proposal {
   created_at: Date;
   num_ofproject_binicficiaries: number;
   region: string;
+  region_id?: string;
+  region_detail?: IRegions;
   execution_time: number;
   project_idea: string;
   project_goals: string;

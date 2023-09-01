@@ -54,7 +54,9 @@ export interface IEditedValues {
   bank_information?: bank_information[] | [];
   bank_informations?: bank_information[] | [];
   governorate?: string | null;
+  governorate_id?: string | null;
   region?: string | null;
+  region_id?: string | null;
   entity_mobile?: string | null;
   center_administration?: string | null;
   twitter_acount?: string | null;

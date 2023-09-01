@@ -62,8 +62,30 @@ function EditRequestTabs({ EditValues }: DataTabProps) {
     // dispatch(setActiveTap(newValue));
     setActiveTap(newValue);
   };
+  const [tmpDifference, setTmpDifference] = React.useState<IEditedValues>();
 
-  // React.useEffect(() => {}, [proposal]);
+  React.useEffect(() => {
+    if (EditValues.difference) {
+      if (EditValues?.difference?.region_id || EditValues?.difference?.governorate_id) {
+        let tpmLocationValue: IEditedValues = {
+          ...EditValues?.difference,
+        };
+        if (
+          EditValues?.difference?.region_id &&
+          EditValues?.old_data?.region_id !== EditValues?.difference?.region_id
+        ) {
+          tpmLocationValue.region = EditValues?.new_data?.region;
+        }
+        if (
+          EditValues?.difference?.governorate_id &&
+          EditValues?.old_data?.governorate_id !== EditValues?.difference?.governorate_id
+        ) {
+          tpmLocationValue.governorate = EditValues?.new_data?.governorate;
+        }
+        setTmpDifference(tpmLocationValue);
+      }
+    }
+  }, [EditValues]);
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -103,7 +125,7 @@ function EditRequestTabs({ EditValues }: DataTabProps) {
         {/* prevData */}
         <DataTab
           EditValues={EditValues.old_data}
-          compareValues={EditValues.difference}
+          compareValues={tmpDifference}
           EditType={'previous-data'}
         />
       </TabPanel>
@@ -111,7 +133,7 @@ function EditRequestTabs({ EditValues }: DataTabProps) {
         {/* oldData */}
         <DataTab
           EditValues={EditValues.new_data}
-          compareValues={EditValues.difference}
+          compareValues={tmpDifference}
           EditType={'new-data'}
         />
       </TabPanel>
