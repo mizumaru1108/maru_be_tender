@@ -132,7 +132,7 @@ const FundingProjectRequestForm = () => {
   });
   const [requestState, setRequestState] = useState(defaultValues);
   const isMobile = useResponsive('down', 'sm');
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isDraft, setIsDraft] = useState(false);
   const [lastIndex, setLastIndex] = useState(0);

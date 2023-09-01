@@ -211,7 +211,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
             (item) => item.is_deleted !== true
           );
           if (tmpGovernorates && tmpGovernorates.length > 0) {
-            setGovernorates(tmpRegion?.governorate);
+            setGovernorates(tmpGovernorates);
           } else {
             setGovernorates([]);
           }
@@ -220,7 +220,9 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
         }
         let tmpGovernorate: IGovernorate | undefined = undefined;
         if (tmpRegion && tmpRegion?.governorate?.length > 0) {
-          tmpGovernorate = [...tmpRegion.governorate].find(
+          tmpGovernorate = [...tmpRegion.governorate]
+          .filter((item) => item.is_deleted !== true)
+          .find(
             (item) => item.governorate_id === defaultValues.governorate_id
           ) as IGovernorate;
         }
