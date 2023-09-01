@@ -31,6 +31,8 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
 
+  const tmpRegions: any = REGION;
+
   const [isLoadingRegions, setIsLoadingRegions] = React.useState(false);
   const [regions, setRegions] = React.useState<IRegions[]>([]);
   const [governorates, setGovernorates] = React.useState<IGovernorate[]>([]);
@@ -328,8 +330,9 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
             {!FEATURE_MENU_ADMIN_ENTITY_AREA &&
             !FEATURE_MENU_ADMIN_REGIONS &&
             region !== '' &&
-            REGION
-              ? REGION[`${region}`].map((item: any, index: any) => (
+            tmpRegions &&
+            tmpRegions.length > 0
+              ? tmpRegions[`${region}`].map((item: any, index: any) => (
                   <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
                     {item}
                   </MenuItem>

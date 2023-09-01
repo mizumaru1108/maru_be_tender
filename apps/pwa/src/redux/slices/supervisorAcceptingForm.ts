@@ -51,7 +51,9 @@ const initialState: SupervisorAcceptingForm = {
   step2: {
     organizationName: '',
     region: '',
+    region_id: '',
     governorate: '',
+    governorate_id: '',
     date_of_esthablistmen: new Date(),
     chairman_of_board_of_directors: '',
     ceo: '',
@@ -129,7 +131,11 @@ const slice = createSlice({
       //step 2
       state.step2.organizationName = action.payload.user.employee_name ?? '';
       state.step2.region = action.payload.user.client_data.region ?? '';
+      state.step2.region_id = action?.payload?.region_detail?.region_id || '';
+      state.step2.region_detail = action?.payload?.region_detail || undefined;
       state.step2.governorate = action.payload.user.client_data.governorate ?? '';
+      state.step2.governorate_id = action?.payload?.governorate_detail?.governorate_id || '';
+      state.step2.governorate_detail = action?.payload?.governorate_detail || undefined;
       state.step2.date_of_esthablistmen =
         action.payload.user.client_data.date_of_esthablistmen ?? new Date();
       state.step2.num_of_beneficiaries = action.payload.user.client_data.num_of_beneficiaries ?? 0;

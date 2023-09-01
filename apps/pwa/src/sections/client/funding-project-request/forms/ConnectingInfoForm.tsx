@@ -36,10 +36,12 @@ type Props = {
 
 const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const tmpDefaultValues = removeEmptyKey(defaultValues);
-  console.log({ revised });
+  // console.log({ revised });
   // console.log({ tmpDefaultValues });
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
+
+  const tmpRegions: any = REGION;
 
   const [isLoadingRegions, setIsLoadingRegions] = React.useState(false);
   const [regions, setRegions] = React.useState<IRegions[]>([]);
@@ -220,8 +222,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
   const tmpGovernorate = (watch('governorate') as string) || '';
 
   // console.log({ region, tmpGovernorate });
-  if (isLoadingRegions || region === undefined || tmpGovernorate === undefined || !tmpGovernorate)
-    return <>{translate('pages.common.loading')}</>;
+  if (isLoadingRegions) return <>{translate('pages.common.loading')}</>;
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
@@ -368,8 +369,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
               (!!revised && revised.hasOwnProperty('governorate')
                 ? false
                 : !!revised &&
-                  !(tmpGovernorate === '' || !tmpGovernorate) &&
-                  !(region === '' || !region) &&
+                  (!(tmpGovernorate === '' || !tmpGovernorate) || !(region === '' || !region)) &&
                   true)
             }
             name="governorate"
@@ -402,13 +402,13 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
                 ))
               : null}
             {revised &&
+            !isLoadingRegions &&
             tmpDefaultValues.region_id &&
             tmpDefaultValues.governorate_id &&
             FEATURE_MENU_ADMIN_ENTITY_AREA &&
             FEATURE_MENU_ADMIN_REGIONS &&
             governorates &&
-            governorates.length > 0 &&
-            !isLoadingRegions
+            governorates.length > 0
               ? governorates.map((option, i) => (
                   <MenuItem key={i} value={option.governorate_id}>
                     {option.name}
@@ -419,8 +419,9 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
             region !== '' &&
             region !== undefined &&
             !isLoadingRegions &&
-            REGION
-              ? REGION[`${removeNewLineCharacters(region) as RegionNames}`].map(
+            tmpRegions &&
+            tmpRegions.length > 0
+              ? tmpRegions[`${removeNewLineCharacters(region) as RegionNames}`].map(
                   (item: any, index: any) => (
                     <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
                       {item}
