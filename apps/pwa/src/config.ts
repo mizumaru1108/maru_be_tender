@@ -316,3 +316,9 @@ export const FEATURE_LOGIN_BY_PHONE: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_LOGIN_BY_PHONE === 'true'
     ? true
     : false;
+
+export const FEATURE_LOGIN_BY_LICENSE: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_LOGIN_BY_LICENSE &&
+  process.env.REACT_APP_CONFIG_FEATURE_LOGIN_BY_LICENSE === 'true'
+    ? true
+    : false;

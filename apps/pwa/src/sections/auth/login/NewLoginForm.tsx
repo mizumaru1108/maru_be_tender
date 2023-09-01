@@ -23,7 +23,7 @@ import useAuth from 'hooks/useAuth';
 import { useDispatch } from 'redux/store';
 import { setConversation, setMessageGrouped, setActiveConversationId } from 'redux/slices/wschat';
 import { SxProps, Theme } from '@mui/material/styles';
-import { FEATURE_LOGIN_BY_PHONE } from 'config';
+import { FEATURE_LOGIN_BY_LICENSE, FEATURE_LOGIN_BY_PHONE } from 'config';
 
 // ----------------------------------------------------------------------
 
@@ -36,12 +36,17 @@ const OptionLoginId = [
     value: 'phone',
     label: 'select_loginId.phone',
   },
+  {
+    value: 'license',
+    label: 'select_loginId.license',
+  },
 ];
 
 type FormValuesProps = {
   select_loginId: string;
   mobile_number: string;
   email: string;
+  license_number: string;
   password: string;
   remember: boolean;
   afterSubmit?: string;
@@ -83,6 +88,9 @@ export default function NewLoginForm() {
           .email(translate('errors.login.email.message'))
           .required(translate('errors.login.email.required')),
       }),
+      ...(tmpType === 'license' && {
+        license_number: Yup.string().required(translate('errors.register.license_number.required')),
+      }),
       ...(tmpType === 'phone' && {
         mobile_number: Yup.string()
           .required(translate('errors.register.entity_mobile.required'))
@@ -104,6 +112,7 @@ export default function NewLoginForm() {
     select_loginId: 'email',
     mobile_number: '',
     email: '',
+    license_number: '',
     password: '',
     remember: false,
   };
@@ -129,6 +138,7 @@ export default function NewLoginForm() {
       setLoginTypeId(loginIdType);
       setValue('email', '');
       setValue('mobile_number', '');
+      setValue('license_number', '');
     }
   }, [loginIdType, setValue]);
   // console.log({ loginIdType });
@@ -144,9 +154,11 @@ export default function NewLoginForm() {
     let tmpLoginId = undefined;
     if (data.email && loginTypeId === 'email') {
       tmpLoginId = data.email;
-    } else {
+    } else if (data.mobile_number && loginTypeId === 'phone') {
       const tmpPhone = `966${data.mobile_number}`;
       tmpLoginId = tmpPhone;
+    } else {
+      tmpLoginId = data.license_number;
     }
     // console.log('tmpLoginId', tmpLoginId);
     try {
@@ -156,7 +168,8 @@ export default function NewLoginForm() {
       dispatch(setMessageGrouped([]));
     } catch (err) {
       // console.log({ err });
-      const { error, message } = FEATURE_LOGIN_BY_PHONE ? err : err.response.data;
+      const { error, message } =
+        FEATURE_LOGIN_BY_PHONE || FEATURE_LOGIN_BY_LICENSE ? err : err.response.data;
       const statusCode = err?.response?.data?.statusCode || undefined;
       // console.log('cek err: ', { err: err });
       // console.log('test 401', statusCode, statusCode === 401);
@@ -184,22 +197,39 @@ export default function NewLoginForm() {
             placeholder={translate('select_loginId.placeholder')}
             size="medium"
           >
-            {OptionLoginId.map((option, index) => (
-              <MenuItem
-                data-cy={`select-option.select_loginId-${index}`}
-                key={option.value}
-                value={option.value}
-              >
-                {translate(option.label)}
-              </MenuItem>
-            ))}
+            {OptionLoginId.map((option, index) => {
+              const { value, label } = option;
+              if (value === 'phone' && !FEATURE_LOGIN_BY_PHONE) {
+                return null;
+              }
+              if (value === 'license' && !FEATURE_LOGIN_BY_LICENSE) {
+                return null;
+              }
+              return (
+                <MenuItem
+                  data-cy={`select-option.select_loginId-${index}`}
+                  key={value}
+                  value={value}
+                >
+                  {translate(label)}
+                </MenuItem>
+              );
+            })}
           </RHFSelect>
 
           {loginIdType === 'email' ? (
             <RHFTextField name="email" label={translate('email_label')} sx={{ direction: 'rtl' }} />
-          ) : (
+          ) : null}
+          {loginIdType === 'phone' ? (
             <RHFTextField name="mobile_number" label={translate('mobile_number')} />
-          )}
+          ) : null}
+          {loginIdType === 'license' ? (
+            <RHFTextField
+              name="license_number"
+              label={translate('account_manager.partner_details.license_number')}
+              sx={{ direction: 'rtl' }}
+            />
+          ) : null}
           {/* <RHFTextField
             type={'number'}
             name="loginId"
