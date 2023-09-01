@@ -17,6 +17,7 @@ type DataTabProps = {
 };
 
 function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
+  // console.log({ EditValues, compareValues });
   const { translate, currentLang } = useLocales();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -104,7 +105,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                     : 'black',
               }}
             >
-              {EditValues.entity ?? '-'}
+              {EditValues.entity || '-'}
             </Typography>
           </Box>
           <Box>
@@ -127,7 +128,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                     : 'black',
               }}
             >
-              {EditValues.num_of_employed_facility ?? '-'}
+              {EditValues.num_of_employed_facility || '-'}
             </Typography>
           </Box>
           <Box>
@@ -149,7 +150,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                     : 'black',
               }}
             >
-              {EditValues.num_of_beneficiaries ?? '-'}
+              {EditValues.num_of_beneficiaries || '-'}
             </Typography>
           </Box>
           <Box>
@@ -171,7 +172,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                     : 'black',
               }}
             >
-              {EditValues.date_of_esthablistmen?.split('T')[0] ?? '-'}
+              {EditValues.date_of_esthablistmen?.split('T')[0] || '-'}
             </Typography>
           </Box>
           <Box>
@@ -192,7 +193,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                     : 'black',
               }}
             >
-              {EditValues.headquarters ?? '-'}
+              {EditValues.headquarters || '-'}
             </Typography>
           </Box>
         </Stack>
@@ -226,7 +227,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                     : 'black',
               }}
             >
-              {EditValues.license_number ?? '-'}
+              {EditValues.license_number || '-'}
             </Typography>
           </Box>
           <Box>
@@ -248,7 +249,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                     : 'black',
               }}
             >
-              {EditValues.license_expired?.split('T')[0] ?? '-'}
+              {EditValues.license_expired?.split('T')[0] || '-'}
             </Typography>
           </Box>
           <Box>
@@ -270,7 +271,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                     : 'black',
               }}
             >
-              {EditValues.license_issue_date?.split('T')[0] ?? '-'}
+              {EditValues.license_issue_date?.split('T')[0] || '-'}
             </Typography>
           </Box>
           <Box>
@@ -281,7 +282,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
               variant="h6"
               // component="p"
               component={Link}
-              href={EditValues.license_file.url ?? '#'}
+              href={EditValues.license_file.url || '#'}
               target="_blank"
               sx={{
                 mt: 1,
@@ -290,15 +291,15 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                 cursor: 'pointer',
                 // color:
                 //   (EditValues.license_file.color !== 'transparent' &&
-                //     EditValues.license_file.color) ??
+                //     EditValues.license_file.color) ||
                 //   '#000',
               }}
             >
-              {/* {EditValues.license_file.url ?? '-'} */}
+              {/* {EditValues.license_file.url || '-'} */}
               <a
                 target="_blank"
                 rel="noopener noreferrer"
-                href={EditValues.license_file.url ?? '#'}
+                href={EditValues.license_file.url || '#'}
                 style={{
                   color:
                     compareValues?.hasOwnProperty('license_file') && EditType === 'new-data'
@@ -313,7 +314,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
               </a>
             </Typography>
             {/* <Typography>
-              <a target="_blank" rel="noopener noreferrer" href={license_file.url ?? '#'}>
+              <a target="_blank" rel="noopener noreferrer" href={license_file.url || '#'}>
                 اضغط هنا لرؤية ملف الترخيص
               </a>
             </Typography> */}
@@ -412,7 +413,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.chairman_name ?? '-'}
+                {EditValues.chairman_name || '-'}
               </Typography>
             </Box>
           </Grid>
@@ -437,7 +438,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {newValues.chairman_mobile ?? '-'}
+                {newValues.chairman_mobile || '-'}
               </Typography>
             </Stack>
           </Grid>
@@ -461,7 +462,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.data_entry_name ?? '-'}
+                {EditValues.data_entry_name || '-'}
               </Typography>
             </Box>
           </Grid>
@@ -486,7 +487,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {newValues.data_entry_mobile ?? '-'}
+                {newValues.data_entry_mobile || '-'}
               </Typography>
             </Stack>
           </Grid>
@@ -510,7 +511,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.data_entry_mail ?? '-'}
+                {EditValues.data_entry_mail || '-'}
               </Typography>
             </Box>
           </Grid>
@@ -545,7 +546,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.center_administration ?? '-'}
+                {EditValues.center_administration || '-'}
               </Typography>
             </Box>
           </Grid>
@@ -568,7 +569,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.governorate ?? '-'}
+                {EditValues.governorate || '-'}
               </Typography>
             </Box>
           </Grid>
@@ -591,7 +592,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.region ?? '-'}
+                {EditValues.region || '-'}
               </Typography>
             </Box>
           </Grid>
@@ -605,7 +606,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                 component="p"
                 sx={{ mt: 1, fontWeight: theme.typography.fontWeightMedium }}
               >
-                {EditValues.email ?? '-'}
+                {EditValues.email || '-'}
               </Typography>
             </Box>
           </Grid> */}
@@ -629,7 +630,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues?.twitter_acount ?? '-'}
+                {EditValues?.twitter_acount || '-'}
               </Typography>
             </Box>
           </Grid>
@@ -652,7 +653,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues?.website ?? '-'}
+                {EditValues?.website || '-'}
               </Typography>
             </Box>
           </Grid>
@@ -676,7 +677,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.phone ?? '-'}
+                {EditValues.phone || '-'}
               </Typography>
             </Stack>
           </Grid>
@@ -701,7 +702,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.entity_mobile ?? '-'}
+                {EditValues.entity_mobile || '-'}
               </Typography>
             </Stack>
           </Grid>
@@ -726,7 +727,7 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                   imageUrl={v?.card_image?.url}
                   size={v?.card_image?.size}
                   type={v?.card_image?.type}
-                  borderColor={v?.color ?? 'transparent'}
+                  borderColor={v?.color || 'transparent'}
                 />
               </Grid>
             ))

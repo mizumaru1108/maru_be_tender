@@ -65,11 +65,25 @@ function EditRequestDetails() {
         }
       );
       if (rest) {
+        const tmpOldData: IEditedValues = rest.data.data.old_data;
+        const tmpNewData: IEditedValues = rest.data.data.new_data;
+        const tmpDiffrence: IEditedValues = rest.data.data.diffrence;
+        const tmpEntityMobileNewData =
+          !tmpNewData.entity_mobile && tmpOldData.entity_mobile
+            ? tmpOldData.entity_mobile
+            : tmpNewData.entity_mobile;
+        const tmpRegionOldData = tmpOldData.region_detail?.name
+          ? tmpOldData.region_detail?.name
+          : tmpOldData.region;
+        // console.log('test', tmpEntityMobileNewData);
         setTmpEditValues((prev: any) => ({
           ...prev,
-          old_data: rest.data.data.old_data,
-          new_data: rest.data.data.new_data,
-          difference: rest.data.data.diffrence,
+          old_data: { ...tmpOldData, region: tmpRegionOldData },
+          new_data: {
+            ...tmpNewData,
+            entity_mobile: tmpEntityMobileNewData,
+          },
+          difference: tmpDiffrence,
         }));
         // console.log({ rest });
       }
