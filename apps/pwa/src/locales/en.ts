@@ -2169,6 +2169,7 @@ const en = {
   },
   closing_project_by_client: 'Closing Project By Client',
   review: {
+    beneficiary_id: 'Beneficiaries',
     project_idea: 'Project Idea',
     project_goals: 'Project Goals',
     project_risks: 'Project Risks',

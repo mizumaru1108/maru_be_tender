@@ -2183,6 +2183,7 @@ const ar = {
   },
   closing_project_by_client: 'إغلاق مشروع',
   review: {
+    beneficiary_id: 'المستفيدون',
     project_idea: 'مفهوم المشروع',
     project_goals: 'مهام المشروع',
     project_risks: 'مخاطر المشروع',

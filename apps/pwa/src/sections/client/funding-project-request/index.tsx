@@ -905,7 +905,7 @@ const FundingProjectRequestForm = () => {
   };
 
   const BeneficiariesList = async () => {
-    await dispatch(getBeneficiariesList(activeRole!))
+    await dispatch(getBeneficiariesList(activeRole!, true))
       .then((res) => {
         console.log(res);
       })

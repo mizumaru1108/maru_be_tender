@@ -26,6 +26,8 @@ function RevisionLog({ stepGeneralLog }: Props) {
   const { proposal } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
   const [dataGrants, setDataGrants] = React.useState<any>();
+  const { beneficiaries_list } = useSelector((state) => state.proposal);
+
   // let batch: number = 0;
   // if (stepGeneralLog && stepGeneralLog.message) {
   //   batch = Number(stepGeneralLog.message.split('_')[1]);
@@ -177,6 +179,19 @@ function RevisionLog({ stepGeneralLog }: Props) {
                 .map(([key, value]: any) => {
                   const tmpValue = value || '';
                   if (!tmpValue) return null;
+                  if (key === 'beneficiary_id' && tmpValue) {
+                    const tmpBeneficiary = beneficiaries_list.find(
+                      (item) => item.id === tmpValue
+                    )?.name;
+                    return (
+                      <Grid key={key} item md={6} xs={12}>
+                        <Typography variant="h6">{translate(`review.${key}`)}</Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>{tmpBeneficiary || 'no Data'}</Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
                   if (key === 'project_implement_date' && tmpValue) {
                     return (
                       <Grid key={key} item md={6} xs={12}>

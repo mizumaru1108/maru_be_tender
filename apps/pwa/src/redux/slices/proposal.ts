@@ -485,7 +485,7 @@ export const getTrackList = (isGeneral: number, role: string) => async () => {
     dispatch(slice.actions.setLoadingCount(false));
   }
 };
-export const getBeneficiariesList = (role: string) => async () => {
+export const getBeneficiariesList = (role: string, showActive: boolean) => async () => {
   try {
     // dispatch(slice.actions.startLoading);
     dispatch(slice.actions.setLoadingCount(true));
@@ -497,7 +497,7 @@ export const getBeneficiariesList = (role: string) => async () => {
       if (response.data.statusCode === 200) {
         const tmpValues =
           response.data.data.filter((item: IBeneficiaries) => item.is_deleted !== true) || [];
-        dispatch(slice.actions.setBeneficiariesList(tmpValues));
+        dispatch(slice.actions.setBeneficiariesList(showActive ? tmpValues : response.data.data));
       }
     } catch (error) {
       console.log(error);

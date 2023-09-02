@@ -88,13 +88,21 @@ function AmandementRequestProposal() {
 
   const handleSubmit = async () => {
     setIsLoad(true);
+    // console.log({ tmpValues });
     // const url = 'tender-proposal/send-amandement';
+    let tmpPayload = { ...tmpValues };
+    if (tmpPayload.project_beneficiaries) {
+      tmpPayload = {
+        ...tmpPayload,
+        beneficiary_id: tmpPayload.project_beneficiaries,
+      };
+    }
     const url = 'tender-proposal/send-amandement-cqrs';
     try {
       const rest = await axiosInstance.post(
         url,
         {
-          ...tmpValues,
+          ...tmpPayload,
         },
         {
           headers: { 'x-hasura-role': activeRole! },

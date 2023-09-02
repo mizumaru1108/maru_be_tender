@@ -80,7 +80,7 @@ const AmandementRequest = () => {
 
   React.useEffect(() => {
     fetchingData();
-    dispatch(getBeneficiariesList(activeRole!));
+    dispatch(getBeneficiariesList(activeRole!, true));
   }, [fetchingData, activeRole]);
 
   if (loadingCount) return <>Loading...</>;
@@ -145,22 +145,24 @@ const AmandementRequest = () => {
                   </Typography>
                   {tmpValues &&
                     tmpValues.revised &&
-                    Object.entries(tmpValues?.revised).map(([name, value]) => (
-                      <Box key={name} sx={{ mb: 2 }}>
-                        <Typography
-                          sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', color: 'text.secondary' }}
-                        >
-                          {/* {formatingFieldName(name)} */}
-                          {/* {name} */}
-                          {translate(`amandement.client.amandement_request.${name}`)}
-                        </Typography>
-                        <Typography
-                          sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', color: 'text.primary' }}
-                        >
-                          {value}
-                        </Typography>
-                      </Box>
-                    ))}
+                    Object.entries(tmpValues?.revised)
+                      .filter(([name, value]) => name !== 'beneficiary_id')
+                      .map(([name, value]) => (
+                        <Box key={name} sx={{ mb: 2 }}>
+                          <Typography
+                            sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', color: 'text.secondary' }}
+                          >
+                            {/* {formatingFieldName(name)} */}
+                            {/* {name} */}
+                            {translate(`amandement.client.amandement_request.${name}`)}
+                          </Typography>
+                          <Typography
+                            sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', color: 'text.primary' }}
+                          >
+                            {value}
+                          </Typography>
+                        </Box>
+                      ))}
                 </Box>
               </ContentStyle>
             </Grid>

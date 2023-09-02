@@ -47,7 +47,7 @@ function ProjectDetailsMainPage() {
     // dispatch(getProposal(id as string, role as string));
     handleFetching();
     // getTrackList
-    dispatch(getBeneficiariesList(role!));
+    dispatch(getBeneficiariesList(role!, false));
     dispatch(getTrackList(0, role as string));
   }, [dispatch, id, role, handleFetching]);
 
