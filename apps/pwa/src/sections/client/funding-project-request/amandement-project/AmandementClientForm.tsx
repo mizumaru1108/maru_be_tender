@@ -242,6 +242,8 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         if (!!newValue.region_id) {
           filteredValue.region = newValue.region;
           filteredValue.region_id = newValue.region_id;
+        } else {
+          filteredValue.region = newValue.region;
         }
       }
       if (
@@ -251,6 +253,8 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         if (!!newValue.governorate_id) {
           filteredValue.governorate = newValue.governorate;
           filteredValue.governorate_id = newValue.governorate_id;
+        } else {
+          filteredValue.governorate = newValue.governorate;
         }
       }
     }

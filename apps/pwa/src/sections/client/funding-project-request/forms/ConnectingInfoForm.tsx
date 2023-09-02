@@ -219,6 +219,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
         };
         setArea((prevState: any) => ({
           ...prevState,
+
           region: tmpRegion ? tmpRegion : null,
           governorate: tmpGovernorate ? tmpGovernorate : null,
         }));
@@ -234,7 +235,10 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
           region: region,
           governorate:
             !FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS
-              ? tmpDefaultValues.governorate
+              ? region &&
+                tmpRegions &&
+                tmpRegions[`${removeNewLineCharacters(region) as RegionNames}`] &&
+                tmpDefaultValues.governorate
               : '',
         };
       }
