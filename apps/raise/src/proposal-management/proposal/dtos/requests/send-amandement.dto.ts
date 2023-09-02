@@ -76,6 +76,30 @@ export class SendAmandementDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  governorate?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  governorate_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  region?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  region_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   num_ofproject_binicficiaries?: string;
 
   @ApiPropertyOptional()

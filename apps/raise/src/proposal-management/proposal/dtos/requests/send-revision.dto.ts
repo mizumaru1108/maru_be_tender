@@ -71,6 +71,30 @@ export class SendRevisionDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  governorate?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  governorate_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  region?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  region_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   proposal_bank_id?: string;
 
   @ApiPropertyOptional()

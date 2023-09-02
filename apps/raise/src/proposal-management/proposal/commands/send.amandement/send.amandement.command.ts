@@ -82,6 +82,8 @@ export class SendAmandementCommandHandler
                 'user',
                 'bank_information',
                 'beneficiary_details',
+                'region_detail',
+                'governorate_detail',
               ],
             },
             session,

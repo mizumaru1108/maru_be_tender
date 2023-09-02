@@ -129,6 +129,8 @@ export class SendRevisionCommandHandler
           //form 4
           amount_required_fsupport: request.amount_required_fsupport,
           proposal_bank_id: request.proposal_bank_id,
+          governorate_id: request.governorate_id,
+          region_id: request.region_id,
         },
       ).build();
 
