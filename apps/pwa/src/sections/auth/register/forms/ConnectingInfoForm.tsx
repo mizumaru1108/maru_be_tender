@@ -221,10 +221,8 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
         let tmpGovernorate: IGovernorate | undefined = undefined;
         if (tmpRegion && tmpRegion?.governorate?.length > 0) {
           tmpGovernorate = [...tmpRegion.governorate]
-          .filter((item) => item.is_deleted !== true)
-          .find(
-            (item) => item.governorate_id === defaultValues.governorate_id
-          ) as IGovernorate;
+            .filter((item) => item.is_deleted !== true)
+            .find((item) => item.governorate_id === defaultValues.governorate_id) as IGovernorate;
         }
         newValues = {
           ...newValues,
@@ -391,7 +389,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
             !FEATURE_MENU_ADMIN_REGIONS &&
             region !== '' &&
             tmpRegions &&
-            tmpRegions.length > 0
+            tmpRegions[`${region}`]
               ? tmpRegions[`${region}`].map((item: any, index: any) => (
                   <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
                     {item}

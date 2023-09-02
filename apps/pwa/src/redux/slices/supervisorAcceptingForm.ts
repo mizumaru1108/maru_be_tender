@@ -130,10 +130,10 @@ const slice = createSlice({
       // state.step1.payment_number = action.payload.proposal_item_budgets.length ?? 0;
       //step 2
       state.step2.organizationName = action.payload.user.employee_name ?? '';
-      state.step2.region = action.payload.user.client_data.region ?? '';
+      state.step2.region = action?.payload.region || '';
       state.step2.region_id = action?.payload?.region_detail?.region_id || '';
       state.step2.region_detail = action?.payload?.region_detail || undefined;
-      state.step2.governorate = action.payload.user.client_data.governorate ?? '';
+      state.step2.governorate = action?.payload.governorate || '';
       state.step2.governorate_id = action?.payload?.governorate_detail?.governorate_id || '';
       state.step2.governorate_detail = action?.payload?.governorate_detail || undefined;
       state.step2.date_of_esthablistmen =

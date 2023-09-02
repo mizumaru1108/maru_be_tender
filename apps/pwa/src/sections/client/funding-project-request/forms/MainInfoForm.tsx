@@ -33,7 +33,7 @@ type FormValuesProps = {
   // project_beneficiaries_specific_type: string;
 };
 
-type beneficiaries = {
+export type IBeneficiaries = {
   id: string;
   is_deleted: boolean;
   name: string;
@@ -131,7 +131,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
     reset,
   } = methods;
 
-  const [beneficiaries, setBeneficiaries] = React.useState<beneficiaries[] | []>([]);
+  // const [beneficiaries, setBeneficiaries] = React.useState<IBeneficiaries[] | []>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -200,6 +200,7 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
         ?.name || '';
     // console.log({ tmpBeneficiaries });
     tmpValue.project_beneficiaries = tmpBeneficiaries;
+    tmpValue = { ...tmpValue, beneficiary_id: data.beneficiary_id };
     onSubmit(removeEmptyKey(tmpValue));
   };
 

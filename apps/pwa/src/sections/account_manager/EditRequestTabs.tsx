@@ -66,10 +66,10 @@ function EditRequestTabs({ EditValues }: DataTabProps) {
 
   React.useEffect(() => {
     if (EditValues.difference) {
+      let tpmLocationValue: IEditedValues = {
+        ...EditValues?.difference,
+      };
       if (EditValues?.difference?.region_id || EditValues?.difference?.governorate_id) {
-        let tpmLocationValue: IEditedValues = {
-          ...EditValues?.difference,
-        };
         if (
           EditValues?.difference?.region_id &&
           EditValues?.old_data?.region_id !== EditValues?.difference?.region_id
@@ -82,8 +82,8 @@ function EditRequestTabs({ EditValues }: DataTabProps) {
         ) {
           tpmLocationValue.governorate = EditValues?.new_data?.governorate;
         }
-        setTmpDifference(tpmLocationValue);
       }
+      setTmpDifference(tpmLocationValue);
     }
   }, [EditValues]);
 

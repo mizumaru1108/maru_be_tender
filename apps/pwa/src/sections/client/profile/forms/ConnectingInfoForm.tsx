@@ -348,7 +348,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
             !FEATURE_MENU_ADMIN_REGIONS &&
             region !== '' &&
             tmpRegions &&
-            tmpRegions.length > 0
+            tmpRegions[`${region}`]
               ? tmpRegions[`${region}`].map((item: any, index: any) => (
                   <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
                     {item}

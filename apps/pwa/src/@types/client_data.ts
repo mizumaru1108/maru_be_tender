@@ -1,3 +1,5 @@
+import { IGovernorate } from 'sections/admin/governorate/list/types';
+import { IRegions } from 'sections/admin/region/list/types';
 import { bank_information, UploadFilesJsonbDto } from './commons';
 
 export type PartnerDetailsProps = {
@@ -55,8 +57,10 @@ export interface IEditedValues {
   bank_informations?: bank_information[] | [];
   governorate?: string | null;
   governorate_id?: string | null;
+  governorate_detail?: IGovernorate;
   region?: string | null;
   region_id?: string | null;
+  region_detail?: IRegions;
   entity_mobile?: string | null;
   center_administration?: string | null;
   twitter_acount?: string | null;

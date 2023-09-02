@@ -18,6 +18,7 @@ import axiosInstance from 'utils/axios';
 import { useQuery } from 'urql';
 import { DefaultApi } from 'raise-sdk';
 import { getRaiseConfiguration, raiseConfiguration } from 'utils/raise-configuration';
+import { IBeneficiaries } from 'sections/client/funding-project-request/forms/MainInfoForm';
 
 // ----------------------------------------------------------------------
 
@@ -494,7 +495,9 @@ export const getBeneficiariesList = (role: string) => async () => {
         headers: { 'x-hasura-role': role },
       });
       if (response.data.statusCode === 200) {
-        dispatch(slice.actions.setBeneficiariesList(response.data.data));
+        const tmpValues =
+          response.data.data.filter((item: IBeneficiaries) => item.is_deleted !== true) || [];
+        dispatch(slice.actions.setBeneficiariesList(tmpValues));
       }
     } catch (error) {
       console.log(error);
