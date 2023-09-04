@@ -1122,7 +1122,8 @@ const ar = {
   register_one: 'قم بإنشاء حساب من هنا',
   add_new_line: 'إنشاء سطر جديد',
   create_new_account: 'إنشاء حساب جديد',
-  headline_verify_email: 'أنت على وشك أن تصبح نجمة!',
+  headline_verify_email:
+    'أنت على وشك أن تصبح شركاً للنجاح مع مؤسسة محمد بن عبدالعزيز الحبيب وأولاده الخيرية',
   content_verify_email:
     'لإكمال تسجيلك ، يرجى النقر فوق الزر أدناه ، وسوف نرسل لك بريدًا إلكترونيًا للتحقق وتفعيل حسابك.',
   send_verify_email: 'ارسل البريد الإلكتروني لإعادة تعيين كلمة المرور',
@@ -2431,7 +2432,7 @@ const ar = {
     COMPLETED: 'منجز',
     ONGOING: 'تحت التشغيل',
     PENDING: 'معلقة',
-    CANCELED: 'ملغي',
+    CANCELED: 'الاعتذار عن الدعم',
     ON_REVISION: 'في المراجعة',
     ASKED_FOR_AMANDEMENT: 'طلب تعديل',
     ASKED_FOR_AMANDEMENT_PAYMENT: 'طلب تعديل الدفع',
