@@ -48,7 +48,16 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
 
   const methods = useForm<SupervisorStep4>({
     resolver: yupResolver(validationSchema),
-    defaultValues: useMemo(() => step4, [step4]),
+    // defaultValues: useMemo(() => step4, [step4]),
+    defaultValues: {
+      proposal_item_budgets: [
+        {
+          clause: '',
+          explanation: '',
+          amount: undefined,
+        },
+      ],
+    },
   });
 
   const {
@@ -195,28 +204,14 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
   };
 
   useEffect(() => {
-    if (proposal && proposal.proposal_item_budgets.length) {
-      setBasedBudget(proposal.proposal_item_budgets);
-      setValue('proposal_item_budgets', proposal?.proposal_item_budgets);
-    } else {
-      resetField('proposal_item_budgets');
-    }
+    // if (proposal && proposal.proposal_item_budgets.length) {
+    //   setBasedBudget(proposal.proposal_item_budgets);
+    //   setValue('proposal_item_budgets', proposal?.proposal_item_budgets);
+    // } else {
+    //   resetField('proposal_item_budgets');
+    // }
 
     let loopNumber = -1;
-    // if (paymentNumber > proposal.proposal_item_budgets.length) {
-    //   loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
-    //   if (loopNumber > 0) {
-    //     for (let i = 0; i < loopNumber; i++) {
-    //       append({
-    //         amount: undefined,
-    //         clause: '',
-    //         explanation: '',
-    //         id: uuidv4(),
-    //       });
-    //     }
-    //   }
-    // }
-    // console.log('paynumber', paymentNumber, proposal.proposal_item_budgets.length);
     if (paymentNumber > proposal.proposal_item_budgets.length) {
       loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
       if (loopNumber > 0) {
@@ -225,7 +220,6 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
     }
     if (paymentNumber < proposal.proposal_item_budgets.length) {
       loopNumber = proposal.proposal_item_budgets.length - Number(paymentNumber);
-      // console.log('masuk else', <loo></loo>pNumber);
       handleRemoveLoop(loopNumber);
     }
 
