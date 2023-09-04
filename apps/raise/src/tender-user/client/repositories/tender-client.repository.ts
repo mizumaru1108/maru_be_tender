@@ -189,6 +189,7 @@ export class TenderClientRepository {
           id: true,
           user: {
             select: {
+              id: true,
               employee_name: true,
             },
           },
