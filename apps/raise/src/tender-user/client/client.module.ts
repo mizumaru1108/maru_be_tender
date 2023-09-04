@@ -2,6 +2,7 @@ import { Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UserModule } from '../user/user.module';
 import { TenderClientController } from './controllers/tender-client.controller';
+import { ClientFindNameAndIdQueryHandler } from './queries/client.find.name.and.id/client.find.name.and.id.query';
 import { TenderClientRepository } from './repositories/tender-client.repository';
 import { TenderClientService } from './services/tender-client.service';
 
@@ -12,7 +13,7 @@ const commands: Provider[] = [
   // Client Domain
   TenderClientService,
 ];
-const queries: Provider[] = [];
+const queries: Provider[] = [ClientFindNameAndIdQueryHandler];
 const exportedProviders: Provider[] = [
   TenderClientService,
   TenderClientRepository,

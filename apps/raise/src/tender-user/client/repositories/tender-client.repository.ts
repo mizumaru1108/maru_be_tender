@@ -56,6 +56,25 @@ export class CreateClientDataProps {
   chairman_mobile?: string | null;
   qid?: number | null;
 }
+
+export class FindManyNameAndIdProps {
+  user_name?: string;
+  client_name?: string;
+  limit?: number;
+  page?: number;
+  sort_by?: string;
+  sort_direction?: string;
+}
+
+export class ClientDataFindManyProps {
+  user_name?: string;
+  client_name?: string;
+  limit?: number;
+  page?: number;
+  sort_by?: string;
+  sort_direction?: string;
+  include_relations?: string[];
+}
 @Injectable()
 export class TenderClientRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -119,6 +138,100 @@ export class TenderClientRepository {
       throw error;
     }
   }
+
+  async findManyFilter(props: ClientDataFindManyProps) {
+    const args: Prisma.client_dataFindManyArgs = {};
+    let whereClause: Prisma.client_dataWhereInput = {};
+    if (props.client_name) {
+      whereClause.entity = props.client_name;
+    }
+    if (props.user_name) {
+      whereClause = {
+        ...whereClause,
+        user: {
+          employee_name: props.user_name,
+        },
+      };
+    }
+
+    args.where = whereClause;
+    return args;
+  }
+
+  async findManyNameAndId(
+    props: FindManyNameAndIdProps,
+    session?: PrismaService,
+  ) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const options = await this.findManyFilter({
+        client_name: props.client_name,
+        user_name: props.user_name,
+      });
+
+      const { limit = 0, page = 0, sort_by, sort_direction } = props;
+      const offset = (page - 1) * limit;
+      const getSortBy = sort_by ? sort_by : 'created_at';
+      const getSortDirection = sort_direction ? sort_direction : 'desc';
+
+      // console.log(logUtil(options));
+      let queryOptions: Prisma.client_dataFindManyArgs = {
+        where: options.where,
+
+        orderBy: {
+          [getSortBy]: getSortDirection,
+        },
+
+        include: options.include,
+
+        select: {
+          id: true,
+          user: {
+            select: {
+              employee_name: true,
+            },
+          },
+        },
+      };
+
+      if (limit > 0) {
+        queryOptions = {
+          ...queryOptions,
+          skip: offset,
+          take: limit,
+        };
+      }
+
+      // console.log(logUtil(queryOptions));
+      const rawResults = await prisma.client_data.findMany(queryOptions);
+      const entities = rawResults.map((rawResult) => {
+        return Builder<ClientDataEntity>(ClientDataEntity, {
+          ...rawResult,
+        }).build();
+      });
+
+      return entities;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
+  async countMany(props: ClientDataFindManyProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const args = await this.findManyFilter(props);
+      return await prisma.client_data.count({
+        where: args.where,
+      });
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
   async validateStatus(status: string): Promise<user_status | null> {
     try {
       return await this.prismaService.user_status.findUnique({

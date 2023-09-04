@@ -8,6 +8,17 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { QueryBus } from '@nestjs/cqrs';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Builder } from 'builder-pattern';
+import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
+import { BannerFindManyQueryDto } from '../../../banners/dtos/queries/banner.find.many.query.dto';
+import {
+  BannerFindManyQuery,
+  BannerFindManyQueryResult,
+} from '../../../banners/queries/banner.find.many.query/banner.find.many.query';
+import { BannerFindManyResponse } from '../../../banners/repositories/banner.repository';
+import { BasePaginationApiOkResponse } from '../../../commons/decorators/base.pagination.api.ok.response.decorator';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
@@ -25,11 +36,18 @@ import {
   SearchSpecificClientProposalFilter,
 } from '../dtos/requests';
 import { TenderClientService } from '../services/tender-client.service';
-import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
-
+import { ClientFieldAndIdQueryDto } from '../dtos/queries/client.find.name.and.id.query.dto';
+import {
+  ClientFindNameAndIdQuery,
+  ClientFindNameAndIdQueryResult,
+} from '../queries/client.find.name.and.id/client.find.name.and.id.query';
+@ApiTags('ClientModule')
 @Controller('tender/client')
 export class TenderClientController {
-  constructor(private readonly tenderClientService: TenderClientService) {}
+  constructor(
+    private readonly tenderClientService: TenderClientService,
+    private readonly queryBus: QueryBus,
+  ) {}
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
@@ -47,6 +65,33 @@ export class TenderClientController {
       response,
       HttpStatus.OK,
       'Asking for changes successfully applied!, please wait untill account manager responded to your request',
+    );
+  }
+
+  @ApiOperation({
+    summary: 'Find client name and id',
+  })
+  @Get()
+  async findClientName(@Query() query: ClientFieldAndIdQueryDto) {
+    const builder = Builder<ClientFindNameAndIdQuery>(
+      ClientFindNameAndIdQuery,
+      {
+        ...query,
+      },
+    );
+
+    const { result, total } = await this.queryBus.execute<
+      ClientFindNameAndIdQuery,
+      ClientFindNameAndIdQueryResult
+    >(builder.build());
+
+    return manualPaginationHelper(
+      result,
+      total,
+      query.page || 1,
+      query.limit || 10,
+      HttpStatus.OK,
+      'Client List Fetched Successfully!',
     );
   }
 
