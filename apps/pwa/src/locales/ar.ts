@@ -2183,6 +2183,8 @@ const ar = {
   },
   closing_project_by_client: 'إغلاق مشروع',
   review: {
+    region_id: 'المناطق',
+    governorate_id: 'المحافظات',
     beneficiary_id: 'المستفيدون',
     project_idea: 'مفهوم المشروع',
     project_goals: 'مهام المشروع',
@@ -2679,6 +2681,8 @@ const ar = {
         project_strengths: 'نقاط القوة للمشروع',
         timelines: 'مواعيد المشروع',
         notes: 'ملاحظات',
+        region: 'المنطقة',
+        governorate: 'المحافظة',
       },
     },
   },

@@ -157,7 +157,7 @@ export default function GovernoratesTableRow({
       </TableCell>
 
       <TableCell align="left">{name}</TableCell>
-      <TableCell align="left">{region_detail.name}</TableCell>
+      <TableCell align="left">{region_detail?.name || 'no Data'}</TableCell>
       <TableCell align="left">
         <Stack direction="row" gap={2}>
           <Button

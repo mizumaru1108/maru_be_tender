@@ -146,7 +146,12 @@ const AmandementRequest = () => {
                   {tmpValues &&
                     tmpValues.revised &&
                     Object.entries(tmpValues?.revised)
-                      .filter(([name, value]) => name !== 'beneficiary_id')
+                      .filter(
+                        ([name, value]) =>
+                          name !== 'beneficiary_id' &&
+                          name !== 'region_id' &&
+                          name !== 'governorate_id'
+                      )
                       .map(([name, value]) => (
                         <Box key={name} sx={{ mb: 2 }}>
                           <Typography

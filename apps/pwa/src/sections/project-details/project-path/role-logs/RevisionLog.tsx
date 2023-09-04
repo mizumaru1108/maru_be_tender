@@ -13,7 +13,6 @@ import {
 } from '../../../../@types/proposal';
 import ButtonDownloadFiles from '../../../../components/button/ButtonDownloadFiles';
 import { FormProvider, RHFDatePicker, RHFTextField } from '../../../../components/hook-form';
-import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
 import BankImageComp from '../../../shared/BankImageComp';
 
 interface Props {
@@ -26,8 +25,8 @@ function RevisionLog({ stepGeneralLog }: Props) {
   const { proposal } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
   const [dataGrants, setDataGrants] = React.useState<any>();
-  const { beneficiaries_list } = useSelector((state) => state.proposal);
-
+  const { beneficiaries_list, region_list } = useSelector((state) => state.proposal);
+  // console.log({ region_list });
   // let batch: number = 0;
   // if (stepGeneralLog && stepGeneralLog.message) {
   //   batch = Number(stepGeneralLog.message.split('_')[1]);
@@ -188,6 +187,38 @@ function RevisionLog({ stepGeneralLog }: Props) {
                         <Typography variant="h6">{translate(`review.${key}`)}</Typography>
                         <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                           <Typography>{tmpBeneficiary || 'no Data'}</Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                  if (key === 'region_id' && tmpValue) {
+                    const tmpRegion = region_list.find((item) => item.region_id === tmpValue);
+                    return (
+                      <Grid key={key} item md={6} xs={12}>
+                        <Typography variant="h6">{translate(`review.${key}`)}</Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>{tmpRegion?.name || 'no Data'}</Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                  if (key === 'governorate_id' && tmpValue) {
+                    const tmpRegion = region_list.find(
+                      (item) =>
+                        item.governorate &&
+                        item.governorate?.length > 0 &&
+                        item.governorate.find((item) => item.governorate_id === tmpValue)
+                    );
+                    const tmpGovernorate = tmpRegion?.governorate?.find(
+                      (item) => item.governorate_id === tmpValue
+                    )?.name;
+                    // console.log({ tmpGovernorate });
+                    // const tmpRegion = region_list.find((item) => item.region_id === tmpValue);
+                    return (
+                      <Grid key={key} item md={6} xs={12}>
+                        <Typography variant="h6">{translate(`review.${key}`)}</Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>{tmpGovernorate || 'no Data'}</Typography>
                         </Stack>
                       </Grid>
                     );

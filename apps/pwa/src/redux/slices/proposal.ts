@@ -19,6 +19,10 @@ import { useQuery } from 'urql';
 import { DefaultApi } from 'raise-sdk';
 import { getRaiseConfiguration, raiseConfiguration } from 'utils/raise-configuration';
 import { IBeneficiaries } from 'sections/client/funding-project-request/forms/MainInfoForm';
+import { IRegions } from 'sections/admin/region/list/types';
+import { IGovernorate } from 'sections/admin/governorate/list/types';
+import axios from 'axios';
+import { TMRA_RAISE_URL } from 'config';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +40,8 @@ interface ProposalItme {
   updateStatus: UpdateStatus;
   track_list: tracks[];
   beneficiaries_list: BeneficiaryDetail[];
+  region_list: IRegions[];
+  // governorate_list: IGovernorate[];
 }
 
 const initialState: ProposalItme = {
@@ -54,6 +60,21 @@ const initialState: ProposalItme = {
       id: '-1',
       name: 'test',
       is_deleted: false,
+    },
+  ],
+  region_list: [
+    {
+      region_id: '-1',
+      name: 'test',
+      is_deleted: false,
+      governorate: [
+        {
+          region_id: '-1',
+          governorate_id: '-1',
+          name: 'test',
+          is_deleted: false,
+        },
+      ],
     },
   ],
   proposalCount: {
@@ -310,6 +331,9 @@ const slice = createSlice({
     setBeneficiariesList(state, action) {
       state.beneficiaries_list = action.payload;
     },
+    setRegionList(state, action) {
+      state.region_list = action.payload;
+    },
     setTrackBudget(state, action) {
       state.proposal.track_budget = action.payload;
     },
@@ -371,6 +395,7 @@ export const {
   setUpdatedStatus,
   setLoadingPayment,
   setLoadingFetchin,
+  setRegionList,
 } = slice.actions;
 
 export const getProposal = (id: string, role: string) => async () => {
@@ -498,6 +523,30 @@ export const getBeneficiariesList = (role: string, showActive: boolean) => async
         const tmpValues =
           response.data.data.filter((item: IBeneficiaries) => item.is_deleted !== true) || [];
         dispatch(slice.actions.setBeneficiariesList(showActive ? tmpValues : response.data.data));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  } catch (error) {
+    dispatch(slice.actions.hasError(error));
+  } finally {
+    // dispatch(slice.actions.endLoading);
+    dispatch(slice.actions.setLoadingCount(false));
+  }
+};
+
+export const getRegionList = () => async () => {
+  try {
+    // dispatch(slice.actions.startLoading);
+    dispatch(slice.actions.setLoadingCount(true));
+    try {
+      const response = await axios.get(
+        `${TMRA_RAISE_URL}/region-management/regions?include_relations=governorate&limit=0`
+      );
+      if (response.data.statusCode === 200) {
+        const tmpValues =
+          // response.data.data.filter((item: IBeneficiaries) => item.is_deleted !== true) || [];
+          dispatch(slice.actions.setRegionList(response.data.data));
       }
     } catch (error) {
       console.log(error);

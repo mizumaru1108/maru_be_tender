@@ -4,7 +4,7 @@ export type IRegions = {
   region_id: string;
   name: string;
   is_deleted?: boolean;
-  governorate: IGovernorate[];
+  governorate?: IGovernorate[];
 };
 
 export interface RegionsFormInput {

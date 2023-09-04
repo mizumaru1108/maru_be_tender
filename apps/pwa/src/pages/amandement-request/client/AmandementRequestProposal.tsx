@@ -88,14 +88,26 @@ function AmandementRequestProposal() {
 
   const handleSubmit = async () => {
     setIsLoad(true);
-    // console.log({ tmpValues });
-    // const url = 'tender-proposal/send-amandement';
     let tmpPayload = { ...tmpValues };
     if (tmpPayload.project_beneficiaries) {
       tmpPayload = {
         ...tmpPayload,
         beneficiary_id: tmpPayload.project_beneficiaries,
       };
+    }
+    if (tmpPayload?.region || tmpPayload?.governorate) {
+      if (tmpPayload?.region) {
+        tmpPayload = {
+          ...tmpPayload,
+          region_id: tmpPayload.region,
+        };
+      }
+      if (tmpPayload?.governorate) {
+        tmpPayload = {
+          ...tmpPayload,
+          governorate_id: tmpPayload.governorate,
+        };
+      }
     }
     const url = 'tender-proposal/send-amandement-cqrs';
     try {

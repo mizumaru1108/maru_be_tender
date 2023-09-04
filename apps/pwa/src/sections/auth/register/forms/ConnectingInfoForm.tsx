@@ -166,10 +166,11 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
   const handleChangeRegion = (id: string) => {
     if (id) {
       const tmpRegion: IRegions = [...regions].find((item) => item.region_id === id) as IRegions;
-      const tmpGovernorates: IGovernorate[] = tmpRegion.governorate.filter(
-        (item) => item.is_deleted !== true
-      );
-      setGovernorates(tmpGovernorates);
+      const tmpGovernorates: IGovernorate[] | undefined =
+        tmpRegion?.governorate && tmpRegion?.governorate
+          ? tmpRegion?.governorate.filter((item) => item.is_deleted !== true)
+          : undefined;
+      if (tmpGovernorates) setGovernorates(tmpGovernorates);
       setArea((prevState: any) => ({
         ...prevState,
         region: tmpRegion,
@@ -219,7 +220,7 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
           setGovernorates([]);
         }
         let tmpGovernorate: IGovernorate | undefined = undefined;
-        if (tmpRegion && tmpRegion?.governorate?.length > 0) {
+        if (tmpRegion && tmpRegion?.governorate && tmpRegion?.governorate?.length > 0) {
           tmpGovernorate = [...tmpRegion.governorate]
             .filter((item) => item.is_deleted !== true)
             .find((item) => item.governorate_id === defaultValues.governorate_id) as IGovernorate;

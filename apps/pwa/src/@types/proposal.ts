@@ -272,6 +272,8 @@ export type AmandementProposal = Omit<
   | 'follow_ups'
   | 'region_id'
   | 'governorate_id'
+  | 'region'
+  | 'governorate'
   // | 'timelines'
 >;
 
@@ -316,6 +318,10 @@ export type AmandementProposalList = {
 };
 
 export type AmandementFields = {
+  region: string;
+  region_id: string;
+  governorate: string;
+  governorate_id: string;
   amount_required_fsupport: string;
   letter_ofsupport_req: string;
   num_ofproject_binicficiaries: string;

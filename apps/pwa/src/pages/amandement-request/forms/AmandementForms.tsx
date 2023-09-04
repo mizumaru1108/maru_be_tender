@@ -1,23 +1,19 @@
-import * as Yup from 'yup';
-import React, { useEffect, useMemo, useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Checkbox, Grid, Stack } from '@mui/material';
 import { FormProvider, RHFDatePicker, RHFTextField } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import FormGenerator from 'components/FormGenerator';
 import useLocales from 'hooks/useLocales';
-import { ProjectInfoData } from '../../../sections/client/funding-project-request/Forms-Data';
-import RHFTextArea from '../../../components/hook-form/RHFTextArea';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router';
+import * as Yup from 'yup';
 import { AmandementFields, AmandementProposal } from '../../../@types/proposal';
 import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
-import { async } from '@firebase/util';
-import { useParams } from 'react-router';
-import { LeftField, RightField } from './FormFieldData';
-import BaseField from 'components/hook-form/BaseField';
-import moment from 'moment';
-import BankImageComp from '../../../sections/shared/BankImageComp';
-import { useSelector } from '../../../redux/store';
+import RHFTextArea from '../../../components/hook-form/RHFTextArea';
 import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
+import { useSelector } from '../../../redux/store';
+import BankImageComp from '../../../sections/shared/BankImageComp';
+import { LeftField, RightField } from './FormFieldData';
 
 type Props = {
   // onSubmit: (data: any) => void;
@@ -123,6 +119,8 @@ const AmandementForms = ({
         project_outputs: newValues.project_outputs,
         project_risks: newValues.project_risks,
         project_strengths: newValues.project_strengths,
+        region: newValues.region,
+        governorate: newValues.governorate,
         timelines: '-',
         notes: '',
         proposal_bank_id: '-',

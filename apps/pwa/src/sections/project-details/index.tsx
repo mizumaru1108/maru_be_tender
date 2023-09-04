@@ -7,7 +7,12 @@ import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
 import ProjectStatus from './ProjectStatus';
 import FloatinActonBar from './floating-action-bar/FloatinActonBar';
-import { getBeneficiariesList, getProposal, getTrackList } from 'redux/slices/proposal';
+import {
+  getBeneficiariesList,
+  getProposal,
+  getRegionList,
+  getTrackList,
+} from 'redux/slices/proposal';
 import { useDispatch, useSelector } from 'redux/store';
 //
 import { FEATURE_PROJECT_DETAILS } from 'config';
@@ -49,6 +54,7 @@ function ProjectDetailsMainPage() {
     // getTrackList
     dispatch(getBeneficiariesList(role!, false));
     dispatch(getTrackList(0, role as string));
+    dispatch(getRegionList());
   }, [dispatch, id, role, handleFetching]);
 
   if (isLoading || loadingCount) return <>... Loading</>;

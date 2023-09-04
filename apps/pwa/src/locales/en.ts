@@ -2169,6 +2169,8 @@ const en = {
   },
   closing_project_by_client: 'Closing Project By Client',
   review: {
+    region_id: 'Regions',
+    governorate_id: 'Governorates',
     beneficiary_id: 'Beneficiaries',
     project_idea: 'Project Idea',
     project_goals: 'Project Goals',
@@ -2667,6 +2669,8 @@ const en = {
         project_strengths: 'Project strengths',
         timelines: 'Timelines',
         notes: 'Notes',
+        region: 'Region',
+        governorate: 'Governorate',
       },
     },
   },

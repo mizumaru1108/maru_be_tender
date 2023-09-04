@@ -234,30 +234,43 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         beneficiary_id: newValue.beneficiary_id,
       };
     }
-    if (filteredValue && (!filteredValue.region_id || !filteredValue.governorate_id)) {
-      if (
-        tmpValues?.data?.region !== newValue?.region ||
-        tmpValues?.data?.region_id !== newValue?.region_id
-      ) {
-        if (!!newValue.region_id) {
-          filteredValue.region = newValue.region;
-          filteredValue.region_id = newValue.region_id;
-        } else {
-          filteredValue.region = newValue.region;
-        }
-      }
-      if (
-        tmpValues?.data?.governorate !== newValue?.governorate ||
-        tmpValues?.data?.governorate_id !== newValue?.governorate_id
-      ) {
-        if (!!newValue.governorate_id) {
-          filteredValue.governorate = newValue.governorate;
-          filteredValue.governorate_id = newValue.governorate_id;
-        } else {
-          filteredValue.governorate = newValue.governorate;
-        }
-      }
+    if (tmpValues?.revised?.region && filteredValue && !filteredValue.region_id) {
+      filteredValue = {
+        ...filteredValue,
+        region_id: newValue.region_id,
+      };
     }
+    if (tmpValues?.revised?.governorate && filteredValue && !filteredValue.governorate_id) {
+      filteredValue = {
+        ...filteredValue,
+        governorate_id: newValue.governorate_id,
+      };
+    }
+
+    // if (filteredValue && (!filteredValue.region_id || !filteredValue.governorate_id)) {
+    //   if (
+    //     tmpValues?.data?.region !== newValue?.region ||
+    //     tmpValues?.data?.region_id !== newValue?.region_id
+    //   ) {
+    //     if (!!newValue.region_id) {
+    //       filteredValue.region = newValue.region;
+    //       filteredValue.region_id = newValue.region_id;
+    //     } else {
+    //       filteredValue.region = newValue.region;
+    //     }
+    //   }
+    //   if (
+    //     tmpValues?.data?.governorate !== newValue?.governorate ||
+    //     tmpValues?.data?.governorate_id !== newValue?.governorate_id
+    //   ) {
+    //     if (!!newValue.governorate_id) {
+    //       filteredValue.governorate = newValue.governorate;
+    //       filteredValue.governorate_id = newValue.governorate_id;
+    //     } else {
+    //       filteredValue.governorate = newValue.governorate;
+    //     }
+    //   }
+    // }
 
     filteredValue = {
       ...filteredValue,

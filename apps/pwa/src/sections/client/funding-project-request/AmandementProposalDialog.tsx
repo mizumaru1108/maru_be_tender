@@ -10,7 +10,7 @@ function AmandementProposalDialog() {
   const { activeRole } = useAuth();
   const { translate } = useLocales();
   const params = useParams();
-  console.log('params', params);
+  // console.log('params', params);
   return (
     <Box
       sx={{
