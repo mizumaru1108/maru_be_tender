@@ -34,6 +34,10 @@ const steps = [
   'التوصية بالدعم من المشرف',
 ];
 
+interface IsFormSubmited {
+  form1: boolean;
+}
+
 function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   const { activeStep, isLoading, step1, step2, step3, step4, step5 } = useSelector(
     (state) => state.supervisorAcceptingForm
@@ -57,6 +61,9 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [numberPayment, setNumberPayment] = useState<number>(0);
+  const [isFormSubmited, setIsFormSubmited] = useState<IsFormSubmited>({
+    form1: false,
+  });
   // console.log({ numberPayment });
 
   const handleSubmitFirstForm = (data: any) => {
@@ -268,7 +275,14 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
       content={
         <>
           {activeStep === 0 && (
-            <FirstForm onSubmit={handleSubmitFirstForm} setPaymentNumber={setNumberPayment}>
+            <FirstForm
+              onSubmit={handleSubmitFirstForm}
+              setPaymentNumber={setNumberPayment}
+              isSubmited={isFormSubmited.form1}
+              setIsSubmited={(data: boolean) => {
+                setIsFormSubmited({ ...isFormSubmited, form1: data });
+              }}
+            >
               <ActionBox
                 isLoading={isSubmitting}
                 onClose={onClose}

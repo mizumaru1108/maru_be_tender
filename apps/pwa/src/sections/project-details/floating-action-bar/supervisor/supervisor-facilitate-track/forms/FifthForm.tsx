@@ -187,7 +187,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
   // }, [paymentNumber]);
 
   const handleLoop = (loopNumber: number) => {
-    for (let i = 0; i < loopNumber; i++) {
+    for (let i = 1; i < loopNumber; i++) {
       append({
         amount: undefined,
         clause: '',
@@ -211,16 +211,21 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
     //   resetField('proposal_item_budgets');
     // }
 
-    let loopNumber = -1;
-    if (paymentNumber > proposal.proposal_item_budgets.length) {
-      loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
-      if (loopNumber > 0) {
-        handleLoop(loopNumber);
-      }
-    }
-    if (paymentNumber < proposal.proposal_item_budgets.length) {
-      loopNumber = proposal.proposal_item_budgets.length - Number(paymentNumber);
-      handleRemoveLoop(loopNumber);
+    const loopNumber = Number(paymentNumber);
+    // if (paymentNumber > proposal.proposal_item_budgets.length) {
+    //   // loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
+    //   loopNumber = Number(paymentNumber);
+    //   if (loopNumber > 0) {
+    //     handleLoop(loopNumber);
+    //   }
+    // }
+    // if (paymentNumber < proposal.proposal_item_budgets.length) {
+    //   // loopNumber = proposal.proposal_item_budgets.length - Number(paymentNumber);
+    //   loopNumber = Number(paymentNumber);
+    //   handleRemoveLoop(loopNumber);
+    // }
+    if (loopNumber > 0) {
+      handleLoop(loopNumber);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

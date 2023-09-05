@@ -5,6 +5,7 @@ import Page from 'components/Page';
 import useResponsive from 'hooks/useResponsive';
 import { useLocation, useNavigate } from 'react-router';
 import { useQuery } from 'urql';
+import formatPhone from 'utils/formatPhone';
 import { role_url_map } from '../../@types/commons';
 import { FEATURE_EDIT_CLIENT_INFORMATION } from '../../config';
 import useAuth from '../../hooks/useAuth';
@@ -142,7 +143,8 @@ export default function NonClientProfile() {
                   <Typography
                     sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
                   >
-                    {data?.profile?.mobile_number || 'N/A'}
+                    {/* {data?.profile?.mobile_number || 'N/A'} */}
+                    {formatPhone({ phone: data?.profile?.mobile_number, prefix: '+966' }) || 'N/A'}
                   </Typography>
                 </Stack>
                 {/* <Stack direction="column">

@@ -15,7 +15,7 @@ import { fCurrencyNumber } from 'utils/formatNumber';
 import { removeEmptyKey } from 'utils/remove-empty-key';
 import useAuth from 'hooks/useAuth';
 
-function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
+function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubmited }: any) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
   const { proposal } = useSelector((state) => state.proposal);
@@ -78,7 +78,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
   // const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
   const methods = useForm<SupervisorStep1>({
     resolver: yupResolver(validationSchema),
-    defaultValues: activeRole === 'tender_project_supervisor' ? null : tmpStep1,
+    defaultValues: activeRole === 'tender_project_supervisor' && !isSubmited ? null : tmpStep1,
   });
 
   const { handleSubmit, watch, setValue, resetField, reset } = methods;
@@ -91,6 +91,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber }: any) {
 
   const onSubmitForm = async (data: SupervisorStep1) => {
     // console.log('data', data);
+    setIsSubmited(true);
     const { vat_percentage, ...rest } = data;
     const tmpValues = {
       vat_percentage: vat_percentage ? Number(vat_percentage) : undefined,
