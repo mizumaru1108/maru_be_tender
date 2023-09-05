@@ -160,6 +160,7 @@ export function ApproveEditRequestMapper(
     data_entry_mobile &&
     data_entry_mobile !== oldClientData.data_entry_mobile
   ) {
+    updateUserPayload.mobile_number = data_entry_mobile;
     updateClientPayload.data_entry_mobile = data_entry_mobile;
   }
 
