@@ -17,7 +17,7 @@ function EntityArea() {
 
   // return <div>EntityArea</div>;
   return (
-    <Page title={translate('pages.admin.entity_area_table')}>
+    <Page title={translate('pages.admin.settings.label.governorate.list_of_governorate')}>
       <ContentStyle>
         <Box sx={{ px: '30px' }}>
           <GovernoratesTable />

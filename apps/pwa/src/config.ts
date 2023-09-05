@@ -322,3 +322,8 @@ export const FEATURE_LOGIN_BY_LICENSE: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_LOGIN_BY_LICENSE === 'true'
     ? true
     : false;
+export const MENU_ADMIN_PORTAL_REPORTS: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_PORTAL_REPORTS &&
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_PORTAL_REPORTS === 'true'
+    ? true
+    : false;

@@ -33,6 +33,14 @@ query MyQuery($id: String = "") {
       client_field_id
       governorate_id
       region_id
+      governorate_detail {
+        name
+        governorate_id
+      }
+      region_detail {
+        name
+        region_id
+      }
     }
     bank_informations(where: {is_deleted: {_eq: false}}) {
       bank_account_name
@@ -48,7 +56,6 @@ query MyQuery($id: String = "") {
     email
   }
 }
-
 
 
 `;

@@ -64,13 +64,21 @@ function ContactAccordion({ userInfo }: Props) {
               <Typography sx={sxPropsText}>
                 {translate('project_owner_details.accordion.contact_tab.governorate')}
               </Typography>
-              <TextField disabled fullWidth value={userInfo?.governorate ?? '-'} />
+              <TextField
+                disabled
+                fullWidth
+                value={userInfo?.governorate_detail?.name || userInfo?.governorate || '-'}
+              />
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography sx={sxPropsText}>
                 {translate('project_owner_details.accordion.contact_tab.region')}
               </Typography>
-              <TextField disabled fullWidth value={userInfo?.region ?? '-'} />
+              <TextField
+                disabled
+                fullWidth
+                value={userInfo?.region_detail?.name || userInfo?.region || '-'}
+              />
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography sx={sxPropsText}>

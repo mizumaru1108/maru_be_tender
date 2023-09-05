@@ -1,23 +1,22 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid, Typography, TextField, IconButton, Button } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
-import * as Yup from 'yup';
-import { useMemo, useState, useEffect } from 'react';
-import FormGenerator from 'components/FormGenerator';
-import { FifthFormData } from './form-data';
-import { SupervisorStep4 } from '../../../../../../@types/supervisor-accepting-form';
+import { useEffect, useMemo, useState } from 'react';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'redux/store';
+import * as Yup from 'yup';
+import { SupervisorStep4 } from '../../../../../../@types/supervisor-accepting-form';
 //
+import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import CloseIcon from '@mui/icons-material/Close';
-import uuidv4 from 'utils/uuidv4';
 import { useSnackbar } from 'notistack';
+import uuidv4 from 'utils/uuidv4';
 import { getMissingItems } from '../../../../../../utils/checkDeletedArray';
 
 function FifthForm({ children, onSubmit, paymentNumber }: any) {
   const { step4, step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const { proposal } = useSelector((state) => state.proposal);
+  const { activeRole } = useAuth();
 
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
@@ -46,18 +45,23 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
     ),
   });
 
+  const tmpStep4 = useMemo(() => step4, [step4]);
+
   const methods = useForm<SupervisorStep4>({
     resolver: yupResolver(validationSchema),
     // defaultValues: useMemo(() => step4, [step4]),
-    defaultValues: {
-      proposal_item_budgets: [
-        {
-          clause: '',
-          explanation: '',
-          amount: undefined,
-        },
-      ],
-    },
+    defaultValues:
+      activeRole !== 'tender_project_supervisor'
+        ? tmpStep4
+        : {
+            proposal_item_budgets: [
+              {
+                clause: '',
+                explanation: '',
+                amount: undefined,
+              },
+            ],
+          },
   });
 
   const {
@@ -187,7 +191,8 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
   // }, [paymentNumber]);
 
   const handleLoop = (loopNumber: number) => {
-    for (let i = 1; i < loopNumber; i++) {
+    const initNumber = activeRole === 'tender_project_supervisor' ? 1 : 0;
+    for (let i = initNumber; i < loopNumber; i++) {
       append({
         amount: undefined,
         clause: '',
@@ -211,21 +216,23 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
     //   resetField('proposal_item_budgets');
     // }
 
-    const loopNumber = Number(paymentNumber);
-    // if (paymentNumber > proposal.proposal_item_budgets.length) {
-    //   // loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
-    //   loopNumber = Number(paymentNumber);
-    //   if (loopNumber > 0) {
-    //     handleLoop(loopNumber);
-    //   }
-    // }
-    // if (paymentNumber < proposal.proposal_item_budgets.length) {
-    //   // loopNumber = proposal.proposal_item_budgets.length - Number(paymentNumber);
-    //   loopNumber = Number(paymentNumber);
-    //   handleRemoveLoop(loopNumber);
-    // }
-    if (loopNumber > 0) {
-      handleLoop(loopNumber);
+    let loopNumber = -1;
+    if (activeRole !== 'tender_project_supervisor') {
+      if (paymentNumber > proposal.proposal_item_budgets.length) {
+        loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
+        if (loopNumber > 0) {
+          handleLoop(loopNumber);
+        }
+      }
+      if (paymentNumber < proposal.proposal_item_budgets.length) {
+        loopNumber = proposal.proposal_item_budgets.length - Number(paymentNumber);
+        handleRemoveLoop(loopNumber);
+      }
+    } else {
+      if (Number(paymentNumber) > 0) {
+        loopNumber = Number(paymentNumber);
+        handleLoop(loopNumber);
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -708,7 +708,8 @@ const navConfig = {
             // },
             FEATURE_MENU_ADMIN_ENTITY_AREA &&
               ({
-                title: 'entity_area',
+                // title: 'entity_area',
+                title: 'pages.admin.settings.label.governorate.list_of_governorate',
                 path: PATH_ADMIN.entity_area,
                 icon: ICONS.tender_admin.entity_area,
               } as any),

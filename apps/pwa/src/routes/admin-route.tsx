@@ -44,7 +44,8 @@ const EntityClassification = Loadable(lazy(() => import('pages/admin/EntityClass
 const BankName = Loadable(lazy(() => import('pages/admin/BankName')));
 const Beneficiaries = Loadable(lazy(() => import('pages/admin/Beneficiaries')));
 
-const PortalReports = Loadable(lazy(() => import('pages/PortalReports')));
+// const PortalReports = Loadable(lazy(() => import('pages/PortalReports')));
+const PortalReports = Loadable(lazy(() => import('pages/admin/PortalReports')));
 const Messages = Loadable(lazy(() => import('pages/admin/Messages')));
 
 const NonClientProfile = Loadable(

@@ -9,7 +9,7 @@ export default function formatPhone({ phone, prefix }: IFormatPhone) {
     tmpPhone = phone.slice(prefix.length);
   } else {
     // tmpPhone = prefix.concat(phone);
-    tmpPhone = `${prefix} ${phone}`;
+    tmpPhone = `${prefix}${phone}`;
   }
   // console.log({ tmpPhone, isPrefix, phone, prefix });
   return tmpPhone;

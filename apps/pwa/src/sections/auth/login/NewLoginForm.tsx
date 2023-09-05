@@ -24,6 +24,7 @@ import { useDispatch } from 'redux/store';
 import { setConversation, setMessageGrouped, setActiveConversationId } from 'redux/slices/wschat';
 import { SxProps, Theme } from '@mui/material/styles';
 import { FEATURE_LOGIN_BY_LICENSE, FEATURE_LOGIN_BY_PHONE } from 'config';
+import formatPhone from 'utils/formatPhone';
 
 // ----------------------------------------------------------------------
 
@@ -45,6 +46,7 @@ const OptionLoginId = [
 type FormValuesProps = {
   select_loginId: string;
   mobile_number: string;
+  mobile_number_login: string;
   email: string;
   license_number: string;
   password: string;
@@ -92,7 +94,7 @@ export default function NewLoginForm() {
         license_number: Yup.string().required(translate('errors.register.license_number.required')),
       }),
       ...(tmpType === 'phone' && {
-        mobile_number: Yup.string()
+        mobile_number_login: Yup.string()
           .required(translate('errors.register.entity_mobile.required'))
           .test('len', translate('errors.register.entity_mobile.length'), (val) => {
             if (val === undefined || val?.length === 0) {
@@ -110,7 +112,7 @@ export default function NewLoginForm() {
 
   const defaultValues = {
     select_loginId: 'email',
-    mobile_number: '',
+    mobile_number_login: '',
     email: '',
     license_number: '',
     password: '',
@@ -137,7 +139,7 @@ export default function NewLoginForm() {
     if (loginIdType) {
       setLoginTypeId(loginIdType);
       setValue('email', '');
-      setValue('mobile_number', '');
+      setValue('mobile_number_login', '');
       setValue('license_number', '');
     }
   }, [loginIdType, setValue]);
@@ -154,8 +156,9 @@ export default function NewLoginForm() {
     let tmpLoginId = undefined;
     if (data.email && loginTypeId === 'email') {
       tmpLoginId = data.email;
-    } else if (data.mobile_number && loginTypeId === 'phone') {
-      const tmpPhone = `966${data.mobile_number}`;
+    } else if (data.mobile_number_login && loginTypeId === 'phone') {
+      // const tmpPhone = `+966${data.mobile_number_login}`;
+      const tmpPhone = formatPhone({ phone: data.mobile_number_login, prefix: '+966' });
       tmpLoginId = tmpPhone;
     } else {
       tmpLoginId = data.license_number;
@@ -221,7 +224,7 @@ export default function NewLoginForm() {
             <RHFTextField name="email" label={translate('email_label')} sx={{ direction: 'rtl' }} />
           ) : null}
           {loginIdType === 'phone' ? (
-            <RHFTextField name="mobile_number" label={translate('mobile_number')} />
+            <RHFTextField name="mobile_number_login" label={translate('mobile_number')} />
           ) : null}
           {loginIdType === 'license' ? (
             <RHFTextField

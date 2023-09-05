@@ -118,6 +118,7 @@ export default function RHFTextField({ name, ...other }: Props) {
                 // 'ceo_mobile',
                 // 'chairman_mobile',
                 // 'pm_mobile',
+                'mobile_number_login',
                 'execution_time',
               ].includes(name)
                 ? newDial
@@ -145,6 +146,7 @@ export default function RHFTextField({ name, ...other }: Props) {
               'chairman_mobile',
               'pm_mobile',
               'mobile_number',
+              'mobile_number_login',
             ].includes(name) ? (
               <InputAdornment
                 position="start"
@@ -177,6 +179,7 @@ export default function RHFTextField({ name, ...other }: Props) {
                 'pm_mobile',
                 'mobile_number',
                 'bank_account_number',
+                'mobile_number_login',
               ].includes(name) && `${currentLang.value}` === 'ar'
                 ? 'rtl'
                 : 'ltr',
