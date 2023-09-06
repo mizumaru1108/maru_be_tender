@@ -91,6 +91,9 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
             'proposal_id',
             'select_loginId',
             'region_id',
+            'governorate_id',
+            'beneficiary_id',
+            'target_type',
           ].includes(name) ? (
             <TextField
               {...field}

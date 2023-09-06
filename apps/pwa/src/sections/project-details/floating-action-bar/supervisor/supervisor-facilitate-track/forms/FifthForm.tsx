@@ -209,10 +209,11 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
   };
 
   useEffect(() => {
-    // if (proposal && proposal.proposal_item_budgets.length) {
-    //   setBasedBudget(proposal.proposal_item_budgets);
-    //   setValue('proposal_item_budgets', proposal?.proposal_item_budgets);
-    // } else {
+    if (proposal && proposal.proposal_item_budgets.length) {
+      setBasedBudget(proposal.proposal_item_budgets);
+      // setValue('proposal_item_budgets', proposal?.proposal_item_budgets);
+    }
+    // else {
     //   resetField('proposal_item_budgets');
     // }
 

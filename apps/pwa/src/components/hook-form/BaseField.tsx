@@ -140,6 +140,7 @@ function BaseField({
           label={label ?? ''}
           name={name ?? ''}
           options={options!}
+          gridCol={2}
           placeholder={translate(placeholder)}
         />
       )}

@@ -31,7 +31,6 @@ const GeneralForm = ({ onSubmitForm, defaultValuesForm, children, isLoading }: P
   });
 
   const {
-    watch,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
