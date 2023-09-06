@@ -17,6 +17,7 @@ import axiosInstance from '../../utils/axios';
 import ActionsBoxUserEdit from '../client/profile/ActionsBoxUserEdit';
 import UserInfoForm from '../client/profile/forms/UserInfoForm';
 import { useSnackbar } from 'notistack';
+import formatPhone from '../../utils/formatPhone';
 
 function NonClientProfileEditForm() {
   const { user, activeRole, logout } = useAuth();
@@ -67,11 +68,16 @@ function NonClientProfileEditForm() {
   const onSubmit1 = async (data: UserInfoFormProps) => {
     setLoading(true);
     window.scrollTo(0, 0);
-    console.log(data);
+    const tmpMobilePhone = formatPhone({ phone: data.mobile_number, prefix: '+966' });
+    // console.log(data);
+    const tmpValues = {
+      ...data,
+      mobile_number: tmpMobilePhone,
+    };
     try {
       const rest: any = await axiosInstance.patch(
         'tender-user/update-profile',
-        { ...data },
+        { ...tmpValues },
         {
           headers: { 'x-hasura-role': activeRole! },
         }
