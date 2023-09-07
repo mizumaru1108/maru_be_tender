@@ -205,7 +205,7 @@ export class TenderUserService {
     const deleteResult = await this.userRepo.deleteUserWFusionAuth(id);
     let logs = '';
     let deletedUser: user | null = null;
-    console.log('delete result', deleteResult);
+    // console.log('delete result', deleteResult);
     logs =
       deleteResult.fusionResult === true
         ? "Fusion Auth's user deleted!"

@@ -865,10 +865,12 @@ export class TenderUserRepository {
     }
   }
 
-  async deleteUser(userId: string): Promise<user | null> {
+  async deleteUser(userId: string, tx?: PrismaService): Promise<user | null> {
     this.logger.debug(`Deleting user with id: ${userId}`);
+    let prisma = this.prismaService;
+    if (tx) prisma = tx;
     try {
-      return await this.prismaService.user.delete({
+      return await prisma.user.delete({
         where: { id: userId },
       });
     } catch (error) {
@@ -894,7 +896,10 @@ export class TenderUserRepository {
     this.logger.info(`Deleting user with id: ${userId}`);
     try {
       const result = await this.prismaService.$transaction(async (prisma) => {
-        const prismaResult = await this.deleteUser(userId);
+        const session =
+          prisma instanceof PrismaService ? prisma : this.prismaService;
+
+        const prismaResult = await this.deleteUser(userId, session);
         const fusionResult = await this.fusionAuthService.fusionAuthDeleteUser(
           userId,
         );
