@@ -29,6 +29,7 @@ export class UpdateUserProps {
   email?: string;
   status_id?: string;
   address?: string;
+  is_deleted?: boolean;
 }
 
 export class FetchByIdProps {
@@ -907,6 +908,7 @@ export class TenderUserRepository {
       });
       return result;
     } catch (error) {
+      console.trace(error);
       const theError = prismaErrorThrower(
         error,
         TenderUserRepository.name,

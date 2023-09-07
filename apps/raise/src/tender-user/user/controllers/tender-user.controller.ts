@@ -43,6 +43,10 @@ import { PayloadErrorException } from '../../../tender-commons/exceptions/payloa
 import { BasePrismaErrorException } from '../../../tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { RequestErrorException } from '../../../tender-commons/exceptions/request-error.exception';
 import {
+  UserSoftDeleteCommand,
+  UserSoftDeleteCommandResult,
+} from '../commands/user.soft.delete/user.soft.delete.command';
+import {
   UserUpdateStatusCommand,
   UserUpdateStatusCommandResult,
 } from '../commands/user.update.status/user.update.status.command';
@@ -146,6 +150,32 @@ export class TenderUserController {
       HttpStatus.CREATED,
       'User deleted successfully!',
     );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Post('soft-delete')
+  async softDelete(
+    @Body() dto: TenderDeleteUserDto,
+  ): Promise<BaseResponse<any>> {
+    try {
+      const command = Builder<UserSoftDeleteCommand>(UserSoftDeleteCommand, {
+        user_id: dto.user_id,
+      }).build();
+
+      const result = await this.commandBus.execute<
+        UserSoftDeleteCommand,
+        UserSoftDeleteCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'User Deleted Successfully!',
+      );
+    } catch (e) {
+      throw this.errorMapper(e);
+    }
   }
 
   @UseGuards(TenderJwtGuard)

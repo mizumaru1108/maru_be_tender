@@ -30,6 +30,7 @@ export class UserEntity {
   proposal_proposal_supervisor_idTouser?: ProposalEntity[];
   client_data?: ClientDataEntity;
   status: UserStatusEntity;
+  is_deleted: boolean;
   // appointment_appointment_employee_idTouser                                   appointment[]                 @relation("appointment_employee_idTouser")
   // appointment_appointment_user_idTouser                                       appointment[]                 @relation("appointment_user_idTouser")
   // client_log                                                                  client_log[]

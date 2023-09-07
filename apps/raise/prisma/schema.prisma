@@ -342,6 +342,7 @@ model user {
   is_online                                                                   Boolean?
   track_id                                                                    String?
   uid                                                                         Int?
+  is_deleted                                                                  Boolean                       @default(false)
   appointment_appointment_employee_idTouser                                   appointment[]                 @relation("appointment_employee_idTouser")
   appointment_appointment_user_idTouser                                       appointment[]                 @relation("appointment_user_idTouser")
   bank_information                                                            bank_information[]

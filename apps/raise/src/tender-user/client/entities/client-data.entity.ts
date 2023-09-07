@@ -44,7 +44,7 @@ export class ClientDataEntity {
   authority?: string | null;
   authority_detail?: AuthoritiesEntity;
   headquarters?: string | null;
-  date_of_esthablistmen?: Date | null = new Date();
+  date_of_esthablistmen?: Date | null;
   num_of_beneficiaries?: number | null;
   num_of_employed_facility?: number | null;
   governorate?: string | null;
@@ -60,15 +60,15 @@ export class ClientDataEntity {
   website?: string | null;
   password?: string | null;
   license_number?: string | null;
-  license_expired?: Date | null = new Date();
-  license_issue_date?: Date | null = new Date();
+  license_expired?: Date | null;
+  license_issue_date?: Date | null;
   ceo_mobile?: string | null;
   ceo_name?: string | null;
   data_entry_mobile?: string | null;
   data_entry_name?: string | null;
   data_entry_mail?: string | null;
-  created_at?: Date | null = new Date();
-  updated_at?: Date | null = new Date();
+  created_at?: Date | null;
+  updated_at?: Date | null;
   client_field?: string | null;
   client_field_id?: string | null;
   client_field_details?: ClientFieldEntity;

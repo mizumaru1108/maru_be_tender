@@ -12,13 +12,6 @@ import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
-import { BannerFindManyQueryDto } from '../../../banners/dtos/queries/banner.find.many.query.dto';
-import {
-  BannerFindManyQuery,
-  BannerFindManyQueryResult,
-} from '../../../banners/queries/banner.find.many.query/banner.find.many.query';
-import { BannerFindManyResponse } from '../../../banners/repositories/banner.repository';
-import { BasePaginationApiOkResponse } from '../../../commons/decorators/base.pagination.api.ok.response.decorator';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
@@ -27,6 +20,7 @@ import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
+import { ClientFieldAndIdQueryDto } from '../dtos/queries/client.find.name.and.id.query.dto';
 import {
   ClientEditRequestFieldDto,
   EditRequestByIdDto,
@@ -35,12 +29,11 @@ import {
   SearchEditRequestFilter,
   SearchSpecificClientProposalFilter,
 } from '../dtos/requests';
-import { TenderClientService } from '../services/tender-client.service';
-import { ClientFieldAndIdQueryDto } from '../dtos/queries/client.find.name.and.id.query.dto';
 import {
   ClientFindNameAndIdQuery,
   ClientFindNameAndIdQueryResult,
 } from '../queries/client.find.name.and.id/client.find.name.and.id.query';
+import { TenderClientService } from '../services/tender-client.service';
 @ApiTags('ClientModule')
 @Controller('tender/client')
 export class TenderClientController {
