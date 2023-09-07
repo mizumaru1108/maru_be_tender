@@ -534,13 +534,14 @@ export class FusionAuthService {
     const registration: IFusionAuthUserRegistration = {
       applicationId: this.fusionAuthAppId,
       roles: role,
-      verified: false,
+      verified: props.email_verified || false,
     };
 
     const registrationRequest: IFusionAuthRegistrationRequest = {
       user,
       registration,
       skipVerification: false,
+      skipRegistrationVerification: false,
     };
 
     const options: AxiosRequestConfig<any> = {
