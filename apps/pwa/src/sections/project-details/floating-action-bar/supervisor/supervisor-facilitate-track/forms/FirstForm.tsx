@@ -22,6 +22,12 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
 
+  const isStepBack =
+    proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
+      ? true
+      : false;
+  console.log('isStepBack', isStepBack);
+
   const validationSchema = React.useMemo(() => {
     const tmpIsVat = isVat;
     return Yup.object().shape({
@@ -78,7 +84,10 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
   // const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
   const methods = useForm<SupervisorStep1>({
     resolver: yupResolver(validationSchema),
-    defaultValues: activeRole === 'tender_project_supervisor' && !isSubmited ? null : tmpStep1,
+    defaultValues:
+      (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep1) ||
+      ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep1) ||
+      null,
   });
 
   const { handleSubmit, watch, setValue, resetField, reset } = methods;

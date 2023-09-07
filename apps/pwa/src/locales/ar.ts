@@ -234,7 +234,7 @@ const ar = {
       beneficiaries_table: 'المستفيدين | الجدول',
       rejections_list_ceo: 'رفض قائمة المدير التنفيذي',
       entity_class_table: 'تصنيف الجهة | الجدول',
-      entity_area_table: 'مجال الجهة | الجدول',
+      entity_area_table: 'المناطق | الجدول',
       bank_name_table: 'اسم البنك | الجدول',
       gregorian_table: 'السنة القمرية | الجدول',
       regions_project_location_table: 'المناطق - مكان المشروع | الجدول',
@@ -289,7 +289,7 @@ const ar = {
           client_list: 'قائمة العملاء',
           users_and_permissions: 'المستخدمين والصلاحيات',
           authority: 'الجهة المشرفة',
-          entity_area: 'مجال الجهة',
+          entity_area: 'المناطق',
           regions_project_location: 'المناطق - مكان المشروع',
           entity_classification: 'تصنيف الجهة',
           bank_name: 'اسم البنك',
@@ -603,7 +603,7 @@ const ar = {
       },
       client_field: {
         message: '',
-        required: 'مجال الجهة مطلوب',
+        required: 'المناطق مطلوب',
       },
       authority: {
         message: '',
@@ -1101,7 +1101,7 @@ const ar = {
   contact_support_title: 'تواصل مع الدعم ',
   register_first_tap: 'المعلومات الرئيسية',
   register_second_tap: 'معلومات الاتصال',
-  register_third_tap: 'اسم مدير المشروع',
+  register_third_tap: 'اسم مدير الجهة',
   register_fourth_tap: 'بيانات الإدارية',
   register_fifth_tap: 'المعلومات البنكية',
   email_label: 'البريد الإلكتروني',
@@ -1146,8 +1146,8 @@ const ar = {
       placeholder: 'هل توافق على ضريبة القيمة المضافة',
     },
     entity_area: {
-      label: 'مجال الجهة*',
-      placeholder: 'الرجاء اختيار مجال الجهة',
+      label: 'المناطق*',
+      placeholder: 'الرجاء اختيار المناطق',
       options: {
         sub_entity_area: 'فرعي',
         main_entity_area: 'رئيسي',
@@ -1596,7 +1596,7 @@ const ar = {
   users_and_permissions: 'المستخدمين والصلاحيات',
   customization_for_dropdown: 'تخصيص القوائم المنسدلة',
   authority: 'الجهة المشرفة',
-  entity_area: 'مجال الجهة',
+  entity_area: 'المناطق',
   regions_project_location: 'المناطق - مكان المشروع',
   entity_classification: 'تصنيف الجهة',
   bank_name: 'اسم البنك',
@@ -2142,7 +2142,7 @@ const ar = {
   edeting_the_available_time: 'تعديل مواعيد تواجدك',
   appointments: 'الاجتماعات',
   requests_for_meeting: 'طلبات للاجتماع',
-  please_choose_entity_field: 'الرجاء اختار مجال الجهة',
+  please_choose_entity_field: 'الرجاء اختار المناطق',
   entity_field_main: 'رئيسي',
   entity_field_sub_main: 'فرعي',
   please_choose_the_name_of_the_client: 'الرجاء اختيار اسم الشريك',
@@ -2375,7 +2375,7 @@ const ar = {
     accordion: {
       main_tab: {
         header: 'المعلومات الرئيسية',
-        entity_field: 'مجال الجهة',
+        entity_field: 'المناطق',
         headquarters: 'المقر الرئيسي',
         date_of_establishment: 'تاريخ التأسيس',
         number_of_employees: 'عدد الموظفين الدوام الكامل للمنشأة',

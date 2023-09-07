@@ -28,6 +28,7 @@ import { useQuery } from 'urql';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
 import { TrackProps } from '../../../../@types/commons';
 import { useSnackbar } from 'notistack';
+import formatPhone from 'utils/formatPhone';
 
 type FormValuesProps = {
   employee_name: string;
@@ -137,11 +138,14 @@ function AddNewUser() {
   const onSubmit = async (data: FormValuesProps) => {
     // console.log({ data });
     // console.log('submit: ', data);
+    const tmpMobile = formatPhone({ phone: data.mobile_number, prefix: '+966' });
     let payload = {
       ...data,
+      mobile_number: tmpMobile,
     };
     payload.track_id = (data && data.employee_path) ?? '';
     delete payload.employee_path;
+    console.log({ payload });
     try {
       setIsLoading(true);
       await axiosInstance.post(
@@ -161,14 +165,14 @@ function AddNewUser() {
   };
 
   const onUpdate = async (data: FormValuesProps) => {
+    const tmpMobile = formatPhone({ phone: data.mobile_number, prefix: '+966' });
     let payload = {
       ...data,
       id: params.userId,
     };
     payload.track_id = (data && data.employee_path) ?? '';
     delete payload.employee_path;
-    payload.mobile_number =
-      data.mobile_number.split('')[4] === '+966' ? data.mobile_number : `+966${data.mobile_number}`;
+    payload.mobile_number = tmpMobile;
     payload = removeEmptyKey(payload);
     // console.log('update: ', payload);
     // alert('under construction');
