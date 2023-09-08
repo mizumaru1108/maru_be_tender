@@ -349,6 +349,24 @@ export type ActiveTap =
   | 'project-path'
   | 'supervisor-revision';
 
+export interface LoadingProps {
+  loadingRegion: boolean;
+  loadingGovernorate: boolean;
+  loadingBeneficiary: boolean;
+  laodingTrack: boolean;
+  laodingClient: boolean;
+}
+
+export interface IClientList {
+  id: string;
+  employee_name: string;
+  mobile_number?: string;
+  email?: string;
+  governorate?: null;
+  status_id?: string;
+  proposal_count?: number;
+}
+
 export type UpdateStatus = 'no-change' | 'updating' | 'updated' | 'error';
 
 type Role =

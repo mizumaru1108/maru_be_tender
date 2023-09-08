@@ -2809,6 +2809,68 @@ const ar = {
     placeholder: 'حدد معرف تسجيل الدخول',
     license: 'عن طريق رقم الرخصة',
   },
+  portal_report: {
+    header_page: 'إنشاء تقرير المشروع',
+    description: 'يرجى تحديد الأقسام المراد الاستفسار عنها لعرض المعلومات بشكل دقيق',
+    outter_status: {
+      completed: 'مكتمل',
+      pending: 'معلق',
+      canceled: 'ملغى',
+      ongoing: 'جاري',
+      on_revision: 'في مراجعة',
+      asked_for_amendment: 'طلب تعديل',
+      asked_for_amendment_payment: 'طلب تعديل مدفوع',
+      label: 'حالة المشروع',
+      placeholder: 'حالة المشروع',
+    },
+    errors: {
+      partner_name: {
+        required: 'اسم الشريك مطلوب',
+      },
+      track_id: {
+        required: 'اسم المسار مطلوب',
+      },
+      region_id: {
+        required: 'المنطقة مطلوبة',
+      },
+      governorate_id: {
+        required: 'المحافظة مطلوبة',
+      },
+      outter_status: {
+        required: 'حالة المشروع مطلوبة',
+      },
+      beneficiary_id: {
+        required: 'اسم المستفيد مطلوب',
+      },
+      project_created_date: {
+        required: 'تاريخ البناء مطلوب',
+      },
+    },
+    partner_name: {
+      label: 'اسم شريك*',
+      placeholder: 'اسم شريك',
+    },
+    track_id: {
+      label: 'تصفية*',
+      placeholder: 'تصفية',
+    },
+    region_id: {
+      label: 'منطقة*',
+      placeholder: 'منطقة',
+    },
+    governorate_id: {
+      label: 'محافظة*',
+      placeholder: 'محافظة',
+    },
+    beneficiary_id: {
+      label: 'اسم المستفيد*',
+      placeholder: 'اسم المستفيد',
+    },
+    project_created_date: {
+      label: 'تاريخ البناء*',
+      placeholder: 'تاريخ البناء',
+    },
+  },
 };
 
 export default ar;

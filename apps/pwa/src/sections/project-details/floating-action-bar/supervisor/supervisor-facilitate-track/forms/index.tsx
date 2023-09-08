@@ -36,6 +36,7 @@ const steps = [
 
 interface IsFormSubmited {
   form1: boolean;
+  form5: boolean;
 }
 
 function FacilitateSupervisorAcceptingForm({ onClose }: any) {
@@ -63,6 +64,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   const [numberPayment, setNumberPayment] = useState<number>(0);
   const [isFormSubmited, setIsFormSubmited] = useState<IsFormSubmited>({
     form1: false,
+    form5: false,
   });
   // console.log({ numberPayment });
 
@@ -322,7 +324,14 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
             </ForthFrom>
           )} */}
           {activeStep === 3 && (
-            <FifthForm onSubmit={handleSubmitFifthForm} paymentNumber={numberPayment}>
+            <FifthForm
+              onSubmit={handleSubmitFifthForm}
+              paymentNumber={numberPayment}
+              isSubmited={isFormSubmited.form5}
+              setIsSubmited={(data: boolean) => {
+                setIsFormSubmited({ ...isFormSubmited, form5: data });
+              }}
+            >
               <ActionBox
                 isLoading={isSubmitting}
                 onClose={onClose}

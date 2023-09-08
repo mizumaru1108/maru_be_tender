@@ -16,6 +16,7 @@ import {
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
   FEATURE_MENU_ADMIN_REGIONS,
   FEATURE_MENU_CLIENT_FILES,
+  MENU_ADMIN_PORTAL_REPORTS,
 } from 'config';
 
 const Main = Loadable(lazy(() => import('pages/admin/MainPage')));
@@ -184,7 +185,7 @@ export const adminRoute = {
         },
         { path: 'bank-name', element: <BankName /> },
         { path: 'beneficiaries', element: <Beneficiaries /> },
-        { path: 'portal-reports', element: <PortalReports /> },
+        MENU_ADMIN_PORTAL_REPORTS && { path: 'portal-reports', element: <PortalReports /> },
         { path: 'messages', element: <Messages /> },
         {
           path: 'old-proposal',

@@ -1,28 +1,24 @@
+import { LoadingButtonProps } from '@mui/lab';
 import { createSlice } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { TMRA_RAISE_URL } from 'config';
+import { createNewFollowUp } from 'queries/commons/createNewFollowUp';
 import { getOneProposal } from 'queries/commons/getOneProposal';
-import { insertPayments } from 'queries/project-supervisor/insertPayments';
 import { dispatch } from 'redux/store';
+import { IRegions } from 'sections/admin/region/list/types';
+import { IBeneficiaries } from 'sections/client/funding-project-request/forms/MainInfoForm';
+import axiosInstance from 'utils/axios';
 import graphQlAxiosInstance from 'utils/axisoGraphQlInstance';
 import {
   ActiveTap,
   BeneficiaryDetail,
+  IClientList,
+  LoadingProps,
   Proposal,
   ProposalCount,
   tracks,
   UpdateStatus,
 } from '../../@types/proposal';
-import { updatePayment } from 'queries/project-supervisor/updatePayment';
-import { insertChequeUpdatePayment } from 'queries/Cashier/insertChequeUpdatePayment';
-import { createNewFollowUp } from 'queries/commons/createNewFollowUp';
-import axiosInstance from 'utils/axios';
-import { useQuery } from 'urql';
-import { DefaultApi } from 'raise-sdk';
-import { getRaiseConfiguration, raiseConfiguration } from 'utils/raise-configuration';
-import { IBeneficiaries } from 'sections/client/funding-project-request/forms/MainInfoForm';
-import { IRegions } from 'sections/admin/region/list/types';
-import { IGovernorate } from 'sections/admin/governorate/list/types';
-import axios from 'axios';
-import { TMRA_RAISE_URL } from 'config';
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +26,7 @@ interface ProposalItme {
   isLoading: boolean;
   loadingCount: boolean;
   loadingPayment: boolean;
+  loadingProps: LoadingProps;
   error: Error | string | null;
   activeTap: ActiveTap;
   checkedItems: any;
@@ -41,6 +38,7 @@ interface ProposalItme {
   track_list: tracks[];
   beneficiaries_list: BeneficiaryDetail[];
   region_list: IRegions[];
+  client_list: IClientList[];
   // governorate_list: IGovernorate[];
 }
 
@@ -48,6 +46,13 @@ const initialState: ProposalItme = {
   isLoading: false,
   loadingCount: false,
   loadingPayment: false,
+  loadingProps: {
+    laodingTrack: false,
+    loadingBeneficiary: false,
+    laodingClient: false,
+    loadingGovernorate: false,
+    loadingRegion: false,
+  },
   error: null,
   activeTap: 'main',
   checkedItems: [],
@@ -60,6 +65,16 @@ const initialState: ProposalItme = {
       id: '-1',
       name: 'test',
       is_deleted: false,
+    },
+  ],
+  client_list: [
+    {
+      id: '-1',
+      email: 'test',
+      employee_name: 'test',
+      mobile_number: 'test',
+      status_id: 'test',
+      proposal_count: 0,
     },
   ],
   region_list: [
@@ -290,6 +305,26 @@ const slice = createSlice({
     startLoadingCount(state) {
       state.loadingCount = true;
     },
+    // loading when fetcing region
+    startLoadingRegion(state, action) {
+      state.loadingProps.loadingRegion = action.payload;
+    },
+    // loading when fetcing governorate
+    startLoadingGovernorate(state, action) {
+      state.loadingProps.loadingGovernorate = action.payload;
+    },
+    // loading when fetcing client
+    startLoadingClient(state, action) {
+      state.loadingProps.laodingClient = action.payload;
+    },
+    // loading when fetcing track
+    startLoadingTrack(state, action) {
+      state.loadingProps.laodingTrack = action.payload;
+    },
+    // loading when fetcing beneficiary
+    startLoadingBeneficiary(state, action) {
+      state.loadingProps.loadingBeneficiary = action.payload;
+    },
     setLoadingCount(state, action) {
       state.loadingCount = action.payload;
     },
@@ -330,6 +365,9 @@ const slice = createSlice({
     },
     setBeneficiariesList(state, action) {
       state.beneficiaries_list = action.payload;
+    },
+    setClientList(state, action) {
+      state.client_list = action.payload;
     },
     setRegionList(state, action) {
       state.region_list = action.payload;
@@ -487,6 +525,7 @@ export const getTrackList = (isGeneral: number, role: string) => async () => {
   try {
     dispatch(slice.actions.startLoading);
     dispatch(slice.actions.setLoadingCount(true));
+    dispatch(slice.actions.startLoadingTrack(true));
     let url = '';
     if (isGeneral) {
       url = '/tender/track/fetch-all?include_general=1';
@@ -508,11 +547,13 @@ export const getTrackList = (isGeneral: number, role: string) => async () => {
   } finally {
     dispatch(slice.actions.endLoading);
     dispatch(slice.actions.setLoadingCount(false));
+    dispatch(slice.actions.startLoadingTrack(false));
   }
 };
 export const getBeneficiariesList = (role: string, showActive: boolean) => async () => {
   try {
     // dispatch(slice.actions.startLoading);
+    dispatch(slice.actions.startLoadingBeneficiary(true));
     dispatch(slice.actions.setLoadingCount(true));
     const url = '/tender/proposal/beneficiaries/find-all?limit=0';
     try {
@@ -532,6 +573,30 @@ export const getBeneficiariesList = (role: string, showActive: boolean) => async
   } finally {
     // dispatch(slice.actions.endLoading);
     dispatch(slice.actions.setLoadingCount(false));
+    dispatch(slice.actions.startLoadingBeneficiary(false));
+  }
+};
+
+export const getClientList = (role: string) => async () => {
+  try {
+    dispatch(slice.actions.startLoadingClient(true));
+    const url = '/tender/client/proposal/list?limit=99999';
+    try {
+      const response = await axiosInstance.get(url, {
+        headers: { 'x-hasura-role': role },
+      });
+      if (response.data.statusCode === 200) {
+        const tmpValues =
+          response.data.data.filter((item: IBeneficiaries) => item.is_deleted !== true) || [];
+        dispatch(slice.actions.setClientList(response.data.data));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  } catch (error) {
+    dispatch(slice.actions.hasError(error));
+  } finally {
+    dispatch(slice.actions.startLoadingClient(false));
   }
 };
 
@@ -539,6 +604,7 @@ export const getRegionList = () => async () => {
   try {
     // dispatch(slice.actions.startLoading);
     dispatch(slice.actions.setLoadingCount(true));
+    dispatch(slice.actions.startLoadingRegion(true));
     try {
       const response = await axios.get(
         `${TMRA_RAISE_URL}/region-management/regions?include_relations=governorate&limit=0`
@@ -556,6 +622,7 @@ export const getRegionList = () => async () => {
   } finally {
     // dispatch(slice.actions.endLoading);
     dispatch(slice.actions.setLoadingCount(false));
+    dispatch(slice.actions.startLoadingRegion(false));
   }
 };
 

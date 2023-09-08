@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { Stack } from '@mui/system';
 import React from 'react';
+import useLocales from 'hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
@@ -56,14 +57,13 @@ export function RHFMultiCheckbox({
 }: RHFMultiCheckboxProps) {
   const { control } = useFormContext();
   const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
-  const [stateError, setStateError] = React.useState(false);
+  const { translate } = useLocales();
 
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => {
-        // console.log({ field, fieldState: { error } });
         const onSelected = (option: string) => {
           const updatedOptions = [...selectedOptions];
           if (updatedOptions.includes(option)) {
@@ -94,7 +94,7 @@ export function RHFMultiCheckbox({
                       control={
                         <Checkbox checked={checked} onChange={() => onSelected(option.value)} />
                       }
-                      label={option.label}
+                      label={translate(option.label)}
                       {...other}
                     />
                   </Grid>

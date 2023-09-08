@@ -2796,6 +2796,69 @@ const en = {
     placeholder: 'Select Login Id',
     license: 'By License Number',
   },
+  portal_report: {
+    header_page: 'Create a project report',
+    description:
+      'Please select the sections to be inquired in order to display the information accurately',
+    outter_status: {
+      completed: 'Completed',
+      pending: 'Pending',
+      canceled: 'Cancelled',
+      ongoing: 'Ongoing',
+      on_revision: 'On Revision',
+      asked_for_amendment: 'Asked for Amendment',
+      asked_for_amendment_payment: 'Asked for Amendment Payment',
+      label: 'Project Status',
+      placeholder: 'Project Status',
+    },
+    errors: {
+      partner_name: {
+        required: 'Partner name is required',
+      },
+      track_id: {
+        required: 'Track is required',
+      },
+      region_id: {
+        required: 'Region is required',
+      },
+      governorate_id: {
+        required: 'Governorate is required',
+      },
+      outter_status: {
+        required: 'Project Status is required',
+      },
+      beneficiary_id: {
+        required: 'Beneficiary is required',
+      },
+      project_created_date: {
+        required: 'Project Created Date is required',
+      },
+    },
+    partner_name: {
+      label: 'Partner Name',
+      placeholder: 'Partner Name',
+    },
+    track_id: {
+      label: 'Track',
+      placeholder: 'Track',
+    },
+    region_id: {
+      label: 'Region',
+      placeholder: 'Region',
+    },
+    governorate_id: {
+      label: 'Governorate',
+      placeholder: 'Governorate',
+    },
+    beneficiary_id: {
+      label: 'Beneficiary',
+      placeholder: 'Beneficiary',
+    },
+    project_created_date: {
+      label: 'Project Created Date',
+      placeholder: 'Project Created Date',
+    },
+  },
 };
 
 export default en;

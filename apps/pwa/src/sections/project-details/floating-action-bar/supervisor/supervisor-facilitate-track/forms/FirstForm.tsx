@@ -26,7 +26,8 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
     proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
       ? true
       : false;
-  console.log('isStepBack', isStepBack);
+
+  // console.log('isStepBack', isStepBack);
 
   const validationSchema = React.useMemo(() => {
     const tmpIsVat = isVat;
@@ -135,11 +136,14 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
 
   useEffect(() => {
     if (
-      proposal.proposal_item_budgets &&
-      (activeRole! === 'tender_project_manager' || activeRole! === 'tender_ceo')
+      (proposal.proposal_item_budgets &&
+        (activeRole! === 'tender_project_manager' || activeRole! === 'tender_ceo')) ||
+      (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep1) ||
+      ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep1)
     ) {
       setValue('payment_number', proposal.proposal_item_budgets.length);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposal, setValue, activeRole]);
 
   return (

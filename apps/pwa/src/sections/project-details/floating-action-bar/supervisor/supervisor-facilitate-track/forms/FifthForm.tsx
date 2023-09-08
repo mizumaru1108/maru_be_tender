@@ -13,10 +13,14 @@ import { useSnackbar } from 'notistack';
 import uuidv4 from 'utils/uuidv4';
 import { getMissingItems } from '../../../../../../utils/checkDeletedArray';
 
-function FifthForm({ children, onSubmit, paymentNumber }: any) {
+function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmited }: any) {
   const { step4, step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const { proposal } = useSelector((state) => state.proposal);
   const { activeRole } = useAuth();
+  const isStepBack =
+    proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
+      ? true
+      : false;
 
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
@@ -51,17 +55,27 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
     resolver: yupResolver(validationSchema),
     // defaultValues: useMemo(() => step4, [step4]),
     defaultValues:
-      activeRole !== 'tender_project_supervisor'
-        ? tmpStep4
-        : {
-            proposal_item_budgets: [
-              {
-                clause: '',
-                explanation: '',
-                amount: undefined,
-              },
-            ],
-          },
+      // activeRole !== 'tender_project_supervisor'
+      //   ? tmpStep4
+      //   : {
+      //       proposal_item_budgets: [
+      //         {
+      //           clause: '',
+      //           explanation: '',
+      //           amount: undefined,
+      //         },
+      //       ],
+      //     },
+      (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep4) ||
+        ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep4) || {
+          proposal_item_budgets: [
+            {
+              clause: '',
+              explanation: '',
+              amount: undefined,
+            },
+          ],
+        },
   });
 
   const {
@@ -86,7 +100,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
   });
 
   const onSubmitForm = (data: SupervisorStep4) => {
-    // console.log(data, 'data test');
+    setIsSubmited(true);
     let totalAmount: number | undefined = undefined;
     const fSupportBySpv: number = Number(
       Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
@@ -230,7 +244,7 @@ function FifthForm({ children, onSubmit, paymentNumber }: any) {
         handleRemoveLoop(loopNumber);
       }
     } else {
-      if (Number(paymentNumber) > 0) {
+      if (Number(paymentNumber) > 0 && !isStepBack) {
         loopNumber = Number(paymentNumber);
         handleLoop(loopNumber);
       }

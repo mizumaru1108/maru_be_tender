@@ -115,9 +115,6 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
                 '& > .MuiFormHelperText-root': {
                   backgroundColor: 'transparent',
                 },
-                // '& .MuiPaper-root': {
-                //   maxHeight: 300,
-                // },
                 ...(!other.disabled && {
                   '& label.Mui-focused': {
                     color: theme.palette.grey[800],
