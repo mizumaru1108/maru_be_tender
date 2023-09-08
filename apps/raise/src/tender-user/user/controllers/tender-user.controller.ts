@@ -52,6 +52,10 @@ import {
 } from '../commands/user.update.status/user.update.status.command';
 import { TenderCurrentUser } from '../interfaces/current-user.interface';
 import { TenderUserService } from '../services/tender-user.service';
+import {
+  UserCreateCommand,
+  UserCreateCommandResult,
+} from '../commands/user.create/user.create.command';
 @ApiTags('UserModule')
 @Controller('tender-user')
 export class TenderUserController {
@@ -91,15 +95,25 @@ export class TenderUserController {
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Post('create')
-  async createUser(
-    @Body() request: TenderCreateUserDto,
-  ): Promise<BaseResponse<CreateUserResponseDto>> {
-    const response = await this.tenderUserService.createUser(request);
-    return baseResponseHelper(
-      response,
-      HttpStatus.CREATED,
-      'User created successfully!',
-    );
+  async createUser(@Body() dto: TenderCreateUserDto) {
+    try {
+      const command = Builder<UserCreateCommand>(UserCreateCommand, {
+        dto,
+      }).build();
+
+      const { data } = await this.commandBus.execute<
+        UserCreateCommand,
+        UserCreateCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        data,
+        HttpStatus.CREATED,
+        'User Created Successfully!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)

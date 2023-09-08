@@ -507,7 +507,7 @@ export class FusionAuthService {
 
   async fusionAuthTenderRegisterUser(props: FusionAuthRegisterProps) {
     const baseUrl = this.fusionAuthUrl;
-    const registerUrl = baseUrl + '/api/user/registration/';
+    const registerUrl = baseUrl + '/api/user/registration';
 
     let role: string[] = ['tender_client'];
 

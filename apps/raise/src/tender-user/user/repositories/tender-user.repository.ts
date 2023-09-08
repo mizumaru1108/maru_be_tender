@@ -20,6 +20,7 @@ export class CreateUserProps {
   mobile_number: string;
   email: string;
   status_id: string;
+  track_id?: string;
   address?: string;
 }
 export class UpdateUserProps {
@@ -29,6 +30,7 @@ export class UpdateUserProps {
   email?: string;
   status_id?: string;
   address?: string;
+  track_id?: string;
   is_deleted?: boolean;
 }
 
@@ -112,6 +114,7 @@ export class TenderUserRepository {
           email: props.email,
           status_id: props.status_id,
           address: props.address,
+          track_id: props.track_id,
         },
       });
 
@@ -137,6 +140,7 @@ export class TenderUserRepository {
           email: props.email,
           status_id: props.status_id,
           address: props.address,
+          track_id: props.track_id,
         },
       });
 

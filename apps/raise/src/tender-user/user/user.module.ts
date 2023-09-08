@@ -9,6 +9,7 @@ import { TenderUserRoleRepository } from './repositories/tender-user-role.reposi
 import { TenderUserStatusLogRepository } from './repositories/tender-user-status-log.repository';
 import { TenderUserRepository } from './repositories/tender-user.repository';
 import { TenderUserService } from './services/tender-user.service';
+import { UserCreateCommandHandler } from './commands/user.create/user.create.command';
 
 const importedModule = [CqrsModule];
 const controllers = [TenderUserController];
@@ -16,6 +17,7 @@ const repositories: Provider[] = [];
 const commands: Provider[] = [
   // User Domain
   TenderUserService,
+  UserCreateCommandHandler,
   UserUpdateStatusCommandHandler,
   UserSoftDeleteCommandHandler,
   TenderUserRepository,
