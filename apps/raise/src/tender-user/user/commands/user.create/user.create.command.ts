@@ -136,6 +136,7 @@ export class UserCreateCommandHandler
       ];
 
       if (status === UserStatusEnum.ACTIVE_ACCOUNT) {
+        await this.fusionAuthService.verifyEmail(fusionAuthResult.user.id);
         statusLogPayload.push({
           id: uuidv4(),
           user_id: fusionAuthResult.user.id as string,
