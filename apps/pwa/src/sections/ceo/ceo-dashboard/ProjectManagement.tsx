@@ -77,7 +77,7 @@ function DashboardProjectManagement() {
                   project.track_id &&
                   track_list &&
                   track_list.length > 0 &&
-                  track_list.find((item: tracks) => item.id === project.track_id)!.name) ||
+                  track_list.find((item: tracks) => item.id === project.track_id)?.name) ||
                 '',
               associationName: (project.user.employee_name as string) || '',
               createdAt: (project.created_at as string) || '',
@@ -90,20 +90,30 @@ function DashboardProjectManagement() {
     } catch (err) {
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
-      enqueueSnackbar(
-        `${
-          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
-        }`,
-        {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        }
-      );
+      console.log({ err });
+      // enqueueSnackbar(
+      //   `${
+      //     statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+      //   }`,
+      //   {
+      //     variant: 'error',
+      //     preventDuplicate: true,
+      //     autoHideDuration: 3000,
+      //     anchorOrigin: {
+      //       vertical: 'bottom',
+      //       horizontal: 'center',
+      //     },
+      //   }
+      // );
+      enqueueSnackbar('ini error', {
+        variant: 'error',
+        preventDuplicate: true,
+        autoHideDuration: 3000,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center',
+        },
+      });
     } finally {
       setIsLoading(false);
     }
@@ -112,7 +122,8 @@ function DashboardProjectManagement() {
 
   React.useEffect(() => {
     fetchingIncoming();
-  }, [fetchingIncoming]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // useEffect(() => {
   //   dispatch(getTrackList(0, activeRole! as string));
