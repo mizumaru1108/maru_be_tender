@@ -38,6 +38,7 @@ import {
   ProposalFindManyProps,
   ProposalUpdateProps,
 } from '../types';
+import { ProposalSelectEnum } from '../dtos/queries/proposal.report.list.query.dto';
 
 @Injectable()
 export class ProposalRepository {
@@ -597,7 +598,12 @@ export class ProposalRepository {
       governorate_id,
       region_id,
       submitter_user_id,
+      outter_status,
+      benificiary_id,
       include_relations,
+      selected_columns,
+      start_date,
+      end_date,
     } = props;
     let args: Prisma.proposalFindManyArgs = {};
     let whereClause: Prisma.proposalWhereInput = {};
@@ -625,22 +631,28 @@ export class ProposalRepository {
     if (region_id) {
       whereClause = {
         ...whereClause,
-        user: {
-          client_data: {
-            region_id: { in: region_id },
-          },
-        },
+        region_id: { in: region_id },
       };
     }
 
     if (governorate_id) {
       whereClause = {
         ...whereClause,
-        user: {
-          client_data: {
-            governorate_id: { in: governorate_id },
-          },
-        },
+        governorate_id: { in: governorate_id },
+      };
+    }
+
+    if (outter_status) {
+      whereClause = {
+        ...whereClause,
+        outter_status: { in: outter_status },
+      };
+    }
+
+    if (benificiary_id) {
+      whereClause = {
+        ...whereClause,
+        beneficiary_id: { in: benificiary_id },
       };
     }
 
@@ -648,6 +660,24 @@ export class ProposalRepository {
       whereClause = {
         ...whereClause,
         submitter_user_id,
+      };
+    }
+
+    if (start_date) {
+      whereClause = {
+        ...whereClause,
+        created_at: {
+          gte: start_date,
+        },
+      };
+    }
+
+    if (end_date) {
+      whereClause = {
+        ...whereClause,
+        created_at: {
+          lte: end_date,
+        },
       };
     }
 
@@ -787,6 +817,92 @@ export class ProposalRepository {
       args.include = include;
     }
 
+    if (selected_columns && selected_columns.length > 0) {
+      let ps: Prisma.proposalSelect = {};
+      for (const selected of selected_columns) {
+        if (selected === ProposalSelectEnum.AMOUNT_REQUIRED_FSUPPORT) {
+          ps.amount_required_fsupport = true;
+        }
+        if (selected === ProposalSelectEnum.BANK_ACCOUNT_NAME) {
+          ps = {
+            ...ps,
+            bank_information: {
+              select: {
+                bank_account_name: true,
+              },
+            },
+          };
+        }
+        if (selected === ProposalSelectEnum.BANK_ACCOUNT_NUMBER) {
+          ps = {
+            ...ps,
+            bank_information: {
+              select: {
+                bank_account_number: true,
+              },
+            },
+          };
+        }
+        if (selected === ProposalSelectEnum.BANK_NAME) {
+          ps = {
+            ...ps,
+            bank_information: {
+              select: {
+                bank_name: true,
+              },
+            },
+          };
+        }
+        if (selected === ProposalSelectEnum.EMAIL) {
+          ps = { ...ps, user: { select: { email: true } } };
+        }
+        if (selected === ProposalSelectEnum.EXECUTION_TIME) {
+          ps = { ...ps, execution_time: true };
+        }
+        if (selected === ProposalSelectEnum.GOVERNORATE) {
+          ps.governorate_detail = true;
+        }
+        if (selected === ProposalSelectEnum.MOBILE_NUMBER) {
+          ps = { ...ps, user: { select: { email: true } } };
+        }
+        if (selected === ProposalSelectEnum.NUM_OF_PROJECT_BENEFICIARIES) {
+          ps.num_ofproject_binicficiaries = true;
+        }
+        if (selected === ProposalSelectEnum.PM_NAME) ps.pm_name = true;
+        if (selected === ProposalSelectEnum.PROJECET_LOCATION) {
+          ps.project_location = true;
+        }
+        if (selected === ProposalSelectEnum.PROJECT_BENEFICIARIES) {
+          ps.project_beneficiaries = true;
+        }
+        if (selected === ProposalSelectEnum.PROJECT_GOALS) {
+          ps.project_goals = true;
+        }
+        if (selected === ProposalSelectEnum.PROJECT_IDEA) {
+          ps.project_idea = true;
+        }
+        if (selected === ProposalSelectEnum.PROJECT_IMPLEMENT_DATE) {
+          ps.project_implement_date = true;
+        }
+        if (selected === ProposalSelectEnum.PROJECT_NAME) {
+          ps.project_name = true;
+        }
+        if (selected === ProposalSelectEnum.PROJECT_OUTPUTS) {
+          ps.project_outputs = true;
+        }
+        if (selected === ProposalSelectEnum.PROJECT_RISKS) {
+          ps.project_risks = true;
+        }
+        if (selected === ProposalSelectEnum.PROJECT_STRENGTH) {
+          ps.project_strengths = true;
+        }
+        if (selected === ProposalSelectEnum.REGION) {
+          ps.region_detail = true;
+        }
+      }
+      args.select = ps;
+    }
+
     args.where = whereClause;
     return args;
   }
@@ -806,11 +922,16 @@ export class ProposalRepository {
       const args = await this.findManyFilter(props);
       let queryOptions: Prisma.proposalFindManyArgs = {
         where: args.where,
-        include: args.include,
         orderBy: {
           [getSortBy]: getSortDirection,
         },
       };
+
+      if (args.include) {
+        queryOptions = { ...queryOptions, include: args.include };
+      }
+
+      if (args.select) queryOptions = { ...queryOptions, select: args.select };
 
       if (limit > 0) {
         queryOptions = {
@@ -826,35 +947,49 @@ export class ProposalRepository {
         return Builder<ProposalEntity>(ProposalEntity, {
           ...rawResult,
           amount_required_fsupport:
-            rawResult.amount_required_fsupport !== null
-              ? parseFloat(rawResult.amount_required_fsupport.toString())
-              : null,
+            rawResult.amount_required_fsupport !== undefined
+              ? rawResult.amount_required_fsupport !== null
+                ? parseFloat(rawResult.amount_required_fsupport.toString())
+                : null
+              : undefined,
           whole_budget:
-            rawResult.whole_budget !== null
-              ? parseFloat(rawResult.whole_budget.toString())
-              : null,
+            rawResult.whole_budget !== undefined
+              ? rawResult.whole_budget !== null
+                ? parseFloat(rawResult.whole_budget.toString())
+                : null
+              : undefined,
           number_of_payments:
-            rawResult.number_of_payments !== null
-              ? parseFloat(rawResult.number_of_payments.toString())
-              : null,
+            rawResult.number_of_payments !== undefined
+              ? rawResult.number_of_payments !== null
+                ? parseFloat(rawResult.number_of_payments.toString())
+                : null
+              : undefined,
           partial_support_amount:
-            rawResult.partial_support_amount !== null
-              ? parseFloat(rawResult.partial_support_amount.toString())
-              : null,
+            rawResult.partial_support_amount !== undefined
+              ? rawResult.partial_support_amount !== null
+                ? parseFloat(rawResult.partial_support_amount.toString())
+                : null
+              : undefined,
           fsupport_by_supervisor:
-            rawResult.fsupport_by_supervisor !== null
-              ? parseFloat(rawResult.fsupport_by_supervisor.toString())
-              : null,
+            rawResult.fsupport_by_supervisor !== undefined
+              ? rawResult.fsupport_by_supervisor !== null
+                ? parseFloat(rawResult.fsupport_by_supervisor.toString())
+                : null
+              : undefined,
           number_of_payments_by_supervisor:
-            rawResult.number_of_payments_by_supervisor !== null
-              ? parseFloat(
-                  rawResult.number_of_payments_by_supervisor.toString(),
-                )
-              : null,
+            rawResult.number_of_payments_by_supervisor !== undefined
+              ? rawResult.number_of_payments_by_supervisor !== null
+                ? parseFloat(
+                    rawResult.number_of_payments_by_supervisor.toString(),
+                  )
+                : null
+              : undefined,
           execution_time:
-            rawResult.execution_time !== null
-              ? parseFloat(rawResult.execution_time.toString())
-              : null,
+            rawResult.execution_time !== undefined
+              ? rawResult.execution_time !== null
+                ? parseFloat(rawResult.execution_time.toString())
+                : null
+              : undefined,
           payments:
             tmpProposal.payments && tmpProposal.payments.length > 0
               ? tmpProposal.payments.map((payment: ProposalPaymentEntity) =>

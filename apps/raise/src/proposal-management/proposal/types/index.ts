@@ -1,3 +1,6 @@
+import { OutterStatusEnum } from '../../../tender-commons/types/proposal';
+import { ProposalSelectEnum } from '../dtos/queries/proposal.report.list.query.dto';
+
 export interface ProposalFetchByIdProps {
   id: string;
   includes_relation?: string[];
@@ -8,12 +11,17 @@ export interface ProposalFindManyProps {
   region_id?: string[];
   governorate_id?: string[];
   track_id?: string[];
+  benificiary_id?: string[];
   submitter_user_id?: string;
+  outter_status?: OutterStatusEnum[];
   limit?: number;
   page?: number;
   sort_by?: string;
   sort_direction?: string;
   include_relations?: string[];
+  selected_columns?: ProposalSelectEnum[];
+  start_date?: Date;
+  end_date?: Date;
 }
 
 export interface ProposalDeleteProps {

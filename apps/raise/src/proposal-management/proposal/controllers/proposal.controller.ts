@@ -289,6 +289,8 @@ export class TenderProposalController {
   async findMany(@Query() query: ProposalReportListQueryDto) {
     const builder = Builder<ProposalReportListQuery>(ProposalReportListQuery, {
       ...query,
+      start_date: query.start_date ? new Date(query.start_date) : undefined,
+      end_date: query.end_date ? new Date(query.end_date) : undefined,
     });
 
     const { result, total } = await this.queryBus.execute<
