@@ -2169,6 +2169,17 @@ const en = {
   },
   closing_project_by_client: 'Closing Project By Client',
   review: {
+    region: 'Region',
+    governorate: 'Governorate',
+    pm_name: 'Project Manager',
+    bank_account_number: 'Bank Account Number',
+    bank_account_name: 'Bank Account Name',
+    project_beneficiaries: 'Project Beneficiaries',
+    mobile_number: 'Mobile Number',
+    bank_name: 'Bank Name',
+    project_name: 'Project Name',
+    execution_time: 'Execution Time',
+    email: 'Email',
     region_id: 'Regions',
     governorate_id: 'Governorates',
     beneficiary_id: 'Beneficiaries',
@@ -2833,29 +2844,47 @@ const en = {
       project_created_date: {
         required: 'Project Created Date is required',
       },
+      start_date: {
+        required: 'Start Date is required',
+      },
+      end_date: {
+        required: 'End Date is required',
+      },
+    },
+    selected_columns: {
+      label: 'Order Status',
+      placeholder: 'Order Status',
+    },
+    start_date: {
+      label: 'Start Date *',
+      placeholder: 'Start Date',
+    },
+    end_date: {
+      label: 'End Date *',
+      placeholder: 'End Date',
     },
     partner_name: {
-      label: 'Partner Name',
+      label: 'Partner Name *',
       placeholder: 'Partner Name',
     },
     track_id: {
-      label: 'Track',
+      label: 'Track *',
       placeholder: 'Track',
     },
     region_id: {
-      label: 'Region',
+      label: 'Region *',
       placeholder: 'Region',
     },
     governorate_id: {
-      label: 'Governorate',
+      label: 'Governorate *',
       placeholder: 'Governorate',
     },
     beneficiary_id: {
-      label: 'Beneficiary',
+      label: 'Beneficiary *',
       placeholder: 'Beneficiary',
     },
     project_created_date: {
-      label: 'Project Created Date',
+      label: 'Project Created Date *',
       placeholder: 'Project Created Date',
     },
   },

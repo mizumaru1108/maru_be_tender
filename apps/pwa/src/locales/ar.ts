@@ -2184,6 +2184,17 @@ const ar = {
   },
   closing_project_by_client: 'إغلاق مشروع',
   review: {
+    region: 'المنطقة',
+    governorate: 'المحافظة',
+    pm_name: 'مدير المشروع',
+    bank_account_number: 'رقم الحساب',
+    bank_account_name: 'اسم الحساب',
+    project_beneficiaries: 'المستفيدين',
+    mobile_number: 'رقم الجوال',
+    bank_name: 'اسم البنك',
+    project_name: 'اسم المشروع',
+    execution_time: 'وقت التنفيذ',
+    email: 'البريد الإلكتروني',
     region_id: 'المناطق',
     governorate_id: 'المحافظات',
     beneficiary_id: 'المستفيدون',
@@ -2845,6 +2856,24 @@ const ar = {
       project_created_date: {
         required: 'تاريخ البناء مطلوب',
       },
+      start_date: {
+        required: 'تاريخ البدء مطلوب',
+      },
+      end_date: {
+        required: 'تاريخ الانتهاء مطلوب',
+      },
+    },
+    selected_columns: {
+      label: 'حالة الطلب',
+      placeholder: 'حالة الطلب',
+    },
+    start_date: {
+      label: 'تاريخ البدء*',
+      placeholder: 'تاريخ البدء',
+    },
+    end_date: {
+      label: 'تاريخ الانتهاء*',
+      placeholder: 'تاريخ الانتهاء',
     },
     partner_name: {
       label: 'اسم شريك*',

@@ -55,9 +55,17 @@ export function RHFMultiCheckbox({
   gridCol = 2,
   ...other
 }: RHFMultiCheckboxProps) {
-  const { control } = useFormContext();
+  const { control, getValues } = useFormContext();
   const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
+  const tmpValues = getValues(name);
+  // console.log('tmpValues', tmpValues);
   const { translate } = useLocales();
+
+  React.useEffect(() => {
+    if (tmpValues && tmpValues.length === 0) {
+      setSelectedOptions([]);
+    }
+  }, [tmpValues]);
 
   return (
     <Controller
@@ -90,6 +98,7 @@ export function RHFMultiCheckbox({
                 return (
                   <Grid item md={gridCol} xs={6} key={index}>
                     <FormControlLabel
+                      data-cy={`${name}.${option.label}.${option.value}`}
                       key={option.value}
                       control={
                         <Checkbox checked={checked} onChange={() => onSelected(option.value)} />

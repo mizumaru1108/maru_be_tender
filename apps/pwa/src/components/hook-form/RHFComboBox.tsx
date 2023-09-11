@@ -154,8 +154,9 @@ export default function RHFComboBox({
   const { control, setValue, getValues, watch } = useFormContext();
   const theme = useTheme();
   const tmpValues = watch(name);
-  const [searchName, setSearchName] = React.useState('');
-  const debouncedValue = useDebounce<string>(searchName || '', 500);
+  // console.log('name:', name, tmpValues);
+  // const [searchName, setSearchName] = React.useState('');
+  // const debouncedValue = useDebounce<string>(searchName || '', 500);
   const handleOnChange = (option: ComboBoxOption) => {
     const tmpFieldValue: ComboBoxOption[] = getValues(name) || [];
     if (tmpValues) {
@@ -195,6 +196,7 @@ export default function RHFComboBox({
               handleOnChange(details.option as ComboBoxOption);
             }
           }}
+          value={tmpValues || []}
           renderTags={() => {
             const tags: ComboBoxOption[] = [...tmpValues];
             return tags.map((option: ComboBoxOption, index: number) => (
@@ -227,13 +229,6 @@ export default function RHFComboBox({
               </li>
             );
           }}
-          // ListboxProps={{
-          //   style: {
-          //     maxHeight: 500,
-          //     overflow: 'auto',
-          //     backgroundColor: '#fff',
-          //   },
-          // }}
           renderInput={(params) => (
             <TextField
               {...params}

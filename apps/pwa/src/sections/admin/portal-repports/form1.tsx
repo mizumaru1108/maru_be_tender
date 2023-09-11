@@ -1,19 +1,14 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid, MenuItem, Stack } from '@mui/material';
-import {
-  FormProvider,
-  RHFDatePicker,
-  RHFMultiCheckbox,
-  RHFSelect,
-  RHFTextField,
-} from 'components/hook-form';
+import { Grid } from '@mui/material';
+import { FormProvider, RHFDatePicker, RHFMultiCheckbox } from 'components/hook-form';
 import RHFComboBox, { ComboBoxOption } from 'components/hook-form/RHFComboBox';
+import dayjs from 'dayjs';
+import useAuth from 'hooks/useAuth';
 // import { useListState, randomId } from '@mantine/hooks';
-import RHFTextArea from 'components/hook-form/RHFTextArea';
 import useLocales from 'hooks/useLocales';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'redux/store';
+import { useSelector, dispatch } from 'redux/store';
 import { IGovernorate } from 'sections/admin/governorate/list/types';
 import { IRegions } from 'sections/admin/region/list/types';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
@@ -33,7 +28,8 @@ export interface FormValuesPortalReport1 {
   governorate_id: ComboBoxOption[];
   outter_status: ComboBoxOption[];
   beneficiary_id: ComboBoxOption[];
-  project_created_date: string;
+  start_date: string;
+  end_date: string;
 }
 
 const OutterStatusOption = [
@@ -52,6 +48,8 @@ const OutterStatusOption = [
 export default function PortalReportsForm1({ defaultValuesForm, children, onSubmitForm }: Props) {
   // const [values, handlers] = useListState(initialValues);
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
+
   const { region_list, beneficiaries_list, track_list, client_list, loadingProps } = useSelector(
     (state) => state.proposal
   );
@@ -66,15 +64,14 @@ export default function PortalReportsForm1({ defaultValuesForm, children, onSubm
   // console.log({ area, governorates });
 
   const supportSchema = Yup.object().shape({
-    outter_status: Yup.array().min(1, translate('portal_report.errors.outter_status.required')),
     partner_name: Yup.array().min(1, translate('portal_report.errors.partner_name.required')),
+    outter_status: Yup.array().min(1, translate('portal_report.errors.outter_status.required')),
     track_id: Yup.array().min(1, translate('portal_report.errors.track_id.required')),
     region_id: Yup.array().min(1, translate('portal_report.errors.region_id.required')),
-    governorate_id: Yup.array().min(1, translate('portal_report.errors.governorate_id.required')),
+    // governorate_id: Yup.array().min(1, translate('portal_report.errors.governorate_id.required')),
     beneficiary_id: Yup.array().min(1, translate('portal_report.errors.beneficiary_id.required')),
-    project_created_date: Yup.string().required(
-      translate('portal_report.errors.project_created_date.required')
-    ),
+    start_date: Yup.string().required(translate('portal_report.errors.start_date.required')),
+    end_date: Yup.string().required(translate('portal_report.errors.end_date.required')),
   });
 
   const defaultValues = {
@@ -84,7 +81,8 @@ export default function PortalReportsForm1({ defaultValuesForm, children, onSubm
     governorate_id: [],
     outter_status: [],
     beneficiary_id: [],
-    project_created_date: '',
+    start_date: '',
+    end_date: '',
   };
   const methods = useForm<FormValuesPortalReport1>({
     resolver: yupResolver(supportSchema),
@@ -102,6 +100,8 @@ export default function PortalReportsForm1({ defaultValuesForm, children, onSubm
   const watchRegion = watch('region_id');
   const watchTrack = watch('track_id');
   const watchBeneficary = watch('beneficiary_id');
+  const watchStartDate = watch('start_date');
+  // const watcg
   // console.log({ formField });
 
   const handleChangeRegion = React.useCallback(
@@ -181,12 +181,12 @@ export default function PortalReportsForm1({ defaultValuesForm, children, onSubm
     handleChangeBeneficiary(watchBeneficary);
   }, [watchBeneficary, handleChangeBeneficiary]);
 
-  // React.useEffect(() => {
-  //   if (defaultValuesForm) {
-  //     reset(defaultValuesForm);
-  //     setValue('beneficiary_id', defaultValuesForm.governorate_id);
-  //   }
-  // }, [defaultValuesForm, reset]);
+  React.useEffect(() => {
+    if (defaultValuesForm) {
+      reset(defaultValuesForm);
+      // setValue('partner_name', defaultValuesForm.partner_name);
+    }
+  }, [defaultValuesForm, reset]);
   // console.log({ defaultValuesForm, watchRegion });
 
   const onSubmit = async (data: FormValuesPortalReport1) => {
@@ -288,13 +288,31 @@ export default function PortalReportsForm1({ defaultValuesForm, children, onSubm
               }
             />
           </Grid>
-          <Grid item md={6} xs={12}>
-            <RHFDatePicker
-              name="project_created_date"
-              label={translate('portal_report.project_created_date.label')}
-              data-cy="portal_report.project_created_date"
-              placeholder={translate('portal_report.project_created_date.placeholder')}
-            />
+          <Grid item md={12} xs={12}>
+            <Grid container rowSpacing={4} columnSpacing={7}>
+              <Grid item md={6}>
+                <RHFDatePicker
+                  name="start_date"
+                  label={translate('portal_report.start_date.label')}
+                  data-cy="portal_report.start_date"
+                  placeholder={translate('portal_report.start_date.placeholder')}
+                />
+              </Grid>
+              <Grid item md={6}>
+                <RHFDatePicker
+                  disabled={watchStartDate === '' || watchStartDate === null}
+                  name="end_date"
+                  label={translate('portal_report.end_date.label')}
+                  data-cy="portal_report.end_date"
+                  placeholder={translate('portal_report.end_date.placeholder')}
+                  minDate={
+                    watchStartDate
+                      ? dayjs(watchStartDate).add(1, 'day').toISOString().split('T')[0]
+                      : ''
+                  }
+                />
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item md={12} xs={12}>
             <RHFMultiCheckbox
