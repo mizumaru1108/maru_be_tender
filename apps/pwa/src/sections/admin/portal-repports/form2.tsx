@@ -11,7 +11,7 @@ import React from 'react';
 
 // -----------------------------------------------------------------------------
 export interface FormValuesPortalReport2 {
-  selected_columns: ComboBoxOption[];
+  selected_column: ComboBoxOption[];
 }
 interface Props {
   children?: React.ReactNode;
@@ -28,14 +28,14 @@ export default function PortalReportsForm2({
 }: Props) {
   const { translate } = useLocales();
   const supportSchema = Yup.object().shape({
-    selected_columns: Yup.array().min(
+    selected_column: Yup.array().min(
       1,
       translate('portal_report.errors.selected_columns.required')
     ),
   });
 
   const defaultValues = {
-    selected_columns: [],
+    selected_column: [],
   };
   const methods = useForm<FormValuesPortalReport2>({
     resolver: yupResolver(supportSchema),
@@ -50,7 +50,7 @@ export default function PortalReportsForm2({
     formState: { isSubmitting },
   } = methods;
 
-  const watchSelectedColumns = watch('selected_columns');
+  const watchSelectedColumns = watch('selected_column');
   // console.log('watchSelectedColumns', watchSelectedColumns);
 
   const onSubmit = async (data: FormValuesPortalReport2) => {
@@ -72,7 +72,7 @@ export default function PortalReportsForm2({
           <Grid item md={12} xs={12}>
             <RHFMultiCheckbox
               disabled={watchSelectedColumns.length === 7}
-              name="selected_columns"
+              name="selected_column"
               label={translate('portal_report.selected_columns.label')}
               data-cy="portal_report.selected_columns"
               placeholder={translate('portal_report.selected_columns.placeholder')}
@@ -90,7 +90,7 @@ export default function PortalReportsForm2({
                 color="error"
                 onClick={() => {
                   reset({
-                    selected_columns: [],
+                    selected_column: [],
                   });
                 }}
                 endIcon={<ReplayIcon />}

@@ -2862,6 +2862,9 @@ const ar = {
       end_date: {
         required: 'تاريخ الانتهاء مطلوب',
       },
+      selected_columns: {
+        required: 'حالة الطلب مطلوبة',
+      },
     },
     selected_columns: {
       label: 'حالة الطلب',

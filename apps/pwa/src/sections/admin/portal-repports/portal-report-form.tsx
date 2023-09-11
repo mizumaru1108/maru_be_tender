@@ -12,6 +12,7 @@ import {
 } from 'redux/slices/proposal';
 import { dispatch } from 'redux/store';
 import PortalReportActionBox from 'sections/admin/portal-repports/action-box';
+import PortarReportsTable from 'sections/admin/portal-repports/final-table';
 import PortalReportsForm1, { FormValuesPortalReport1 } from 'sections/admin/portal-repports/form1';
 import PortalReportsForm2, { FormValuesPortalReport2 } from 'sections/admin/portal-repports/form2';
 import { joinStringFromArray } from 'utils/joinStringFromArray';
@@ -25,10 +26,11 @@ export default function PortalReportsForm() {
   const { activeRole } = useAuth();
   const [step, setStep] = React.useState(0);
   const [values, setValues] = React.useState<FormValue>();
+  const [urlParams, setUrlParams] = React.useState<string | null>(null);
   // console.log({ values });
 
   const handleNext = () => {
-    if (step < 1) {
+    if (step < 2) {
       setStep((prevStep) => prevStep + 1);
     }
   };
@@ -62,7 +64,7 @@ export default function PortalReportsForm() {
       { key: 'regions', payloadKey: 'region_id', value: '' },
       { key: 'governorates', payloadKey: 'governorate_id', value: '' },
       { key: 'tracks', payloadKey: 'track_id', value: '' },
-      { key: 'columns', payloadKey: 'selected_columns', value: '' },
+      { key: 'columns', payloadKey: 'selected_column', value: '' },
       { key: 'outter_status', payloadKey: 'outter_status', value: '' },
     ];
 
@@ -79,55 +81,27 @@ export default function PortalReportsForm() {
       } else {
         tmpJoinedArray = tmpPayload[payloadKey]
           ? joinStringFromArray(
-              tmpPayload[payloadKey]?.map((item: ComboBoxOption) => item.value),
+              tmpPayload[payloadKey]?.map((item: string) =>
+                key === 'columns' ? item.toUpperCase() : item
+              ),
               ','
             )
           : '';
       }
+      // console.log('tmpJoinedArray', key, tmpJoinedArray);
       return {
         key,
         payloadKey,
         value: tmpJoinedArray,
       };
     });
-    console.log('tmpMappedValues', tmpMappedValues);
-    const partner_names = tmpPayload.partner_name
-      ? joinStringFromArray(
-          tmpPayload.partner_name?.map((item: ComboBoxOption) => item.value),
-          ','
-        )
-      : '';
-    const beneficiaries = tmpPayload.beneficiary_id
-      ? joinStringFromArray(
-          tmpPayload.beneficiary_id.map((item: ComboBoxOption) => item.value),
-          ','
-        )
-      : '';
-    const regions = tmpPayload.region_id
-      ? joinStringFromArray(
-          tmpPayload.region_id.map((item: ComboBoxOption) => item.value),
-          ','
-        )
-      : '';
-    const governorates = tmpPayload.governorate_id
-      ? joinStringFromArray(
-          tmpPayload.governorate_id.map((item: ComboBoxOption) => item.value),
-          ','
-        )
-      : '';
-    const tracks = tmpPayload.track_id
-      ? joinStringFromArray(
-          tmpPayload.track_id.map((item: ComboBoxOption) => item.value),
-          ','
-        )
-      : '';
-    const columns = tmpPayload.selected_columns
-      ? joinStringFromArray(
-          tmpPayload.selected_columns.map((item: ComboBoxOption) => item.value),
-          ','
-        )
-      : '';
-    // console.log('partner_name', partner_names);
+    const queryString = tmpMappedValues
+      .filter((item) => item.value !== '')
+      .map((item) => `${item.payloadKey}=${item.value}`)
+      .join('&');
+    const urlWithParams = `?${queryString}`;
+    if (urlWithParams) setUrlParams(urlWithParams);
+    // console.log('urlWithParams', urlWithParams);
   };
 
   React.useEffect(() => {
@@ -149,6 +123,12 @@ export default function PortalReportsForm() {
           <PortalReportsForm2 isLoading={false} onSubmitForm={handleSubmitForm2}>
             <PortalReportActionBox isLoad={false} lastStep={false} onReturn={handleBack} />
           </PortalReportsForm2>
+        )}
+        {step === 2 && urlParams && (
+          <>
+            <PortarReportsTable params={urlParams} />
+            <PortalReportActionBox isLoad={false} lastStep={false} onReturn={handleBack} />
+          </>
         )}
         {/* <PortalReportActionBox isLoad={false} lastStep={false} onReturn={handleBack} /> */}
       </Grid>

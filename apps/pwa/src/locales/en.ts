@@ -2850,6 +2850,9 @@ const en = {
       end_date: {
         required: 'End Date is required',
       },
+      selected_columns: {
+        required: 'Order status is required',
+      },
     },
     selected_columns: {
       label: 'Order Status',
