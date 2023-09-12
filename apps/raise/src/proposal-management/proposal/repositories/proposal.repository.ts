@@ -830,38 +830,37 @@ export class ProposalRepository {
 
     if (selected_columns && selected_columns.length > 0) {
       let ps: Prisma.proposalSelect = {};
+      let bankInfoSelectArgs: Prisma.bank_informationSelect = {};
+      let userInfoSelectArgs: Prisma.userSelect = {};
       for (const selected of selected_columns) {
         if (selected === ProposalSelectEnum.AMOUNT_REQUIRED_FSUPPORT) {
           ps.amount_required_fsupport = true;
         }
         if (selected === ProposalSelectEnum.BANK_ACCOUNT_NAME) {
+          bankInfoSelectArgs = {
+            ...bankInfoSelectArgs,
+            bank_account_name: true,
+          };
           ps = {
             ...ps,
-            bank_information: {
-              select: {
-                bank_account_name: true,
-              },
-            },
+            bank_information: { select: { ...bankInfoSelectArgs } },
           };
         }
         if (selected === ProposalSelectEnum.BANK_ACCOUNT_NUMBER) {
+          bankInfoSelectArgs = {
+            ...bankInfoSelectArgs,
+            bank_account_number: true,
+          };
           ps = {
             ...ps,
-            bank_information: {
-              select: {
-                bank_account_number: true,
-              },
-            },
+            bank_information: { select: { ...bankInfoSelectArgs } },
           };
         }
         if (selected === ProposalSelectEnum.BANK_NAME) {
+          bankInfoSelectArgs = { ...bankInfoSelectArgs, bank_name: true };
           ps = {
             ...ps,
-            bank_information: {
-              select: {
-                bank_name: true,
-              },
-            },
+            bank_information: { select: { ...bankInfoSelectArgs } },
           };
         }
         if (selected === ProposalSelectEnum.EMAIL) {
@@ -871,10 +870,12 @@ export class ProposalRepository {
           ps = { ...ps, execution_time: true };
         }
         if (selected === ProposalSelectEnum.GOVERNORATE) {
+          ps.governorate = true;
           ps.governorate_detail = true;
         }
         if (selected === ProposalSelectEnum.MOBILE_NUMBER) {
-          ps = { ...ps, user: { select: { email: true } } };
+          userInfoSelectArgs = { ...userInfoSelectArgs, mobile_number: true };
+          ps = { ...ps, user: { select: { ...userInfoSelectArgs } } };
         }
         if (selected === ProposalSelectEnum.NUM_OF_PROJECT_BENEFICIARIES) {
           ps.num_ofproject_binicficiaries = true;
@@ -908,9 +909,11 @@ export class ProposalRepository {
           ps.project_strengths = true;
         }
         if (selected === ProposalSelectEnum.REGION) {
+          ps.region = true;
           ps.region_detail = true;
         }
       }
+      // console.log(logUtil(ps));
       args.select = ps;
     }
 
