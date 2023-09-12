@@ -6,7 +6,8 @@ import { OutterStatusEnum } from '../../../../tender-commons/types/proposal';
 export class ProposalReportListQuery {
   selected_columns?: ProposalSelectEnum[];
   outter_status?: OutterStatusEnum[];
-  partner_name?: string[];
+  partner_name?: string;
+  partner_id?: string[];
   region_id?: string[];
   benificiary_id?: string[];
   governorate_id?: string[];

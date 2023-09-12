@@ -7,7 +7,8 @@ export interface ProposalFetchByIdProps {
 }
 
 export interface ProposalFindManyProps {
-  partner_name?: string[];
+  partner_name?: string;
+  partner_id?: string[];
   region_id?: string[];
   governorate_id?: string[];
   track_id?: string[];

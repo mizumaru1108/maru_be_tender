@@ -594,6 +594,7 @@ export class ProposalRepository {
   async findManyFilter(props: ProposalFindManyProps) {
     const {
       partner_name,
+      partner_id,
       track_id,
       governorate_id,
       region_id,
@@ -622,8 +623,18 @@ export class ProposalRepository {
         ...whereClause,
         user: {
           employee_name: {
-            in: partner_name,
+            contains: partner_name,
+            mode: 'insensitive',
           },
+        },
+      };
+    }
+
+    if (partner_id) {
+      whereClause = {
+        ...whereClause,
+        submitter_user_id: {
+          in: partner_id,
         },
       };
     }
@@ -941,6 +952,7 @@ export class ProposalRepository {
         };
       }
 
+      // console.log({ queryOptions });
       const rawResult = await prisma.proposal.findMany(queryOptions);
       const entities = rawResult.map((rawResult) => {
         const tmpProposal = rawResult as any;

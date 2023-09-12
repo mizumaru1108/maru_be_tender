@@ -82,6 +82,12 @@ export class ProposalReportListQueryDto extends BaseFilterRequest {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  partner_name: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
   @Transform(({ value }) => {
@@ -90,7 +96,7 @@ export class ProposalReportListQueryDto extends BaseFilterRequest {
     }
     return value;
   })
-  partner_name?: string[];
+  partner_id?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()
