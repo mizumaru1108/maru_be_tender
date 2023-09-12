@@ -877,7 +877,7 @@ export class ProposalRepository {
           userInfoSelectArgs = { ...userInfoSelectArgs, mobile_number: true };
           ps = { ...ps, user: { select: { ...userInfoSelectArgs } } };
         }
-        if (selected === ProposalSelectEnum.NUM_OF_PROJECT_BENEFICIARIES) {
+        if (selected === ProposalSelectEnum.NUM_OFPROJECT_BENEFICIARIES) {
           ps.num_ofproject_binicficiaries = true;
         }
         if (selected === ProposalSelectEnum.PM_NAME) ps.pm_name = true;
@@ -896,6 +896,9 @@ export class ProposalRepository {
         if (selected === ProposalSelectEnum.PROJECT_IMPLEMENT_DATE) {
           ps.project_implement_date = true;
         }
+        if (selected === ProposalSelectEnum.PROJECT_LOCATION) {
+          ps.project_location = true;
+        }
         if (selected === ProposalSelectEnum.PROJECT_NAME) {
           ps.project_name = true;
         }
@@ -905,7 +908,7 @@ export class ProposalRepository {
         if (selected === ProposalSelectEnum.PROJECT_RISKS) {
           ps.project_risks = true;
         }
-        if (selected === ProposalSelectEnum.PROJECT_STRENGTH) {
+        if (selected === ProposalSelectEnum.PROJECT_STRENGTHS) {
           ps.project_strengths = true;
         }
         if (selected === ProposalSelectEnum.REGION) {
