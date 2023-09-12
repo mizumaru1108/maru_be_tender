@@ -2831,7 +2831,7 @@ const ar = {
       on_revision: 'في مراجعة',
       asked_for_amendment: 'طلب تعديل',
       asked_for_amendment_payment: 'طلب تعديل مدفوع',
-      label: 'حالة المشروع',
+      label: 'حالة المشروع*',
       placeholder: 'حالة المشروع',
     },
     errors: {
@@ -2883,19 +2883,19 @@ const ar = {
       placeholder: 'اسم شريك',
     },
     track_id: {
-      label: 'تصفية*',
+      label: 'تصفية',
       placeholder: 'تصفية',
     },
     region_id: {
-      label: 'منطقة*',
+      label: 'منطقة',
       placeholder: 'منطقة',
     },
     governorate_id: {
-      label: 'محافظة*',
+      label: 'محافظة',
       placeholder: 'محافظة',
     },
     beneficiary_id: {
-      label: 'اسم المستفيد*',
+      label: 'اسم المستفيد',
       placeholder: 'اسم المستفيد',
     },
     project_created_date: {

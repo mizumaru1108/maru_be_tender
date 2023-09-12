@@ -2819,7 +2819,7 @@ const en = {
       on_revision: 'On Revision',
       asked_for_amendment: 'Asked for Amendment',
       asked_for_amendment_payment: 'Asked for Amendment Payment',
-      label: 'Project Status',
+      label: 'Project Status *',
       placeholder: 'Project Status',
     },
     errors: {
@@ -2871,19 +2871,19 @@ const en = {
       placeholder: 'Partner Name',
     },
     track_id: {
-      label: 'Track *',
+      label: 'Track',
       placeholder: 'Track',
     },
     region_id: {
-      label: 'Region *',
+      label: 'Region',
       placeholder: 'Region',
     },
     governorate_id: {
-      label: 'Governorate *',
+      label: 'Governorate',
       placeholder: 'Governorate',
     },
     beneficiary_id: {
-      label: 'Beneficiary *',
+      label: 'Beneficiary',
       placeholder: 'Beneficiary',
     },
     project_created_date: {

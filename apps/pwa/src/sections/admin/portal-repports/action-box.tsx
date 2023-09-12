@@ -35,20 +35,22 @@ const PortalReportActionBox = ({ onReturn, lastStep = false, isLoad }: PROPS) =>
           {translate('going_back_one_step')}
         </LoadingButton>
         <Box sx={{ width: '10px' }} />
-        <LoadingButton
-          loading={isLoad}
-          type="submit"
-          variant="outlined"
-          sx={{
-            backgroundColor: 'background.paper',
-            color: '#fff',
-            width: { xs: '100%', sm: '200px' },
-            hieght: { xs: '100%', sm: '50px' },
-            '&:hover': { backgroundColor: '#0E8478' },
-          }}
-        >
-          {lastStep ? translate('send') : translate('next')}
-        </LoadingButton>
+        {lastStep ? null : (
+          <LoadingButton
+            loading={isLoad}
+            type="submit"
+            variant="outlined"
+            sx={{
+              backgroundColor: 'background.paper',
+              color: '#fff',
+              width: { xs: '100%', sm: '200px' },
+              hieght: { xs: '100%', sm: '50px' },
+              '&:hover': { backgroundColor: '#0E8478' },
+            }}
+          >
+            {translate('next')}
+          </LoadingButton>
+        )}
       </Box>
     </Stack>
   );

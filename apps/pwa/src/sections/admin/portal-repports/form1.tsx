@@ -66,10 +66,10 @@ export default function PortalReportsForm1({ defaultValuesForm, children, onSubm
   const supportSchema = Yup.object().shape({
     partner_id: Yup.array().min(1, translate('portal_report.errors.partner_name.required')),
     outter_status: Yup.array().min(1, translate('portal_report.errors.outter_status.required')),
-    track_id: Yup.array().min(1, translate('portal_report.errors.track_id.required')),
-    region_id: Yup.array().min(1, translate('portal_report.errors.region_id.required')),
+    // track_id: Yup.array().min(1, translate('portal_report.errors.track_id.required')),
+    // region_id: Yup.array().min(1, translate('portal_report.errors.region_id.required')),
     // governorate_id: Yup.array().min(1, translate('portal_report.errors.governorate_id.required')),
-    beneficiary_id: Yup.array().min(1, translate('portal_report.errors.beneficiary_id.required')),
+    // beneficiary_id: Yup.array().min(1, translate('portal_report.errors.beneficiary_id.required')),
     start_date: Yup.string().required(translate('portal_report.errors.start_date.required')),
     end_date: Yup.string().required(translate('portal_report.errors.end_date.required')),
   });
