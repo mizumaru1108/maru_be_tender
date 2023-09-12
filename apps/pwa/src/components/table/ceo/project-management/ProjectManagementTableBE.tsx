@@ -144,7 +144,7 @@ export default function ProjectManagementTableBE({
             size="small"
             sx={{ fontSize: '12px', width: 200 }}
           >
-            <MenuItem value={'all'}>{'All'}</MenuItem>
+            <MenuItem value={'all'}>{'كل القائمة'}</MenuItem>
             {track_list.map((item) => (
               <MenuItem data-cy={`select-option-track-${item.id}`} key={item.id} value={item.id}>
                 {formatCapitalizeText(item.name)}

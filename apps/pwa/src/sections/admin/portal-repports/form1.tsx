@@ -22,7 +22,7 @@ interface Props {
 }
 
 export interface FormValuesPortalReport1 {
-  partner_name: ComboBoxOption[];
+  partner_id: ComboBoxOption[];
   track_id: ComboBoxOption[];
   region_id: ComboBoxOption[];
   governorate_id: ComboBoxOption[];
@@ -64,7 +64,7 @@ export default function PortalReportsForm1({ defaultValuesForm, children, onSubm
   // console.log({ area, governorates });
 
   const supportSchema = Yup.object().shape({
-    partner_name: Yup.array().min(1, translate('portal_report.errors.partner_name.required')),
+    partner_id: Yup.array().min(1, translate('portal_report.errors.partner_name.required')),
     outter_status: Yup.array().min(1, translate('portal_report.errors.outter_status.required')),
     track_id: Yup.array().min(1, translate('portal_report.errors.track_id.required')),
     region_id: Yup.array().min(1, translate('portal_report.errors.region_id.required')),
@@ -75,7 +75,7 @@ export default function PortalReportsForm1({ defaultValuesForm, children, onSubm
   });
 
   const defaultValues = {
-    partner_name: [],
+    partner_id: [],
     track_id: [],
     region_id: [],
     governorate_id: [],
@@ -204,7 +204,7 @@ export default function PortalReportsForm1({ defaultValuesForm, children, onSubm
           <Grid item md={6} xs={12}>
             <RHFComboBox
               disabled={loadingProps.laodingClient}
-              name="partner_name"
+              name="partner_id"
               label={translate('portal_report.partner_name.label')}
               data-cy="portal_report.partner_name"
               placeholder={translate('portal_report.partner_name.placeholder')}

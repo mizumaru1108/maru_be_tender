@@ -59,7 +59,7 @@ export default function PortalReportsForm() {
     };
     console.log('tmpPayload', tmpPayload);
     const fieldsToMap = [
-      { key: 'partner_names', payloadKey: 'partner_name', value: '' },
+      { key: 'partner_id', payloadKey: 'partner_id', value: '' },
       { key: 'beneficiaries', payloadKey: 'beneficiary_id', value: '' },
       { key: 'regions', payloadKey: 'region_id', value: '' },
       { key: 'governorates', payloadKey: 'governorate_id', value: '' },
