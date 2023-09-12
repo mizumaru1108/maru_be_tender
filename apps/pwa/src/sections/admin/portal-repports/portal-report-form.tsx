@@ -19,7 +19,7 @@ import { joinStringFromArray } from 'utils/joinStringFromArray';
 
 interface FormValue {
   form1?: FormValuesPortalReport1;
-  from2?: FormValuesPortalReport2;
+  form2?: FormValuesPortalReport2;
 }
 
 export default function PortalReportsForm() {
@@ -57,14 +57,14 @@ export default function PortalReportsForm() {
       ...data,
       ...values?.form1,
     };
-    console.log('tmpPayload', tmpPayload);
+    // console.log('tmpPayload', tmpPayload);
     const fieldsToMap = [
       { key: 'partner_id', payloadKey: 'partner_id', value: '' },
       { key: 'beneficiaries', payloadKey: 'beneficiary_id', value: '' },
       { key: 'regions', payloadKey: 'region_id', value: '' },
       { key: 'governorates', payloadKey: 'governorate_id', value: '' },
       { key: 'tracks', payloadKey: 'track_id', value: '' },
-      { key: 'columns', payloadKey: 'selected_column', value: '' },
+      { key: 'columns', payloadKey: 'selected_columns', value: '' },
       { key: 'outter_status', payloadKey: 'outter_status', value: '' },
     ];
 
@@ -81,9 +81,7 @@ export default function PortalReportsForm() {
       } else {
         tmpJoinedArray = tmpPayload[payloadKey]
           ? joinStringFromArray(
-              tmpPayload[payloadKey]?.map((item: string) =>
-                key === 'columns' ? item.toUpperCase() : item
-              ),
+              tmpPayload[payloadKey]?.map((item: string) => item),
               ','
             )
           : '';
@@ -95,6 +93,14 @@ export default function PortalReportsForm() {
         value: tmpJoinedArray,
       };
     });
+    if (tmpPayload.start_date)
+      tmpMappedValues.push({
+        key: 'start_date',
+        payloadKey: 'start_date',
+        value: tmpPayload.start_date,
+      });
+    if (tmpPayload.end_date)
+      tmpMappedValues.push({ key: 'end_date', payloadKey: 'end_date', value: tmpPayload.end_date });
     const queryString = tmpMappedValues
       .filter((item) => item.value !== '')
       .map((item) => `${item.payloadKey}=${item.value}`)
@@ -103,6 +109,7 @@ export default function PortalReportsForm() {
     if (urlWithParams) setUrlParams(urlWithParams);
     // console.log('urlWithParams', urlWithParams);
   };
+  // console.log('form2,', values?.form2);
 
   React.useEffect(() => {
     dispatch(getBeneficiariesList(activeRole!, false));
@@ -120,15 +127,21 @@ export default function PortalReportsForm() {
           </PortalReportsForm1>
         )}
         {step === 1 && (
-          <PortalReportsForm2 isLoading={false} onSubmitForm={handleSubmitForm2}>
+          <PortalReportsForm2
+            defaultValuesForm={values?.form2}
+            isLoading={false}
+            onSubmitForm={handleSubmitForm2}
+          >
             <PortalReportActionBox isLoad={false} lastStep={false} onReturn={handleBack} />
           </PortalReportsForm2>
         )}
-        {step === 2 && urlParams && (
-          <>
-            <PortarReportsTable params={urlParams} />
-            <PortalReportActionBox isLoad={false} lastStep={false} onReturn={handleBack} />
-          </>
+        {step === 2 && urlParams && values?.form2 && (
+          <PortarReportsTable
+            selectedColums={values?.form2.selected_columns.sort((a, b) => a.localeCompare(b))}
+            params={urlParams}
+          >
+            <PortalReportActionBox isLoad={false} lastStep={true} onReturn={handleBack} />
+          </PortarReportsTable>
         )}
         {/* <PortalReportActionBox isLoad={false} lastStep={false} onReturn={handleBack} /> */}
       </Grid>

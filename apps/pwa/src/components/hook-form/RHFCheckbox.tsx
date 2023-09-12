@@ -64,6 +64,8 @@ export function RHFMultiCheckbox({
   React.useEffect(() => {
     if (tmpValues && tmpValues.length === 0) {
       setSelectedOptions([]);
+    } else {
+      setSelectedOptions(tmpValues);
     }
   }, [tmpValues]);
 

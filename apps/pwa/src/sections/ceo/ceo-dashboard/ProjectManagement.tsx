@@ -39,7 +39,7 @@ function DashboardProjectManagement() {
   const [total, setTotal] = useState<number | null>(null);
   const [filter, setFilter] = useState('');
   const [filterValue, setFilterValue] = useState('');
-
+  // console.log({ filter, filterValue });
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
     let url = '';
@@ -123,7 +123,7 @@ function DashboardProjectManagement() {
   React.useEffect(() => {
     fetchingIncoming();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchingIncoming]);
 
   // useEffect(() => {
   //   dispatch(getTrackList(0, activeRole! as string));
