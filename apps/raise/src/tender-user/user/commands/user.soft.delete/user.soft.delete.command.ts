@@ -43,7 +43,7 @@ export class UserSoftDeleteCommandHandler
           const updatedUser = await this.userRepo.update(
             {
               id: command.user_id,
-              is_deleted: true,
+              status_id: UserStatusEnum.DELETED,
             },
             tx,
           );
@@ -51,7 +51,7 @@ export class UserSoftDeleteCommandHandler
           const createdStatusLog = await this.statusLogRepo.create(
             {
               user_id: command.user_id,
-              status_id: 'DELETED',
+              status_id: UserStatusEnum.DELETED,
             },
             tx,
           );

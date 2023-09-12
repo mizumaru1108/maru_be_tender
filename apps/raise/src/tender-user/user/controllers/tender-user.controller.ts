@@ -168,7 +168,7 @@ export class TenderUserController {
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
-  @Post('soft-delete')
+  @Patch('soft-delete')
   async softDelete(
     @Body() dto: TenderDeleteUserDto,
   ): Promise<BaseResponse<any>> {

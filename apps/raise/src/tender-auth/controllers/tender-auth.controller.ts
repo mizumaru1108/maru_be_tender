@@ -12,37 +12,38 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
+import { ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { LoginRequestDto } from '../../auth/dtos';
 import { BaseResponse } from '../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
 import { FileUploadErrorException } from '../../libs/bunny/exception/file-upload-error.exception';
+import { FusionAuthPasswordlessLoginErrorException } from '../../libs/fusionauth/exceptions/fusion.auth.passwordless.login.error.exception';
 import { FusionAuthPasswordlessStartError } from '../../libs/fusionauth/exceptions/fusion.auth.passwordless.start.error.exception';
 import { FusionAuthRegisterError } from '../../libs/fusionauth/exceptions/fusion.auth.register.error.exception';
+import { FusionAuthVerifyEmailErrorException } from '../../libs/fusionauth/exceptions/fusion.auth.verify.email.error.exception';
+import { DataNotFoundException } from '../../tender-commons/exceptions/data-not-found.exception';
 import { InvalidFileExtensionException } from '../../tender-commons/exceptions/invalid-file-extension.exception';
 import { InvalidFileSizeException } from '../../tender-commons/exceptions/invalid-file-size.exception';
 import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
 import { PrismaTransactionExpiredException } from '../../tender-commons/exceptions/prisma-error/prisma-transaction-expired.exception';
 import { CreateUserResponseDto } from '../../tender-user/user/dtos/responses/create-user-response.dto';
+import { EmailAlreadyVerifiedException } from '../../tender-user/user/exceptions/email-already-verified.exception';
 import { UserAlreadyExistException } from '../../tender-user/user/exceptions/user-already-exist-exception.exception';
+import { AuthLoginCommand } from '../commands/login/auth.login.command';
 import { RegisterClientCommand } from '../commands/register/register.command';
 import { SendEmailVerificationClassCommand } from '../commands/send.email.verification/send.email.verification.command';
+import { VerifyEmailCommand } from '../commands/verify.email/verify.email.command';
 import { TenderRoles } from '../decorators/tender-roles.decorator';
 import { ForgotPasswordRequestDto } from '../dtos/requests/forgot-password-request.dto';
 import { RegisterTenderDto } from '../dtos/requests/register-tender.dto';
 import { SendEmailVerifDto } from '../dtos/requests/send-email-verif.dto';
 import { SubmitChangePasswordDto } from '../dtos/requests/submit-change-password.dto';
 import { TenderLoginResponseDto } from '../dtos/responses/tender-login-response.dto';
+import { TokenExpiredException } from '../exceptions/token-expire.exception';
 import { TenderJwtGuard } from '../guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../guards/tender-roles.guard';
 import { TenderAuthService } from '../services/tender-auth.service';
-import { VerifyEmailCommand } from '../commands/verify.email/verify.email.command';
-import { TokenExpiredException } from '../exceptions/token-expire.exception';
-import { EmailAlreadyVerifiedException } from '../../tender-user/user/exceptions/email-already-verified.exception';
-import { FusionAuthPasswordlessLoginErrorException } from '../../libs/fusionauth/exceptions/fusion.auth.passwordless.login.error.exception';
-import { DataNotFoundException } from '../../tender-commons/exceptions/data-not-found.exception';
-import { FusionAuthVerifyEmailErrorException } from '../../libs/fusionauth/exceptions/fusion.auth.verify.email.error.exception';
-import { ApiTags } from '@nestjs/swagger';
 @ApiTags('AuthModule')
 @Controller('tender-auth')
 export class TenderAuthController {
@@ -98,12 +99,21 @@ export class TenderAuthController {
   async login(
     @Body() loginRequest: LoginRequestDto,
   ): Promise<BaseResponse<TenderLoginResponseDto>> {
-    const createdClient = await this.tenderAuthService.login(loginRequest);
-    return baseResponseHelper(
-      createdClient,
-      HttpStatus.CREATED,
-      'Client has been logged in successfully!',
-    );
+    try {
+      const authLoginCommand = Builder<AuthLoginCommand>(AuthLoginCommand, {
+        dto: loginRequest,
+      }).build();
+
+      const { data } = await this.commandBus.execute(authLoginCommand);
+
+      return baseResponseHelper(
+        data,
+        HttpStatus.CREATED,
+        'Client has been logged in successfully!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 
   @Post('send-email-verif')

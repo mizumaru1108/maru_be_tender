@@ -829,7 +829,9 @@ export class ProposalRepository {
     }
 
     if (selected_columns && selected_columns.length > 0) {
-      let ps: Prisma.proposalSelect = {};
+      let ps: Prisma.proposalSelect = {
+        id: true,
+      };
       let bankInfoSelectArgs: Prisma.bank_informationSelect = {};
       let userInfoSelectArgs: Prisma.userSelect = {};
       for (const selected of selected_columns) {
@@ -877,7 +879,7 @@ export class ProposalRepository {
           userInfoSelectArgs = { ...userInfoSelectArgs, mobile_number: true };
           ps = { ...ps, user: { select: { ...userInfoSelectArgs } } };
         }
-        if (selected === ProposalSelectEnum.NUM_OFPROJECT_BENEFICIARIES) {
+        if (selected === ProposalSelectEnum.NUM_OFPROJECT_BINICFICIARIES) {
           ps.num_ofproject_binicficiaries = true;
         }
         if (selected === ProposalSelectEnum.PM_NAME) ps.pm_name = true;

@@ -93,6 +93,9 @@ export class TenderUserRepository {
       // console.log(logUtil(clause));
       const result = await this.prismaService.user.findFirst({
         where: clause,
+        include: {
+          client_data: true,
+        },
       });
       // console.log(result);
       return result;

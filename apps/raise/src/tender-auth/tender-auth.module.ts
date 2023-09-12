@@ -10,8 +10,10 @@ import { VerifyEmailCommandHandler } from './commands/verify.email/verify.email.
 import { TenderAuthController } from './controllers/tender-auth.controller';
 import { TenderAuthRepository } from './repositories/tender-auth.repository';
 import { TenderAuthService } from './services/tender-auth.service';
+import { AuthLoginCommandHandler } from './commands/login/auth.login.command';
 
 const commands = [
+  AuthLoginCommandHandler,
   RegisterClientCommandHandler,
   SendEmailVerificationClassCommandHandler,
   VerifyEmailCommandHandler,

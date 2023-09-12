@@ -7,9 +7,9 @@ export class TenderLoginResponseDto {
   @ApiProperty()
   fusionAuthResponse: ClientResponse<LoginResponse>;
 
-  // @ApiPropertyOptional()
-  // userData?: user;
+  @ApiProperty()
+  userData?: user;
 
-  // @ApiPropertyOptional()
-  // clientData?: client_data | null;
+  @ApiProperty()
+  clientData?: client_data | null;
 }
