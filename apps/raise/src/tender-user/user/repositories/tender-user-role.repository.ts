@@ -42,4 +42,18 @@ export class TenderUserRoleRepository {
       throw error;
     }
   }
+
+  async deleteByUserId(user_id: string, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawRole = await prisma.user_role.deleteMany({
+        where: { user_id },
+      });
+      return rawRole.count;
+    } catch (error) {
+      this.logger.log('info', `Error when creating user role ${error}`);
+      throw error;
+    }
+  }
 }

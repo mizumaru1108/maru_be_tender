@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   ForbiddenException,
   Get,
@@ -56,6 +57,10 @@ import {
   UserCreateCommand,
   UserCreateCommandResult,
 } from '../commands/user.create/user.create.command';
+import {
+  UserUpdateCommand,
+  UserUpdateCommandResult,
+} from '../commands/user.update/user.update.command';
 @ApiTags('UserModule')
 @Controller('tender-user')
 export class TenderUserController {
@@ -76,6 +81,15 @@ export class TenderUserController {
     }
     if (error instanceof RequestErrorException) {
       return new UnprocessableEntityException(error.message);
+    }
+    if (error instanceof BadRequestException) {
+      throw new BadRequestException(error.message);
+    }
+    if (error instanceof NotFoundException) {
+      throw new NotFoundException(error.message);
+    }
+    if (error instanceof ConflictException) {
+      throw new ConflictException(error.message);
     }
 
     if (error instanceof BasePrismaErrorException) {
@@ -261,15 +275,36 @@ export class TenderUserController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Updating user [for updating employee only] (admin only)',
+  })
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Patch('update-user')
   async updateUser(@Body() request: UpdateUserDto): Promise<BaseResponse<any>> {
-    const status = await this.tenderUserService.updateUserData(request);
-    return baseResponseHelper(
-      status,
-      HttpStatus.CREATED,
-      'User updated successfully!',
-    );
+    // const status = await this.tenderUserService.updateUserData(request);
+    // return baseResponseHelper(
+    //   status,
+    //   HttpStatus.CREATED,
+    //   'User updated successfully!',
+    // );
+    try {
+      const command = Builder<UserUpdateCommand>(UserUpdateCommand, {
+        dto: request,
+      }).build();
+
+      const result = await this.commandBus.execute<
+        UserUpdateCommand,
+        UserUpdateCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.OK,
+        'User updated successfully!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 }

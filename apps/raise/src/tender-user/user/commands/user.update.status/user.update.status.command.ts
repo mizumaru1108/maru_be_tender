@@ -1,13 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UserStatusEnum } from '../../types/user_status';
-import { TenderUserRepository } from '../../repositories/tender-user.repository';
-import { UserStatusUpdateDto } from '../../dtos/requests';
-import { RequestErrorException } from '../../../../tender-commons/exceptions/request-error.exception';
-import { UserEntity } from '../../entities/user.entity';
-import { PrismaService } from '../../../../prisma/prisma.service';
-import { TenderUserStatusLogRepository } from '../../repositories/tender-user-status-log.repository';
-import { UserStatusLogEntity } from '../../entities/user-status-log.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { PrismaService } from '../../../../prisma/prisma.service';
+import { RequestErrorException } from '../../../../tender-commons/exceptions/request-error.exception';
+import { UserStatusUpdateDto } from '../../dtos/requests';
+import { UserStatusLogEntity } from '../../entities/user-status-log.entity';
+import { UserEntity } from '../../entities/user.entity';
+import { TenderUserStatusLogRepository } from '../../repositories/tender-user-status-log.repository';
+import { TenderUserRepository } from '../../repositories/tender-user.repository';
+import { UserStatusEnum } from '../../types/user_status';
 export class UserUpdateStatusCommand {
   acc_manager_id: string;
   request: UserStatusUpdateDto;

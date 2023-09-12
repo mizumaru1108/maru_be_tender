@@ -135,6 +135,9 @@ export class UserCreateCommandHandler
         },
       ];
 
+      // // either active or inactive the fusion auth must be active [we just validate trough db] (Frisky notes)
+      // await this.fusionAuthService.verifyEmail(fusionAuthResult.user.id);
+
       if (status === UserStatusEnum.ACTIVE_ACCOUNT) {
         await this.fusionAuthService.verifyEmail(fusionAuthResult.user.id);
         statusLogPayload.push({

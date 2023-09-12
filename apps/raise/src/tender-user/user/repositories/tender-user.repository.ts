@@ -57,6 +57,7 @@ export class TenderUserRepository {
     phone: string = '',
     email: string = '',
     license_number: string = '',
+    exclude_id?: string,
   ) {
     try {
       const clause: Prisma.userWhereInput = {};
@@ -89,6 +90,10 @@ export class TenderUserRepository {
       }
 
       clause.OR = orClause;
+
+      if (exclude_id && exclude_id !== '') {
+        clause.id = { notIn: [exclude_id] };
+      }
 
       // console.log(logUtil(clause));
       const result = await this.prismaService.user.findFirst({
