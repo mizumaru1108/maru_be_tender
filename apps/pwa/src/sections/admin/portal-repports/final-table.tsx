@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import {
   Box,
   Button,
@@ -11,16 +12,15 @@ import {
   tableCellClasses,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   Typography,
 } from '@mui/material';
-import EmptyContent from 'components/EmptyContent';
+import dayjs from 'dayjs';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import React, { useRef } from 'react';
-import ReactToPrint from 'react-to-print';
 import axiosInstance from 'utils/axios';
+import { utils, writeFile } from 'xlsx';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -50,17 +50,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 interface Props {
   params: string;
-  children?: React.ReactNode;
   selectedColums: string[];
+  onReturn: () => void;
 }
 
-export default function PortarReportsTable({ params, selectedColums, children }: Props) {
+export default function PortarReportsTable({ params, selectedColums, onReturn }: Props) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
   const [isLoading, setIsLoading] = React.useState(false);
   const [tableData, setTableData] = React.useState<any[]>([]);
   const componentRef = useRef<HTMLDivElement>(null);
-  // console.log({ selectedColums, tableData });
+  console.log({ selectedColums });
 
   const fetchingTableData = React.useCallback(async () => {
     setIsLoading(true);
@@ -102,13 +102,13 @@ export default function PortarReportsTable({ params, selectedColums, children }:
                 value = tmpItem.user[key];
               }
               if (key === 'region') {
-                value = tmpItem?.region_detail?.name || tmpItem[key];
+                value = tmpItem?.region_detail?.name || tmpItem[key] || '-';
               }
               if (key === 'governorate') {
-                value = tmpItem?.governorate_detail?.name || tmpItem[key];
+                value = tmpItem?.governorate_detail?.name || tmpItem[key] || '-';
               }
               if (key === 'project_beneficiaries') {
-                value = tmpItem?.beneficiary_details.name || tmpItem[key];
+                value = tmpItem?.beneficiary_details?.name || tmpItem[key] || '-';
               }
               if (
                 key === 'bank_name' ||
@@ -136,7 +136,7 @@ export default function PortarReportsTable({ params, selectedColums, children }:
         if (newArray) {
           setTableData(newArray);
         }
-        console.log('newArray', newArray);
+        // console.log('newArray', newArray);
       }
     } catch (error) {
       console.log('error', error);
@@ -144,6 +144,18 @@ export default function PortarReportsTable({ params, selectedColums, children }:
       setIsLoading(false);
     }
   }, [activeRole, params, selectedColums]);
+
+  const handleExportXLSX = async () => {
+    // console.log('export', tableData);
+    /* generate worksheet from state */
+    const ws = utils.json_to_sheet(tableData);
+
+    /* create workbook and append worksheet */
+    const wb = utils.book_new();
+    utils.book_append_sheet(wb, ws, 'Data');
+    /* export to XLSX */
+    writeFile(wb, `proposal_report_${dayjs(new Date()).format('YYMMDDHHmmss')}.xlsx`);
+  };
 
   React.useEffect(() => {
     if (params !== '') {
@@ -167,26 +179,37 @@ export default function PortarReportsTable({ params, selectedColums, children }:
           />
         </Stack> */}
         <Card
-          ref={componentRef}
           sx={{
             bgcolor: '#fff',
-            '@media print': {
-              // transform: 'scale(0.7)',
-              // transformOrigin: 'top left',
-              // position: 'absolute',
-              // top: '-50px',
-              // left: '-220px',
-              // width: '80vw',
-              // translate: '0 0',
-              // height: '100vh',
-              // display: 'block !important',
-              breakInside: 'avoid',
-              overflow: 'visible !important',
-              // padding: 9,
-            },
+            // '@media print': {
+            //   // transform: 'scale(0.8)',
+            //   // transformOrigin: 'top left',
+
+            //   // width: '100vw',
+            //   // translate: '0 0',
+            //   // height: '100vh',
+            //   // display: 'block !important',
+            //   // breakInside: 'avoid',
+            //   // overflow: 'visible !important',
+            //   // padding: 9,
+            // },
           }}
         >
-          <TableContainer component={Paper}>
+          <TableContainer
+            component={Paper}
+            ref={componentRef}
+            sx={{
+              '@media print': {
+                overflow: 'visible !important',
+                // transform: 'scale(0.9)',
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                width: '100%',
+                // translate: '0 0',
+              },
+            }}
+          >
             <Table aria-label="customized table">
               <TableHead>
                 <TableRow>
@@ -246,7 +269,46 @@ export default function PortarReportsTable({ params, selectedColums, children }:
           </TableContainer>
         </Card>
       </Box>
-      {children}
+      {/* {children} */}
+      <Stack direction="row" justifyContent="center" sx={{ marginTop: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            borderRadius: 2,
+            backgroundColor: '#fff',
+            padding: '24px',
+          }}
+        >
+          <LoadingButton
+            // onClick={onReturn}
+            // loading={isLoad}
+            // endIcon={!isLoad && <MovingBack />}
+            sx={{
+              color: 'text.primary',
+              width: { xs: '100%', sm: '200px' },
+              hieght: { xs: '100%', sm: '50px' },
+            }}
+          >
+            {translate('going_back_one_step')}
+          </LoadingButton>
+          <Box sx={{ width: '10px' }} />
+          <LoadingButton
+            onClick={handleExportXLSX}
+            type="submit"
+            variant="outlined"
+            sx={{
+              backgroundColor: 'background.paper',
+              color: '#fff',
+              width: { xs: '100%', sm: '200px' },
+              hieght: { xs: '100%', sm: '50px' },
+              '&:hover': { backgroundColor: '#0E8478' },
+            }}
+          >
+            {translate('export')}
+          </LoadingButton>
+        </Box>
+      </Stack>
     </>
   );
 }

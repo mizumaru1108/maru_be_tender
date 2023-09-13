@@ -20,12 +20,14 @@ function IncomingAmandementRequest() {
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const [cardData, setCardData] = React.useState([]);
+  const [sortingFilter, setSortingFilter] = React.useState('');
+
   // console.log({ cardData });
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
     try {
       const rest = await axiosInstance.get(
-        `tender-proposal/amandement-request-lists?limit=4&status=PENDING&include_relations=supervisor,sender,proposal`,
+        `tender-proposal/amandement-request-lists?limit=4&status=PENDING&include_relations=supervisor,sender,proposal${sortingFilter}`,
         {
           headers: { 'x-hasura-role': activeRole! },
         }
@@ -62,7 +64,7 @@ function IncomingAmandementRequest() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar]);
+  }, [activeRole, enqueueSnackbar, sortingFilter]);
 
   React.useEffect(() => {
     fetchingIncoming();
@@ -101,12 +103,15 @@ function IncomingAmandementRequest() {
         </Typography>
         <Box>
           <SortingCardTable
-            limit={4}
             isLoading={isLoading}
-            api={'tender-proposal/amandement-request-lists'}
-            returnData={setCardData}
-            loadingState={setIsLoading}
-            addCustomFilter={'&status=PENDING&include_relations=supervisor,sender,proposal'}
+            onChangeSorting={(event: string) => {
+              setSortingFilter(event);
+            }}
+            // limit={4}
+            // api={'tender-proposal/amandement-request-lists'}
+            // returnData={setCardData}
+            // loadingState={setIsLoading}
+            // addCustomFilter={''}
           />
           {/* <Button
             sx={{

@@ -21,13 +21,17 @@ function ProposalOnAmandement() {
   const { activeRole } = useAuth();
   const [cardData, setCardData] = React.useState([]);
   const [tmpCardData, setTmpCardData] = React.useState([]);
+  const [sortingFilter, setSortingFilter] = React.useState('');
 
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
     try {
-      const rest = await axiosInstance.get(`tender-proposal/amandement-lists?limit=4`, {
-        headers: { 'x-hasura-role': activeRole! },
-      });
+      const rest = await axiosInstance.get(
+        `tender-proposal/amandement-lists?limit=4${sortingFilter}`,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
       // console.log('test', rest.data.data);
       if (rest) {
         setCardData(
@@ -62,7 +66,7 @@ function ProposalOnAmandement() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar]);
+  }, [activeRole, enqueueSnackbar, sortingFilter]);
 
   React.useEffect(() => {
     fetchingIncoming();
@@ -90,11 +94,10 @@ function ProposalOnAmandement() {
           {translate('amandement_requests_project_supervisor')}
         </Typography>
         <SortingCardTable
-          limit={4}
           isLoading={isLoading}
-          api={'tender-proposal/amandement-lists'}
-          returnData={setCardData}
-          loadingState={setIsLoading}
+          onChangeSorting={(event: string) => {
+            setSortingFilter(event);
+          }}
         />
         {/* <Button
           sx={{

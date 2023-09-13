@@ -997,6 +997,8 @@ const en = {
       ascending: 'Ascending',
       descending: 'Descending',
       created_at: 'Created at',
+      outter_status: 'Outter status',
+      no_value: 'All',
     },
   },
   commons: {
@@ -1467,6 +1469,7 @@ const en = {
     },
   },
   next: 'Next',
+  export: 'Export',
   going_back_one_step: 'Back',
   saving_as_draft: 'save as draft',
   send: 'send',

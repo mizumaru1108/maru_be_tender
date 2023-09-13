@@ -1,5 +1,7 @@
 import { Grid, MenuItem, Pagination, Select, Stack, Typography } from '@mui/material';
+import SearchField from 'components/sorting/searchField';
 import SortingCardTable from 'components/sorting/sorting';
+import SortingProjectStatusCardTable from 'components/sorting/sorting-project-status';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
@@ -25,11 +27,18 @@ CardTablePropsByBE) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
 
+  // loading state when fetching
   const [isLoading, setIsLoading] = React.useState(false);
+  // cards Data state
   const [cardData, setCardData] = useState([]);
+  // for pagination
   const [limit, setLimit] = useState(limitShowCard);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
+  // for filtering
+  const [searchName, setSearchName] = useState('');
+  const [sortingFilter, setSortingFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   // const [filterSorting, setFilterSorting] = useState('');
   const tmpTypeRequest = `&type=${typeRequest}`;
   const endPointOrigin = `${endPoint}?limit=${limit}&page=${page}${addCustomFilter || ''}${
@@ -40,7 +49,7 @@ CardTablePropsByBE) {
     setIsLoading(true);
     const url = endPointOrigin;
     try {
-      const rest = await axiosInstance.get(`${url}`, {
+      const rest = await axiosInstance.get(`${url}${sortingFilter}${searchName}${statusFilter}`, {
         headers: { 'x-hasura-role': activeRole! },
       });
       if (rest) {
@@ -90,7 +99,17 @@ CardTablePropsByBE) {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, endPoint, limit, page, typeRequest]);
+  }, [
+    activeRole,
+    enqueueSnackbar,
+    endPoint,
+    limit,
+    page,
+    typeRequest,
+    searchName,
+    sortingFilter,
+    statusFilter,
+  ]);
 
   const handleLimitChange = (event: any) => {
     setLimit(event.target.value as number);
@@ -109,38 +128,57 @@ CardTablePropsByBE) {
       <Grid item md={8} xs={12}>
         <Typography variant="h4">{title}</Typography>
       </Grid>
-      <Grid
-        item
-        md={4}
-        xs={12}
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-        }}
-      >
-        <SortingCardTable
-          isLoading={isLoading}
-          limit={limit}
-          page={page}
-          typeRequest={typeRequest}
-          // api={!typeRequest ? `${endPoint}` : `${endPoint}`}
-          api={endPoint ? endPoint : ''}
-          addCustomFilter={addCustomFilter}
-          returnData={(data) => {
-            if (destination === 'incoming-amandment-requests') {
-              setCardData(
-                data.map((item: any) => ({
-                  ...item.proposal,
-                  user: item.proposal.user,
-                }))
-              );
-            } else {
-              setCardData(data);
-            }
+      {destination === 'previous-funding-requests' ? (
+        <Grid
+          item
+          md={4}
+          xs={12}
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
           }}
-          loadingState={setIsLoading}
-        />
+        >
+          <SearchField
+            data-cy="search_field"
+            isLoading={isLoading}
+            onReturnSearch={(value) => {
+              setSearchName(`&project_name=${value}`);
+            }}
+            reFetch={() => {
+              setPage(1);
+              setSearchName('');
+              // if (reFetch) reFetch();
+            }}
+          />
+        </Grid>
+      ) : null}
+      <Grid item md={12} xs={12}>
+        <Grid container gap={3} justifyContent="flex-end">
+          <Grid item md={2} xs={6}>
+            <SortingCardTable
+              isLoading={isLoading}
+              onChangeSorting={(event: string) => {
+                setPage(1);
+                setSortingFilter(event);
+              }}
+            />
+          </Grid>
+
+          {destination === 'previous-funding-requests' ? (
+            <>
+              <Grid item md={2} xs={6}>
+                <SortingProjectStatusCardTable
+                  isLoading={isLoading}
+                  onChangeSorting={(event: string) => {
+                    setPage(1);
+                    setStatusFilter(event);
+                  }}
+                />
+              </Grid>
+            </>
+          ) : null}
+        </Grid>
       </Grid>
       {isLoading && (
         <Grid item md={12} xs={12}>

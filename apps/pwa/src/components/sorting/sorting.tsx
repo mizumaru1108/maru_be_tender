@@ -1,50 +1,30 @@
-import { FormControl, InputLabel, ListSubheader, MenuItem, Select } from '@mui/material';
-import useAuth from 'hooks/useAuth';
+import { StyledProps } from '@material-ui/styles';
+import {
+  FormControl,
+  InputLabel,
+  ListSubheader,
+  MenuItem,
+  Select,
+  SxProps,
+  Theme,
+} from '@mui/material';
 import useLocales from 'hooks/useLocales';
-import { useSnackbar } from 'notistack';
 import React from 'react';
-import axiosInstance from 'utils/axios';
 
 type SortingCardTableProps = {
-  // handleSorting: ((event: SelectChangeEvent<string>, child: ReactNode) => void) | undefined;
   isLoading?: boolean;
-  loadingState: (loading: boolean) => void;
-  api: string;
-  returnData: (data: any) => void;
-  limit: number;
-  type?: 'incoming' | 'inprocess';
-  page?: number;
-  typeRequest?: string;
-  // addCustomFilter?: '&vat=false' | '&vat=true' | '&status=PENDING' | undefined;
-  addCustomFilter?: string;
+  onChangeSorting: (event: string) => void;
+  sx?: SxProps<Theme>;
 };
 
 export default function SortingCardTable({
-  // handleSorting,
   isLoading,
-  api,
-  limit = 4,
-  type,
-  page,
-  typeRequest,
-  loadingState,
-  returnData,
-  addCustomFilter,
+  onChangeSorting,
+  ...other
 }: SortingCardTableProps) {
   const { translate } = useLocales();
-  const { enqueueSnackbar } = useSnackbar();
-  const { activeRole } = useAuth();
-  const [filterSorting, setFilterSorting] = React.useState('');
-  const [limitPage, setLimitPage] = React.useState<string>(`?limit=${limit}`);
-  const [typeFilter, setTypeFilter] = React.useState(
-    type || typeRequest ? `&type=${type ?? typeRequest}` : ''
-  );
-  const [pageFilter, setPageFilter] = React.useState(page ? `&page=${page}` : '');
-  const [tmpAddCustomFilter, setTmpAddCustomFilter] = React.useState(addCustomFilter || '');
-  // const [isLoading, setIsLoading] = React.useState(false);
 
   const handleSortingFilter = (event: any) => {
-    // console.log('test masuk sini');
     const value = event.target.value as number;
     let tmpFilter = '';
     if (value < 3) {
@@ -52,7 +32,11 @@ export default function SortingCardTable({
       if (value === 1) {
         tmpFilter = '&sorting_field=project_name&sort=asc';
       } else {
-        tmpFilter = '&sorting_field=project_name&sort=desc';
+        if (event.target.value === '') {
+          tmpFilter = '';
+        } else {
+          tmpFilter = '&sorting_field=project_name&sort=desc';
+        }
       }
     } else {
       if (value === 3) {
@@ -61,70 +45,14 @@ export default function SortingCardTable({
         tmpFilter = '&sort=desc';
       }
     }
-    if (!!tmpFilter) {
-      setFilterSorting(tmpFilter);
-    }
+    // console.log({ tmpFilter });
+    onChangeSorting(tmpFilter);
+    // if (!!tmpFilter) {
+    // }
   };
 
-  const fetching = React.useCallback(async () => {
-    loadingState(true);
-    // setIsLoading(true);
-
-    try {
-      const rest = await axiosInstance.get(
-        `${api}${limitPage}${typeFilter}${filterSorting}${pageFilter}${tmpAddCustomFilter}`,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-        }
-      );
-      // console.log('test: ', rest.data.data);
-      if (rest.data.data) {
-        const cardData = rest.data.data.map((item: any) => ({
-          ...item,
-        }));
-        returnData(cardData);
-      }
-    } catch (err) {
-      const statusCode = (err && err.statusCode) || 0;
-      const message = (err && err.message) || null;
-      enqueueSnackbar(
-        `${
-          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
-        }`,
-        {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        }
-      );
-    } finally {
-      // setIsLoading(false);
-      loadingState(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, api, filterSorting]);
-
-  React.useEffect(() => {
-    fetching();
-  }, [fetching]);
   return (
-    // <Grid
-    //   item
-    //   md={4}
-    //   xs={12}
-    //   sx={{
-    //     display: 'flex',
-    //     justifyContent: 'flex-end',
-    //     alignItems: 'center',
-    //   }}
-    // >
-
-    // </Grid>
-    <FormControl sx={{ minWidth: 120, paddingBottom: 2 }}>
+    <FormControl fullWidth sx={{ minWidth: 120, paddingBottom: 2 }}>
       <InputLabel htmlFor="grouped-select">{translate('sorting.label.sorting')}</InputLabel>
       <Select
         defaultValue=""
@@ -132,6 +60,7 @@ export default function SortingCardTable({
         label="Sorting"
         onChange={handleSortingFilter}
         disabled={isLoading}
+        {...other}
       >
         <MenuItem value="">
           {/* <em>None</em> */}

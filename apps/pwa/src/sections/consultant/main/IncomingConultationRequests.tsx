@@ -30,13 +30,17 @@ function IncomingConultationRequests() {
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
   const [cardData, setCardData] = React.useState([]);
+  const [sortingFilter, setSortingFilter] = React.useState('');
 
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
     try {
-      const rest = await axiosInstance.get(`tender-proposal/request-in-process?limit=4`, {
-        headers: { 'x-hasura-role': activeRole! },
-      });
+      const rest = await axiosInstance.get(
+        `tender-proposal/request-in-process?limit=4${sortingFilter}`,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
       if (rest) {
         // console.log('rest total :', rest.data.total);
         setCardData(
@@ -76,7 +80,7 @@ function IncomingConultationRequests() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar]);
+  }, [activeRole, enqueueSnackbar, sortingFilter]);
 
   React.useEffect(() => {
     fetchingIncoming();
@@ -95,11 +99,10 @@ function IncomingConultationRequests() {
             </Typography>
             <Box>
               <SortingCardTable
-                limit={4}
                 isLoading={isLoading}
-                api={'tender-proposal/request-in-process'}
-                returnData={setCardData}
-                loadingState={setIsLoading}
+                onChangeSorting={(event: string) => {
+                  setSortingFilter(event);
+                }}
               />
               <Button
                 sx={{

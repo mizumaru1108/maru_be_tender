@@ -1005,6 +1005,8 @@ const ar = {
       ascending: 'تصاعدي',
       descending: 'تنازلي',
       created_at: 'أنشئ في',
+      outter_status: 'الحالة',
+      no_value: 'الجميع',
     },
   },
   commons: {
@@ -1472,6 +1474,7 @@ const ar = {
     },
   },
   next: 'التالي',
+  export: 'تصدير',
   going_back_one_step: 'رجوع',
   saving_as_draft: 'حفظ كمسودة',
   send: 'إرسال',

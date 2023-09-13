@@ -139,9 +139,8 @@ export default function PortalReportsForm() {
           <PortarReportsTable
             selectedColums={values?.form2.selected_columns.sort((a, b) => a.localeCompare(b))}
             params={urlParams}
-          >
-            <PortalReportActionBox isLoad={false} lastStep={true} onReturn={handleBack} />
-          </PortarReportsTable>
+            onReturn={handleBack}
+          />
         )}
         {/* <PortalReportActionBox isLoad={false} lastStep={false} onReturn={handleBack} /> */}
       </Grid>

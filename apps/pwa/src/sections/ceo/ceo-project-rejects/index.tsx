@@ -140,10 +140,10 @@ function CeoProjectRejects() {
     // fetchingPrevious();
   }, [fetchingIncoming, isLoading, track_list]);
 
-  // useEffect(() => {
-  //   // dispatch(setTracks(filteredTrack));
-  //   dispatch(getTrackList(0, activeRole! as string));
-  // }, [dispatch, filteredTrack, activeRole]);
+  useEffect(() => {
+    // dispatch(setTracks(filteredTrack));
+    dispatch(getTrackList(1, activeRole! as string));
+  }, [dispatch, activeRole]);
 
   const headerCells: ProjectManagementTableHeader[] = [
     { id: 'projectNumber', label: translate('project_management_headercell.project_number') },
