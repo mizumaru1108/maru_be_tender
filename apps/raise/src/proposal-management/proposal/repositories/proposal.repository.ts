@@ -887,6 +887,7 @@ export class ProposalRepository {
           ps.project_location = true;
         }
         if (selected === ProposalSelectEnum.PROJECT_BENEFICIARIES) {
+          ps.beneficiary_details = true;
           ps.project_beneficiaries = true;
         }
         if (selected === ProposalSelectEnum.PROJECT_GOALS) {
@@ -916,6 +917,11 @@ export class ProposalRepository {
         if (selected === ProposalSelectEnum.REGION) {
           ps.region = true;
           ps.region_detail = true;
+        }
+
+        if (start_date || end_date) {
+          ps.created_at = true;
+          // ps.updated_at = true;
         }
       }
       // console.log(logUtil(ps));
@@ -2222,6 +2228,7 @@ export class ProposalRepository {
         limit = 10,
         sort = 'desc',
         sorting_field,
+        project_name,
         track_id,
       } = filter;
 
@@ -2230,6 +2237,13 @@ export class ProposalRepository {
       let whereClause: Prisma.proposalWhereInput = {
         oid: null,
       };
+
+      if (project_name) {
+        whereClause.project_name = {
+          contains: project_name,
+          mode: 'insensitive',
+        };
+      }
 
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
       const field =
@@ -2245,29 +2259,29 @@ export class ProposalRepository {
         step: 'ZERO',
       };
 
-      if (['tender_project_manager'].indexOf(currentUser.choosenRole) > -1) {
-        const reviewer = await this.prismaService.user.findUnique({
-          where: { id: currentUser.id },
-          include: { track: true },
-        });
-        if (!reviewer || !reviewer.track) {
-          throw new BadRequestException('cant find track of this user');
-        }
+      // if (['tender_project_manager'].indexOf(currentUser.choosenRole) > -1) {
+      //   const reviewer = await this.prismaService.user.findUnique({
+      //     where: { id: currentUser.id },
+      //     include: { track: true },
+      //   });
+      //   if (!reviewer || !reviewer.track) {
+      //     throw new BadRequestException('cant find track of this user');
+      //   }
 
-        if (reviewer.track.name !== 'GENERAL') {
-          whereClause = {
-            ...whereClause,
-            track_id: reviewer.track.id,
-          };
-        }
-      } else {
-        if (track_id) {
-          whereClause = {
-            ...whereClause,
-            track_id,
-          };
-        }
+      //   if (reviewer.track.name !== 'GENERAL') {
+      //     whereClause = {
+      //       ...whereClause,
+      //       track_id: reviewer.track.id,
+      //     };
+      //   }
+      // } else {
+      if (track_id) {
+        whereClause = {
+          ...whereClause,
+          track_id,
+        };
       }
+      // }
 
       if (currentUser.choosenRole === 'tender_project_manager') {
         whereClause = {
