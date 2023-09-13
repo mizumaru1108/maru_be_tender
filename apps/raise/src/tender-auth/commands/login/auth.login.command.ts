@@ -58,7 +58,10 @@ export class AuthLoginCommandHandler
         throw new UnauthorizedException('Wrong Credentials!');
       }
 
-      if (user.status_id === UserStatusEnum.DELETED) {
+      if (
+        user.status_id === UserStatusEnum.DELETED ||
+        user.status_id === UserStatusEnum.CANCELED_ACCOUNT
+      ) {
         throw new UnauthorizedException('Wrong Credentials!');
       }
 
