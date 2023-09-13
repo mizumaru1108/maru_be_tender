@@ -111,10 +111,13 @@ export default function UsersAndPermissionsTable() {
   };
 
   const handleDeleteRow = async (id: string) => {
+    // const url = '/tender-user/delete'; post method
+    // patch method
+    const url = '/tender-user/soft-delete';
     try {
       setIsDeletig({ loading: true, id });
-      await axiosInstance.post(
-        '/tender-user/delete',
+      await axiosInstance.patch(
+        url,
         { user_id: id },
         { headers: { 'x-hasura-role': activeRole! } }
       );

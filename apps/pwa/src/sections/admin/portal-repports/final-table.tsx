@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Card,
   Paper,
   Stack,
@@ -17,7 +18,8 @@ import {
 import EmptyContent from 'components/EmptyContent';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import React from 'react';
+import React, { useRef } from 'react';
+import ReactToPrint from 'react-to-print';
 import axiosInstance from 'utils/axios';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -57,7 +59,8 @@ export default function PortarReportsTable({ params, selectedColums, children }:
   const { activeRole } = useAuth();
   const [isLoading, setIsLoading] = React.useState(false);
   const [tableData, setTableData] = React.useState<any[]>([]);
-  console.log({ selectedColums, tableData });
+  const componentRef = useRef<HTMLDivElement>(null);
+  // console.log({ selectedColums, tableData });
 
   const fetchingTableData = React.useCallback(async () => {
     setIsLoading(true);
@@ -116,10 +119,10 @@ export default function PortarReportsTable({ params, selectedColums, children }:
                   value = tmpItem?.bank_information?.bank_name || '-';
                 }
                 if (key === 'bank_account_name') {
-                  value = tmpItem?.bank_information?.account_name || '-';
+                  value = tmpItem?.bank_information?.bank_account_name || '-';
                 }
                 if (key === 'bank_account_number') {
-                  value = tmpItem?.bank_information?.account_number || '-';
+                  value = tmpItem?.bank_information?.bank_account_number || '-';
                 }
               }
               if (key === 'execution_time') {
@@ -153,9 +156,38 @@ export default function PortarReportsTable({ params, selectedColums, children }:
   return (
     <>
       <Box>
-        <Card sx={{ bgcolor: '#fff' }}>
+        {/* <Stack>
+          <ReactToPrint
+            trigger={() => (
+              <Button variant="contained" color="primary" size="medium">
+                {translate('pages.finance.payment_generate.heading.print_out_data')}
+              </Button>
+            )}
+            content={() => componentRef.current}
+          />
+        </Stack> */}
+        <Card
+          ref={componentRef}
+          sx={{
+            bgcolor: '#fff',
+            '@media print': {
+              // transform: 'scale(0.7)',
+              // transformOrigin: 'top left',
+              // position: 'absolute',
+              // top: '-50px',
+              // left: '-220px',
+              // width: '80vw',
+              // translate: '0 0',
+              // height: '100vh',
+              // display: 'block !important',
+              breakInside: 'avoid',
+              overflow: 'visible !important',
+              // padding: 9,
+            },
+          }}
+        >
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <Table aria-label="customized table">
               <TableHead>
                 <TableRow>
                   {/* <StyledTableCell>{'Id Number'}</StyledTableCell> */}
@@ -211,29 +243,6 @@ export default function PortarReportsTable({ params, selectedColums, children }:
                 />
               </Stack>
             ) : null} */}
-            <Box sx={{ position: 'relative', backgroundColor: '#fff', height: 50 }} />
-            {/* <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={total}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={(e, newPage) => {
-                  // console.log({ newPage });
-                  if (!!newPage) {
-                    setPage(Number(newPage));
-                  } else {
-                    setPage(0);
-                  }
-                }}
-                onRowsPerPageChange={(e) => {
-                  // console.log(e);
-                  if (e.target.value) {
-                    setRowsPerPage(Number(e.target.value));
-                  }
-                }}
-              /> */}
-            {/* </Box> */}
           </TableContainer>
         </Card>
       </Box>

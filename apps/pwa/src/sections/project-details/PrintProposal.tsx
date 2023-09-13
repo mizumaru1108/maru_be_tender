@@ -19,8 +19,6 @@ import Iconify from 'components/Iconify';
 // hooks
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import { useQuery } from 'urql';
-import { getOneProposal } from 'queries/commons/getOneProposal';
 import ReactToPrint from 'react-to-print';
 //
 // import { ReactComponent as Logo } from '../../../assets/new_logo.svg';
