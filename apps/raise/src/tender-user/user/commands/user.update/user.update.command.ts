@@ -93,7 +93,7 @@ export class UserUpdateCommandHandler
         mobile_number: command.dto.mobile_number,
         status_id: command.dto.activate_user
           ? UserStatusEnum.ACTIVE_ACCOUNT
-          : UserStatusEnum.SUSPENDED_ACCOUNT,
+          : UserStatusEnum.CANCELED_ACCOUNT,
         track_id: command.dto.track_id,
       }).build();
 
@@ -146,7 +146,7 @@ export class UserUpdateCommandHandler
 
           const updatedUser = await this.userRepo.update(updateUserPayload, tx);
 
-          if (updateUserPayload.status_id === UserStatusEnum.ACTIVE_ACCOUNT) {
+          if (command.dto.activate_user) {
             await this.fusionAuthService.verifyEmail(updateUserPayload.id);
           }
 
