@@ -2022,6 +2022,8 @@ export class ProposalRepository {
         limit = 10,
         sort = 'desc',
         sorting_field,
+        client_name,
+        start_date,
         outter_status,
         project_name,
       } = filter;
@@ -2042,9 +2044,28 @@ export class ProposalRepository {
         };
       }
 
+      if (outter_status) {
+        whereClause = {
+          ...whereClause,
+          outter_status: { in: outter_status },
+        };
+      }
+
+      if (client_name) {
+        whereClause = {
+          ...whereClause,
+          user: {
+            employee_name: { contains: client_name, mode: 'insensitive' },
+          },
+        };
+      }
+
+      if (start_date) whereClause = { ...whereClause, created_at: start_date };
+
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
       const field =
         sorting_field as keyof Prisma.proposalOrderByWithRelationInput;
+
       if (sorting_field) {
         order_by[field] = sort;
       } else {
@@ -2058,13 +2079,6 @@ export class ProposalRepository {
           submitter_user_id: currentUser.id,
           step: 'ZERO',
         };
-
-        if (outter_status) {
-          whereClause = {
-            ...whereClause,
-            outter_status: { in: outter_status },
-          };
-        }
       } else {
         whereClause = {
           ...whereClause,
