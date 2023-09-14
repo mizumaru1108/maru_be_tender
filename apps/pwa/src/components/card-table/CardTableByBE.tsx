@@ -1,4 +1,5 @@
 import { Grid, MenuItem, Pagination, Select, Stack, Typography } from '@mui/material';
+import SearchDateField from 'components/sorting/date-filter';
 import SearchField from 'components/sorting/searchField';
 import SortingCardTable from 'components/sorting/sorting';
 import SortingProjectStatusCardTable from 'components/sorting/sorting-project-status';
@@ -37,6 +38,8 @@ CardTablePropsByBE) {
   const [totalPage, setTotalPage] = useState(0);
   // for filtering
   const [searchName, setSearchName] = useState('');
+  const [clientName, setClientName] = useState('');
+  const [startDate, setStartDate] = useState('');
   const [sortingFilter, setSortingFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   // const [filterSorting, setFilterSorting] = useState('');
@@ -49,9 +52,12 @@ CardTablePropsByBE) {
     setIsLoading(true);
     const url = endPointOrigin;
     try {
-      const rest = await axiosInstance.get(`${url}${sortingFilter}${searchName}${statusFilter}`, {
-        headers: { 'x-hasura-role': activeRole! },
-      });
+      const rest = await axiosInstance.get(
+        `${url}${sortingFilter}${searchName}${statusFilter}${clientName}${startDate}`,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
       if (rest) {
         // console.log('rest.data.data', rest.data.data);
         const tmpTotalPage = Math.ceil(rest.data.total / limit);
@@ -109,6 +115,8 @@ CardTablePropsByBE) {
     searchName,
     sortingFilter,
     statusFilter,
+    clientName,
+    startDate,
   ]);
 
   const handleLimitChange = (event: any) => {
@@ -124,24 +132,16 @@ CardTablePropsByBE) {
   }, [fetchingPrevious, page, limit]);
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} justifyContent="space-between">
       <Grid item md={8} xs={12}>
         <Typography variant="h4">{title}</Typography>
       </Grid>
       {destination === 'previous-funding-requests' ? (
-        <Grid
-          item
-          md={4}
-          xs={12}
-          sx={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-          }}
-        >
+        <Grid item md={3} xs={12}>
           <SearchField
             data-cy="search_field"
             isLoading={isLoading}
+            label={translate('sorting.label.project_name')}
             onReturnSearch={(value) => {
               setSearchName(`&project_name=${value}`);
             }}
@@ -150,11 +150,13 @@ CardTablePropsByBE) {
               setSearchName('');
               // if (reFetch) reFetch();
             }}
+            fullWidth
+            // sx={{ width: '250px' }}
           />
         </Grid>
       ) : null}
       <Grid item md={12} xs={12}>
-        <Grid container gap={3} justifyContent="flex-end">
+        <Grid container spacing={2} justifyContent="flex-end">
           <Grid item md={2} xs={6}>
             <SortingCardTable
               isLoading={isLoading}
@@ -173,6 +175,36 @@ CardTablePropsByBE) {
                   onChangeSorting={(event: string) => {
                     setPage(1);
                     setStatusFilter(event);
+                  }}
+                />
+              </Grid>
+              <Grid item md={2} xs={6}>
+                <SearchDateField
+                  fullWidth
+                  isLoading={isLoading}
+                  onReturnDate={(event: string) => {
+                    setPage(1);
+                    if (event && event !== '') {
+                      setStartDate(`&start_date=${event}`);
+                    } else {
+                      setStartDate('');
+                    }
+                  }}
+                />
+              </Grid>
+              <Grid item md={3} xs={6}>
+                <SearchField
+                  fullWidth
+                  data-cy="search_field"
+                  isLoading={isLoading}
+                  label={translate('client_list_headercell.client_name')}
+                  onReturnSearch={(value) => {
+                    setClientName(`&client_name=${value}`);
+                  }}
+                  reFetch={() => {
+                    setPage(1);
+                    setClientName('');
+                    // if (reFetch) reFetch();
                   }}
                 />
               </Grid>

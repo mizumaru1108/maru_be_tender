@@ -97,6 +97,7 @@ export const adminRoute = {
       children: [
         { element: <Navigate to="/cashier/dashboard/app" replace />, index: true },
         { path: 'app', element: <Main /> },
+        { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'transaction-progression',
           children: [
