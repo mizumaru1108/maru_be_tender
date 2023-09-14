@@ -121,7 +121,7 @@ export class ProposalReportListQueryDto extends BaseFilterRequest {
     }
     return value;
   })
-  benificiary_id?: string[];
+  beneficiary_id?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()

@@ -9,7 +9,7 @@ export class ProposalReportListQuery {
   partner_name?: string;
   partner_id?: string[];
   region_id?: string[];
-  benificiary_id?: string[];
+  beneficiary_id?: string[];
   governorate_id?: string[];
   track_id?: string[];
   start_date?: Date;

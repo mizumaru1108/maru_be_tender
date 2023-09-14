@@ -12,7 +12,7 @@ export interface ProposalFindManyProps {
   region_id?: string[];
   governorate_id?: string[];
   track_id?: string[];
-  benificiary_id?: string[];
+  beneficiary_id?: string[];
   submitter_user_id?: string;
   outter_status?: OutterStatusEnum[];
   limit?: number;

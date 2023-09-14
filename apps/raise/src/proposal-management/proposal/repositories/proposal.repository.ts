@@ -600,12 +600,13 @@ export class ProposalRepository {
       region_id,
       submitter_user_id,
       outter_status,
-      benificiary_id,
+      beneficiary_id,
       include_relations,
       selected_columns,
       start_date,
       end_date,
     } = props;
+    // console.log({ props });
     let args: Prisma.proposalFindManyArgs = {};
     let whereClause: Prisma.proposalWhereInput = {};
 
@@ -660,10 +661,10 @@ export class ProposalRepository {
       };
     }
 
-    if (benificiary_id) {
+    if (beneficiary_id) {
       whereClause = {
         ...whereClause,
-        beneficiary_id: { in: benificiary_id },
+        beneficiary_id: { in: beneficiary_id },
       };
     }
 
@@ -687,6 +688,16 @@ export class ProposalRepository {
       whereClause = {
         ...whereClause,
         created_at: {
+          lte: end_date,
+        },
+      };
+    }
+
+    if (start_date && end_date) {
+      whereClause = {
+        ...whereClause,
+        created_at: {
+          gte: start_date,
           lte: end_date,
         },
       };
@@ -929,6 +940,8 @@ export class ProposalRepository {
     }
 
     args.where = whereClause;
+
+    // console.log(logUtil(args));
     return args;
   }
 
@@ -2060,7 +2073,16 @@ export class ProposalRepository {
         };
       }
 
-      if (start_date) whereClause = { ...whereClause, created_at: start_date };
+      if (start_date) {
+        whereClause = {
+          ...whereClause,
+          project_timeline: {
+            some: {
+              start_date: { equals: start_date },
+            },
+          },
+        };
+      }
 
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
       const field =
