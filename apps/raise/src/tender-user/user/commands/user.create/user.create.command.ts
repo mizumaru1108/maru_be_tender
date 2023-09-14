@@ -135,11 +135,11 @@ export class UserCreateCommandHandler
         },
       ];
 
-      // // either active or inactive the fusion auth must be active [we just validate trough db] (Frisky notes)
-      // await this.fusionAuthService.verifyEmail(fusionAuthResult.user.id);
+      // either active or inactive the fusion auth must be active [we just validate trough db] (Frisky, Umar notes)
+      await this.fusionAuthService.verifyEmail(fusionAuthResult.user.id);
 
       if (status === UserStatusEnum.ACTIVE_ACCOUNT) {
-        await this.fusionAuthService.verifyEmail(fusionAuthResult.user.id);
+        // await this.fusionAuthService.verifyEmail(fusionAuthResult.user.id);
         statusLogPayload.push({
           id: uuidv4(),
           user_id: fusionAuthResult.user.id as string,
