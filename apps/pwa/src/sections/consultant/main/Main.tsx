@@ -1,4 +1,5 @@
 import { Grid } from '@mui/material';
+import Space from 'components/space/space';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import React from 'react';
@@ -26,12 +27,11 @@ function Main() {
       <Grid item md={12}>
         <DailyStatistics />
       </Grid>
-      <Grid item md={12}>
-        <IncomingConultationRequests />
-      </Grid>
-      <Grid item md={12}>
+      <IncomingConultationRequests />
+      <Space direction="horizontal" size="small" />
+      {/* <Grid item md={12}>
         <ProposalOnAmandement />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }

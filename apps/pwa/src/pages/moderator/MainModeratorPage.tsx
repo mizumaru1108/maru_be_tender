@@ -1,24 +1,18 @@
-import { Box, Button, Container, Grid, Stack, styled, Typography } from '@mui/material';
+import { Container, Grid, styled } from '@mui/material';
 import { CardInsight } from 'components/card-insight';
 import Page from 'components/Page';
 import useLocales from 'hooks/useLocales';
-import { getProposals } from 'queries/commons/getProposal';
-import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
-import { ProjectCard } from '../../components/card-table';
 import { moderatorStatistics } from '../../queries/Moderator/stactic';
 
 //
+import CardTableByBE from 'components/card-table/CardTableByBE';
 import moment from 'moment';
-import { generateHeader } from '../../utils/generateProposalNumber';
-import { useSnackbar } from 'notistack';
-import useAuth from '../../hooks/useAuth';
 import React from 'react';
-import axiosInstance from '../../utils/axios';
-import SortingCardTable from 'components/sorting/sorting';
-import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
-import { dispatch, useSelector } from 'redux/store';
 import { getTrackList } from 'redux/slices/proposal';
+import { dispatch, useSelector } from 'redux/store';
+import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
+import useAuth from '../../hooks/useAuth';
 
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
@@ -30,7 +24,6 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 function MainManagerPage() {
-  const navigate = useNavigate();
   const { translate } = useLocales();
 
   const [stats] = useQuery({
@@ -42,81 +35,16 @@ function MainManagerPage() {
   });
   const { data: statsData, fetching, error } = stats;
 
-  // const [incoming] = useQuery({
-  //   query: getProposals,
-  //   variables: {
-  //     order_by: { updated_at: 'desc' },
-  //     where: {
-  //       outter_status: { _eq: 'ONGOING' },
-  //       _and: { inner_status: { _eq: 'CREATED_BY_CLIENT' } },
-  //     },
-  //   },
-  // });
-  // const { data: incomingData, fetching: incomingFetching, error: incomingError } = incoming;
-
   // using API
-  const [isLoading, setIsLoading] = React.useState(false);
-  const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
-  const [cardData, setCardData] = React.useState([]);
   const { loadingCount } = useSelector((state) => state.proposal);
-  const [sortingFilter, setSortingFilter] = React.useState('');
-
-  const fetchingIncoming = React.useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const rest = await axiosInstance.get(
-        `tender-proposal/request-in-process?limit=4${sortingFilter}`,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-        }
-      );
-      if (rest) {
-        setCardData(
-          rest.data.data.map((item: any) => ({
-            ...item,
-          }))
-        );
-      }
-    } catch (err) {
-      const statusCode = (err && err.statusCode) || 0;
-      const message = (err && err.message) || null;
-      if (message && statusCode !== 0) {
-        enqueueSnackbar(err.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      } else {
-        enqueueSnackbar(translate('pages.common.internal_server_error'), {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      }
-    } finally {
-      setIsLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, sortingFilter]);
 
   React.useEffect(() => {
-    fetchingIncoming();
     dispatch(getTrackList(1, activeRole! as string));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchingIncoming, activeRole]);
+  }, [activeRole]);
 
   if (fetching || loadingCount) return <>{translate('pages.common.loading')}</>;
-  // console.log({ isLoading });
-  // if (isLoading) return <>{translate('pages.common.loading')}</>;
 
   return (
     // <Page title="Moderator Dashboard">
@@ -141,67 +69,15 @@ function MainManagerPage() {
               />
             </Grid>
             <Grid item md={12} xs={12}>
-              <Stack direction="row" justifyContent="space-between">
-                <Typography variant="h4" sx={{ mb: '20px' }}>
-                  {translate('incoming_support_requests')}
-                </Typography>
-                <Box>
-                  <SortingCardTable
-                    isLoading={isLoading}
-                    onChangeSorting={(event: string) => {
-                      setSortingFilter(event);
-                    }}
-                  />
-                  <Button
-                    sx={{
-                      backgroundColor: 'transparent',
-                      color: '#93A3B0',
-                      textDecoration: 'underline',
-                      ':hover': {
-                        backgroundColor: 'transparent',
-                      },
-                    }}
-                    onClick={() => {
-                      navigate('/moderator/dashboard/incoming-support-requests');
-                    }}
-                  >
-                    {translate('view_all')}
-                  </Button>
-                </Box>
-              </Stack>
-            </Grid>
-            <Grid item md={12} xs={12}>
-              <Grid container rowSpacing={3} columnSpacing={3}>
-                {isLoading && translate('pages.common.loading')}
-                {!isLoading &&
-                  cardData.map((item: any, index: any) => (
-                    <Grid item md={6} xs={12} key={index}>
-                      <ProjectCard
-                        title={{
-                          id: item.id,
-                          project_number: generateHeader(
-                            item && item.project_number && item.project_number
-                              ? item.project_number
-                              : item.id
-                          ),
-                          inquiryStatus: item.outter_status.toLowerCase(),
-                        }}
-                        content={{
-                          projectName: item.project_name,
-                          organizationName: (item && item.user && item.user.employee_name) ?? '-',
-                          sentSection: item.state,
-                          employee: item.user.employee_name,
-                          createdAtClient: new Date(item.created_at),
-                        }}
-                        footer={{
-                          createdAt: new Date(item.updated_at),
-                        }}
-                        cardFooterButtonAction="show-details"
-                        destination="requests-in-process"
-                      />
-                    </Grid>
-                  ))}
-              </Grid>
+              <CardTableByBE
+                title={translate('incoming_support_requests')}
+                destination="requests-in-process"
+                endPoint="tender-proposal/request-in-process"
+                limitShowCard={4}
+                cardFooterButtonAction="show-details"
+                showPagination={false}
+                navigateLink="/moderator/dashboard/incoming-support-requests"
+              />
             </Grid>
           </Grid>
         </ContentStyle>

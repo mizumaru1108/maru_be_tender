@@ -524,7 +524,7 @@ export const getTrackList = (isGeneral: number, role: string) => async () => {
   // console.log('masuk sini');
   try {
     dispatch(slice.actions.startLoading);
-    dispatch(slice.actions.setLoadingCount(true));
+    // dispatch(slice.actions.setLoadingCount(true));
     dispatch(slice.actions.startLoadingTrack(true));
     let url = '';
     if (isGeneral) {
@@ -546,7 +546,7 @@ export const getTrackList = (isGeneral: number, role: string) => async () => {
     dispatch(slice.actions.hasError(error));
   } finally {
     dispatch(slice.actions.endLoading);
-    dispatch(slice.actions.setLoadingCount(false));
+    // dispatch(slice.actions.setLoadingCount(false));
     dispatch(slice.actions.startLoadingTrack(false));
   }
 };

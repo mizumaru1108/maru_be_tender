@@ -235,16 +235,7 @@ function UnActivatedAccount() {
                 )}
 
                 {/* it showed when any proposal was created and showed only in dashboard */}
-                {showProposal ? (
-                  <Grid item md={12} xs={12} sx={{ my: 10, position: 'relative' }}>
-                    <PreviousFundingInqueries
-                      completed_client_projects={data.completed_client_projects}
-                      pending_client_projects={data.pending_client_projects}
-                      amandement_proposal={data.amandement_proposal}
-                      all_client_projects={data.all_client_projects}
-                    />
-                  </Grid>
-                ) : null}
+                {showProposal ? <PreviousFundingInqueries /> : null}
                 {showOldProposal ? (
                   <Grid item md={12} xs={12} sx={{ my: 10, position: 'relative' }}>
                     <OldProposalPage />

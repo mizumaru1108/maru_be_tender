@@ -1,8 +1,7 @@
 import { Container } from '@mui/material';
-import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import CardTableBE from 'components/card-table/CardTableBE';
-import { gettingPreviousProposals } from 'queries/client/gettingPreviousProposals';
+import CardTableByBE from 'components/card-table/CardTableByBE';
+import Page from 'components/Page';
 import useLocales from '../../../hooks/useLocales';
 
 function PreviousFundingRequests() {
@@ -21,7 +20,7 @@ function PreviousFundingRequests() {
     <Page title={translate('pages.common.previous_funding_requests')}>
       <Container>
         <ContentStyle>
-          <CardTableBE
+          {/* <CardTableBE
             resource={gettingPreviousProposals}
             title="طلبات دعم سابقة"
             dateFilter={true}
@@ -48,6 +47,13 @@ function PreviousFundingRequests() {
               outter_status: { outter_status: { _neq: 'ONGOING' } },
             }}
             destination={'previous-funding-requests'}
+          /> */}
+          <CardTableByBE
+            title={translate('previous_support_requests')}
+            endPoint="tender-proposal/previous"
+            destination="previous-funding-requests"
+            limitShowCard={6}
+            cardFooterButtonAction="show-project"
           />
         </ContentStyle>
       </Container>

@@ -19,8 +19,8 @@ import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
 import { useMutation } from 'urql';
 import { FusionAuthRoles } from '../../@types/commons';
 import React from 'react';
-import { dispatch } from 'redux/store';
-import { getProposalCount } from 'redux/slices/proposal';
+import { dispatch, useSelector } from 'redux/store';
+import { getProposalCount, getTrackList } from 'redux/slices/proposal';
 import { FEATURE_PROPOSAL_COUNTING } from 'config';
 
 /**
@@ -75,6 +75,10 @@ const ProjectCard = ({
   const { translate, currentLang } = useLocales();
   const [_, updateAsigning] = useMutation(asignProposalToAUser);
   const [action, setAction] = React.useState('');
+  // redux
+  const { loadingProps, track_list } = useSelector((state) => state.proposal);
+  // console.log({ content });
+
   // const valueLocale = localStorage.getItem('i18nextLng');
 
   let daysSinceCreated = 0;
@@ -191,6 +195,10 @@ const ProjectCard = ({
       }
     }
   }, [role, destination, translate, title.inquiryStatus]);
+
+  if (loadingProps.laodingTrack) {
+    return null;
+  }
   // console.log('test', title);
   return (
     <Card sx={{ backgroundColor: '#fff' }}>

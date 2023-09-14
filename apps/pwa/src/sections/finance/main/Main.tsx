@@ -1,4 +1,5 @@
 import { Grid } from '@mui/material';
+import Space from 'components/space/space';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { getOneEmployee } from 'queries/admin/getAllTheEmployees';
@@ -41,12 +42,9 @@ function Main() {
       {/* <Grid item md={12}>
         <TrackBudget path={data.data.employee_path} track_id={data.data.track_id} />
       </Grid> */}
-      <Grid item md={12}>
-        <IncomingExchangePermissionRequests />
-      </Grid>
-      <Grid item md={12}>
-        <RequestsInProcess />
-      </Grid>
+      <IncomingExchangePermissionRequests />
+      <Space direction="horizontal" size="small" />
+      <RequestsInProcess />
     </Grid>
   );
 }

@@ -34,7 +34,7 @@ function DraftProject({ draft_projects, mutate }: any) {
   };
 
   return (
-    <Container>
+    <>
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4">{translate('content.client.main_page.draft_projects')}</Typography>
         <Button
@@ -125,7 +125,7 @@ function DraftProject({ draft_projects, mutate }: any) {
           )
         )}
       </Grid>
-    </Container>
+    </>
   );
 }
 

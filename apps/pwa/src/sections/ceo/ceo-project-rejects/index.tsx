@@ -96,7 +96,7 @@ function CeoProjectRejects() {
                   project.track_id &&
                   track_list &&
                   track_list.length > 0 &&
-                  track_list.find((item: tracks) => item.id === project.track_id)!.name) ||
+                  track_list.find((item: tracks) => item.id === project.track_id)?.name) ||
                 '',
               associationName: (project.user.employee_name as string) || '',
               createdAt: (project.created_at as string) || '',

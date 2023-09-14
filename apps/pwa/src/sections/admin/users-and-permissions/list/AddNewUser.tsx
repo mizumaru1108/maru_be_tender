@@ -145,7 +145,7 @@ function AddNewUser() {
     };
     payload.track_id = (data && data.employee_path) ?? '';
     delete payload.employee_path;
-    console.log({ payload });
+    // console.log({ payload });
     try {
       setIsLoading(true);
       await axiosInstance.post(
@@ -267,8 +267,9 @@ function AddNewUser() {
             ? data.data.mobile_number.replace('+62', '')
             : data.data.mobile_number.replace('+966', '');
         // console.log({ tmpMobileNumber });
+        const tmpActiveUser = data?.data?.status_id === 'ACTIVE_ACCOUNT' ? true : false;
         reset({
-          activate_user: true,
+          activate_user: tmpActiveUser,
           email: data.data.email,
           password: '',
           employee_name: data.data.employee_name,
@@ -280,7 +281,6 @@ function AddNewUser() {
       }
     }
   }, [params, fetching, error, data, reset, tracksData]);
-
   if (isLoading) return <>Loading...</>;
 
   return (

@@ -1,13 +1,11 @@
 import { Grid } from '@mui/material';
+import Space from 'components/space/space';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import { getOneEmployee } from 'queries/admin/getAllTheEmployees';
 import React from 'react';
 import { getTrackList } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
-import TrackBudget from 'sections/cashier/main/TrackBudget';
 import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
-import { useQuery } from 'urql';
 import DailyStatistics from './DailyStatistics';
 import IncomingExchangePermissionRequests from './IncomingExchangePermissionRequests';
 import RequestsInProcess from './RequestsInProcess';
@@ -42,12 +40,9 @@ function Main() {
       {/* <Grid item md={12}>
         <TrackBudget path={data.data.employee_path} track_id={data.data.track_id} />
       </Grid> */}
-      <Grid item md={12} xs={12}>
-        <IncomingExchangePermissionRequests />
-      </Grid>
-      <Grid item md={12} xs={12}>
-        <RequestsInProcess />
-      </Grid>
+      <IncomingExchangePermissionRequests />
+      <Space direction="horizontal" size="small" />
+      <RequestsInProcess />
     </Grid>
   );
 }

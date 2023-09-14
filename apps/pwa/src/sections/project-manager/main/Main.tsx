@@ -15,6 +15,7 @@ import React from 'react';
 import { dispatch, useSelector } from 'redux/store';
 import { getTrackList } from 'redux/slices/proposal';
 import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
+import Space from 'components/space/space';
 
 function Main() {
   const { translate } = useLocales();
@@ -45,8 +46,11 @@ function Main() {
         <TrackBudget path={data.data.employee_path} track_id={data.data.track_id} />
       </Grid>
       <IncomingFundingRequests />
+      <Space direction="horizontal" size="small" />
       <RequestsInProcess />
+      <Space direction="horizontal" size="small" />
       <ExchangePermission />
+
       {/* <ProposalOnAmandement /> */}
     </Grid>
   );

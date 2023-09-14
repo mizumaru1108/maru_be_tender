@@ -14,6 +14,7 @@ import React from 'react';
 import { dispatch, useSelector } from 'redux/store';
 import { getTrackList } from 'redux/slices/proposal';
 import useAuth from 'hooks/useAuth';
+import Space from 'components/space/space';
 
 function DashboardPage() {
   const { activeRole } = useAuth();
@@ -37,11 +38,10 @@ function DashboardPage() {
       <Grid item md={12} xs={12}>
         <Statistic />
       </Grid>
+      <CurrentProjects />
+      <Space direction="horizontal" size="small" />
       {data && (
         <>
-          <Grid item md={12} xs={12}>
-            <CurrentProjects current_projects={data.current_projects} />
-          </Grid>
           {data.draft_projects.length ? (
             <Grid item md={12} xs={12}>
               <DraftProject draft_projects={data.draft_projects} mutate={mutate} />
@@ -56,16 +56,9 @@ function DashboardPage() {
           <Grid item md={12} xs={12}>
             <IncomingClientCloseReport />
           </Grid>
-          <Grid item md={12} xs={12}>
-            <PreviousFundingInqueries
-              completed_client_projects={data.completed_client_projects}
-              pending_client_projects={data.pending_client_projects}
-              amandement_proposal={data.amandement_proposal}
-              all_client_projects={data.all_client_projects}
-            />
-          </Grid>
         </>
       )}
+      <PreviousFundingInqueries />
     </Grid>
   );
 }

@@ -1,15 +1,19 @@
-import { Grid, MenuItem, Pagination, Select, Stack, Typography } from '@mui/material';
+import { Box, Button, Grid, MenuItem, Pagination, Select, Stack, Typography } from '@mui/material';
+import EmptyContent from 'components/EmptyContent';
 import SearchDateField from 'components/sorting/date-filter';
 import SearchField from 'components/sorting/searchField';
 import SortingCardTable from 'components/sorting/sorting';
 import SortingProjectStatusCardTable from 'components/sorting/sorting-project-status';
+import SvgIconStyle from 'components/SvgIconStyle';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { getTrackList } from 'redux/slices/proposal';
+import { dispatch, useSelector } from 'redux/store';
 import useAuth from '../../hooks/useAuth';
 import axiosInstance from '../../utils/axios';
 import CardTableLoading from './CardTableLoading';
-import CardTableNoData from './CardTableNoData';
 import ProjectTableBE from './ProjectCardBE';
 import { CardTablePropsByBE } from './types';
 
@@ -21,12 +25,18 @@ function CardTableByBE({
   destination,
   typeRequest,
   addCustomFilter,
+  navigateLink,
+  showPagination = true,
 }: // isIncoming = false,
 CardTablePropsByBE) {
   // const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useLocales();
   const { activeRole } = useAuth();
+  const navigate = useNavigate();
+
+  // redux
+  const { loadingProps } = useSelector((state) => state.proposal);
 
   // loading state when fetching
   const [isLoading, setIsLoading] = React.useState(false);
@@ -128,8 +138,16 @@ CardTablePropsByBE) {
   };
 
   React.useEffect(() => {
+    dispatch(getTrackList(1, activeRole! as string));
+  }, [activeRole]);
+
+  React.useEffect(() => {
     fetchingPrevious();
   }, [fetchingPrevious, page, limit]);
+
+  if (loadingProps.laodingTrack) {
+    return <CardTableLoading />;
+  }
 
   return (
     <Grid container spacing={2} justifyContent="space-between">
@@ -192,23 +210,44 @@ CardTablePropsByBE) {
                   }}
                 />
               </Grid>
-              <Grid item md={3} xs={6}>
-                <SearchField
-                  fullWidth
-                  data-cy="search_field"
-                  isLoading={isLoading}
-                  label={translate('client_list_headercell.client_name')}
-                  onReturnSearch={(value) => {
-                    setClientName(`&client_name=${value}`);
-                  }}
-                  reFetch={() => {
-                    setPage(1);
-                    setClientName('');
-                    // if (reFetch) reFetch();
-                  }}
-                />
-              </Grid>
+              {activeRole !== 'tender_client' ? (
+                <Grid item md={3} xs={6}>
+                  <SearchField
+                    fullWidth
+                    data-cy="search_client_name_field"
+                    isLoading={isLoading}
+                    label={translate('client_list_headercell.client_name')}
+                    onReturnSearch={(value) => {
+                      setClientName(`&client_name=${value}`);
+                    }}
+                    reFetch={() => {
+                      setPage(1);
+                      setClientName('');
+                      // if (reFetch) reFetch();
+                    }}
+                  />
+                </Grid>
+              ) : null}
             </>
+          ) : null}
+          {navigateLink ? (
+            <Grid item md={1} xs={6}>
+              <Button
+                sx={{
+                  backgroundColor: 'transparent',
+                  color: '#93A3B0',
+                  textDecoration: 'underline',
+                  ':hover': {
+                    backgroundColor: 'transparent',
+                  },
+                }}
+                onClick={() => {
+                  navigate(navigateLink);
+                }}
+              >
+                {translate('view_all')}
+              </Button>
+            </Grid>
           ) : null}
         </Grid>
       </Grid>
@@ -235,42 +274,72 @@ CardTablePropsByBE) {
             />
           </Grid>
         ))}
-      {!isLoading && !cardData && (
+      {!isLoading && cardData.length === 0 && (
         <Grid item md={12} xs={12}>
-          <CardTableNoData />
+          {activeRole !== 'tender_client' ? (
+            <EmptyContent
+              title="لا يوجد بيانات"
+              sx={{
+                '& span.MuiBox-root': { height: 160 },
+              }}
+            />
+          ) : (
+            <>
+              <Typography variant="h4">
+                {translate('content.client.main_page.current_projects')}
+              </Typography>
+              <Grid
+                container
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                justifyContent="center"
+                p="20px"
+              >
+                <Box sx={{ width: '100%' }}>
+                  <Stack justifyItems="center">
+                    <Box sx={{ textAlign: 'center' }}>
+                      <SvgIconStyle src={`/icons/empty-project.svg`} />
+                    </Box>
+                    <Typography sx={{ textAlign: 'center' }}>
+                      {translate('content.client.main_page.no_current_projects')}
+                    </Typography>
+                    <Button
+                      sx={{
+                        textAlign: 'center',
+                        margin: '0 auto',
+                        textDecorationLine: 'underline',
+                      }}
+                      onClick={() => {
+                        navigate('/client/dashboard/funding-project-request');
+                      }}
+                    >
+                      {translate('content.client.main_page.apply_new_support_request')}
+                    </Button>
+                  </Stack>
+                </Box>
+              </Grid>
+            </>
+          )}
         </Grid>
       )}
-      {/* {!isLoading && cardData && cardData.length > 0 ? (
-        cardData.map((item: any, index: any) => (
-          <Grid item key={index} md={6} xs={12}>
-            <ProjectTableBE
-              {...item}
-              created_at={new Date(item.created_at)}
-              cardFooterButtonAction={cardFooterButtonAction}
-              destination={destination}
-            />
-          </Grid>
-        ))
-      ) : (
-        <Grid item md={12} xs={12}>
-          <CardTableNoData />
-        </Grid>
-      )} */}
-      {!isLoading && cardData && (
+      {!isLoading && cardData && showPagination && (
         <>
-          <Grid
-            item
-            md={12}
-            xs={12}
-            sx={{
-              mt: 3,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Pagination count={totalPage} page={page} onChange={handleChange} />
-          </Grid>
+          {cardData.length > 0 ? (
+            <Grid
+              item
+              md={12}
+              xs={12}
+              sx={{
+                mt: 3,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Pagination count={totalPage} page={page} onChange={handleChange} />
+            </Grid>
+          ) : null}
           <Grid
             item
             md={12}
@@ -291,6 +360,7 @@ CardTablePropsByBE) {
                   backgroundColor: '#fff !important',
                 }}
               >
+                <MenuItem value={4}>4</MenuItem>
                 <MenuItem value={6}>6</MenuItem>
                 <MenuItem value={8}>8</MenuItem>
                 <MenuItem value={10}>10</MenuItem>

@@ -23,6 +23,7 @@ query getOneEmployee($id: String = "") {
       role: user_type_id
     }
     track_id
+    status_id
   }
 }
 

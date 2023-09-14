@@ -89,17 +89,24 @@ function ProposalOnAmandement() {
   }, [cardData]);
   return (
     <Grid item md={12}>
-      <Stack direction="row" justifyContent="space-between">
-        <Typography variant="h4" sx={{ mb: '20px' }}>
-          {translate('amandement_requests_project_supervisor')}
-        </Typography>
-        <SortingCardTable
-          isLoading={isLoading}
-          onChangeSorting={(event: string) => {
-            setSortingFilter(event);
-          }}
-        />
-        {/* <Button
+      <Grid container>
+        <Grid item md={10}>
+          <Box>
+            <Typography variant="h4" sx={{ mb: '20px' }}>
+              {translate('amandement_requests_project_supervisor')}
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item md={2}>
+          <SortingCardTable
+            isLoading={isLoading}
+            onChangeSorting={(event: string) => {
+              setSortingFilter(event);
+            }}
+          />
+        </Grid>
+      </Grid>
+      {/* <Button
           sx={{
             backgroundColor: 'transparent',
             color: '#93A3B0',
@@ -114,7 +121,6 @@ function ProposalOnAmandement() {
         >
           {translate('view_all')}
         </Button> */}
-      </Stack>
       <Grid container spacing={2}>
         {isLoading && translate('pages.common.loading')}
         {!isLoading && tmpCardData && tmpCardData.length > 0 ? (

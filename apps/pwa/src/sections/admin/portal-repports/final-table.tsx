@@ -231,15 +231,6 @@ export default function PortarReportsTable({ params, selectedColums, onReturn }:
                 {tableData.length > 0
                   ? tableData.map((row, index) => (
                       <StyledTableRow key={index}>
-                        {/* <StyledTableCell component="th" scope="row">
-                          <Typography
-                            noWrap={false}
-                            data-cy={`contact_us_id-${index}`}
-                            sx={{ fontWeight: 550 }}
-                          >
-                            test
-                          </Typography>
-                        </StyledTableCell> */}
                         {Object.entries(row).map(([key, value]: any, index) => (
                           <StyledTableCell key={index} component="th" align="center" scope="row">
                             <Typography
@@ -256,16 +247,6 @@ export default function PortarReportsTable({ params, selectedColums, onReturn }:
                   : null}
               </StyledTableBody>
             </Table>
-            {/* {tableData.length === 0 ? (
-              <Stack display={'flex'} sx={{ backgroundColor: '#fff' }}>
-                <EmptyContent
-                  title="لا يوجد بيانات"
-                  sx={{
-                    '& span.MuiBox-root': { height: 160 },
-                  }}
-                />
-              </Stack>
-            ) : null} */}
           </TableContainer>
         </Card>
       </Box>
@@ -281,9 +262,7 @@ export default function PortarReportsTable({ params, selectedColums, onReturn }:
           }}
         >
           <LoadingButton
-            // onClick={onReturn}
-            // loading={isLoad}
-            // endIcon={!isLoad && <MovingBack />}
+            onClick={onReturn}
             sx={{
               color: 'text.primary',
               width: { xs: '100%', sm: '200px' },

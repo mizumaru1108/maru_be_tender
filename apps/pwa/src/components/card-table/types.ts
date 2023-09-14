@@ -107,6 +107,7 @@ export type ProjectCardPropsBE = {
   ];
   state?: string;
   payments?: any;
+  track_id?: string;
   outter_status?:
     | 'CANCELED'
     | 'COMPLETED'
@@ -196,9 +197,11 @@ export type CardTablePropsByBE = {
     | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
     | 'project-report'
     | 'incoming-amandment-requests';
-  addCustomFilter?: '&vat=false' | '&vat=true' | '&status=PENDING' | undefined;
-  // staticFilters?: any;
-  // baseFilters?: any;
+
+  // example addCustomFilter: '&status=PENDING&include_relations=supervisor,sender,proposal'
+  addCustomFilter?: string;
+  navigateLink?: string;
+  showPagination?: boolean;
 };
 
 interface GenerateFilterReturning {

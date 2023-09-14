@@ -24,6 +24,7 @@ import { FEATURE_PROJECT_SAVE_DRAFT, FEATURE_PROPOSAL_COUNTING } from '../../con
 import { generateHeader } from '../../utils/generateProposalNumber';
 import { useSnackbar } from 'notistack';
 import { getProposalCount } from 'redux/slices/proposal';
+import { useSelector } from 'redux/store';
 
 const cardFooterButtonActionLocal = {
   'show-project': 'show_project',
@@ -59,6 +60,7 @@ const ProjectCardBE = ({
   payments,
   outter_status: status,
   cardFooterButtonAction,
+  track_id,
   destination, // it refers to the url that I came from and the url that I have to go to
   mutate,
 }: ProjectCardPropsBE) => {
@@ -75,6 +77,8 @@ const ProjectCardBE = ({
   const [, deleteDrPro] = useMutation(deleteDraftProposal);
   const [loading, setLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const { track_list } = useSelector((state) => state.proposal);
+  // console.log({ track_list });
 
   // const urlArr: string[] = location.pathname.split('/');
 
@@ -392,6 +396,17 @@ const ProjectCardBE = ({
               </Typography>
               <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
                 {translate(`project_card.${state.toLowerCase()}`)}
+              </Typography>
+            </Stack>
+          )}
+          {track_id && (
+            <Stack>
+              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                {translate('modal.headline.track')}
+              </Typography>
+              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                {/* {translate(`project_card.${state.toLowerCase()}`)} */}
+                {track_list.find((track: any) => track.id === track_id)?.name || '-'}
               </Typography>
             </Stack>
           )}
