@@ -1,4 +1,4 @@
-import { IconButton, InputAdornment, TextField } from '@mui/material';
+import { IconButton, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import Iconify from 'components/Iconify';
 import { useDebounce } from 'hooks/useDebounce';
 import useLocales from 'hooks/useLocales';
@@ -10,7 +10,12 @@ interface Props {
   reFetch?: () => void;
 }
 
-export default function SearchField({ onReturnSearch, isLoading = false, reFetch }: Props) {
+export default function SearchField({
+  onReturnSearch,
+  isLoading = false,
+  reFetch,
+  ...other
+}: Props & TextFieldProps) {
   const [searchName, setSearchName] = React.useState<string | null>(null);
   const { translate } = useLocales();
   const debouncedValue = useDebounce<string>(searchName || '', 500);
@@ -44,9 +49,9 @@ export default function SearchField({ onReturnSearch, isLoading = false, reFetch
   return (
     <React.Fragment>
       <TextField
+        {...other}
         data-cy={'textfield_search'}
         disabled={isLoading}
-        size={'small'}
         value={searchName || ''}
         InputProps={{
           endAdornment: (
@@ -73,7 +78,7 @@ export default function SearchField({ onReturnSearch, isLoading = false, reFetch
             </InputAdornment>
           ),
         }}
-        sx={{ width: '100%', mb: 2 }}
+        // sx={{ width: '100%', mb: 2 }}
         onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyupMsg(e)}
         onChange={(e) => {
           handleChange(e);
