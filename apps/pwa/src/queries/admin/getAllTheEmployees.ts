@@ -1,6 +1,6 @@
 export const getAllTheEmployees = `
 query getAllTheEmployees {
-  user(where: {roles: {user_type_id: {_neq: ADMIN}, _and: {user_type_id: {_neq: CLIENT}}}}) {
+  user(where: {roles: {user_type_id: {_neq: ADMIN}, _and: {user_type_id: {_neq: CLIENT}}}, status: {id: {_neq: "DELETED"}}}) {
     id
     email
     name: employee_name
@@ -10,6 +10,7 @@ query getAllTheEmployees {
     }
   }
 }
+
 `;
 
 export const getOneEmployee = `
