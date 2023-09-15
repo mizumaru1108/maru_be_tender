@@ -800,6 +800,7 @@ export class FusionAuthService {
       }
       return true;
     } catch (err) {
+      console.trace({ err });
       this.logger.error('Fusion Auth Update User Error: ', err);
       return false;
     }

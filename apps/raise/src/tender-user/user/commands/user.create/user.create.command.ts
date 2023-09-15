@@ -108,7 +108,7 @@ export class UserCreateCommandHandler
       // map as a create input
       const status = activate_user
         ? UserStatusEnum.ACTIVE_ACCOUNT
-        : UserStatusEnum.WAITING_FOR_ACTIVATION;
+        : UserStatusEnum.CANCELED_ACCOUNT;
 
       const userCreatePayload: CreateUserProps = {
         id: fusionAuthResult.user.id,
@@ -144,6 +144,15 @@ export class UserCreateCommandHandler
           id: uuidv4(),
           user_id: fusionAuthResult.user.id as string,
           status_id: UserStatusEnum.ACTIVE_ACCOUNT,
+        });
+      }
+
+      if (status === UserStatusEnum.CANCELED_ACCOUNT) {
+        // await this.fusionAuthService.verifyEmail(fusionAuthResult.user.id);
+        statusLogPayload.push({
+          id: uuidv4(),
+          user_id: fusionAuthResult.user.id as string,
+          status_id: UserStatusEnum.CANCELED_ACCOUNT,
         });
       }
 

@@ -20,6 +20,7 @@ import { UserStatusEnum } from '../../types/user_status';
 import { FusionAuthService } from '../../../../libs/fusionauth/services/fusion-auth.service';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { UserEntity } from '../../entities/user.entity';
+import { logUtil } from '../../../../commons/utils/log-util';
 export class UserUpdateCommand {
   dto: UpdateUserDto;
 }
@@ -51,6 +52,8 @@ export class UserUpdateCommandHandler
       });
 
       const isUserExist = await this.userRepo.fetchById({ id });
+      console.log({ command });
+      console.log({ isUserExist });
       if (!isUserExist) throw new NotFoundException('User Not Found!');
       if (!!isUserExist.client_data) {
         throw new BadRequestException(
@@ -97,7 +100,7 @@ export class UserUpdateCommandHandler
         track_id: command.dto.track_id,
       }).build();
 
-      if (!!updateUserPayload.email) {
+      if (command.dto.email && command.dto.email !== isUserExist.email) {
         const emailExist = await this.userRepo.checkExistance(
           '',
           updateUserPayload.email,
@@ -115,13 +118,18 @@ export class UserUpdateCommandHandler
         }
       }
 
-      if (!!updateUserPayload.mobile_number) {
+      if (
+        command.dto.mobile_number &&
+        command.dto.mobile_number !== isUserExist.mobile_number
+      ) {
+        // console.log('new mobile number');
         const phoneExist = await this.userRepo.checkExistance(
-          '',
           updateUserPayload.mobile_number,
+          '',
           '',
           command.dto.id,
         );
+        // console.log(logUtil(phoneExist));
         if (phoneExist.length > 0) {
           throw new ConflictException('Phone already exist in our app!');
         }
@@ -178,6 +186,9 @@ export class UserUpdateCommandHandler
           return {
             updated_user: updatedUser,
           };
+        },
+        {
+          timeout: 50000,
         },
       );
 

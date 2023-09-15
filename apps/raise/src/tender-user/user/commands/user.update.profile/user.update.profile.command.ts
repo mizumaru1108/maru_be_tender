@@ -56,7 +56,10 @@ export class UserUpdateProfileCommandHandler
         mobile_number: command.request.mobile_number,
       };
 
-      if (command.request.email) {
+      if (
+        command.request.email &&
+        command.request.email !== existingUserData.email
+      ) {
         const isEmailExist = await this.userRepo.checkExistance(
           '',
           command.request.email,
@@ -68,7 +71,10 @@ export class UserUpdateProfileCommandHandler
         }
       }
 
-      if (command.request.mobile_number) {
+      if (
+        command.request.mobile_number &&
+        command.request.mobile_number !== existingUserData.mobile_number
+      ) {
         const isNumExist = await this.userRepo.checkExistance(
           command.request.mobile_number,
           '',

@@ -54,6 +54,7 @@ export class AuthLoginCommandHandler
         email,
         license_number,
       );
+      // console.log({ users });
 
       if (users.length === 0) {
         throw new UnauthorizedException('Wrong Credentials!');
