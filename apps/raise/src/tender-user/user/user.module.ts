@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 
 import { Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -11,8 +11,10 @@ import { TenderUserRepository } from './repositories/tender-user.repository';
 import { TenderUserService } from './services/tender-user.service';
 import { UserCreateCommandHandler } from './commands/user.create/user.create.command';
 import { UserUpdateCommandHandler } from './commands/user.update/user.update.command';
+import { UserUpdateProfileCommandHandler } from './commands/user.update.profile/user.update.profile.command';
+import { ClientModule } from '../client/client.module';
 
-const importedModule = [CqrsModule];
+const importedModule = [CqrsModule, forwardRef(() => ClientModule)];
 const controllers = [TenderUserController];
 const repositories: Provider[] = [];
 const commands: Provider[] = [
@@ -22,6 +24,7 @@ const commands: Provider[] = [
   UserUpdateCommandHandler,
   UserUpdateStatusCommandHandler,
   UserSoftDeleteCommandHandler,
+  UserUpdateProfileCommandHandler,
   TenderUserRepository,
   // Role Repository
   TenderUserRoleRepository,

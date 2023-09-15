@@ -56,6 +56,42 @@ export class CreateClientDataProps {
   chairman_mobile?: string | null;
   qid?: number | null;
 }
+export class UpdateClientDataProps {
+  id: string;
+  user_id?: string;
+  entity?: string | null;
+  authority?: string | null;
+  authority_id?: string | null;
+  headquarters?: string | null;
+  date_of_esthablistmen?: Date | null;
+  num_of_beneficiaries?: number | null;
+  num_of_employed_facility?: number | null;
+  governorate?: string | null;
+  governorate_id?: string | null;
+  region?: string | null;
+  region_id?: string | null;
+  entity_mobile?: string | null;
+  center_administration?: string | null;
+  twitter_acount?: string | null;
+  phone?: string | null;
+  website?: string | null;
+  password?: string | null;
+  license_number?: string | null;
+  license_expired?: Date | null;
+  license_issue_date?: Date | null;
+  ceo_mobile?: string | null;
+  ceo_name?: string | null;
+  data_entry_mobile?: string | null;
+  data_entry_name?: string | null;
+  data_entry_mail?: string | null;
+  client_field?: string | null;
+  client_field_id?: string | null;
+  license_file?: any; // json
+  board_ofdec_file?: any; // json
+  chairman_name?: string | null;
+  chairman_mobile?: string | null;
+  qid?: number | null;
+}
 
 export class FindManyNameAndIdProps {
   user_name?: string;
@@ -131,6 +167,61 @@ export class TenderClientRepository {
 
       const clientEntity = Builder<ClientDataEntity>(ClientDataEntity, {
         ...rawCreatedClient,
+      }).build();
+
+      return clientEntity;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async update(props: UpdateClientDataProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      const rawUpdatedClient = await prisma.client_data.update({
+        where: {
+          id: props.id,
+        },
+        data: {
+          user_id: props.user_id,
+          entity: props.entity,
+          authority: props.authority,
+          authority_id: props.authority_id,
+          headquarters: props.headquarters,
+          date_of_esthablistmen: props.date_of_esthablistmen,
+          num_of_beneficiaries: props.num_of_beneficiaries,
+          num_of_employed_facility: props.num_of_employed_facility,
+          governorate: props.governorate,
+          governorate_id: props.governorate_id,
+          region: props.region,
+          region_id: props.region_id,
+          entity_mobile: props.entity_mobile,
+          center_administration: props.center_administration,
+          twitter_acount: props.twitter_acount,
+          phone: props.phone,
+          website: props.website,
+          password: props.password,
+          license_number: props.license_number,
+          license_expired: props.license_expired,
+          license_issue_date: props.license_issue_date,
+          ceo_mobile: props.ceo_mobile,
+          ceo_name: props.ceo_name,
+          data_entry_mobile: props.data_entry_mobile,
+          data_entry_name: props.data_entry_name,
+          data_entry_mail: props.data_entry_mail,
+          client_field: props.client_field,
+          client_field_id: props.client_field_id,
+          license_file: props.license_file, // json
+          board_ofdec_file: props.board_ofdec_file, // json
+          chairman_name: props.chairman_name,
+          chairman_mobile: props.chairman_mobile,
+        },
+      });
+
+      const clientEntity = Builder<ClientDataEntity>(ClientDataEntity, {
+        ...rawUpdatedClient,
       }).build();
 
       return clientEntity;

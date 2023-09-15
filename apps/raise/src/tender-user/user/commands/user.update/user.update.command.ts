@@ -104,7 +104,7 @@ export class UserUpdateCommandHandler
           '',
           command.dto.id,
         );
-        if (emailExist) {
+        if (emailExist.length > 0) {
           if (selectLang === 'en') {
             throw new ConflictException('Email already exist in our app!');
           } else {
@@ -122,7 +122,7 @@ export class UserUpdateCommandHandler
           '',
           command.dto.id,
         );
-        if (phoneExist) {
+        if (phoneExist.length > 0) {
           throw new ConflictException('Phone already exist in our app!');
         }
       }

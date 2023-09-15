@@ -96,7 +96,7 @@ export class TenderUserRepository {
       }
 
       // console.log(logUtil(clause));
-      const result = await this.prismaService.user.findFirst({
+      const result = await this.prismaService.user.findMany({
         where: clause,
         include: {
           client_data: true,
@@ -175,6 +175,9 @@ export class TenderUserRepository {
       let include: Prisma.userInclude = {};
 
       for (const relation of includes_relation) {
+        if (relation === 'client_data') {
+          include = { ...include, client_data: true };
+        }
         if (relation === 'track') {
           include = {
             ...include,

@@ -61,6 +61,10 @@ import {
   UserUpdateCommand,
   UserUpdateCommandResult,
 } from '../commands/user.update/user.update.command';
+import {
+  UserUpdateProfileCommand,
+  UserUpdateProfileCommandResult,
+} from '../commands/user.update.profile/user.update.profile.command';
 @ApiTags('UserModule')
 @Controller('tender-user')
 export class TenderUserController {
@@ -212,15 +216,37 @@ export class TenderUserController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: UpdateProfileDto,
   ): Promise<BaseResponse<any>> {
-    const updateResult = await this.tenderUserService.updateProfile(
-      currentUser,
-      request,
-    );
-    return baseResponseHelper(
-      updateResult,
-      HttpStatus.CREATED,
-      'User updated successfully!',
-    );
+    try {
+      // const updateResult = await this.tenderUserService.updateProfile(
+      //   currentUser,
+      //   request,
+      // );
+      // return baseResponseHelper(
+      //   updateResult,
+      //   HttpStatus.CREATED,
+      //   'User updated successfully!',
+      // );
+      const command = Builder<UserUpdateProfileCommand>(
+        UserUpdateProfileCommand,
+        {
+          currentUser,
+          request,
+        },
+      ).build();
+
+      const { data } = await this.commandBus.execute<
+        UserUpdateProfileCommand,
+        UserUpdateProfileCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        data,
+        HttpStatus.OK,
+        'User updated successfully!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 
   // @UseGuards(TenderJwtGuard, TenderRolesGuard)
