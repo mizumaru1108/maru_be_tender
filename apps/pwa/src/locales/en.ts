@@ -1554,6 +1554,7 @@ const en = {
         title_message: 'Title Message',
         message: 'Message',
         employee_name: 'Employee Name',
+        details: 'Details',
       },
       tableRow: {
         inquiry_type: {

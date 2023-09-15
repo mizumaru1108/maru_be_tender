@@ -1555,6 +1555,7 @@ const ar = {
         title_message: 'عنوان الرسالة',
         message: 'الرسالة',
         employee_name: 'اسم الموظف',
+        details: 'التفاصيل',
       },
       tableRow: {
         inquiry_type: {

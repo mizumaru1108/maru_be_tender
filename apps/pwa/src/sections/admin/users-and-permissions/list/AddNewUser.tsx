@@ -204,7 +204,7 @@ function AddNewUser() {
   const fetchingTracks = React.useCallback(async () => {
     setIsLoading(true);
     try {
-      const rest = await axiosInstance.get(`/tender/track/fetch-all?include_general=0`, {
+      const rest = await axiosInstance.get(`/tender/track/fetch-all?include_general=1`, {
         headers: { 'x-hasura-role': activeRole! },
       });
       // console.log(rest.data.data);

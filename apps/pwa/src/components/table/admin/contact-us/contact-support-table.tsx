@@ -7,7 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Box, Card, Stack, TablePagination, Typography } from '@mui/material';
+import { Box, Card, IconButton, Stack, TablePagination, Typography } from '@mui/material';
 import useLocales from '../../../../hooks/useLocales';
 import useAuth from '../../../../hooks/useAuth';
 import { useSnackbar } from 'notistack';
@@ -18,6 +18,8 @@ import dayjs from 'dayjs';
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
 import { ICustomHeaderCell } from './contact-us';
 import { UserInfoFormProps } from '../../../../@types/register';
+import Iconify from 'components/Iconify';
+import ContactUsDetails from 'components/table/admin/contact-us/details-modal';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -98,13 +100,21 @@ const CustomHeaderCell: ICustomHeaderCell[] = [
     label: 'contact_support.table.headerCell.message',
     align: 'center',
   },
+  {
+    value: 'contact_support.table.headerCell.details',
+    label: 'contact_support.table.headerCell.details',
+    align: 'center',
+    minWidth: 50,
+  },
 ];
 
-interface ContactUsTableData {
+type InquryTypes = 'GENERAL' | 'PROJECT_INQUIRIES' | 'VISITATION';
+
+export interface ContactUsTableData {
   created_at?: Date;
   udpated_at?: Date;
   contact_us_id?: string;
-  inquiry_type?: string;
+  inquiry_type?: InquryTypes;
   title?: string;
   message?: string;
   date_of_visit?: null;
@@ -116,6 +126,7 @@ interface ContactUsTableData {
 }
 
 export default function BaseContactSupportTable() {
+  const [openDetails, setOpenDetails] = React.useState(false);
   const [total, setTotal] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [page, setPage] = React.useState(0);
@@ -125,6 +136,7 @@ export default function BaseContactSupportTable() {
   const [error, setError] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [tableData, setTableData] = React.useState<ContactUsTableData[]>([]);
+  const [selectedData, setSelectedData] = React.useState<ContactUsTableData>();
   // console.log({ page });
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
@@ -175,6 +187,11 @@ export default function BaseContactSupportTable() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRole, enqueueSnackbar, page, rowsPerPage]);
 
+  const handleOpenDetails = (data: ContactUsTableData) => {
+    setSelectedData(data);
+    setOpenDetails(true);
+  };
+
   React.useEffect(() => {
     fetchingData();
   }, [fetchingData]);
@@ -183,18 +200,24 @@ export default function BaseContactSupportTable() {
 
   return (
     <Box>
+      <ContactUsDetails
+        open={openDetails}
+        handleClose={() => setOpenDetails(false)}
+        title={translate('contact_us')}
+        data={selectedData || {}}
+      />
       <Typography variant="h3" gutterBottom sx={{ marginBottom: '50px' }}>
         {translate('contact_us')}
       </Typography>
       <Card sx={{ bgcolor: '#fff' }}>
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ backgroundColor: '#fff' }}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
               <TableRow>
                 {/* <StyledTableCell>{'Id Number'}</StyledTableCell> */}
                 {CustomHeaderCell.map((item, index) => (
                   <StyledTableCell
-                    sx={{ minWidth: 150 }}
+                    sx={{ minWidth: item?.minWidth || 150 }}
                     key={index}
                     align={item.align}
                     data-cy={`${item.label}-${index}`}
@@ -266,6 +289,20 @@ export default function BaseContactSupportTable() {
                           {row?.message ? row?.message : '-'}
                         </Typography>
                       </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <IconButton
+                          onClick={() => {
+                            handleOpenDetails(row);
+                          }}
+                        >
+                          <Iconify
+                            icon={'eva:eye-outline'}
+                            width={32}
+                            height={32}
+                            color="#0E8478"
+                          />
+                        </IconButton>
+                      </StyledTableCell>
                     </StyledTableRow>
                   ))
                 : null}
@@ -281,7 +318,7 @@ export default function BaseContactSupportTable() {
               />
             </Stack>
           ) : null}
-          <Box sx={{ position: 'relative', backgroundColor: '#fff' }}>
+          <Box sx={{ position: 'relative', backgroundColor: '#fff', width: '100%' }}>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"

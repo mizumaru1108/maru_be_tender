@@ -25,6 +25,7 @@ import { generateHeader } from '../../utils/generateProposalNumber';
 import { useSnackbar } from 'notistack';
 import { getProposalCount } from 'redux/slices/proposal';
 import { useSelector } from 'redux/store';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 
 const cardFooterButtonActionLocal = {
   'show-project': 'show_project',
@@ -406,7 +407,11 @@ const ProjectCardBE = ({
               </Typography>
               <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
                 {/* {translate(`project_card.${state.toLowerCase()}`)} */}
-                {track_list.find((track: any) => track.id === track_id)?.name || '-'}
+                {track_list.length > 0 && track_list.find((track: any) => track.id === track_id)
+                  ? formatCapitalizeText(
+                      track_list.find((track: any) => track.id === track_id)?.name || '-'
+                    )
+                  : '-'}
               </Typography>
             </Stack>
           )}
