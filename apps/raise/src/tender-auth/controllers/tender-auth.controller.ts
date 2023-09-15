@@ -83,17 +83,17 @@ export class TenderAuthController {
     return new InternalServerErrorException(error);
   }
 
-  @Post('old/login')
-  async oldLogin(
-    @Body() loginRequest: LoginRequestDto,
-  ): Promise<BaseResponse<TenderLoginResponseDto>> {
-    const createdClient = await this.tenderAuthService.login(loginRequest);
-    return baseResponseHelper(
-      createdClient,
-      HttpStatus.CREATED,
-      'Client has been logged in successfully!',
-    );
-  }
+  // @Post('old/login')
+  // async oldLogin(
+  //   @Body() loginRequest: LoginRequestDto,
+  // ): Promise<BaseResponse<TenderLoginResponseDto>> {
+  //   const createdClient = await this.tenderAuthService.login(loginRequest);
+  //   return baseResponseHelper(
+  //     createdClient,
+  //     HttpStatus.CREATED,
+  //     'Client has been logged in successfully!',
+  //   );
+  // }
 
   @Post('login')
   async login(

@@ -1,4 +1,4 @@
-import { Module, Provider } from '@nestjs/common';
+import { Module, Provider, forwardRef } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UserModule } from '../user/user.module';
 import { TenderClientController } from './controllers/tender-client.controller';
@@ -6,7 +6,7 @@ import { ClientFindNameAndIdQueryHandler } from './queries/client.find.name.and.
 import { TenderClientRepository } from './repositories/tender-client.repository';
 import { TenderClientService } from './services/tender-client.service';
 
-const importedModule = [CqrsModule, UserModule];
+const importedModule = [CqrsModule, forwardRef(() => UserModule)];
 const controllers = [TenderClientController];
 const repositories: Provider[] = [TenderClientRepository];
 const commands: Provider[] = [

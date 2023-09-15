@@ -604,22 +604,41 @@ export class TenderClientService {
         old_banks, // current existing bank_information that will be displayed as bank_information at the old data
         board_ofdec_file,
         license_file,
-        entity_mobile,
+        license_number,
+        data_entry_mobile,
         selectLang,
       } = editRequest;
 
-      if (entity_mobile) {
-        const isNumExist =
-          await this.tenderClientRepository.findClientByMobileNum(
-            entity_mobile,
-          );
-        if (isNumExist) {
+      if (data_entry_mobile) {
+        const isNumExist = await this.tenderUserRepository.checkExistance(
+          data_entry_mobile,
+          '',
+          '',
+          user.id,
+        );
+        if (isNumExist.length > 0) {
           if (selectLang === 'en') {
             throw new BadRequestException('Entity Mobile Already Used/Exist!');
           } else {
             throw new BadRequestException(
               'رقم الجوال  المستخدم وموجود بالفعل!',
             );
+          }
+        }
+      }
+
+      if (license_number) {
+        const isLicenseExist = await this.tenderUserRepository.checkExistance(
+          '',
+          '',
+          license_number,
+          user.id,
+        );
+        if (isLicenseExist.length > 0) {
+          if (selectLang === 'en') {
+            throw new BadRequestException('License Number Already Used/Exist!');
+          } else {
+            throw new BadRequestException('رقم الترخيص مستخدم/موجود بالفعل!');
           }
         }
       }

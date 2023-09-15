@@ -6,6 +6,7 @@ import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
 import { TenderLoginResponseDto } from '../../dtos/responses/tender-login-response.dto';
 import { UserStatusEnum } from '../../../tender-user/user/types/user_status';
+import { logUtil } from '../../../commons/utils/log-util';
 
 export class AuthLoginCommand {
   dto: LoginRequestDto;
@@ -48,16 +49,21 @@ export class AuthLoginCommandHandler
       // console.log({ phone_number });
       // console.log({ email });
 
-      const user = await this.tenderUserRepo.checkExistance(
+      const users = await this.tenderUserRepo.checkExistance(
         phone_number,
         email,
         license_number,
       );
 
-      if (!user) {
+      if (users.length === 0) {
+        throw new UnauthorizedException('Wrong Credentials!');
+      }
+      if (users.length > 1) {
+        console.log('duplicate user', logUtil(users));
         throw new UnauthorizedException('Wrong Credentials!');
       }
 
+      const user = users[0];
       if (
         user.status_id === UserStatusEnum.DELETED ||
         user.status_id === UserStatusEnum.CANCELED_ACCOUNT

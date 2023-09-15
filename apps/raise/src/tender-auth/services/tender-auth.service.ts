@@ -63,60 +63,60 @@ export class TenderAuthService {
     };
   }
 
-  async login(loginRequest: LoginRequestDto): Promise<any> {
-    const { loginId, password } = loginRequest;
-    try {
-      // console.log({ loginId });
-      let license_number = '';
-      let phone_number = '';
-      let email = '';
+  // async login(loginRequest: LoginRequestDto): Promise<any> {
+  //   const { loginId, password } = loginRequest;
+  //   try {
+  //     // console.log({ loginId });
+  //     let license_number = '';
+  //     let phone_number = '';
+  //     let email = '';
 
-      if (/^(\+966|966)/.test(loginId)) {
-        phone_number = loginId;
-      } else if (/^\d+$/.test(loginId) && !/^(?:\+966|966)/.test(loginId)) {
-        license_number = loginId;
-      } else if (/^\S+@\S+\.\S+$/.test(loginId)) {
-        email = loginId;
-      }
+  //     if (/^(\+966|966)/.test(loginId)) {
+  //       phone_number = loginId;
+  //     } else if (/^\d+$/.test(loginId) && !/^(?:\+966|966)/.test(loginId)) {
+  //       license_number = loginId;
+  //     } else if (/^\S+@\S+\.\S+$/.test(loginId)) {
+  //       email = loginId;
+  //     }
 
-      // console.log({ license_number });
-      // console.log({ phone_number });
-      // console.log({ email });
+  //     // console.log({ license_number });
+  //     // console.log({ phone_number });
+  //     // console.log({ email });
 
-      const user = await this.tenderUserRepo.checkExistance(
-        phone_number,
-        email,
-        license_number,
-      );
+  //     const user = await this.tenderUserRepo.checkExistance(
+  //       phone_number,
+  //       email,
+  //       license_number,
+  //     );
 
-      if (!user) {
-        throw new UnauthorizedException('Wrong Credentials!');
-      }
+  //     if (!user) {
+  //       throw new UnauthorizedException('Wrong Credentials!');
+  //     }
 
-      // if user found then do regular login using fusion auth
-      const fusionAuthResponse = await this.fusionAuthService.fusionAuthLogin({
-        loginId: user.email,
-        password,
-      });
+  //     // if user found then do regular login using fusion auth
+  //     const fusionAuthResponse = await this.fusionAuthService.fusionAuthLogin({
+  //       loginId: user.email,
+  //       password,
+  //     });
 
-      if (
-        !fusionAuthResponse.response.user ||
-        !fusionAuthResponse.response.user.id
-      ) {
-        throw new BadRequestException(
-          'Failed to get the user after fusion auth login!',
-        );
-      }
+  //     if (
+  //       !fusionAuthResponse.response.user ||
+  //       !fusionAuthResponse.response.user.id
+  //     ) {
+  //       throw new BadRequestException(
+  //         'Failed to get the user after fusion auth login!',
+  //       );
+  //     }
 
-      return {
-        fusionAuthResponse,
-        user,
-      };
-    } catch (error) {
-      this.logger.error('login error', error);
-      throw error;
-    }
-  }
+  //     return {
+  //       fusionAuthResponse,
+  //       user,
+  //     };
+  //   } catch (error) {
+  //     this.logger.error('login error', error);
+  //     throw error;
+  //   }
+  // }
 
   async sendEmailVerif(email: string, selectLang: 'en' | 'ar') {
     // passwordless login
@@ -129,7 +129,7 @@ export class TenderAuthService {
       const loginResponse =
         await this.fusionAuthService.fusionAuthPasswordlessLogin(loginCode);
 
-      console.log('login response send email verif', loginResponse);
+      // console.log('login response send email verif', loginResponse);
 
       if (!loginResponse.user) {
         throw new BadRequestException('User Data Not Found!');
