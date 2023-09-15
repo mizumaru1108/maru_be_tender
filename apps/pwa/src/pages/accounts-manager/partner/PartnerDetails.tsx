@@ -906,10 +906,11 @@ function AccountPartnerDetails() {
                   </Grid>
                   <Grid item>
                     <Button
+                      disabled
                       variant="contained"
                       color="error"
                       onClick={() => handleChangeStatus(partnerId || '', 'CANCELED_ACCOUNT')}
-                      disabled={dynamicState === 'CANCELED_ACCOUNT' ? true : false}
+                      // disabled={dynamicState === 'CANCELED_ACCOUNT' ? true : false}
                     >
                       {translate('account_manager.partner_details.btn_deleted_account')}
                     </Button>
