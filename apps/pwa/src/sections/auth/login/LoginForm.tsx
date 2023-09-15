@@ -72,7 +72,7 @@ export default function LoginForm() {
       dispatch(setConversation([]));
       dispatch(setMessageGrouped([]));
     } catch (error) {
-      // console.log('cek error: ', { message: error.message });
+      // console.log('cek error: ', { message: error.message, error });
       reset();
       setError('afterSubmit', { message: error.message || translate('login_message_error') });
       // setError('afterSubmit', { ...error, message: translate('login_message_error') });

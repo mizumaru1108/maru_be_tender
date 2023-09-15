@@ -173,9 +173,10 @@ export default function NewLoginForm() {
       // console.log({ err });
       const { error, message } =
         FEATURE_LOGIN_BY_PHONE || FEATURE_LOGIN_BY_LICENSE ? err : err.response.data;
-      const statusCode = err?.response?.data?.statusCode || undefined;
-      // console.log('cek err: ', { err: err });
-      // console.log('test 401', statusCode, statusCode === 401);
+      const statusCode =
+        err?.response?.data?.statusCode || err?.response?.data?.status || undefined;
+      // console.log('cek err: ', { err: err?.response?.data });
+      // console.log('test 401', { statusCode }, statusCode === 401);
       reset();
       if (statusCode === 401 && statusCode !== undefined) {
         setError('afterSubmit', { message: translate('pages.auth.error.wrong_credential') });
