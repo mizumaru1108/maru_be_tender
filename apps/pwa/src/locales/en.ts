@@ -999,6 +999,10 @@ const en = {
       created_at: 'Created at',
       outter_status: 'Outter status',
       no_value: 'All',
+      project_tracks: 'Project tracks',
+      start_project_date: 'Start project date',
+      range_start_date: 'Start date',
+      range_end_date: 'End date',
     },
   },
   commons: {
@@ -2701,6 +2705,9 @@ const en = {
     },
     client: {
       sent_success_contact_support: 'The message has been sent successfully',
+    },
+    admin: {
+      duplicate_mobile_number: 'Mobile number already exist',
     },
     auth: {
       register: {

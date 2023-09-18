@@ -76,9 +76,9 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
     region: Yup.string().required('Region name required'),
     governorate: Yup.string().required('City name required'),
     // center_administration: Yup.string().required('Center is required'),
-    phone: Yup.string()
-      .required(translate('errors.register.phone.required'))
-      .test('len', translate('errors.register.phone.length'), (val) => {
+    entity_mobile: Yup.string()
+      .required(translate('errors.register.entity_mobile.required'))
+      .test('len', translate('errors.register.entity_mobile.length'), (val) => {
         if (val === undefined) {
           return true;
         }

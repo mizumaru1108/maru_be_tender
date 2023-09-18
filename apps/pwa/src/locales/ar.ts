@@ -1007,6 +1007,10 @@ const ar = {
       created_at: 'أنشئ في',
       outter_status: 'الحالة',
       no_value: 'الجميع',
+      project_tracks: 'مسارات المشروع',
+      start_project_date: 'تاريخ بدء المشروع',
+      range_start_date: 'تاريخ بدء المشروع',
+      range_end_date: 'تاريخ نهاية المشروع',
     },
   },
   commons: {
@@ -2714,6 +2718,9 @@ const ar = {
     },
     client: {
       sent_success_contact_support: 'تم إرسال الرسالة بنجاح',
+    },
+    admin: {
+      duplicate_mobile_number: 'الهاتف موجود بالفعل في التطبيق لدينا',
     },
     auth: {
       register: {

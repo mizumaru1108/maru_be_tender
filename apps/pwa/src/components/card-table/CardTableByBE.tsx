@@ -4,7 +4,9 @@ import SearchDateField from 'components/sorting/date-filter';
 import SearchField from 'components/sorting/searchField';
 import SortingCardTable from 'components/sorting/sorting';
 import SortingProjectStatusCardTable from 'components/sorting/sorting-project-status';
+import SortingProjectTrackCardTable from 'components/sorting/sorting-project-track';
 import SvgIconStyle from 'components/SvgIconStyle';
+import dayjs from 'dayjs';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
@@ -36,8 +38,8 @@ CardTablePropsByBE) {
   const navigate = useNavigate();
 
   // redux
-  const { loadingProps } = useSelector((state) => state.proposal);
-
+  const { loadingProps, track_list } = useSelector((state) => state.proposal);
+  // console.log({ track_list });
   // loading state when fetching
   const [isLoading, setIsLoading] = React.useState(false);
   // cards Data state
@@ -50,8 +52,14 @@ CardTablePropsByBE) {
   const [searchName, setSearchName] = useState('');
   const [clientName, setClientName] = useState('');
   const [startDate, setStartDate] = useState('');
+  const [sortingRangedDate, setSortingRangedDate] = useState({
+    startDate: '',
+    endDate: '',
+    filter: '',
+  });
   const [sortingFilter, setSortingFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [trackFilter, setTrackFilter] = useState('');
   // const [filterSorting, setFilterSorting] = useState('');
   const tmpTypeRequest = `&type=${typeRequest}`;
   const endPointOrigin = `${endPoint}?limit=${limit}&page=${page}${addCustomFilter || ''}${
@@ -63,7 +71,7 @@ CardTablePropsByBE) {
     const url = endPointOrigin;
     try {
       const rest = await axiosInstance.get(
-        `${url}${sortingFilter}${searchName}${statusFilter}${clientName}${startDate}`,
+        `${url}${sortingFilter}${searchName}${statusFilter}${clientName}${startDate}${trackFilter}${sortingRangedDate.filter}`,
         {
           headers: { 'x-hasura-role': activeRole! },
         }
@@ -127,6 +135,8 @@ CardTablePropsByBE) {
     statusFilter,
     clientName,
     startDate,
+    trackFilter,
+    sortingRangedDate.filter,
   ]);
 
   const handleLimitChange = (event: any) => {
@@ -136,6 +146,16 @@ CardTablePropsByBE) {
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
+
+  const changeHandleRangeDate = (event: string, type: 'start' | 'end') => {
+    if (type === 'start') {
+      setSortingRangedDate({ ...sortingRangedDate, startDate: event, endDate: '' });
+    } else {
+      const filter = `&range_start_date=${sortingRangedDate.startDate}&range_end_date=${event}`;
+      setSortingRangedDate({ ...sortingRangedDate, endDate: event, filter: filter });
+    }
+  };
+  console.log({ sortingRangedDate });
 
   React.useEffect(() => {
     dispatch(getTrackList(1, activeRole! as string));
@@ -187,6 +207,20 @@ CardTablePropsByBE) {
 
           {destination === 'previous-funding-requests' ? (
             <>
+              {activeRole !== 'tender_project_manager' &&
+              activeRole !== 'tender_project_supervisor' &&
+              activeRole !== 'tender_cashier' &&
+              activeRole !== 'tender_finance' ? (
+                <Grid item md={2} xs={6}>
+                  <SortingProjectTrackCardTable
+                    isLoading={isLoading}
+                    onChangeSorting={(event: string) => {
+                      setPage(1);
+                      setTrackFilter(event);
+                    }}
+                  />
+                </Grid>
+              ) : null}
               <Grid item md={2} xs={6}>
                 <SortingProjectStatusCardTable
                   isLoading={isLoading}
@@ -199,7 +233,9 @@ CardTablePropsByBE) {
               <Grid item md={2} xs={6}>
                 <SearchDateField
                   fullWidth
-                  isLoading={isLoading}
+                  disabled={isLoading}
+                  label={translate('sorting.label.start_project_date')}
+                  focused={true}
                   onReturnDate={(event: string) => {
                     setPage(1);
                     if (event && event !== '') {
@@ -248,6 +284,70 @@ CardTablePropsByBE) {
                 {translate('view_all')}
               </Button>
             </Grid>
+          ) : null}
+        </Grid>
+      </Grid>
+      <Grid item md={12} xs={12}>
+        <Grid container spacing={2} justifyContent="flex-end">
+          {destination === 'previous-funding-requests' ? (
+            <>
+              {activeRole !== 'tender_project_manager' &&
+              activeRole !== 'tender_project_supervisor' &&
+              activeRole !== 'tender_cashier' &&
+              activeRole !== 'tender_finance' ? (
+                <>
+                  <Grid item md={2} xs={6}>
+                    <SearchDateField
+                      fullWidth
+                      disabled={isLoading}
+                      label={translate('sorting.label.range_start_date')}
+                      focused={true}
+                      onReturnDate={(event: string) => {
+                        setPage(1);
+                        if (event && event !== '') {
+                          changeHandleRangeDate(`${event}`, 'start');
+                        } else {
+                          changeHandleRangeDate('', 'start');
+                        }
+                      }}
+                    />
+                  </Grid>
+                  <Grid item md={2} xs={6}>
+                    <SearchDateField
+                      fullWidth
+                      focused={true}
+                      disabled={
+                        sortingRangedDate.startDate === '' ||
+                        sortingRangedDate.startDate === null ||
+                        isLoading
+                      }
+                      label={
+                        sortingRangedDate.startDate === '' || sortingRangedDate.startDate === null
+                          ? null
+                          : translate('sorting.label.range_end_date')
+                      }
+                      value={sortingRangedDate.endDate}
+                      minDate={
+                        sortingRangedDate.startDate
+                          ? dayjs(sortingRangedDate.startDate)
+                              .add(1, 'day')
+                              .toISOString()
+                              .split('T')[0]
+                          : ''
+                      }
+                      onReturnDate={(event: string) => {
+                        setPage(1);
+                        if (event && event !== '') {
+                          changeHandleRangeDate(`${event}`, 'end');
+                        } else {
+                          changeHandleRangeDate('', 'end');
+                        }
+                      }}
+                    />
+                  </Grid>
+                </>
+              ) : null}
+            </>
           ) : null}
         </Grid>
       </Grid>

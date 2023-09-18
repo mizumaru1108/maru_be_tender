@@ -171,17 +171,23 @@ export default function NewLoginForm() {
       dispatch(setMessageGrouped([]));
     } catch (err) {
       // console.log({ err });
-      const { error, message } =
-        FEATURE_LOGIN_BY_PHONE || FEATURE_LOGIN_BY_LICENSE ? err : err.response.data;
+      // const { error, message } =
+      //   FEATURE_LOGIN_BY_PHONE || FEATURE_LOGIN_BY_LICENSE ? err : err.response.data;
       const statusCode =
-        err?.response?.data?.statusCode || err?.response?.data?.status || undefined;
+        err?.response?.data?.statusCode ||
+        err?.response?.data?.status ||
+        err?.response?.statusCode ||
+        err?.status ||
+        undefined;
+      const tmpMessage =
+        err?.response?.data?.message || err?.response?.message || err?.message || undefined;
       // console.log('cek err: ', { err: err?.response?.data });
       // console.log('test 401', { statusCode }, statusCode === 401);
       reset();
       if (statusCode === 401 && statusCode !== undefined) {
         setError('afterSubmit', { message: translate('pages.auth.error.wrong_credential') });
       } else {
-        setError('afterSubmit', { message: message || translate('login_message_error') });
+        setError('afterSubmit', { message: tmpMessage || translate('login_message_error') });
       }
       // setError('afterSubmit', { ...error, message: translate('login_message_error') });
     }

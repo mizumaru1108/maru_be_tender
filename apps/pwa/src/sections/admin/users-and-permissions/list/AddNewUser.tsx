@@ -159,8 +159,12 @@ function AddNewUser() {
       setOpenSnackBar({ open: true, message: 'تم إنشاء الحساب', severity: 'success' });
       navigate('/admin/dashboard/users-and-permissions');
     } catch (error) {
+      let message: string | undefined = undefined;
+      if ((error?.statusCode && error?.statusCode === 409) || error?.error === 'conflict') {
+        message = translate('snackbar.admin.duplicate_mobile_number');
+      }
       setIsLoading(false);
-      setOpenSnackBar({ open: true, message: error.message, severity: 'error' });
+      setOpenSnackBar({ open: true, message: message || error?.message, severity: 'error' });
     }
   };
 
@@ -189,8 +193,12 @@ function AddNewUser() {
       setOpenSnackBar({ open: true, message: 'تم إنشاء الحساب', severity: 'success' });
       navigate('/admin/dashboard/users-and-permissions');
     } catch (error) {
+      let message: string | undefined = undefined;
+      if ((error?.statusCode && error?.statusCode === 409) || error?.error === 'conflict') {
+        message = translate('snackbar.admin.duplicate_mobile_number');
+      }
       setIsLoading(false);
-      setOpenSnackBar({ open: true, message: error.message, severity: 'error' });
+      setOpenSnackBar({ open: true, message: message || error?.message, severity: 'error' });
     }
   };
 

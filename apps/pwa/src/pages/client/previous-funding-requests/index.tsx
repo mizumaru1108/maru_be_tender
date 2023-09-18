@@ -7,8 +7,8 @@ import useLocales from '../../../hooks/useLocales';
 function PreviousFundingRequests() {
   const { translate } = useLocales();
   const ContentStyle = styled('div')(({ theme }) => ({
-    maxWidth: '100vw',
-    maxHeight: '100vh',
+    maxWidth: '100%',
+    minHeight: '100vh',
     display: 'flex',
     justifyContent: 'start',
     flexDirection: 'column',
