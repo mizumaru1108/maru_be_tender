@@ -1,4 +1,8 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { FusionAuthService } from '../../../../libs/fusionauth/services/fusion-auth.service';
 import { PrismaService } from '../../../../prisma/prisma.service';
@@ -36,10 +40,11 @@ export class UserUpdateProfileCommandHandler
     command: UserUpdateProfileCommand,
   ): Promise<UserUpdateProfileCommandResult> {
     try {
-      const existingUserData = await this.userRepo.fetchById({
+      const existingUserData = await this.userRepo.findFirst({
         id: command.currentUser.id,
         includes_relation: ['client_data'],
       });
+      // console.log({ existingUserData });
       if (!existingUserData) throw new NotFoundException("User doesn't exist!");
 
       const valid = await this.fusionAuthService.login(
@@ -91,15 +96,23 @@ export class UserUpdateProfileCommandHandler
           session instanceof PrismaService ? session : this.prismaService;
 
         if (command.currentUser.choosenRole === 'tender_client') {
+          // console.log(existingUserData.client_data);
+          if (!existingUserData.client_data) {
+            throw new UnprocessableEntityException(
+              `Unable to fetch client data!`,
+            );
+          }
           const clientId = existingUserData.client_data!.id!;
 
-          await this.clientRepo.update(
-            {
-              id: clientId,
-              data_entry_mobile: command.request.mobile_number,
-            },
-            tx,
-          );
+          if (command.request.mobile_number) {
+            await this.clientRepo.update(
+              {
+                id: clientId,
+                data_entry_mobile: command.request.mobile_number,
+              },
+              tx,
+            );
+          }
         }
 
         const updatedUser = await this.userRepo.update(updateUserPayload, tx);

@@ -8,6 +8,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  UnauthorizedException,
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
@@ -58,6 +59,9 @@ export class TenderAuthController {
       error instanceof EmailAlreadyVerifiedException
     ) {
       return new ConflictException(error.message);
+    }
+    if (error instanceof UnauthorizedException) {
+      return new UnauthorizedException(error.message);
     }
     if (
       error instanceof FusionAuthRegisterError ||

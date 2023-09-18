@@ -12,6 +12,7 @@ import {
   Patch,
   Post,
   Query,
+  UnauthorizedException,
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
@@ -31,7 +32,6 @@ import {
   UpdateUserDto,
   UserStatusUpdateDto,
 } from '../dtos/requests';
-import { CreateUserResponseDto } from '../dtos/responses/create-user-response.dto';
 import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 
 import { CommandBus } from '@nestjs/cqrs';
@@ -44,27 +44,27 @@ import { PayloadErrorException } from '../../../tender-commons/exceptions/payloa
 import { BasePrismaErrorException } from '../../../tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { RequestErrorException } from '../../../tender-commons/exceptions/request-error.exception';
 import {
-  UserSoftDeleteCommand,
-  UserSoftDeleteCommandResult,
-} from '../commands/user.soft.delete/user.soft.delete.command';
-import {
-  UserUpdateStatusCommand,
-  UserUpdateStatusCommandResult,
-} from '../commands/user.update.status/user.update.status.command';
-import { TenderCurrentUser } from '../interfaces/current-user.interface';
-import { TenderUserService } from '../services/tender-user.service';
-import {
   UserCreateCommand,
   UserCreateCommandResult,
 } from '../commands/user.create/user.create.command';
 import {
-  UserUpdateCommand,
-  UserUpdateCommandResult,
-} from '../commands/user.update/user.update.command';
+  UserSoftDeleteCommand,
+  UserSoftDeleteCommandResult,
+} from '../commands/user.soft.delete/user.soft.delete.command';
 import {
   UserUpdateProfileCommand,
   UserUpdateProfileCommandResult,
 } from '../commands/user.update.profile/user.update.profile.command';
+import {
+  UserUpdateStatusCommand,
+  UserUpdateStatusCommandResult,
+} from '../commands/user.update.status/user.update.status.command';
+import {
+  UserUpdateCommand,
+  UserUpdateCommandResult,
+} from '../commands/user.update/user.update.command';
+import { TenderCurrentUser } from '../interfaces/current-user.interface';
+import { TenderUserService } from '../services/tender-user.service';
 @ApiTags('UserModule')
 @Controller('tender-user')
 export class TenderUserController {
@@ -94,6 +94,9 @@ export class TenderUserController {
     }
     if (error instanceof ConflictException) {
       throw new ConflictException(error.message);
+    }
+    if (error instanceof UnauthorizedException) {
+      throw new UnauthorizedException(error.message);
     }
 
     if (error instanceof BasePrismaErrorException) {

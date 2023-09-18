@@ -34,7 +34,7 @@ export class UpdateUserProps {
   is_deleted?: boolean;
 }
 
-export class FetchByIdProps {
+export class UserFindFirstProps {
   id: string;
   includes_relation?: string[];
 }
@@ -162,8 +162,8 @@ export class TenderUserRepository {
     }
   }
 
-  async fetchByIdFilter(
-    props: FetchByIdProps,
+  async findFirstFilter(
+    props: UserFindFirstProps,
   ): Promise<Prisma.userFindFirstArgs> {
     const { includes_relation } = props;
 
@@ -192,15 +192,17 @@ export class TenderUserRepository {
     return findByIdFilter;
   }
 
-  async fetchById(
-    props: FetchByIdProps,
+  async findFirst(
+    props: UserFindFirstProps,
     session?: PrismaService,
   ): Promise<UserEntity | null> {
     let prisma = this.prismaService;
     if (session) prisma = session;
     try {
-      const rawRes = await prisma.user.findUnique({
-        where: { id: props.id },
+      const args = await this.findFirstFilter(props);
+      const rawRes = await prisma.user.findFirst({
+        where: args.where,
+        include: args.include,
       });
 
       const foundedEntity = Builder<UserEntity>(UserEntity, {

@@ -63,7 +63,7 @@ export class QaProposalCreateNewSupervisorCommandHandler
           }
 
           if (supervisor_id) {
-            const fetchedSupervisor = await this.userRepo.fetchById(
+            const fetchedSupervisor = await this.userRepo.findFirst(
               {
                 id: supervisor_id,
                 includes_relation: ['track'],
