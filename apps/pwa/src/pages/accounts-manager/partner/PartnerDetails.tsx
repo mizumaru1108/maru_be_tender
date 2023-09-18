@@ -889,7 +889,8 @@ function AccountPartnerDetails() {
                         onClick={() => handleChangeStatus(partnerDetails?.id!, 'SUSPENDED_ACCOUNT')}
                         variant="contained"
                         color="warning"
-                        disabled={isSubmitting}
+                        // disabled={isSubmitting}
+                        disabled
                       >
                         {translate('account_manager.partner_details.btn_disabled_account')}
                       </Button>
@@ -906,11 +907,11 @@ function AccountPartnerDetails() {
                   </Grid>
                   <Grid item>
                     <Button
-                      disabled
+                      // disabled
                       variant="contained"
                       color="error"
                       onClick={() => handleChangeStatus(partnerId || '', 'CANCELED_ACCOUNT')}
-                      // disabled={dynamicState === 'CANCELED_ACCOUNT' ? true : false}
+                      disabled={dynamicState === 'CANCELED_ACCOUNT' ? true : false}
                     >
                       {translate('account_manager.partner_details.btn_deleted_account')}
                     </Button>
