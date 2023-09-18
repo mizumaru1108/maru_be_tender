@@ -2090,11 +2090,28 @@ export class ProposalRepository {
       if (range_start_date) {
         whereClause = {
           ...whereClause,
+          created_at: {
+            gte: range_start_date,
+          },
         };
       }
+
       if (range_end_date) {
         whereClause = {
           ...whereClause,
+          created_at: {
+            lte: range_end_date,
+          },
+        };
+      }
+
+      if (range_start_date && range_end_date) {
+        whereClause = {
+          ...whereClause,
+          created_at: {
+            gte: range_start_date,
+            lte: range_end_date,
+          },
         };
       }
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
@@ -2140,6 +2157,13 @@ export class ProposalRepository {
             whereClause = {
               ...whereClause,
               OR: [{ track_id: reviewer.track.id }, { track_id: null }],
+            };
+          }
+        } else {
+          if (track_id) {
+            whereClause = {
+              ...whereClause,
+              track_id,
             };
           }
         }
