@@ -211,7 +211,11 @@ export class ProposalFollowUpCreateCommandHandler
           const tmpFile: UploadFilesJsonbDto = {
             ...uploadRes,
           };
-          if (createFollowUpPayload.attachments.length > 0) {
+          if (
+            createFollowUpPayload &&
+            createFollowUpPayload.attachments &&
+            createFollowUpPayload.attachments.length > 0
+          ) {
             createFollowUpPayload.attachments.push({
               ...tmpFile,
             });
