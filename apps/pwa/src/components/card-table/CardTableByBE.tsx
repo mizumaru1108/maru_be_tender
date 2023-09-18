@@ -6,6 +6,7 @@ import SortingCardTable from 'components/sorting/sorting';
 import SortingProjectStatusCardTable from 'components/sorting/sorting-project-status';
 import SortingProjectTrackCardTable from 'components/sorting/sorting-project-track';
 import SvgIconStyle from 'components/SvgIconStyle';
+import { FEATURE_PREVIOUS_PROPOSAL_FILTER } from 'config';
 import dayjs from 'dayjs';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
@@ -291,10 +292,7 @@ CardTablePropsByBE) {
         <Grid container spacing={2} justifyContent="flex-end">
           {destination === 'previous-funding-requests' ? (
             <>
-              {activeRole !== 'tender_project_manager' &&
-              activeRole !== 'tender_project_supervisor' &&
-              activeRole !== 'tender_cashier' &&
-              activeRole !== 'tender_finance' ? (
+              {FEATURE_PREVIOUS_PROPOSAL_FILTER ? (
                 <>
                   <Grid item md={2} xs={6}>
                     <SearchDateField

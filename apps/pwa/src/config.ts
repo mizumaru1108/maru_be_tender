@@ -327,3 +327,8 @@ export const MENU_ADMIN_PORTAL_REPORTS: boolean =
   process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_PORTAL_REPORTS === 'true'
     ? true
     : false;
+export const FEATURE_PREVIOUS_PROPOSAL_FILTER: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_PREVIOUS_PROPOSAL_FILTER &&
+  process.env.REACT_APP_CONFIG_FEATURE_PREVIOUS_PROPOSAL_FILTER === 'true'
+    ? true
+    : false;
