@@ -2039,6 +2039,9 @@ export class ProposalRepository {
         start_date,
         outter_status,
         project_name,
+        range_end_date,
+        range_start_date,
+        track_id,
       } = filter;
 
       const offset = (page - 1) * limit;
@@ -2084,6 +2087,16 @@ export class ProposalRepository {
         };
       }
 
+      if (range_start_date) {
+        whereClause = {
+          ...whereClause,
+        };
+      }
+      if (range_end_date) {
+        whereClause = {
+          ...whereClause,
+        };
+      }
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
       const field =
         sorting_field as keyof Prisma.proposalOrderByWithRelationInput;

@@ -30,8 +30,28 @@ export class PreviousProposalFilterRequest extends BaseFilterRequest {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  track_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsDate()
   @IsNotEmpty()
   @Type(() => Date)
-  start_date?: string;
+  start_date?: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDate()
+  @IsNotEmpty()
+  @Type(() => Date)
+  range_start_date?: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDate()
+  @IsNotEmpty()
+  @Type(() => Date)
+  range_end_date?: Date;
 }

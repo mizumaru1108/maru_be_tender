@@ -1,4 +1,8 @@
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LoginRequestDto } from '../../../auth/dtos';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
@@ -59,9 +63,23 @@ export class AuthLoginCommandHandler
       if (users.length === 0) {
         throw new UnauthorizedException('Wrong Credentials!');
       }
+
       if (users.length > 1) {
-        console.log('duplicate user', logUtil(users));
-        throw new UnauthorizedException('Wrong Credentials!');
+        // console.log('duplicate user', logUtil(users));
+        // throw new UnauthorizedException('Wrong Credentials!');
+        if (license_number !== '') {
+          // you cannot log in using the license number cause have a duplicate with another account
+          throw new ConflictException(
+            `لا يمكنك تسجيل الدخول باستخدام رقم الترخيص لأن لديك نسخة مكررة بحساب آخر`,
+          );
+        }
+
+        if (phone_number !== '') {
+          // you cannot log in using the phone number cause have a duplicate with another account
+          throw new ConflictException(
+            `لا يمكنك تسجيل الدخول باستخدام رقم الهاتف لأن لديك نسخة مكررة بحساب آخر`,
+          );
+        }
       }
 
       const user = users[0];
