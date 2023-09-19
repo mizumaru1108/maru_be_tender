@@ -440,10 +440,50 @@ export class TenderUserRepository {
     }
 
     if (account_status) {
+      const status = decodeURIComponent(account_status);
+      if (status && status.includes('بانتظار التفعيل')) {
+        query = {
+          ...query,
+          status_id: { in: ['REVISED_ACCOUNT', 'WAITING_FOR_ACTIVATION'] },
+        };
+      }
+      if (status && status.includes('الحساب موقوف')) {
+        query = {
+          ...query,
+          status_id: {
+            in: ['SUSPENDED_ACCOUNT'],
+          },
+        };
+      }
+      if (status && status.includes('حساب ملغى')) {
+        query = {
+          ...query,
+          status_id: {
+            in: ['CANCELED_ACCOUNT'],
+          },
+        };
+      }
+      if (status && status.includes('حساب مفعل')) {
+        query = {
+          ...query,
+          status_id: {
+            in: ['ACTIVE_ACCOUNT'],
+          },
+        };
+      }
+      if (status && status.includes('الحساب المحذوف')) {
+        query = {
+          ...query,
+          status_id: {
+            in: ['DELETED'],
+          },
+        };
+      }
+
       query = {
         ...query,
         status_id: {
-          contains: account_status,
+          contains: status,
           mode: 'insensitive',
         },
       };
@@ -618,8 +658,8 @@ export class TenderUserRepository {
     }
 
     try {
-      console.log(logUtil(query));
-      this.logger.debug(`applied filter: ${logUtil(query)}`);
+      // console.log(logUtil(query));
+      // this.logger.debug(`applied filter: ${logUtil(query)}`);
       const users: FindUserResponse['data'] =
         await this.prismaService.user.findMany({
           where: {

@@ -119,6 +119,7 @@ export class TrackRepository {
         track_name,
         page = 1,
         limit = 10,
+        is_deleted,
       } = filter;
       const offset = (page - 1) * limit;
 
@@ -140,6 +141,20 @@ export class TrackRepository {
           name: {
             notIn: ['GENERAL'],
           },
+        };
+      }
+
+      if (is_deleted === '1') {
+        whereClause = {
+          ...whereClause,
+          is_deleted: true,
+        };
+      }
+
+      if (is_deleted === '0') {
+        whereClause = {
+          ...whereClause,
+          is_deleted: false,
         };
       }
 

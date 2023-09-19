@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsIn } from 'class-validator';
 import { BaseFilterRequest } from '../../../../commons/dtos/base-filter-request.dto';
 
 export class FetchTrackFilterRequest extends BaseFilterRequest {
@@ -12,4 +12,10 @@ export class FetchTrackFilterRequest extends BaseFilterRequest {
   @IsOptional()
   @IsString()
   include_general?: '1' | '0';
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsIn(['1', '0'])
+  is_deleted?: '1' | '0';
 }
