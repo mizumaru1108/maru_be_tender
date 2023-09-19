@@ -31,9 +31,21 @@ import { PrismaTransactionExpiredException } from '../../tender-commons/exceptio
 import { CreateUserResponseDto } from '../../tender-user/user/dtos/responses/create-user-response.dto';
 import { EmailAlreadyVerifiedException } from '../../tender-user/user/exceptions/email-already-verified.exception';
 import { UserAlreadyExistException } from '../../tender-user/user/exceptions/user-already-exist-exception.exception';
+import {
+  AskForgotPasswordUrlCommand,
+  AskForgotPasswordUrlCommandResult,
+} from '../commands/ask-forgot-password-url/ask.forgot.password.url.command';
 import { AuthLoginCommand } from '../commands/login/auth.login.command';
 import { RegisterClientCommand } from '../commands/register/register.command';
+import {
+  ResetPasswordRequestCommand,
+  ResetPasswordRequestCommandResult,
+} from '../commands/reset-password-request/reset.password.request.command';
 import { SendEmailVerificationClassCommand } from '../commands/send.email.verification/send.email.verification.command';
+import {
+  SubmitChangePasswordCommand,
+  SubmitChangePasswordCommandResult,
+} from '../commands/submit-change-password/submit.change.password.command';
 import { VerifyEmailCommand } from '../commands/verify.email/verify.email.command';
 import { TenderRoles } from '../decorators/tender-roles.decorator';
 import { ForgotPasswordRequestDto } from '../dtos/requests/forgot-password-request.dto';
@@ -44,14 +56,10 @@ import { TenderLoginResponseDto } from '../dtos/responses/tender-login-response.
 import { TokenExpiredException } from '../exceptions/token-expire.exception';
 import { TenderJwtGuard } from '../guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../guards/tender-roles.guard';
-import { TenderAuthService } from '../services/tender-auth.service';
 @ApiTags('AuthModule')
 @Controller('tender-auth')
 export class TenderAuthController {
-  constructor(
-    private readonly tenderAuthService: TenderAuthService,
-    private readonly commandBus: CommandBus,
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   errorMapper(error: any) {
     if (
@@ -86,18 +94,6 @@ export class TenderAuthController {
     }
     return new InternalServerErrorException(error);
   }
-
-  // @Post('old/login')
-  // async oldLogin(
-  //   @Body() loginRequest: LoginRequestDto,
-  // ): Promise<BaseResponse<TenderLoginResponseDto>> {
-  //   const createdClient = await this.tenderAuthService.login(loginRequest);
-  //   return baseResponseHelper(
-  //     createdClient,
-  //     HttpStatus.CREATED,
-  //     'Client has been logged in successfully!',
-  //   );
-  // }
 
   @Post('login')
   async login(
@@ -166,21 +162,6 @@ export class TenderAuthController {
     }
   }
 
-  // DEPRECATED
-  @Post('register')
-  async register(
-    @Body() registerRequest: RegisterTenderDto,
-  ): Promise<BaseResponse<CreateUserResponseDto>> {
-    const createdClient = await this.tenderAuthService.register(
-      registerRequest,
-    );
-    return baseResponseHelper(
-      createdClient,
-      HttpStatus.CREATED,
-      'Client has been registered successfully!',
-    );
-  }
-
   @Post('register-client')
   async registerClient(
     @Body() registerRequest: RegisterTenderDto,
@@ -210,17 +191,30 @@ export class TenderAuthController {
   @Post('reset-password-request')
   async resetPasswordRequest(
     @Body() request: ForgotPasswordRequestDto,
-  ): Promise<BaseResponse<any>> {
-    const createdClient = await this.tenderAuthService.changePasswordRequest(
-      request.email,
-      false,
-      request.selectLang,
-    );
-    return baseResponseHelper(
-      createdClient,
-      HttpStatus.CREATED,
-      'Forgot password already submitted!',
-    );
+  ): Promise<BaseResponse<string>> {
+    try {
+      const command = Builder<ResetPasswordRequestCommand>(
+        ResetPasswordRequestCommand,
+        {
+          email: request.email,
+          forgotPassword: false,
+          selected_language: request.selectLang,
+        },
+      ).build();
+
+      const { data } = await this.commandBus.execute<
+        ResetPasswordRequestCommand,
+        ResetPasswordRequestCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        data,
+        HttpStatus.CREATED,
+        'Reset password already submitted!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
@@ -229,41 +223,80 @@ export class TenderAuthController {
   async askForgotPasswordUrl(
     @Body() request: ForgotPasswordRequestDto,
   ): Promise<BaseResponse<string>> {
-    const url = await this.tenderAuthService.askForgotPasswordUrl(
-      request.email,
-    );
-    return baseResponseHelper(
-      url,
-      HttpStatus.CREATED,
-      'Forgot password url already asked!',
-    );
+    try {
+      const command = Builder<AskForgotPasswordUrlCommand>(
+        AskForgotPasswordUrlCommand,
+        {
+          email: request.email,
+        },
+      ).build();
+
+      const { data } = await this.commandBus.execute<
+        AskForgotPasswordUrlCommand,
+        AskForgotPasswordUrlCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        data,
+        HttpStatus.CREATED,
+        'Forgot password url already asked!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 
   @Post('forgot-password-request')
   async forgotPasswordRequest(
     @Body() request: ForgotPasswordRequestDto,
-  ): Promise<BaseResponse<any>> {
-    const createdClient = await this.tenderAuthService.changePasswordRequest(
-      request.email,
-      true,
-      request.selectLang,
-    );
-    return baseResponseHelper(
-      createdClient,
-      HttpStatus.CREATED,
-      'Forgot password already submitted!',
-    );
+  ): Promise<BaseResponse<string>> {
+    try {
+      const command = Builder<ResetPasswordRequestCommand>(
+        ResetPasswordRequestCommand,
+        {
+          email: request.email,
+          forgotPassword: true,
+          selected_language: request.selectLang,
+        },
+      ).build();
+
+      const { data } = await this.commandBus.execute<
+        ResetPasswordRequestCommand,
+        ResetPasswordRequestCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        data,
+        HttpStatus.CREATED,
+        'Forgot password already submitted!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 
   @Post('submit-change-password')
   async submitForgotPassword(
     @Body() request: SubmitChangePasswordDto,
   ): Promise<BaseResponse<string>> {
-    await this.tenderAuthService.submitChangePassword(request);
-    return baseResponseHelper(
-      'Password Changed Successfully!',
-      HttpStatus.CREATED,
-      'Client password successfully changed!',
-    );
+    try {
+      const command = Builder<SubmitChangePasswordCommand>(
+        SubmitChangePasswordCommand,
+        { request },
+      ).build();
+
+      const { data } = await this.commandBus.execute<
+        SubmitChangePasswordCommand,
+        SubmitChangePasswordCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        data,
+        HttpStatus.CREATED,
+        'Client password successfully changed!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 }
