@@ -382,7 +382,7 @@ CardTablePropsByBE) {
                 '& span.MuiBox-root': { height: 160 },
               }}
             />
-          ) : (
+          ) : destination === 'current-project' ? (
             <>
               <Typography variant="h4">
                 {translate('content.client.main_page.current_projects')}
@@ -419,6 +419,13 @@ CardTablePropsByBE) {
                 </Box>
               </Grid>
             </>
+          ) : (
+            <EmptyContent
+              title="لا يوجد بيانات"
+              sx={{
+                '& span.MuiBox-root': { height: 160 },
+              }}
+            />
           )}
         </Grid>
       )}

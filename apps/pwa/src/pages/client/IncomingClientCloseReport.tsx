@@ -2,12 +2,10 @@
 import { Container, styled } from '@mui/material';
 // components
 import Page from 'components/Page';
-import CardTableBE from 'components/card-table/CardTableBE';
 // hooks
 import useAuth from 'hooks/useAuth';
 import useLocales from '../../hooks/useLocales';
 // query
-import { gettingClosingReportProposals } from 'queries/client/gettingClosingReportProposals';
 import CardTableByBE from 'components/card-table/CardTableByBE';
 
 function IncomingCloseReports() {
