@@ -27,7 +27,7 @@ import useAuth from 'hooks/useAuth';
 import { role_url_map } from '../../../@types/commons';
 import useLocales from '../../../hooks/useLocales';
 import { useDispatch, useSelector } from 'redux/store';
-import { setSort, setFiltered } from 'redux/slices/searching';
+import { setSort, setFiltered, setActiveOptionAccountManager } from 'redux/slices/searching';
 import axiosInstance from 'utils/axios';
 // ----------------------------------------------------------------------
 const APPBAR_MOBILE = 64;
@@ -91,9 +91,10 @@ export default function Searchbar() {
   const [stateAccManager, setStateAccManager] = React.useState({
     client_name: true,
     account_status: true,
+    entity_name: true,
   });
   // State Account Manager
-  const { client_name, account_status } = stateAccManager;
+  const { client_name, account_status, entity_name } = stateAccManager;
   const filteredAccManager = Object.fromEntries(
     Object.entries({ client_name, account_status }).filter(([_, v]) => v)
   );
@@ -285,6 +286,7 @@ export default function Searchbar() {
   const handleSearchAccManager = async () => {
     navigate(`/${role_url_map[`${role}`]}/searching`);
     setShow(false);
+    dispatch(setActiveOptionAccountManager(stateAccManager));
     if (text) {
       dispatch(setFiltered(text));
     } else {

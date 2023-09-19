@@ -150,13 +150,24 @@ CardTablePropsByBE) {
 
   const changeHandleRangeDate = (event: string, type: 'start' | 'end') => {
     if (type === 'start') {
-      setSortingRangedDate({ ...sortingRangedDate, startDate: event, endDate: '' });
+      if (event === '') {
+        setSortingRangedDate({ startDate: '', endDate: '', filter: '' });
+        return;
+      } else {
+        setSortingRangedDate({ ...sortingRangedDate, startDate: event, endDate: '' });
+      }
     } else {
-      const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
-      const filter = `&range_start_date=${sortingRangedDate.startDate}&range_end_date=${tmpNewEndDate}`;
-      setSortingRangedDate({ ...sortingRangedDate, endDate: event, filter: filter });
+      if (event === '') {
+        setSortingRangedDate({ ...sortingRangedDate, endDate: '', filter: '' });
+        return;
+      } else {
+        const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
+        const filter = `&range_start_date=${sortingRangedDate.startDate}&range_end_date=${tmpNewEndDate}`;
+        setSortingRangedDate({ ...sortingRangedDate, endDate: event, filter: filter });
+      }
     }
   };
+
   // console.log({ sortingRangedDate });
 
   React.useEffect(() => {
@@ -337,8 +348,8 @@ CardTablePropsByBE) {
                       onReturnDate={(event: string) => {
                         setPage(1);
                         if (event && event !== '') {
-                          const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
-                          changeHandleRangeDate(`${tmpNewEndDate}`, 'end');
+                          // const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
+                          changeHandleRangeDate(`${event}`, 'end');
                         } else {
                           changeHandleRangeDate('', 'end');
                         }

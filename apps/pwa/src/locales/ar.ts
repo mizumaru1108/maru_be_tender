@@ -2607,6 +2607,7 @@ const ar = {
     by_track_name: 'اسم المسار',
     by_project_number: 'رقم المشروع',
     by_account_status: 'حالة الحساب',
+    by_entity_name: 'اسم الجهة',
     ascending: 'تصاعدي',
     descending: 'تنازلي',
     project_type: 'نوع المشروع',

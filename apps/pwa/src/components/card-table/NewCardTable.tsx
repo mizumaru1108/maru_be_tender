@@ -27,7 +27,7 @@ function NewCardTable({
   const { activeRole } = useAuth();
   const [page, setPage] = useState(1);
   const { translate } = useLocales();
-  const { sort, filtered } = useSelector((state) => state.searching);
+  const { sort, filtered, activeOptions } = useSelector((state) => state.searching);
   const [params, setParams] = useState({
     limit: limitShowCard ? limitShowCard : 6,
   });
@@ -43,6 +43,8 @@ function NewCardTable({
     total: 0,
   });
 
+  // console.log({ activeOptions });
+
   const getData = async () => {
     try {
       setLoading(true);
@@ -52,8 +54,10 @@ function NewCardTable({
             params: {
               limit: params.limit,
               page: page,
-              employee_name: filtered,
-              account_status: filtered,
+              employee_name: activeOptions.client_name ? filtered : undefined,
+              user_type_id: activeOptions.account_status ? filtered : undefined,
+              association_name: filtered,
+              hide_internal: '1',
             },
             headers: headersProps,
           });

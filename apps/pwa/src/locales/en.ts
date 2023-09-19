@@ -2593,6 +2593,7 @@ const en = {
     by_track_name: 'Name of Track',
     by_project_number: 'Number of Project',
     by_account_status: 'Account Status',
+    by_entity_name: 'Entity Name',
     ascending: 'Ascending',
     descending: 'Descending',
     project_type: 'Project`s Type',

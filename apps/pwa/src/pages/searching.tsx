@@ -1,15 +1,13 @@
 import { Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { filterInterface, ProjectCardProps } from 'components/card-table/types';
+import NewCardTable from 'components/card-table/NewCardTable';
+import CardSearching from 'components/card-table/searching/CardSearching';
+import { ProjectCardProps } from 'components/card-table/types';
 import Page from 'components/Page';
 import useAuth from 'hooks/useAuth';
-import { useEffect, useState } from 'react';
-import axiosInstance from 'utils/axios';
-import { CardTableSearching } from '../components/card-table';
-import useLocales from '../hooks/useLocales';
+import { useState } from 'react';
 import { useSelector } from 'redux/store';
-import CardSearching from 'components/card-table/searching/CardSearching';
-import NewCardTable from 'components/card-table/NewCardTable';
+import useLocales from '../hooks/useLocales';
 
 function PreviousSupportRequests() {
   const { translate } = useLocales();
