@@ -1833,6 +1833,8 @@ const en = {
         label_active_account: 'Active account',
         label_canceled_account: 'Canceled account',
         label_rejected_account: 'Rejected account',
+        label_suspended_account: 'Suspended account',
+        label_deleted: 'Deleted account',
         label_pending: 'Pending',
         label_approved: 'Approved',
         label_rejected: 'Rejected',

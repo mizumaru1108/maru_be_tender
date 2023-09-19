@@ -156,7 +156,7 @@ CardTablePropsByBE) {
       setSortingRangedDate({ ...sortingRangedDate, endDate: event, filter: filter });
     }
   };
-  console.log({ sortingRangedDate });
+  // console.log({ sortingRangedDate });
 
   React.useEffect(() => {
     dispatch(getTrackList(1, activeRole! as string));
@@ -336,7 +336,8 @@ CardTablePropsByBE) {
                       onReturnDate={(event: string) => {
                         setPage(1);
                         if (event && event !== '') {
-                          changeHandleRangeDate(`${event}`, 'end');
+                          const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
+                          changeHandleRangeDate(`${tmpNewEndDate}`, 'end');
                         } else {
                           changeHandleRangeDate('', 'end');
                         }
