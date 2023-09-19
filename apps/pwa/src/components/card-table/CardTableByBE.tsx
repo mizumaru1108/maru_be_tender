@@ -152,7 +152,8 @@ CardTablePropsByBE) {
     if (type === 'start') {
       setSortingRangedDate({ ...sortingRangedDate, startDate: event, endDate: '' });
     } else {
-      const filter = `&range_start_date=${sortingRangedDate.startDate}&range_end_date=${event}`;
+      const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
+      const filter = `&range_start_date=${sortingRangedDate.startDate}&range_end_date=${tmpNewEndDate}`;
       setSortingRangedDate({ ...sortingRangedDate, endDate: event, filter: filter });
     }
   };
