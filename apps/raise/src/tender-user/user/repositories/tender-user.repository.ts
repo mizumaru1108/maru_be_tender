@@ -428,15 +428,22 @@ export class TenderUserRepository {
     const offset = (page - 1) * limit;
 
     let query: Prisma.userWhereInput = {};
+    let orQuery: Prisma.userWhereInput[] = [];
 
     if (employee_name) {
-      query = {
-        ...query,
+      // query = {
+      //   ...query,
+      // employee_name: {
+      //   contains: employee_name,
+      //   mode: 'insensitive',
+      // },
+      // };
+      orQuery.push({
         employee_name: {
           contains: employee_name,
           mode: 'insensitive',
         },
-      };
+      });
     }
 
     if (account_status) {
@@ -500,13 +507,19 @@ export class TenderUserRepository {
     }
 
     if (email) {
-      query = {
-        ...query,
+      // query = {
+      //   ...query,
+      //   email: {
+      //     contains: email,
+      //     mode: 'insensitive',
+      //   },
+      // };
+      orQuery.push({
         email: {
           contains: email,
           mode: 'insensitive',
         },
-      };
+      });
     }
 
     if (hide_external && hide_external === '1') {
@@ -523,6 +536,18 @@ export class TenderUserRepository {
       };
     }
 
+    if (user_type_id) {
+      orQuery.push({
+        roles: {
+          some: {
+            user_type_id: {
+              in: user_type_id,
+            },
+          },
+        },
+      });
+    }
+
     if (
       hide_external &&
       hide_external === '1' &&
@@ -537,6 +562,38 @@ export class TenderUserRepository {
             user_type_id: {
               in: [...user_type_id],
             },
+          },
+        },
+      };
+    }
+
+    if (association_name) {
+      // query = {
+      //   ...query,
+      //   client_data: {
+      //     entity: {
+      //       contains: association_name,
+      //       mode: 'insensitive',
+      //     },
+      //   },
+      // };
+      orQuery.push({
+        client_data: {
+          entity: {
+            contains: association_name,
+            mode: 'insensitive',
+          },
+        },
+      });
+    }
+
+    if (client_field) {
+      query = {
+        ...query,
+        client_data: {
+          client_field: {
+            contains: client_field,
+            mode: 'insensitive',
           },
         },
       };
@@ -566,6 +623,7 @@ export class TenderUserRepository {
     }
 
     let include: Prisma.userInclude = {};
+
     if (include_schedule === '1' && hide_internal === '1') {
       include = {
         ...include,
@@ -586,30 +644,6 @@ export class TenderUserRepository {
       };
     }
 
-    if (hide_internal === '1' && association_name) {
-      query = {
-        ...query,
-        client_data: {
-          entity: {
-            contains: association_name,
-            mode: 'insensitive',
-          },
-        },
-      };
-    }
-
-    if (hide_internal === '1' && client_field) {
-      query = {
-        ...query,
-        client_data: {
-          client_field: {
-            contains: client_field,
-            mode: 'insensitive',
-          },
-        },
-      };
-    }
-
     const order_by: Prisma.userOrderByWithRelationInput = {};
     const field = sorting_field as keyof Prisma.userOrderByWithRelationInput;
     if (sorting_field) {
@@ -618,46 +652,45 @@ export class TenderUserRepository {
       order_by.updated_at = sort;
     }
 
-    if (findOnlyActive === false) {
-      if (employee_name) {
-        query = {
-          employee_name: {
-            contains: employee_name,
-            mode: 'insensitive',
-          },
-        };
-      }
-
-      if (account_status) {
-        query = {
-          status_id: {
-            contains: account_status,
-            mode: 'insensitive',
-          },
-        };
-      }
-
-      if (employee_name && account_status) {
-        query = {
-          OR: [
-            {
-              status_id: {
-                contains: account_status,
-                mode: 'insensitive',
-              },
-            },
-            {
-              employee_name: {
-                contains: employee_name,
-                mode: 'insensitive',
-              },
-            },
-          ],
-        };
-      }
-    }
-
+    // if (findOnlyActive === false) {
+    // if (employee_name) {
+    //   query = {
+    //     employee_name: {
+    //       contains: employee_name,
+    //       mode: 'insensitive',
+    //     },
+    //   };
+    // }
+    // if (account_status) {
+    //   query = {
+    //     status_id: {
+    //       contains: account_status,
+    //       mode: 'insensitive',
+    //     },
+    //   };
+    // }
+    // if (employee_name && account_status) {
+    //   query = {
+    //     OR: [
+    //       {
+    //         status_id: {
+    //           contains: account_status,
+    //           mode: 'insensitive',
+    //         },
+    //       },
+    //       {
+    //         employee_name: {
+    //           contains: employee_name,
+    //           mode: 'insensitive',
+    //         },
+    //       },
+    //     ],
+    //   };
+    // }
+    // }
+    query.OR = orQuery;
     try {
+      // console.log(logUtil(filter));
       // console.log(logUtil(query));
       // this.logger.debug(`applied filter: ${logUtil(query)}`);
       const users: FindUserResponse['data'] =
