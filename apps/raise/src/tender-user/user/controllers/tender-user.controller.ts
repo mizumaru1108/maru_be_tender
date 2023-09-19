@@ -172,23 +172,6 @@ export class TenderUserController {
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
-  @Post('delete')
-  async deleteUser(
-    @Body() request: TenderDeleteUserDto,
-  ): Promise<BaseResponse<any>> {
-    const { user_id } = request;
-    const response = await this.tenderUserService.deleteUserWFusionAuth(
-      user_id,
-    );
-    return baseResponseHelper(
-      response,
-      HttpStatus.CREATED,
-      'User deleted successfully!',
-    );
-  }
-
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_admin')
   @Patch('soft-delete')
   async softDelete(
     @Body() dto: TenderDeleteUserDto,
@@ -220,15 +203,6 @@ export class TenderUserController {
     @Body() request: UpdateProfileDto,
   ): Promise<BaseResponse<any>> {
     try {
-      // const updateResult = await this.tenderUserService.updateProfile(
-      //   currentUser,
-      //   request,
-      // );
-      // return baseResponseHelper(
-      //   updateResult,
-      //   HttpStatus.CREATED,
-      //   'User updated successfully!',
-      // );
       const command = Builder<UserUpdateProfileCommand>(
         UserUpdateProfileCommand,
         {
@@ -252,23 +226,6 @@ export class TenderUserController {
     }
   }
 
-  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  // @TenderRoles('tender_accounts_manager')
-  // @Patch('update-status')
-  // async updateStatus(
-  //   @CurrentUser() currentUser: TenderCurrentUser,
-  //   @Body() request: UserStatusUpdateDto,
-  // ): Promise<BaseResponse<any>> {
-  //   const status = await this.tenderUserService.updateUserStatus(
-  //     currentUser.id,
-  //     request,
-  //   );
-  //   return baseResponseHelper(
-  //     status,
-  //     HttpStatus.CREATED,
-  //     'User updated successfully!',
-  //   );
-  // }
   @ApiOperation({
     summary: 'Updating user status (admin only)',
   })
@@ -311,12 +268,6 @@ export class TenderUserController {
   @TenderRoles('tender_admin')
   @Patch('update-user')
   async updateUser(@Body() request: UpdateUserDto): Promise<BaseResponse<any>> {
-    // const status = await this.tenderUserService.updateUserData(request);
-    // return baseResponseHelper(
-    //   status,
-    //   HttpStatus.CREATED,
-    //   'User updated successfully!',
-    // );
     try {
       const command = Builder<UserUpdateCommand>(UserUpdateCommand, {
         dto: request,

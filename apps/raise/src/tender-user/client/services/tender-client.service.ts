@@ -93,280 +93,280 @@ export class TenderClientService {
   }
 
   // create user and it's relation to client_data table by user_id in client_data table
-  async createUserAndClient(
-    idFromFusionAuth: string,
-    request: RegisterTenderDto,
-  ): Promise<any> {
-    let uploadedFilePath: string[] = [];
-    try {
-      let userCreatePayload: Prisma.userCreateInput = CreateClientMapper(
-        idFromFusionAuth,
-        request,
-      );
+  // async createUserAndClient(
+  //   idFromFusionAuth: string,
+  //   request: RegisterTenderDto,
+  // ): Promise<any> {
+  //   let uploadedFilePath: string[] = [];
+  //   try {
+  //     let userCreatePayload: Prisma.userCreateInput = CreateClientMapper(
+  //       idFromFusionAuth,
+  //       request,
+  //     );
 
-      const createStatusLogPayload: Prisma.user_status_logUncheckedCreateInput[] =
-        [
-          {
-            id: uuidv4(),
-            user_id: idFromFusionAuth,
-            status_id: UserStatusEnum.WAITING_FOR_ACTIVATION,
-          },
-        ] as Prisma.user_status_logUncheckedCreateInput[];
+  //     const createStatusLogPayload: Prisma.user_status_logUncheckedCreateInput[] =
+  //       [
+  //         {
+  //           id: uuidv4(),
+  //           user_id: idFromFusionAuth,
+  //           status_id: UserStatusEnum.WAITING_FOR_ACTIVATION,
+  //         },
+  //       ] as Prisma.user_status_logUncheckedCreateInput[];
 
-      let bankCreatePayload:
-        | Prisma.bank_informationUncheckedCreateInput
-        | undefined = undefined;
+  //     let bankCreatePayload:
+  //       | Prisma.bank_informationUncheckedCreateInput
+  //       | undefined = undefined;
 
-      let lisceneFileObj: UploadFilesJsonbDto | undefined = undefined;
-      const ofdecObj: UploadFilesJsonbDto[] = [];
-      let bankCardObj: UploadFilesJsonbDto | undefined = undefined;
+  //     let lisceneFileObj: UploadFilesJsonbDto | undefined = undefined;
+  //     const ofdecObj: UploadFilesJsonbDto[] = [];
+  //     let bankCardObj: UploadFilesJsonbDto | undefined = undefined;
 
-      const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
-        [];
+  //     const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
+  //       [];
 
-      const maxSize: number = 1024 * 1024 * 8; // 8MB
+  //     const maxSize: number = 1024 * 1024 * 8; // 8MB
 
-      // make the upload file on this service into another service that can used globally on this service (diffrent case with bunny service)
-      if (request.data.license_file) {
-        const uploadResult = await this.uploadClientFile(
-          idFromFusionAuth,
-          'Uploading Liscene File for user',
-          request.data.license_file,
-          'license-file',
-          [
-            FileMimeTypeEnum.JPG,
-            FileMimeTypeEnum.JPEG,
-            FileMimeTypeEnum.PNG,
-            FileMimeTypeEnum.PDF,
-          ],
-          maxSize,
-          uploadedFilePath,
-          true,
-        );
-        uploadedFilePath = uploadResult.uploadedFilePath;
-        lisceneFileObj = uploadResult.fileObj;
+  //     // make the upload file on this service into another service that can used globally on this service (diffrent case with bunny service)
+  //     if (request.data.license_file) {
+  //       const uploadResult = await this.uploadClientFile(
+  //         idFromFusionAuth,
+  //         'Uploading Liscene File for user',
+  //         request.data.license_file,
+  //         'license-file',
+  //         [
+  //           FileMimeTypeEnum.JPG,
+  //           FileMimeTypeEnum.JPEG,
+  //           FileMimeTypeEnum.PNG,
+  //           FileMimeTypeEnum.PDF,
+  //         ],
+  //         maxSize,
+  //         uploadedFilePath,
+  //         true,
+  //       );
+  //       uploadedFilePath = uploadResult.uploadedFilePath;
+  //       lisceneFileObj = uploadResult.fileObj;
 
-        const payload: Prisma.file_managerUncheckedCreateInput = {
-          id: uuidv4(),
-          user_id: idFromFusionAuth,
-          name: uploadResult.fileObj.url.split('/').pop() as string,
-          url: uploadResult.fileObj.url,
-          mimetype: uploadResult.fileObj.type,
-          size: uploadResult.fileObj.size,
-          column_name: 'license_file',
-          table_name: 'client_data',
-        };
-        fileManagerCreateManyPayload.push(payload);
-      }
+  //       const payload: Prisma.file_managerUncheckedCreateInput = {
+  //         id: uuidv4(),
+  //         user_id: idFromFusionAuth,
+  //         name: uploadResult.fileObj.url.split('/').pop() as string,
+  //         url: uploadResult.fileObj.url,
+  //         mimetype: uploadResult.fileObj.type,
+  //         size: uploadResult.fileObj.size,
+  //         column_name: 'license_file',
+  //         table_name: 'client_data',
+  //       };
+  //       fileManagerCreateManyPayload.push(payload);
+  //     }
 
-      if (request.data.board_ofdec_file) {
-        const uploadResult = await this.uploadClientFile(
-          idFromFusionAuth,
-          'Uploading Board Ofdec File for user',
-          request.data.board_ofdec_file,
-          'ofdec',
-          [
-            FileMimeTypeEnum.JPG,
-            FileMimeTypeEnum.JPEG,
-            FileMimeTypeEnum.PNG,
-            FileMimeTypeEnum.PDF,
-            // FileMimeTypeEnum.DOC,
-            // FileMimeTypeEnum.DOCX,
-            // FileMimeTypeEnum.XLS,
-            // FileMimeTypeEnum.XLSX,
-            // FileMimeTypeEnum.PPT,
-            // FileMimeTypeEnum.PPTX,
-          ],
-          maxSize,
-          uploadedFilePath,
-          true,
-        );
-        uploadedFilePath = uploadResult.uploadedFilePath;
+  //     if (request.data.board_ofdec_file) {
+  //       const uploadResult = await this.uploadClientFile(
+  //         idFromFusionAuth,
+  //         'Uploading Board Ofdec File for user',
+  //         request.data.board_ofdec_file,
+  //         'ofdec',
+  //         [
+  //           FileMimeTypeEnum.JPG,
+  //           FileMimeTypeEnum.JPEG,
+  //           FileMimeTypeEnum.PNG,
+  //           FileMimeTypeEnum.PDF,
+  //           // FileMimeTypeEnum.DOC,
+  //           // FileMimeTypeEnum.DOCX,
+  //           // FileMimeTypeEnum.XLS,
+  //           // FileMimeTypeEnum.XLSX,
+  //           // FileMimeTypeEnum.PPT,
+  //           // FileMimeTypeEnum.PPTX,
+  //         ],
+  //         maxSize,
+  //         uploadedFilePath,
+  //         true,
+  //       );
+  //       uploadedFilePath = uploadResult.uploadedFilePath;
 
-        const payload: Prisma.file_managerUncheckedCreateInput = {
-          id: uuidv4(),
-          user_id: idFromFusionAuth,
-          name: uploadResult.fileObj.url.split('/').pop() as string,
-          url: uploadResult.fileObj.url,
-          mimetype: uploadResult.fileObj.type,
-          size: uploadResult.fileObj.size,
-          column_name: 'board_ofdec_file',
-          table_name: 'client_data',
-        };
-        fileManagerCreateManyPayload.push(payload);
+  //       const payload: Prisma.file_managerUncheckedCreateInput = {
+  //         id: uuidv4(),
+  //         user_id: idFromFusionAuth,
+  //         name: uploadResult.fileObj.url.split('/').pop() as string,
+  //         url: uploadResult.fileObj.url,
+  //         mimetype: uploadResult.fileObj.type,
+  //         size: uploadResult.fileObj.size,
+  //         column_name: 'board_ofdec_file',
+  //         table_name: 'client_data',
+  //       };
+  //       fileManagerCreateManyPayload.push(payload);
 
-        ofdecObj.push(uploadResult.fileObj);
-      }
+  //       ofdecObj.push(uploadResult.fileObj);
+  //     }
 
-      if (request.data.bank_informations) {
-        const uploadResult = await this.uploadClientFile(
-          idFromFusionAuth,
-          'Uploading Bank Card Image File for user',
-          request.data.bank_informations.card_image,
-          'bank-info',
-          [FileMimeTypeEnum.JPG, FileMimeTypeEnum.JPEG, FileMimeTypeEnum.PNG],
-          maxSize,
-          uploadedFilePath,
-          true,
-        );
-        uploadedFilePath = uploadResult.uploadedFilePath;
+  //     if (request.data.bank_informations) {
+  //       const uploadResult = await this.uploadClientFile(
+  //         idFromFusionAuth,
+  //         'Uploading Bank Card Image File for user',
+  //         request.data.bank_informations.card_image,
+  //         'bank-info',
+  //         [FileMimeTypeEnum.JPG, FileMimeTypeEnum.JPEG, FileMimeTypeEnum.PNG],
+  //         maxSize,
+  //         uploadedFilePath,
+  //         true,
+  //       );
+  //       uploadedFilePath = uploadResult.uploadedFilePath;
 
-        bankCardObj = uploadResult.fileObj;
+  //       bankCardObj = uploadResult.fileObj;
 
-        const bankInfo = await this.prismaService.banks.findFirst({
-          where: {
-            id: request.data.bank_informations.bank_id,
-          },
-        });
+  //       const bankInfo = await this.prismaService.banks.findFirst({
+  //         where: {
+  //           id: request.data.bank_informations.bank_id,
+  //         },
+  //       });
 
-        if (!bankInfo) {
-          throw new BadRequestException('Invalid Bank Id!');
-        }
+  //       if (!bankInfo) {
+  //         throw new BadRequestException('Invalid Bank Id!');
+  //       }
 
-        const newBankInformations: RegisterTenderDto['data']['bank_informations'] =
-          {
-            ...request.data.bank_informations,
-          };
+  //       const newBankInformations: RegisterTenderDto['data']['bank_informations'] =
+  //         {
+  //           ...request.data.bank_informations,
+  //         };
 
-        bankCreatePayload = BankInformationsMapper(
-          idFromFusionAuth,
-          newBankInformations,
-          bankCardObj,
-        );
+  //       bankCreatePayload = BankInformationsMapper(
+  //         idFromFusionAuth,
+  //         newBankInformations,
+  //         bankCardObj,
+  //       );
 
-        const payload: Prisma.file_managerUncheckedCreateInput = {
-          id: uuidv4(),
-          user_id: idFromFusionAuth,
-          name: uploadResult.fileObj.url.split('/').pop() as string,
-          url: uploadResult.fileObj.url,
-          mimetype: uploadResult.fileObj.type,
-          size: uploadResult.fileObj.size,
-          column_name: 'card_image',
-          table_name: 'bank_information',
-          bank_information_id: bankCreatePayload.id,
-        };
-        fileManagerCreateManyPayload.push(payload);
-      }
+  //       const payload: Prisma.file_managerUncheckedCreateInput = {
+  //         id: uuidv4(),
+  //         user_id: idFromFusionAuth,
+  //         name: uploadResult.fileObj.url.split('/').pop() as string,
+  //         url: uploadResult.fileObj.url,
+  //         mimetype: uploadResult.fileObj.type,
+  //         size: uploadResult.fileObj.size,
+  //         column_name: 'card_image',
+  //         table_name: 'bank_information',
+  //         bank_information_id: bankCreatePayload.id,
+  //       };
+  //       fileManagerCreateManyPayload.push(payload);
+  //     }
 
-      userCreatePayload = UserClientDataMapper(
-        userCreatePayload,
-        request,
-        lisceneFileObj,
-        ofdecObj,
-      );
+  //     userCreatePayload = UserClientDataMapper(
+  //       userCreatePayload,
+  //       request,
+  //       lisceneFileObj,
+  //       ofdecObj,
+  //     );
 
-      // const createManyWebNotif: Prisma.notificationCreateManyInput[] = [];
+  //     // const createManyWebNotif: Prisma.notificationCreateManyInput[] = [];
 
-      const createUserResult = await this.tenderUserRepository.createUser(
-        userCreatePayload,
-        createStatusLogPayload,
-        undefined,
-        bankCreatePayload,
-        fileManagerCreateManyPayload,
-        uploadedFilePath,
-      );
+  //     const createUserResult = await this.tenderUserRepository.createUser(
+  //       userCreatePayload,
+  //       createStatusLogPayload,
+  //       undefined,
+  //       bankCreatePayload,
+  //       fileManagerCreateManyPayload,
+  //       uploadedFilePath,
+  //     );
 
-      const createdUser: (user & any[]) | user =
-        createUserResult instanceof Array
-          ? createUserResult[0]
-          : createUserResult;
+  //     const createdUser: (user & any[]) | user =
+  //       createUserResult instanceof Array
+  //         ? createUserResult[0]
+  //         : createUserResult;
 
-      // createManyWebNotif.push({
-      //   id: uuidv4(),
-      //   user_id: createdUser.id,
-      //   content: 'Account Successfully Registered!',
-      //   subject: 'Account Registered Successfully!',
-      //   type: 'ACCOUNT',
-      //   specific_type: 'NEW_ACCOUNT_CREATED',
-      // });
+  //     // createManyWebNotif.push({
+  //     //   id: uuidv4(),
+  //     //   user_id: createdUser.id,
+  //     //   content: 'Account Successfully Registered!',
+  //     //   subject: 'Account Registered Successfully!',
+  //     //   type: 'ACCOUNT',
+  //     //   specific_type: 'NEW_ACCOUNT_CREATED',
+  //     // });
 
-      // const accountsManager = await this.tenderUserRepository.findByRole(
-      //   'ACCOUNTS_MANAGER',
-      // );
+  //     // const accountsManager = await this.tenderUserRepository.findByRole(
+  //     //   'ACCOUNTS_MANAGER',
+  //     // );
 
-      // const accountManagerSubject = "There's new Account Created!";
-      // const accountManagerContent = `There's new Account Created!, account name: ${createdUser.employee_name}`;
-      // const accountManagerIds: string[] = [];
-      // const accountMangerEmails: string[] = [];
-      // const accountManagerMobileNumbers: string[] = [];
+  //     // const accountManagerSubject = "There's new Account Created!";
+  //     // const accountManagerContent = `There's new Account Created!, account name: ${createdUser.employee_name}`;
+  //     // const accountManagerIds: string[] = [];
+  //     // const accountMangerEmails: string[] = [];
+  //     // const accountManagerMobileNumbers: string[] = [];
 
-      // if (accountsManager.length > 0) {
-      //   accountsManager.forEach((accManager) => {
-      //     accountManagerIds.push(accManager.id);
-      //     accountMangerEmails.push(accManager.email);
-      //     accountManagerMobileNumbers.push(accManager.mobile_number || '');
-      //     createManyWebNotif.push({
-      //       id: uuidv4(),
-      //       user_id: accManager.id,
-      //       content: accountManagerContent,
-      //       subject: accountManagerSubject,
-      //       type: 'ACCOUNT',
-      //       specific_type: 'NEW_ACCOUNT_CREATED',
-      //     });
-      //   });
-      // }
+  //     // if (accountsManager.length > 0) {
+  //     //   accountsManager.forEach((accManager) => {
+  //     //     accountManagerIds.push(accManager.id);
+  //     //     accountMangerEmails.push(accManager.email);
+  //     //     accountManagerMobileNumbers.push(accManager.mobile_number || '');
+  //     //     createManyWebNotif.push({
+  //     //       id: uuidv4(),
+  //     //       user_id: accManager.id,
+  //     //       content: accountManagerContent,
+  //     //       subject: accountManagerSubject,
+  //     //       type: 'ACCOUNT',
+  //     //       specific_type: 'NEW_ACCOUNT_CREATED',
+  //     //     });
+  //     //   });
+  //     // }
 
-      // const notifPayload: CommonNotificationMapperResponse = {
-      //   logTime: moment(new Date().getTime()).format('llll'),
-      //   clientSubject: 'Account Created Successfully!',
-      //   clientId:
-      //     createdUser instanceof Array ? [createdUser[0].id] : [createdUser.id],
-      //   clientEmail:
-      //     createdUser instanceof Array
-      //       ? [createdUser[0].email]
-      //       : [createdUser.email],
-      //   clientMobileNumber:
-      //     createdUser instanceof Array
-      //       ? [createdUser[0].mobile_number]
-      //       : [createdUser.mobile_number],
-      //   clientEmailTemplatePath: `tender/${
-      //     request.data.selectLang || 'ar'
-      //   }/account/account_created`,
-      //   clientEmailTemplateContext: [
-      //     {
-      //       name: createdUser.employee_name,
-      //     },
-      //   ],
-      //   clientContent: 'Your account has registered successfully!',
-      //   reviewerId: [],
-      //   reviewerEmail: [],
-      //   reviewerContent: '',
-      //   reviewerMobileNumber: [],
-      //   reviwerSubject: '',
-      //   createManyWebNotifPayload: createManyWebNotif,
-      // };
+  //     // const notifPayload: CommonNotificationMapperResponse = {
+  //     //   logTime: moment(new Date().getTime()).format('llll'),
+  //     //   clientSubject: 'Account Created Successfully!',
+  //     //   clientId:
+  //     //     createdUser instanceof Array ? [createdUser[0].id] : [createdUser.id],
+  //     //   clientEmail:
+  //     //     createdUser instanceof Array
+  //     //       ? [createdUser[0].email]
+  //     //       : [createdUser.email],
+  //     //   clientMobileNumber:
+  //     //     createdUser instanceof Array
+  //     //       ? [createdUser[0].mobile_number]
+  //     //       : [createdUser.mobile_number],
+  //     //   clientEmailTemplatePath: `tender/${
+  //     //     request.data.selectLang || 'ar'
+  //     //   }/account/account_created`,
+  //     //   clientEmailTemplateContext: [
+  //     //     {
+  //     //       name: createdUser.employee_name,
+  //     //     },
+  //     //   ],
+  //     //   clientContent: 'Your account has registered successfully!',
+  //     //   reviewerId: [],
+  //     //   reviewerEmail: [],
+  //     //   reviewerContent: '',
+  //     //   reviewerMobileNumber: [],
+  //     //   reviwerSubject: '',
+  //     //   createManyWebNotifPayload: createManyWebNotif,
+  //     // };
 
-      // await this.tenderNotifRepo.createMany(createManyWebNotif);
+  //     // await this.tenderNotifRepo.createMany(createManyWebNotif);
 
-      // await this.notificationService.sendSmsAndEmailBatch(notifPayload);
+  //     // await this.notificationService.sendSmsAndEmailBatch(notifPayload);
 
-      return {
-        createdUser,
-      };
-    } catch (err) {
-      if (err instanceof MsegatSendingMessageError) {
-        throw new BadRequestException(
-          `Request might be success but sms notif may not be sented to the client details ${err.message}`,
-        );
-      } else {
-        this.logger.log(
-          'info',
-          `Falied to store user data on db, deleting the user ${idFromFusionAuth} from fusion auth`,
-        );
-        await this.fusionAuthService.fusionAuthDeleteUser(idFromFusionAuth);
-        this.logger.log(
-          'info',
-          `deleting all uploaded files related for user ${idFromFusionAuth}`,
-        );
-        if (uploadedFilePath && uploadedFilePath.length > 0) {
-          uploadedFilePath.forEach(async (path) => {
-            await this.bunnyService.deleteMedia(path, true);
-          });
-        }
-      }
-      throw err;
-    }
-  }
+  //     return {
+  //       createdUser,
+  //     };
+  //   } catch (err) {
+  //     if (err instanceof MsegatSendingMessageError) {
+  //       throw new BadRequestException(
+  //         `Request might be success but sms notif may not be sented to the client details ${err.message}`,
+  //       );
+  //     } else {
+  //       this.logger.log(
+  //         'info',
+  //         `Falied to store user data on db, deleting the user ${idFromFusionAuth} from fusion auth`,
+  //       );
+  //       await this.fusionAuthService.fusionAuthDeleteUser(idFromFusionAuth);
+  //       this.logger.log(
+  //         'info',
+  //         `deleting all uploaded files related for user ${idFromFusionAuth}`,
+  //       );
+  //       if (uploadedFilePath && uploadedFilePath.length > 0) {
+  //         uploadedFilePath.forEach(async (path) => {
+  //           await this.bunnyService.deleteMedia(path, true);
+  //         });
+  //       }
+  //     }
+  //     throw err;
+  //   }
+  // }
 
   async getMyProfile(userId: string) {
     const profile = await this.tenderClientRepository.findMyProfile(userId);

@@ -57,25 +57,23 @@ export class UserCreateCommandHandler
         throw new BadRequestException('Roles is Forbidden to create!');
       }
 
-      const tracks = await this.userRepo.validateTracks(track_id);
-      if (!tracks) {
-        throw new BadRequestException(
-          'Invalid employee track!, Path is not found!',
-        );
-      }
+      // const tracks = await this.userRepo.validateTracks(track_id);
+      // if (!tracks) {
+      //   throw new BadRequestException(
+      //     'Invalid employee track!, Path is not found!',
+      //   );
+      // }
 
-      for (let i = 0; i < user_roles.length; i++) {
-        const availableRoles = await this.userRepo.validateRoles(user_roles[i]);
-        if (!availableRoles) {
-          throw new BadRequestException(
-            `Invalid user roles!, Roles [${user_roles[i]}] is not found!`,
-          );
-        }
-      }
+      // for (let i = 0; i < user_roles.length; i++) {
+      //   const availableRoles = await this.userRepo.validateRoles(user_roles[i]);
+      //   if (!availableRoles) {
+      //     throw new BadRequestException(
+      //       `Invalid user roles!, Roles [${user_roles[i]}] is not found!`,
+      //     );
+      //   }
+      // }
 
-      const emailExist = await this.userRepo.findUser({
-        email,
-      });
+      const emailExist = await this.userRepo.findFirst({ email });
       if (emailExist) {
         if (selectLang === 'en') {
           throw new ConflictException('Email already exist in our app!');
@@ -86,9 +84,7 @@ export class UserCreateCommandHandler
         }
       }
 
-      const phoneExist = await this.userRepo.findUser({
-        mobile_number,
-      });
+      const phoneExist = await this.userRepo.findFirst({ mobile_number });
       if (phoneExist) {
         throw new ConflictException('Phone already exist in our app!');
       }

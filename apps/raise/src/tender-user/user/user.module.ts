@@ -2,17 +2,17 @@ import { Module, forwardRef } from '@nestjs/common';
 
 import { Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { ClientModule } from '../client/client.module';
+import { UserCreateCommandHandler } from './commands/user.create/user.create.command';
 import { UserSoftDeleteCommandHandler } from './commands/user.soft.delete/user.soft.delete.command';
+import { UserUpdateProfileCommandHandler } from './commands/user.update.profile/user.update.profile.command';
 import { UserUpdateStatusCommandHandler } from './commands/user.update.status/user.update.status.command';
+import { UserUpdateCommandHandler } from './commands/user.update/user.update.command';
 import { TenderUserController } from './controllers/tender-user.controller';
 import { TenderUserRoleRepository } from './repositories/tender-user-role.repository';
 import { TenderUserStatusLogRepository } from './repositories/tender-user-status-log.repository';
 import { TenderUserRepository } from './repositories/tender-user.repository';
 import { TenderUserService } from './services/tender-user.service';
-import { UserCreateCommandHandler } from './commands/user.create/user.create.command';
-import { UserUpdateCommandHandler } from './commands/user.update/user.update.command';
-import { UserUpdateProfileCommandHandler } from './commands/user.update.profile/user.update.profile.command';
-import { ClientModule } from '../client/client.module';
 
 const importedModule = [CqrsModule, forwardRef(() => ClientModule)];
 const controllers = [TenderUserController];

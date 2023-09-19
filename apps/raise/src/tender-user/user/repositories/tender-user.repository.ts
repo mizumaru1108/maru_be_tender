@@ -35,14 +35,13 @@ export class UpdateUserProps {
 }
 
 export class UserFindFirstProps {
-  id: string;
+  id?: string;
+  email?: string;
+  mobile_number?: string;
   includes_relation?: string[];
 }
 @Injectable()
 export class TenderUserRepository {
-  // private readonly logger = ROOT_LOGGER.child({
-  //   'log.logger': TenderUserRepository.name,
-  // });
   constructor(
     private readonly prismaService: PrismaService,
     private readonly bunnyService: BunnyService,
@@ -167,9 +166,12 @@ export class TenderUserRepository {
   ): Promise<Prisma.userFindFirstArgs> {
     const { includes_relation } = props;
 
-    let findByIdFilter: Prisma.userFindFirstArgs = {
-      where: { id: props.id },
-    };
+    const args: Prisma.userFindFirstArgs = {};
+    let where: Prisma.userWhereInput = {};
+
+    if (props.id) where.id = props.id;
+    if (props.email) where.email = props.email;
+    if (props.mobile_number) where.mobile_number = props.mobile_number;
 
     if (includes_relation && includes_relation.length > 0) {
       let include: Prisma.userInclude = {};
@@ -186,10 +188,10 @@ export class TenderUserRepository {
         }
       }
 
-      findByIdFilter.include = include;
+      args.include = include;
     }
 
-    return findByIdFilter;
+    return args;
   }
 
   async findFirst(
@@ -214,75 +216,75 @@ export class TenderUserRepository {
       throw error;
     }
   }
-  /**
-   * validate if the track exist on the database
-   */
-  async validateTrack(trackName: string): Promise<project_tracks | null> {
-    try {
-      return await this.prismaService.project_tracks.findUnique({
-        where: { id: trackName },
-      });
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'validateTrack Error:',
-        `validating track!`,
-      );
-      throw theError;
-    }
-  }
+  // /**
+  //  * validate if the track exist on the database
+  //  */
+  // async validateTrack(trackName: string): Promise<project_tracks | null> {
+  //   try {
+  //     return await this.prismaService.project_tracks.findUnique({
+  //       where: { id: trackName },
+  //     });
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'validateTrack Error:',
+  //       `validating track!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async validateTracks(track_id: string): Promise<track | null> {
-    try {
-      return await this.prismaService.track.findFirst({
-        where: {
-          id: track_id,
-          name: { notIn: ['GENERAL'] },
-        },
-      });
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'validateTrack Error:',
-        `validating track!`,
-      );
-      throw theError;
-    }
-  }
+  // async validateTracks(track_id: string): Promise<track | null> {
+  //   try {
+  //     return await this.prismaService.track.findFirst({
+  //       where: {
+  //         id: track_id,
+  //         name: { notIn: ['GENERAL'] },
+  //       },
+  //     });
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'validateTrack Error:',
+  //       `validating track!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async validateRoles(role: string): Promise<user_type | null> {
-    try {
-      return await this.prismaService.user_type.findUnique({
-        where: { id: role },
-      });
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'validateRoles Error:',
-        `validating roles!`,
-      );
-      throw theError;
-    }
-  }
+  // async validateRoles(role: string): Promise<user_type | null> {
+  //   try {
+  //     return await this.prismaService.user_type.findUnique({
+  //       where: { id: role },
+  //     });
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'validateRoles Error:',
+  //       `validating roles!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async findByEmail(email: string): Promise<user | null> {
-    try {
-      return await this.prismaService.user.findFirst({
-        where: { email },
-      });
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'Finding User by Email Error:',
-        `Finding User by Email!`,
-      );
-      throw theError;
-    }
-  }
+  // async findByEmail(email: string): Promise<user | null> {
+  //   try {
+  //     return await this.prismaService.user.findFirst({
+  //       where: { email },
+  //     });
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'Finding User by Email Error:',
+  //       `Finding User by Email!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
   async isUserHasProposal(userId: string) {
     try {
@@ -355,51 +357,51 @@ export class TenderUserRepository {
   //   }
   // }
 
-  async findUserById(userId: string) {
-    this.logger.debug(`Finding user with id: ${userId}`);
-    try {
-      return await this.prismaService.user.findUnique({
-        where: { id: userId },
-        include: {
-          roles: true,
-          client_data: {
-            include: {
-              authority_detail: true,
-              client_field_details: true,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'findUserById Error:',
-        `finding user!`,
-      );
-      throw theError;
-    }
-  }
+  // async findUserById(userId: string) {
+  //   this.logger.debug(`Finding user with id: ${userId}`);
+  //   try {
+  //     return await this.prismaService.user.findUnique({
+  //       where: { id: userId },
+  //       include: {
+  //         roles: true,
+  //         client_data: {
+  //           include: {
+  //             authority_detail: true,
+  //             client_field_details: true,
+  //           },
+  //         },
+  //       },
+  //     });
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'findUserById Error:',
+  //       `finding user!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async findUser(
-    passedQuery?: Prisma.userWhereInput,
-    passedSelect?: Prisma.userSelect | null | undefined,
-  ): Promise<user | null> {
-    const findFirstArg: Prisma.userFindFirstArgs = {};
-    if (passedQuery) findFirstArg.where = passedQuery;
-    if (passedSelect) findFirstArg.select = passedSelect;
-    try {
-      return await this.prismaService.user.findFirst(findFirstArg);
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'findUser Error:',
-        `finding user!`,
-      );
-      throw theError;
-    }
-  }
+  // async findUser(
+  //   passedQuery?: Prisma.userWhereInput,
+  //   passedSelect?: Prisma.userSelect | null | undefined,
+  // ): Promise<user | null> {
+  //   const findFirstArg: Prisma.userFindFirstArgs = {};
+  //   if (passedQuery) findFirstArg.where = passedQuery;
+  //   if (passedSelect) findFirstArg.select = passedSelect;
+  //   try {
+  //     return await this.prismaService.user.findFirst(findFirstArg);
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'findUser Error:',
+  //       `finding user!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
   async findUsers(
     filter: SearchUserFilterRequest,
@@ -675,462 +677,462 @@ export class TenderUserRepository {
     }
   }
 
-  async findUserByTrack(track: string) {
-    try {
-      return await this.prismaService.user.findMany({
-        where: {
-          employee_path: track,
-        },
-        include: {
-          roles: {
-            select: {
-              user_type_id: true,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'findUserByTrack Error:',
-        `finding user by track!`,
-      );
-      throw theError;
-    }
-  }
+  // async findUserByTrack(track: string) {
+  //   try {
+  //     return await this.prismaService.user.findMany({
+  //       where: {
+  //         employee_path: track,
+  //       },
+  //       include: {
+  //         roles: {
+  //           select: {
+  //             user_type_id: true,
+  //           },
+  //         },
+  //       },
+  //     });
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'findUserByTrack Error:',
+  //       `finding user by track!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async changeUserStatus(
-    userId: string,
-    status: UserStatus,
-    reviewer_id?: string,
-  ) {
-    this.logger.info(`Changing user ${userId} status to ${status}`);
-    try {
-      return await this.prismaService.$transaction(async (prismaSession) => {
-        const user = await prismaSession.user.update({
-          where: { id: userId },
-          data: {
-            status_id: status,
-          },
-        });
-        const user_status_log = await prismaSession.user_status_log.create({
-          data: {
-            id: uuidv4(),
-            user_id: userId,
-            status_id: status,
-            account_manager_id: reviewer_id,
-          },
-          select: {
-            user_status: {
-              select: {
-                id: true,
-              },
-            },
-            user_detail: {
-              select: {
-                id: true,
-                employee_name: true,
-                email: true,
-                mobile_number: true,
-              },
-            },
-            account_manager_detail: {
-              select: {
-                id: true,
-                employee_name: true,
-                email: true,
-                mobile_number: true,
-              },
-            },
-          },
-        });
+  // async changeUserStatus(
+  //   userId: string,
+  //   status: UserStatus,
+  //   reviewer_id?: string,
+  // ) {
+  //   this.logger.info(`Changing user ${userId} status to ${status}`);
+  //   try {
+  //     return await this.prismaService.$transaction(async (prismaSession) => {
+  //       const user = await prismaSession.user.update({
+  //         where: { id: userId },
+  //         data: {
+  //           status_id: status,
+  //         },
+  //       });
+  //       const user_status_log = await prismaSession.user_status_log.create({
+  //         data: {
+  //           id: uuidv4(),
+  //           user_id: userId,
+  //           status_id: status,
+  //           account_manager_id: reviewer_id,
+  //         },
+  //         select: {
+  //           user_status: {
+  //             select: {
+  //               id: true,
+  //             },
+  //           },
+  //           user_detail: {
+  //             select: {
+  //               id: true,
+  //               employee_name: true,
+  //               email: true,
+  //               mobile_number: true,
+  //             },
+  //           },
+  //           account_manager_detail: {
+  //             select: {
+  //               id: true,
+  //               employee_name: true,
+  //               email: true,
+  //               mobile_number: true,
+  //             },
+  //           },
+  //         },
+  //       });
 
-        return {
-          user,
-          user_status_log,
-        };
-      });
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'changeUserStatus Error:',
-        `changing user status!`,
-      );
-      throw theError;
-    }
-  }
+  //       return {
+  //         user,
+  //         user_status_log,
+  //       };
+  //     });
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'changeUserStatus Error:',
+  //       `changing user status!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async createUser(
-    userData: Prisma.userCreateInput | Prisma.userUncheckedCreateInput,
-    userStatusLogData: Prisma.user_status_logUncheckedCreateInput[],
-    rolesData?: Prisma.user_roleUncheckedCreateInput[],
-    bankInfoData?: Prisma.bank_informationUncheckedCreateInput,
-    fileManagerCreateManyPayload?: Prisma.file_managerCreateManyInput[],
-    uploadedFilesPath?: string[],
-  ) {
-    try {
-      return await this.prismaService.$transaction(
-        async (prismaSession) => {
-          this.logger.info(
-            `creating user with payload of \n${logUtil(userData)}`,
-          );
-          const user = await prismaSession.user.create({
-            data: userData,
-          });
+  // async createUser(
+  //   userData: Prisma.userCreateInput | Prisma.userUncheckedCreateInput,
+  //   userStatusLogData: Prisma.user_status_logUncheckedCreateInput[],
+  //   rolesData?: Prisma.user_roleUncheckedCreateInput[],
+  //   bankInfoData?: Prisma.bank_informationUncheckedCreateInput,
+  //   fileManagerCreateManyPayload?: Prisma.file_managerCreateManyInput[],
+  //   uploadedFilesPath?: string[],
+  // ) {
+  //   try {
+  //     return await this.prismaService.$transaction(
+  //       async (prismaSession) => {
+  //         this.logger.info(
+  //           `creating user with payload of \n${logUtil(userData)}`,
+  //         );
+  //         const user = await prismaSession.user.create({
+  //           data: userData,
+  //         });
 
-          this.logger.info(
-            `creating user status with payload of \n${logUtil(
-              userStatusLogData,
-            )}`,
-          );
-          await prismaSession.user_status_log.createMany({
-            data: userStatusLogData,
-          });
+  //         this.logger.info(
+  //           `creating user status with payload of \n${logUtil(
+  //             userStatusLogData,
+  //           )}`,
+  //         );
+  //         await prismaSession.user_status_log.createMany({
+  //           data: userStatusLogData,
+  //         });
 
-          if (rolesData) {
-            this.logger.info(
-              `creating user_role with payload of \n${logUtil(rolesData)}`,
-            );
-            await prismaSession.user_role.createMany({
-              data: rolesData,
-            });
-          }
+  //         if (rolesData) {
+  //           this.logger.info(
+  //             `creating user_role with payload of \n${logUtil(rolesData)}`,
+  //           );
+  //           await prismaSession.user_role.createMany({
+  //             data: rolesData,
+  //           });
+  //         }
 
-          if (bankInfoData) {
-            this.logger.info(
-              `creating bank information with payload of \n ${logUtil(
-                bankInfoData,
-              )}`,
-            );
-            await prismaSession.bank_information.create({
-              data: bankInfoData,
-            });
-          }
+  //         if (bankInfoData) {
+  //           this.logger.info(
+  //             `creating bank information with payload of \n ${logUtil(
+  //               bankInfoData,
+  //             )}`,
+  //           );
+  //           await prismaSession.bank_information.create({
+  //             data: bankInfoData,
+  //           });
+  //         }
 
-          if (
-            fileManagerCreateManyPayload &&
-            fileManagerCreateManyPayload.length > 0
-          ) {
-            this.logger.info(
-              `file manager with payload of \n ${logUtil(
-                fileManagerCreateManyPayload,
-              )}`,
-            );
-            await prismaSession.file_manager.createMany({
-              data: fileManagerCreateManyPayload,
-            });
-          }
+  //         if (
+  //           fileManagerCreateManyPayload &&
+  //           fileManagerCreateManyPayload.length > 0
+  //         ) {
+  //           this.logger.info(
+  //             `file manager with payload of \n ${logUtil(
+  //               fileManagerCreateManyPayload,
+  //             )}`,
+  //           );
+  //           await prismaSession.file_manager.createMany({
+  //             data: fileManagerCreateManyPayload,
+  //           });
+  //         }
 
-          return user;
-        },
-        { maxWait: 50000, timeout: 150000 },
-      );
-    } catch (error) {
-      // delete the fusion auth user if the user creation failed
-      this.logger.info(
-        `Falied to store user data on db, deleting the user ${userData.id} from fusion auth`,
-      );
-      await this.fusionAuthService.fusionAuthDeleteUser(userData.id);
-      this.logger.info(
-        `deleting all uploaded files related for user ${userData.id}`,
-      );
-      if (uploadedFilesPath && uploadedFilesPath.length > 0) {
-        uploadedFilesPath.forEach(async (path) => {
-          await this.bunnyService.deleteMedia(path, true);
-        });
-      }
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'createUser error:',
-        `creating user!`,
-      );
-      throw theError;
-    }
-  }
+  //         return user;
+  //       },
+  //       { maxWait: 50000, timeout: 150000 },
+  //     );
+  //   } catch (error) {
+  //     // delete the fusion auth user if the user creation failed
+  //     this.logger.info(
+  //       `Falied to store user data on db, deleting the user ${userData.id} from fusion auth`,
+  //     );
+  //     await this.fusionAuthService.fusionAuthDeleteUser(userData.id);
+  //     this.logger.info(
+  //       `deleting all uploaded files related for user ${userData.id}`,
+  //     );
+  //     if (uploadedFilesPath && uploadedFilesPath.length > 0) {
+  //       uploadedFilesPath.forEach(async (path) => {
+  //         await this.bunnyService.deleteMedia(path, true);
+  //       });
+  //     }
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'createUser error:',
+  //       `creating user!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async updateUser(
-    userId: string,
-    userData: Prisma.userUpdateInput,
-    prismaSession?: Prisma.TransactionClient,
-  ): Promise<user> {
-    this.logger.debug(
-      `Invoke
-      update user with payload: ${JSON.stringify(userData)}`,
-    );
-    try {
-      if (prismaSession) {
-        return await prismaSession.user.update({
-          where: { id: userId },
-          data: userData,
-        });
-      } else {
-        return await this.prismaService.user.update({
-          where: { id: userId },
-          data: userData,
-        });
-      }
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'updateUser error:',
-        `updating user!`,
-      );
-      throw theError;
-    }
-  }
+  // async updateUser(
+  //   userId: string,
+  //   userData: Prisma.userUpdateInput,
+  //   prismaSession?: Prisma.TransactionClient,
+  // ): Promise<user> {
+  //   this.logger.debug(
+  //     `Invoke
+  //     update user with payload: ${JSON.stringify(userData)}`,
+  //   );
+  //   try {
+  //     if (prismaSession) {
+  //       return await prismaSession.user.update({
+  //         where: { id: userId },
+  //         data: userData,
+  //       });
+  //     } else {
+  //       return await this.prismaService.user.update({
+  //         where: { id: userId },
+  //         data: userData,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'updateUser error:',
+  //       `updating user!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async deleteUser(userId: string, tx?: PrismaService): Promise<user | null> {
-    this.logger.debug(`Deleting user with id: ${userId}`);
-    let prisma = this.prismaService;
-    if (tx) prisma = tx;
-    try {
-      return await prisma.user.delete({
-        where: { id: userId },
-      });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
-        this.logger.info('warn', `User with id: ${userId} not found`);
-        return null; // gonna be still works if the user is not found.
-      } else {
-        const theError = prismaErrorThrower(
-          error,
-          TenderUserRepository.name,
-          'deleteUser Error:',
-          `deleting user!`,
-        );
-        throw theError;
-      }
-    }
-  }
+  // async deleteUser(userId: string, tx?: PrismaService): Promise<user | null> {
+  //   this.logger.debug(`Deleting user with id: ${userId}`);
+  //   let prisma = this.prismaService;
+  //   if (tx) prisma = tx;
+  //   try {
+  //     return await prisma.user.delete({
+  //       where: { id: userId },
+  //     });
+  //   } catch (error) {
+  //     if (
+  //       error instanceof Prisma.PrismaClientKnownRequestError &&
+  //       error.code === 'P2025'
+  //     ) {
+  //       this.logger.info('warn', `User with id: ${userId} not found`);
+  //       return null; // gonna be still works if the user is not found.
+  //     } else {
+  //       const theError = prismaErrorThrower(
+  //         error,
+  //         TenderUserRepository.name,
+  //         'deleteUser Error:',
+  //         `deleting user!`,
+  //       );
+  //       throw theError;
+  //     }
+  //   }
+  // }
 
-  async deleteUserWFusionAuth(userId: string) {
-    this.logger.info(`Deleting user with id: ${userId}`);
-    try {
-      const result = await this.prismaService.$transaction(async (prisma) => {
-        const session =
-          prisma instanceof PrismaService ? prisma : this.prismaService;
+  // async deleteUserWFusionAuth(userId: string) {
+  //   this.logger.info(`Deleting user with id: ${userId}`);
+  //   try {
+  //     const result = await this.prismaService.$transaction(async (prisma) => {
+  //       const session =
+  //         prisma instanceof PrismaService ? prisma : this.prismaService;
 
-        const prismaResult = await this.deleteUser(userId, session);
-        const fusionResult = await this.fusionAuthService.fusionAuthDeleteUser(
-          userId,
-        );
-        return { fusionResult, prismaResult };
-      });
-      return result;
-    } catch (error) {
-      console.trace(error);
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'deleteUserWFusionAuth Error:',
-        `deleting user!`,
-      );
-      throw theError;
-    }
-  }
+  //       const prismaResult = await this.deleteUser(userId, session);
+  //       const fusionResult = await this.fusionAuthService.fusionAuthDeleteUser(
+  //         userId,
+  //       );
+  //       return { fusionResult, prismaResult };
+  //     });
+  //     return result;
+  //   } catch (error) {
+  //     console.trace(error);
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'deleteUserWFusionAuth Error:',
+  //       `deleting user!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async updateUserFieldByKeyValuePair(
-    userId: string,
-    updatePayload: Record<string, any>,
-    prismaSession?: Prisma.TransactionClient,
-  ) {
-    // log the key and the value
-    Object.keys(updatePayload).forEach((key) => {
-      this.logger.info(
-        `updating client field ${key} with value ${updatePayload[key]}`,
-      );
-    });
+  // async updateUserFieldByKeyValuePair(
+  //   userId: string,
+  //   updatePayload: Record<string, any>,
+  //   prismaSession?: Prisma.TransactionClient,
+  // ) {
+  //   // log the key and the value
+  //   Object.keys(updatePayload).forEach((key) => {
+  //     this.logger.info(
+  //       `updating client field ${key} with value ${updatePayload[key]}`,
+  //     );
+  //   });
 
-    try {
-      if (prismaSession) {
-        return await prismaSession.user.update({
-          where: {
-            id: userId,
-          },
-          data: {
-            ...updatePayload,
-          },
-        });
-      } else {
-        return await this.prismaService.user.update({
-          where: {
-            id: userId,
-          },
-          data: {
-            ...updatePayload,
-          },
-        });
-      }
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'updateUserFieldByKeyValuePair error details: ',
-        'updating client field!',
-      );
-      throw theError;
-    }
-  }
+  //   try {
+  //     if (prismaSession) {
+  //       return await prismaSession.user.update({
+  //         where: {
+  //           id: userId,
+  //         },
+  //         data: {
+  //           ...updatePayload,
+  //         },
+  //       });
+  //     } else {
+  //       return await this.prismaService.user.update({
+  //         where: {
+  //           id: userId,
+  //         },
+  //         data: {
+  //           ...updatePayload,
+  //         },
+  //       });
+  //     }
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'updateUserFieldByKeyValuePair error details: ',
+  //       'updating client field!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async updateUserWFusionAuth(
-    userId: string,
-    request: UpdateUserPayload,
-    createRolesData?: Prisma.user_roleUncheckedCreateInput[],
-  ) {
-    this.logger.debug(`Updating user with id: ${userId}`);
-    try {
-      return await this.prismaService.$transaction(
-        async (prisma) => {
-          if (createRolesData && createRolesData.length > 0) {
-            this.logger.info(`Deleteing all previous roles on user ${userId}`);
-            await prisma.user_role.deleteMany({
-              where: { user_id: userId },
-            });
+  // async updateUserWFusionAuth(
+  //   userId: string,
+  //   request: UpdateUserPayload,
+  //   createRolesData?: Prisma.user_roleUncheckedCreateInput[],
+  // ) {
+  //   this.logger.debug(`Updating user with id: ${userId}`);
+  //   try {
+  //     return await this.prismaService.$transaction(
+  //       async (prisma) => {
+  //         if (createRolesData && createRolesData.length > 0) {
+  //           this.logger.info(`Deleteing all previous roles on user ${userId}`);
+  //           await prisma.user_role.deleteMany({
+  //             where: { user_id: userId },
+  //           });
 
-            this.logger.info(
-              `Creating new roles for ${userId}, with payload of \n ${logUtil(
-                createRolesData,
-              )}`,
-            );
-            await prisma.user_role.createMany({
-              data: createRolesData,
-            });
-          }
+  //           this.logger.info(
+  //             `Creating new roles for ${userId}, with payload of \n ${logUtil(
+  //               createRolesData,
+  //             )}`,
+  //           );
+  //           await prisma.user_role.createMany({
+  //             data: createRolesData,
+  //           });
+  //         }
 
-          const exclude = ['password'];
-          const updateUserPayload: Prisma.userUncheckedUpdateInput =
-            Object.fromEntries(
-              Object.entries(request).filter(([k]) => !exclude.includes(k)),
-            );
+  //         const exclude = ['password'];
+  //         const updateUserPayload: Prisma.userUncheckedUpdateInput =
+  //           Object.fromEntries(
+  //             Object.entries(request).filter(([k]) => !exclude.includes(k)),
+  //           );
 
-          const prismaResult = await prisma.user.update({
-            where: { id: userId },
-            data: updateUserPayload,
-          });
+  //         const prismaResult = await prisma.user.update({
+  //           where: { id: userId },
+  //           data: updateUserPayload,
+  //         });
 
-          const fusionResult =
-            await this.fusionAuthService.fusionAuthUpdateUserRegistration(
-              userId,
-              {
-                firstName:
-                  request.employee_name && !!request.employee_name
-                    ? (request.employee_name as string)
-                    : undefined,
-                email:
-                  request.email && !!request.email
-                    ? (request.email as string)
-                    : undefined,
-                mobilePhone:
-                  request.mobile_number && !!request.mobile_number
-                    ? (request.mobile_number as string)
-                    : undefined,
-                address:
-                  request.address && !!request.address
-                    ? (request.address as string)
-                    : undefined,
-                password: request.password,
-                roles: createRolesData
-                  ? createRolesData.map((role) => role.user_type_id)
-                  : [],
-              },
-            );
-          return { prismaResult, fusionResult };
-        },
-        { maxWait: 500000, timeout: 1500000 },
-      );
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'updateUserWFusionAuth Error:',
-        `updating user!`,
-      );
-      throw theError;
-    }
-  }
+  //         const fusionResult =
+  //           await this.fusionAuthService.fusionAuthUpdateUserRegistration(
+  //             userId,
+  //             {
+  //               firstName:
+  //                 request.employee_name && !!request.employee_name
+  //                   ? (request.employee_name as string)
+  //                   : undefined,
+  //               email:
+  //                 request.email && !!request.email
+  //                   ? (request.email as string)
+  //                   : undefined,
+  //               mobilePhone:
+  //                 request.mobile_number && !!request.mobile_number
+  //                   ? (request.mobile_number as string)
+  //                   : undefined,
+  //               address:
+  //                 request.address && !!request.address
+  //                   ? (request.address as string)
+  //                   : undefined,
+  //               password: request.password,
+  //               roles: createRolesData
+  //                 ? createRolesData.map((role) => role.user_type_id)
+  //                 : [],
+  //             },
+  //           );
+  //         return { prismaResult, fusionResult };
+  //       },
+  //       { maxWait: 500000, timeout: 1500000 },
+  //     );
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'updateUserWFusionAuth Error:',
+  //       `updating user!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async createUserBankAccount(
-    userId: string,
-    bankAccounts: Prisma.bank_informationCreateInput,
-    prismaSession?: Prisma.TransactionClient,
-  ) {
-    this.logger.info(
-      `Creating bank account for user with id: ${userId}, with payload: ${JSON.stringify(
-        bankAccounts,
-      )}`,
-    );
-    try {
-      if (prismaSession) {
-        return await prismaSession.bank_information.create({
-          data: {
-            ...bankAccounts,
-          },
-        });
-      } else {
-        return await this.prismaService.bank_information.create({
-          data: {
-            ...bankAccounts,
-          },
-        });
-      }
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'createManyUserBankAccounts Error:',
-        `creating many bank accounts for user!`,
-      );
-      throw theError;
-    }
-  }
+  // async createUserBankAccount(
+  //   userId: string,
+  //   bankAccounts: Prisma.bank_informationCreateInput,
+  //   prismaSession?: Prisma.TransactionClient,
+  // ) {
+  //   this.logger.info(
+  //     `Creating bank account for user with id: ${userId}, with payload: ${JSON.stringify(
+  //       bankAccounts,
+  //     )}`,
+  //   );
+  //   try {
+  //     if (prismaSession) {
+  //       return await prismaSession.bank_information.create({
+  //         data: {
+  //           ...bankAccounts,
+  //         },
+  //       });
+  //     } else {
+  //       return await this.prismaService.bank_information.create({
+  //         data: {
+  //           ...bankAccounts,
+  //         },
+  //       });
+  //     }
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'createManyUserBankAccounts Error:',
+  //       `creating many bank accounts for user!`,
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
-  async updateBankAccount(
-    bankAccountId: string,
-    updatePayload: Record<string, any>,
-    prismaSession?: Prisma.TransactionClient,
-  ) {
-    // log the key and the value
-    Object.keys(updatePayload).forEach((key) => {
-      this.logger.info(
-        `updating bank account field ${key} with value ${updatePayload[key]}`,
-      );
-    });
+  // async updateBankAccount(
+  //   bankAccountId: string,
+  //   updatePayload: Record<string, any>,
+  //   prismaSession?: Prisma.TransactionClient,
+  // ) {
+  //   // log the key and the value
+  //   Object.keys(updatePayload).forEach((key) => {
+  //     this.logger.info(
+  //       `updating bank account field ${key} with value ${updatePayload[key]}`,
+  //     );
+  //   });
 
-    try {
-      if (prismaSession) {
-        return await prismaSession.bank_information.update({
-          where: {
-            id: bankAccountId,
-          },
-          data: {
-            ...updatePayload,
-          },
-        });
-      } else {
-        return await this.prismaService.bank_information.update({
-          where: {
-            id: bankAccountId,
-          },
-          data: {
-            ...updatePayload,
-          },
-        });
-      }
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderUserRepository.name,
-        'updateBankAccount error details: ',
-        'updating bank account field!',
-      );
-      throw theError;
-    }
-  }
+  //   try {
+  //     if (prismaSession) {
+  //       return await prismaSession.bank_information.update({
+  //         where: {
+  //           id: bankAccountId,
+  //         },
+  //         data: {
+  //           ...updatePayload,
+  //         },
+  //       });
+  //     } else {
+  //       return await this.prismaService.bank_information.update({
+  //         where: {
+  //           id: bankAccountId,
+  //         },
+  //         data: {
+  //           ...updatePayload,
+  //         },
+  //       });
+  //     }
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderUserRepository.name,
+  //       'updateBankAccount error details: ',
+  //       'updating bank account field!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
 }

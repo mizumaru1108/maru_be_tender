@@ -67,7 +67,10 @@ export class TenderAppointmentService {
     const timezone = new Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     // check if the client is a client account or not
-    const client = await this.tenderUserRepository.findUserById(client_id);
+    const client = await this.tenderUserRepository.findFirst({
+      id: request.client_id,
+      includes_relation: ['client_data'],
+    });
     if (!client) throw new NotFoundException('Client not found!');
     const clientRoles = client?.roles.map((role) => role.user_type_id);
     if (clientRoles && clientRoles?.indexOf('CLIENT') === -1) {

@@ -66,7 +66,7 @@ export class TenderMessagesService {
       throw new BadRequestException('Attachment is required!');
     }
 
-    const sender = await this.tenderUserRepository.findUserById(senderId);
+    const sender = await this.tenderUserRepository.findFirst({ id: senderId });
     if (!sender) throw new BadRequestException('Sender not found!');
     const validUserRole = appRoleMappers[userRole as TenderFusionAuthRoles];
     if (!validUserRole) {
@@ -79,7 +79,9 @@ export class TenderMessagesService {
       throw new BadRequestException('You do not have this role!');
     }
 
-    const partner = await this.tenderUserRepository.findUserById(partner_id);
+    const partner = await this.tenderUserRepository.findFirst({
+      id: partner_id,
+    });
     if (!partner) throw new BadRequestException('Partner not found!');
 
     const partnerRole: string[] = partner.roles.map(
