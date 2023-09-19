@@ -27,6 +27,7 @@ import { ClientCardProps } from './types';
  */
 const statusStyle = {
   CANCELED_ACCOUNT: { color: '#FF4842', backgroundColor: '#FF484229' },
+  DELETED: { color: '#FF4842', backgroundColor: '#FF484229' },
   ACTIVE_ACCOUNT: { color: '#0E8478', backgroundColor: '#0E847829' },
   SUSPENDED_ACCOUNT: { color: '#FFC107', backgroundColor: '#FFC10729' },
   WAITING_FOR_ACTIVATION: { color: '#FFC107', backgroundColor: '#FFC10729' }, // this is the same as pending

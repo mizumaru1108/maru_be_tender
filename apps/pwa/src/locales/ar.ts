@@ -1842,6 +1842,8 @@ const ar = {
         label_active_account: 'حساب مفعل',
         label_canceled_account: 'حساب ملغى',
         label_rejected_account: 'حساب مرفوض',
+        label_suspended_account: 'الحساب موقوف',
+        label_deleted: 'الحساب المحذوف',
         label_pending: 'قيد الانتظار',
         label_approved: 'مقبول',
         label_rejected: 'مرفوض',
