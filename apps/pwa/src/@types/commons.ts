@@ -154,6 +154,7 @@ export interface TrackProps {
   with_consultation: boolean;
   created_at: string;
   updated_at: string;
+  is_deleted: boolean;
 }
 
 export interface BankReduxProps {

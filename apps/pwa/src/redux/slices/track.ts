@@ -21,6 +21,7 @@ const initialState: TrackState = {
       with_consultation: true,
       created_at: '01-01-2023',
       updated_at: '01-01-2023',
+      is_deleted: false,
     },
   ],
 };
@@ -59,7 +60,7 @@ export const getTracks = (role: string) => async () => {
   try {
     dispatch(slice.actions.startLoading);
 
-    const response = await axiosInstance.get(`tender/track/fetch-all`, {
+    const response = await axiosInstance.get(`tender/track/fetch-all?is_deleted=1`, {
       headers: { 'x-hasura-role': role },
     });
     if (response.data.statusCode === 200) {

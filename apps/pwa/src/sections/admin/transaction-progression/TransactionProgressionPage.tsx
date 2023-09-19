@@ -14,6 +14,7 @@ const TransactionProgressionPage = () => {
   const [open, setOpen] = React.useState<boolean>(false);
   const { tracks } = useSelector((state) => state.tracks);
 
+  console.log({ tracks });
   const handleOpen = () => {
     setOpen(true);
   };
@@ -100,17 +101,19 @@ const TransactionProgressionPage = () => {
             </Button>
           </Stack>
         </Grid>
-        {tracks.map((track, index) => (
-          <Grid item md={4} sm={6} xs={12} key={index}>
-            <Card sx={{ py: 3, background: '#fff' }}>
-              <ContentTrackCard
-                id={track.id}
-                name={track.name}
-                withConsultation={track.with_consultation}
-              />
-            </Card>
-          </Grid>
-        ))}
+        {tracks
+          .filter((item) => item.is_deleted === false)
+          .map((track, index) => (
+            <Grid item md={4} sm={6} xs={12} key={index}>
+              <Card sx={{ py: 3, background: '#fff' }}>
+                <ContentTrackCard
+                  id={track.id}
+                  name={track.name}
+                  withConsultation={track.with_consultation}
+                />
+              </Card>
+            </Grid>
+          ))}
       </Grid>
     </Grid>
   );
