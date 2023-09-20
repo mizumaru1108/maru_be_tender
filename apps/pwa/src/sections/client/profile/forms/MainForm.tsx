@@ -268,8 +268,12 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
           setValue('client_field', defaultValues.client_field);
         }
       }
-      if (defaultValues.client_field === 'main' && defaultValues.authority_id) {
-        setValue('authority', defaultValues.authority_id);
+      if (defaultValues.client_field === 'main') {
+        if (defaultValues.authority_id) {
+          setValue('authority', defaultValues.authority_id);
+        } else {
+          setValue('authority', '');
+        }
       } else {
         setValue('authority', defaultValues.authority);
       }
@@ -282,7 +286,9 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
           fetchAuthorities(tmpClientId);
         }
         setClientFieldId(tmpClientId);
-        // setValue('client_field', tmpClientId);
+        setValue('client_field', tmpClientId);
+      } else {
+        setValue('client_field', '');
       }
       //  else {
       //   alert('tmpClientId not found');

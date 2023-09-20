@@ -9,10 +9,11 @@ import { nanoid } from 'nanoid';
 import { LIST_OF_BANK } from 'sections/auth/register/RegisterFormData';
 import { useSelector } from '../../../../redux/store';
 import { AuthorityInterface } from '../../../admin/bank-name/list/types';
+import { SubmitBankForm } from 'sections/client/profile/ClientProfileEditForm';
 
 type FormProps = {
   children?: React.ReactNode;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: SubmitBankForm | BankingValuesProps[]) => void;
   initialValue: Array<BankingValuesProps>;
   onDelete: (data: number) => void;
   isEdit?: boolean;

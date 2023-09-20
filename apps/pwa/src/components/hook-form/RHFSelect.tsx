@@ -53,12 +53,12 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
     dispatch(getBankList());
   };
 
-  // useEffect(() => {
-  //   if (name === 'bank_name') {
-  //     getBankList();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [name]);
+  useEffect(() => {
+    if (name === 'bank_name') {
+      handleRefetchBankList();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name]);
   // console.log('error', error);
 
   return (
@@ -211,7 +211,7 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
               onClick={handleRefetchBankList}
               endIcon={<ReplayIcon />}
             >
-              Re-try Fetching Bank List
+              إعادة جلب قائمة البنك
             </Button>
           ) : null}
         </>

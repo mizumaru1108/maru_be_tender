@@ -1,33 +1,30 @@
-import { Box, IconButton, Typography, Stack, Button, Tabs, Tab } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Box, IconButton, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+import { useSnackbar } from 'notistack';
+import { gettingUserDataForEdit } from 'queries/client/gettingUserDataForEdit';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { useQuery } from 'urql';
 import {
-  AccountEditValuesProps,
-  AccountValuesProps,
   AdministrativeValuesProps,
   BankingValuesProps,
   ConnectingValuesProps,
   LicenseValuesProps,
   MainValuesProps,
 } from '../../../@types/register';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { FileProp } from '../../../components/upload';
+import axiosInstance from '../../../utils/axios';
+import ActionsBox from './ActionsBox';
 import {
-  MainForm,
-  ConnectingInfoForm,
-  LicenseInfoForm,
   AdministrativeInfoForm,
   BankingInfoForm,
+  ConnectingInfoForm,
+  LicenseInfoForm,
+  MainForm,
 } from './forms';
-import ActionsBox from './ActionsBox';
-import Toast from 'components/toast';
-import { useTheme } from '@mui/material/styles';
-import { useQuery } from 'urql';
-import { gettingUserDataForEdit } from 'queries/client/gettingUserDataForEdit';
-import useAuth from 'hooks/useAuth';
-import axiosInstance from '../../../utils/axios';
-import { LoadingButton } from '@mui/lab';
-import { useSnackbar } from 'notistack';
-import { FileProp } from '../../../components/upload';
 const taps = [
   'register_first_tap',
   'register_second_tap',
@@ -43,6 +40,12 @@ interface editedTabs {
   form4: string;
   form5: string;
   numberOfUpdatedBanks?: number;
+}
+
+export interface SubmitBankForm {
+  created_banks?: BankingValuesProps[];
+  updated_banks?: BankingValuesProps[];
+  deleted_banks?: BankingValuesProps[];
 }
 
 function ClientProfileEditForm() {
@@ -538,7 +541,7 @@ function ClientProfileEditForm() {
     }
   };
 
-  const onSubmit5 = (data: BankingValuesProps) => {
+  const onSubmit5 = (data: any) => {
     // console.log({ data });
     window.scrollTo(0, 0);
     if (isEdit && isEdit.form5) {
@@ -557,6 +560,38 @@ function ClientProfileEditForm() {
       // }));
     }
     if (isEdit && !isEdit.form5) {
+      let mergeArray: BankingValuesProps[] = [];
+      if (
+        (data as BankingValuesProps[]).length > 0 &&
+        !data.created_banks &&
+        !data.updated_banks &&
+        !data.updated_banks
+      ) {
+        mergeArray = data as BankingValuesProps[];
+      } else {
+        if (data && data?.created_banks) {
+          if (data?.created_banks?.length! > 0) {
+            const tmpCreatedBanks =
+              data?.created_banks && data?.created_banks.map((item: any) => item);
+            mergeArray = [...mergeArray, ...tmpCreatedBanks];
+          }
+        }
+        if (data && data?.updated_banks) {
+          if (data?.updated_banks?.length! > 0) {
+            const tmpUpdatedBanks =
+              data?.updated_banks && data?.updated_banks.map((item: any) => item);
+            mergeArray = [...mergeArray, ...tmpUpdatedBanks];
+          }
+        }
+        if (data && data?.deleted_banks) {
+          if (data?.deleted_banks?.length! > 0) {
+            const tmpDeletedBanks =
+              data?.deleted_banks && data?.deleted_banks.map((item: any) => item);
+            mergeArray = [...mergeArray, ...tmpDeletedBanks];
+          }
+        }
+      }
+      console.log({ mergeArray });
       setOpen(true);
       setIsEdit((prevIsEdit: any) => ({
         ...prevIsEdit,
@@ -565,6 +600,7 @@ function ClientProfileEditForm() {
       setProfileState((prevProfileState: any) => ({
         ...prevProfileState,
         ...data,
+        form5: mergeArray,
       }));
     }
   };
@@ -581,7 +617,13 @@ function ClientProfileEditForm() {
     let newBankInformation = {};
     newBankInformation = {
       ...newBankInformation,
-      old_banks: [...profileState.form5],
+      old_banks: [...profileState.form5].map((item) => {
+        const tmpItme = item;
+        return {
+          ...tmpItme,
+          bank_name: tmpItme.bank_name || '-',
+        };
+      }),
     };
     if (profileState.updated_banks.length > 0) {
       newBankInformation = {
