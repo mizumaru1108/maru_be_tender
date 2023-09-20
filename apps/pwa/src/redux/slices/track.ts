@@ -60,7 +60,7 @@ export const getTracks = (role: string) => async () => {
   try {
     dispatch(slice.actions.startLoading);
 
-    const response = await axiosInstance.get(`tender/track/fetch-all?is_deleted=0`, {
+    const response = await axiosInstance.get(`tender/track?is_deleted=0`, {
       headers: { 'x-hasura-role': role },
     });
     if (response.data.statusCode === 200) {
