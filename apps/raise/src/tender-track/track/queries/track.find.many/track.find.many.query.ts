@@ -26,6 +26,7 @@ export class TrackFindManyQueryHandler
   constructor(private readonly trackRepo: TrackRepository) {}
 
   async execute(query: TrackFindManyQuery): Promise<TrackFindManyQueryResult> {
+    // console.log('kintil2');
     const data = await this.trackRepo.findMany({
       ...query,
     });

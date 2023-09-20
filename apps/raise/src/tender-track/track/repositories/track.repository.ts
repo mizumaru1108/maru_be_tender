@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TrackEntity } from '../entities/track.entity';
+import { logUtil } from '../../../commons/utils/log-util';
 
 export class TrackCreateProps {
   id?: string;
@@ -160,6 +161,8 @@ export class TrackRepository {
         is_deleted: false,
       };
     }
+
+    args.where = whereClause;
     return args;
   }
 
@@ -173,6 +176,7 @@ export class TrackRepository {
       const getSortDirection = sort_direction ? sort_direction : 'desc';
 
       const options = this.findManyFilters(props);
+      // console.log(logUtil(options));
       let queryOptions: Prisma.trackFindManyArgs = {
         where: options.where,
 

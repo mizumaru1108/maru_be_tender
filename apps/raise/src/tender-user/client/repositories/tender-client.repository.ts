@@ -827,35 +827,44 @@ export class TenderClientRepository {
     fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
   ) {
     try {
-      return await this.prismaService.$transaction(async (prisma) => {
-        const createdEditRequest = await prisma.edit_requests.create({
-          data: editRequestLogPayload,
-          include: {
-            user: true,
-          },
-        });
-
-        if (
-          fileManagerCreateManyPayload &&
-          fileManagerCreateManyPayload.length > 0
-        ) {
-          await prisma.file_manager.createMany({
-            data: fileManagerCreateManyPayload,
-          });
-        }
-
-        await prisma.edit_requests.deleteMany({
-          where: {
-            user_id: userId,
-            status_id: {
-              in: ['APPROVED', 'REJECTED'],
+      return await this.prismaService.$transaction(
+        async (prisma) => {
+          console.log('creating edit request');
+          const createdEditRequest = await prisma.edit_requests.create({
+            data: editRequestLogPayload,
+            include: {
+              user: true,
             },
-          },
-        });
+          });
 
-        return createdEditRequest;
-      });
+          console.log('creating file manager');
+          if (
+            fileManagerCreateManyPayload &&
+            fileManagerCreateManyPayload.length > 0
+          ) {
+            await prisma.file_manager.createMany({
+              data: fileManagerCreateManyPayload,
+            });
+          }
+
+          await prisma.edit_requests.deleteMany({
+            where: {
+              user_id: userId,
+              status_id: {
+                in: ['APPROVED', 'REJECTED'],
+              },
+            },
+          });
+
+          // throw new Error('testing');
+          return createdEditRequest;
+        },
+        {
+          timeout: 50000,
+        },
+      );
     } catch (error) {
+      console.trace({ error });
       const theError = prismaErrorThrower(
         error,
         TenderClientRepository.name,

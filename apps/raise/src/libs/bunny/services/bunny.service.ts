@@ -1,15 +1,14 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 // import { MulterFile } from '@webundsoehne/nest-fastify-file-upload/dist/interfaces/multer-options.interface';
 import axios, { AxiosRequestConfig } from 'axios';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+import { TenderFilePayload } from 'src/tender-commons/dto/tender-file-payload.dto';
+import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
+import { generateFileName } from 'src/tender-commons/utils/generate-filename';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { generateRandomNumberString } from '../../../commons/utils/generate-random-string';
-import { logUtil } from '../../../commons/utils/log-util';
 import { sanitizeString } from '../../../commons/utils/sanitize-string';
 import { uploadFileNameParser } from '../../../commons/utils/upload-filename-parser';
 import {
@@ -21,9 +20,6 @@ import {
   validateFileUploadSize,
 } from '../../../commons/utils/validate-file-size';
 import { FileUploadErrorException } from '../exception/file-upload-error.exception';
-import { TenderFilePayload } from 'src/tender-commons/dto/tender-file-payload.dto';
-import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
-import { generateFileName } from 'src/tender-commons/utils/generate-filename';
 
 /**
  * Nest Bunny Module
@@ -31,7 +27,8 @@ import { generateFileName } from 'src/tender-commons/utils/generate-filename';
  */
 @Injectable()
 export class BunnyService {
-  private readonly logger = new Logger(BunnyService.name);
+  // private readonly logger = new Logger(BunnyService.name);
+  @InjectPinoLogger(BunnyService.name) private logger: PinoLogger;
   private appEnv: string;
   private storageUrlMedia: string;
   private storageAccessKey: string;
@@ -80,10 +77,10 @@ export class BunnyService {
   async checkIfImageExists(path: string): Promise<boolean> {
     const mediaUrl = this.storageUrlMedia + '/' + path;
 
-    this.logger.log(
-      'info',
-      `Checking if image exists at ${mediaUrl} at bunny storage ...`,
-    );
+    // this.logger.log(
+    //   'info',
+    //   `Checking if image exists at ${mediaUrl} at bunny storage ...`,
+    // );
 
     const options: AxiosRequestConfig<any> = {
       method: 'GET',
@@ -96,17 +93,17 @@ export class BunnyService {
 
     try {
       const response = await axios(options);
-      this.logger.log(
-        'Check Result: %s %s',
-        response.status,
-        response.statusText,
-      );
+      // this.logger.log(
+      //   'Check Result: %s %s',
+      //   response.status,
+      //   response.statusText,
+      // );
       return true;
     } catch (error) {
-      this.logger.log(
-        'Check Result: %s',
-        JSON.stringify(error.response.data, null, 2),
-      );
+      // this.logger.log(
+      //   'Check Result: %s',
+      //   JSON.stringify(error.response.data, null, 2),
+      // );
       return false;
     }
   }
@@ -132,18 +129,18 @@ export class BunnyService {
     };
 
     try {
-      this.logger.log(
-        `Uploading to Bunny: ${mediaUrl} (${binary.length} bytes)...`,
-      );
+      // this.logger.log(
+      //   `Uploading to Bunny: ${mediaUrl} (${binary.length} bytes)...`,
+      // );
       const response = await axios(options);
-      this.logger.log(
-        'Uploaded %s (%d bytes) to Bunny: %s %s %s',
-        mediaUrl,
-        binary.length,
-        response.status,
-        response.statusText,
-        JSON.stringify(response.data, null, 2),
-      );
+      // this.logger.log(
+      //   'Uploaded %s (%d bytes) to Bunny: %s %s %s',
+      //   mediaUrl,
+      //   binary.length,
+      //   response.status,
+      //   response.statusText,
+      //   JSON.stringify(response.data, null, 2),
+      // );
       return true;
     } catch (error) {
       throw new InternalServerErrorException(
@@ -159,7 +156,7 @@ export class BunnyService {
       : this.storageUrlMedia + '/' + path;
 
     const cdnUrl: string = includeCdn ? path : this.cdnUrl + '/' + path;
-    this.logger.log('info', `Deleting ${cdnUrl} from storage ...`);
+    // this.logger.log('info', `Deleting ${cdnUrl} from storage ...`);
 
     const options: AxiosRequestConfig<any> = {
       method: 'DELETE',
@@ -172,10 +169,10 @@ export class BunnyService {
     try {
       const response = await axios(options);
       if (response.data.HttpCode === 200) {
-        this.logger.log(
-          `${cdnUrl} has been removed from the cloud service!`,
-          JSON.stringify(response.data, null, 2),
-        );
+        // this.logger.log(
+        //   `${cdnUrl} has been removed from the cloud service!`,
+        //   JSON.stringify(response.data, null, 2),
+        // );
       }
       return true;
     } catch (error) {
@@ -200,12 +197,12 @@ export class BunnyService {
       ? uploadFileNameParser(file.originalname)
       : file.originalname;
 
-    this.logger.log('info', 'fileName before path: ', fileName);
+    // this.logger.log('info', 'fileName before path: ', fileName);
 
     if (path) {
       fileName = path + '/' + fileName;
     }
-    this.logger.log('info', `path=${path} fileName after path=${fileName}`);
+    // this.logger.log('info', `path=${path} fileName after path=${fileName}`);
 
     const mediaUrl = this.storageUrlMedia + '/' + fileName;
 
@@ -222,18 +219,19 @@ export class BunnyService {
     };
 
     try {
-      this.logger.log(
-        `Uploading to Bunny: ${mediaUrl} (${file.buffer.length} bytes)...`,
-      );
-      const response = await axios(options);
-      this.logger.log(
-        'Uploaded %s (%d bytes) to Bunny: %s %s %s',
-        mediaUrl,
-        file.buffer.length,
-        response.status,
-        response.statusText,
-        JSON.stringify(response.data, null, 2),
-      );
+      // this.logger.log(
+      //   `Uploading to Bunny: ${mediaUrl} (${file.buffer.length} bytes)...`,
+      // );
+      // const response = await axios(options);
+      await axios(options);
+      // this.logger.log(
+      //   'Uploaded %s (%d bytes) to Bunny: %s %s %s',
+      //   mediaUrl,
+      //   file.buffer.length,
+      //   response.status,
+      //   response.statusText,
+      //   JSON.stringify(response.data, null, 2),
+      // );
       return fileName;
     } catch (error) {
       this.logger.error(
@@ -268,19 +266,19 @@ export class BunnyService {
     };
 
     try {
-      this.logger.log(
-        'info',
-        `Uploading [${file.originalname}] (${file.size} bytes) to Bunny ${this.storageUrlMedia} ...`,
-      );
+      // this.logger.log(
+      //   'info',
+      //   `Uploading [${file.originalname}] (${file.size} bytes) to Bunny ${this.storageUrlMedia} ...`,
+      // );
       const response = await axios(options);
-      this.logger.log(
-        'info',
-        `${
-          file.originalname
-        } has been Uploaded!, uploaded Url: ${cdnUrl}, response ${logUtil(
-          response.data,
-        )}`,
-      );
+      // this.logger.log(
+      //   'info',
+      //   `${
+      //     file.originalname
+      //   } has been Uploaded!, uploaded Url: ${cdnUrl}, response ${logUtil(
+      //     response.data,
+      //   )}`,
+      // );
       return cdnUrl;
     } catch (error) {
       this.logger.error(
@@ -317,19 +315,27 @@ export class BunnyService {
     };
 
     try {
-      this.logger.log(
-        'info',
-        `Uploading [${fileName}] (${fileBuffer.length} bytes) to Bunny ${this.storageUrlMedia} ...`,
+      // this.logger.log(
+      //   'info',
+      //   `Uploading [${fileName}] (${fileBuffer.length} bytes) to Bunny ${this.storageUrlMedia} ...`,
+      // );
+      this.logger.info(
+        'Uploading %j (%j bytes) to Bunny %j ...',
+        fileName,
+        fileBuffer.length,
+        this.storageUrlMedia,
       );
-      const response = await axios(options);
-      this.logger.log(
-        'info',
-        `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}, ${JSON.stringify(
-          response.data,
-          null,
-          2,
-        )}`,
-      );
+      // const response = await axios(options);
+      await axios(options);
+      // this.logger.log(
+      //   'info',
+      //   `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}, ${JSON.stringify(
+      //     response.data,
+      //     null,
+      //     2,
+      //   )}`,
+      // );
+      this.logger.info('`%j has been Uploaded!, uploaded Url: %j', fileName);
       return cdnUrl;
     } catch (error) {
       this.logger.error(
@@ -444,13 +450,13 @@ export class BunnyService {
     };
 
     try {
-      this.logger.log(
-        `Uploading [${fileName}] (${fileBuffer.length} bytes) to Bunny ${this.storageUrlMedia} ...`,
-      );
+      // this.logger.log(
+      //   `Uploading [${fileName}] (${fileBuffer.length} bytes) to Bunny ${this.storageUrlMedia} ...`,
+      // );
       await axios(options);
-      this.logger.log(
-        `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}`,
-      );
+      // this.logger.log(
+      //   `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}`,
+      // );
       return cdnUrl; // TODO: change only to use path on next iteration.
     } catch (error) {
       this.logger.error(

@@ -119,10 +119,10 @@ export class TrackController {
     summary: 'Find many track',
   })
   @BasePaginationApiOkResponse(TrackEntity)
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_admin')
+  @UseGuards(TenderJwtGuard)
   @Get()
   async findMany(@Query() query: TrackFindManyQueryDto) {
+    console.log('kintil');
     const builder = Builder<TrackFindManyQuery>(TrackFindManyQuery, {
       ...query,
     });

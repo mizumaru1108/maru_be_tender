@@ -596,6 +596,8 @@ export class TenderClientService {
   ): Promise<any> {
     let uploadedFilePath: string[] = [];
 
+    console.log({ editRequest });
+
     try {
       const {
         created_banks,
@@ -609,6 +611,7 @@ export class TenderClientService {
         selectLang,
       } = editRequest;
 
+      // check data data_entry_mobile
       if (data_entry_mobile) {
         const isNumExist = await this.tenderUserRepository.checkExistance(
           data_entry_mobile,
@@ -627,6 +630,7 @@ export class TenderClientService {
         }
       }
 
+      // check license number
       if (license_number) {
         const isLicenseExist = await this.tenderUserRepository.checkExistance(
           '',
@@ -643,6 +647,7 @@ export class TenderClientService {
         }
       }
 
+      // check user is active or not if it is not active it will be fail
       const clientData =
         await this.tenderClientRepository.findClientDataByUserId(user.id);
       if (!clientData) throw new NotFoundException('Client data not found!');
@@ -656,6 +661,7 @@ export class TenderClientService {
         }
       }
 
+      // find old pending log, if there's pending log then it will be fail
       const pendingLogs = await this.tenderClientRepository.countMyPendingLogs(
         user.id,
       );
@@ -665,7 +671,7 @@ export class TenderClientService {
         );
       }
 
-      // excluding some prop from client data
+      // create newClientDataObject contain all client data exclude user and id
       const exclude = ['user', 'id'];
       const newClientDataObject = Object.fromEntries(
         Object.entries(clientData).filter(([k]) => !exclude.includes(k)),
@@ -676,8 +682,9 @@ export class TenderClientService {
         bank_information: old_banks,
       } as ClientEditRequestFieldDto;
 
-      const clientOldRequest = this.sanitizeEditRequest(tmp); // client_request (old data / previous data)
-      let clientNewRequest = this.sanitizeEditRequest(editRequest); // client_request (new data / data that requested to account manager to be approved)
+      // delete created_banks, deleted_banks, updated_banks,old_banks from oldData object (sanitize)
+      const clientOldRequest = this.sanitizeEditRequest(tmp); // previous data
+      let clientNewRequest = this.sanitizeEditRequest(editRequest); // data requested to account manager to be approved
       const createdBankInfo: ExistingClientBankInformation[] = [];
       const updatedBankInfo: ExistingClientBankInformation[] = [];
       const deletedBankInfo: ExistingClientBankInformation[] = [];
@@ -863,10 +870,12 @@ export class TenderClientService {
         };
       }
 
-      const ofdecFromDb = clientData.board_ofdec_file;
-      // console.log({ ofdecFromDb });
+      const ofdecFromDb = clientData?.board_ofdec_file; // old client data ofdec (old ofdec)
+
       const oldOfdec: finalUploadFileJson[] = [];
       const newOfdec: finalUploadFileJson[] = [];
+
+      // board_ofdec_file here is from the request (new ofdec)
       if (!!board_ofdec_file && board_ofdec_file.length > 0) {
         // console.log(
         //   'board_ofdec_file[] on request length = ',
@@ -1008,11 +1017,31 @@ export class TenderClientService {
           }
         }
 
-        if (ofdecFromDb instanceof Array) {
-          ofdecFromDb.forEach((existingOfdec) => {
-            if (isUploadFileJsonb(existingOfdec)) {
-              // console.log({ existingOfdec });
-              const tmpExisting: finalUploadFileJson = existingOfdec as any;
+        //handling either old ofdec exist or not
+        // console.log({ ofdecFromDb });
+        if (!!ofdecFromDb) {
+          // handling if old ofdec is exist, either is array or not
+          if (ofdecFromDb instanceof Array) {
+            ofdecFromDb.forEach((existingOfdec) => {
+              if (isUploadFileJsonb(existingOfdec)) {
+                // console.log({ existingOfdec });
+                const tmpExisting: finalUploadFileJson = existingOfdec as any;
+                const idx = newOfdec.findIndex(
+                  (newData) => newData.url === tmpExisting.url,
+                );
+
+                if (idx === -1) {
+                  tmpExisting.color = 'red';
+                  oldOfdec.push(tmpExisting);
+                  // console.log({ oldOfdec });
+                }
+              }
+            });
+          } else {
+            if (isUploadFileJsonb(ofdecFromDb)) {
+              const tmpExisting: finalUploadFileJson = ofdecFromDb as any;
+              // console.log({ ofdecFromDb });
+              // console.log({ newOfdec });
               const idx = newOfdec.findIndex(
                 (newData) => newData.url === tmpExisting.url,
               );
@@ -1023,34 +1052,27 @@ export class TenderClientService {
                 // console.log({ oldOfdec });
               }
             }
-          });
-        } else {
-          if (isUploadFileJsonb(ofdecFromDb)) {
-            const tmpExisting: finalUploadFileJson = ofdecFromDb as any;
-            // console.log({ ofdecFromDb });
-            // console.log({ newOfdec });
-            const idx = newOfdec.findIndex(
-              (newData) => newData.url === tmpExisting.url,
-            );
-
-            if (idx === -1) {
-              tmpExisting.color = 'red';
-              oldOfdec.push(tmpExisting);
-              // console.log({ oldOfdec });
-            }
           }
         }
       }
 
-      const oldLicenseFile: finalUploadFileJson = clientOldRequest.license_file;
-      let newLicenseFile: finalUploadFileJson = clientOldRequest.license_file;
+      let oldLicenseFile: finalUploadFileJson | null =
+        clientOldRequest?.license_file || null;
+      let newLicenseFile: finalUploadFileJson | null =
+        clientOldRequest?.license_file || null;
+
+      // console.log({ oldLicenseFile });
+      // console.log({ newLicenseFile });
+      // if there's new license file form request
       if (!!license_file) {
         // console.log(logUtil(license_file));
+        // if it is unuploaded file
         if (isTenderFilePayload(license_file)) {
           // this.logger.log(
           //   'info',
           //   'liscene_file is a new file, uploading liscene file',
           // );
+          // console.log('license file is a new file uploadine license file');
           const uploadResult = await this.uploadClientFile(
             user.id,
             'Uploading license file for user',
@@ -1075,10 +1097,13 @@ export class TenderClientService {
           };
           fileManagerCreateManyPayload.push(payload);
 
-          oldLicenseFile.color = 'red';
+          if (oldLicenseFile) {
+            oldLicenseFile.color = 'red';
+          }
           newLicenseFile = uploadResult.fileObj;
           newLicenseFile.color = 'green';
         }
+        // if it is already uploaded file
         if (isUploadFileJsonb(license_file)) {
           // this.logger.log(
           //   'info',
@@ -1086,14 +1111,30 @@ export class TenderClientService {
           //     license_file,
           //   )}`,
           // );
-          const tmp: UploadFilesJsonbDto = license_file;
-          if (tmp.url !== clientOldRequest.license_file.url) {
-            oldLicenseFile.color = 'red';
-            newLicenseFile = license_file;
-            newLicenseFile.color = 'green';
+          console.log(`license file is an uploaded file`);
+          if (
+            oldLicenseFile &&
+            oldLicenseFile !== null &&
+            newLicenseFile &&
+            newLicenseFile !== null
+          ) {
+            const tmp: UploadFilesJsonbDto = license_file;
+            if (tmp.url !== clientOldRequest.license_file.url) {
+              oldLicenseFile.color = 'red';
+              newLicenseFile = {
+                ...license_file,
+                color: 'green',
+              };
+            } else {
+              oldLicenseFile.color = 'transparent';
+              newLicenseFile.color = 'transparent';
+            }
           } else {
-            oldLicenseFile.color = 'transparent';
-            newLicenseFile.color = 'transparent';
+            oldLicenseFile = null;
+            newLicenseFile = {
+              ...license_file,
+              color: 'green',
+            };
           }
         }
       }
