@@ -1708,6 +1708,7 @@ const en = {
     sent_section: 'Sent Section',
     clients_name: 'Clients Name',
     employee: 'Employee',
+    entity_name: 'Entity Name',
     start_date: 'Start Date',
     at: 'at',
     sent_by: 'Sent by',
@@ -2518,6 +2519,7 @@ const en = {
       track: 'Track',
       add_new_track: 'Add New Track',
       payment_reject: 'Payment Reject',
+      delete_track: 'Delete Track',
     },
     label: {
       track_name: 'Track Name',
@@ -2713,6 +2715,10 @@ const en = {
       duplicate_mobile_number: 'Mobile number already exist',
     },
     auth: {
+      reset_password: {
+        wrong_old_password:
+          'Please confirm with account manager because you cannot change your password temporarily',
+      },
       register: {
         send_verify_email: {
           success: 'The verification email has been sent successfully',

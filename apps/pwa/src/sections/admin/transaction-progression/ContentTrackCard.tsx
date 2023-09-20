@@ -8,6 +8,7 @@ import AddNewTrack from './AddNewTrack';
 function ContentTrackCard({ id, name, withConsultation }: any) {
   const [open, setOpen] = React.useState<boolean>(false);
   const [isEdit, setIsEdit] = React.useState<boolean>(false);
+  const [isDelete, setIsDelete] = React.useState<boolean>(false);
   const { translate } = useLocales();
 
   const tempName = name.toLowerCase();
@@ -29,7 +30,11 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
     setIsEdit(true);
     setOpen(true);
   };
-  const handleDelete = () => {};
+  const handleDelete = () => {
+    setIsEdit(false);
+    setIsDelete(true);
+    setOpen(true);
+  };
 
   return (
     <Grid>
@@ -44,6 +49,7 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
             trackName={name}
             withConsultation={withConsultation}
             isEdit={isEdit}
+            isDelete={isDelete}
             // loading={loading}
             onClose={handleOnClose}
             // onSubmit={handleSubmit}
@@ -98,7 +104,7 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
               }
               onClick={handleDelete}
             >
-              حذف
+              {translate('button.delete')}
             </Button> */}
             <Button
               sx={{

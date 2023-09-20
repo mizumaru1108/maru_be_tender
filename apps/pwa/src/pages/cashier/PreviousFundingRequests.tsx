@@ -1,22 +1,11 @@
 import { Container } from '@mui/material';
-import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import CardTableBE from 'components/card-table/CardTableBE';
-import { gettingPreviousRequests } from 'queries/project-supervisor/gettingPreviousRequests';
-import { getProposals } from 'queries/commons/getProposal';
-import useLocales from '../../hooks/useLocales';
-import useAuth from 'hooks/useAuth';
-import { useSelector } from 'redux/store';
-import { useEffect, useState } from 'react';
+import Page from 'components/Page';
 import CardTableByBE from '../../components/card-table/CardTableByBE';
+import useLocales from '../../hooks/useLocales';
 
 function PreviousFundingRequests() {
-  const { user } = useAuth();
   const { translate } = useLocales();
-
-  const { proposal } = useSelector((state) => state.proposal);
-
-  const [paymentFilter, setPayementFilter] = useState<any>([]);
 
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
@@ -26,19 +15,6 @@ function PreviousFundingRequests() {
     flexDirection: 'column',
     gap: 20,
   }));
-
-  useEffect(() => {
-    const acc_payments = proposal.number_of_payments_by_supervisor;
-    const payment_actual_done = proposal.payments.filter(
-      (el: { status: string }) => el.status === 'done'
-    ).length;
-
-    if (payment_actual_done === acc_payments && proposal.inner_status !== 'DONE_BY_CASHIER') {
-      setPayementFilter(['accepted_by_finance', 'done']);
-    } else {
-      setPayementFilter(['accepted_by_finance']);
-    }
-  }, [proposal]);
 
   return (
     // <Page title="طلبات الدعم سابقة">

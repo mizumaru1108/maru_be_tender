@@ -19,7 +19,7 @@ type FormProps = {
 const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: FormProps) => {
   const { translate } = useLocales();
   const RegisterSchema = Yup.object().shape({
-    ceo_name: Yup.string().required('Executive Director is required'),
+    ceo_name: Yup.string().required(translate('errors.register.ceo_name.required')),
     ceo_mobile: Yup.string()
       .required(translate('errors.register.ceo_mobile.length'))
       .test('len', translate('errors.register.ceo_mobile.length'), (val) => {
@@ -29,7 +29,7 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
 
         return val.length === 0 || val!.length === 9;
       }),
-    chairman_name: Yup.string().required('Chairman Name is required'),
+    chairman_name: Yup.string().required(translate('errors.register.chairman_name.required')),
     chairman_mobile: Yup.string()
       .required(translate('errors.register.ceo_mobile.length'))
       .test('len', translate('errors.register.ceo_mobile.length'), (val) => {
@@ -39,7 +39,7 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
 
         return val.length === 0 || val!.length === 9;
       }),
-    data_entry_name: Yup.string().required('Entery Data Name is required'),
+    data_entry_name: Yup.string().required(translate('errors.register.data_entry_name.required')),
     data_entry_mobile: Yup.string()
       .required(translate('errors.register.ceo_mobile.length'))
       .test('len', translate('errors.register.ceo_mobile.length'), (val) => {
@@ -49,7 +49,9 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
 
         return val.length === 0 || val!.length === 9;
       }),
-    data_entry_mail: Yup.string().email().required('Entery Data Email is required'),
+    data_entry_mail: Yup.string()
+      .email(translate('errors.register.email.email'))
+      .required(translate('errors.register.email.required')),
   });
 
   const methods = useForm<AdministrativeValuesProps>({
@@ -81,7 +83,7 @@ const AdministrativeInfoForm = ({ onSubmit, defaultValues, children, isEdit }: F
     newData.ceo_mobile = newCeoMobile;
     newData.data_entry_mobile = newDataEntryMobile;
     newData.chairman_mobile = newChairmanMobile;
-    console.log('newData', newData);
+    // console.log('newData', newData);
     onSubmit(newData);
     // onSubmit(data);
   };

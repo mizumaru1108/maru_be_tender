@@ -124,7 +124,7 @@ const BankingInfoForm = ({
     }
   };
   // console.log('test', tmpBank.findIndex((bank: any) => bank.bank_list.is_deleted) > -1);
-  console.log('test', tmpBank);
+  // console.log('test', tmpBank);
   return (
     <Grid container rowSpacing={4} columnSpacing={7}>
       {tmpBank &&
@@ -263,7 +263,9 @@ const BankingInfoForm = ({
           onClick={onSubmitForm5}
           disabled={
             tmpBank.findIndex((bank: any) => bank && bank.bank_list && bank.bank_list.is_deleted) >
-            -1
+              -1 ||
+            !tmpBank ||
+            (tmpBank && tmpBank.length === 0)
           }
           variant={isEdit ? 'outlined' : 'contained'}
           sx={{

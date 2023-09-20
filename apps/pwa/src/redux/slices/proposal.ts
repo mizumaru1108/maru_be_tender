@@ -528,9 +528,9 @@ export const getTrackList = (isGeneral: number, role: string) => async () => {
     dispatch(slice.actions.startLoadingTrack(true));
     let url = '';
     if (isGeneral) {
-      url = '/tender/track/fetch-all?include_general=1';
+      url = '/tender/track?include_general=1';
     } else {
-      url = '/tender/track/fetch-all?include_general=0';
+      url = '/tender/track?include_general=0';
     }
     try {
       const response = await axiosInstance.get(url, {

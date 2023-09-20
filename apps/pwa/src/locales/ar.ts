@@ -1718,6 +1718,7 @@ const ar = {
     sent_section: 'القسم المرسل',
     clients_name: 'اسم الشريك',
     employee: 'موظف',
+    entity_name: 'اسم الشركة',
     start_date: 'تاريخ البدء',
     at: 'في',
     sent_by: 'أرسلت بواسطة',
@@ -2531,6 +2532,7 @@ const ar = {
       track: 'مسار',
       add_new_track: 'إضافة مسار جديد',
       payment_reject: 'تم رفض الدفع',
+      delete_track: 'حذف المسار',
     },
     label: {
       track_name: 'اسم المسار',
@@ -2726,6 +2728,9 @@ const ar = {
       duplicate_mobile_number: 'الهاتف موجود بالفعل في التطبيق لدينا',
     },
     auth: {
+      reset_password: {
+        wrong_old_password: 'يرجى التأكيد مع مدير حسابك لأنه لا يمكنك تغيير كلمة المرور الخاصة بك مؤقتًا',
+      },
       register: {
         send_verify_email: {
           success: 'تم إرسال البريد الإلكتروني للتحقق بنجاح',

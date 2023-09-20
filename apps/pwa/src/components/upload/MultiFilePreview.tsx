@@ -29,7 +29,7 @@ export default function MultiFilePreview({
   disabled,
 }: // isCompressing,
 UploadMultiFileProps) {
-  const hasFile = (files && files.length > 0) ?? false;
+  const hasFile = files && files.length > 0 && files.every((item) => !!item) ? true : false;
   // console.log('isCompressing', isCompressing);
   return (
     <List disablePadding sx={{ ...(hasFile && { my: 3 }) }}>
@@ -37,6 +37,7 @@ UploadMultiFileProps) {
         {files &&
           typeof files !== 'string' &&
           files.length > 0 &&
+          hasFile &&
           // isCompressing &&
           files.map((file, index) => {
             const { key, name, size, preview, fileExtension, fullName, type } = getFileData(

@@ -110,7 +110,7 @@ function NewCardTable({
 
   useEffect(() => {}, [data]);
 
-  // console.log(data, 'DATA');
+  console.log(data, 'DATA');
 
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>
@@ -151,6 +151,7 @@ function NewCardTable({
               <ClientCard
                 id={item.id}
                 title={{ statusId: item.status_id }}
+                entityName={(item?.client_data && item?.client_data?.entity) || undefined}
                 email={item.email}
                 employeeName={item.employee_name}
                 createdAt={new Date(item.created_at)}

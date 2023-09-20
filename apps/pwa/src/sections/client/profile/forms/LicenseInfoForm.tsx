@@ -1,13 +1,12 @@
-import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid } from '@mui/material';
 import { FormProvider, RHFDatePicker, RHFTextField } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { LicenseValuesProps } from '../../../../@types/register';
-import useLocales from 'hooks/useLocales';
 import BaseField from 'components/hook-form/BaseField';
+import useLocales from 'hooks/useLocales';
 import { useEffect, useMemo, useState } from 'react';
-import { CustomFile } from '../../../../components/upload';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { LicenseValuesProps } from '../../../../@types/register';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -20,9 +19,11 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
   const { translate } = useLocales();
   const [tmpLicenseValues, setTmpLicenseValues] = useState<LicenseValuesProps>(defaultValues);
   const RegisterSchema = Yup.object().shape({
-    license_number: Yup.string().required('License Number is required'),
-    license_issue_date: Yup.string().required('License Issue Date is required'),
-    license_expired: Yup.string().required('License Expiry Date is required'),
+    license_number: Yup.string().required(translate('errors.register.license_number.required')),
+    license_issue_date: Yup.string().required(
+      translate('errors.register.license_issue_date.required')
+    ),
+    license_expired: Yup.string().required(translate('errors.register.license_expired.required')),
     license_file: Yup.mixed()
       .test('size', translate('errors.register.license_file.size'), (value) => {
         if (value) {
@@ -46,42 +47,9 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
         }
         return true;
       }),
-    board_ofdec_file: Yup.array().min(1, translate('errors.register.board_ofdec_file.required')),
-    // board_ofdec_file: Yup.mixed()
-    //   .test('size', translate('errors.register.board_ofdec_file.size'), (value) => {
-    //     if (value) {
-    //       // const trueSize = value.size * 28;
-    //       if (value.size > 1024 * 1024 * 5) {
-    //         return false;
-    //       }
-    //     }
-    //     return true;
-    //   })
-    //   .test(
-    //     'fileExtension',
-    //     translate('errors.register.board_ofdec_file.fileExtension'),
-    //     (value) => {
-    //       if (value) {
-    //         if (
-    //           value.type !== 'application/pdf' &&
-    //           value.type !== 'application/msword' &&
-    //           value.type !==
-    //             'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
-    //           value.type !== 'application/vnd.ms-excel' &&
-    //           value.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
-    //           value.type !== 'application/vnd.ms-powerpoint' &&
-    //           value.type !==
-    //             'application/vnd.openxmlformats-officedocument.presentationml.presentation' &&
-    //           value.type !== 'image/png' &&
-    //           value.type !== 'image/jpeg' &&
-    //           value.type !== 'image/jpg'
-    //         ) {
-    //           return false;
-    //         }
-    //       }
-    //       return true;
-    //     }
-    //   ),
+    board_ofdec_file: Yup.array()
+      .min(1, translate('errors.register.board_ofdec_file.required'))
+      .nullable(),
   });
 
   const methods = useForm<LicenseValuesProps>({
@@ -104,11 +72,15 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
     } else {
       let newValues = { ...defaultValues };
       let newLetters: any = [];
+      const checkBoardOfDec = defaultValues.board_ofdec_file.every((item: any) => !!item)
+        ? true
+        : false;
       if (
         defaultValues &&
         defaultValues.board_ofdec_file &&
         typeof defaultValues.board_ofdec_file !== 'string' &&
-        defaultValues.board_ofdec_file.length > 0
+        defaultValues.board_ofdec_file.length > 0 &&
+        checkBoardOfDec
       ) {
         newLetters = [
           ...newLetters,
@@ -125,7 +97,6 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
         defaultValues.board_ofdec_file &&
         typeof defaultValues.board_ofdec_file === 'object'
       ) {
-        // newLetters = [...newLetters, { name: defaultValues.board_ofdec_file }];
         newLetters.push({
           ...(defaultValues &&
             typeof defaultValues.board_ofdec_file === 'object' && {
@@ -134,8 +105,9 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProp
           preview: defaultValues.board_ofdec_file.url,
         });
       }
-      newValues = { ...newValues, board_ofdec_file: [...newLetters] };
-      // console.log('newValues', newValues);
+      if (newLetters.length > 0 && checkBoardOfDec)
+        newValues = { ...newValues, board_ofdec_file: [...newLetters] };
+      else newValues = { ...newValues, board_ofdec_file: [] };
       reset(newValues);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

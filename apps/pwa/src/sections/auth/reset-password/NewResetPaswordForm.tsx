@@ -75,22 +75,33 @@ export default function ResetPasswordForm() {
           });
         });
       } else {
-        const statusCode = (err && err.statusCode) || 0;
-        const message = (err && err.message) || null;
-        enqueueSnackbar(
-          `${
-            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
-          }`,
-          {
-            variant: 'error',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'center',
-            },
-          }
-        );
+        const statusCode =
+          (err && err?.response?.data?.status) ||
+          (err && err?.response?.data?.response?.statusCode) ||
+          (err && err.statusCode) ||
+          0;
+        const message =
+          (err && err?.response?.data?.message) ||
+          (err && err?.response?.data?.response?.message) ||
+          (err && err.message) ||
+          null;
+        // console.log({ err, message });
+        const showMessage =
+          statusCode === 400
+            ? // ? translate('snackbar.auth.reset_password.wrong_old_password')
+              'يرجى التأكيد مع مدير الحساب لأنه لا يمكنك تغيير كلمة المرور الخاصة بك مؤقتًا'
+            : statusCode !== 0
+            ? message
+            : translate('pages.common.internal_server_error');
+        enqueueSnackbar(showMessage, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
       }
 
       reset({

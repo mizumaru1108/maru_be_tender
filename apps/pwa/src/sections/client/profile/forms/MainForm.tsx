@@ -48,19 +48,29 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
   const [clientFieldName, setClientFieldName] = React.useState<ClientFieldName>('main');
 
   const RegisterSchema = Yup.object().shape({
-    entity: Yup.string().required('Entity is required'),
-    client_field: Yup.string().required('Client Field Area is required'),
-    authority: Yup.string().required('Authority is required'),
-    date_of_esthablistmen: Yup.string().default(null).required('Date Of Establishment is required'),
-    headquarters: Yup.string().required('Headquarters is required'),
+    entity: Yup.string().required(translate('errors.register.entity.required')).nullable(),
+    client_field: Yup.string()
+      .required(translate('errors.register.client_field.required'))
+      .nullable(),
+    authority: Yup.string().required(translate('errors.register.authority.required')).nullable(),
+    date_of_esthablistmen: Yup.string()
+      .default(null)
+      .required(translate('errors.register.date_of_esthablistmen.required')),
+    headquarters: Yup.string()
+      .required(translate('errors.register.headquarters.required'))
+      .nullable(),
     num_of_employed_facility: Yup.number()
       .positive()
       .integer()
-      .required('Number Of Employees is required'),
+      .nullable()
+      .min(1, translate('errors.register.num_of_employed_facility.min'))
+      .required(translate('errors.register.num_of_employed_facility.required')),
     num_of_beneficiaries: Yup.number()
       .positive()
       .integer()
-      .required('Number Of Beneficiaries is required'),
+      .nullable()
+      .min(1, translate('errors.register.num_of_beneficiaries.min'))
+      .required(translate('errors.register.num_of_beneficiaries.required')),
   });
 
   const methods = useForm<MainValuesProps>({
@@ -273,9 +283,10 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
         }
         setClientFieldId(tmpClientId);
         // setValue('client_field', tmpClientId);
-      } else {
-        alert('tmpClientId not found');
       }
+      //  else {
+      //   alert('tmpClientId not found');
+      // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues, clientFields]);

@@ -216,9 +216,10 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
       if (tmpClientId) {
         fetchAuthorities(tmpClientId);
         setClientFieldId(tmpClientId);
-      } else {
-        alert('tmpClientId not found');
-      }
+      } 
+      // else {
+      //   alert('tmpClientId not found');
+      // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues, clientFields]);
