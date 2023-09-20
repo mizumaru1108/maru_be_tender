@@ -54,7 +54,7 @@ export default function ResetPasswordForm() {
         `${TMRA_RAISE_URL}/tender-auth/forgot-password-request`,
         {
           email: formValues.email,
-          selectLang: currentLang.value,
+          selectLang: 'ar',
         }
       );
       if (status === 201) {

@@ -73,8 +73,10 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
   }, []);
 
   const RegisterSchema = Yup.object().shape({
-    region: Yup.string().required('Region name required'),
-    governorate: Yup.string().required('City name required'),
+    region: Yup.string().required(translate('errors.register.region.required')).nullable(),
+    governorate: Yup.string()
+      .required(translate('errors.register.governorate.required'))
+      .nullable(),
     // center_administration: Yup.string().required('Center is required'),
     entity_mobile: Yup.string()
       .required(translate('errors.register.entity_mobile.required'))
@@ -85,8 +87,8 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormP
 
         return val.length === 0 || val!.length === 9;
       }),
-    twitter_acount: Yup.string(),
-    website: Yup.string(),
+    twitter_acount: Yup.string().nullable(),
+    website: Yup.string().nullable(),
   });
 
   const methods = useForm<ConnectingValuesProps>({

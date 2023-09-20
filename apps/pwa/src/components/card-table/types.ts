@@ -35,6 +35,7 @@ type CardContentComp = {
   employee?: string;
   projectDetails?: string;
   createdAtClient?: Date;
+  entity_name?: string;
 };
 export type ProjectCardProps = {
   title: CardTitle;
@@ -62,6 +63,7 @@ export type ClientCardProps = {
   createdAt: Date;
   email?: string;
   employeeName?: string;
+  entityName?: string;
   id?: string;
   statusId?: string;
   updatedAt?: Date;

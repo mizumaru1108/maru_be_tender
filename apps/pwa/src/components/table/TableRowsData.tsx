@@ -188,7 +188,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
     try {
       const res = await axiosInstance.post(
         '/tender-auth/reset-password-request',
-        { email, selectLang: currentLang.value },
+        { email, selectLang: 'ar' },
         {
           headers: { 'x-hasura-role': activeRole! },
         }

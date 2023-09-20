@@ -446,12 +446,18 @@ function ClientProfileEditForm() {
 
   const onSubmit3 = (data: LicenseValuesProps) => {
     window.scrollTo(0, 0);
-    // console.log({ data });
+    const checkBoardOfDec =
+      startedValue &&
+      startedValue?.board_ofdec_file &&
+      startedValue?.board_ofdec_file.length > 0 &&
+      startedValue?.board_ofdec_file.every((item: any) => !!item)
+        ? true
+        : false;
     if (isEdit && isEdit.form3) {
       let defaultBoardofDec: FileProp[] = [];
-      defaultBoardofDec.push(
-        ...(startedValue && startedValue.board_ofdec_file && startedValue.board_ofdec_file)
-      );
+      if (checkBoardOfDec) {
+        defaultBoardofDec.push(...startedValue.board_ofdec_file);
+      }
       setIsEdit((prevIsEdit: any) => ({
         ...prevIsEdit,
         form3: false,

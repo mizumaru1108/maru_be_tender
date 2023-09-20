@@ -107,8 +107,6 @@ function CardSearching({
 
   useEffect(() => {}, [data]);
 
-  // console.log(data, 'DATA');
-
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>
       <Grid item md={12} xs={12}>

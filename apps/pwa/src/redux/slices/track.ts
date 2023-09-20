@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { TrackProps } from '../../@types/commons';
+import { TrackProps, UpdateTrackProps } from '../../@types/commons';
 import axiosInstance from 'utils/axios';
 import { dispatch } from 'redux/store';
 
@@ -72,7 +72,7 @@ export const getTracks = (role: string) => async () => {
   }
 };
 
-export const updateTrack = (payload: any, role: string) => async () => {
+export const updateTrack = (payload: UpdateTrackProps, role: string) => async () => {
   try {
     dispatch(slice.actions.startLoading);
 

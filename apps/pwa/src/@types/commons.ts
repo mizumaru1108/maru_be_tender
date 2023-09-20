@@ -148,6 +148,13 @@ export interface bank_information {
   color?: string | '';
 }
 
+export interface UpdateTrackProps {
+  id: string;
+  name: string;
+  with_consultation: boolean;
+  is_deleted: boolean;
+}
+
 export interface TrackProps {
   id: string;
   name: string;

@@ -27,6 +27,7 @@ interface Props {
   trackName?: string;
   withConsultation?: boolean;
   isEdit?: boolean;
+  isDelete?: boolean;
   // title: string;
   // onSubmit: (data: any) => void;
   onClose: () => void;
@@ -39,7 +40,14 @@ interface FormInput {
   consultant: string;
 }
 
-const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsultation }: Props) => {
+const AddNewTrack = ({
+  isEdit = false,
+  isDelete = false,
+  trackId,
+  trackName,
+  withConsultation,
+  onClose,
+}: Props) => {
   const navigate = useNavigate();
   const { translate, currentLang } = useLocales();
   const [open, setOpen] = React.useState<boolean>(false);
@@ -134,7 +142,12 @@ const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsulta
     } else {
       dispatch(
         updateTrack(
-          { id: trackId, name: TEMP_TRACKNAME, with_consultation: consultantValue },
+          {
+            id: trackId,
+            name: TEMP_TRACKNAME,
+            with_consultation: consultantValue,
+            is_deleted: isDelete,
+          },
           activeRole!
         )
       );
@@ -169,6 +182,8 @@ const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsulta
         >
           {isEdit
             ? `${translate('modal.headline.add_new_track')}`
+            : isDelete
+            ? translate('modal.headline.delete_track')
             : translate('modal.headline.track')}
         </Typography>
         <Grid item md={12} xs={12} sx={{ mb: 6 }}>
@@ -204,8 +219,8 @@ const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsulta
             </option>
           </RHFSelectNoGenerator>
         </Grid>
-        {isEdit && (
-          <Stack justifyContent="center" direction="row" gap={2}>
+        <Stack justifyContent="center" direction="row" gap={2}>
+          {isEdit && !isDelete && (
             <LoadingButton
               loading={loading}
               onClick={handleSubmit(onSubmitForm)}
@@ -221,20 +236,37 @@ const AddNewTrack = ({ isEdit = false, onClose, trackId, trackName, withConsulta
             >
               {translate('button.save')}
             </LoadingButton>
-            <Button
-              onClick={onClose}
+          )}
+          {isDelete && (
+            <LoadingButton
+              loading={loading}
+              onClick={handleSubmit(onSubmitForm)}
+              variant="contained"
+              fullWidth
               sx={{
-                color: '#000',
-                size: 'large',
+                backgroundColor: '#FF4842',
+                color: '#fff',
                 width: { xs: '100%', sm: '170px' },
-                hieght: { xs: '100%', sm: '40px' },
-                ':hover': { backgroundColor: '#efefef' },
+                height: { xs: '100%', sm: '40px' },
+                '&:hover': { backgroundColor: '#ff6e66' },
               }}
             >
-              {translate('button.back')}
-            </Button>
-          </Stack>
-        )}
+              {translate('button.delete')}
+            </LoadingButton>
+          )}
+          <Button
+            onClick={onClose}
+            sx={{
+              color: '#000',
+              size: 'large',
+              width: { xs: '100%', sm: '170px' },
+              hieght: { xs: '100%', sm: '40px' },
+              ':hover': { backgroundColor: '#DFE3E8' },
+            }}
+          >
+            {translate('button.back')}
+          </Button>
+        </Stack>
       </Grid>
     </FormProvider>
   );

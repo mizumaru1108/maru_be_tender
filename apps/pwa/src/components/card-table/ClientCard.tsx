@@ -61,6 +61,7 @@ const ClientCard = ({
   email,
   employeeName,
   id,
+  entityName,
   statusId,
   updatedAt,
   footer,
@@ -165,6 +166,27 @@ const ClientCard = ({
                 </Typography>
               </React.Fragment>
             )}
+
+            <React.Fragment>
+              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                {translate('project_management_headercell.entity_name')}
+              </Typography>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{
+                  mb: 1.5,
+                  wordWrap: 'unset',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                  maxWidth: '500px',
+                  fontSize: '14px !important',
+                  flexWrap: 'nowrap',
+                }}
+              >
+                {entityName || '-'}
+              </Typography>
+            </React.Fragment>
 
             {email && (
               <React.Fragment>
