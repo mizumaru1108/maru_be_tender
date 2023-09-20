@@ -167,11 +167,13 @@ export class TenderUserRepository {
     const { includes_relation } = props;
 
     const args: Prisma.userFindFirstArgs = {};
-    let where: Prisma.userWhereInput = {};
+    let whereClause: Prisma.userWhereInput = {};
 
-    if (props.id) where.id = props.id;
-    if (props.email) where.email = props.email;
-    if (props.mobile_number) where.mobile_number = props.mobile_number;
+    if (props.id) whereClause.id = props.id;
+    if (props.email) whereClause.email = props.email;
+    if (props.mobile_number) whereClause.mobile_number = props.mobile_number;
+
+    args.where = whereClause;
 
     if (includes_relation && includes_relation.length > 0) {
       let include: Prisma.userInclude = {};
@@ -207,6 +209,8 @@ export class TenderUserRepository {
         include: args.include,
       });
 
+      // console.log({ args });
+      // console.log({ rawRes });
       const foundedEntity = Builder<UserEntity>(UserEntity, {
         ...rawRes,
       }).build();
@@ -624,7 +628,20 @@ export class TenderUserRepository {
 
     let include: Prisma.userInclude = {};
 
-    if (include_schedule === '1' && hide_internal === '1') {
+    if (hide_internal === '1') {
+      include = {
+        ...include,
+        client_data: {
+          select: {
+            id: true,
+            client_field: true,
+            entity: true,
+          },
+        },
+      };
+    }
+
+    if (include_schedule === '1') {
       include = {
         ...include,
         schedule: {
@@ -632,13 +649,6 @@ export class TenderUserRepository {
             id: true,
             start_time: true,
             end_time: true,
-          },
-        },
-        client_data: {
-          select: {
-            id: true,
-            client_field: true,
-            entity: true,
           },
         },
       };

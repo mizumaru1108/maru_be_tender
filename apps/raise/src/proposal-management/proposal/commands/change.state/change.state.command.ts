@@ -100,7 +100,7 @@ export class ChangeStateCommandHandler
         }
 
         /* validating track */
-        const validTrack = await this.trackRepo.fetchById(
+        const validTrack = await this.trackRepo.findFirst(
           {
             id: request.moderator_payload.track_id,
           },

@@ -8,7 +8,6 @@ import { ProposalManagementModule } from './proposal-management/proposal.managem
 import { SharedModule } from './shared/shared.module';
 import { TenderAppointmentModule } from './tender-appointment/tender-appointment.module';
 import { TenderAuthModule } from './tender-auth/tender-auth.module';
-import { TenderTrackModule } from './tender-track/track.module';
 import { TenderModule } from './tender/tender.module';
 /* Environment Config */
 import { bunnyConfig } from './commons/configs/bunny-config';
@@ -39,6 +38,7 @@ import { TenderMessagesModule } from './tender-messaging/tender-messages.module'
 import { TenderStatisticsModule } from './tender-statistics/tender-statistics.module';
 import { UserManagementModule } from './tender-user/user.management.module';
 import { RegionManagementModule } from './region-management/region.management.module';
+import { TrackModule } from './tender-track/track.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -153,7 +153,7 @@ const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
     ProposalManagementModule,
     TenderAppointmentModule,
     TenderAuthModule,
-    TenderTrackModule,
+    TrackModule,
     TenderCommentsModule,
     TenderMessagesModule,
     TenderStatisticsModule,

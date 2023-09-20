@@ -1,11 +1,11 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
-import { EmailService } from '../../../libs/email/email.service';
 import { ConfigService } from '@nestjs/config';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { EmailService } from '../../../libs/email/email.service';
+import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
+import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { DataNotFoundException } from '../../../tender-commons/exceptions/data-not-found.exception';
 import { EmailAlreadyVerifiedException } from '../../../tender-user/user/exceptions/email-already-verified.exception';
 import { TokenExpiredException } from '../../exceptions/token-expire.exception';
-import { ROOT_LOGGER } from '../../../libs/root-logger';
 
 export class VerifyEmailCommand {
   token: string;
@@ -19,11 +19,9 @@ export class VerifyEmailCommandHandler
   private readonly logger = ROOT_LOGGER.child({
     'log.logger': VerifyEmailCommandHandler.name,
   });
-  constructor(
-    private readonly fusionAuthService: FusionAuthService,
-    private readonly emailService: EmailService,
-    private readonly configService: ConfigService,
-  ) {}
+  // private readonly emailService: EmailService,
+  // private readonly configService: ConfigService,
+  constructor(private readonly fusionAuthService: FusionAuthService) {}
 
   async execute(command: VerifyEmailCommand): Promise<any> {
     const { token } = command;

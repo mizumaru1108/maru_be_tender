@@ -1,7 +1,6 @@
 import { Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ProposalModule } from 'src/proposal-management/proposal/proposal.module';
-import { TenderTrackModule } from '../../tender-track/track.module';
 import { ProposalLogModule } from '../proposal-log/proposal.log.module';
 import { ProposalInsertPaymentCommandHandler } from './commands/proposal.insert.payments.command.ts/proposal.insert.payments.command';
 import { ProposalPaymentSendCloseReportCommandHandler } from './commands/proposal.send.close.report.command/proposal.send.close.report.command';
@@ -12,12 +11,13 @@ import { ProposalPaymentRepository } from './repositories/proposal-payment.repos
 import { ProposalPaymentService } from './services/proposal-payment.service';
 import { PaymentSubmitClosingReportCommandHandler } from 'src/proposal-management/payment/commands/payment.submit.closing.report.command';
 import { ProposalCloseReportModule } from 'src/proposal-management/closing-report/close.report.module';
+import { TrackModule } from '../../tender-track/track.module';
 
 const importedModule = [
   CqrsModule,
   ProposalModule,
   ProposalLogModule,
-  TenderTrackModule,
+  TrackModule,
   ProposalCloseReportModule,
 ];
 

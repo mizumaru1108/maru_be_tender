@@ -50,7 +50,7 @@ export class QaProposalCreateNewSupervisorCommandHandler
               : this.prismaService;
 
           if (track_id) {
-            const fetchedTrack = await this.trackRepo.fetchById(
+            const fetchedTrack = await this.trackRepo.findFirst(
               { id: track_id },
               session,
             );

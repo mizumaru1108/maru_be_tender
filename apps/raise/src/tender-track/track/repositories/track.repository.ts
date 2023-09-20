@@ -1,14 +1,37 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { logUtil } from '../../../commons/utils/log-util';
+import { Builder } from 'builder-pattern';
+import { v4 as uuidv4 } from 'uuid';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { FetchTrackFilterRequest } from '../dto/requests';
-import { Builder } from 'builder-pattern';
 import { TrackEntity } from '../entities/track.entity';
 
-export class FetchTrackByIdProps {
+export class TrackCreateProps {
+  id?: string;
+  name: string;
+  with_consultation: boolean;
+}
+export class TrackUpdateProps {
   id: string;
+  name?: string;
+  with_consultation?: boolean;
+  is_deleted?: boolean;
+}
+export class TrackFindFirstProps {
+  id?: string;
+  name?: string;
+  exclude_id?: string;
+  include_relations?: string[];
+}
+
+export class TrackFindManyProps {
+  track_name?: string;
+  include_general?: '1' | '0';
+  is_deleted?: '1' | '0';
+  limit?: number;
+  page?: number;
+  sort_by?: string;
+  sort_direction?: string;
   include_relations?: string[];
 }
 
@@ -30,12 +53,23 @@ export class TrackRepository {
     }
   }
 
-  async fetchById(
-    props: FetchTrackByIdProps,
-    session?: PrismaService,
-  ): Promise<TrackEntity | null> {
+  applyInclude() {}
+
+  findFirstFilter(props: TrackFindFirstProps) {
+    const args: Prisma.trackFindFirstArgs = {};
+    let whereClause: Prisma.trackWhereInput = {};
+
+    if (props.id) whereClause.id = props.id;
+    if (props.name) whereClause.name = props.name;
+    if (props.exclude_id) whereClause.id = { notIn: [props.exclude_id] };
+    args.where = whereClause;
+
+    return args;
+  }
+
+  async findFirst(props: TrackFindFirstProps, tx?: PrismaService) {
     let prisma = this.prismaService;
-    if (session) prisma = session;
+    if (tx) prisma = tx;
     try {
       const rawTrack = await prisma.track.findUnique({
         where: { id: props.id },
@@ -50,312 +84,135 @@ export class TrackRepository {
     }
   }
 
-  async findByName(name: string, excludeId?: string) {
+  async create(props: TrackCreateProps, tx?: PrismaService) {
+    let prisma = this.prismaService;
+    if (tx) prisma = tx;
     try {
-      this.logger.log('info', `finding track with name of ${name}`);
-      let whereClause: Prisma.trackWhereInput = {
-        name,
-      };
-
-      if (excludeId) {
-        whereClause = {
-          ...whereClause,
-          id: {
-            notIn: [excludeId],
-          },
-        };
-      }
-
-      return await this.prismaService.track.findUnique({
-        where: { name },
+      const rawCreated = await prisma.track.create({
+        data: {
+          id: props.id || uuidv4(),
+          name: props.name,
+          with_consultation: props.with_consultation,
+        },
       });
+
+      return Builder<TrackEntity>(TrackEntity, rawCreated).build();
     } catch (err) {
-      console.trace(err);
-      throw new InternalServerErrorException(
-        'Something went wrong when finding track by name!',
-      );
+      this.logger.error(err);
+      throw err;
     }
   }
 
-  async create(payload: Prisma.trackCreateInput) {
+  async update(props: TrackUpdateProps, tx?: PrismaService) {
+    let prisma = this.prismaService;
+    if (tx) prisma = tx;
     try {
-      this.logger.log(
-        'info',
-        `createing new track with payload of \n${logUtil(payload)}`,
-      );
-      return await this.prismaService.track.create({
-        data: payload,
+      const rawCreated = await prisma.track.create({
+        data: {
+          id: props.id || uuidv4(),
+          name: props.name,
+          with_consultation: props.with_consultation,
+          is_deleted: props.is_deleted,
+        },
       });
-    } catch (error) {
-      console.trace(error);
-      throw new InternalServerErrorException(
-        'Something went wrong when createing a new track!',
-      );
+
+      return Builder<TrackEntity>(TrackEntity, rawCreated).build();
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
     }
   }
 
-  async update(id: string, payload: Prisma.trackUpdateInput) {
-    try {
-      this.logger.log(
-        'info',
-        `updating track ${id}, with payload of \n${logUtil(payload)}`,
-      );
-      return await this.prismaService.track.update({
-        where: { id },
-        data: payload,
-      });
-    } catch (error) {
-      console.trace(error);
-      throw new InternalServerErrorException(
-        'Something went wrong when updating track!',
-      );
+  findManyFilters(props: TrackFindManyProps) {
+    const { include_general = '0', track_name, is_deleted } = props;
+
+    const args: Prisma.trackFindManyArgs = {};
+    let whereClause: Prisma.trackWhereInput = {};
+    if (track_name) {
+      whereClause = {
+        ...whereClause,
+        name: {
+          contains: track_name,
+          mode: 'insensitive',
+        },
+      };
     }
+
+    if (include_general === '0') {
+      whereClause = {
+        ...whereClause,
+        name: {
+          notIn: ['GENERAL'],
+        },
+      };
+    }
+
+    if (is_deleted === '1') {
+      whereClause = {
+        ...whereClause,
+        is_deleted: true,
+      };
+    }
+
+    if (is_deleted === '0') {
+      whereClause = {
+        ...whereClause,
+        is_deleted: false,
+      };
+    }
+    return args;
   }
 
-  async fetchAll(filter: FetchTrackFilterRequest) {
+  async findMany(props: TrackFindManyProps, tx?: PrismaService) {
+    let prisma = this.prismaService;
+    if (tx) prisma = tx;
     try {
-      const {
-        include_general = '0',
-        track_name,
-        page = 1,
-        limit = 10,
-        is_deleted,
-      } = filter;
+      const { limit = 0, page = 0, sort_by, sort_direction } = props;
       const offset = (page - 1) * limit;
+      const getSortBy = sort_by ? sort_by : 'created_at';
+      const getSortDirection = sort_direction ? sort_direction : 'desc';
 
-      let whereClause: Prisma.trackWhereInput = {};
+      const options = this.findManyFilters(props);
+      let queryOptions: Prisma.trackFindManyArgs = {
+        where: options.where,
 
-      if (track_name) {
-        whereClause = {
-          ...whereClause,
-          name: {
-            contains: track_name,
-            mode: 'insensitive',
-          },
-        };
-      }
+        orderBy: {
+          [getSortBy]: getSortDirection,
+        },
 
-      if (include_general === '0') {
-        whereClause = {
-          ...whereClause,
-          name: {
-            notIn: ['GENERAL'],
-          },
-        };
-      }
-
-      if (is_deleted === '1') {
-        whereClause = {
-          ...whereClause,
-          is_deleted: true,
-        };
-      }
-
-      if (is_deleted === '0') {
-        whereClause = {
-          ...whereClause,
-          is_deleted: false,
-        };
-      }
-
-      const data = await this.prismaService.track.findMany({
-        where: whereClause,
-        take: limit,
-        skip: offset,
-      });
-
-      const total = await this.prismaService.track.count({
-        where: whereClause,
-      });
-
-      return {
-        data,
-        total,
+        include: options.include,
       };
-    } catch (err) {
-      console.trace(err);
-      throw new InternalServerErrorException(
-        'Something went wrong when finding track!',
-      );
+
+      if (limit > 0) {
+        queryOptions = {
+          ...queryOptions,
+          skip: offset,
+          take: limit,
+        };
+      }
+
+      const rawResults = await prisma.track.findMany(queryOptions);
+      const entities = rawResults.map((rawResult) => {
+        return Builder<TrackEntity>(TrackEntity, rawResult).build();
+      });
+
+      return entities;
+    } catch (error) {
+      throw error;
     }
   }
 
-  // /* save trackSection and increment Parents budget */
-  // async createTrackSection(createPayload: Prisma.track_sectionCreateArgs) {
-  //   this.logger.debug('create new track record...');
-  //   try {
-  //     if (!createPayload.data.is_leaf && createPayload.data.budget > 0)
-  //       throw new BadRequestException(
-  //         'can not create section with budget unless it is leaf',
-  //       );
-  //     await this.incrementParentsBudget(
-  //       createPayload,
-  //       createPayload.data.budget as number,
-  //     );
-  //     return await this.prismaService.track_section.create(createPayload);
-  //   } catch (error) {
-  //     console.trace(error);
-  //     throw new InternalServerErrorException(
-  //       'Something went wrong when saving new track record!',
-  //     );
-  //   }
-  // }
-  // /** update a trackSection and update the parents budget */
-  // async updateTrackSection(updatePayload: Prisma.track_sectionUpdateArgs) {
-  //   this.logger.debug('update a track record...');
-  //   try {
-  //     const oldSection = await this.prismaService.track_section.findUnique({
-  //       where: {
-  //         id: updatePayload.data.id as string,
-  //       },
-  //     });
-  //     if (!oldSection)
-  //       throw new NotFoundException('there is no such recrod to update');
-  //     if (!oldSection.is_leaf && (updatePayload.data.budget as number) > 0)
-  //       throw new BadRequestException(
-  //         'can not create section with budget unless it is leaf',
-  //       );
-  //     const newBudget: number = (updatePayload.data.budget as number) || 0;
-  //     const budgetDiff = Math.abs(newBudget - oldSection.budget);
-  //     if (newBudget > oldSection.budget)
-  //       await this.incrementParentsBudget(updatePayload, budgetDiff);
-  //     if (newBudget < oldSection.budget && newBudget !== 0) {
-  //       await this.decrementParentsBudget(updatePayload, newBudget);
-  //     }
-  //     return await this.prismaService.track_section.update({
-  //       where: {
-  //         id: updatePayload.data.id as string,
-  //       },
-  //       data: {
-  //         budget: updatePayload.data.budget,
-  //         name: updatePayload.data.name,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     console.trace(error);
-  //     throw new InternalServerErrorException(
-  //       'Something went wrong when updateing new track record!',
-  //     );
-  //   }
-  // }
-  // /** get all track sections */
-  // async deleteTrackSection(id: string) {
-  //   const isParent = await this.prismaService.track_section.findFirst({
-  //     where: { section_id: id },
-  //   });
-  //   if (isParent)
-  //     throw new BadRequestException('you can not delete a parent section');
-  //   const section = await this.prismaService.track_section.findUnique({
-  //     where: { id },
-  //   });
-  //   if (!section) throw new NotFoundException('no section with this id');
-  //   await this.decrementParentsBudget(
-  //     { data: section } as Prisma.track_sectionUpdateArgs,
-  //     section.budget as number,
-  //   );
-  //   await this.prismaService.track_section.delete({
-  //     where: {
-  //       id,
-  //     },
-  //   });
-  // }
-  // async getAllTrackSections(track_id: string) {
-  //   const sections = (await this.prismaService.track_section.findMany({
-  //     where: { track_id },
-  //   })) as any;
-  //   for (let i = 0; i < sections.length; i++) {
-  //     // add children to every item
-  //     sections[i].children = [];
-  //   }
-  //   this.buildTree(sections, null);
-  //   return sections;
-  // }
-  // async buildTree(sections: any, item: any) {
-  //   if (item) {
-  //     // if item then have parent
-  //     for (let i = 0; i < sections.length; i++) {
-  //       // parses the entire tree in order to find the parent
-  //       if (String(sections[i].id) === String(item.section_id)) {
-  //         // bingo!
-  //         sections[i].children.push(item); // add the child to his parent
-  //         break;
-  //       } else this.buildTree(sections[i].children, item); // if item doesn't match but tree have children then parses children again to find item parent
-  //     }
-  //   } else {
-  //     // if no item then is a root item, multiple root items are supported
-  //     let idx = 0;
-  //     while (idx < sections.length)
-  //       if (sections[idx].section_id)
-  //         this.buildTree(sections, sections.splice(idx, 1)[0]);
-  //       // if have parent then remove it from the array to relocate it to the right place
-  //       else idx++; // if doesn't have parent then is root and move it to the next object
-  //   }
-  // }
-  // async incrementParentsBudget(
-  //   section: Prisma.track_sectionCreateArgs | Prisma.track_sectionUpdateArgs,
-  //   budget: number,
-  // ) {
-  //   if (!section.data?.section_id) {
-  //     // await this.prismaService.track.update({
-  //     //   where: {
-  //     //     id: section.data.track_id as string,
-  //     //   },
-  //     //   data: {
-  //     //     budget: { increment: budget },
-  //     //   },
-  //     // });
-  //     return;
-  //   }
-  //   await this.prismaService.track_section.update({
-  //     where: {
-  //       id: section.data.section_id as string,
-  //     },
-  //     data: {
-  //       budget: { increment: budget },
-  //     },
-  //   });
-  //   const parentSection = await this.prismaService.track_section.findUnique({
-  //     where: {
-  //       id: section.data.section_id as string,
-  //     },
-  //   });
-  //   await this.incrementParentsBudget(
-  //     { data: parentSection } as Prisma.track_sectionCreateArgs,
-  //     budget,
-  //   );
-  // }
-  // async decrementParentsBudget(
-  //   section: Prisma.track_sectionUpdateArgs,
-  //   budget: number,
-  // ) {
-  //   if (!section.data.section_id) {
-  //     await this.prismaService.track.update({
-  //       where: {
-  //         id: section.data.track_id as string,
-  //       },
-  //       data: {
-  //         budget: { decrement: budget },
-  //       },
-  //     });
-  //     return;
-  //   }
-  //   console.log(section.data.section_id);
-  //   await this.prismaService.track_section.update({
-  //     where: {
-  //       id: section.data.section_id as string,
-  //     },
-  //     data: {
-  //       budget: { decrement: budget },
-  //     },
-  //   });
-  //   const parentSection = await this.prismaService.track_section.findUnique({
-  //     where: {
-  //       id: section.data.section_id as string,
-  //     },
-  //   });
-  //   await this.decrementParentsBudget(
-  //     { data: parentSection } as Prisma.track_sectionUpdateArgs,
-  //     budget,
-  //   );
-  // }
+  async countMany(props: TrackFindManyProps, tx?: PrismaService) {
+    let prisma = this.prismaService;
+    if (tx) prisma = tx;
+    try {
+      const queryOptions = this.findManyFilters(props);
+      const result = await prisma.track.count({
+        where: queryOptions.where,
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

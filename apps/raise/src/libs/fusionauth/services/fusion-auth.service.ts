@@ -677,13 +677,23 @@ export class FusionAuthService {
 
       return response;
     } catch (error) {
-      if (error.response.status === 404 || error.response.status === 400) {
+      // console.trace({ error });
+      if (
+        error.response.status === 400 ||
+        error.response.status === 401 ||
+        error.response.status === 404
+      ) {
+        console.log(error.response.status);
+        if (error.response.status === 400) {
+          throw new BadRequestException('Token Required');
+        }
+        if (error.response.status === 401) {
+          throw new BadRequestException(
+            'Invalid fusion auth authorization header',
+          );
+        }
         if (error.response.status === 404) {
-          if (oldPassword) {
-            throw new BadRequestException('Invalid Old Password!');
-          } else {
-            throw new BadRequestException('Token Expired!');
-          }
+          throw new BadRequestException('Token Expired/Invalid Old Password');
         }
       } else {
         throw new Error(

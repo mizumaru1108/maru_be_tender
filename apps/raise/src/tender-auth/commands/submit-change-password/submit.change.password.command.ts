@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SubmitChangePasswordDto } from '../../dtos/requests/submit-change-password.dto';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
+import { UnauthorizedException } from '@nestjs/common';
 export class SubmitChangePasswordCommand {
   request: SubmitChangePasswordDto;
 }

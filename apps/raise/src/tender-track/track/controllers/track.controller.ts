@@ -1,117 +1,144 @@
 import {
+  BadRequestException,
   Body,
+  ConflictException,
   Controller,
   Get,
   HttpStatus,
+  InternalServerErrorException,
+  NotFoundException,
   Patch,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Builder } from 'builder-pattern';
+import { BaseApiOkResponse } from '../../../commons/decorators/base.api.ok.response.decorator';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
 import { TenderRoles } from '../../../tender-auth/decorators/tender-roles.decorator';
 import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import {
-  CreateTrackDto,
-  FetchTrackFilterRequest,
-  UpdateTrackDto,
-} from '../dto/requests';
-import { TrackService } from '../services/track.service';
+  TrackCreateCommandCommand,
+  TrackCreateCommandCommandResult,
+} from '../commands/track.create.command/track.create.command';
 
+import { BasePaginationApiOkResponse } from '../../../commons/decorators/base.pagination.api.ok.response.decorator';
+import {
+  TrackUpdateCommand,
+  TrackUpdateCommandResult,
+} from '../commands/track.update.command/track.update.command';
+import { TrackFindManyQueryDto } from '../dto/queries/track.find.many.query.dto';
+import { CreateTrackDto, UpdateTrackDto } from '../dto/requests';
+import { TrackEntity } from '../entities/track.entity';
+import {
+  TrackFindManyQuery,
+  TrackFindManyQueryResult,
+} from '../queries/track.find.many/track.find.many.query';
+
+@ApiTags('TrackModule')
 @Controller('tender/track')
 export class TrackController {
-  constructor(private readonly trackService: TrackService) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
+  errorMapper(e: any) {
+    if (
+      e instanceof BadRequestException ||
+      e instanceof NotFoundException ||
+      e instanceof ConflictException ||
+      e instanceof InternalServerErrorException
+    ) {
+      return e;
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Creating track (admin only)',
+  })
+  @BaseApiOkResponse(TrackEntity, 'object')
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Post('create')
   async create(@Body() request: CreateTrackDto) {
-    const createdTrack = await this.trackService.create(request);
-    return baseResponseHelper(
-      createdTrack,
-      HttpStatus.CREATED,
-      'Track Created Successfully!',
-    );
+    try {
+      const command = Builder<TrackCreateCommandCommand>(
+        TrackCreateCommandCommand,
+        { ...request },
+      ).build();
+
+      const result = await this.commandBus.execute<
+        TrackCreateCommandCommand,
+        TrackCreateCommandCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'Track Created Successfully!',
+      );
+    } catch (e) {
+      throw this.errorMapper(e);
+    }
   }
 
+  @ApiOperation({
+    summary: 'Updating track (admin only)',
+  })
+  @BaseApiOkResponse(TrackEntity, 'object')
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Patch('update')
   async update(@Body() request: UpdateTrackDto) {
-    const updatedTrack = await this.trackService.update(request);
-    return baseResponseHelper(
-      updatedTrack,
-      HttpStatus.CREATED,
-      'Track Created Successfully!',
-    );
+    try {
+      const command = Builder<TrackUpdateCommand>(TrackUpdateCommand, {
+        ...request,
+      }).build();
+
+      const result = await this.commandBus.execute<
+        TrackUpdateCommand,
+        TrackUpdateCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'Track Updated Successfully!',
+      );
+    } catch (e) {
+      throw this.errorMapper(e);
+    }
   }
 
-  @UseGuards(TenderJwtGuard)
-  @Get('fetch-all')
-  async fetchAll(@Query() payload: FetchTrackFilterRequest) {
-    const result = await this.trackService.fetchAll(payload);
+  @ApiOperation({
+    summary: 'Find many track',
+  })
+  @BasePaginationApiOkResponse(TrackEntity)
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Get()
+  async findMany(@Query() query: TrackFindManyQueryDto) {
+    const builder = Builder<TrackFindManyQuery>(TrackFindManyQuery, {
+      ...query,
+    });
+
+    const { data, total } = await this.queryBus.execute<
+      TrackFindManyQuery,
+      TrackFindManyQueryResult
+    >(builder.build());
 
     return manualPaginationHelper(
-      result.data,
-      result.total,
-      payload.page || 1,
-      payload.limit || 10,
+      data,
+      total,
+      query.page || 1,
+      query.limit || 10,
       HttpStatus.OK,
-      'Success',
+      'Track List Fetched Successfully!',
     );
   }
-
-  // @Post('track-section')
-  // async createTrackSection(
-  //   @Body() request: TracSectionkDto,
-  // ): Promise<BaseResponse<track_section>> {
-  //   const createdRecord = await this.tenderTrackService.createTrackSection(
-  //     request,
-  //   );
-  //   return baseResponseHelper(
-  //     createdRecord,
-  //     HttpStatus.CREATED,
-  //     'Tender Track Section created successfully',
-  //   );
-  // }
-
-  // @Patch('track-section')
-  // async udateTrackSection(
-  //   @Body() request: UpdateTrackSection,
-  //   @Query() id: string,
-  // ): Promise<BaseResponse<track_section>> {
-  //   const updatedRecord = await this.tenderTrackService.updateTrackSection(
-  //     request,
-  //     id,
-  //   );
-  //   return baseResponseHelper(
-  //     updatedRecord,
-  //     HttpStatus.OK,
-  //     'Tender Track Section updated successfully',
-  //   );
-  // }
-
-  // @Delete('track-section/:id')
-  // async deleteTrackSection(@Param('id') id: string) {
-  //   const deletedTrack = await this.tenderTrackService.deleteTrackSection(id);
-  //   return baseResponseHelper(
-  //     deletedTrack,
-  //     HttpStatus.OK,
-  //     'Tender Track Section deleted successfully',
-  //   );
-  // }
-
-  // @Get('track-section')
-  // async getAllTrackSections(@Query('track_id') track_id: string) {
-  //   const trackSections = await this.tenderTrackService.getAllTrackSections(
-  //     track_id,
-  //   );
-  //   return baseResponseHelper(
-  //     trackSections,
-  //     HttpStatus.OK,
-  //     'Tender Track Sections',
-  //   );
-  // }
 }
