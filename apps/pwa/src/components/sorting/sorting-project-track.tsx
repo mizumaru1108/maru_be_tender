@@ -41,7 +41,7 @@ export default function SortingProjectTrackCardTable({
   const handleSortingFilter = (event: any) => {
     const value = event.target.value as string;
     let tmpFilter = '&track_id=';
-    if (value) {
+    if (value !== '-') {
       tmpFilter = `&track_id=${value}`;
     } else {
       tmpFilter = '';
@@ -53,14 +53,14 @@ export default function SortingProjectTrackCardTable({
     <FormControl fullWidth sx={{ minWidth: 120, paddingBottom: 2 }}>
       <InputLabel htmlFor="grouped-select">{translate('sorting.label.project_tracks')}</InputLabel>
       <Select
-        defaultValue=""
+        defaultValue="-"
         id="grouped-select"
         label={translate('sorting.label.project_tracks')}
         onChange={handleSortingFilter}
         disabled={isLoading}
         {...other}
       >
-        <MenuItem value="">
+        <MenuItem value="-">
           {/* No Sorting */}
           {translate('sorting.label.no_value')}
         </MenuItem>

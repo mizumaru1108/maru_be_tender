@@ -99,7 +99,7 @@ function ClientProfileEditForm() {
         fileExtension: '',
         fullName: '',
       },
-      board_ofdec_file: null,
+      board_ofdec_file: [],
     },
     form4: {
       ceo_name: '',
@@ -615,16 +615,34 @@ function ClientProfileEditForm() {
   const onSubmitEditRequest = async () => {
     setLoadingButtonState(true);
     let newBankInformation = {};
-    newBankInformation = {
-      ...newBankInformation,
-      old_banks: [...profileState.form5].map((item) => {
-        const tmpItme = item;
-        return {
-          ...tmpItme,
-          bank_name: tmpItme.bank_name || '-',
-        };
-      }),
-    };
+    // newBankInformation = {
+    //   ...newBankInformation,
+    //   old_banks: [...profileState.form5].map((item) => {
+    //     const tmpItme = item;
+    //     return {
+    //       ...tmpItme,
+    //       bank_name: tmpItme.bank_name || '-',
+    //     };
+    //   }),
+    // };
+    if (startedValue.bank_informations && startedValue.bank_informations.length > 0) {
+      newBankInformation = {
+        ...newBankInformation,
+        old_banks: [...startedValue.bank_informations].map((item) => {
+          const tmpItme = item;
+          return {
+            ...tmpItme,
+            bank_name: tmpItme.bank_name || '-',
+          };
+        }),
+      };
+    } else {
+      newBankInformation = {
+        ...newBankInformation,
+        old_banks: [],
+      };
+    }
+
     if (profileState.updated_banks.length > 0) {
       newBankInformation = {
         ...newBankInformation,
@@ -644,9 +662,9 @@ function ClientProfileEditForm() {
       };
     }
     // }
-    const updateBank = {
-      ...newBankInformation,
-    };
+    // const updateBank = {
+    //   ...newBankInformation,
+    // };
     const tpmForm1 = {
       ...profileState.form1,
       authority_id:
@@ -658,13 +676,19 @@ function ClientProfileEditForm() {
     // const tmpForm4 = {
     //   ...profileState.form4,
     // };
-    const payload = {
+    let payload = {
       ...tpmForm1,
       ...tpmForm2,
       ...profileState.form3,
       ...profileState.form4,
       ...newBankInformation,
     };
+    if (profileState.form3.board_ofdec_file && !profileState.form3.board_ofdec_file[0]) {
+      payload = {
+        ...payload,
+        board_ofdec_file: [],
+      };
+    }
     // console.log({ payload });
     const filteredObj = Object.fromEntries(Object.entries(payload).filter(([key, value]) => value));
     if (filteredObj.entity_mobile === startedValue.entity_mobile) {
