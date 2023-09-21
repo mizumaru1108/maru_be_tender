@@ -596,7 +596,7 @@ export class TenderClientService {
   ): Promise<any> {
     let uploadedFilePath: string[] = [];
 
-    console.log({ editRequest });
+    // console.log({ editRequest });
 
     try {
       const {

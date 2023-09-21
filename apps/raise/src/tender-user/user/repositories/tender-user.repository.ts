@@ -552,14 +552,8 @@ export class TenderUserRepository {
       });
     }
 
-    if (
-      hide_external &&
-      hide_external === '1' &&
-      user_type_id &&
-      user_type_id.length > 0
-    ) {
-      query = {
-        ...query,
+    if (user_type_id && user_type_id.length > 0) {
+      orQuery.push({
         // only show roles.user_type_id[] should be not contain "tender_client"
         roles: {
           some: {
@@ -568,7 +562,7 @@ export class TenderUserRepository {
             },
           },
         },
-      };
+      });
     }
 
     if (association_name) {
@@ -699,6 +693,7 @@ export class TenderUserRepository {
     // }
     // }
     query.OR = orQuery;
+
     try {
       // console.log(logUtil(filter));
       // console.log(logUtil(query));
