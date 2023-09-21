@@ -407,6 +407,7 @@ const en = {
         wrong_credential: 'Wrong login ID or password',
       },
     },
+    landing: { landing: 'Welcome' },
     cashier: {
       previous_funding_request: 'Previous Funding Requests',
       main: 'The Cashier | Main Page',
