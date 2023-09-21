@@ -315,10 +315,6 @@ export class BunnyService {
     };
 
     try {
-      // this.logger.log(
-      //   'info',
-      //   `Uploading [${fileName}] (${fileBuffer.length} bytes) to Bunny ${this.storageUrlMedia} ...`,
-      // );
       this.logger.info(
         'Uploading %j (%j bytes) to Bunny %j ...',
         fileName,
@@ -327,20 +323,14 @@ export class BunnyService {
       );
       // const response = await axios(options);
       await axios(options);
-      // this.logger.log(
-      //   'info',
-      //   `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}, ${JSON.stringify(
-      //     response.data,
-      //     null,
-      //     2,
-      //   )}`,
-      // );
       this.logger.info('`%j has been Uploaded!, uploaded Url: %j', fileName);
       return cdnUrl;
     } catch (error) {
       this.logger.error(
-        `Error uploading image file to Bunny ${storageUrlMedia} (${fileBuffer.length} bytes) while creating ${serviceName}`,
-        error,
+        `Error uploading image file to Bunny %j (%j bytes) while creating %j`,
+        storageUrlMedia,
+        fileBuffer.length,
+        serviceName,
       );
       throw new InternalServerErrorException(
         `Error uploading image file to Bunny ${storageUrlMedia} (${fileBuffer.length} bytes) while creating ${serviceName}`,
@@ -450,17 +440,24 @@ export class BunnyService {
     };
 
     try {
-      // this.logger.log(
-      //   `Uploading [${fileName}] (${fileBuffer.length} bytes) to Bunny ${this.storageUrlMedia} ...`,
-      // );
+      this.logger.info(
+        `Uploading [%j] (%d bytes) to Bunny %j ...`,
+        fileName,
+        fileBuffer.length,
+        this.storageUrlMedia,
+      );
       await axios(options);
-      // this.logger.log(
-      //   `${fileName} has been Uploaded!, uploaded Url: ${cdnUrl}`,
-      // );
+      this.logger.info(
+        `%j has been Uploaded!, uploaded Url: %j`,
+        fileName,
+        cdnUrl,
+      );
       return cdnUrl; // TODO: change only to use path on next iteration.
     } catch (error) {
       this.logger.error(
-        `Error while uploading base64 image to ${storageUrlMedia} more detail: ${error}`,
+        `Error while uploading base64 image to %j more detail: %j`,
+        storageUrlMedia,
+        error,
       );
 
       throw new FileUploadErrorException(

@@ -8,7 +8,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { QueryBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
@@ -20,6 +20,10 @@ import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
+import {
+  ClientCreateEditRequestCommand,
+  ClientCreateEditRequestCommandResult,
+} from '../commands/client.create.edit.request/client.create.edit.request.command';
 import { ClientFieldAndIdQueryDto } from '../dtos/queries/client.find.name.and.id.query.dto';
 import {
   ClientEditRequestFieldDto,
@@ -39,6 +43,7 @@ import { TenderClientService } from '../services/tender-client.service';
 export class TenderClientController {
   constructor(
     private readonly tenderClientService: TenderClientService,
+    private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
 
@@ -59,6 +64,37 @@ export class TenderClientController {
       HttpStatus.OK,
       'Asking for changes successfully applied!, please wait untill account manager responded to your request',
     );
+  }
+
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_client')
+  @Post('edit-request/create-cqrs')
+  async createEditRequestCqrs(
+    @CurrentUser() user: TenderCurrentUser,
+    @Body() editRequest: ClientEditRequestFieldDto,
+  ): Promise<BaseResponse<any>> {
+    try {
+      const command = Builder<ClientCreateEditRequestCommand>(
+        ClientCreateEditRequestCommand,
+        {
+          user,
+          editRequest,
+        },
+      ).build();
+
+      const result = await this.commandBus.execute<
+        ClientCreateEditRequestCommand,
+        ClientCreateEditRequestCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'Advertisement Created Successfully!',
+      );
+    } catch (e) {
+      throw e;
+    }
   }
 
   @ApiOperation({

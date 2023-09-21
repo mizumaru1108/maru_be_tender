@@ -7,7 +7,7 @@ import {
 import { PrismaService } from '../../../prisma/prisma.service';
 
 import { ConfigService } from '@nestjs/config';
-import { bank_information, client_data, Prisma, user } from '@prisma/client';
+import { bank_information, client_data, Prisma } from '@prisma/client';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
@@ -19,16 +19,13 @@ import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { SendEmailDto } from '../../../libs/email/dtos/requests/send-email.dto';
 import { EmailService } from '../../../libs/email/email.service';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
-import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { TwilioService } from '../../../libs/twilio/services/twilio.service';
-import { RegisterTenderDto } from '../../../tender-auth/dtos/requests/register-tender.dto';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
 import { isTenderFilePayload } from '../../../tender-commons/utils/is-tender-file-payload';
 import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
-import { UserStatusEnum } from '../../user/types/user_status';
 import { ClientEditRequestFieldDto } from '../dtos/requests/client-edit-request-field.dto';
 import { ExistingClientBankInformation } from '../dtos/requests/existing-bank-information.dto';
 import { RejectEditRequestDto } from '../dtos/requests/reject-edit-request.dto';
@@ -36,14 +33,11 @@ import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-fi
 import { RawCreateEditRequestResponse } from '../dtos/responses/raw-create-edit-request-response.dto';
 import { RawResponseEditRequestDto } from '../dtos/responses/raw-response-edit-request-response.dto';
 import { ApproveEditRequestMapper } from '../mappers/approve-edit-request.mapper';
-import { BankInformationsMapper } from '../mappers/bank_information.mapper';
-import { CreateClientMapper } from '../mappers/create-client.mapper';
-import { UserClientDataMapper } from '../mappers/user-client-data.mapper';
 import { TenderClientRepository } from '../repositories/tender-client.repository';
 
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
 import { logUtil } from '../../../commons/utils/log-util';
-import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
 import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
 import { TenderNotificationRepository } from '../../../notification-management/notification/repository/tender-notification.repository';
 import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
@@ -54,9 +48,9 @@ import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-spec
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
-  private readonly logger = ROOT_LOGGER.child({
-    'log.logger': TenderClientService.name,
-  });
+  // private readonly logger = ROOT_LOGGER.child({
+  //   'log.logger': TenderClientService.name,
+  // });
 
   constructor(
     private readonly prismaService: PrismaService,
@@ -69,6 +63,7 @@ export class TenderClientService {
     private readonly tenderNotifRepo: TenderNotificationRepository,
     private readonly tenderUserRepository: TenderUserRepository,
     private tenderClientRepository: TenderClientRepository,
+    @InjectPinoLogger(TenderClientService.name) private logger: PinoLogger,
   ) {
     const environment = this.configService.get('APP_ENV');
     if (!environment) envLoadErrorHelper('APP_ENV');
@@ -427,18 +422,19 @@ export class TenderClientService {
       };
     } catch (error) {
       if (uploadedFilePath.length > 0) {
-        this.logger.log(
-          'log',
-          `${uploadMessage} error, deleting all previous uploaded files: ${error}`,
+        this.logger.info(
+          `%j error, deleting all previous uploaded files: %j`,
+          uploadMessage,
+          error,
         );
         uploadedFilePath.forEach(async (path) => {
           await this.bunnyService.deleteMedia(path, true);
         });
       }
       if (onCreateUser && userId) {
-        this.logger.log(
-          'info',
-          `Falied to store user data on db, deleting the user ${userId} from fusion auth`,
+        this.logger.info(
+          `Falied to store user data on db, deleting the user %j from fusion auth`,
+          userId,
         );
         await this.fusionAuthService.fusionAuthDeleteUser(userId);
       }
@@ -871,21 +867,17 @@ export class TenderClientService {
       }
 
       const ofdecFromDb = clientData?.board_ofdec_file; // old client data ofdec (old ofdec)
+      this.logger.info(`offdec from db %j`, ofdecFromDb);
 
       const oldOfdec: finalUploadFileJson[] = [];
       const newOfdec: finalUploadFileJson[] = [];
 
       // board_ofdec_file here is from the request (new ofdec)
       if (!!board_ofdec_file && board_ofdec_file.length > 0) {
-        // console.log(
-        //   'board_ofdec_file[] on request length = ',
-        //   board_ofdec_file.length,
-        // );
+        // this.logger.info(`new ofdec from request %j`, board_ofdec_file);
         for (let i = 0; i < board_ofdec_file.length; i++) {
           if (isTenderFilePayload(board_ofdec_file[i])) {
-            // console.log(
-            //   `board_ofdec_file[${i}] on request is a new file (base64), so we upload it first`,
-            // );
+            this.logger.info('ofdec is base64, upload it first');
             const uploadResult = await this.uploadClientFile(
               user.id,
               'Uploading ofdec File for user',
@@ -900,19 +892,16 @@ export class TenderClientService {
               maxSize,
               uploadedFilePath,
             );
+            this.logger.info('updateResult %j', uploadResult);
 
-            // console.log('add uploaded file url to uploaded file path');
+            //add uploaded file url to uploaded file path
             uploadedFilePath = uploadResult.uploadedFilePath;
-            // console.log({ uploadedFilePath });
 
             const tmpCreatedOfdec: finalUploadFileJson = uploadResult.fileObj;
             tmpCreatedOfdec.color = 'green';
 
-            // console.log(
-            //   `pushing the new file to the new uploaded file of board_ofdec_file[${i}] to newOfdec with green color flags`,
-            // );
+            // `pushing the new file to the new uploaded file of board_ofdec_file[${i}] to newOfdec with green color flags`,
             newOfdec.push(tmpCreatedOfdec);
-            // console.log({ newOfdec });
 
             const payload: Prisma.file_managerUncheckedCreateInput = {
               id: uuidv4(),
@@ -924,15 +913,10 @@ export class TenderClientService {
               table_name: 'client_data',
               name: uploadResult.fileObj.url.split('/').pop() as string,
             };
-            // console.log(
             //   `create / push the uploaded file (board_ofdec_file[${i}]) to new file manager create payload`,
-            // );
             fileManagerCreateManyPayload.push(payload);
-            // console.log({ fileManagerCreateManyPayload });
           } else if (isUploadFileJsonb(board_ofdec_file[i])) {
-            // console.log(
-            //   `board_ofdec_file[${i}] on request is an old file (already uploaded / !== base64)`,
-            // );
+            this.logger.info('ofdec is already uploaded file');
             // check if ofdecFromDb is array or not with (instance of array)
             let tmpCreatedOfdec: finalUploadFileJson;
             // console.log(
@@ -1040,8 +1024,6 @@ export class TenderClientService {
           } else {
             if (isUploadFileJsonb(ofdecFromDb)) {
               const tmpExisting: finalUploadFileJson = ofdecFromDb as any;
-              // console.log({ ofdecFromDb });
-              // console.log({ newOfdec });
               const idx = newOfdec.findIndex(
                 (newData) => newData.url === tmpExisting.url,
               );
@@ -1049,7 +1031,6 @@ export class TenderClientService {
               if (idx === -1) {
                 tmpExisting.color = 'red';
                 oldOfdec.push(tmpExisting);
-                // console.log({ oldOfdec });
               }
             }
           }
@@ -1063,16 +1044,16 @@ export class TenderClientService {
 
       // console.log({ oldLicenseFile });
       // console.log({ newLicenseFile });
+      this.logger.info(`oldLicenseFile %j`, oldLicenseFile);
+      this.logger.info(`newLicenseFile %j`, newLicenseFile);
       // if there's new license file form request
       if (!!license_file) {
-        // console.log(logUtil(license_file));
+        this.logger.info(`license file from request %j`, license_file);
         // if it is unuploaded file
         if (isTenderFilePayload(license_file)) {
-          // this.logger.log(
-          //   'info',
-          //   'liscene_file is a new file, uploading liscene file',
-          // );
-          // console.log('license file is a new file uploadine license file');
+          this.logger.info(
+            `liscene_file is a new file, uploading liscene file`,
+          );
           const uploadResult = await this.uploadClientFile(
             user.id,
             'Uploading license file for user',
@@ -1105,13 +1086,10 @@ export class TenderClientService {
         }
         // if it is already uploaded file
         if (isUploadFileJsonb(license_file)) {
-          // this.logger.log(
-          //   'info',
-          //   `liscene file is an uploaded file (jsonb), ${logUtil(
-          //     license_file,
-          //   )}`,
-          // );
-          console.log(`license file is an uploaded file`);
+          this.logger.info(
+            `liscene file is an uploaded file (jsonb) %j`,
+            license_file,
+          );
           if (
             oldLicenseFile &&
             oldLicenseFile !== null &&
@@ -1173,9 +1151,9 @@ export class TenderClientService {
         `error occured, current uploaded files ${logUtil(uploadedFilePath)}`,
       );
       if (uploadedFilePath.length > 0) {
-        this.logger.log(
-          'log',
-          `Error occured during edit request, deleting all previous uploaded files: ${error}`,
+        this.logger.info(
+          `Error occured during edit request, deleting all previous uploaded files: %j`,
+          error,
         );
         uploadedFilePath.forEach(async (path) => {
           await this.bunnyService.deleteMedia(path, true);

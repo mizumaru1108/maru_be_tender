@@ -2,7 +2,6 @@ import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ApiProperty } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
-import moment from 'moment';
 import { nanoid } from 'nanoid';
 import { BannerEntity } from 'src/banners/entities/banner.entity';
 import {
