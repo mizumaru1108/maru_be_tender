@@ -5,7 +5,6 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { TenderFilePayload } from 'src/tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
-import { generateFileName } from 'src/tender-commons/utils/generate-filename';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { generateRandomNumberString } from '../../../commons/utils/generate-random-string';
@@ -20,6 +19,7 @@ import {
   validateFileUploadSize,
 } from '../../../commons/utils/validate-file-size';
 import { FileUploadErrorException } from '../exception/file-upload-error.exception';
+import { generateFileName } from '../../../tender-commons/utils/generate-filename';
 
 /**
  * Nest Bunny Module
@@ -440,17 +440,19 @@ export class BunnyService {
     };
 
     try {
+      // console.log('Uploading ', fileName, ' to ', path);
       this.logger.info(
         `Uploading [%j] (%d bytes) to Bunny %j ...`,
         fileName,
         fileBuffer.length,
         this.storageUrlMedia,
       );
-      await axios(options);
+      const res = await axios(options);
       this.logger.info(
-        `%j has been Uploaded!, uploaded Url: %j`,
+        `%j has been Uploaded!, uploaded Url: %j, response %j`,
         fileName,
         cdnUrl,
+        res,
       );
       return cdnUrl; // TODO: change only to use path on next iteration.
     } catch (error) {

@@ -34,6 +34,7 @@ import {
 } from '../../dtos/requests';
 import { TenderClientRepository } from '../../repositories/tender-client.repository';
 import { TenderClientService } from '../../services/tender-client.service';
+import { logUtil } from '../../../../commons/utils/log-util';
 
 export class ClientCreateEditRequestCommand {
   user: TenderCurrentUser;
@@ -94,6 +95,8 @@ export class ClientCreateEditRequestCommandHandler
         selectLang,
       } = command.editRequest;
       const { user } = command;
+
+      const cd = await this.clientRepo.findClient;
 
       // check data data_entry_mobile
       if (data_entry_mobile) {
@@ -353,7 +356,7 @@ export class ClientCreateEditRequestCommandHandler
       };
 
       const ofdecFromDb = clientData?.board_ofdec_file; // old client data ofdec (old ofdec)
-      this.logger.info(`offdec from db %j`, ofdecFromDb);
+      // console.log('ofdec from db', ofdecFromDb);
 
       const oldOfdec: finalUploadFileJson[] = [];
       const newOfdec: finalUploadFileJson[] = [];
@@ -361,9 +364,10 @@ export class ClientCreateEditRequestCommandHandler
       // board_ofdec_file here is from the request (new ofdec)
       if (!!board_ofdec_file && board_ofdec_file.length > 0) {
         // this.logger.info(`new ofdec from request %j`, board_ofdec_file);
+        // validating if ofdec from request is already uploaded
         for (let i = 0; i < board_ofdec_file.length; i++) {
           if (isTenderFilePayload(board_ofdec_file[i])) {
-            this.logger.info('ofdec is base64, upload it first');
+            // console.log('ofdec is base64, upload it first');
             const uploadRes = await this.bunnyService.uploadFileBase64(
               board_ofdec_file[i],
               `tmra/${appConfig?.env}/organization/tender-management/client-data/${user.id}/ofdec`,
@@ -382,6 +386,7 @@ export class ClientCreateEditRequestCommandHandler
               type: uploadRes.type,
             };
 
+            // console.log('upload kelar', tmpPayload);
             const tmpCreatedOfdec: finalUploadFileJson = tmpPayload;
             tmpCreatedOfdec.color = 'green';
 
@@ -398,13 +403,11 @@ export class ClientCreateEditRequestCommandHandler
               column_name: 'board_ofdec_file',
               table_name: 'client_data',
             });
+            // console.log('pushed file manager', fileManagerPayload);
           } else if (isUploadFileJsonb(board_ofdec_file[i])) {
-            this.logger.info('ofdec is already uploaded file');
+            // console.log('ofdec is already uploaded file');
             // check if ofdecFromDb is array or not with (instance of array)
             let tmpCreatedOfdec: finalUploadFileJson;
-            // console.log(
-            //   'checking the type of the old ofdec file on db (ofdecFromDb)',
-            // );
             if (ofdecFromDb instanceof Array) {
               // console.log(`ofdecFromDb is an instance of array`);
               // console.log(
@@ -427,8 +430,6 @@ export class ClientCreateEditRequestCommandHandler
                 // );
                 newOfdec.push(tmpCreatedOfdec);
                 oldOfdec.push(tmpCreatedOfdec);
-                // console.log({ oldOfdec });
-                // console.log({ newOfdec });
               } else {
                 // console.log(
                 //   `board_ofdec_file[${i}] (from frequest), is NOT EXIST on ofdecFromDb array`,
@@ -485,10 +486,11 @@ export class ClientCreateEditRequestCommandHandler
         }
 
         //handling either old ofdec exist or not
-        // console.log({ ofdecFromDb });
         if (!!ofdecFromDb) {
           // handling if old ofdec is exist, either is array or not
+          // console.log('ofdec from db exist');
           if (ofdecFromDb instanceof Array) {
+            // console.log('ofdec from db is array');
             ofdecFromDb.forEach((existingOfdec) => {
               if (isUploadFileJsonb(existingOfdec)) {
                 // console.log({ existingOfdec });
@@ -505,7 +507,9 @@ export class ClientCreateEditRequestCommandHandler
               }
             });
           } else {
+            // console.log('offdec from db is not an array');
             if (isUploadFileJsonb(ofdecFromDb)) {
+              // console.log('offdec from db is a jsonb (upload file jsonb)');
               const tmpExisting: finalUploadFileJson = ofdecFromDb as any;
               const idx = newOfdec.findIndex(
                 (newData) => newData.url === tmpExisting.url,
@@ -520,22 +524,27 @@ export class ClientCreateEditRequestCommandHandler
         }
       }
 
+      // console.log('oldOfdec', oldOfdec);
+      // console.log('newOfdec', newOfdec);
+
       let oldLicenseFile: finalUploadFileJson | null =
         clientOldRequest?.license_file || null;
       let newLicenseFile: finalUploadFileJson | null =
         clientOldRequest?.license_file || null;
 
-      this.logger.info(`oldLicenseFile %j`, oldLicenseFile);
-      this.logger.info(`newLicenseFile %j`, newLicenseFile);
+      // console.log(`oldLicenseFile`, oldLicenseFile);
+      // console.log(`license_file from request ${logUtil(license_file)}`);
 
       // if there's new license file form request
       if (!!license_file) {
-        this.logger.info(`license file from request %j`, license_file);
+        // console.log(
+        //   `is TenderFilePayload ${isTenderFilePayload(license_file)}`,
+        // );
+        // console.log(`is isUploadFileJsonb ${isUploadFileJsonb(license_file)}`);
         // if it is unuploaded file
         if (isTenderFilePayload(license_file)) {
-          this.logger.info(
-            `liscene_file is a new file, uploading liscene file`,
-          );
+          // console.log('license is tender file payload');
+          // console.log('license file is a new file', license_file);
           const uploadRes = await this.bunnyService.uploadFileBase64(
             license_file as TenderFilePayload,
             `tmra/${appConfig?.env}/organization/tender-management/client-data/${user.id}/liscene-file`,
@@ -574,10 +583,7 @@ export class ClientCreateEditRequestCommandHandler
         }
         // if it is already uploaded file
         if (isUploadFileJsonb(license_file)) {
-          this.logger.info(
-            `liscene file is an uploaded file (jsonb) %j`,
-            license_file,
-          );
+          // console.log('license file is jsonb');
           if (
             oldLicenseFile &&
             oldLicenseFile !== null &&

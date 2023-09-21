@@ -437,6 +437,7 @@ export class TenderClientRepository {
           website: true,
           user: {
             select: {
+              id: true,
               status_id: true,
             },
           },

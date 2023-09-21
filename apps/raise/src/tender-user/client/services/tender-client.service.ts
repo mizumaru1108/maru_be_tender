@@ -647,6 +647,11 @@ export class TenderClientService {
       const clientData =
         await this.tenderClientRepository.findClientDataByUserId(user.id);
       if (!clientData) throw new NotFoundException('Client data not found!');
+      if (clientData.user.id !== user.id) {
+        throw new BadRequestException(
+          'You are not allowed to perform an edit request to another client data!',
+        );
+      }
 
       if (clientData.user.status_id !== 'ACTIVE_ACCOUNT') {
         // if one of them /both of them not exist then throw error
