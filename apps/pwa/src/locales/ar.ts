@@ -408,6 +408,7 @@ const ar = {
         wrong_credential: 'معرف تسجيل الدخول أو كلمة المرور خاطئة',
       },
     },
+    landing: { landing: 'الرئيسية' },
     cashier: {
       previous_funding_request: 'طلبات الدعم السابقة',
       main: 'صفحة الخزينة الرئيسية',
@@ -2729,7 +2730,8 @@ const ar = {
     },
     auth: {
       reset_password: {
-        wrong_old_password: 'يرجى التأكيد مع مدير حسابك لأنه لا يمكنك تغيير كلمة المرور الخاصة بك مؤقتًا',
+        wrong_old_password:
+          'يرجى التأكيد مع مدير حسابك لأنه لا يمكنك تغيير كلمة المرور الخاصة بك مؤقتًا',
       },
       register: {
         send_verify_email: {

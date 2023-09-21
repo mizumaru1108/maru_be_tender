@@ -1,48 +1,40 @@
-import { noCase } from 'change-case';
-import React, { useState, useEffect, Key } from 'react';
+import React, { useEffect, useState } from 'react';
 // @mui
 import {
-  Box,
-  List,
+  Alert,
   Badge,
+  Box,
   Button,
-  Avatar,
-  Tooltip,
   Divider,
-  IconButton,
-  Typography,
-  ListItemText,
-  ListSubheader,
-  ListItemAvatar,
+  List,
   ListItemButton,
+  ListItemText,
+  Snackbar,
   Stack,
   Tab,
-  Alert,
-  Snackbar,
+  Typography,
 } from '@mui/material';
 // utils
-import { fToNow } from '../../../utils/formatTime';
-import Iconify from '../../../components/Iconify';
-import Scrollbar from '../../../components/Scrollbar';
-import MenuPopover from '../../../components/MenuPopover';
-import { IconButtonAnimate } from '../../../components/animate';
-import SvgIconStyle from 'components/SvgIconStyle';
-import { sub } from 'date-fns';
-import useLocales from '../../../hooks/useLocales';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
+import SvgIconStyle from 'components/SvgIconStyle';
+import { FEATURE_NOTIFICATION_SYSTEM } from 'config';
+import { sub } from 'date-fns';
+import useAuth from 'hooks/useAuth';
+import moment from 'moment';
 import {
+  notifAccManager,
   subNotification,
   subNotificationClient,
-  notifAccManager,
 } from 'queries/commons/subNotification';
-import useAuth from 'hooks/useAuth';
 import { useSubscription } from 'urql';
-import Page500 from 'pages/Page500';
-import { FEATURE_NOTIFICATION_SYSTEM } from 'config';
+import { IconButtonAnimate } from '../../../components/animate';
+import Iconify from '../../../components/Iconify';
+import MenuPopover from '../../../components/MenuPopover';
+import Scrollbar from '../../../components/Scrollbar';
+import useLocales from '../../../hooks/useLocales';
 import { messageNotificationCount } from '../../../queries/commons/subMessageNotificationCount';
-import { useDispatch, useSelector } from '../../../redux/store';
 import { setMessageNotifyCount } from '../../../redux/slices/notification';
-import moment from 'moment';
+import { useDispatch, useSelector } from '../../../redux/store';
 import axiosInstance from '../../../utils/axios';
 
 // ----------------------------------------------------------------------
@@ -152,6 +144,7 @@ export default function MessagePopover() {
 
   const { data, fetching, error } = result;
   const { data: dataNotifCount, fetching: fetchingNotifCount, error: NotifCountError } = notifCount;
+  // console.log({ data, dataNotifCount });
 
   const memoResult = React.useMemo(() => data, [data]);
   const memoResultError = React.useMemo(() => error, [error]);
@@ -192,7 +185,7 @@ export default function MessagePopover() {
   const handleMarkAllAsRead = async () => {
     await axiosInstance.patch(
       'tender/notification/read-mine',
-      {},
+      { type: 'message' },
       {
         headers: { 'x-hasura-role': activeRole! },
       }
@@ -207,7 +200,7 @@ export default function MessagePopover() {
   const handleClearAll = async () => {
     await axiosInstance.patch(
       'tender/notification/delete-all-mine',
-      {},
+      { type: 'message' },
       {
         headers: { 'x-hasura-role': activeRole! },
       }

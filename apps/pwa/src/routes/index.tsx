@@ -12,6 +12,7 @@ import { ceoRoute } from './ceo-route';
 import { mainRoute } from './main-route';
 import { adminRoute } from './admin-route';
 import { getAuthCode } from './get-auth-code';
+import { landingRoute } from 'routes/landing-route';
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +31,7 @@ export default function Router() {
     mainRoute,
     adminRoute,
     getAuthCode,
+    landingRoute,
     {
       path: '/',
       element: <Navigate to="/auth/login" replace />,

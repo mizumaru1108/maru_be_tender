@@ -267,7 +267,7 @@ export default function NotificationsPopover() {
   const handleMarkAllAsRead = async () => {
     await axiosInstance.patch(
       'tender/notification/read-mine',
-      {},
+      { type: 'notification' },
       {
         headers: { 'x-hasura-role': activeRole! },
       }
@@ -277,7 +277,7 @@ export default function NotificationsPopover() {
   const handleClearAll = async () => {
     await axiosInstance.patch(
       'tender/notification/delete-all-mine',
-      {},
+      { type: 'notification' },
       {
         headers: { 'x-hasura-role': activeRole! },
       }
