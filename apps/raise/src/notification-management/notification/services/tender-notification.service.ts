@@ -57,8 +57,8 @@ export class TenderNotificationService {
     return updatedNotif;
   }
 
-  async readMine(userId: string) {
-    return await this.tenderNotificationRepository.readByUserId(userId);
+  async readMine(userId: string, type?: 'notification' | 'message') {
+    return await this.tenderNotificationRepository.readByUserId(userId, type);
   }
 
   async hide(userId: string, notificationId: string) {
@@ -93,8 +93,8 @@ export class TenderNotificationService {
     return updatedNotif;
   }
 
-  async deleteAllMine(userId: string) {
-    return await this.tenderNotificationRepository.deleteAllMine(userId);
+  async deleteAllMine(userId: string, type?: 'notification' | 'message') {
+    return await this.tenderNotificationRepository.deleteAllMine(userId, type);
   }
 
   sendSmsAndEmail(notifPayload: CommonNotifMapperResponse) {

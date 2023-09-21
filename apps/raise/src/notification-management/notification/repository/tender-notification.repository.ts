@@ -133,12 +133,29 @@ export class TenderNotificationRepository {
     }
   }
 
-  async readByUserId(userId: string) {
+  async readByUserId(userId: string, type?: 'notification' | 'message') {
+    let notifClause: Prisma.notificationWhereInput = {
+      user_id: userId,
+    };
+
+    if (type) {
+      if (type === 'notification') {
+        notifClause = {
+          ...notifClause,
+          specific_type: 'NEW_MESSAGE',
+        };
+      }
+
+      if (type === 'message') {
+        notifClause = {
+          ...notifClause,
+          specific_type: { notIn: ['NEW_MESSAGE'] },
+        };
+      }
+    }
     try {
       return await this.prismaService.notification.updateMany({
-        where: {
-          user_id: userId,
-        },
+        where: notifClause,
         data: {
           read_status: true,
         },
@@ -214,12 +231,29 @@ export class TenderNotificationRepository {
     }
   }
 
-  async deleteAllMine(userId: string) {
+  async deleteAllMine(userId: string, type?: 'notification' | 'message') {
+    let notifClause: Prisma.notificationWhereInput = {
+      user_id: userId,
+    };
+
+    if (type) {
+      if (type === 'notification') {
+        notifClause = {
+          ...notifClause,
+          specific_type: 'NEW_MESSAGE',
+        };
+      }
+
+      if (type === 'message') {
+        notifClause = {
+          ...notifClause,
+          specific_type: { notIn: ['NEW_MESSAGE'] },
+        };
+      }
+    }
     try {
       return await this.prismaService.notification.deleteMany({
-        where: {
-          user_id: userId,
-        },
+        where: notifClause,
       });
     } catch (error) {
       const theError = prismaErrorThrower(

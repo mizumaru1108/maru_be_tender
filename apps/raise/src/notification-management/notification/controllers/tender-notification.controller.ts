@@ -13,6 +13,7 @@ import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-
 import { BaseNotificationDto } from '../dtos/requests/base-notification.dto';
 
 import { TenderNotificationService } from '../services/tender-notification.service';
+import { ReadAndDeleteMineDto } from '../dtos/requests/read.and.delete.mine.dto';
 
 @Controller('tender/notification')
 export class TenderNotificationController {
@@ -40,9 +41,13 @@ export class TenderNotificationController {
 
   @UseGuards(TenderJwtGuard)
   @Patch('read-mine')
-  async readAll(@CurrentUser() currentUser: TenderCurrentUser) {
+  async readAll(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() dto: ReadAndDeleteMineDto,
+  ) {
     const readResponse = await this.tenderNotificationService.readMine(
       currentUser.id,
+      dto.type,
     );
 
     return baseResponseHelper(
@@ -106,9 +111,13 @@ export class TenderNotificationController {
 
   @UseGuards(TenderJwtGuard)
   @Patch('delete-all-mine')
-  async deleteAllMine(@CurrentUser() currentUser: TenderCurrentUser) {
+  async deleteAllMine(
+    @CurrentUser() currentUser: TenderCurrentUser,
+    @Body() dto: ReadAndDeleteMineDto,
+  ) {
     const readResponse = await this.tenderNotificationService.deleteAllMine(
       currentUser.id,
+      dto.type,
     );
 
     return baseResponseHelper(

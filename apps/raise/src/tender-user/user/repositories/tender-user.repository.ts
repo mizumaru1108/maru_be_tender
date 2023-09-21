@@ -168,6 +168,9 @@ export class TenderUserRepository {
 
     const args: Prisma.userFindFirstArgs = {};
     let whereClause: Prisma.userWhereInput = {};
+    let include: Prisma.userInclude = {
+      roles: true,
+    };
 
     if (props.id) whereClause.id = props.id;
     if (props.email) whereClause.email = props.email;
@@ -176,8 +179,6 @@ export class TenderUserRepository {
     args.where = whereClause;
 
     if (includes_relation && includes_relation.length > 0) {
-      let include: Prisma.userInclude = {};
-
       for (const relation of includes_relation) {
         if (relation === 'client_data') {
           include = { ...include, client_data: true };
@@ -189,9 +190,8 @@ export class TenderUserRepository {
           };
         }
       }
-
-      args.include = include;
     }
+    args.include = include;
 
     return args;
   }
