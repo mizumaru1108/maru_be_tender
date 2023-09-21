@@ -90,7 +90,7 @@ export default function Searchbar() {
   });
   const [stateAccManager, setStateAccManager] = React.useState({
     client_name: true,
-    account_status: true,
+    account_status: false,
     entity_name: true,
   });
   // State Account Manager
@@ -445,7 +445,7 @@ export default function Searchbar() {
                         }
                         label={translate('search_component.by_client_name')}
                       />
-                      <FormControlLabel
+                      {/* <FormControlLabel
                         control={
                           <Checkbox
                             checked={account_status}
@@ -454,7 +454,7 @@ export default function Searchbar() {
                           />
                         }
                         label={translate('search_component.by_account_status')}
-                      />
+                      /> */}
                     </FormGroup>
                     {/* <FormHelperText>You can display an error</FormHelperText> */}
                   </FormControl>

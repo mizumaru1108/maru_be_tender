@@ -37,7 +37,7 @@ export default function SortingProjectStatusCardTable({
   const handleSortingFilter = (event: any) => {
     const value = event.target.value as string;
     let tmpFilter = '&outter_status=';
-    if (value) {
+    if (value !== '-') {
       tmpFilter = `&outter_status=${value.toUpperCase()}`;
     } else {
       tmpFilter = '';
@@ -49,14 +49,14 @@ export default function SortingProjectStatusCardTable({
     <FormControl fullWidth sx={{ minWidth: 120, paddingBottom: 2 }}>
       <InputLabel htmlFor="grouped-select">{translate('sorting.label.outter_status')}</InputLabel>
       <Select
-        defaultValue=""
+        defaultValue="-"
         id="grouped-select"
         label={translate('sorting.label.outter_status')}
         onChange={handleSortingFilter}
         disabled={isLoading}
         {...other}
       >
-        <MenuItem value="">
+        <MenuItem value="-">
           {/* No Sorting */}
           {translate('sorting.label.no_value')}
         </MenuItem>

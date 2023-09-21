@@ -55,14 +55,14 @@ export default function SortingCardTable({
     <FormControl fullWidth sx={{ minWidth: 120, paddingBottom: 2 }}>
       <InputLabel htmlFor="grouped-select">{translate('sorting.label.sorting')}</InputLabel>
       <Select
-        defaultValue=""
+        defaultValue={0}
         id="grouped-select"
         label="Sorting"
         onChange={handleSortingFilter}
         disabled={isLoading}
         {...other}
       >
-        <MenuItem value="">
+        <MenuItem value={0}>
           {/* <em>None</em> */}
           {/* No Sorting */}
           {translate('sorting.label.no_sorting')}
