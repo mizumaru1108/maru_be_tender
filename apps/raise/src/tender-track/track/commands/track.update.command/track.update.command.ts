@@ -35,9 +35,7 @@ export class TrackUpdateCommandHandler
             `Track with name of ${command.name} already exist!`,
           );
         }
-        if (!nameExist) {
-          command.name = undefined;
-        }
+        if (!nameExist && command.name === track.name) command.name = undefined;
       }
 
       const data = await this.trackRepo.update({ ...command });
