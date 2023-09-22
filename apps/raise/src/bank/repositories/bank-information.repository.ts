@@ -11,6 +11,7 @@ export class BankInformationCreateProps {
   id?: string; // incase if id is predefined
   user_id: string;
   bank_id: string; // refer to bank
+  bank_name?: string;
   bank_account_name: string;
   bank_account_number: string;
   card_image: UploadFilesJsonbDto | null;
@@ -19,6 +20,7 @@ export class BankInformationUpdateProps {
   id: string; // incase if id is predefined
   user_id?: string;
   bank_id?: string; // refer to bank
+  bank_name?: string;
   bank_account_name?: string;
   bank_account_number?: string;
   card_image?: UploadFilesJsonbDto | null;
@@ -40,6 +42,7 @@ export class BankInformationRepository {
           id: props.id || uuidv4(),
           bank_id: props.bank_id,
           user_id: props.user_id,
+          bank_name: props.bank_name,
           bank_account_name: props.bank_account_name,
           bank_account_number: props.bank_account_number,
           card_image: props.card_image
@@ -71,6 +74,7 @@ export class BankInformationRepository {
         data: {
           bank_id: props.bank_id,
           user_id: props.user_id,
+          bank_name: props.bank_name,
           bank_account_name: props.bank_account_name,
           bank_account_number: props.bank_account_number,
           card_image: props.card_image

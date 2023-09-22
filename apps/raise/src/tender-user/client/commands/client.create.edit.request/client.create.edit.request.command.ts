@@ -271,11 +271,10 @@ export class ClientCreateEditRequestCommandHandler
                 updated_banks[i].bank_id !== oldData.bank_id
                   ? updated_banks[i].bank_id
                   : oldData.bank_id,
-              // DEPRECATED
-              // bank_name:
-              //   updated_banks[i].bank_name !== oldData.bank_name
-              //     ? updated_banks[i].bank_name
-              //     : oldData.bank_name,
+              bank_name:
+                updated_banks[i].bank_name !== oldData.bank_name
+                  ? updated_banks[i].bank_name
+                  : oldData.bank_name,
             },
           ).build();
 
@@ -330,8 +329,7 @@ export class ClientCreateEditRequestCommandHandler
               id: newBankId,
               user_id: user.id,
               bank_id: created_banks[i].bank_id,
-              // DEPRECARED
-              // bank_name: created_banks[i].bank_name,
+              bank_name: created_banks[i].bank_name,
               bank_account_name: created_banks[i].bank_account_name,
               bank_account_number: created_banks[i].bank_account_number,
               card_image: tmpPayload,
