@@ -591,7 +591,7 @@ function ClientProfileEditForm() {
           }
         }
       }
-      console.log({ mergeArray });
+      // console.log({ mergeArray });
       setOpen(true);
       setIsEdit((prevIsEdit: any) => ({
         ...prevIsEdit,
@@ -676,13 +676,16 @@ function ClientProfileEditForm() {
     // const tmpForm4 = {
     //   ...profileState.form4,
     // };
-    let payload = {
+    let payload: any = {
       ...tpmForm1,
       ...tpmForm2,
       ...profileState.form3,
       ...profileState.form4,
       ...newBankInformation,
     };
+    if (payload?.license_file?.base64Data) {
+      delete payload?.license_file?.url;
+    }
     if (profileState.form3.board_ofdec_file && !profileState.form3.board_ofdec_file[0]) {
       payload = {
         ...payload,

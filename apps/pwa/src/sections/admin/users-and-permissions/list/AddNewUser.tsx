@@ -26,9 +26,10 @@ import useLocales from 'hooks/useLocales';
 import { getOneEmployee } from '../../../../queries/admin/getAllTheEmployees';
 import { useQuery } from 'urql';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
-import { TrackProps } from '../../../../@types/commons';
 import { useSnackbar } from 'notistack';
 import formatPhone from 'utils/formatPhone';
+import { tracks } from '../../../../@types/proposal';
+import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
 
 type FormValuesProps = {
   employee_name: string;
@@ -45,12 +46,6 @@ interface SnackBar {
   open: boolean;
   message: string;
   severity: 'success' | 'error';
-}
-
-interface tracks {
-  id: string;
-  name: string;
-  with_consultant?: boolean;
 }
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
@@ -72,7 +67,7 @@ function AddNewUser() {
 
   const { enqueueSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [tracksData, setTracksData] = React.useState<TrackProps[]>([]);
+  const [tracksData, setTracksData] = React.useState<tracks[]>([]);
 
   const [openSnackBar, setOpenSnackBar] = React.useState<SnackBar>({
     open: false,
@@ -212,7 +207,7 @@ function AddNewUser() {
   const fetchingTracks = React.useCallback(async () => {
     setIsLoading(true);
     try {
-      const rest = await axiosInstance.get(`/tender/track?include_general=1`, {
+      const rest = await axiosInstance.get(`/tender/track?include_general=1&is_deleted=0`, {
         headers: { 'x-hasura-role': activeRole! },
       });
       // console.log(rest.data.data);
@@ -221,7 +216,8 @@ function AddNewUser() {
           rest.data.data.map((item: tracks) => ({
             id: item.id ?? '-',
             name: item.name ?? 'No Record',
-            with_consultant: item.with_consultant ?? 'No Record',
+            with_consultant: item.with_consultation ?? 'No Record',
+            is_deleted: item.is_deleted ?? 'No Record',
           }))
         );
       }
@@ -410,11 +406,13 @@ function AddNewUser() {
                 disabled={isLoading}
                 size="small"
               >
-                {tracksData?.map((item: tracks, index: any) => (
-                  <MenuItem key={index} value={item?.id}>
-                    {item.name}
-                  </MenuItem>
-                ))}
+                {tracksData
+                  .filter((item: tracks) => item.is_deleted === false)
+                  .map((item: tracks, index: any) => (
+                    <MenuItem key={index} value={item?.id}>
+                      {formatCapitalizeText(item.name)}
+                    </MenuItem>
+                  ))}
               </RHFSelect>
             </Grid>
             <Grid item md={6} xs={12}>

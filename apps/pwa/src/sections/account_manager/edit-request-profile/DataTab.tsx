@@ -1,22 +1,21 @@
 import { Box, Grid, Link, Stack, Typography, useTheme } from '@mui/material';
 import useLocales from 'hooks/useLocales';
-import { type } from 'os';
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { useSelector } from 'redux/store';
 import { IEditedValues } from '../../../@types/client_data';
 import { bank_information } from '../../../@types/commons';
 import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
 import BankImageComp from '../../shared/BankImageComp';
 
 type DataTabProps = {
+  OldData?: IEditedValues;
   EditValues: IEditedValues;
   // status_edit: string;
   compareValues?: IEditedValues;
   EditType: 'previous-data' | 'new-data' | 'difference';
 };
 
-function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
+function DataTab({ EditValues, compareValues, EditType, OldData }: DataTabProps) {
   // console.log({ EditValues, compareValues });
   const { translate, currentLang } = useLocales();
   const navigate = useNavigate();
@@ -569,7 +568,11 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.governorate || '-'}
+                {(!(compareValues?.hasOwnProperty('governorate') && EditType === 'new-data') &&
+                  !(compareValues?.hasOwnProperty('governorate') && EditType === 'previous-data') &&
+                  OldData?.governorate_detail?.name) ||
+                  EditValues.governorate ||
+                  '-'}
               </Typography>
             </Box>
           </Grid>
@@ -592,7 +595,11 @@ function DataTab({ EditValues, compareValues, EditType }: DataTabProps) {
                       : 'black',
                 }}
               >
-                {EditValues.region || '-'}
+                {(!(compareValues?.hasOwnProperty('region') && EditType === 'new-data') &&
+                  !(compareValues?.hasOwnProperty('region') && EditType === 'previous-data') &&
+                  OldData?.region_detail?.name) ||
+                  EditValues.region ||
+                  '-'}
               </Typography>
             </Box>
           </Grid>

@@ -132,6 +132,7 @@ function EditRequestTabs({ EditValues }: DataTabProps) {
       <TabPanel value={activeTap} index="new-data" dir={theme.direction}>
         {/* oldData */}
         <DataTab
+          OldData={EditValues.old_data}
           EditValues={EditValues.new_data}
           compareValues={tmpDifference}
           EditType={'new-data'}
