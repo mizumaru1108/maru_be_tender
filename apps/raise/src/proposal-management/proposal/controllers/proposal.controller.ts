@@ -246,15 +246,6 @@ export class TenderProposalController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: AskAmandementRequestDto,
   ) {
-    // const result = await this.proposalService.askAmandementRequest(
-    //   currentUser,
-    //   request,
-    // );
-    // return baseResponseHelper(
-    //   result,
-    //   HttpStatus.OK,
-    //   'Draft deleted successfully',
-    // );
     try {
       const command = Builder<AskAmandementRequestCommand>(
         AskAmandementRequestCommand,

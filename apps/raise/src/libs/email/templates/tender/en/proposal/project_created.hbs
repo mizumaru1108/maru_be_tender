@@ -8,7 +8,7 @@
       rel="stylesheet"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Receive New Message</title>
+    <title>New Created Proposal</title>
     <style>
       @media screen and (min-width: 480px) {
         table {
@@ -81,7 +81,7 @@
                           color: #101828;
                         "
                       >
-                        لقد تلقيت رسالة جديدة في منصة غيث للمنح
+                        تم رفع المشروع {{projectName}} إلى بوابة غيث
                       </h1>
                       <p
                         style="
@@ -115,7 +115,7 @@
                           color: #344054;
                         "
                       >
-                        {{receiverUsername}}
+                        {{clientName}}
                       </p>
                       <p
                         style="
@@ -126,7 +126,8 @@
                           color: #344054;
                         "
                       >
-                        {{senderUsername}} لقد تلقيت رسالة جديدة من
+                        نفيدكم علما بإن المشروع {{projectName}} قد تم رفعه إلى
+                        بوابة غيث وستتم دراسته خلال الأيام القادمة
                       </p>
                       <p
                         style="
@@ -137,7 +138,7 @@
                           color: #344054;
                         "
                       >
-                        يمكنكم الرد على الرسالة من خلال البوابة
+                        يمكنكم متابعة تفاصيل المشروع من خلال المنصة
                       </p>
                       <p
                         style="
@@ -148,32 +149,8 @@
                           color: #344054;
                         "
                       >
-                        شاكرين لكم تواصلكم وتعاونكم، والله يحفظكم ويرعاكم
+                        والله يحفظكم ويرعاكم
                       </p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td align="left" style="padding: 0 60px">
-                      <div style="width: fit-content">
-                        <a target="_blank" href="{{messagePageLink}}">
-                          <button
-                            style="
-                              width: fit-content;
-                              background-color: #0e8478;
-                              color: white;
-                              font-weight: 500;
-                              font-size: medium;
-                              border: none;
-                              border-radius: 7px;
-                              margin: 10px 0;
-                              padding: 15px 20px;
-                              cursor: pointer;
-                            "
-                          >
-                            الدخول إلى البوابة
-                          </button>
-                        </a>
-                      </div>
                     </td>
                   </tr>
                 </table>

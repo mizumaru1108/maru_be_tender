@@ -47,28 +47,28 @@ export class TenderClientController {
     private readonly queryBus: QueryBus,
   ) {}
 
+  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  // @TenderRoles('tender_client')
+  // @Post('edit-request/create')
+  // async createEditRequest(
+  //   @CurrentUser() user: TenderCurrentUser,
+  //   @Body() editRequest: ClientEditRequestFieldDto,
+  // ): Promise<BaseResponse<any>> {
+  //   const response = await this.tenderClientService.createEditRequest(
+  //     user,
+  //     editRequest,
+  //   );
+
+  //   return baseResponseHelper(
+  //     response,
+  //     HttpStatus.OK,
+  //     'Asking for changes successfully applied!, please wait untill account manager responded to your request',
+  //   );
+  // }
+
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_client')
   @Post('edit-request/create')
-  async createEditRequest(
-    @CurrentUser() user: TenderCurrentUser,
-    @Body() editRequest: ClientEditRequestFieldDto,
-  ): Promise<BaseResponse<any>> {
-    const response = await this.tenderClientService.createEditRequest(
-      user,
-      editRequest,
-    );
-
-    return baseResponseHelper(
-      response,
-      HttpStatus.OK,
-      'Asking for changes successfully applied!, please wait untill account manager responded to your request',
-    );
-  }
-
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_client')
-  @Post('edit-request/create-cqrs')
   async createEditRequestCqrs(
     @CurrentUser() user: TenderCurrentUser,
     @Body() editRequest: ClientEditRequestFieldDto,

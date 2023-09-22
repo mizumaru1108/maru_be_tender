@@ -8,6 +8,7 @@ import { PrismaService } from '../../../../prisma/prisma.service';
 import { TenderUserStatusLogRepository } from '../../repositories/tender-user-status-log.repository';
 import { UserStatusLogEntity } from '../../entities/user-status-log.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { FusionAuthService } from '../../../../libs/fusionauth/services/fusion-auth.service';
 export class UserSoftDeleteCommand {
   user_id: string;
 }
@@ -27,6 +28,7 @@ export class UserSoftDeleteCommandHandler
   constructor(
     private readonly prismaService: PrismaService,
     private readonly userRepo: TenderUserRepository,
+    private readonly fusionAuthService: FusionAuthService,
     private readonly statusLogRepo: TenderUserStatusLogRepository,
   ) {}
   async execute(
@@ -55,6 +57,8 @@ export class UserSoftDeleteCommandHandler
             },
             tx,
           );
+
+          await this.fusionAuthService.fusionAuthDeleteUser(command.user_id);
 
           return {
             updated_user: updatedUser,

@@ -78,7 +78,7 @@ export class RegisterClientCommandHandler
     maxSize: number = 1024 * 1024 * 10, // 10 mb by default
   ) {
     try {
-      console.log(file.fullName);
+      // console.log(file.fullName);
       const fileName = generateFileName(
         file.fullName,
         file.fileExtension as FileMimeTypeEnum,
