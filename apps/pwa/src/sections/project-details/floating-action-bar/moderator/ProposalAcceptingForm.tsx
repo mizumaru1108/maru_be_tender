@@ -16,17 +16,12 @@ import axiosInstance from '../../../../utils/axios';
 import { useSelector } from 'redux/store';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import { REOPEN_TMRA_45c1040caab9450dbdf64cb94c50bb7d } from 'config';
+import { tracks } from '../../../ceo/ceo-project-rejects';
 
 interface FormProps {
   onSubmit: (data: any) => void;
   onClose: () => void;
   loading?: boolean;
-}
-
-interface tracks {
-  id: string;
-  name: string;
-  with_consultation: boolean;
 }
 
 interface ProposalModeratorApprovePayload {
@@ -174,17 +169,22 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
                   setValue('path', e.target.value);
                   // console.log('test on select data:', e.target.value);
                 }}
+                SelectProps={{
+                  MenuProps: { PaperProps: { style: { maxHeight: 300 } } },
+                }}
               >
                 {/* <MenuItem value="MOSQUES">{translate('MOSQUES')}</MenuItem>
                 <MenuItem value="CONCESSIONAL_GRANTS">{translate('CONCESSIONAL_GRANTS')}</MenuItem>
                 <MenuItem value="INITIATIVES">{translate('INITIATIVES')}</MenuItem>
                 <MenuItem value="BAPTISMS">{translate('BAPTISMS')}</MenuItem> */}
                 {track_list &&
-                  track_list?.map((item: tracks, index: any) => (
-                    <MenuItem key={index} value={item?.id}>
-                      {formatCapitalizeText(item.name)}
-                    </MenuItem>
-                  ))}
+                  track_list
+                    .filter((item: tracks) => item.is_deleted === false)
+                    .map((item: tracks, index: any) => (
+                      <MenuItem key={index} value={item?.id}>
+                        {formatCapitalizeText(item.name)}
+                      </MenuItem>
+                    ))}
               </RHFSelect>
             </Grid>
             <Grid item md={6} xs={12}>

@@ -36,11 +36,11 @@ function a11yProps(index: number) {
 
 const editedTabs = [
   {
-    title: 'Previous Data',
+    title: 'البيانات السابقة',
     value: 'previous-data',
   },
   {
-    title: 'New Data',
+    title: 'بيانات جديدة',
     value: 'new-data',
   },
 ];
