@@ -548,7 +548,7 @@ export class ClientCreateEditRequestCommandHandler
           const uploadRes = await this.bunnyService.uploadFileBase64(
             license_file as TenderFilePayload,
             `tmra/${appConfig?.env}/organization/tender-management/client-data/${user.id}/liscene-file`,
-            [FileMimeTypeEnum.JPG, FileMimeTypeEnum.JPEG, FileMimeTypeEnum.PNG],
+            [FileMimeTypeEnum.PDF],
             1024 * 1024 * 6,
           );
 
