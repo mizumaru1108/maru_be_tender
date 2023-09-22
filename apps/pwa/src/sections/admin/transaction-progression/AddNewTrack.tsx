@@ -140,17 +140,22 @@ const AddNewTrack = ({
         onClose();
       }
     } else {
-      dispatch(
-        updateTrack(
-          {
-            id: trackId,
-            name: TEMP_TRACKNAME,
-            with_consultation: consultantValue,
-            is_deleted: isDelete,
-          },
-          activeRole!
-        )
-      );
+      try {
+        await dispatch(
+          updateTrack(
+            {
+              id: trackId,
+              name: TEMP_TRACKNAME,
+              with_consultation: consultantValue,
+              is_deleted: isDelete,
+            },
+            activeRole!
+          )
+        );
+        await dispatch(getTracks(activeRole!));
+      } catch (error) {
+        console.log({ error });
+      }
 
       onClose();
     }

@@ -21,12 +21,14 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
   };
 
   const handleReview = () => {
+    setIsDelete(false);
     setIsEdit(false);
     setOpen(true);
     // navigate(`/admin/dashboard/transaction-progression/review/1`);
   };
   const handleEdit = () => {
     // navigate('/admin/dashboard/transaction-progression/edit/1');
+    setIsDelete(false);
     setIsEdit(true);
     setOpen(true);
   };
@@ -67,7 +69,7 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
         <Typography sx={{ fontWeight: 'bold', mb: 5, mt: 1 }}>{resultName}</Typography>
         <Box>
           <Stack direction="row" justifyContent="space-around" flex={1} gap={2}>
-            {/* <Button
+            <Button
               sx={{
                 backgroundColor: '#FF4842',
                 color: '#fff',
@@ -105,7 +107,7 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
               onClick={handleDelete}
             >
               {translate('button.delete')}
-            </Button> */}
+            </Button>
             <Button
               sx={{
                 backgroundColor: '#0169DE',
