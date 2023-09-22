@@ -72,8 +72,9 @@ export class TrackRepository {
     let prisma = this.prismaService;
     if (tx) prisma = tx;
     try {
-      const rawTrack = await prisma.track.findUnique({
-        where: { id: props.id },
+      const args = this.findFirstFilter(props);
+      const rawTrack = await prisma.track.findFirst({
+        where: args.where,
       });
 
       if (!rawTrack) return null;
@@ -108,9 +109,9 @@ export class TrackRepository {
     let prisma = this.prismaService;
     if (tx) prisma = tx;
     try {
-      const rawCreated = await prisma.track.create({
+      const rawCreated = await prisma.track.update({
+        where: { id: props.id },
         data: {
-          id: props.id || uuidv4(),
           name: props.name,
           with_consultation: props.with_consultation,
           is_deleted: props.is_deleted,

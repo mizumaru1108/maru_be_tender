@@ -25,14 +25,18 @@ export class TrackUpdateCommandHandler
       });
       if (!track) throw new NotFoundException('Track Not Found!');
 
-      if (command.name && command.name !== track.name) {
-        const track = await this.trackRepo.findFirst({
+      if (command.name && command.name !== '') {
+        const nameExist = await this.trackRepo.findFirst({
           name: command.name,
+          exclude_id: track.id,
         });
-        if (track) {
+        if (nameExist) {
           throw new ConflictException(
             `Track with name of ${command.name} already exist!`,
           );
+        }
+        if (!nameExist) {
+          command.name = undefined;
         }
       }
 
