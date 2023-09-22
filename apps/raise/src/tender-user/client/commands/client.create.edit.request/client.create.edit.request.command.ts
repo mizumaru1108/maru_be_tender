@@ -185,119 +185,26 @@ export class ClientCreateEditRequestCommandHandler
       // the bank_information that will be displayed as a bank_information at the new data
       const newBankInfo: ExistingClientBankInformation[] = [];
 
-      if (old_banks && old_banks.length > 0) {
+      // if (old_banks && old_banks.length > 0) {
+      if (old_banks) {
         newBankInfo.push(...old_banks);
+      }
 
-        if (updated_banks && updated_banks.length > 0) {
-          for (let i = 0; i < updated_banks.length; i++) {
-            const idx = newBankInfo.findIndex(
-              (value) => value.id === updated_banks[i].id,
-            );
-            const oldData = newBankInfo[idx];
+      if (updated_banks && updated_banks.length > 0) {
+        for (let i = 0; i < updated_banks.length; i++) {
+          const idx = newBankInfo.findIndex(
+            (value) => value.id === updated_banks[i].id,
+          );
+          const oldData = newBankInfo[idx];
 
-            let cardImage = {
-              ...oldData.card_image,
-            };
+          let cardImage = {
+            ...oldData.card_image,
+          };
 
-            // uploading if the image of the bank changed
-            if (isTenderFilePayload(updated_banks[i].card_image)) {
-              const uploadRes = await this.bunnyService.uploadFileBase64(
-                updated_banks[i].card_image,
-                `tmra/${appConfig?.env}/organization/tender-management/client-data/${user.id}/bank-info`,
-                [
-                  FileMimeTypeEnum.JPG,
-                  FileMimeTypeEnum.JPEG,
-                  FileMimeTypeEnum.PNG,
-                ],
-                1024 * 1024 * 6,
-              );
-
-              fileManagerPayload.push({
-                id: uuidv4(),
-                user_id: user.id,
-                name: uploadRes.name,
-                mimetype: uploadRes.type,
-                size: uploadRes.size,
-                url: uploadRes.url,
-                column_name: 'card_image',
-                table_name: 'bank_information',
-                bank_information_id: updated_banks[i].id,
-              });
-
-              const tmpPayload = {
-                url: uploadRes.url,
-                size: uploadRes.size,
-                type: uploadRes.type,
-              };
-              cardImage = tmpPayload;
-            }
-
-            // if bank_id changed (for bank name)
-            if (
-              !!updated_banks[i].bank_id &&
-              updated_banks[i].bank_id !== undefined &&
-              typeof updated_banks[i].bank_id === 'string' &&
-              updated_banks[i].bank_id !== '' &&
-              updated_banks[i].bank_id !== oldData.bank_id
-            ) {
-              const validBank = await this.clientRepo.validateBankId(
-                updated_banks[i].bank_id!,
-              );
-              if (!validBank) {
-                throw new BadRequestException(
-                  `invalid bank id on updated_banks index ${i}`,
-                );
-              }
-            }
-
-            const newBankData = Builder<BankInformationUpdateProps>(
-              BankInformationUpdateProps,
-              {
-                id: oldData.id,
-                user_id: user.id,
-                bank_account_name:
-                  updated_banks[i].bank_account_name !==
-                  oldData.bank_account_name
-                    ? updated_banks[i].bank_account_name
-                    : oldData.bank_account_name,
-                bank_account_number:
-                  updated_banks[i].bank_account_number !==
-                  oldData.bank_account_number
-                    ? updated_banks[i].bank_account_number
-                    : oldData.bank_account_number,
-                card_image: cardImage,
-                bank_id:
-                  updated_banks[i].bank_id !== oldData.bank_id
-                    ? updated_banks[i].bank_id
-                    : oldData.bank_id,
-                // DEPRECATED
-                // bank_name:
-                //   updated_banks[i].bank_name !== oldData.bank_name
-                //     ? updated_banks[i].bank_name
-                //     : oldData.bank_name,
-              },
-            ).build();
-
-            newBankInfo[idx] = newBankData as ExistingClientBankInformation;
-            updatedBankInfo.push(newBankData as ExistingClientBankInformation);
-          }
-        }
-
-        if (deleted_banks && deleted_banks.length > 0) {
-          for (let i = 0; i < deleted_banks.length; i++) {
-            const idx = newBankInfo.findIndex(
-              (value) => value.id === deleted_banks[i].id,
-            );
-
-            deletedBankInfo.push(newBankInfo[i]);
-            newBankInfo.splice(idx, 1);
-          }
-        }
-
-        if (created_banks && created_banks.length > 0) {
-          for (let i = 0; i < created_banks.length; i++) {
+          // uploading if the image of the bank changed
+          if (isTenderFilePayload(updated_banks[i].card_image)) {
             const uploadRes = await this.bunnyService.uploadFileBase64(
-              created_banks[i].card_image,
+              updated_banks[i].card_image,
               `tmra/${appConfig?.env}/organization/tender-management/client-data/${user.id}/bank-info`,
               [
                 FileMimeTypeEnum.JPG,
@@ -306,8 +213,6 @@ export class ClientCreateEditRequestCommandHandler
               ],
               1024 * 1024 * 6,
             );
-
-            const newBankId = uuidv4();
 
             fileManagerPayload.push({
               id: uuidv4(),
@@ -318,7 +223,7 @@ export class ClientCreateEditRequestCommandHandler
               url: uploadRes.url,
               column_name: 'card_image',
               table_name: 'bank_information',
-              bank_information_id: newBankId,
+              bank_information_id: updated_banks[i].id,
             });
 
             const tmpPayload = {
@@ -326,26 +231,118 @@ export class ClientCreateEditRequestCommandHandler
               size: uploadRes.size,
               type: uploadRes.type,
             };
-
-            const newBankData = Builder<BankInformationCreateProps>(
-              BankInformationCreateProps,
-              {
-                id: newBankId,
-                user_id: user.id,
-                bank_id: created_banks[i].bank_id,
-                // DEPRECARED
-                // bank_name: created_banks[i].bank_name,
-                bank_account_name: created_banks[i].bank_account_name,
-                bank_account_number: created_banks[i].bank_account_number,
-                card_image: tmpPayload,
-              },
-            ).build();
-
-            newBankInfo.push(newBankData as ExistingClientBankInformation);
-            createdBankInfo.push(newBankData as ExistingClientBankInformation);
+            cardImage = tmpPayload;
           }
+
+          // if bank_id changed (for bank name)
+          if (
+            !!updated_banks[i].bank_id &&
+            updated_banks[i].bank_id !== undefined &&
+            typeof updated_banks[i].bank_id === 'string' &&
+            updated_banks[i].bank_id !== '' &&
+            updated_banks[i].bank_id !== oldData.bank_id
+          ) {
+            const validBank = await this.clientRepo.validateBankId(
+              updated_banks[i].bank_id!,
+            );
+            if (!validBank) {
+              throw new BadRequestException(
+                `invalid bank id on updated_banks index ${i}`,
+              );
+            }
+          }
+
+          const newBankData = Builder<BankInformationUpdateProps>(
+            BankInformationUpdateProps,
+            {
+              id: oldData.id,
+              user_id: user.id,
+              bank_account_name:
+                updated_banks[i].bank_account_name !== oldData.bank_account_name
+                  ? updated_banks[i].bank_account_name
+                  : oldData.bank_account_name,
+              bank_account_number:
+                updated_banks[i].bank_account_number !==
+                oldData.bank_account_number
+                  ? updated_banks[i].bank_account_number
+                  : oldData.bank_account_number,
+              card_image: cardImage,
+              bank_id:
+                updated_banks[i].bank_id !== oldData.bank_id
+                  ? updated_banks[i].bank_id
+                  : oldData.bank_id,
+              // DEPRECATED
+              // bank_name:
+              //   updated_banks[i].bank_name !== oldData.bank_name
+              //     ? updated_banks[i].bank_name
+              //     : oldData.bank_name,
+            },
+          ).build();
+
+          newBankInfo[idx] = newBankData as ExistingClientBankInformation;
+          updatedBankInfo.push(newBankData as ExistingClientBankInformation);
         }
       }
+
+      if (deleted_banks && deleted_banks.length > 0) {
+        for (let i = 0; i < deleted_banks.length; i++) {
+          const idx = newBankInfo.findIndex(
+            (value) => value.id === deleted_banks[i].id,
+          );
+
+          deletedBankInfo.push(newBankInfo[i]);
+          newBankInfo.splice(idx, 1);
+        }
+      }
+
+      if (created_banks && created_banks.length > 0) {
+        for (let i = 0; i < created_banks.length; i++) {
+          const uploadRes = await this.bunnyService.uploadFileBase64(
+            created_banks[i].card_image,
+            `tmra/${appConfig?.env}/organization/tender-management/client-data/${user.id}/bank-info`,
+            [FileMimeTypeEnum.JPG, FileMimeTypeEnum.JPEG, FileMimeTypeEnum.PNG],
+            1024 * 1024 * 6,
+          );
+
+          const newBankId = uuidv4();
+
+          fileManagerPayload.push({
+            id: uuidv4(),
+            user_id: user.id,
+            name: uploadRes.name,
+            mimetype: uploadRes.type,
+            size: uploadRes.size,
+            url: uploadRes.url,
+            column_name: 'card_image',
+            table_name: 'bank_information',
+            bank_information_id: newBankId,
+          });
+
+          const tmpPayload = {
+            url: uploadRes.url,
+            size: uploadRes.size,
+            type: uploadRes.type,
+          };
+
+          const newBankData = Builder<BankInformationCreateProps>(
+            BankInformationCreateProps,
+            {
+              id: newBankId,
+              user_id: user.id,
+              bank_id: created_banks[i].bank_id,
+              // DEPRECARED
+              // bank_name: created_banks[i].bank_name,
+              bank_account_name: created_banks[i].bank_account_name,
+              bank_account_number: created_banks[i].bank_account_number,
+              card_image: tmpPayload,
+            },
+          ).build();
+
+          newBankInfo.push(newBankData as ExistingClientBankInformation);
+          createdBankInfo.push(newBankData as ExistingClientBankInformation);
+        }
+      }
+      // }
       clientOldRequest['bank_information'] = old_banks;
       clientNewRequest['bank_information'] = newBankInfo;
       clientNewRequest = {

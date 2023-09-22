@@ -7,229 +7,200 @@
       href="https://fonts.googleapis.com/css?family=Inter"
       rel="stylesheet"
     />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proposal Accepted</title>
     <style>
-      .container {
-        height: 100%;
-        width: 100%;
-      }
-      .card {
-        position: relative;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-        transition: 0.3s;
-        width: 640px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        margin: auto;
-      }
-      .cardHeader {
-        padding-top: 20px;
-        background-color: #fff;
-        width: 100%;
-        direction: rtl;
-      }
-      .cardHeader p {
-        color: #931267;
-        font-family: Inter, Helvetica, sans-serif;
-        font-weight: 700;
-        font-size: 1.5em;
-        text-align: left;
-        margin: 0;
+      @media screen and (min-width: 480px) {
+        table {
+          width: 430px;
+        }
       }
 
-      .cardHeader li {
-        font-family: Inter, Helvetica, sans-serif;
-        font-weight: 700;
-        font-size: 1em;
-        text-align: left;
-        list-style: none;
-        cursor: pointer;
-        margin-right: 20px;
-      }
-
-      .cardHeader li:hover {
-        color: #a4a4a4;
-        text-decoration: underline;
-      }
-      .cardHeader img {
-        width: 15%;
-      }
-
-      .navbar {
-        display: flex;
-        /* gap: 10px; */
-      }
-      .cardBody {
-        background-color: #fff;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-      }
-      .icon {
-        margin-right: 5px;
-        margin-left: 5px;
-        cursor: pointer;
-      }
-      .wrapper {
-        font-family: Inter, Helvetica, sans-serif;
-        display: flex;
-        flex-direction: column;
-        padding: 30px 60px;
-        direction: rtl;
-      }
-      .wrapper span {
-        cursor: pointer;
-        color: #00aa55;
-      }
-
-      .wrapper span:hover {
-        cursor: pointer;
-        color: #038544;
-      }
-
-      .wrapperFooter {
-        display: flex;
-        flex-direction: row;
-        padding: 30px;
-        justify-content: space-between;
-        align-items: center;
-        direction: rtl;
-      }
-      .cardBody p {
-        font-weight: 450;
-        line-height: 1.25;
-        text-align: justify;
-        margin-block-end: 10px;
-        margin-block-start: 10px;
-        padding-left: 50px;
-      }
-      .cardBody img {
-        width: 80%;
-        align-self: left;
-        padding-bottom: 15px;
-      }
-      .cardBody button {
-        background-color: #0e8478;
-        color: white;
-        font-weight: 500;
-        font-size: medium;
-        border: none;
-        border-radius: 7px;
-        margin: 10px 0;
-        padding: 15px 20px;
-        width: 27%;
-        cursor: pointer;
-      }
-      .cardBody button:hover {
-        background-color: #1da799;
-      }
-      .cardFooter {
-        margin: 0;
-        align-items: center;
-        background-color: #fff;
-        height: 100px;
-        padding: 0 20px;
-      }
-      .cardFooter img {
-        height: 3.3vh;
-      }
-      .cardFooter p {
-        font-family: Inter, Helvetica, sans-serif;
-        font-weight: 450;
-        text-align: center;
-        color: #931267;
-        margin: 0;
-      }
-      .cardFooter a {
-        color: #fff;
-        text-decoration: underline;
-      }
-      .cardFooter a:hover {
-        color: rgba(255, 255, 255, 0.704);
-        text-decoration: none;
-      }
-
-      .endingParagraph p {
-        text-align: left;
+      @media screen and (min-width: 680px) {
+        table {
+          width: 680px;
+        }
       }
     </style>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Project Approved</title>
   </head>
-  <body>
-    <div class="container">
-      <div class="card">
-        <div class="cardHeader">
-          <img
-            src="https://media.tmra.io/tender-assets/tender-newlogo.png"
-            alt="Logo Tmra Tender"
-            style="margin-right: 60px"
-          />
-          <!-- <nav>
-            <ul class="navbar">
-              <li>الدعم</li>
-              <li>مسكن</li>
-            </ul>
-          </nav> -->
-        </div>
-        <div class="cardBody">
-          <div class="wrapper">
-            <h1 style="font-size: 1.6em">
-              "المشروع: {{projectName}}" تمت الموافقة
-            </h1>
-            <p>مرحبًا {{clientUsername}}،</p>
-            <p>
-              نعلمك أن مشروعك قد تم تأكيده والموافقة عليه. مشروع جديد لشركتك Tom
-              and Sons Pvt. Ltd. أرسل لك تأكيدي. نحن متحمسون لهذا الاحتمال
-              الجديد ونريد بدء العمل على هذا في أقرب وقت ممكن.
-            </p>
-            <p>شكرا جزيلا على توفير هذه الفرصة الذهبية لك. صديقك</p>
-
-            <p>فريق منصة غيث</p>
-
-            <a target="_blank" href="{{projectDetailUrl}}">
-                <button style="width: 200px" type="button">تحقق من المشروع</button>
-            </a>
-
-            <div style="margin-top: 32px">
-              {{!-- <p>
-                تم إرسال هذا البريد الإلكتروني إلى <span>olivia@gs.com</span>.
-                إذا كنت تفضل عدم تلقي هذا النوع من البريد الإلكتروني ، فيمكنك
-                إلغاء الاشتراك أو إدارة تفضيلات البريد الإلكتروني الخاصة بك.
-              </p> --}}
-              {{!-- <p style="color: gray; direction: ltr; text-align: end">
-                © 2077 Tender، 100 Smith Street، Melbourne VIC 3000
-              </p> --}}
-            </div>
-          </div>
-        </div>
-        <div class="cardFooter">
-          <div class="wrapperFooter">
-            <img
-              src="https://media.tmra.io/tender-assets/tender-newlogo.png"
-              alt="Logo Tmra Tender"
-              style="height: 4.3vh"
-            />
-            <div>
-              <img
-                class="icon"
-                src="https://media.tmra.io/tender-assets/tender-twitter-logo.png"
-                alt="Thumbnail Twitter"
-              />
-              <img
-                class="icon"
-                src="https://media.tmra.io/tender-assets/tender-facebook-logo.png"
-                alt="Thumbnail Facebook"
-              />
-              <img
-                class="icon"
-                src="https://media.tmra.io/tender-assets/tender-instagram-logo.png"
-                alt="Thumbnail Instagram"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <body
+    style="
+      font-family: Inter, Helvetica, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    "
+  >
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      bgcolor="#f5f5f5"
+      align="center"
+    >
+      <tr>
+        <td align="center">
+          <table
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            width="680"
+            style="
+              background-color: #ffffff;
+              box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+              border-radius: 3%;
+            "
+          >
+            <tr>
+              <td align="left" style="padding: 20px 0">
+                <img
+                  src="https://media.tmra.io/tender-assets/tender-newlogo.png"
+                  alt="Logo Tmra Tender"
+                  style="padding: 0 60px; max-width: 15%"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <table
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  width="100%"
+                  style="background-color: #ffffff"
+                >
+                  <tr>
+                    <td style="padding: 0 60px">
+                      <h1
+                        style="
+                          font-size: 31.6px;
+                          line-height: 30.02px;
+                          text-align: right;
+                          font-weight: 500;
+                          color: #101828;
+                        "
+                      >
+                        تم قبول المشروع {{projectName}}
+                      </h1>
+                      <p
+                        style="
+                          font-size: 18px;
+                          line-height: 31.79px;
+                          text-align: right;
+                          font-weight: 400;
+                          color: #344054;
+                        "
+                      >
+                        السلام عليكم ورحمة الله وبركاته
+                      </p>
+                      <p
+                        style="
+                          font-size: 18px;
+                          line-height: 31.79px;
+                          text-align: right;
+                          font-weight: 400;
+                          color: #344054;
+                        "
+                      >
+                        السادة شركاء النجاح لمؤسسة محمد بن عبدالعزيز الحبيب
+                        وأولاده الخيرية
+                      </p>
+                      <p
+                        style="
+                          font-size: 18px;
+                          line-height: 31.79px;
+                          text-align: right;
+                          font-weight: 400;
+                          color: #344054;
+                        "
+                      >
+                        {{clientUsername}}
+                      </p>
+                      <p
+                        style="
+                          font-size: 18px;
+                          line-height: 31.79px;
+                          text-align: right;
+                          font-weight: 400;
+                          color: #344054;
+                        "
+                      >
+                        نفيدكم علما بإن المشروع {{projectName}} قد تم قبوله
+                        قبولاً مبدأيا
+                      </p>
+                      <p
+                        style="
+                          font-size: 18px;
+                          line-height: 31.79px;
+                          text-align: right;
+                          font-weight: 400;
+                          color: #344054;
+                        "
+                      >
+                        يمكنكم متابعة تفاصيل المشروع من خلال المنصة
+                      </p>
+                      <p
+                        style="
+                          font-size: 18px;
+                          line-height: 31.79px;
+                          text-align: right;
+                          font-weight: 400;
+                          color: #344054;
+                        "
+                      >
+                        والله يحفظكم ويرعاكم
+                      </p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="left" style="padding: 0 60px">
+                      <div style="width: fit-content">
+                        <a target="_blank" href="{{projectDetailUrl}}">
+                          <button
+                            style="
+                              width: fit-content;
+                              background-color: #0e8478;
+                              color: white;
+                              font-weight: 500;
+                              font-size: medium;
+                              border: none;
+                              border-radius: 7px;
+                              margin: 10px 0;
+                              padding: 15px 20px;
+                              cursor: pointer;
+                            "
+                          >
+                            الدخول إلى البوابة
+                          </button>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td
+                align="center"
+                style="background-color: #ffffff; height: 100px"
+              >
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                  <tr>
+                    <td align="left" style="padding: 0 60px">
+                      <img
+                        src="https://media.tmra.io/tender-assets/tender-newlogo.png"
+                        alt="Logo Tmra Tender"
+                        style="height: 5vh; max-width: 100%"
+                      />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

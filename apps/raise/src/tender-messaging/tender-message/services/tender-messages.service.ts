@@ -267,8 +267,8 @@ export class TenderMessagesService {
       clientEmailTemplateContext: [
         {
           senderUsername: sender.employee_name,
-          messageContent:
-            contentType === 'TEXT' ? content : 'see attachment on the link',
+          // messageContent:
+          //   contentType === 'TEXT' ? content : 'see attachment on the link',
           receiverUsername: partner.employee_name,
           messagePageLink: `${this.configService.get<string>(
             'tenderAppConfig.baseUrl',

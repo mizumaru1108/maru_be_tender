@@ -1,22 +1,24 @@
+import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ProposalRepository } from '../../repositories/proposal.repository';
-import { ProposalTimelinePostgresRepository } from '../../../poject-timelines/repositories/proposal.project.timeline.repository';
-import { ProposalItemBudgetRepository } from '../../../item-budget/repositories/proposal.item.budget.repository';
-import { ProposalLogRepository } from '../../../proposal-log/repositories/proposal.log.repository';
+import { Builder } from 'builder-pattern';
+import { nanoid } from 'nanoid';
+import { v4 as uuidv4 } from 'uuid';
+import { ITenderAppConfig } from '../../../../commons/configs/tender-app-config';
+import { FileMimeTypeEnum } from '../../../../commons/enums/file-mimetype.enum';
+import { BunnyService } from '../../../../libs/bunny/services/bunny.service';
+import { EmailService } from '../../../../libs/email/email.service';
+import { PrismaService } from '../../../../prisma/prisma.service';
 import {
   CreateFileManagerProps,
   TenderFileManagerRepository,
 } from '../../../../tender-file-manager/repositories/tender-file-manager.repository';
-import { ConfigService } from '@nestjs/config';
+import { ProposalItemBudgetRepository } from '../../../item-budget/repositories/proposal.item.budget.repository';
+import { ProposalTimelinePostgresRepository } from '../../../poject-timelines/repositories/proposal.project.timeline.repository';
+import { ProposalLogRepository } from '../../../proposal-log/repositories/proposal.log.repository';
 import { CreateProposalInterceptorDto } from '../../dtos/requests';
-import { BunnyService } from '../../../../libs/bunny/services/bunny.service';
-import { ITenderAppConfig } from '../../../../commons/configs/tender-app-config';
-import { Builder } from 'builder-pattern';
+import { ISendNotificaitonEvent } from '../../entities/proposal.entity';
+import { ProposalRepository } from '../../repositories/proposal.repository';
 import { ProposalCreateProps } from '../../types';
-import { FileMimeTypeEnum } from '../../../../commons/enums/file-mimetype.enum';
-import { v4 as uuidv4 } from 'uuid';
-import { nanoid } from 'nanoid';
-import { PrismaService } from '../../../../prisma/prisma.service';
 
 export class ProposalCreateCommand {
   userId: string;
@@ -40,6 +42,7 @@ export class ProposalCreateCommandHandler
     private readonly fileManagerRepo: TenderFileManagerRepository,
     private readonly configService: ConfigService,
     private readonly bunnyService: BunnyService,
+    private readonly emailService: EmailService,
     private readonly prismaService: PrismaService,
   ) {}
 
@@ -336,6 +339,40 @@ export class ProposalCreateCommandHandler
             },
             session,
           );
+
+          const notifPayloads: ISendNotificaitonEvent[] = [];
+          notifPayloads.push({
+            notif_type: 'EMAIL',
+            user_id: updatedProposal?.submitter_user_id!,
+            user_email: updatedProposal?.user?.email,
+            subject: '',
+            content: '',
+            email_type: 'template',
+            emailTemplateContext: {
+              projectName: updatedProposal?.project_name,
+              clientName: updatedProposal?.user?.employee_name,
+            },
+            emailTemplatePath: `tender/ar/proposal/project_created`,
+          });
+
+          if (notifPayloads && notifPayloads.length > 0) {
+            for (const notifPayload of notifPayloads) {
+              if (
+                notifPayload.notif_type === 'EMAIL' &&
+                notifPayload.user_email &&
+                notifPayload.email_type
+              ) {
+                this.emailService.sendMail({
+                  mailType: notifPayload.email_type,
+                  to: notifPayload.user_email,
+                  subject: notifPayload.subject,
+                  content: notifPayload.content,
+                  templateContext: notifPayload.emailTemplateContext,
+                  templatePath: notifPayload.emailTemplatePath,
+                });
+              }
+            }
+          }
 
           return {
             created_proposal: createdProposal,
