@@ -134,25 +134,29 @@ export class TenderNotificationRepository {
   }
 
   async readByUserId(userId: string, type?: 'notification' | 'message') {
-    let notifClause: Prisma.notificationWhereInput = {
-      user_id: userId,
-    };
+    let notifClause: Prisma.notificationWhereInput = {};
+    let andClause: Prisma.notificationWhereInput[] = [];
+
+    andClause.push({ user_id: userId });
 
     if (type) {
-      if (type === 'notification') {
-        notifClause = {
-          ...notifClause,
+      if (type === 'message') {
+        andClause.push({
           specific_type: 'NEW_MESSAGE',
-        };
+          read_status: false,
+        });
       }
 
-      if (type === 'message') {
-        notifClause = {
-          ...notifClause,
+      if (type === 'notification') {
+        andClause.push({
           specific_type: { notIn: ['NEW_MESSAGE'] },
-        };
+          read_status: false,
+        });
       }
     }
+
+    notifClause.AND = andClause;
+
     try {
       return await this.prismaService.notification.updateMany({
         where: notifClause,
@@ -232,25 +236,27 @@ export class TenderNotificationRepository {
   }
 
   async deleteAllMine(userId: string, type?: 'notification' | 'message') {
-    let notifClause: Prisma.notificationWhereInput = {
-      user_id: userId,
-    };
+    let notifClause: Prisma.notificationWhereInput = {};
+    let andClause: Prisma.notificationWhereInput[] = [];
+
+    andClause.push({ user_id: userId });
 
     if (type) {
-      if (type === 'notification') {
-        notifClause = {
-          ...notifClause,
+      if (type === 'message') {
+        andClause.push({
           specific_type: 'NEW_MESSAGE',
-        };
+        });
       }
 
-      if (type === 'message') {
-        notifClause = {
-          ...notifClause,
+      if (type === 'notification') {
+        andClause.push({
           specific_type: { notIn: ['NEW_MESSAGE'] },
-        };
+        });
       }
     }
+
+    notifClause.AND = andClause;
+
     try {
       return await this.prismaService.notification.deleteMany({
         where: notifClause,
