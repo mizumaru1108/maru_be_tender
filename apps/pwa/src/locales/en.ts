@@ -1980,6 +1980,7 @@ const en = {
       CANCELED_ACCOUNT: 'Canceled Partners',
       REVISED_ACCOUNT: 'Revised Partners',
       WAITING_FOR_EDITING_APPROVAL: 'Parters Need to Approval',
+      DELETED: 'Deleted',
       series_name: {
         last_month: 'Last Month',
         this_month: 'This Month',

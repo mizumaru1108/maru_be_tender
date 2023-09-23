@@ -5,7 +5,7 @@ import ProjectManagerFloatingActionBar from './project-manager';
 import SupervisorFloatingActionBar from './supervisor';
 import CeoFloatingActionBar from './ceo';
 import ModeratorActionBar from './moderator';
-import { useSelector } from 'redux/store';
+import { dispatch, useSelector } from 'redux/store';
 import ConsultantFloatingActionBar from './consultant';
 import RejectProjectsActionBar from './reject-project';
 import FloatingCloseReportSPV from '../floating-close-report/FloatingSpv';
@@ -17,6 +17,7 @@ import { getProposalClosingReport } from 'queries/client/getProposalClosingRepor
 import FinanceFloatingActionBar from 'sections/project-details/floating-action-bar/finance';
 import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
 import PaymentAmandementFloatingActionBar from './supervisor/SendPaymentAmandement';
+import { getTracks } from 'redux/slices/track';
 
 //
 

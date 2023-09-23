@@ -205,10 +205,16 @@ function AddNewUser() {
   };
 
   const fetchingTracks = React.useCallback(async () => {
+    const params = {
+      is_deleted: 0,
+    };
     setIsLoading(true);
     try {
-      const rest = await axiosInstance.get(`/tender/track?include_general=1&is_deleted=0`, {
+      const rest = await axiosInstance.get(`/tender/track?`, {
         headers: { 'x-hasura-role': activeRole! },
+        params: {
+          ...params,
+        },
       });
       // console.log(rest.data.data);
       if (rest) {

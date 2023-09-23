@@ -41,6 +41,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
+  console.log({ trackList });
 
   const fetchingSchedule = React.useCallback(async () => {
     setIsLoading(true);

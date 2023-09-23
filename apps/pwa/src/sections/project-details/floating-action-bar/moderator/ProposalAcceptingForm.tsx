@@ -13,10 +13,11 @@ import { LoadingButton } from '@mui/lab';
 import { useSnackbar } from 'notistack';
 import useAuth from '../../../../hooks/useAuth';
 import axiosInstance from '../../../../utils/axios';
-import { useSelector } from 'redux/store';
+import { dispatch, useSelector } from 'redux/store';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import { REOPEN_TMRA_45c1040caab9450dbdf64cb94c50bb7d } from 'config';
 import { tracks } from '../../../ceo/ceo-project-rejects';
+import { getTrackList } from 'redux/slices/proposal';
 
 interface FormProps {
   onSubmit: (data: any) => void;
@@ -40,6 +41,7 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
   const { track_list } = useSelector((state) => state.proposal);
+  console.log({ track_list });
   const { enqueueSnackbar } = useSnackbar();
   const [employeeByPath, setEmployeeByPath] = React.useState<IEmployeeByTrack[]>([]);
   // console.log({ employeeByPath });
@@ -143,6 +145,11 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
   // }, [resetField]);
 
   // console.log('TracksData', tracksData);
+
+  React.useEffect(() => {
+    // dispatch(getProposal(id as string, role as string));
+    dispatch(getTrackList(0, activeRole as string, 0));
+  }, [activeRole]);
 
   return (
     <FormProvider methods={methods}>

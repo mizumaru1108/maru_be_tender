@@ -9,6 +9,7 @@ import { IRegions } from 'sections/admin/region/list/types';
 import { IBeneficiaries } from 'sections/client/funding-project-request/forms/MainInfoForm';
 import axiosInstance from 'utils/axios';
 import graphQlAxiosInstance from 'utils/axisoGraphQlInstance';
+import { removeEmptyKey } from 'utils/remove-empty-key';
 import {
   ActiveTap,
   BeneficiaryDetail,
@@ -520,21 +521,22 @@ export const getProposal = (id: string, role: string) => async () => {
     // dispatch(slice.actions.setLoadingCount(false));
   }
 };
-export const getTrackList = (isGeneral: number, role: string) => async () => {
+export const getTrackList = (isGeneral: number, role: string, isDeleted?: number) => async () => {
   // console.log('masuk sini');
+  const tmpIsDeleted = !!isDeleted ? isDeleted : undefined;
   try {
-    dispatch(slice.actions.startLoading);
-    // dispatch(slice.actions.setLoadingCount(true));
     dispatch(slice.actions.startLoadingTrack(true));
-    let url = '';
-    if (isGeneral) {
-      url = '/tender/track?include_general=1';
-    } else {
-      url = '/tender/track?include_general=0';
-    }
+    let url = '/tender/track';
+    const tmpParams = {
+      include_general: isGeneral ? '1' : undefined,
+      is_deleted: isDeleted === 1 ? '1' : isDeleted === 0 ? '0' : undefined,
+    };
     try {
       const response = await axiosInstance.get(url, {
         headers: { 'x-hasura-role': role },
+        params: {
+          ...removeEmptyKey(tmpParams),
+        },
       });
       if (response.data.statusCode === 200) {
         dispatch(slice.actions.setTrackList(response.data.data));
@@ -545,7 +547,7 @@ export const getTrackList = (isGeneral: number, role: string) => async () => {
   } catch (error) {
     dispatch(slice.actions.hasError(error));
   } finally {
-    dispatch(slice.actions.endLoading);
+    // dispatch(slice.actions.endLoading);
     // dispatch(slice.actions.setLoadingCount(false));
     dispatch(slice.actions.startLoadingTrack(false));
   }

@@ -1989,6 +1989,7 @@ const ar = {
       CANCELED_ACCOUNT: 'الشركاء الملغون',
       REVISED_ACCOUNT: 'مراجعة الشركاء',
       WAITING_FOR_EDITING_APPROVAL: 'يحتاج الشركاء إلى الموافقة',
+      DELETED: 'تم الحذف',
       series_name: {
         last_month: 'الشهر الماضي',
         this_month: 'هذا الشهر',
@@ -2013,10 +2014,10 @@ const ar = {
     },
     table: {
       th: {
-        employee_name: 'Employee Name',
-        account_type: 'Account Type',
-        section: 'Section',
-        number_of_clock: 'Number of Clock',
+        employee_name: 'اسم الموظف',
+        account_type: 'نوع الحساب',
+        section: 'قسم',
+        number_of_clock: 'إجمالي الساعة',
       },
     },
     total_budget_for_the_course: 'الميزانية الكلية للمسار',
