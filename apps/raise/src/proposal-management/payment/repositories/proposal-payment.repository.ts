@@ -902,8 +902,12 @@ export class ProposalPaymentRepository {
 
   async findTrackBudgets(filter: FindTrackBudgetFilter) {
     try {
-      const { limit = 0, page = 1 } = filter;
+      const { limit = 0, page = 1, is_deleted } = filter;
       const offset = (page - 1) * limit;
+
+      let deletedCondition: boolean = false;
+      if (is_deleted && is_deleted === '0') deletedCondition = false;
+      if (is_deleted && is_deleted === '1') deletedCondition = true;
 
       let query: Sql = Prisma.sql`
       SELECT
@@ -916,7 +920,7 @@ export class ProposalPaymentRepository {
           track_section
         WHERE
           track.id = track_section.track_id
-          AND track_section.is_deleted = false
+          AND track_section.is_deleted = ${deletedCondition}
       ) as sections,
       (
         SELECT
@@ -949,7 +953,7 @@ export class ProposalPaymentRepository {
       LEFT JOIN
         track_section ON track.id = track_section.track_id
       WHERE
-        track.is_deleted = false
+        track.is_deleted = ${deletedCondition}
       GROUP BY
       track.id, track.name`;
 
