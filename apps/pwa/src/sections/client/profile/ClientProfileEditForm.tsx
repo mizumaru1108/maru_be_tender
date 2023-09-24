@@ -568,10 +568,12 @@ function ClientProfileEditForm() {
         !data.updated_banks &&
         !data.updated_banks
       ) {
+        // console.log('masuk if');
         mergeArray = data as BankingValuesProps[];
       } else {
+        // console.log('masuk else', { data });
         if (data && data?.created_banks) {
-          if (data?.created_banks?.length! > 0) {
+          if (data?.created_banks?.length > 0) {
             const tmpCreatedBanks =
               data?.created_banks && data?.created_banks.map((item: any) => item);
             mergeArray = [...mergeArray, ...tmpCreatedBanks];
@@ -590,6 +592,15 @@ function ClientProfileEditForm() {
               data?.deleted_banks && data?.deleted_banks.map((item: any) => item);
             mergeArray = [...mergeArray, ...tmpDeletedBanks];
           }
+        }
+        if (
+          data &&
+          data?.created_banks?.length === 0 &&
+          data?.updated_banks?.length === 0 &&
+          data?.deleted_banks?.length === 0
+        ) {
+          // console.log('masuk if sini', { startedValue });
+          mergeArray = profileState.form5;
         }
       }
       // console.log({ mergeArray });
