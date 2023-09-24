@@ -32,7 +32,7 @@ export class ResetPasswordRequestCommandHandler
   async execute(
     command: ResetPasswordRequestCommand,
   ): Promise<ResetPasswordRequestCommandResult> {
-    const { email, forgotPassword, selected_language } = command;
+    const { email, forgotPassword } = command;
     try {
       const user = await this.userRepo.findFirst({ email });
       if (!user) throw new BadRequestException('User not found!');
@@ -45,9 +45,7 @@ export class ResetPasswordRequestCommandHandler
         mailType: 'template',
         to: email,
         from: 'no-reply@hcharity.org',
-        subject: forgotPassword
-          ? 'Forgot Password Request'
-          : 'Reset Password Request',
+        subject: 'استعادة كلمة المرور',
         templateContext: {
           name: user.employee_name,
           resetUrl: forgotPassword
@@ -58,9 +56,7 @@ export class ResetPasswordRequestCommandHandler
                 'tenderAppConfig.baseUrl',
               )}/auth/reset-password/${forgotPassReq}`,
         },
-        templatePath: `tender/${selected_language || 'ar'}/account/${
-          forgotPassword ? 'forget_password' : 'reset_password'
-        }`,
+        templatePath: `tender/ar/account/forget_password`,
       });
 
       return {
