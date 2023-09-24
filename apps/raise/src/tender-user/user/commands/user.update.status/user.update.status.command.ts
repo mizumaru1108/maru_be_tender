@@ -97,7 +97,7 @@ export class UserUpdateStatusCommandHandler
           notif_type: 'EMAIL',
           user_id: dbRes.updated_user.id,
           user_email: dbRes.updated_user.email,
-          subject: '',
+          subject: 'القبول في منصة غيث للمنح',
           content: '',
           email_type: 'template',
           emailTemplateContext: {
