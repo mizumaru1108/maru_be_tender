@@ -48,6 +48,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
     try {
       const rest = await axiosInstance.get(`/tender/proposal/payment/find-track-budgets`, {
         headers: { 'x-hasura-role': activeRole! },
+        params: { is_deleted: '0' },
       });
       // console.log('rest', rest.data);
       if (rest) {
@@ -109,65 +110,69 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
       ) : (
         <React.Fragment>
           {!isLoading && trackList && trackList?.length > 0
-            ? trackList.map((item: ITrackList, index: number) => (
-                <Grid
-                  item
-                  md={6}
-                  xs={12}
-                  key={index}
-                  sx={{ display: 'flex', flexDirection: 'column' }}
-                >
-                  <Grid item xs={12}>
-                    <Typography variant="h5">{formatCapitalizeText(item?.name)}</Typography>
+            ? trackList
+                .filter((item: ITrackList) => item.name !== 'GENERAL')
+                .map((item: ITrackList, index: number) => (
+                  <Grid
+                    item
+                    md={6}
+                    xs={12}
+                    key={index}
+                    sx={{ display: 'flex', flexDirection: 'column' }}
+                  >
+                    <Grid item xs={12}>
+                      <Typography variant="h5">{formatCapitalizeText(item?.name)}</Typography>
+                    </Grid>
+                    <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'row' }} gap={2}>
+                      <Grid item md={4} xs={12} sx={styleBox}>
+                        <Image
+                          src={`/icons/rial-currency.svg`}
+                          alt="icon_riyals"
+                          sx={{ display: 'inline-flex' }}
+                        />
+                        <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                          {translate(
+                            'content.administrative.statistic.heading.totalReservedBudget'
+                          )}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            color: 'text.tertiary',
+                            fontWeight: 700,
+                          }}
+                        >
+                          {fCurrencyNumber(item.remaining_budget || 0)}
+                        </Typography>
+                      </Grid>
+                      <Grid item md={4} xs={12} sx={styleBox}>
+                        <Image
+                          src={`/icons/rial-currency.svg`}
+                          alt="icon_riyals"
+                          sx={{ display: 'inline-flex' }}
+                        />
+                        <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                          {translate('content.administrative.statistic.heading.totalSpendBudget')}
+                        </Typography>
+                        <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                          {fCurrencyNumber(item.total_budget_used || 0)}
+                        </Typography>
+                      </Grid>
+                      <Grid item md={4} xs={12} sx={styleBox}>
+                        <Image
+                          src={`/icons/rial-currency.svg`}
+                          alt="icon_riyals"
+                          sx={{ display: 'inline-flex' }}
+                        />
+                        <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                          {translate('content.administrative.statistic.heading.totalBudget')}
+                        </Typography>
+                        <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                          {fCurrencyNumber(item.budget || 0)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'row' }} gap={2}>
-                    <Grid item md={4} xs={12} sx={styleBox}>
-                      <Image
-                        src={`/icons/rial-currency.svg`}
-                        alt="icon_riyals"
-                        sx={{ display: 'inline-flex' }}
-                      />
-                      <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                        {translate('content.administrative.statistic.heading.totalReservedBudget')}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          color: 'text.tertiary',
-                          fontWeight: 700,
-                        }}
-                      >
-                        {fCurrencyNumber(item.remaining_budget || 0)}
-                      </Typography>
-                    </Grid>
-                    <Grid item md={4} xs={12} sx={styleBox}>
-                      <Image
-                        src={`/icons/rial-currency.svg`}
-                        alt="icon_riyals"
-                        sx={{ display: 'inline-flex' }}
-                      />
-                      <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                        {translate('content.administrative.statistic.heading.totalSpendBudget')}
-                      </Typography>
-                      <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                        {fCurrencyNumber(item.total_budget_used || 0)}
-                      </Typography>
-                    </Grid>
-                    <Grid item md={4} xs={12} sx={styleBox}>
-                      <Image
-                        src={`/icons/rial-currency.svg`}
-                        alt="icon_riyals"
-                        sx={{ display: 'inline-flex' }}
-                      />
-                      <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                        {translate('content.administrative.statistic.heading.totalBudget')}
-                      </Typography>
-                      <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                        {fCurrencyNumber(item.budget || 0)}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              ))
+                ))
             : null}
         </React.Fragment>
       )}
