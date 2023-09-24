@@ -8,6 +8,7 @@ import { gettingUserDataForEdit } from 'queries/client/gettingUserDataForEdit';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
+import { removeEmptyKey } from 'utils/remove-empty-key';
 import {
   AdministrativeValuesProps,
   BankingValuesProps,
@@ -626,15 +627,31 @@ function ClientProfileEditForm() {
     //   }),
     // };
     if (startedValue.bank_informations && startedValue.bank_informations.length > 0) {
-      newBankInformation = {
-        ...newBankInformation,
-        old_banks: [...startedValue.bank_informations].map((item) => {
-          const tmpItme = item;
-          return {
+      const tmpUpdateBanks = [...startedValue.bank_informations].map((item) => {
+        const tmpItme = item;
+        if (
+          !!tmpItme?.card_image?.url &&
+          !!tmpItme?.card_image?.size &&
+          !!tmpItme?.card_image?.type
+        ) {
+          return removeEmptyKey({
             ...tmpItme,
             bank_name: tmpItme.bank_name || '-',
-          };
-        }),
+          });
+        }
+        return removeEmptyKey({
+          ...tmpItme,
+          bank_name: tmpItme.bank_name || '-',
+          card_image: {
+            url: 'https://ui-avatars.com/api',
+            size: 0,
+            type: 'image/png',
+          },
+        });
+      });
+      newBankInformation = {
+        ...newBankInformation,
+        old_banks: tmpUpdateBanks?.filter((item: any) => !!item),
       };
     } else {
       newBankInformation = {
@@ -644,6 +661,22 @@ function ClientProfileEditForm() {
     }
 
     if (profileState.updated_banks.length > 0) {
+      const tmpNewUpdateBanks = profileState?.updated_banks?.map((item: any) => {
+        const tmpItem: any = item;
+        if (tmpItem?.card_image?.base64Data) {
+          return {
+            ...tmpItem,
+            card_image: removeEmptyKey({
+              ...tmpItem.card_image,
+              url: undefined,
+            }),
+          };
+        } else {
+          return removeEmptyKey({
+            ...tmpItem,
+          });
+        }
+      });
       newBankInformation = {
         ...newBankInformation,
         updated_banks: profileState.updated_banks,

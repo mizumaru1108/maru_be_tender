@@ -177,14 +177,22 @@ export default function AddBankModal({
       setValue('bank_account_number', newBankAccNumber);
       setValue('bank_account_name', initialValues.bank_account_name);
       setValue('bank_name', newValues.bank_name);
-      setValue('card_image', {
-        url: initialValues.card_image.url,
-        size: initialValues.card_image.size,
-        type: initialValues.card_image.type,
-        base64Data: initialValues.card_image.base64Data,
-        fileExtension: initialValues.card_image.fileExtension,
-        fullName: initialValues.card_image.fullName,
-      });
+      if (initialValues?.card_image) {
+        if (
+          initialValues?.card_image?.url &&
+          initialValues?.card_image?.size &&
+          initialValues?.card_image?.type
+        ) {
+          setValue('card_image', {
+            url: initialValues.card_image.url,
+            size: initialValues.card_image.size,
+            type: initialValues.card_image.type,
+            base64Data: initialValues.card_image.base64Data,
+            fileExtension: initialValues.card_image.fileExtension,
+            fullName: initialValues.card_image.fullName,
+          });
+        }
+      }
     }
   }, [initialValues, setValue, listOfBank, banks]);
   return (
