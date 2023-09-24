@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
 import { removeEmptyKey } from 'utils/remove-empty-key';
+import { BankInformation } from '../../../@types/proposal';
 import {
   AdministrativeValuesProps,
   BankingValuesProps,
@@ -693,10 +694,39 @@ function ClientProfileEditForm() {
         updated_banks: profileState.updated_banks,
       };
     }
-    if (profileState.deleted_banks.length > 0) {
+    // if (profileState.deleted_banks.length > 0) {
+    //   newBankInformation = {
+    //     ...newBankInformation,
+    //     deleted_banks: profileState.deleted_banks,
+    //   };
+    // }
+    if (profileState?.deleted_banks.length > 0) {
+      const tmpDeletedBanks = profileState?.deleted_banks.map((item: BankInformation) => {
+        const tmpItme: BankInformation = item;
+        if (
+          tmpItme &&
+          !!tmpItme?.card_image?.url &&
+          !!tmpItme?.card_image?.size &&
+          !!tmpItme?.card_image?.type
+        ) {
+          return removeEmptyKey({
+            ...tmpItme,
+            bank_name: tmpItme.bank_name || '-',
+          });
+        }
+        return removeEmptyKey({
+          ...tmpItme,
+          bank_name: tmpItme.bank_name || '-',
+          card_image: {
+            url: 'https://ui-avatars.com/api',
+            size: 0,
+            type: 'image/png',
+          },
+        });
+      });
       newBankInformation = {
         ...newBankInformation,
-        deleted_banks: profileState.deleted_banks,
+        deleted_banks: tmpDeletedBanks?.filter((item: any) => !!item),
       };
     }
     if (profileState.created_banks.length > 0) {
