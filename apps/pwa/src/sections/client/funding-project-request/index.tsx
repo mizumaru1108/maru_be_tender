@@ -361,7 +361,7 @@ const FundingProjectRequestForm = () => {
     // }
 
     try {
-      const res = await axiosInstance.post('/tender-proposal/interceptor-create/aa', formData, {
+      const res = await axiosInstance.post('/tender-proposal/interceptor-create', formData, {
         headers: { 'x-hasura-role': activeRole! },
         maxBodyLength: Infinity,
         maxContentLength: Infinity,
@@ -595,7 +595,7 @@ const FundingProjectRequestForm = () => {
         // '/tender-proposal/save-draft',
 
         // withFormData
-        '/tender-proposal/interceptor-save-draft/aa',
+        '/tender-proposal/interceptor-save-draft',
         // { ...datas },
         formData,
         {
@@ -630,7 +630,7 @@ const FundingProjectRequestForm = () => {
           // {
           //   ...datas,
           // },
-          '/tender-proposal/interceptor-create/aa',
+          '/tender-proposal/interceptor-create',
           formData,
           {
             headers: { 'x-hasura-role': activeRole! },
@@ -800,7 +800,7 @@ const FundingProjectRequestForm = () => {
         // witoutformData
         // '/tender-proposal/save-draft',
         // { ...saveLastDraft },
-        '/tender-proposal/interceptor-save-draft/aa',
+        '/tender-proposal/interceptor-save-draft',
         formData,
         {
           headers: { 'x-hasura-role': activeRole! },
