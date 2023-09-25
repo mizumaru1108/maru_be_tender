@@ -416,7 +416,8 @@ function ClientProfile() {
                 </Stack>
               </Stack>
               <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px' }}>
-                بيانات الإدارية
+                {/* بيانات الإدارية */}
+                المعلومات الإدارية
               </Typography>
               <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
                 <Stack direction="column" alignItems="start">

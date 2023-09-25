@@ -477,7 +477,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
           />
         </Grid>
         <Grid item md={6} xs={12}>
-          <RHFSelectNoGenerator
+          {/* <RHFSelectNoGenerator
             disabled={isEdit}
             name="headquarters"
             label={translate('register_form1.headquarters.label')}
@@ -492,7 +492,21 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
                 </option>
               ))}
             </>
-          </RHFSelectNoGenerator>
+          </RHFSelectNoGenerator> */}
+          <RHFSelect
+            name="headquarters"
+            label={translate('register_form1.headquarters.label')}
+            placeholder={translate('register_form1.headquarters.placeholder')}
+          >
+            {[
+              'register_form1.headquarters.options.own',
+              'register_form1.headquarters.options.rent',
+            ].map((option, i) => (
+              <MenuItem key={i} value={translate(option)}>
+                {translate(option)}
+              </MenuItem>
+            ))}
+          </RHFSelect>
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFTextField

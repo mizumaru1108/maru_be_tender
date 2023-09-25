@@ -2,7 +2,6 @@ import { alpha, Box, Container, Step, StepLabel, Stepper, Typography } from '@mu
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import useResponsive from 'hooks/useResponsive';
-import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { CreateProposel } from 'queries/client/createProposel';
 import { getDraftProposal } from 'queries/client/getDraftProposal';
@@ -13,8 +12,8 @@ import { getBeneficiariesList } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
 import { useMutation, useQuery } from 'urql';
 import axiosInstance from 'utils/axios';
+import { ComboBoxOption } from '../../../components/hook-form/RHFComboBox';
 import Toast from '../../../components/toast';
-import { logUtil } from '../../../utils/log-util';
 import { removeEmptyKey } from '../../../utils/remove-empty-key';
 import {
   ConnectingInfoForm,
@@ -103,6 +102,8 @@ const FundingProjectRequestForm = () => {
       governorate: '',
       region_id: '',
       governorate_id: '',
+      regions_id: [],
+      governorates_id: [],
     },
     form4: {
       amount_required_fsupport: undefined,
@@ -132,7 +133,7 @@ const FundingProjectRequestForm = () => {
   });
   const [requestState, setRequestState] = useState(defaultValues);
   const isMobile = useResponsive('down', 'sm');
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(2);
   const [isLoading, setIsLoading] = useState(false);
   const [isDraft, setIsDraft] = useState(false);
   const [lastIndex, setLastIndex] = useState(0);
@@ -260,11 +261,31 @@ const FundingProjectRequestForm = () => {
     delete payload.letter_ofsupport_req;
     delete payload.project_timeline;
     delete payload.detail_project_budgets;
+    delete payload.regions_id;
+    delete payload.governorates_id;
     const jsonData: any = {
       ...payload,
     };
     for (const key in jsonData) {
       formData.append(key, jsonData[key]);
+    }
+    if (datas && datas?.regions_id && datas?.regions_id?.length > 0) {
+      for (let i = 0; i < datas?.regions_id?.length; i++) {
+        const region_id: ComboBoxOption = datas?.regions_id[i] as ComboBoxOption;
+        const index = i; // Get the index for appending to FormData
+
+        // Append the values for each object using template literals
+        formData.append(`regions_id[${index}]`, region_id.value);
+      }
+    }
+    if (datas && datas?.governorates_id && datas?.governorates_id?.length > 0) {
+      for (let i = 0; i < datas?.governorates_id?.length; i++) {
+        const governoreate_id: ComboBoxOption = datas?.governorates_id[i] as ComboBoxOption;
+        const index = i; // Get the index for appending to FormData
+
+        // Append the values for each object using template literals
+        formData.append(`governorates_id[${index}]`, governoreate_id.value);
+      }
     }
     if (datas && datas?.detail_project_budgets && datas?.detail_project_budgets?.length > 0) {
       for (let i = 0; i < datas?.detail_project_budgets?.length; i++) {
@@ -497,13 +518,35 @@ const FundingProjectRequestForm = () => {
     delete payload.letter_ofsupport_req;
     delete payload.detail_project_budgets;
     delete payload.project_timeline;
+    delete payload.regions_id;
+    delete payload.governorates_id;
     const jsonData: any = {
       ...payload,
     };
-    console.log({ datas, requestState });
+    // console.log({ datas, requestState });
 
     for (const key in jsonData) {
       formData.append(key, jsonData[key]);
+    }
+    if (datas && datas?.regions_id && datas?.regions_id?.length > 0) {
+      for (let i = 0; i < datas?.regions_id?.length; i++) {
+        const region_id: ComboBoxOption = datas?.regions_id[i] as ComboBoxOption;
+        // console.log({ region_id });
+        const index = i; // Get the index for appending to FormData
+
+        // Append the values for each object using template literals
+        formData.append(`regions_id[${index}]`, region_id.value);
+      }
+    }
+    if (datas && datas?.governorates_id && datas?.governorates_id?.length > 0) {
+      for (let i = 0; i < datas?.governorates_id?.length; i++) {
+        const governoreate_id: ComboBoxOption = datas?.governorates_id[i] as ComboBoxOption;
+        const index = i; // Get the index for appending to FormData
+        // console.log({ governoreate_id });
+
+        // Append the values for each object using template literals
+        formData.append(`governorates_id[${index}]`, governoreate_id.value);
+      }
     }
     if (datas && datas?.detail_project_budgets && datas?.detail_project_budgets?.length > 0) {
       for (let i = 0; i < datas?.detail_project_budgets?.length; i++) {
@@ -684,6 +727,8 @@ const FundingProjectRequestForm = () => {
     delete payload.letter_ofsupport_req;
     delete payload.detail_project_budgets;
     delete payload.project_timeline;
+    delete payload.regions_id;
+    delete payload.governorates_id;
     const jsonData: any = {
       ...payload,
     };
@@ -699,6 +744,24 @@ const FundingProjectRequestForm = () => {
         formData.append(`detail_project_budgets[${index}][amount]`, budget.amount as any);
         formData.append(`detail_project_budgets[${index}][explanation]`, budget.explanation);
         formData.append(`detail_project_budgets[${index}][clause]`, budget.clause);
+      }
+    }
+    if (datas && datas?.regions_id && datas?.regions_id?.length > 0) {
+      for (let i = 0; i < datas?.regions_id?.length; i++) {
+        const region_id: ComboBoxOption = datas?.regions_id[i] as ComboBoxOption;
+        const index = i; // Get the index for appending to FormData
+
+        // Append the values for each object using template literals
+        formData.append(`regions_id[${index}]`, region_id.value);
+      }
+    }
+    if (datas && datas?.governorates_id && datas?.governorates_id?.length > 0) {
+      for (let i = 0; i < datas?.governorates_id?.length; i++) {
+        const governoreate_id: ComboBoxOption = datas?.governorates_id[i] as ComboBoxOption;
+        const index = i; // Get the index for appending to FormData
+
+        // Append the values for each object using template literals
+        formData.append(`governorates_id[${index}]`, governoreate_id.value);
       }
     }
     if (datas && datas?.project_timeline && datas?.project_timeline?.length > 0) {
@@ -797,102 +860,6 @@ const FundingProjectRequestForm = () => {
       setIsLoading(false);
       setIsDraft(false);
     }
-
-    //using formData still develop
-    // const payload = {
-    //   ...(lastIndex >= 1 && { ...requestState.form2 }),
-    //   ...(lastIndex >= 2 && { ...requestState.form3 }),
-    //   ...(lastIndex >= 3 && {
-    //     amount_required_fsupport: requestState.form4.amount_required_fsupport,
-    //     detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
-    //   }),
-    //   ...(lastIndex < step && step >= 1 && { ...requestState.form1 }),
-    //   ...(lastIndex < step && step >= 2 && { ...requestState.form2 }),
-    //   ...(lastIndex < step && step >= 3 && { ...requestState.form3 }),
-    //   ...(lastIndex < step &&
-    //     step >= 4 && {
-    //       amount_required_fsupport: requestState.form4.amount_required_fsupport,
-    //       detail_project_budgets: [...requestState.form4.detail_project_budgets.data],
-    //     }),
-    //   proposal_bank_information_id: step === 4 ? data : undefined,
-    //   proposal_id: id,
-    // };
-    // const datas = { ...payload };
-    // let formData = new FormData();
-    // delete payload.detail_project_budgets;
-    // delete payload.project_attachments;
-    // delete payload.letter_ofsupport_req;
-    // delete payload.detail_project_budgets;
-    // const jsonData: any = {
-    //   ...payload,
-    // };
-    // for (const key in jsonData) {
-    //   formData.append(key, jsonData[key]);
-    // }
-    // if (datas && datas?.detail_project_budgets && datas?.detail_project_budgets?.length > 0) {
-    //   for (let i = 0; i < datas?.detail_project_budgets?.length; i++) {
-    //     const budget = datas?.detail_project_budgets[i];
-    //     const index = i; // Get the index for appending to FormData
-
-    //     // Append the values for each object using template literals
-    //     formData.append(`detail_project_budgets[${index}].amount`, budget.amount as any);
-    //     formData.append(`detail_project_budgets[${index}].explanation`, budget.explanation);
-    //     formData.append(`detail_project_budgets[${index}].clause`, budget.clause);
-    //   }
-    // }
-    // if (datas && datas?.project_attachments && datas?.project_attachments?.file) {
-    //   formData.append('project_attachments', datas?.project_attachments?.file as any);
-    // } else {
-    //   formData.append('project_attachments[url]', datas?.project_attachments?.url as string);
-    //   formData.append('project_attachments[type]', datas?.project_attachments?.type as string);
-    //   formData.append('project_attachments[size]', datas?.project_attachments?.size as any);
-    // }
-    // if (datas && datas?.letter_ofsupport_req && datas?.letter_ofsupport_req?.file) {
-    //   formData.append('letter_ofsupport_req', datas?.letter_ofsupport_req?.file as any);
-    // } else {
-    //   formData.append('letter_ofsupport_req[url]', datas?.letter_ofsupport_req?.url as string);
-    //   formData.append('letter_ofsupport_req[type]', datas?.letter_ofsupport_req?.type as string);
-    //   formData.append('letter_ofsupport_req[size]', datas?.letter_ofsupport_req?.size as any);
-    // }
-
-    // console.log(formData.get('project_name'));
-    // console.log({ datas });
-
-    // // formData.forEach((value, key) => {
-    // //   console.log(key + ' - ' + value);
-    // // });
-
-    // try {
-    //   const res = await axiosInstance.post('/tender-proposal/interceptor-create', formData, {
-    //     headers: { 'x-hasura-role': activeRole! },
-    //     maxBodyLength: Infinity,
-    //     maxContentLength: Infinity,
-    //   });
-    //   if (res) {
-    //     const spreadUrl = location.pathname.split('/');
-    //     enqueueSnackbar(translate('proposal_created'), {
-    //       variant: 'success',
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //       anchorOrigin: {
-    //         vertical: 'bottom',
-    //         horizontal: 'center',
-    //       },
-    //     });
-    //     navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
-    //   }
-    // } catch (err) {
-    //   enqueueSnackbar(err.message, {
-    //     variant: 'error',
-    //     preventDuplicate: true,
-    //     autoHideDuration: 3000,
-    //     anchorOrigin: {
-    //       vertical: 'bottom',
-    //       horizontal: 'center',
-    //     },
-    //   });
-    //   setIsLoading(false);
-    // }
   };
 
   // on return
@@ -1012,6 +979,8 @@ const FundingProjectRequestForm = () => {
                 region_id,
                 governorate,
                 governorate_id,
+                regions_id: [],
+                governorates_id: [],
               }),
             },
             form4: {
@@ -1066,6 +1035,8 @@ const FundingProjectRequestForm = () => {
               governorate,
               region_id,
               governorate_id,
+              regions_id: [],
+              governorates_id: [],
             }),
             ...(STEP.indexOf(step.trim()) >= 3 && {
               amount_required_fsupport,
@@ -1136,7 +1107,6 @@ const FundingProjectRequestForm = () => {
               step={step}
               onReturn={onReturn}
               isLoad={isLoading}
-              // onSavingDraft={onSavingDraft}
               isStep={step < 5}
               isDraft={(draft: boolean) => setIsDraft(draft)}
             />
@@ -1148,7 +1118,6 @@ const FundingProjectRequestForm = () => {
               step={step}
               onReturn={onReturn}
               isLoad={isLoading}
-              // onSavingDraft={onSavingDraft}
               isStep={id !== undefined ? true : false}
               isDraft={(draft: boolean) => setIsDraft(draft)}
             />
@@ -1160,7 +1129,6 @@ const FundingProjectRequestForm = () => {
               step={step}
               onReturn={onReturn}
               isLoad={isLoading}
-              // onSavingDraft={onSavingDraft}
               isStep={id !== undefined ? true : false}
               isDraft={(draft: boolean) => setIsDraft(draft)}
             />
@@ -1172,7 +1140,6 @@ const FundingProjectRequestForm = () => {
               step={step}
               onReturn={onReturn}
               isLoad={isLoading}
-              // onSavingDraft={onSavingDraft}
               isStep={id !== undefined ? true : false}
               isDraft={(draft: boolean) => setIsDraft(draft)}
             />
@@ -1184,7 +1151,6 @@ const FundingProjectRequestForm = () => {
               step={step}
               onReturn={onReturn}
               isLoad={isLoading}
-              // onSavingDraft={onSavingDraft}
               isStep={id !== undefined ? true : false}
               isDraft={(draft: boolean) => setIsDraft(draft)}
             />
@@ -1197,7 +1163,6 @@ const FundingProjectRequestForm = () => {
             onUpdate={(data: any) => {
               onLastSavingDraft(data);
             }}
-            // onSavingDraft={onSavingDraft}
             proposal_id={id}
             onSubmit={onSubmit}
             onLoader={(load) => setIsLoading(load)}

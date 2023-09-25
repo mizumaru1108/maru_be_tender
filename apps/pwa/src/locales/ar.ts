@@ -1111,8 +1111,10 @@ const ar = {
   contact_support_title: 'تواصل مع الدعم ',
   register_first_tap: 'المعلومات الرئيسية',
   register_second_tap: 'معلومات الاتصال',
-  register_third_tap: 'اسم مدير الجهة',
-  register_fourth_tap: 'بيانات الإدارية',
+  // register_third_tap: 'اسم مدير الجهة',
+  register_third_tap: 'معلومات الترخيص',
+  // register_fourth_tap: 'بيانات الإدارية',
+  register_fourth_tap: 'المعلومات الإدارية',
   register_fifth_tap: 'المعلومات البنكية',
   email_label: 'البريد الإلكتروني',
   password_label: 'كلمة السر',
@@ -1156,8 +1158,9 @@ const ar = {
       placeholder: 'هل توافق على ضريبة القيمة المضافة',
     },
     entity_area: {
-      label: 'المناطق*',
-      placeholder: 'الرجاء اختيار المناطق',
+      // label: 'المناطق*',
+      label: 'نوع الجهة المشرفة*',
+      placeholder: 'الرجاء اختيار نوع الجهة المشرفة',
       options: {
         sub_entity_area: 'فرعي',
         main_entity_area: 'رئيسي',
@@ -1197,7 +1200,8 @@ const ar = {
       options: {},
     },
     center: {
-      label: 'المركز الإداري ( ترجمة)',
+      // label: 'المركز الإداري ( ترجمة)',
+      label: 'المركز الإداري',
       // placeholder: 'الرجاء اختيار المركز',
       placeholder: 'الرجاء ادخال المركز الإداري',
       options: {},
@@ -1402,7 +1406,8 @@ const ar = {
       placeholder: 'الرجاء كتابة البريد الإلكتروني',
     },
     region: {
-      label: 'منطقة تنفيذ المشروع*',
+      // label: 'منطقة تنفيذ المشروع*',
+      label: 'المنطقة*',
       placeholder: 'الرجاء اختيار المنطقة',
     },
     city: {
