@@ -271,8 +271,8 @@ export class TenderClientRepository {
     let prisma = this.prismaService;
     if (session) prisma = session;
     try {
-      const args = await this.findFirstFilter(props);
-      const rawRes = await prisma.user.findFirst({
+      const args = this.findFirstFilter(props);
+      const rawRes = await prisma.client_data.findFirst({
         where: args.where,
         include: args.include,
       });
