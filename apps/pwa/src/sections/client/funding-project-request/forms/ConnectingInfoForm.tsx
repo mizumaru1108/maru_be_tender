@@ -1,23 +1,29 @@
-import * as Yup from 'yup';
-import React, { useEffect } from 'react';
-import { Button, Grid, MenuItem } from '@mui/material';
-import { FormProvider, RHFSelect } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import BaseField from 'components/hook-form/BaseField';
-import { REGION } from '_mock/region';
-import { RegionNames } from '../../../../@types/region';
-import useLocales from 'hooks/useLocales';
-import { AmandementFields } from '../../../../@types/proposal';
-import { useSnackbar } from 'notistack';
-import { IRegions } from 'sections/admin/region/list/types';
-import { IGovernorate } from 'sections/admin/governorate/list/types';
+import { Button, Grid, MenuItem } from '@mui/material';
 import axios from 'axios';
-import { FEATURE_MENU_ADMIN_ENTITY_AREA, FEATURE_MENU_ADMIN_REGIONS, TMRA_RAISE_URL } from 'config';
+import { FormProvider, RHFSelect } from 'components/hook-form';
+import BaseField from 'components/hook-form/BaseField';
+import {
+  FEATURE_MENU_ADMIN_ENTITY_AREA,
+  FEATURE_MENU_ADMIN_REGIONS,
+  FEATURE_PROPOSAL_MULTIPLE_REGION_ENTITY_AREA,
+  TMRA_RAISE_URL,
+} from 'config';
+import useLocales from 'hooks/useLocales';
+import { useSnackbar } from 'notistack';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { IGovernorate } from 'sections/admin/governorate/list/types';
+import { IRegions } from 'sections/admin/region/list/types';
 import { CatchError } from 'utils/catchError';
-import { removeNewLineCharacters } from 'utils/removeNewLineCharacters';
-import ReplayIcon from '@mui/icons-material/Replay';
 import { removeEmptyKey } from 'utils/remove-empty-key';
+import { removeNewLineCharacters } from 'utils/removeNewLineCharacters';
+import * as Yup from 'yup';
+import { REGION } from '_mock/region';
+import { AmandementFields } from '../../../../@types/proposal';
+import { RegionNames } from '../../../../@types/region';
+import RHFComboBox, { ComboBoxOption } from '../../../../components/hook-form/RHFComboBox';
+import ReplayIcon from '@mui/icons-material/Replay';
 
 type FormValuesProps = {
   pm_name: string;
@@ -25,6 +31,8 @@ type FormValuesProps = {
   pm_email: string;
   region: string;
   governorate: string;
+  regions_id: ComboBoxOption[];
+  governorates_id: ComboBoxOption[];
 };
 
 type Props = {
@@ -36,8 +44,6 @@ type Props = {
 
 const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const tmpDefaultValues = removeEmptyKey(defaultValues);
-  const isOldProps =
-    revised && tmpDefaultValues.region_id && tmpDefaultValues.governorate_id ? false : true;
   // console.log({ revised });
   // console.log({ tmpDefaultValues, defaultValues });
   const { translate } = useLocales();
@@ -51,6 +57,11 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
   const [area, setArea] = React.useState<{
     region?: IRegions;
     governorate?: IGovernorate;
+  } | null>(null);
+
+  const [formField, setFormField] = React.useState<{
+    regions?: IRegions[];
+    governorates?: IGovernorate[];
   } | null>(null);
 
   const fetchRegions = React.useCallback(async () => {
@@ -84,24 +95,55 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const CreatingProposalForm3 = Yup.object().shape({
-    pm_name: Yup.string().required(translate('errors.cre_proposal.pm_name.required')),
-    pm_mobile: Yup.string()
-      // .matches(/^\+9665[0-9]{8}$/, translate('errors.cre_proposal.pm_mobile.message'))
-      // .required(translate('errors.cre_proposal.pm_mobile.required')),
-      .required(translate('errors.register.phone.length'))
-      .test('len', translate('errors.register.phone.length'), (val) => {
-        if (val === undefined) {
-          return true;
-        }
-        return val?.length === 0 || val!.length === 9;
-      }),
-    pm_email: Yup.string()
-      .email('Email must be a valid email address')
-      .required(translate('errors.cre_proposal.pm_email.required')),
-    region: Yup.string().required(translate('errors.cre_proposal.region.required')),
-    governorate: Yup.string().required(translate('errors.cre_proposal.governorate.required')),
-  });
+  const CreatingProposalForm3 = React.useMemo(() => {
+    const tmpRevised = revised || undefined;
+    return Yup.object().shape({
+      pm_name: Yup.string().required(translate('errors.cre_proposal.pm_name.required')),
+      pm_mobile: Yup.string()
+        .required(translate('errors.register.phone.length'))
+        .test('len', translate('errors.register.phone.length'), (val) => {
+          if (val === undefined) {
+            return true;
+          }
+          return val?.length === 0 || val!.length === 9;
+        }),
+      pm_email: Yup.string()
+        .email('Email must be a valid email address')
+        .required(translate('errors.cre_proposal.pm_email.required')),
+      // region: Yup.string().required(translate('errors.cre_proposal.region.required')),
+      // governorate: Yup.string().required(translate('errors.cre_proposal.governorate.required')),
+      // ...(FEATURE_PROPOSAL_MULTIPLE_REGION_ENTITY_AREA
+      //   ? null
+      //   : tmpRevised
+      //   ? null
+      //   : {
+      //       region: Yup.string().required(translate('errors.cre_proposal.region.required')),
+      //       governorate: Yup.string().required(
+      //         translate('errors.cre_proposal.governorate.required')
+      //       ),
+      //     }),
+      ...(tmpRevised
+        ? null
+        : FEATURE_PROPOSAL_MULTIPLE_REGION_ENTITY_AREA
+        ? {
+            regions_id: Yup.array()
+              .min(1, translate('portal_report.errors.region_id.required'))
+              .required(translate('portal_report.errors.region_id.required'))
+              .nullable(),
+            governorates_id: Yup.array()
+              .min(1, translate('portal_report.errors.governorate_id.required'))
+              .required(translate('portal_report.errors.governorate_id.required'))
+              .nullable(),
+          }
+        : {
+            region: Yup.string().required(translate('errors.cre_proposal.region.required')),
+            governorate: Yup.string().required(
+              translate('errors.cre_proposal.governorate.required')
+            ),
+          }),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revised]);
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(CreatingProposalForm3),
@@ -121,8 +163,11 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
     reset,
     setValue,
   } = methods;
+  const watchRegionsId = watch('regions_id');
+  // const watchGovernoratesId = watch('governorates_id');
+  // console.log({ watchRegionsId, watchGovernoratesId, tmpDefaultValues });
 
-  const onSubmitForm = async (data: any) => {
+  const onSubmitForm = async (data: FormValuesProps) => {
     let newEntityMobile = getValues('pm_mobile');
 
     newEntityMobile.substring(0, 4) !== '+966'
@@ -137,11 +182,10 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
       governorate_id: area?.governorate?.governorate_id || '',
       pm_mobile: newEntityMobile!,
     };
-    // console.log('payload:', removeEmptyKey(payload));
-    // reset({ ...payload });
     onSubmit(removeEmptyKey(payload));
   };
 
+  //  handle for single selected region
   const handleChangeRegion = (id: string) => {
     if (id && regions && regions.length > 0) {
       const tmpRegion: IRegions = [...regions].find((item) => item.region_id === id) as IRegions;
@@ -160,6 +204,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
     }
   };
 
+  // handle for single selected governorate
   const handleChangeGovernorate = (id: string) => {
     if (id && governorates && governorates.length > 0) {
       const tmpGovernorate: IGovernorate = [...governorates].find(
@@ -172,76 +217,124 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
     }
   };
 
+  const handleChangeRegions = React.useCallback(
+    (options: ComboBoxOption[]) => {
+      if (options && options.length > 0) {
+        const regionsId = options.map((item) => item.value);
+        const tmpRegions = regions.filter((region) => regionsId.includes(region.region_id));
+        const tmpGovernorates = tmpRegions
+          .filter((item) => item.governorate && item.governorate.length > 0)
+          .map((item) => item.governorate)
+          .flat();
+        // console.log('masuk sini');
+        setFormField((prevState: any) => ({
+          ...prevState,
+          regions: tmpRegions && tmpRegions.length > 0 ? tmpRegions : null,
+          governorates:
+            tmpGovernorates && tmpGovernorates.length > 0
+              ? tmpGovernorates.filter((item) => item?.is_deleted === false)
+              : null,
+        }));
+      } else {
+        setFormField((prevState: any) => ({
+          ...prevState,
+          regions: null,
+          governorates: null,
+        }));
+        setValue('governorates_id', []);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [regions]
+  );
+
   React.useEffect(() => {
-    // window.scrollTo(0, 0);
-    // let newValues = { ...tmpDefaultValues };
-    // const newEntityMobile = tmpDefaultValues.pm_mobile?.replace('+966', '');
-    // newValues = { ...newValues, pm_mobile: newEntityMobile };
-    // if (!!newValues.pm_name) {
-    //   reset(newValues);
-    // }
+    handleChangeRegions(watchRegionsId);
+  }, [watchRegionsId, handleChangeRegions]);
+
+  React.useEffect(() => {
     if (!isLoadingRegions && tmpDefaultValues) {
       let newValues = { ...tmpDefaultValues };
-      // const newPhone = tmpDefaultValues.phone?.replace('+966', '');
       const newEntityMobile = tmpDefaultValues.pm_mobile?.replace('+966', '');
       newValues = { ...newValues, pm_mobile: newEntityMobile };
-      if (tmpDefaultValues.region_id && tmpDefaultValues.governorate_id && regions.length > 0) {
-        let tmpRegion: IRegions | undefined = undefined;
-        if (regions.length > 0) {
-          tmpRegion = [...regions].find(
-            (item) => item.region_id === defaultValues.region_id
-          ) as IRegions;
-        }
-        if (tmpRegion?.governorate && tmpRegion?.governorate?.length > 0) {
-          const tmpGovernorates = [...tmpRegion.governorate].filter(
-            (item) => item.is_deleted !== true
-          );
-          if (tmpGovernorates && tmpGovernorates.length > 0) {
-            setGovernorates(tmpGovernorates);
+      if (tmpDefaultValues?.regions_id && tmpDefaultValues?.regions_id?.length > 0) {
+        newValues = {
+          ...newValues,
+
+          regions_id: tmpDefaultValues?.regions_id,
+        };
+      } else {
+        newValues = { ...newValues, regions_id: [] };
+      }
+      if (tmpDefaultValues?.governorates_id && tmpDefaultValues?.governorates_id?.length > 0) {
+        newValues = {
+          ...newValues,
+
+          governorates_id: tmpDefaultValues?.governorates_id,
+        };
+      } else {
+        newValues = { ...newValues, governorates_id: [] };
+      }
+      // set value for single selected region and governorate
+      if (!FEATURE_PROPOSAL_MULTIPLE_REGION_ENTITY_AREA) {
+        if (tmpDefaultValues.region_id && tmpDefaultValues.governorate_id && regions.length > 0) {
+          // console.log('masuk if');
+          let tmpRegion: IRegions | undefined = undefined;
+          if (regions.length > 0) {
+            tmpRegion = [...regions].find(
+              (item) => item.region_id === defaultValues.region_id
+            ) as IRegions;
+          }
+          if (tmpRegion?.governorate && tmpRegion?.governorate?.length > 0) {
+            const tmpGovernorates = [...tmpRegion.governorate].filter(
+              (item) => item.is_deleted !== true
+            );
+            if (tmpGovernorates && tmpGovernorates.length > 0) {
+              setGovernorates(tmpGovernorates);
+            } else {
+              setGovernorates([]);
+            }
           } else {
             setGovernorates([]);
           }
+          let tmpGovernorate: IGovernorate | undefined = undefined;
+          if (tmpRegion && tmpRegion?.governorate && tmpRegion?.governorate?.length > 0) {
+            tmpGovernorate = [...tmpRegion.governorate]
+              .filter((item) => item.is_deleted !== true)
+              .find((item) => item.governorate_id === defaultValues.governorate_id) as IGovernorate;
+          }
+
+          newValues = {
+            ...newValues,
+            region: tmpRegion ? tmpRegion.region_id : '',
+            governorate: tmpGovernorate ? tmpGovernorate.governorate_id : '',
+            regions_id: [{ label: tmpRegion?.name || '-', value: tmpRegion?.region_id || '-' }],
+            governorates_id: [
+              { label: tmpGovernorate?.name || '-', value: tmpGovernorate?.governorate_id || '-' },
+            ],
+          };
+          setArea((prevState: any) => ({
+            ...prevState,
+            region: tmpRegion ? tmpRegion : null,
+            governorate: tmpGovernorate ? tmpGovernorate : null,
+          }));
         } else {
-          setGovernorates([]);
+          // console.log('masuk else');
+          const region = Object.keys(REGION).includes(newValues.region) ? newValues.region : '';
+          newValues = {
+            ...newValues,
+            region: region,
+            governorate:
+              !FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS
+                ? region &&
+                  tmpRegions &&
+                  tmpRegions[`${removeNewLineCharacters(region) as RegionNames}`] &&
+                  tmpDefaultValues.governorate
+                : '',
+          };
         }
-        let tmpGovernorate: IGovernorate | undefined = undefined;
-        if (tmpRegion && tmpRegion?.governorate && tmpRegion?.governorate?.length > 0) {
-          tmpGovernorate = [...tmpRegion.governorate]
-            .filter((item) => item.is_deleted !== true)
-            .find((item) => item.governorate_id === defaultValues.governorate_id) as IGovernorate;
-        }
-        // console.log({ tmpGovernorate });
-
-        newValues = {
-          ...newValues,
-          region: tmpRegion ? tmpRegion.region_id : '',
-          governorate: tmpGovernorate ? tmpGovernorate.governorate_id : '',
-        };
-        setArea((prevState: any) => ({
-          ...prevState,
-
-          region: tmpRegion ? tmpRegion : null,
-          governorate: tmpGovernorate ? tmpGovernorate : null,
-        }));
-      } else {
-        const region = Object.keys(REGION).includes(newValues.region) ? newValues.region : '';
-        newValues = {
-          ...newValues,
-          // region: !FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS ? region : '',
-          // governorate:
-          // !FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS
-          //   ? tmpDefaultValues.governorate
-          //   : '',
-          region: region,
-          governorate:
-            !FEATURE_MENU_ADMIN_ENTITY_AREA && !FEATURE_MENU_ADMIN_REGIONS
-              ? region &&
-                tmpRegions &&
-                tmpRegions[`${removeNewLineCharacters(region) as RegionNames}`] &&
-                tmpDefaultValues.governorate
-              : '',
-        };
       }
+
       // console.log({ newValues });
       reset(newValues);
     }
@@ -254,10 +347,10 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
     }
   }, [fetchRegions]);
 
-  const region = watch('region') as RegionNames | '';
+  // for watch region and governorate form value
+  const tmpRegion = watch('region') as RegionNames | '';
   const tmpGovernorate = (watch('governorate') as string) || '';
-
-  // console.log({ region, tmpGovernorate, area });
+  // console.log({ tmpRegion, tmpGovernorate });
   if (isLoadingRegions) return <>{translate('pages.common.loading')}</>;
 
   return (
@@ -290,192 +383,212 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
             placeholder="funding_project_request_form3.email.placeholder"
           />
         </Grid>
-        <Grid item md={6} xs={12}>
-          {/* <BaseField
-            disabled={!!revised && revised.hasOwnProperty('region') ? false : !!revised && true}
-            type="selectWithoutGenerator"
-            name="region"
-            label="funding_project_request_form3.region.label"
-            placeholder="funding_project_request_form3.region.placeholder"
-          >
-            <>
-              {Object.keys(REGION).map((item, index) => (
-                <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
-                  {item}
-                </option>
-              ))}
-            </>
-          </BaseField> */}
-          <RHFSelect
-            disabled={
-              isLoadingRegions ||
-              (!!revised && revised.hasOwnProperty('region')
-                ? false
-                : !!revised && !(region === '' || !region) && true)
-            }
-            name="region"
-            label={translate('funding_project_request_form3.region.label')}
-            placeholder={translate('funding_project_request_form3.region.placeholder')}
-            SelectProps={{
-              MenuProps: {
-                PaperProps: { style: { maxHeight: 500 } },
-              },
-            }}
-            onChange={(e) => {
-              if (e.target.value !== '') {
-                if (
-                  FEATURE_MENU_ADMIN_ENTITY_AREA &&
-                  FEATURE_MENU_ADMIN_REGIONS &&
-                  regions.length > 0
-                ) {
-                  handleChangeRegion(e.target.value as string);
+        {FEATURE_PROPOSAL_MULTIPLE_REGION_ENTITY_AREA ? null : (
+          <>
+            {/* single selected regions */}
+            <Grid item md={6} xs={12}>
+              <RHFSelect
+                disabled={
+                  isLoadingRegions ||
+                  (!!revised && revised.hasOwnProperty('region')
+                    ? false
+                    : !!revised && !(tmpRegion === '' || !tmpRegion) && true)
                 }
-                setValue('region', e.target.value);
-              }
-            }}
-          >
-            {revised &&
-            FEATURE_MENU_ADMIN_ENTITY_AREA &&
-            FEATURE_MENU_ADMIN_REGIONS &&
-            regions.length > 0 &&
-            !isLoadingRegions
-              ? regions.map((option, i) => (
-                  <MenuItem key={i} value={option.region_id}>
-                    {option.name}
-                  </MenuItem>
-                ))
-              : null}
-            {!revised &&
-            FEATURE_MENU_ADMIN_ENTITY_AREA &&
-            FEATURE_MENU_ADMIN_REGIONS &&
-            regions.length > 0 &&
-            !isLoadingRegions
-              ? regions.map((option, i) => (
-                  <MenuItem key={i} value={option.region_id}>
-                    {option.name}
-                  </MenuItem>
-                ))
-              : null}
-            {(area === null || !area.region) &&
-            !FEATURE_MENU_ADMIN_ENTITY_AREA &&
-            !FEATURE_MENU_ADMIN_REGIONS &&
-            !isLoadingRegions
-              ? Object.keys(REGION).map((item, index) => (
-                  <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
-                    {item}
-                  </MenuItem>
-                ))
-              : null}
-          </RHFSelect>
-          {FEATURE_MENU_ADMIN_ENTITY_AREA && FEATURE_MENU_ADMIN_REGIONS && regions.length === 0 && (
-            <Button
-              disabled={isLoadingRegions}
-              data-cy={`button-retry-fetching-bank`}
-              variant="outlined"
-              onClick={() => {
-                fetchRegions();
-              }}
-              endIcon={<ReplayIcon />}
-            >
-              Re-try Fetching Region
-            </Button>
-          )}
-        </Grid>
-        <Grid item md={6} xs={12}>
-          {/* <BaseField
-            disabled={
-              !!revised && revised.hasOwnProperty('governorate') ? false : !!revised && true
-            }
-            type="selectWithoutGenerator"
-            name="governorate"
-            label="funding_project_request_form3.city.label"
-            placeholder="funding_project_request_form3.city.placeholder"
-          >
-            {region !== '' && (
-              <>
-                {REGION[`${removeNewLineCharacters(region) as RegionNames}`].map(
-                  (item: any, index: any) => (
-                    <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
-                      {item}
-                    </option>
-                  )
+                name="region"
+                label={translate('funding_project_request_form3.region.label')}
+                placeholder={translate('funding_project_request_form3.region.placeholder')}
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: { style: { maxHeight: 500 } },
+                  },
+                }}
+                onChange={(e) => {
+                  if (e.target.value !== '') {
+                    if (
+                      FEATURE_MENU_ADMIN_ENTITY_AREA &&
+                      FEATURE_MENU_ADMIN_REGIONS &&
+                      regions.length > 0
+                    ) {
+                      handleChangeRegion(e.target.value as string);
+                    }
+                    setValue('region', e.target.value);
+                  }
+                }}
+              >
+                {revised &&
+                FEATURE_MENU_ADMIN_ENTITY_AREA &&
+                FEATURE_MENU_ADMIN_REGIONS &&
+                regions.length > 0 &&
+                !isLoadingRegions
+                  ? regions.map((option, i) => (
+                      <MenuItem key={i} value={option.region_id}>
+                        {option.name}
+                      </MenuItem>
+                    ))
+                  : null}
+                {!revised &&
+                FEATURE_MENU_ADMIN_ENTITY_AREA &&
+                FEATURE_MENU_ADMIN_REGIONS &&
+                regions.length > 0 &&
+                !isLoadingRegions
+                  ? regions.map((option, i) => (
+                      <MenuItem key={i} value={option.region_id}>
+                        {option.name}
+                      </MenuItem>
+                    ))
+                  : null}
+                {(area === null || !area.region) &&
+                !FEATURE_MENU_ADMIN_ENTITY_AREA &&
+                !FEATURE_MENU_ADMIN_REGIONS &&
+                !isLoadingRegions
+                  ? Object.keys(REGION).map((item, index) => (
+                      <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
+                        {item}
+                      </MenuItem>
+                    ))
+                  : null}
+              </RHFSelect>
+              {FEATURE_MENU_ADMIN_ENTITY_AREA &&
+                FEATURE_MENU_ADMIN_REGIONS &&
+                regions.length === 0 && (
+                  <Button
+                    disabled={isLoadingRegions}
+                    data-cy={`button-retry-fetching-bank`}
+                    variant="outlined"
+                    onClick={() => {
+                      fetchRegions();
+                    }}
+                    endIcon={<ReplayIcon />}
+                  >
+                    Re-try Fetching Region
+                  </Button>
                 )}
-              </>
-            )}
-          </BaseField> */}
-          <RHFSelect
-            disabled={
-              isLoadingRegions ||
-              (!!revised && revised.hasOwnProperty('region')
-                ? false
-                : !!revised && !(tmpGovernorate === '' || !tmpGovernorate) && true)
-            }
-            name="governorate"
-            label={translate('funding_project_request_form3.city.label')}
-            placeholder={translate('funding_project_request_form3.city.placeholder')}
-            SelectProps={{
-              MenuProps: {
-                PaperProps: { style: { maxHeight: 500 } },
-              },
-            }}
-            onChange={(e) => {
-              if (e.target.value !== '') {
-                if (
-                  area &&
-                  area.region &&
-                  FEATURE_MENU_ADMIN_ENTITY_AREA &&
-                  FEATURE_MENU_ADMIN_REGIONS
-                ) {
-                  handleChangeGovernorate(e.target.value as string);
+            </Grid>
+            {/* single selected governorate */}
+            <Grid item md={6} xs={12}>
+              <RHFSelect
+                disabled={
+                  isLoadingRegions ||
+                  (!!revised && revised.hasOwnProperty('region')
+                    ? false
+                    : !!revised && !(tmpGovernorate === '' || !tmpGovernorate) && true)
                 }
-                setValue('governorate', e.target.value);
-              }
-            }}
-          >
-            {!revised &&
-            area &&
-            area.region &&
-            governorates &&
-            governorates.length > 0 &&
-            !isLoadingRegions
-              ? governorates.map((option, i) => (
-                  <MenuItem key={i} value={option.governorate_id}>
-                    {option.name}
-                  </MenuItem>
-                ))
-              : null}
-            {revised &&
-            !isLoadingRegions &&
-            area &&
-            area.region &&
-            governorates &&
-            governorates.length > 0
-              ? governorates.map((option, i) => (
-                  <MenuItem key={i} value={option.governorate_id}>
-                    {option.name}
-                  </MenuItem>
-                ))
-              : null}
-            {(area === null || !area.region) &&
-            region !== '' &&
-            !isLoadingRegions &&
-            tmpRegions &&
-            tmpRegions[`${removeNewLineCharacters(region) as RegionNames}`]
-              ? tmpRegions[`${removeNewLineCharacters(region) as RegionNames}`].map(
-                  (item: any, index: any) => (
-                    <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
-                      {item}
-                    </MenuItem>
-                  )
-                )
-              : null}
-            {(area === null || !area.region) && region === '' ? (
-              <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
-                {translate('funding_project_request_form3.city.placeholder')}
-              </option>
-            ) : null}
-          </RHFSelect>
-        </Grid>
+                name="governorate"
+                label={translate('funding_project_request_form3.city.label')}
+                placeholder={translate('funding_project_request_form3.city.placeholder')}
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: { style: { maxHeight: 500 } },
+                  },
+                }}
+                onChange={(e) => {
+                  if (e.target.value !== '') {
+                    if (
+                      area &&
+                      area.region &&
+                      FEATURE_MENU_ADMIN_ENTITY_AREA &&
+                      FEATURE_MENU_ADMIN_REGIONS
+                    ) {
+                      handleChangeGovernorate(e.target.value as string);
+                    }
+                    setValue('governorate', e.target.value);
+                  }
+                }}
+              >
+                {!revised &&
+                area &&
+                area.region &&
+                governorates &&
+                governorates.length > 0 &&
+                !isLoadingRegions
+                  ? governorates.map((option, i) => (
+                      <MenuItem key={i} value={option.governorate_id}>
+                        {option.name}
+                      </MenuItem>
+                    ))
+                  : null}
+                {revised &&
+                !isLoadingRegions &&
+                area &&
+                area.region &&
+                governorates &&
+                governorates.length > 0
+                  ? governorates.map((option, i) => (
+                      <MenuItem key={i} value={option.governorate_id}>
+                        {option.name}
+                      </MenuItem>
+                    ))
+                  : null}
+                {(area === null || !area.region) &&
+                tmpRegion !== '' &&
+                !isLoadingRegions &&
+                tmpRegions &&
+                tmpRegions[`${removeNewLineCharacters(tmpRegion) as RegionNames}`]
+                  ? tmpRegions[`${removeNewLineCharacters(tmpRegion) as RegionNames}`].map(
+                      (item: any, index: any) => (
+                        <MenuItem key={index} value={item} style={{ backgroundColor: '#fff' }}>
+                          {item}
+                        </MenuItem>
+                      )
+                    )
+                  : null}
+                {(area === null || !area.region) && tmpRegion === '' ? (
+                  <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
+                    {translate('funding_project_request_form3.city.placeholder')}
+                  </option>
+                ) : null}
+              </RHFSelect>
+            </Grid>
+          </>
+        )}
+
+        {FEATURE_PROPOSAL_MULTIPLE_REGION_ENTITY_AREA && (
+          <>
+            <Grid item md={revised ? 12 : 6} xs={12}>
+              <RHFComboBox
+                disabled={
+                  (!!revised && revised.hasOwnProperty('regions_id') ? false : !!revised && true) ||
+                  isLoadingRegions ||
+                  regions.length === 0
+                }
+                name="regions_id"
+                label={translate('portal_report.region_id.label')}
+                data-cy="portal_report.region_id"
+                placeholder={translate('portal_report.region_id.placeholder')}
+                dataOption={
+                  regions.length > 0
+                    ? regions.map((region: IRegions, index: number) => ({
+                        label: region.name,
+                        value: region.region_id,
+                      }))
+                    : []
+                }
+              />
+            </Grid>
+            <Grid item md={revised ? 12 : 6} xs={12}>
+              <RHFComboBox
+                disabled={
+                  (!!revised && revised.hasOwnProperty('regions_id') ? false : !!revised && true) ||
+                  isLoadingRegions ||
+                  !formField?.governorates ||
+                  (formField?.governorates && formField?.governorates.length === 0)
+                }
+                name="governorates_id"
+                label={translate('portal_report.governorate_id.label')}
+                data-cy="portal_report.governorate_id"
+                placeholder={translate('portal_report.governorate_id.placeholder')}
+                dataOption={
+                  formField?.governorates && formField?.governorates.length > 0
+                    ? formField?.governorates.map((governorate: IGovernorate, index: number) => ({
+                        label: governorate.name,
+                        value: governorate.governorate_id,
+                      }))
+                    : []
+                }
+              />
+            </Grid>
+          </>
+        )}
         <Grid item xs={12}>
           {children}
         </Grid>

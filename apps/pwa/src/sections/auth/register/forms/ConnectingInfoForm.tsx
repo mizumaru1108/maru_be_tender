@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import ReplayIcon from '@mui/icons-material/Replay';
 import { Button, Grid, MenuItem } from '@mui/material';
 import axios from 'axios';
 import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
@@ -8,16 +9,13 @@ import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { IGovernorate } from 'sections/admin/governorate/list/types';
 import { IRegions } from 'sections/admin/region/list/types';
 import { CatchError } from 'utils/catchError';
 import * as Yup from 'yup';
 import { REGION } from '_mock/region';
 import { RegionNames } from '../../../../@types/region';
 import { ConnectingValuesProps } from '../../../../@types/register';
-import BaseField from '../../../../components/hook-form/BaseField';
-import ReplayIcon from '@mui/icons-material/Replay';
-import { IGovernorate } from 'sections/admin/governorate/list/types';
-import { removeEmptyKey } from 'utils/remove-empty-key';
 
 type FormProps = {
   children?: React.ReactNode;

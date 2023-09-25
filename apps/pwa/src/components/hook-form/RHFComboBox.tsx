@@ -234,7 +234,10 @@ export default function RHFComboBox({
               {...params}
               error={!!error}
               helperText={
-                <Typography component="span" sx={{ backgroundColor: 'transparent' }}>
+                <Typography
+                  component="span"
+                  sx={{ backgroundColor: 'transparent', fontSize: '12px' }}
+                >
                   {error?.message}
                 </Typography>
               }

@@ -1,24 +1,18 @@
-import * as Yup from 'yup';
-import React, { useEffect, useMemo } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid } from '@mui/material';
 import { FormProvider, RHFDatePicker, RHFTextField } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import FormGenerator from 'components/FormGenerator';
-import { MainFormData } from '../Forms-Data';
 import { CustomFile } from 'components/upload';
 import useLocales from 'hooks/useLocales';
-import { AmandementFields } from '../../../../@types/proposal';
-import RHFSelectNoGenerator from '../../../../components/hook-form/RHFSelectNoGen';
-import { REGION } from '../../../../_mock/region';
-import BaseField from '../../../../components/hook-form/BaseField';
-import { RHFUploadSingleFileBe } from '../../../../components/hook-form/RHFUploadBe';
-import { borderColor } from '@mui/system';
-import axiosInstance from 'utils/axios';
-import useAuth from 'hooks/useAuth';
-import { useSnackbar } from 'notistack';
+import React, { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
 import { useSelector } from 'redux/store';
+import * as Yup from 'yup';
+import { AmandementFields } from '../../../../@types/proposal';
+import BaseField from '../../../../components/hook-form/BaseField';
+import RHFSelectNoGenerator from '../../../../components/hook-form/RHFSelectNoGen';
+import { RHFUploadSingleFileBe } from '../../../../components/hook-form/RHFUploadBe';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
+import { REGION } from '../../../../_mock/region';
 
 type FormValuesProps = {
   project_name: string;
@@ -48,77 +42,91 @@ type Props = {
 
 const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const { translate } = useLocales();
-  const CreatingProposalForm1 = Yup.object().shape({
-    project_name: Yup.string().required(translate('errors.cre_proposal.project_name.required')),
-    project_idea: Yup.string().required(translate('errors.cre_proposal.project_idea.required')),
-    project_location: Yup.string().required(
-      translate('errors.cre_proposal.project_location.required')
-    ),
-    project_implement_date: Yup.string().required(
-      translate('errors.cre_proposal.project_implement_date.required')
-    ),
-    execution_time: Yup.number()
-      .required(translate('errors.cre_proposal.execution_time.required'))
-      .min(1, translate('errors.cre_proposal.execution_time.greater_than_0')),
-    beneficiary_id: Yup.string().required(
-      translate('errors.cre_proposal.project_beneficiaries.required')
-    ),
-    letter_ofsupport_req: Yup.mixed()
-      .test('size', translate('errors.cre_proposal.letter_ofsupport_req.fileSize'), (value) => {
-        if (value) {
-          const maxSize = 1024 * 1024 * 200;
-          console.log('size:', value.size);
-          console.log('maxSize: ', maxSize);
-          if (value.size > 1024 * 1024 * 200) {
-            return false;
-          }
-        }
-        return true;
-      })
-      .test(
-        'fileExtension',
-        translate('errors.cre_proposal.letter_ofsupport_req.fileExtension'),
-        (value) => {
+  const CreatingProposalForm1 = React.useMemo(() => {
+    const tmpReivsed = revised || undefined;
+    return Yup.object().shape({
+      project_name: Yup.string().required(translate('errors.cre_proposal.project_name.required')),
+      project_idea: Yup.string().required(translate('errors.cre_proposal.project_idea.required')),
+      project_location: Yup.string().required(
+        translate('errors.cre_proposal.project_location.required')
+      ),
+      project_implement_date: Yup.string().required(
+        translate('errors.cre_proposal.project_implement_date.required')
+      ),
+      execution_time: Yup.number()
+        .required(translate('errors.cre_proposal.execution_time.required'))
+        .min(1, translate('errors.cre_proposal.execution_time.greater_than_0')),
+      beneficiary_id: Yup.string().required(
+        translate('errors.cre_proposal.project_beneficiaries.required')
+      ),
+      letter_ofsupport_req: Yup.mixed()
+        .test('size', translate('errors.cre_proposal.letter_ofsupport_req.fileSize'), (value) => {
           if (value) {
-            if (value.fileExtension && value.fileExtension !== 'application/pdf') {
-              return false;
-            } else if (value.type && value.type !== 'application/pdf') {
+            const maxSize = 1024 * 1024 * 200;
+            console.log('size:', value.size);
+            console.log('maxSize: ', maxSize);
+            if (value.size > 1024 * 1024 * 200) {
               return false;
             }
           }
           return true;
-        }
-      ),
-    project_attachments: Yup.mixed()
-      .test('size', translate('errors.cre_proposal.project_attachments.fileSize'), (value) => {
-        if (value) {
-          if (value.size > 1024 * 1024 * 200) {
-            return false;
+        })
+        .test(
+          'fileExtension',
+          translate('errors.cre_proposal.letter_ofsupport_req.fileExtension'),
+          (value) => {
+            if (value) {
+              if (value.fileExtension && value.fileExtension !== 'application/pdf') {
+                return false;
+              } else if (value.type && value.type !== 'application/pdf') {
+                return false;
+              }
+            }
+            return true;
           }
-        }
-        return true;
-      })
-      .test(
-        'fileExtension',
-        translate('errors.cre_proposal.project_attachments.fileExtension'),
-        (value) => {
+        ),
+      project_attachments: Yup.mixed()
+        .test('size', translate('errors.cre_proposal.project_attachments.fileSize'), (value) => {
           if (value) {
-            if (value.fileExtension && value.fileExtension !== 'application/pdf') {
-              return false;
-            } else if (value.type && value.type !== 'application/pdf') {
+            if (value.size > 1024 * 1024 * 200) {
               return false;
             }
           }
           return true;
-        }
-      ),
-    project_beneficiaries_specific_type: Yup.string().when('project_beneficiaries', {
-      is: 'GENERAL',
-      then: Yup.string().required(
-        translate('errors.cre_proposal.project_beneficiaries_specific_type.required')
-      ),
-    }),
-  });
+        })
+        .test(
+          'fileExtension',
+          translate('errors.cre_proposal.project_attachments.fileExtension'),
+          (value) => {
+            if (value) {
+              if (value.fileExtension && value.fileExtension !== 'application/pdf') {
+                return false;
+              } else if (value.type && value.type !== 'application/pdf') {
+                return false;
+              }
+            }
+            return true;
+          }
+        ),
+      // project_beneficiaries_specific_type: Yup.string().when('project_beneficiaries', {
+      //   is: 'GENERAL',
+      //   then: Yup.string().required(
+      //     translate('errors.cre_proposal.project_beneficiaries_specific_type.required')
+      //   ),
+      // }),
+      ...(tmpReivsed
+        ? null
+        : {
+            project_beneficiaries_specific_type: Yup.string().when('project_beneficiaries', {
+              is: 'GENERAL',
+              then: Yup.string().required(
+                translate('errors.cre_proposal.project_beneficiaries_specific_type.required')
+              ),
+            }),
+          }),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revised]);
 
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(CreatingProposalForm1),
@@ -133,8 +141,6 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
 
   // const [beneficiaries, setBeneficiaries] = React.useState<IBeneficiaries[] | []>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const { activeRole } = useAuth();
-  const { enqueueSnackbar } = useSnackbar();
   const { beneficiaries_list } = useSelector((state) => state.proposal);
   // const getBeneficiaries = async () => {
   //   setLoading(true);

@@ -1,28 +1,16 @@
-import { async } from '@firebase/util';
 import { alpha, Box, Container, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import useResponsive from 'hooks/useResponsive';
-import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
-import { CreateProposel } from 'queries/client/createProposel';
-import { getDraftProposal } from 'queries/client/getDraftProposal';
-import { updateDraftProposal } from 'queries/client/updateDraftProposal';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import ProjectTimeLine from 'sections/client/funding-project-request/forms/ProjectTimeLine';
-import { useMutation, useQuery } from 'urql';
 import axiosInstance from 'utils/axios';
 import { AmandementFields, AmandmentRequestForm } from '../../../../@types/proposal';
+import { ComboBoxOption } from '../../../../components/hook-form/RHFComboBox';
 import Toast from '../../../../components/toast';
-import {
-  ConnectingInfoForm,
-  MainInfoForm,
-  ProjectBudgetForm,
-  ProjectInfoForm,
-  SupportingDurationInfoForm,
-} from '../forms';
-import ActionBox from '../forms/ActionBox';
+import { ConnectingInfoForm, MainInfoForm, ProjectBudgetForm, ProjectInfoForm } from '../forms';
 import ProposalBankInformation from '../forms/ProposalBankInformation';
 import AmandementActionBox from './AmandementActionBox';
 
@@ -106,6 +94,8 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
       governorate: '',
       region_id: '',
       governorate_id: '',
+      regions_id: [],
+      governorates_id: [],
     },
     form4: {
       amount_required_fsupport: undefined,
@@ -215,6 +205,8 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
     delete newValue.project_attachments;
     delete newValue.letter_ofsupport_req;
     delete newValue.project_timeline;
+    delete newValue.regions_id;
+    delete newValue.governorates_id;
     // delete newValue.detail_project_budgets;
 
     let filteredValue = Object.keys(newValue)
@@ -246,31 +238,6 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         governorate_id: newValue.governorate_id,
       };
     }
-
-    // if (filteredValue && (!filteredValue.region_id || !filteredValue.governorate_id)) {
-    //   if (
-    //     tmpValues?.data?.region !== newValue?.region ||
-    //     tmpValues?.data?.region_id !== newValue?.region_id
-    //   ) {
-    //     if (!!newValue.region_id) {
-    //       filteredValue.region = newValue.region;
-    //       filteredValue.region_id = newValue.region_id;
-    //     } else {
-    //       filteredValue.region = newValue.region;
-    //     }
-    //   }
-    //   if (
-    //     tmpValues?.data?.governorate !== newValue?.governorate ||
-    //     tmpValues?.data?.governorate_id !== newValue?.governorate_id
-    //   ) {
-    //     if (!!newValue.governorate_id) {
-    //       filteredValue.governorate = newValue.governorate;
-    //       filteredValue.governorate_id = newValue.governorate_id;
-    //     } else {
-    //       filteredValue.governorate = newValue.governorate;
-    //     }
-    //   }
-    // }
 
     filteredValue = {
       ...filteredValue,
@@ -338,6 +305,32 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         formData.append(`project_timeline[${index}][end_date]`, timeline.end_date);
       }
     }
+    if (
+      tmpValues?.revised.hasOwnProperty('regions_id') &&
+      requestState?.form3?.regions_id?.length > 0
+    ) {
+      for (let i = 0; i < requestState?.form3?.regions_id?.length; i++) {
+        const region_id: ComboBoxOption = requestState?.form3?.regions_id[i] as ComboBoxOption;
+        const index = i; // Get the index for appending to FormData
+
+        // Append the values for each object using template literals
+        formData.append(`regions_id[${index}]`, region_id.value);
+      }
+    }
+    if (
+      tmpValues?.revised.hasOwnProperty('governorates_id') &&
+      requestState?.form3?.governorates_id?.length > 0
+    ) {
+      for (let i = 0; i < requestState?.form3?.governorates_id?.length; i++) {
+        const governorate_id: ComboBoxOption = requestState?.form3?.governorates_id[
+          i
+        ] as ComboBoxOption;
+        const index = i; // Get the index for appending to FormData
+
+        // Append the values for each object using template literals
+        formData.append(`governorates_id[${index}]`, governorate_id.value);
+      }
+    }
     if (tmpValues?.revised.hasOwnProperty('project_attachments')) {
       // console.log('masuk sini attachment', requestState?.form1);
       if (requestState?.form1?.project_attachments?.file) {
@@ -382,16 +375,6 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         );
       }
     }
-    // console.log('test', formData.get('proposal_id'));
-    // console.log('test', formData.getAll('proposal_id'));
-    // if (tmpValues?.revised.hasOwnProperty('project_timeline')) {
-    //   delete filteredValue.project_timeline;
-    //   filteredValue = {
-    //     ...filteredValue,
-    //     project_timeline: data.project_timeline,
-    //   };
-    // }
-    // console.log({ filteredValue });
 
     try {
       const url = '/tender-proposal/send-revision-cqrs';
