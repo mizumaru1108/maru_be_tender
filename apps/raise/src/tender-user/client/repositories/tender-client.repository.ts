@@ -111,6 +111,16 @@ export class ClientDataFindManyProps {
   sort_direction?: string;
   include_relations?: string[];
 }
+
+export class ClientDataFindFirstProps {
+  license_number?: string;
+  user_id?: string;
+  email?: string;
+  client_id?: string;
+  exclude_id?: string;
+  include_relations?: string[];
+}
+
 @Injectable()
 export class TenderClientRepository {
   private readonly logger = ROOT_LOGGER.child({
@@ -225,6 +235,56 @@ export class TenderClientRepository {
       }).build();
 
       return clientEntity;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  applyInclude(include_relations: string[]) {
+    let args: Prisma.client_dataInclude = {};
+    return args;
+  }
+
+  findFirstFilter(
+    props: ClientDataFindFirstProps,
+  ): Prisma.client_dataFindFirstArgs {
+    const { include_relations } = props;
+
+    const args: Prisma.client_dataFindFirstArgs = {};
+    let whereClause: Prisma.client_dataWhereInput = {};
+
+    if (props.license_number) whereClause.license_number = props.license_number;
+
+    args.where = whereClause;
+
+    if (include_relations && include_relations.length > 0) {
+      args.include = this.applyInclude(include_relations);
+    }
+
+    return args;
+  }
+
+  async findFirst(
+    props: ClientDataFindFirstProps,
+    session?: PrismaService,
+  ): Promise<ClientDataEntity | null> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const args = await this.findFirstFilter(props);
+      const rawRes = await prisma.user.findFirst({
+        where: args.where,
+        include: args.include,
+      });
+
+      if (!rawRes) return null;
+      // console.log({ args });
+      // console.log({ rawRes });
+      const foundedEntity = Builder<ClientDataEntity>(ClientDataEntity, {
+        ...rawRes,
+      }).build();
+
+      return foundedEntity;
     } catch (error) {
       throw error;
     }
@@ -817,60 +877,6 @@ export class TenderClientRepository {
         TenderClientRepository.name,
         'findUsers Error:',
         `finding users!`,
-      );
-      throw theError;
-    }
-  }
-
-  async createUpdateRequest(
-    userId: string,
-    editRequestLogPayload: Prisma.edit_requestsUncheckedCreateInput,
-    fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
-  ) {
-    try {
-      return await this.prismaService.$transaction(
-        async (prisma) => {
-          console.log('creating edit request');
-          const createdEditRequest = await prisma.edit_requests.create({
-            data: editRequestLogPayload,
-            include: {
-              user: true,
-            },
-          });
-
-          console.log('creating file manager');
-          if (
-            fileManagerCreateManyPayload &&
-            fileManagerCreateManyPayload.length > 0
-          ) {
-            await prisma.file_manager.createMany({
-              data: fileManagerCreateManyPayload,
-            });
-          }
-
-          await prisma.edit_requests.deleteMany({
-            where: {
-              user_id: userId,
-              status_id: {
-                in: ['APPROVED', 'REJECTED'],
-              },
-            },
-          });
-
-          // throw new Error('testing');
-          return createdEditRequest;
-        },
-        {
-          timeout: 50000,
-        },
-      );
-    } catch (error) {
-      console.trace({ error });
-      const theError = prismaErrorThrower(
-        error,
-        TenderClientRepository.name,
-        'createUpdateRequest error details: ',
-        'requiesting field change!',
       );
       throw theError;
     }

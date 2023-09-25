@@ -39,6 +39,7 @@ import {
 } from '../../../tender-user/user/repositories/tender-user.repository';
 import { RegisterTenderDto } from '../../dtos/requests/register-tender.dto';
 import { TenderAuthRepository } from '../../repositories/tender-auth.repository';
+import { ConflictException } from '@nestjs/common';
 
 export class RegisterClientCommand {
   request: RegisterTenderDto;
@@ -128,6 +129,7 @@ export class RegisterClientCommandHandler
           ceo_mobile: ceoMobile,
           data_entry_mobile: dataEntryMobile,
           entity_mobile: clientPhone,
+          license_number,
           email,
           employee_path,
           status,
@@ -147,6 +149,13 @@ export class RegisterClientCommandHandler
         throw new PayloadErrorException(
           'Phone number and CEO mobile number cannot be the same!',
         );
+      }
+
+      const licenseExist = await this.clientRepo.findFirst({
+        license_number,
+      });
+      if (licenseExist) {
+        throw new ConflictException(`license number already exist!`);
       }
 
       //  validate the track id
