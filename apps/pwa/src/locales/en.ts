@@ -586,6 +586,10 @@ const en = {
     role: 'Choose one of these roles',
     notes: 'Note is required',
     empty_data: 'No data found.',
+    bank_information: {
+      un_complete_data:
+        'Please make sure bank account details is complete in order to save the data',
+    },
     login: {
       email: {
         message: 'Email must be a valid email address',

@@ -8,7 +8,13 @@ export interface BankInformation {
   bank_account_name: string;
   bank_account_number: number;
   bank_name: string;
-  card_image: { url: string; size: number | undefined; type: string; border_color?: string };
+  card_image: {
+    base64Data?: string;
+    url: string;
+    size: number | undefined;
+    type: string;
+    border_color?: string;
+  };
 }
 
 export interface TransferReceipt {

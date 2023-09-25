@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
-import { useEffect, useState } from 'react';
-import { Badge, Button, Grid, Stack } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Badge, Button, Grid, Stack, Typography } from '@mui/material';
 import BankImageComp from 'sections/shared/BankImageComp';
 import AddBankModal from './AddBankModal';
 import { BankingValuesProps } from '../../../../@types/register';
@@ -10,6 +10,7 @@ import { LIST_OF_BANK } from 'sections/auth/register/RegisterFormData';
 import { useSelector } from '../../../../redux/store';
 import { AuthorityInterface } from '../../../admin/bank-name/list/types';
 import { SubmitBankForm } from 'sections/client/profile/ClientProfileEditForm';
+import useLocales from 'hooks/useLocales';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -31,6 +32,7 @@ const BankingInfoForm = ({
   numberOfUpdate,
 }: FormProps) => {
   const [open, setOpen] = useState(false);
+  const { translate } = useLocales();
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [deleted_banks, setDeletedBank] = useState<any>([]);
@@ -124,8 +126,28 @@ const BankingInfoForm = ({
       onSubmit(newData);
     }
   };
+  const isCardImage: boolean = React.useMemo(() => {
+    let tmpIsCardImage = false;
+    const checkAllImageCard =
+      tmpBank &&
+      tmpBank?.length > 0 &&
+      tmpBank?.every(
+        (item: any) =>
+          item?.card_image &&
+          !!item?.card_image?.url &&
+          !!item?.card_image?.size &&
+          !!item?.card_image?.type
+      )
+        ? true
+        : false;
+    if (checkAllImageCard) {
+      tmpIsCardImage = true;
+    }
+    return tmpIsCardImage;
+  }, [tmpBank]);
+  // console.log({ isCardImage, tmpBank });
+  // console.log('test', tmpBank, initialValue);
   // console.log('test', tmpBank.findIndex((bank: any) => bank.bank_list.is_deleted) > -1);
-  // console.log('test', tmpBank);
   return (
     <Grid container rowSpacing={4} columnSpacing={7}>
       {tmpBank &&
@@ -242,7 +264,7 @@ const BankingInfoForm = ({
       <Grid item xs={12}>
         <Stack justifyContent="center">
           <Button
-            disabled={isEdit || checkUpdateBanks}
+            disabled={isEdit || checkUpdateBanks || !isCardImage}
             sx={{ textDecoration: 'underline', margin: '0 auto' }}
             onClick={handleOpen}
           >
@@ -258,7 +280,7 @@ const BankingInfoForm = ({
           />
         </Stack>
       </Grid>
-      <Stack justifyContent="center" direction="row" gap={2}>
+      <Stack justifyContent="center" direction="column" gap={2}>
         <Button
           // type="submit"
           onClick={onSubmitForm5}
@@ -266,7 +288,8 @@ const BankingInfoForm = ({
             tmpBank.findIndex((bank: any) => bank && bank.bank_list && bank.bank_list.is_deleted) >
               -1 ||
             !tmpBank ||
-            (tmpBank && tmpBank.length === 0)
+            (tmpBank && tmpBank.length === 0) ||
+            !isCardImage
           }
           variant={isEdit ? 'outlined' : 'contained'}
           sx={{
@@ -279,6 +302,13 @@ const BankingInfoForm = ({
           {/* حفظ */}
           {isEdit ? 'إلغاء' : 'حفظ'}
         </Button>
+        {!tmpBank ||
+          (tmpBank && tmpBank.length === 0) ||
+          (!isCardImage && (
+            <Typography color={'#FF4842'}>
+              {translate('errors.bank_information.un_complete_data')}
+            </Typography>
+          ))}
       </Stack>
       {/* <Grid item xs={12} sx={{ mt: '10px' }} alignItems="center">
         {children}

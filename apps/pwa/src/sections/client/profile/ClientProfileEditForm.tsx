@@ -8,6 +8,8 @@ import { gettingUserDataForEdit } from 'queries/client/gettingUserDataForEdit';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useQuery } from 'urql';
+import { removeEmptyKey } from 'utils/remove-empty-key';
+import { BankInformation } from '../../../@types/proposal';
 import {
   AdministrativeValuesProps,
   BankingValuesProps,
@@ -567,10 +569,12 @@ function ClientProfileEditForm() {
         !data.updated_banks &&
         !data.updated_banks
       ) {
+        // console.log('masuk if');
         mergeArray = data as BankingValuesProps[];
       } else {
+        // console.log('masuk else', { data });
         if (data && data?.created_banks) {
-          if (data?.created_banks?.length! > 0) {
+          if (data?.created_banks?.length > 0) {
             const tmpCreatedBanks =
               data?.created_banks && data?.created_banks.map((item: any) => item);
             mergeArray = [...mergeArray, ...tmpCreatedBanks];
@@ -589,6 +593,15 @@ function ClientProfileEditForm() {
               data?.deleted_banks && data?.deleted_banks.map((item: any) => item);
             mergeArray = [...mergeArray, ...tmpDeletedBanks];
           }
+        }
+        if (
+          data &&
+          data?.created_banks?.length === 0 &&
+          data?.updated_banks?.length === 0 &&
+          data?.deleted_banks?.length === 0
+        ) {
+          // console.log('masuk if sini', { startedValue });
+          mergeArray = profileState.form5;
         }
       }
       // console.log({ mergeArray });
@@ -626,15 +639,31 @@ function ClientProfileEditForm() {
     //   }),
     // };
     if (startedValue.bank_informations && startedValue.bank_informations.length > 0) {
-      newBankInformation = {
-        ...newBankInformation,
-        old_banks: [...startedValue.bank_informations].map((item) => {
-          const tmpItme = item;
-          return {
+      const tmpUpdateBanks = [...startedValue.bank_informations].map((item) => {
+        const tmpItme = item;
+        if (
+          !!tmpItme?.card_image?.url &&
+          !!tmpItme?.card_image?.size &&
+          !!tmpItme?.card_image?.type
+        ) {
+          return removeEmptyKey({
             ...tmpItme,
             bank_name: tmpItme.bank_name || '-',
-          };
-        }),
+          });
+        }
+        return removeEmptyKey({
+          ...tmpItme,
+          bank_name: tmpItme.bank_name || '-',
+          card_image: {
+            url: 'https://ui-avatars.com/api',
+            size: 0,
+            type: 'image/png',
+          },
+        });
+      });
+      newBankInformation = {
+        ...newBankInformation,
+        old_banks: tmpUpdateBanks?.filter((item: any) => !!item),
       };
     } else {
       newBankInformation = {
@@ -644,15 +673,60 @@ function ClientProfileEditForm() {
     }
 
     if (profileState.updated_banks.length > 0) {
+      const tmpNewUpdateBanks = profileState?.updated_banks?.map((item: any) => {
+        const tmpItem: any = item;
+        if (tmpItem?.card_image?.base64Data) {
+          return {
+            ...tmpItem,
+            card_image: removeEmptyKey({
+              ...tmpItem.card_image,
+              url: undefined,
+            }),
+          };
+        } else {
+          return removeEmptyKey({
+            ...tmpItem,
+          });
+        }
+      });
       newBankInformation = {
         ...newBankInformation,
         updated_banks: profileState.updated_banks,
       };
     }
-    if (profileState.deleted_banks.length > 0) {
+    // if (profileState.deleted_banks.length > 0) {
+    //   newBankInformation = {
+    //     ...newBankInformation,
+    //     deleted_banks: profileState.deleted_banks,
+    //   };
+    // }
+    if (profileState?.deleted_banks.length > 0) {
+      const tmpDeletedBanks = profileState?.deleted_banks.map((item: BankInformation) => {
+        const tmpItme: BankInformation = item;
+        if (
+          tmpItme &&
+          !!tmpItme?.card_image?.url &&
+          !!tmpItme?.card_image?.size &&
+          !!tmpItme?.card_image?.type
+        ) {
+          return removeEmptyKey({
+            ...tmpItme,
+            bank_name: tmpItme.bank_name || '-',
+          });
+        }
+        return removeEmptyKey({
+          ...tmpItme,
+          bank_name: tmpItme.bank_name || '-',
+          card_image: {
+            url: 'https://ui-avatars.com/api',
+            size: 0,
+            type: 'image/png',
+          },
+        });
+      });
       newBankInformation = {
         ...newBankInformation,
-        deleted_banks: profileState.deleted_banks,
+        deleted_banks: tmpDeletedBanks?.filter((item: any) => !!item),
       };
     }
     if (profileState.created_banks.length > 0) {
