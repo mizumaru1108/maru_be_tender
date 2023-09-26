@@ -275,7 +275,6 @@ function ClientProfileEditForm() {
         phone,
         twitter_acount,
         website,
-        password,
         // third form
         license_number,
         license_issue_date,
@@ -291,8 +290,6 @@ function ClientProfileEditForm() {
         chairman_name,
         chairman_mobile,
         //
-        authority_detail,
-        client_field_details,
       } = client;
       setStartedValue({ bank_informations, ...client });
       let newval: any = [];
@@ -872,6 +869,7 @@ function ClientProfileEditForm() {
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4">تعديل بيانات الحساب</Typography>
         <LoadingButton
+          disabled={Object.entries(isEdit).some(([key, value]) => value) ? false : true}
           loading={LoadingButtonState}
           onClick={onSubmitEditRequest}
           sx={{
