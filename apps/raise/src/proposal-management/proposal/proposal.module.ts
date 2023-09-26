@@ -19,6 +19,9 @@ import { ProposalReportListQueryHandler } from './queries/proposal.report.list/p
 import { ProposalRepository } from './repositories/proposal.repository';
 import { ProposalService } from './services/proposal.service';
 import { TrackModule } from '../../tender-track/track.module';
+import { ProposalRegionsModule } from '../proposal-regions/proposal.region.management.module';
+import { ProposalRegionModule } from '../proposal-regions/region/proposal.region.module';
+import { ProposalGovernorateModule } from '../proposal-regions/governorate/proposal.governorate.module';
 
 const importedModule = [
   CqrsModule,
@@ -28,6 +31,8 @@ const importedModule = [
   ProposalLogModule,
   ProposalItemBudgetModule,
   ProposalProjectTimelineModule,
+  ProposalRegionModule,
+  ProposalGovernorateModule,
 ];
 
 const commands: Provider[] = [

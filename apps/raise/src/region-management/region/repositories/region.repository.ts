@@ -201,7 +201,7 @@ export class RegionRepository {
     if (session) prisma = session;
     try {
       const args = await this.findManyFilter(props);
-      return await prisma.clientFields.count({
+      return await prisma.region.count({
         where: args.where,
       });
     } catch (error) {

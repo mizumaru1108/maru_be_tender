@@ -19,6 +19,8 @@ import { CreateProposalInterceptorDto } from '../../dtos/requests';
 import { ISendNotificaitonEvent } from '../../entities/proposal.entity';
 import { ProposalRepository } from '../../repositories/proposal.repository';
 import { ProposalCreateProps } from '../../types';
+import { ProposalRegionRepository } from '../../../proposal-regions/region/repositories/proposal.region.repository';
+import { ProposalGovernorateRepository } from '../../../proposal-regions/governorate/repositories/proposal.governorate.repository';
 
 export class ProposalCreateCommand {
   userId: string;
@@ -40,6 +42,8 @@ export class ProposalCreateCommandHandler
     private readonly timelineRepo: ProposalTimelinePostgresRepository,
     private readonly itemBudgetRepo: ProposalItemBudgetRepository,
     private readonly fileManagerRepo: TenderFileManagerRepository,
+    private readonly proposalRegionRepo: ProposalRegionRepository,
+    private readonly proposalGovernorateRepo: ProposalGovernorateRepository,
     private readonly configService: ConfigService,
     private readonly bunnyService: BunnyService,
     private readonly emailService: EmailService,
@@ -81,9 +85,9 @@ export class ProposalCreateCommandHandler
           pm_mobile: request.pm_mobile,
           pm_email: request.pm_email,
           region: request.region,
-          region_id: request.region_id,
+          region_id: request.region_id[0],
           governorate: request.governorate,
-          governorate_id: request.governorate_id,
+          governorate_id: request.governorate_id[0],
           amount_required_fsupport: request.amount_required_fsupport,
         },
       ).build();
@@ -129,7 +133,9 @@ export class ProposalCreateCommandHandler
         !!request.pm_mobile &&
         !!request.pm_email &&
         !!request.region &&
-        !!request.governorate
+        !!request.region_id &&
+        !!request.governorate &&
+        !!request.governorate_id
       ) {
         proposalCreatePayload.step = 'THIRD';
       }
@@ -149,7 +155,9 @@ export class ProposalCreateCommandHandler
         !!request.pm_mobile &&
         !!request.pm_email &&
         !!request.region &&
+        !!request.region_id &&
         !!request.governorate &&
+        !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets
       ) {
@@ -171,7 +179,9 @@ export class ProposalCreateCommandHandler
         !!request.pm_mobile &&
         !!request.pm_email &&
         !!request.region &&
+        !!request.region_id &&
         !!request.governorate &&
+        !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets &&
         !!request.project_timeline
@@ -194,7 +204,9 @@ export class ProposalCreateCommandHandler
         !!request.pm_mobile &&
         !!request.pm_email &&
         !!request.region &&
+        !!request.region_id &&
         !!request.governorate &&
+        !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets &&
         !!request.proposal_bank_information_id
@@ -311,6 +323,26 @@ export class ProposalCreateCommandHandler
             }
           }
 
+          for (const governorate_id of request.governorate_id) {
+            await this.proposalGovernorateRepo.create(
+              {
+                proposal_id: createdProposal.id,
+                governorate_id: governorate_id,
+              },
+              session,
+            );
+          }
+
+          for (const region_id of request.region_id) {
+            await this.proposalRegionRepo.create(
+              {
+                proposal_id: createdProposal.id,
+                region_id: region_id,
+              },
+              session,
+            );
+          }
+
           const updatedProposal = await this.proposalRepo.fetchById(
             {
               id: createdProposal.id,
@@ -340,40 +372,6 @@ export class ProposalCreateCommandHandler
             session,
           );
 
-          const notifPayloads: ISendNotificaitonEvent[] = [];
-          notifPayloads.push({
-            notif_type: 'EMAIL',
-            user_id: updatedProposal?.submitter_user_id!,
-            user_email: updatedProposal?.user?.email,
-            subject: '',
-            content: '',
-            email_type: 'template',
-            emailTemplateContext: {
-              projectName: updatedProposal?.project_name,
-              clientName: updatedProposal?.user?.employee_name,
-            },
-            emailTemplatePath: `tender/ar/proposal/project_created`,
-          });
-
-          if (notifPayloads && notifPayloads.length > 0) {
-            for (const notifPayload of notifPayloads) {
-              if (
-                notifPayload.notif_type === 'EMAIL' &&
-                notifPayload.user_email &&
-                notifPayload.email_type
-              ) {
-                this.emailService.sendMail({
-                  mailType: notifPayload.email_type,
-                  to: notifPayload.user_email,
-                  subject: notifPayload.subject,
-                  content: notifPayload.content,
-                  templateContext: notifPayload.emailTemplateContext,
-                  templatePath: notifPayload.emailTemplatePath,
-                });
-              }
-            }
-          }
-
           return {
             created_proposal: createdProposal,
           };
@@ -382,6 +380,40 @@ export class ProposalCreateCommandHandler
           timeout: 500000,
         },
       );
+
+      const notifPayloads: ISendNotificaitonEvent[] = [];
+      notifPayloads.push({
+        notif_type: 'EMAIL',
+        user_id: dbRes.created_proposal.submitter_user_id!,
+        user_email: dbRes.created_proposal?.user?.email,
+        subject: '',
+        content: '',
+        email_type: 'template',
+        emailTemplateContext: {
+          projectName: dbRes.created_proposal.project_name,
+          clientName: dbRes.created_proposal?.user?.employee_name,
+        },
+        emailTemplatePath: `tender/ar/proposal/project_created`,
+      });
+
+      if (notifPayloads && notifPayloads.length > 0) {
+        for (const notifPayload of notifPayloads) {
+          if (
+            notifPayload.notif_type === 'EMAIL' &&
+            notifPayload.user_email &&
+            notifPayload.email_type
+          ) {
+            this.emailService.sendMail({
+              mailType: notifPayload.email_type,
+              to: notifPayload.user_email,
+              subject: notifPayload.subject,
+              content: notifPayload.content,
+              templateContext: notifPayload.emailTemplateContext,
+              templatePath: notifPayload.emailTemplatePath,
+            });
+          }
+        }
+      }
 
       return dbRes.created_proposal;
     } catch (error) {

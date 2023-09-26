@@ -194,9 +194,11 @@ model proposal {
   pm_mobile                           String?                          @db.VarChar
   governorate                         String?
   governorate_id                      String?
+  proposal_governorates               ProposalGovernorate[]
   governorate_detail                  Governorate?  @relation(fields: [governorate_id], references: [governorate_id])
   region                              String?                          @db.VarChar
-  region_id                           String?  
+  region_id                           String?
+  proposal_regions                    ProposalRegion[]  
   region_detail                       Region?       @relation(fields: [region_id], references: [region_id])
   amount_required_fsupport            Decimal?                         @db.Decimal
   need_consultant                     Boolean?                         @default(false)
@@ -281,6 +283,23 @@ model proposal {
   contact_us                          ContactUs[]
 }
 
+model ProposalRegion {
+    proposal_region_id  String      @id @unique
+    proposal_id         String 
+    proposal            proposal @relation(fields: [proposal_id], references: [id])
+    region_id           String
+    region              Region @relation(fields: [region_id], references: [region_id])
+    @@map("proposal_region")
+}
+
+model ProposalGovernorate {
+    proposal_governorate_id  String @id @unique
+    proposal_id         String 
+    proposal            proposal @relation(fields: [proposal_id], references: [id])
+    governorate_id           String
+    governorate          Governorate @relation(fields: [governorate_id], references: [governorate_id])
+    @@map("proposal_governorate")
+}
 model proposal_comment {
   id          String    @id @unique
   proposal_id String
@@ -1673,6 +1692,7 @@ model Region {
     governorate Governorate[]
     client_data client_data[]
     proposal    proposal[]
+    proposal_region ProposalRegion[]
 
     @@map("regions")
 }
@@ -1685,5 +1705,6 @@ model Governorate {
 
     client_data client_data[]
     proposal    proposal[]
+    proposal_governorate ProposalGovernorate[]
     @@map("governorates")
 }

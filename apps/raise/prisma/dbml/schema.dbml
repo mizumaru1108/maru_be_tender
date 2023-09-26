@@ -179,9 +179,11 @@ Table proposal {
   pm_mobile String
   governorate String
   governorate_id String
+  proposal_governorates proposal_governorate [not null]
   governorate_detail governorates
   region String
   region_id String
+  proposal_regions proposal_region [not null]
   region_detail regions
   amount_required_fsupport Decimal
   need_consultant Boolean [default: false]
@@ -264,6 +266,22 @@ Table proposal {
   recommended_support_consultant recommended_support_consultant [not null]
   payment_configuration supervisor [not null]
   contact_us contact_us [not null]
+}
+
+Table proposal_region {
+  proposal_region_id String [pk]
+  proposal_id String [not null]
+  proposal proposal [not null]
+  region_id String [not null]
+  region regions [not null]
+}
+
+Table proposal_governorate {
+  proposal_governorate_id String [pk]
+  proposal_id String [not null]
+  proposal proposal [not null]
+  governorate_id String [not null]
+  governorate governorates [not null]
 }
 
 Table proposal_comment {
@@ -1542,6 +1560,7 @@ Table regions {
   governorate governorates [not null]
   client_data client_data [not null]
   proposal proposal [not null]
+  proposal_region proposal_region [not null]
 }
 
 Table governorates {
@@ -1552,6 +1571,7 @@ Table governorates {
   is_deleted Boolean [not null, default: false]
   client_data client_data [not null]
   proposal proposal [not null]
+  proposal_governorate proposal_governorate [not null]
 }
 
 Ref: authorities.client_field_id > client_fields.client_field_id
@@ -1615,6 +1635,14 @@ Ref: proposal.supervisor_id > user.id [delete: Restrict]
 Ref: proposal.support_goal_id > support_goal.id
 
 Ref: proposal.track_id > track.id
+
+Ref: proposal_region.proposal_id > proposal.id
+
+Ref: proposal_region.region_id > regions.region_id
+
+Ref: proposal_governorate.proposal_id > proposal.id
+
+Ref: proposal_governorate.governorate_id > governorates.governorate_id
 
 Ref: proposal_comment.proposal_id > proposal.id
 
