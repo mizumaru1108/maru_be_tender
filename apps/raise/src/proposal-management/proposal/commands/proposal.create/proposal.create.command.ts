@@ -323,25 +323,17 @@ export class ProposalCreateCommandHandler
             }
           }
 
-          for (const governorate_id of request.governorate_id) {
-            await this.proposalGovernorateRepo.create(
-              {
-                proposal_id: createdProposal.id,
-                governorate_id: governorate_id,
-              },
-              session,
-            );
-          }
+          await this.proposalGovernorateRepo.arraySave(
+            createdProposal.id,
+            request.governorate_id,
+            session,
+          );
 
-          for (const region_id of request.region_id) {
-            await this.proposalRegionRepo.create(
-              {
-                proposal_id: createdProposal.id,
-                region_id: region_id,
-              },
-              session,
-            );
-          }
+          await this.proposalRegionRepo.arraySave(
+            createdProposal.id,
+            request.region_id,
+            session,
+          );
 
           const updatedProposal = await this.proposalRepo.fetchById(
             {

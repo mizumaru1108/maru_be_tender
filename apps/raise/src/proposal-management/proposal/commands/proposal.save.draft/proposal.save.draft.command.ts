@@ -21,6 +21,8 @@ import { ProposalSaveDraftInterceptorDto } from '../../dtos/requests';
 import { ProposalEntity } from '../../entities/proposal.entity';
 import { ProposalRepository } from '../../repositories/proposal.repository';
 import { ProposalUpdateProps } from '../../types';
+import { ProposalRegionRepository } from '../../../proposal-regions/region/repositories/proposal.region.repository';
+import { ProposalGovernorateRepository } from '../../../proposal-regions/governorate/repositories/proposal.governorate.repository';
 
 export class ProposalSaveDraftCommand {
   userId: string;
@@ -46,6 +48,8 @@ export class ProposalSaveDraftCommandHandler
     private readonly logRepo: ProposalLogRepository,
     private readonly itemBudgetRepo: ProposalItemBudgetRepository,
     private readonly timelineRepo: ProposalTimelinePostgresRepository,
+    private readonly proposalRegionRepo: ProposalRegionRepository,
+    private readonly proposalGovernorateRepo: ProposalGovernorateRepository,
     private readonly fileManagerRepo: TenderFileManagerRepository,
   ) {}
 
@@ -389,6 +393,22 @@ export class ProposalSaveDraftCommandHandler
             },
             session,
           );
+
+          if (request.governorate_id && request.governorate_id.length > 0) {
+            await this.proposalGovernorateRepo.arraySave(
+              proposal.id,
+              request.governorate_id,
+              session,
+            );
+          }
+
+          if (request.region_id && request.region_id.length > 0) {
+            await this.proposalRegionRepo.arraySave(
+              proposal.id,
+              request.region_id,
+              session,
+            );
+          }
 
           if (firstLog.length > 0 && firstLog[0]) {
             const updatedProposal = await this.proposalRepo.fetchById(
