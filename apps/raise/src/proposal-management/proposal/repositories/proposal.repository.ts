@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, proposal_item_budget } from '@prisma/client';
-import { Builder } from 'builder-pattern';
 import { nanoid } from 'nanoid';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { PaymentStatusEnum } from 'src/proposal-management/payment/types/enums/payment.status.enum';
@@ -18,8 +17,7 @@ import {
 } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
-import { ProposalItemBudgetEntity } from '../../item-budget/entities/proposal.item.budget.entity';
-import { ProposalPaymentEntity } from '../../payment/entities/proposal-payment.entity';
+import { ProposalSelectEnum } from '../dtos/queries/proposal.report.list.query.dto';
 import {
   FetchClosingReportListFilterRequest,
   FetchRejectionListFilterRequest,
@@ -31,166 +29,174 @@ import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-
 import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
 import { ProposalEntity } from '../entities/proposal.entity';
+import { ProposalMapper } from '../mapper/proposal.mapper';
 import {
   ProposalCreateProps,
   ProposalDeleteProps,
   ProposalFetchByIdProps,
   ProposalFindManyProps,
+  ProposalIncludeTypes,
   ProposalUpdateProps,
 } from '../types';
-import { ProposalSelectEnum } from '../dtos/queries/proposal.report.list.query.dto';
 
 @Injectable()
 export class ProposalRepository {
   constructor(
     private readonly prismaService: PrismaService,
+    private readonly proposalMapper: ProposalMapper,
     @InjectPinoLogger(ProposalRepository.name) private logger: PinoLogger,
   ) {}
 
+  applyFilter(
+    include_relations: ProposalIncludeTypes[],
+  ): Prisma.proposalInclude {
+    let include: Prisma.proposalInclude = {};
+
+    for (const relation of include_relations) {
+      if (relation === 'user') {
+        include = {
+          ...include,
+          user: {
+            select: {
+              id: true,
+              email: true,
+              mobile_number: true,
+              employee_name: true,
+              client_data: {
+                include: {
+                  authority_detail: true,
+                  client_field_details: true,
+                },
+              },
+              roles: true,
+              bank_information: true,
+            },
+          },
+        };
+      }
+
+      if (relation === 'beneficiary_details') {
+        include = {
+          ...include,
+          beneficiary_details: true,
+        };
+      }
+
+      if (relation === 'follow_ups') {
+        include = {
+          ...include,
+          follow_ups: {
+            include: {
+              user: {
+                include: {
+                  roles: true,
+                },
+              },
+            },
+          },
+        };
+      }
+
+      if (relation === 'track') {
+        include = {
+          ...include,
+          track: true,
+        };
+      }
+
+      if (relation === 'proposal_item_budgets') {
+        include = {
+          ...include,
+          proposal_item_budgets: true,
+        };
+      }
+
+      if (relation === 'supervisor') {
+        include = {
+          ...include,
+          supervisor: true,
+        };
+      }
+
+      if (relation === 'proposal_logs') {
+        include = {
+          ...include,
+          proposal_logs: {
+            include: {
+              reviewer: true,
+            },
+          },
+        };
+      }
+
+      if (relation === 'payments') {
+        include = {
+          ...include,
+          payments: {
+            include: {
+              cheques: true,
+            },
+          },
+        };
+      }
+
+      if (relation === 'bank_information') {
+        include = {
+          ...include,
+          bank_information: true,
+        };
+      }
+
+      if (relation === 'project_timeline') {
+        include = {
+          ...include,
+          project_timeline: true,
+        };
+      }
+
+      if (relation === 'governorate_detail') {
+        include = {
+          ...include,
+          governorate_detail: true,
+        };
+      }
+
+      if (relation === 'region_detail') {
+        include = {
+          ...include,
+          region_detail: true,
+        };
+      }
+
+      if (relation === 'proposal_closing_report') {
+        include = {
+          ...include,
+          proposal_closing_report: {
+            include: {
+              beneficiaries: true,
+              execution_places: true,
+              genders: true,
+            },
+          },
+        };
+      }
+    }
+
+    return include;
+  }
   async findByIdFilter(
     props: ProposalFetchByIdProps,
   ): Promise<Prisma.proposalFindFirstArgs> {
-    const { includes_relation } = props;
+    const { include_relations } = props;
 
     let findByIdFilter: Prisma.proposalFindFirstArgs = {
       where: { id: props.id },
     };
 
-    if (includes_relation && includes_relation.length > 0) {
-      let include: Prisma.proposalInclude = {};
-
-      for (const relation of includes_relation) {
-        if (relation === 'user') {
-          include = {
-            ...include,
-            user: {
-              select: {
-                id: true,
-                email: true,
-                mobile_number: true,
-                employee_name: true,
-                client_data: {
-                  include: {
-                    authority_detail: true,
-                    client_field_details: true,
-                  },
-                },
-                roles: true,
-                bank_information: true,
-              },
-            },
-          };
-        }
-
-        if (relation === 'beneficiary_details') {
-          include = {
-            ...include,
-            beneficiary_details: true,
-          };
-        }
-
-        if (relation === 'follow_ups') {
-          include = {
-            ...include,
-            follow_ups: {
-              include: {
-                user: {
-                  include: {
-                    roles: true,
-                  },
-                },
-              },
-            },
-          };
-        }
-
-        if (relation === 'track') {
-          include = {
-            ...include,
-            track: true,
-          };
-        }
-
-        if (relation === 'proposal_item_budgets') {
-          include = {
-            ...include,
-            proposal_item_budgets: true,
-          };
-        }
-
-        if (relation === 'supervisor') {
-          include = {
-            ...include,
-            supervisor: true,
-          };
-        }
-
-        if (relation === 'proposal_logs') {
-          include = {
-            ...include,
-            proposal_logs: {
-              include: {
-                reviewer: true,
-              },
-            },
-          };
-        }
-
-        if (relation === 'payments') {
-          include = {
-            ...include,
-            payments: {
-              include: {
-                cheques: true,
-              },
-            },
-          };
-        }
-
-        if (relation === 'bank_information') {
-          include = {
-            ...include,
-            bank_information: true,
-          };
-        }
-
-        if (relation === 'project_timeline') {
-          include = {
-            ...include,
-            project_timeline: true,
-          };
-        }
-
-        if (relation === 'governorate_detail') {
-          include = {
-            ...include,
-            governorate_detail: true,
-          };
-        }
-
-        if (relation === 'region_detail') {
-          include = {
-            ...include,
-            region_detail: true,
-          };
-        }
-
-        if (relation === 'proposal_closing_report') {
-          include = {
-            ...include,
-            proposal_closing_report: {
-              include: {
-                beneficiaries: true,
-                execution_places: true,
-                genders: true,
-              },
-            },
-          };
-        }
-      }
-
-      findByIdFilter.include = include;
+    if (include_relations && include_relations.length > 0) {
+      findByIdFilter.include = this.applyFilter(include_relations);
     }
+
     return findByIdFilter;
   }
 
@@ -208,72 +214,9 @@ export class ProposalRepository {
 
       if (!rawProposal) return null;
 
-      const tmpProposal = rawProposal as any;
-      const proposalByIdEntity = Builder<ProposalEntity>(ProposalEntity, {
-        ...rawProposal,
-        amount_required_fsupport:
-          rawProposal.amount_required_fsupport !== null
-            ? parseFloat(rawProposal.amount_required_fsupport.toString())
-            : null,
-        whole_budget:
-          rawProposal.whole_budget !== null
-            ? parseFloat(rawProposal.whole_budget.toString())
-            : null,
-        number_of_payments:
-          rawProposal.number_of_payments !== null
-            ? parseFloat(rawProposal.number_of_payments.toString())
-            : null,
-        partial_support_amount:
-          rawProposal.partial_support_amount !== null
-            ? parseFloat(rawProposal.partial_support_amount.toString())
-            : null,
-        fsupport_by_supervisor:
-          rawProposal.fsupport_by_supervisor !== null
-            ? parseFloat(rawProposal.fsupport_by_supervisor.toString())
-            : null,
-        number_of_payments_by_supervisor:
-          rawProposal.number_of_payments_by_supervisor !== null
-            ? parseFloat(
-                rawProposal.number_of_payments_by_supervisor.toString(),
-              )
-            : null,
-        execution_time:
-          rawProposal.execution_time !== null
-            ? parseFloat(rawProposal.execution_time.toString())
-            : null,
-        payments:
-          tmpProposal.payments && tmpProposal.payments.length > 0
-            ? tmpProposal.payments.map((payment: ProposalPaymentEntity) =>
-                Builder<ProposalPaymentEntity>(ProposalPaymentEntity, {
-                  ...payment,
-                  payment_amount: !!payment.payment_amount
-                    ? parseFloat(payment.payment_amount.toString())
-                    : null,
-                  order: !!payment.order
-                    ? parseInt(payment.order.toString())
-                    : null,
-                  number_of_payments: !!payment.number_of_payments
-                    ? parseInt(payment.number_of_payments.toString())
-                    : null,
-                }).build(),
-              )
-            : undefined,
-        proposal_item_budgets:
-          tmpProposal.proposal_item_budgets &&
-          tmpProposal.proposal_item_budgets.length > 0
-            ? tmpProposal.proposal_item_budgets.map(
-                (rawBudget: ProposalItemBudgetEntity) => {
-                  return Builder<ProposalItemBudgetEntity>(
-                    ProposalItemBudgetEntity,
-                    {
-                      ...rawBudget,
-                      amount: parseFloat(rawBudget.amount.toString()),
-                    },
-                  ).build();
-                },
-              )
-            : undefined,
-      }).build();
+      const proposalByIdEntity = await this.proposalMapper.toDomain(
+        rawProposal,
+      );
 
       return proposalByIdEntity;
     } catch (error) {
@@ -366,39 +309,8 @@ export class ProposalRepository {
         },
       });
 
-      const updatedProposalEntity = Builder<ProposalEntity>(ProposalEntity, {
-        ...rawUpdatedProposal,
-        amount_required_fsupport:
-          rawUpdatedProposal.amount_required_fsupport !== null
-            ? parseFloat(rawUpdatedProposal.amount_required_fsupport.toString())
-            : null,
-        whole_budget:
-          rawUpdatedProposal.whole_budget !== null
-            ? parseFloat(rawUpdatedProposal.whole_budget.toString())
-            : null,
-        number_of_payments:
-          rawUpdatedProposal.number_of_payments !== null
-            ? parseFloat(rawUpdatedProposal.number_of_payments.toString())
-            : null,
-        partial_support_amount:
-          rawUpdatedProposal.partial_support_amount !== null
-            ? parseFloat(rawUpdatedProposal.partial_support_amount.toString())
-            : null,
-        fsupport_by_supervisor:
-          rawUpdatedProposal.fsupport_by_supervisor !== null
-            ? parseFloat(rawUpdatedProposal.fsupport_by_supervisor.toString())
-            : null,
-        number_of_payments_by_supervisor:
-          rawUpdatedProposal.number_of_payments_by_supervisor !== null
-            ? parseFloat(
-                rawUpdatedProposal.number_of_payments_by_supervisor.toString(),
-              )
-            : null,
-        execution_time:
-          rawUpdatedProposal.execution_time !== null
-            ? parseFloat(rawUpdatedProposal.execution_time.toString())
-            : null,
-      }).build();
+      const updatedProposalEntity =
+        this.proposalMapper.toDomain(rawUpdatedProposal);
 
       return updatedProposalEntity;
     } catch (error) {
@@ -491,39 +403,8 @@ export class ProposalRepository {
         },
       });
 
-      const createdProposalEntity = Builder<ProposalEntity>(ProposalEntity, {
-        ...rawCreatedProposal,
-        amount_required_fsupport:
-          rawCreatedProposal.amount_required_fsupport !== null
-            ? parseFloat(rawCreatedProposal.amount_required_fsupport.toString())
-            : null,
-        whole_budget:
-          rawCreatedProposal.whole_budget !== null
-            ? parseFloat(rawCreatedProposal.whole_budget.toString())
-            : null,
-        number_of_payments:
-          rawCreatedProposal.number_of_payments !== null
-            ? parseFloat(rawCreatedProposal.number_of_payments.toString())
-            : null,
-        partial_support_amount:
-          rawCreatedProposal.partial_support_amount !== null
-            ? parseFloat(rawCreatedProposal.partial_support_amount.toString())
-            : null,
-        fsupport_by_supervisor:
-          rawCreatedProposal.fsupport_by_supervisor !== null
-            ? parseFloat(rawCreatedProposal.fsupport_by_supervisor.toString())
-            : null,
-        number_of_payments_by_supervisor:
-          rawCreatedProposal.number_of_payments_by_supervisor !== null
-            ? parseFloat(
-                rawCreatedProposal.number_of_payments_by_supervisor.toString(),
-              )
-            : null,
-        execution_time:
-          rawCreatedProposal.execution_time !== null
-            ? parseFloat(rawCreatedProposal.execution_time.toString())
-            : null,
-      }).build();
+      const createdProposalEntity =
+        this.proposalMapper.toDomain(rawCreatedProposal);
 
       // console.log('created entity', createdProposalEntity);
       return createdProposalEntity;
@@ -542,40 +423,7 @@ export class ProposalRepository {
         where: { id: props.id },
       });
 
-      const deletedProposalEntity = Builder<ProposalEntity>(ProposalEntity, {
-        ...rawDeleteRes,
-        amount_required_fsupport:
-          rawDeleteRes.amount_required_fsupport !== null
-            ? parseFloat(rawDeleteRes.amount_required_fsupport.toString())
-            : null,
-        whole_budget:
-          rawDeleteRes.whole_budget !== null
-            ? parseFloat(rawDeleteRes.whole_budget.toString())
-            : null,
-        number_of_payments:
-          rawDeleteRes.number_of_payments !== null
-            ? parseFloat(rawDeleteRes.number_of_payments.toString())
-            : null,
-        partial_support_amount:
-          rawDeleteRes.partial_support_amount !== null
-            ? parseFloat(rawDeleteRes.partial_support_amount.toString())
-            : null,
-        fsupport_by_supervisor:
-          rawDeleteRes.fsupport_by_supervisor !== null
-            ? parseFloat(rawDeleteRes.fsupport_by_supervisor.toString())
-            : null,
-        number_of_payments_by_supervisor:
-          rawDeleteRes.number_of_payments_by_supervisor !== null
-            ? parseFloat(
-                rawDeleteRes.number_of_payments_by_supervisor.toString(),
-              )
-            : null,
-        execution_time:
-          rawDeleteRes.execution_time !== null
-            ? parseFloat(rawDeleteRes.execution_time.toString())
-            : null,
-      }).build();
-
+      const deletedProposalEntity = this.proposalMapper.toDomain(rawDeleteRes);
       return deletedProposalEntity;
     } catch (error) {
       this.logger.info(`Delete Proposal Error details ${error}`);
@@ -981,88 +829,7 @@ export class ProposalRepository {
 
       // console.log({ queryOptions });
       const rawResult = await prisma.proposal.findMany(queryOptions);
-      const entities = rawResult.map((rawResult) => {
-        const tmpProposal = rawResult as any;
-        return Builder<ProposalEntity>(ProposalEntity, {
-          ...rawResult,
-          amount_required_fsupport:
-            rawResult.amount_required_fsupport !== undefined
-              ? rawResult.amount_required_fsupport !== null
-                ? parseFloat(rawResult.amount_required_fsupport.toString())
-                : null
-              : undefined,
-          whole_budget:
-            rawResult.whole_budget !== undefined
-              ? rawResult.whole_budget !== null
-                ? parseFloat(rawResult.whole_budget.toString())
-                : null
-              : undefined,
-          number_of_payments:
-            rawResult.number_of_payments !== undefined
-              ? rawResult.number_of_payments !== null
-                ? parseFloat(rawResult.number_of_payments.toString())
-                : null
-              : undefined,
-          partial_support_amount:
-            rawResult.partial_support_amount !== undefined
-              ? rawResult.partial_support_amount !== null
-                ? parseFloat(rawResult.partial_support_amount.toString())
-                : null
-              : undefined,
-          fsupport_by_supervisor:
-            rawResult.fsupport_by_supervisor !== undefined
-              ? rawResult.fsupport_by_supervisor !== null
-                ? parseFloat(rawResult.fsupport_by_supervisor.toString())
-                : null
-              : undefined,
-          number_of_payments_by_supervisor:
-            rawResult.number_of_payments_by_supervisor !== undefined
-              ? rawResult.number_of_payments_by_supervisor !== null
-                ? parseFloat(
-                    rawResult.number_of_payments_by_supervisor.toString(),
-                  )
-                : null
-              : undefined,
-          execution_time:
-            rawResult.execution_time !== undefined
-              ? rawResult.execution_time !== null
-                ? parseFloat(rawResult.execution_time.toString())
-                : null
-              : undefined,
-          payments:
-            tmpProposal.payments && tmpProposal.payments.length > 0
-              ? tmpProposal.payments.map((payment: ProposalPaymentEntity) =>
-                  Builder<ProposalPaymentEntity>(ProposalPaymentEntity, {
-                    ...payment,
-                    payment_amount: !!payment.payment_amount
-                      ? parseFloat(payment.payment_amount.toString())
-                      : null,
-                    order: !!payment.order
-                      ? parseInt(payment.order.toString())
-                      : null,
-                    number_of_payments: !!payment.number_of_payments
-                      ? parseInt(payment.number_of_payments.toString())
-                      : null,
-                  }).build(),
-                )
-              : undefined,
-          proposal_item_budgets:
-            tmpProposal.proposal_item_budgets &&
-            tmpProposal.proposal_item_budgets.length > 0
-              ? tmpProposal.proposal_item_budgets.map(
-                  (rawBudget: ProposalItemBudgetEntity) => {
-                    return Builder<ProposalItemBudgetEntity>(
-                      ProposalItemBudgetEntity,
-                      {
-                        ...rawBudget,
-                        amount: parseFloat(rawBudget.amount.toString()),
-                      },
-                    ).build();
-                  },
-                )
-              : undefined,
-        }).build();
-      });
+      const entities = this.proposalMapper.toDomainList(rawResult);
 
       return entities;
     } catch (error) {

@@ -22,6 +22,7 @@ import { TrackModule } from '../../tender-track/track.module';
 import { ProposalRegionsModule } from '../proposal-regions/proposal.region.management.module';
 import { ProposalRegionModule } from '../proposal-regions/region/proposal.region.module';
 import { ProposalGovernorateModule } from '../proposal-regions/governorate/proposal.governorate.module';
+import { ProposalMapper } from './mapper/proposal.mapper';
 
 const importedModule = [
   CqrsModule,
@@ -44,6 +45,8 @@ const commands: Provider[] = [
   AskAmandementRequestCommandHandler,
 ];
 
+const mapper: Provider[] = [ProposalMapper];
+
 const queries: Provider[] = [
   ProposalFindByIdQueryHandler,
   ProposalFindMineQueryHandler,
@@ -58,7 +61,13 @@ const exportedProvider: Provider[] = [ProposalRepository];
 @Module({
   imports: [...importedModule],
   controllers: [TenderProposalController],
-  providers: [ProposalService, ...commands, ...queries, ...repositories],
+  providers: [
+    ProposalService,
+    ...commands,
+    ...mapper,
+    ...queries,
+    ...repositories,
+  ],
   exports: [...exportedProvider],
 })
 export class ProposalModule {}

@@ -13,6 +13,8 @@ import { ProposalLogEntity } from '../../proposal-log/entities/proposal-log.enti
 import { BankInformationEntity } from '../../../bank/entities/bank-information.entity';
 import { RegionEntity } from '../../../region-management/region/entities/region.entity';
 import { GovernorateEntity } from '../../../region-management/governorate/entities/governorate.entity';
+import { ProposalGovernorateEntity } from '../../proposal-regions/governorate/entities/proposal.governorate.entity';
+import { ProposalRegionEntity } from '../../proposal-regions/region/entities/proposal.region.entity';
 
 export interface ISendNotificaitonEvent {
   notif_type: 'EMAIL' | 'SMS';
@@ -48,6 +50,7 @@ export class ProposalEntity extends AggregateRoot {
   governorate?: string | null;
   governorate_id?: string | null;
   governorate_detail?: GovernorateEntity;
+  proposal_governorates: ProposalGovernorateEntity[];
   id: string;
   inclu_or_exclu?: boolean | null;
   inner_status?: string | null;
@@ -92,6 +95,7 @@ export class ProposalEntity extends AggregateRoot {
   reasons_to_accept?: string | null;
   region?: string | null;
   region_id?: string | null;
+  proposal_regions: ProposalRegionEntity[];
   region_detail?: RegionEntity;
   remote_or_insite?: string | null;
   state?: string | null;

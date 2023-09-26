@@ -6,7 +6,7 @@ export class ProposalItemBudgetEntity {
   explanation: string;
   clause: string;
   proposal_id: string;
-  created_at?: Date | null = new Date();
-  updated_at?: Date | null = new Date();
+  created_at: Date | null;
+  updated_at: Date | null;
   proposal: ProposalEntity;
 }

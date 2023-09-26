@@ -1,9 +1,23 @@
 import { OutterStatusEnum } from '../../../tender-commons/types/proposal';
 import { ProposalSelectEnum } from '../dtos/queries/proposal.report.list.query.dto';
+export type ProposalIncludeTypes =
+  | 'user'
+  | 'beneficiary_details'
+  | 'follow_ups'
+  | 'track'
+  | 'proposal_item_budgets'
+  | 'supervisor'
+  | 'proposal_logs'
+  | 'payments'
+  | 'bank_information'
+  | 'project_timeline'
+  | 'governorate_detail'
+  | 'region_detail'
+  | 'proposal_closing_report';
 
 export interface ProposalFetchByIdProps {
   id: string;
-  includes_relation?: string[];
+  include_relations?: ProposalIncludeTypes[];
 }
 
 export interface ProposalFindManyProps {
@@ -19,7 +33,7 @@ export interface ProposalFindManyProps {
   page?: number;
   sort_by?: string;
   sort_direction?: string;
-  include_relations?: string[];
+  include_relations?: ProposalIncludeTypes[];
   selected_columns?: ProposalSelectEnum[];
   start_date?: Date;
   end_date?: Date;
