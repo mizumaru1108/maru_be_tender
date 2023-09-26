@@ -2427,7 +2427,8 @@ export class ProposalRepository {
       if (currentUser.choosenRole === 'tender_finance') {
         whereClause = {
           ...whereClause,
-          OR: [{ finance_id: currentUser.id }, { finance_id: null }],
+          // OR: [{ finance_id: currentUser.id }, { finance_id: null }],
+          finance_id: currentUser.id,
           payments: {
             some: {
               status: { in: [PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER] },
