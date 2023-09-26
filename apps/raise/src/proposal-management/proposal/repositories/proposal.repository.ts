@@ -2700,6 +2700,8 @@ export class ProposalRepository {
           },
           region_detail: true,
           governorate_detail: true,
+          proposal_governorates: true,
+          proposal_regions: true,
         },
       });
       return proposal;
