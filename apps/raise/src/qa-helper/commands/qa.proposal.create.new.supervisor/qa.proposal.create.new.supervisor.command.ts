@@ -204,14 +204,14 @@ export class QaProposalCreateNewSupervisorCommandHandler
           const proposal = await this.proposalRepo.fetchById(
             {
               id: createdProposal.id,
-              includes_relation: [
+              include_relations: [
                 'user',
                 'supervisor',
                 'track',
                 'proposal_logs',
                 'proposal_item_budgets',
                 'project_timeline',
-                'beneficiary_detail',
+                'beneficiary_details',
               ],
             },
             session,

@@ -132,7 +132,7 @@ export class ProposalFollowUpCreateCommandHandler
     try {
       const proposal = await this.proposalRepo.fetchById({
         id: request.proposal_id,
-        includes_relation: ['user'],
+        include_relations: ['user'],
       });
       if (proposal === null) {
         throw new DataNotFoundException('Proposal Not Found!');

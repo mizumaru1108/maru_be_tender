@@ -1,6 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  ProposalIncludeRelationsEnum,
+  ProposalIncludeRelationsTypes,
+} from '../../types';
 import { Transform } from 'class-transformer';
-import { IsString, IsNotEmpty, IsOptional, IsIn } from 'class-validator';
 
 export class ProposalFindByIdQueryRequest {
   @ApiProperty()
@@ -10,28 +14,17 @@ export class ProposalFindByIdQueryRequest {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString({ each: true })
-  @IsNotEmpty({ each: true })
-  @IsIn(
-    [
-      'user',
-      'beneficiary_details',
-      'follow_ups',
-      'track',
-      'proposal_item_budgets',
-      'supervisor',
-      'proposal_logs',
-      'payments',
-      'bank_information',
-      'project_timeline',
-    ],
-    { each: true },
-  )
+  @IsNotEmpty()
+  @IsEnum(ProposalIncludeRelationsEnum, {
+    message: `relations must be one of ${Object.values(
+      ProposalIncludeRelationsEnum,
+    ).join(', ')}`,
+  })
   @Transform(({ value }) => {
     if (value && typeof value === 'string') {
       return value.split(',');
     }
     return value;
   })
-  relations?: string[];
+  relations?: ProposalIncludeRelationsTypes[];
 }

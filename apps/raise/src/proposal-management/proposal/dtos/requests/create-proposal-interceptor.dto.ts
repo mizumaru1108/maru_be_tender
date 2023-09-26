@@ -118,7 +118,7 @@ export class CreateProposalInterceptorDto {
   @IsNotEmpty()
   region?: string;
 
-  @ApiPropertyOptional()
+  @ApiProperty()
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
@@ -130,7 +130,7 @@ export class CreateProposalInterceptorDto {
   @IsNotEmpty()
   governorate?: string;
 
-  @ApiPropertyOptional()
+  @ApiProperty()
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty({ each: true })

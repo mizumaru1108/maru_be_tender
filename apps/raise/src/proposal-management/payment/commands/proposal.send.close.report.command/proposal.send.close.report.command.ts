@@ -68,7 +68,7 @@ export class ProposalPaymentSendCloseReportCommandHandler
             : this.prismaService;
 
         const proposal = await this.proposalRepo.fetchById(
-          { id, includes_relation: ['user'] },
+          { id, include_relations: ['user'] },
           session,
         );
         if (!proposal) {

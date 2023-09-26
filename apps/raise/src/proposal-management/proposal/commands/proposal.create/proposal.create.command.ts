@@ -346,7 +346,7 @@ export class ProposalCreateCommandHandler
           const updatedProposal = await this.proposalRepo.fetchById(
             {
               id: createdProposal.id,
-              includes_relation: [
+              include_relations: [
                 'user',
                 'beneficiary_details',
                 'proposal_item_budgets',

@@ -18,9 +18,9 @@ import { ProposalItemBudgetRepository } from '../../../item-budget/repositories/
 import { ProposalTimelinePostgresRepository } from '../../../poject-timelines/repositories/proposal.project.timeline.repository';
 import { ProposalLogRepository } from '../../../proposal-log/repositories/proposal.log.repository';
 import { ProposalSaveDraftInterceptorDto } from '../../dtos/requests';
+import { ProposalEntity } from '../../entities/proposal.entity';
 import { ProposalRepository } from '../../repositories/proposal.repository';
 import { ProposalUpdateProps } from '../../types';
-import { ProposalEntity } from '../../entities/proposal.entity';
 
 export class ProposalSaveDraftCommand {
   userId: string;
@@ -65,7 +65,7 @@ export class ProposalSaveDraftCommandHandler
       // find proposal by id
       const proposal = await this.proposalRepo.fetchById({
         id: proposalId,
-        includes_relation: ['user', 'supervisor'],
+        include_relations: ['user', 'supervisor'],
       });
 
       if (!proposal) throw new DataNotFoundException(`Proposal not found`);
@@ -103,9 +103,13 @@ export class ProposalSaveDraftCommandHandler
           pm_mobile: request.pm_mobile,
           pm_email: request.pm_email,
           region: request.region,
-          region_id: request.region_id,
+          region_id:
+            request && request.region_id ? request.region_id[0] : undefined,
           governorate: request.governorate,
-          governorate_id: request.governorate_id,
+          governorate_id:
+            request && request.governorate_id
+              ? request.governorate_id[0]
+              : undefined,
           amount_required_fsupport: request.amount_required_fsupport,
         },
       ).build();
@@ -390,7 +394,7 @@ export class ProposalSaveDraftCommandHandler
             const updatedProposal = await this.proposalRepo.fetchById(
               {
                 id: request.proposal_id,
-                includes_relation: [
+                include_relations: [
                   'user',
                   'beneficiary_details',
                   'proposal_item_budgets',
@@ -417,7 +421,7 @@ export class ProposalSaveDraftCommandHandler
           const lastUpdatedProposal = await this.proposalRepo.fetchById(
             {
               id: request.proposal_id,
-              includes_relation: [
+              include_relations: [
                 'user',
                 'proposal_logs',
                 'beneficiary_details',

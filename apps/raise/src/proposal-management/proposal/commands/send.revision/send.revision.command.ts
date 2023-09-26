@@ -87,7 +87,7 @@ export class SendRevisionCommandHandler
       // find proposal by id
       const proposal = await this.proposalRepo.fetchById({
         id: proposalId,
-        includes_relation: [
+        include_relations: [
           'user',
           'supervisor',
           'proposal_item_budgets',
@@ -344,7 +344,7 @@ export class SendRevisionCommandHandler
           const updatedProposal = await this.proposalRepo.fetchById(
             {
               id: proposalId,
-              includes_relation: [
+              include_relations: [
                 'proposal_item_budgets',
                 'project_timeline',
                 'bank_information',

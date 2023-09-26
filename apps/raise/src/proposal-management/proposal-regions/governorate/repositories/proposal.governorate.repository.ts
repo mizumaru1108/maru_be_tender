@@ -20,6 +20,7 @@ export class ProposalGovernorateUpdateProps {
 }
 
 export class ProposalGovernorateFindManyProps {
+  proposal_id?: string;
   limit?: number;
   page?: number;
   sort_by?: string;
@@ -172,6 +173,82 @@ export class ProposalGovernorateRepository {
       });
     } catch (error) {
       console.trace(error);
+      throw error;
+    }
+  }
+
+  async delete(
+    proposal_governorate_id: string,
+    session?: PrismaService,
+  ): Promise<ProposalGovernorateEntity> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawDeleted = await prisma.proposalGovernorate.delete({
+        where: { proposal_governorate_id },
+      });
+
+      const createdEntity = Builder<ProposalGovernorateEntity>(
+        ProposalGovernorateEntity,
+        {
+          ...rawDeleted,
+        },
+      ).build();
+      return createdEntity;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
+  async arraySave(
+    proposal_id: string,
+    governorate_ids: string[],
+    session?: PrismaService,
+  ): Promise<void> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      // Find existing proposal governorates for the given proposal ID
+      const existingProposalGovernorate = await this.findMany(
+        {
+          proposal_id,
+        },
+        prisma,
+      );
+
+      // Get existing governorate IDs from the query result
+      const existingGovernorateIds = existingProposalGovernorate.map(
+        (governorate) => governorate.governorate_id,
+      );
+
+      // Delete proposal governorates that are not in the provided IDs
+      for (const existingGov of existingProposalGovernorate) {
+        if (!governorate_ids.includes(existingGov.governorate_id)) {
+          // console.log('delete', existingGov.proposal_governorate_id);
+          // Delete the proposal governorate with the provided ID
+          this.delete(existingGov.proposal_governorate_id, prisma);
+        }
+      }
+
+      // Create proposal governorates for IDs that exist in the array but not in existing governorates
+      for (const id of governorate_ids) {
+        if (!existingGovernorateIds.includes(id)) {
+          // console.log('create', proposal_id, id);
+          // Create a new proposal governorate
+          this.create(
+            {
+              proposal_governorate_id: nanoid(),
+              proposal_id,
+              governorate_id: id,
+            },
+            prisma,
+          );
+        }
+      }
+    } catch (error) {
+      console.error(`Error during arraySave: ${error.message}`);
       throw error;
     }
   }

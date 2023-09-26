@@ -1,6 +1,22 @@
 import { OutterStatusEnum } from '../../../tender-commons/types/proposal';
 import { ProposalSelectEnum } from '../dtos/queries/proposal.report.list.query.dto';
-export type ProposalIncludeTypes =
+export enum ProposalIncludeRelationsEnum {
+  USER = 'user',
+  BENEFICIARY_DETAILS = 'beneficiary_details',
+  FOLLOW_UPS = 'follow_ups',
+  TRACK = 'track',
+  PROPOSAL_ITEM_BUDGETS = 'proposal_item_budgets',
+  SUPERVISOR = 'supervisor',
+  PROPOSAL_LOGS = 'proposal_logs',
+  PAYMENTS = 'payments',
+  BANK_INFORMATION = 'bank_information',
+  PROJECT_TIMELINE = 'project_timeline',
+  GOVERNORATE_DETAIL = 'governorate_detail',
+  REGION_DETAIL = 'region_detail',
+  PROPOSAL_CLOSING_REPORT = 'proposal_closing_report',
+}
+
+export type ProposalIncludeRelationsTypes =
   | 'user'
   | 'beneficiary_details'
   | 'follow_ups'
@@ -17,7 +33,7 @@ export type ProposalIncludeTypes =
 
 export interface ProposalFetchByIdProps {
   id: string;
-  include_relations?: ProposalIncludeTypes[];
+  include_relations?: ProposalIncludeRelationsTypes[];
 }
 
 export interface ProposalFindManyProps {
@@ -33,7 +49,7 @@ export interface ProposalFindManyProps {
   page?: number;
   sort_by?: string;
   sort_direction?: string;
-  include_relations?: ProposalIncludeTypes[];
+  include_relations?: ProposalIncludeRelationsTypes[];
   selected_columns?: ProposalSelectEnum[];
   start_date?: Date;
   end_date?: Date;

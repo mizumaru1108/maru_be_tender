@@ -152,7 +152,7 @@ export class ProposalUpdatePaymentCommandHandler
 
       const proposal = await this.proposalRepo.fetchById({
         id: payment.proposal_id,
-        includes_relation: ['user'],
+        include_relations: ['user'],
       });
 
       if (!proposal) {

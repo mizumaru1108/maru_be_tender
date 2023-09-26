@@ -20,6 +20,7 @@ export class ProposalRegionUpdateProps {
 }
 
 export class ProposalRegionFindManyProps {
+  proposal_id?: string;
   limit?: number;
   page?: number;
   sort_by?: string;
@@ -102,6 +103,7 @@ export class ProposalRegionRepository {
     let args: Prisma.ProposalRegionFindManyArgs = {};
     let whereClause: Prisma.ProposalRegionWhereInput = {};
 
+    if (props.proposal_id) whereClause.proposal_id = props.proposal_id;
     if (include_relations && include_relations.length > 0) {
       args.include = this.applyInclude(include_relations);
     }
@@ -166,6 +168,82 @@ export class ProposalRegionRepository {
       });
     } catch (error) {
       console.trace(error);
+      throw error;
+    }
+  }
+
+  async delete(
+    proposal_region_id: string,
+    session?: PrismaService,
+  ): Promise<ProposalRegionEntity> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawDeleted = await prisma.proposalRegion.delete({
+        where: { proposal_region_id },
+      });
+
+      const createdEntity = Builder<ProposalRegionEntity>(
+        ProposalRegionEntity,
+        {
+          ...rawDeleted,
+        },
+      ).build();
+      return createdEntity;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
+  async arraySave(
+    proposal_id: string,
+    region_ids: string[],
+    session?: PrismaService,
+  ): Promise<void> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    try {
+      // Find existing proposal regions for the given proposal ID
+      const existingProposalRegions = await this.findMany(
+        {
+          proposal_id,
+        },
+        prisma,
+      );
+
+      // Get existing region IDs from the query result
+      const existingRegionIds = existingProposalRegions.map(
+        (region) => region.region_id,
+      );
+
+      // Delete proposal regions that are not in the provided IDs
+      for (const existingRegion of existingProposalRegions) {
+        if (!region_ids.includes(existingRegion.region_id)) {
+          console.log('delete', existingRegion.proposal_region_id);
+          // Delete the proposal region with the provided ID
+          this.delete(existingRegion.proposal_region_id, prisma);
+        }
+      }
+
+      // Create proposal regions for IDs that exist in the array but not in existing regions
+      for (const id of region_ids) {
+        if (!existingRegionIds.includes(id)) {
+          console.log('create', proposal_id, id);
+          // Create a new proposal region
+          this.create(
+            {
+              proposal_region_id: nanoid(),
+              proposal_id,
+              region_id: id,
+            },
+            prisma,
+          );
+        }
+      }
+    } catch (error) {
+      console.error(`Error during arraySave: ${error.message}`);
       throw error;
     }
   }

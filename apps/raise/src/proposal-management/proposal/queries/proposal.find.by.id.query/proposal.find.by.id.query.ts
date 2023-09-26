@@ -9,9 +9,10 @@ import { ChequeEntity } from '../../../payment/entities/cheque.entity';
 import { PaymentStatusEntity } from '../../../payment/entities/payment-status.entity';
 import { ProposalProjectTimelineEntity } from '../../../poject-timelines/entities/proposal.project.timeline.entity';
 import { ProposalLogEntity } from '../../../proposal-log/entities/proposal-log.entity';
+import { ProposalIncludeRelationsTypes } from '../../types';
 export class ProposalFindByIdQuery {
   id: string;
-  relation: string[];
+  relation: ProposalIncludeRelationsTypes[];
 }
 class ProposalItemBudgetEntityFindByIdResponse {
   id: string;
@@ -131,7 +132,7 @@ export class ProposalFindByIdQueryHandler
   ): Promise<ProposalFindByIdQueryResult> {
     const res = await this.proposalRepo.fetchById({
       id: query.id,
-      includes_relation: query.relation || [
+      include_relations: query.relation || [
         'user',
         'beneficiary_details',
         'follow_ups',

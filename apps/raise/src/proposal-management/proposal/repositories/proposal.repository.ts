@@ -35,7 +35,7 @@ import {
   ProposalDeleteProps,
   ProposalFetchByIdProps,
   ProposalFindManyProps,
-  ProposalIncludeTypes,
+  ProposalIncludeRelationsTypes,
   ProposalUpdateProps,
 } from '../types';
 
@@ -48,7 +48,7 @@ export class ProposalRepository {
   ) {}
 
   applyFilter(
-    include_relations: ProposalIncludeTypes[],
+    include_relations: ProposalIncludeRelationsTypes[],
   ): Prisma.proposalInclude {
     let include: Prisma.proposalInclude = {};
 

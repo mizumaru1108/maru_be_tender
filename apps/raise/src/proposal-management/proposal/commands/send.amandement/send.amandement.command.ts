@@ -78,7 +78,7 @@ export class SendAmandementCommandHandler
           const proposal = await this.proposalRepo.fetchById(
             {
               id: proposal_id,
-              includes_relation: [
+              include_relations: [
                 'user',
                 'bank_information',
                 'beneficiary_details',

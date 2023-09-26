@@ -1,6 +1,7 @@
 import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { ProposalEntity } from '../../entities/proposal.entity';
 import { ProposalRepository } from '../../repositories/proposal.repository';
+import { ProposalIncludeRelationsTypes } from '../../types';
 
 export class ProposalFindMineQuery {
   submitter_user_id: string;
@@ -8,7 +9,7 @@ export class ProposalFindMineQuery {
   page?: number;
   sort_by?: string;
   sort_direction?: string;
-  include_relations?: string[];
+  include_relations?: ProposalIncludeRelationsTypes[];
 }
 
 export class ProposalFindMineQueryResult {
