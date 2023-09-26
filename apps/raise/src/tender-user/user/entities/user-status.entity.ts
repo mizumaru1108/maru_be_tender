@@ -1,3 +1,4 @@
+import { UserStatusLogEntity } from './user-status-log.entity';
 import { UserEntity } from './user.entity';
 
 export class UserStatusEntity {
@@ -5,6 +6,5 @@ export class UserStatusEntity {
   // client_log      : ClientLogEntity
   client_log: any;
   user?: UserEntity[];
-  // user_status_log ?: UserStatusLogEntity[]
-  user_status_log?: any[];
+  user_status_log?: UserStatusLogEntity[];
 }

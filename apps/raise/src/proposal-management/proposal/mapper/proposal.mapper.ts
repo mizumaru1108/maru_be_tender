@@ -3,15 +3,25 @@ import {
   beneficiaries,
   payment,
   proposal,
+  proposal_follow_up,
   proposal_item_budget,
+  user,
+  user_role,
 } from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { ProposalItemBudgetEntity } from '../../item-budget/entities/proposal.item.budget.entity';
 import { ProposalEntity } from '../entities/proposal.entity';
 import { BeneficiaryEntity } from '../../../beneficiary/entity/beneficiary.entity';
+import { ProposalFollowUpEntity } from '../../follow-up/entities/proposal.follow.up.entity';
+import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 
 export type ProposalModel = proposal & {
   beneficiary_details?: beneficiaries | null;
+  follow_ups?: (proposal_follow_up & {
+    user: user & {
+      roles: user_role[];
+    };
+  })[];
   payments?: payment[];
   proposal_item_budgets?: proposal_item_budget[];
 };
@@ -19,8 +29,13 @@ export type ProposalModel = proposal & {
 @Injectable()
 export class ProposalMapper {
   async toDomain(type: ProposalModel): Promise<ProposalEntity> {
-    const { payments, beneficiary_details, proposal_item_budgets, ...rest } =
-      type;
+    const {
+      payments,
+      beneficiary_details,
+      follow_ups,
+      proposal_item_budgets,
+      ...rest
+    } = type;
 
     const proposalBuilder = Builder<ProposalEntity>(ProposalEntity, {
       ...rest,
@@ -52,7 +67,23 @@ export class ProposalMapper {
         rest.execution_time !== null
           ? parseFloat(rest.execution_time.toString())
           : null,
+      follow_ups: undefined,
     });
+
+    if (follow_ups) {
+      proposalBuilder.follow_ups(
+        follow_ups.map((item) => {
+          const userBuilder = Builder<UserEntity>(UserEntity, {
+            ...item.user,
+          }).build();
+
+          return Builder<ProposalFollowUpEntity>(ProposalFollowUpEntity, {
+            ...item,
+            user: userBuilder,
+          }).build();
+        }),
+      );
+    }
 
     if (beneficiary_details) {
       const beneficiary = Builder<BeneficiaryEntity>(

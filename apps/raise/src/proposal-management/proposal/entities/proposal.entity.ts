@@ -50,7 +50,7 @@ export class ProposalEntity extends AggregateRoot {
   governorate?: string | null;
   governorate_id?: string | null;
   governorate_detail?: GovernorateEntity;
-  proposal_governorates: ProposalGovernorateEntity[];
+  proposal_governorates?: ProposalGovernorateEntity[];
   id: string;
   inclu_or_exclu?: boolean | null;
   inner_status?: string | null;
@@ -95,7 +95,7 @@ export class ProposalEntity extends AggregateRoot {
   reasons_to_accept?: string | null;
   region?: string | null;
   region_id?: string | null;
-  proposal_regions: ProposalRegionEntity[];
+  proposal_regions?: ProposalRegionEntity[];
   region_detail?: RegionEntity;
   remote_or_insite?: string | null;
   state?: string | null;

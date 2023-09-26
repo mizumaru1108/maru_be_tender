@@ -16,6 +16,7 @@ export class UserEntity {
   employee_path?: string | null;
   last_login?: Date | null = null;
   status_id: string;
+  status: UserStatusEntity;
   address?: string | null = null;
   google_session: any; // jsonb
   is_online?: boolean | null = null;
@@ -29,7 +30,6 @@ export class UserEntity {
   proposals?: ProposalEntity[];
   proposal_proposal_supervisor_idTouser?: ProposalEntity[];
   client_data?: ClientDataEntity;
-  status: UserStatusEntity;
   // appointment_appointment_employee_idTouser                                   appointment[]                 @relation("appointment_employee_idTouser")
   // appointment_appointment_user_idTouser                                       appointment[]                 @relation("appointment_user_idTouser")
   // client_log                                                                  client_log[]

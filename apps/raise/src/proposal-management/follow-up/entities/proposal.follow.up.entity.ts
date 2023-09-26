@@ -10,14 +10,14 @@ import { CreateNotificationEvent } from 'src/notification-management/notificatio
 export class ProposalFollowUpEntity extends AggregateRoot {
   id: string;
   proposal_id: string;
-  created_at?: Date | null = new Date();
-  updated_at?: Date | null = new Date();
+  created_at: Date | null;
+  updated_at?: Date | null;
   attachments?: any; // json
   content?: string | null;
   user_id: string;
   submitter_role: string;
   employee_only: boolean;
-  user?: UserEntity;
+  user: UserEntity;
   proposal?: ProposalEntity;
 
   sendNotificaitonEvent(props: ISendNotificaitonEvent) {
