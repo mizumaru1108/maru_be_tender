@@ -10,11 +10,13 @@ import { QaProposalCreateNewSupervisorCommandHandler } from './commands/qa.propo
 import { QaProposalDeleteCommandHandler } from './commands/qa.proposal.delete/qa.proposal.delete.command';
 import { QaHelperControllers } from './controllers/qa-helper.controller';
 import { TrackModule } from '../tender-track/track.module';
+import { PurgeUserCommandHandler } from './commands/purge.user.command.ts/purge.user.command';
 
 const commands: Provider[] = [
   QaProposalCreateNewModeratorStateCommandHandler,
   QaProposalDeleteCommandHandler,
   QaProposalCreateNewSupervisorCommandHandler,
+  PurgeUserCommandHandler,
 ];
 
 const importedModules = [

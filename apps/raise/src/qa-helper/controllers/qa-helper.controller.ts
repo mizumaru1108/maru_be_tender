@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { baseResponseHelper } from '../../commons/helpers/base-response-helper';
 import { TenderRoles } from '../../tender-auth/decorators/tender-roles.decorator';
@@ -18,9 +18,14 @@ import { TenderJwtGuard } from '../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../tender-auth/guards/tender-roles.guard';
 import { DataNotFoundException } from '../../tender-commons/exceptions/data-not-found.exception';
 import { PayloadErrorException } from '../../tender-commons/exceptions/payload-error.exception';
+import {
+  PurgeUserCommand,
+  PurgeUserCommandResult,
+} from '../commands/purge.user.command.ts/purge.user.command';
 import { QaProposalCreateNewModeratorStateCommand } from '../commands/qa.proposal.create.new.moderator/qa.proposal.create.new.moderator.command';
 import { QaProposalCreateNewSupervisorCommand } from '../commands/qa.proposal.create.new.supervisor/qa.proposal.create.new.supervisor.command';
 import { QaProposalDeleteCommand } from '../commands/qa.proposal.delete/qa.proposal.delete.command';
+import { PurgeUserDto } from '../dto/requests/purge.user.dto';
 import { QaProposalCreateSupervisorDto } from '../dto/requests/qa-proposal-create-supervisor.dto';
 import { QaProposalCreateDto } from '../dto/requests/qa-proposal-create.dto';
 import { QaProposalDeleteDto } from '../dto/requests/qa-proposal.delete.dto';
@@ -74,6 +79,33 @@ export class QaHelperControllers {
     } catch (error) {
       if (error instanceof DataNotFoundException) {
         throw new NotFoundException(error.message);
+      }
+      if (error instanceof PayloadErrorException) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
+  }
+
+  @ApiOperation({ summary: 'Deleting user and all it related data' })
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Post('purge-user')
+  async purgeUser(@Body() dto: PurgeUserDto) {
+    try {
+      const createProposalCommand = Builder<PurgeUserCommand>(
+        PurgeUserCommand,
+        dto,
+      ).build();
+
+      const { data } = await this.commandBus.execute<
+        PurgeUserCommand,
+        PurgeUserCommandResult
+      >(createProposalCommand);
+      return baseResponseHelper(data, HttpStatus.OK);
+    } catch (error) {
+      if (error instanceof DataNotFoundException) {
+        throw new BadRequestException(error.message);
       }
       if (error instanceof PayloadErrorException) {
         throw new BadRequestException(error.message);
