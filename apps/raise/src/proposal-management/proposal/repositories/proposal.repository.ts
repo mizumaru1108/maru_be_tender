@@ -212,17 +212,7 @@ export class ProposalRepository {
       const filterQuery = await this.findByIdFilter(props);
       const rawProposal = await prisma.proposal.findFirst({
         where: filterQuery.where,
-        include: {
-          follow_ups: {
-            include: {
-              user: {
-                include: {
-                  roles: true,
-                },
-              },
-            },
-          },
-        },
+        include: filterQuery.include,
       });
 
       if (!rawProposal) return null;

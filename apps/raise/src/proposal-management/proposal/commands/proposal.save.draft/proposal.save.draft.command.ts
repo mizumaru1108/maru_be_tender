@@ -23,6 +23,7 @@ import { ProposalRepository } from '../../repositories/proposal.repository';
 import { ProposalUpdateProps } from '../../types';
 import { ProposalRegionRepository } from '../../../proposal-regions/region/repositories/proposal.region.repository';
 import { ProposalGovernorateRepository } from '../../../proposal-regions/governorate/repositories/proposal.governorate.repository';
+import { logUtil } from '../../../../commons/utils/log-util';
 
 export class ProposalSaveDraftCommand {
   userId: string;
@@ -71,6 +72,8 @@ export class ProposalSaveDraftCommandHandler
         id: proposalId,
         include_relations: ['user', 'supervisor'],
       });
+
+      console.log(logUtil(proposal));
 
       if (!proposal) throw new DataNotFoundException(`Proposal not found`);
       if (proposal.submitter_user_id !== userId) {

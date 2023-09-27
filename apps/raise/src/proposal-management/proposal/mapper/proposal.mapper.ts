@@ -16,6 +16,8 @@ import { ProposalFollowUpEntity } from '../../follow-up/entities/proposal.follow
 import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 
 export type ProposalModel = proposal & {
+  user?: user;
+  supervisor?: user;
   beneficiary_details?: beneficiaries | null;
   follow_ups?: (proposal_follow_up & {
     user: user & {
@@ -30,6 +32,8 @@ export type ProposalModel = proposal & {
 export class ProposalMapper {
   async toDomain(type: ProposalModel): Promise<ProposalEntity> {
     const {
+      user,
+      supervisor,
       payments,
       beneficiary_details,
       follow_ups,
@@ -69,6 +73,22 @@ export class ProposalMapper {
           : null,
       follow_ups: undefined,
     });
+
+    if (user) {
+      const userBuilder = Builder<UserEntity>(UserEntity, {
+        ...user,
+      }).build();
+
+      proposalBuilder.user(userBuilder);
+    }
+
+    if (supervisor) {
+      const supervisorBuider = Builder<UserEntity>(UserEntity, {
+        ...supervisor,
+      }).build();
+
+      proposalBuilder.user(supervisorBuider);
+    }
 
     if (follow_ups) {
       proposalBuilder.follow_ups(
