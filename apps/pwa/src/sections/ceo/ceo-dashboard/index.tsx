@@ -29,7 +29,7 @@ function CeoDashboard() {
   const { activeRole } = useAuth();
   const { loadingCount } = useSelector((state) => state.proposal);
   React.useEffect(() => {
-    dispatch(getTrackList(1, activeRole! as string));
+    dispatch(getTrackList(1, activeRole! as string, 0));
   }, [activeRole]);
 
   if (loadingCount) return <>{translate('pages.common.loading')}</>;

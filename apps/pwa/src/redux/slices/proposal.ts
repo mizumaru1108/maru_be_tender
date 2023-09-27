@@ -536,6 +536,7 @@ export const getTrackList = (isGeneral: number, role: string, isDeleted?: number
         headers: { 'x-hasura-role': role },
         params: {
           ...removeEmptyKey(tmpParams),
+          limit: 999,
         },
       });
       if (response.data.statusCode === 200) {
