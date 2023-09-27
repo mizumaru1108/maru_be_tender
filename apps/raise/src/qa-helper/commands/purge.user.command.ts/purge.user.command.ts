@@ -18,21 +18,33 @@ import { PrismaService } from '../../../prisma/prisma.service';
 
 export class PurgeUserCommand {
   user_id: string;
+  dry_run: boolean;
 }
 
 export class PurgeUserCommandResult {
   data: {
     client_data: client_data[];
+    client_data_count: number;
     file_manager: file_manager[];
+    file_manager_count: number;
     notifications: notification[];
+    notifications_count: number;
     user_role: user_role[];
+    user_role_count: number;
     user_status_log: user_status_log[];
+    user_status_log_count: number;
     message: message[];
+    message_count: number;
     room_chat: room_chat[];
+    room_chat_count: number;
     contact_us: ContactUs[];
+    contact_us_count: number;
     edit_requests: edit_requests[];
+    edit_requests_count: number;
     proposals: proposal[];
+    proposals_count: number;
     user: user[];
+    user_count: number;
   };
 }
 
@@ -91,20 +103,17 @@ export class PurgeUserCommandHandler
 
       const message = await this.prismaService.message.findMany({
         where: {
-          OR: {
-            owner_id: command.user_id,
-            receiver_id: command.user_id,
-          },
+          OR: [{ owner_id: command.user_id }, { receiver_id: command.user_id }],
         },
       });
       const deleted_message_ids = message.map((message) => message.id);
 
       const room_chat = await this.prismaService.room_chat.findMany({
         where: {
-          OR: {
-            participant1_user_id: command.user_id,
-            participant2_user_id: command.user_id,
-          },
+          OR: [
+            { participant1_user_id: command.user_id },
+            { participant2_user_id: command.user_id },
+          ],
         },
       });
       const deleted_room_chat_ids = room_chat.map((room) => room.id);
@@ -120,10 +129,7 @@ export class PurgeUserCommandHandler
 
       const edit_requests = await this.prismaService.edit_requests.findMany({
         where: {
-          OR: {
-            user_id: command.user_id,
-            reviewer_id: command.user_id,
-          },
+          OR: [{ user_id: command.user_id }, { reviewer_id: command.user_id }],
         },
       });
       const deleted_edit_requests_ids = edit_requests.map(
@@ -132,10 +138,12 @@ export class PurgeUserCommandHandler
 
       const proposals = await this.prismaService.proposal.findMany({
         where: {
-          submitter_user_id: command.user_id,
-          cashier_id: command.user_id,
-          finance_id: command.user_id,
-          supervisor_id: command.user_id,
+          OR: [
+            { submitter_user_id: command.user_id },
+            { supervisor_id: command.user_id },
+            { cashier_id: command.user_id },
+            { finance_id: command.user_id },
+          ],
         },
       });
       const deleted_proposal_id = proposals.map((proposal) => proposal.id);
@@ -144,6 +152,35 @@ export class PurgeUserCommandHandler
         where: { id: command.user_id },
       });
       const deleted_user_id = user.map((user) => user.id);
+
+      const data = {
+        client_data,
+        client_data_count: client_data.length,
+        file_manager,
+        file_manager_count: file_manager.length,
+        notifications,
+        notifications_count: notifications.length,
+        user_role,
+        user_role_count: user_role.length,
+        user_status_log,
+        user_status_log_count: user_status_log.length,
+        message,
+        message_count: message.length,
+        room_chat,
+        room_chat_count: room_chat.length,
+        contact_us,
+        contact_us_count: contact_us.length,
+        edit_requests,
+        edit_requests_count: edit_requests.length,
+        proposals,
+        proposals_count: proposals.length,
+        user,
+        user_count: user.length,
+      };
+
+      if (command.dry_run) {
+        return { data };
+      }
 
       const res = await this.prismaService.$transaction(
         async (prismaSession) => {
@@ -237,20 +274,6 @@ export class PurgeUserCommandHandler
           await this.bunnyService.deleteMedia(url, true);
         }
       }
-
-      const data = {
-        client_data,
-        file_manager,
-        notifications,
-        user_role,
-        user_status_log,
-        message,
-        room_chat,
-        contact_us,
-        edit_requests,
-        proposals,
-        user,
-      };
 
       return { data };
     } catch (error) {
