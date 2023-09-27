@@ -303,10 +303,13 @@ export class ProposalFollowUpCreateCommandHandler
           emailTemplateContext: {
             projectName: proposal.project_name,
             receiverName: proposal.user.employee_name,
-            followUpSender: result.db.sender_data.employee_name,
             projectPageLink: `client/dashboard/current-project/${proposal.id}/show-details`,
           },
-          emailTemplatePath: `tender/ar/proposal/project_followup`,
+          emailTemplatePath: `tender/ar/proposal/${
+            follow_up_attachment && follow_up_attachment.length > 0
+              ? 'project_followup_attachment'
+              : 'project_followup_text'
+          }`,
         });
         notifPayloads.push({
           notif_type: 'SMS',

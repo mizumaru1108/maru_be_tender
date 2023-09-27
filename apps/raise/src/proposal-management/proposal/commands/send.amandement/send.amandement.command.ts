@@ -218,6 +218,7 @@ export class SendAmandementCommandHandler
                 email_type: 'template',
                 emailTemplateContext: {
                   clientUsername: `${proposal.user.employee_name}`,
+                  projectName: `${proposal.project_name}`,
                   projectPageLink: `${
                     appConfig?.baseUrl || ''
                   }/client/dashboard/previous-funding-requests/${
