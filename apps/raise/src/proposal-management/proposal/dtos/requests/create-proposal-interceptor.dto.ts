@@ -112,11 +112,11 @@ export class CreateProposalInterceptorDto {
   @IsNotEmpty()
   pm_email?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  region?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsString()
+  // @IsNotEmpty()
+  // region?: string;
 
   @ApiProperty()
   @IsArray()
@@ -124,11 +124,11 @@ export class CreateProposalInterceptorDto {
   @IsNotEmpty({ each: true })
   region_id: string[];
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  governorate?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsString()
+  // @IsNotEmpty()
+  // governorate?: string;
 
   @ApiProperty()
   @IsArray()

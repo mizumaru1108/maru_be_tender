@@ -26,8 +26,8 @@ export const CreateProposalInterceptorMapper = (
     pm_name,
     pm_mobile,
     pm_email,
-    region,
-    governorate,
+    // region,
+    // governorate,
     /* from (step 4) */
     amount_required_fsupport,
     detail_project_budgets,
@@ -84,8 +84,8 @@ export const CreateProposalInterceptorMapper = (
   pm_name && (createPayload.pm_name = pm_name);
   pm_mobile && (createPayload.pm_mobile = pm_mobile);
   pm_email && (createPayload.pm_email = pm_email);
-  region && (createPayload.region = region);
-  governorate && (createPayload.governorate = governorate);
+  // region && (createPayload.region = region);
+  // governorate && (createPayload.governorate = governorate);
   if (
     !!project_idea &&
     !!project_location &&
@@ -100,9 +100,7 @@ export const CreateProposalInterceptorMapper = (
     !!pm_name &&
     !!pm_name &&
     !!pm_mobile &&
-    !!pm_email &&
-    !!region &&
-    !!governorate
+    !!pm_email
   ) {
     createPayload.step = 'THIRD';
   }
@@ -125,8 +123,8 @@ export const CreateProposalInterceptorMapper = (
     !!pm_name &&
     !!pm_mobile &&
     !!pm_email &&
-    !!region &&
-    !!governorate &&
+    // !!region &&
+    // !!governorate &&
     !!amount_required_fsupport &&
     !!detail_project_budgets
   ) {
@@ -148,8 +146,8 @@ export const CreateProposalInterceptorMapper = (
     !!pm_name &&
     !!pm_mobile &&
     !!pm_email &&
-    !!region &&
-    !!governorate &&
+    // !!region &&
+    // !!governorate &&
     !!amount_required_fsupport &&
     !!detail_project_budgets &&
     !!proposal_bank_information_id

@@ -84,10 +84,10 @@ export class ProposalCreateCommandHandler
           pm_name: request.pm_name,
           pm_mobile: request.pm_mobile,
           pm_email: request.pm_email,
-          region: request.region,
-          region_id: request.region_id[0],
-          governorate: request.governorate,
-          governorate_id: request.governorate_id[0],
+          // region: request.region,
+          // region_id: request.region_id[0],
+          // governorate: request.governorate,
+          // governorate_id: request.governorate_id[0],
           amount_required_fsupport: request.amount_required_fsupport,
         },
       ).build();
@@ -132,9 +132,7 @@ export class ProposalCreateCommandHandler
         !!request.pm_name &&
         !!request.pm_mobile &&
         !!request.pm_email &&
-        !!request.region &&
         !!request.region_id &&
-        !!request.governorate &&
         !!request.governorate_id
       ) {
         proposalCreatePayload.step = 'THIRD';
@@ -154,9 +152,7 @@ export class ProposalCreateCommandHandler
         !!request.pm_name &&
         !!request.pm_mobile &&
         !!request.pm_email &&
-        !!request.region &&
         !!request.region_id &&
-        !!request.governorate &&
         !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets
@@ -178,9 +174,7 @@ export class ProposalCreateCommandHandler
         !!request.pm_name &&
         !!request.pm_mobile &&
         !!request.pm_email &&
-        !!request.region &&
         !!request.region_id &&
-        !!request.governorate &&
         !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets &&
@@ -203,9 +197,7 @@ export class ProposalCreateCommandHandler
         !!request.pm_name &&
         !!request.pm_mobile &&
         !!request.pm_email &&
-        !!request.region &&
         !!request.region_id &&
-        !!request.governorate &&
         !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets &&
@@ -279,7 +271,7 @@ export class ProposalCreateCommandHandler
               : this.prismaService;
 
           // create proposal
-          // console.log('payload', proposalCreatePayload);
+          console.log('payload', proposalCreatePayload);
           const createdProposal = await this.proposalRepo.create(
             proposalCreatePayload,
             session,
@@ -410,6 +402,10 @@ export class ProposalCreateCommandHandler
       return dbRes.created_proposal;
     } catch (error) {
       if (fileManagerPayload.length > 0) {
+        console.log(
+          'error occured, and uploaded file exist, deleteing files',
+          fileManagerPayload,
+        );
         for (const file of fileManagerPayload) {
           await this.bunnyService.deleteMedia(file.url, true);
         }

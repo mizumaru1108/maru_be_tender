@@ -119,11 +119,11 @@ export class ProposalSaveDraftInterceptorDto extends ProposalDeleteDraftDto {
   @IsNotEmpty()
   pm_email?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  region?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsString()
+  // @IsNotEmpty()
+  // region?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -132,11 +132,11 @@ export class ProposalSaveDraftInterceptorDto extends ProposalDeleteDraftDto {
   @IsNotEmpty({ each: true })
   region_id?: string[];
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  governorate?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsString()
+  // @IsNotEmpty()
+  // governorate?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

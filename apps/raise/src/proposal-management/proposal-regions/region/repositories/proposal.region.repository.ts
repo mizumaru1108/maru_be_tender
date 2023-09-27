@@ -221,7 +221,7 @@ export class ProposalRegionRepository {
       // Delete proposal regions that are not in the provided IDs
       for (const existingRegion of existingProposalRegions) {
         if (!region_ids.includes(existingRegion.region_id)) {
-          console.log('delete', existingRegion.proposal_region_id);
+          // console.log('delete', existingRegion.proposal_region_id);
           // Delete the proposal region with the provided ID
           this.delete(existingRegion.proposal_region_id, prisma);
         }
@@ -230,7 +230,7 @@ export class ProposalRegionRepository {
       // Create proposal regions for IDs that exist in the array but not in existing regions
       for (const id of region_ids) {
         if (!existingRegionIds.includes(id)) {
-          console.log('create', proposal_id, id);
+          // console.log('create', proposal_id, id);
           // Create a new proposal region
           this.create(
             {

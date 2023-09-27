@@ -109,14 +109,14 @@ export class ProposalSaveDraftCommandHandler
           pm_name: request.pm_name,
           pm_mobile: request.pm_mobile,
           pm_email: request.pm_email,
-          region: request.region,
-          region_id:
-            request && request.region_id ? request.region_id[0] : undefined,
-          governorate: request.governorate,
-          governorate_id:
-            request && request.governorate_id
-              ? request.governorate_id[0]
-              : undefined,
+          // region: request.region,
+          // region_id:
+          //   request && request.region_id ? request.region_id[0] : undefined,
+          // // governorate: request.governorate,
+          // governorate_id:
+          //   request && request.governorate_id
+          //     ? request.governorate_id[0]
+          //     : undefined,
           amount_required_fsupport: request.amount_required_fsupport,
         },
       ).build();
@@ -161,9 +161,7 @@ export class ProposalSaveDraftCommandHandler
         !!request.pm_name &&
         !!request.pm_mobile &&
         !!request.pm_email &&
-        !!request.region &&
         !!request.region_id &&
-        !!request.governorate &&
         !!request.governorate_id
       ) {
         proposalUpdateProps.step = 'THIRD';
@@ -183,9 +181,7 @@ export class ProposalSaveDraftCommandHandler
         !!request.pm_name &&
         !!request.pm_mobile &&
         !!request.pm_email &&
-        !!request.region &&
         !!request.region_id &&
-        !!request.governorate &&
         !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets
@@ -207,9 +203,7 @@ export class ProposalSaveDraftCommandHandler
         !!request.pm_name &&
         !!request.pm_mobile &&
         !!request.pm_email &&
-        !!request.region &&
         !!request.region_id &&
-        !!request.governorate &&
         !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets &&
@@ -232,9 +226,7 @@ export class ProposalSaveDraftCommandHandler
         !!request.pm_name &&
         !!request.pm_mobile &&
         !!request.pm_email &&
-        !!request.region &&
         !!request.region_id &&
-        !!request.governorate &&
         !!request.governorate_id &&
         !!request.amount_required_fsupport &&
         !!request.detail_project_budgets &&
@@ -468,6 +460,10 @@ export class ProposalSaveDraftCommandHandler
       };
     } catch (error) {
       if (fileManagerPayload && fileManagerPayload.length > 0) {
+        console.log(
+          'error occured, and uploaded file exist, deleteing files',
+          fileManagerPayload,
+        );
         for (const file of fileManagerPayload) {
           await this.bunnyService.deleteMedia(file.url, true);
         }
