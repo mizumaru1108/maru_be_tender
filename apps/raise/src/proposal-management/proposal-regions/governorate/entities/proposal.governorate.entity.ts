@@ -7,4 +7,5 @@ export class ProposalGovernorateEntity {
   proposal: ProposalEntity;
   governorate_id: string;
   governorate: GovernorateEntity;
+  created_at: Date;
 }

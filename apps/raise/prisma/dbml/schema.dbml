@@ -274,6 +274,7 @@ Table proposal_region {
   proposal proposal [not null]
   region_id String [not null]
   region regions [not null]
+  created_at DateTime [default: `now()`, not null]
 }
 
 Table proposal_governorate {
@@ -282,6 +283,7 @@ Table proposal_governorate {
   proposal proposal [not null]
   governorate_id String [not null]
   governorate governorates [not null]
+  created_at DateTime [default: `now()`, not null]
 }
 
 Table proposal_comment {

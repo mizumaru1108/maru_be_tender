@@ -7,4 +7,5 @@ export class ProposalRegionEntity {
   proposal: ProposalEntity;
   region_id: string;
   region: RegionEntity;
+  created_at: Date;
 }

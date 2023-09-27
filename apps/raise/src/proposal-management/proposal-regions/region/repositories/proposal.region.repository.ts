@@ -121,7 +121,7 @@ export class ProposalRegionRepository {
     try {
       const { limit = 0, page = 0, sort_by, sort_direction } = props;
       const offset = (page - 1) * limit;
-      const getSortBy = sort_by ? sort_by : 'name';
+      const getSortBy = sort_by ? sort_by : 'created_at';
       const getSortDirection = sort_direction ? sort_direction : 'desc';
 
       const args = this.findManyFilter(props);
