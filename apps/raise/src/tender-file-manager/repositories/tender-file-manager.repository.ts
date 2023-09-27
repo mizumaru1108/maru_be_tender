@@ -29,7 +29,7 @@ export class CreateFileManagerProps {
   advertisement_id?: string | null;
 }
 export class UpdateFileManagerProps {
-  id?: string; // incase of predefined
+  id?: string;
   url?: string;
   name?: string;
   size?: number;
@@ -40,6 +40,12 @@ export class UpdateFileManagerProps {
   proposal_id?: string | null;
   bank_information_id?: string | null;
   advertisement_id?: string | null;
+  is_deleted?: boolean;
+}
+
+export class UpdateManyFileManagerProps {
+  id?: string[];
+  url?: string[];
   is_deleted?: boolean;
 }
 
@@ -290,6 +296,50 @@ export class TenderFileManagerRepository {
       }).build();
 
       return updatedEntity;
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
+  }
+
+  async updateMany(
+    props: UpdateManyFileManagerProps,
+    session?: PrismaService,
+  ): Promise<number> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+
+    const { url, id } = props;
+
+    try {
+      let whereClause: Prisma.file_managerWhereInput = {};
+
+      // validate the identifier
+      if (url === undefined && id === undefined) {
+        throw new PayloadErrorException(
+          `You must include at least one identifier`,
+        );
+      }
+      if (url) {
+        whereClause = {
+          ...whereClause,
+          url: { in: url },
+        };
+      }
+      if (id) {
+        whereClause = {
+          ...whereClause,
+          id: { in: id },
+        };
+      }
+
+      const updateRes = await prisma.file_manager.updateMany({
+        where: whereClause,
+        data: {
+          is_deleted: props.is_deleted,
+        },
+      });
+
+      return updateRes.count;
     } catch (error) {
       throw this.errorMapper(error);
     }

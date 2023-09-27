@@ -73,7 +73,7 @@ export class ProposalSaveDraftCommandHandler
         include_relations: ['user', 'supervisor'],
       });
 
-      console.log(logUtil(proposal));
+      // console.log(logUtil(proposal));
 
       if (!proposal) throw new DataNotFoundException(`Proposal not found`);
       if (proposal.submitter_user_id !== userId) {

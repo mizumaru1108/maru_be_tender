@@ -61,6 +61,10 @@ import {
   ProposalCreateCommandResult,
 } from '../commands/proposal.create/proposal.create.command';
 import {
+  ProposalDeleteDraftCommand,
+  ProposalDeleteDraftCommandResult,
+} from '../commands/proposal.delete.draft/proposal.delete.draft.command';
+import {
   ProposalSaveDraftCommand,
   ProposalSaveDraftCommandResult,
 } from '../commands/proposal.save.draft/proposal.save.draft.command';
@@ -223,15 +227,28 @@ export class TenderProposalController {
     @CurrentUser() currentUser: TenderCurrentUser,
     @Body() request: ProposalDeleteDraftDto,
   ) {
-    const deletedDraft = await this.proposalService.deleteDraft(
-      currentUser.id,
-      request.proposal_id,
-    );
-    return baseResponseHelper(
-      deletedDraft,
-      HttpStatus.OK,
-      'Draft deleted successfully',
-    );
+    try {
+      const command = Builder<ProposalDeleteDraftCommand>(
+        ProposalDeleteDraftCommand,
+        {
+          user_id: currentUser.id,
+          proposal_id: request.proposal_id,
+        },
+      ).build();
+
+      const { data } = await this.commandBus.execute<
+        ProposalDeleteDraftCommand,
+        ProposalDeleteDraftCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        data,
+        HttpStatus.OK,
+        'Draft deleted successfully',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 
   @ApiOperation({

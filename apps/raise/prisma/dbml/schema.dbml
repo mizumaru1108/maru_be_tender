@@ -1638,11 +1638,11 @@ Ref: proposal.support_goal_id > support_goal.id
 
 Ref: proposal.track_id > track.id
 
-Ref: proposal_region.proposal_id > proposal.id
+Ref: proposal_region.proposal_id > proposal.id [delete: Cascade]
 
 Ref: proposal_region.region_id > regions.region_id
 
-Ref: proposal_governorate.proposal_id > proposal.id
+Ref: proposal_governorate.proposal_id > proposal.id [delete: Cascade]
 
 Ref: proposal_governorate.governorate_id > governorates.governorate_id
 

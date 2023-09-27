@@ -286,7 +286,7 @@ model proposal {
 model ProposalRegion {
     proposal_region_id  String      @id @unique
     proposal_id         String 
-    proposal            proposal @relation(fields: [proposal_id], references: [id])
+    proposal            proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
     region_id           String
     region              Region @relation(fields: [region_id], references: [region_id])
     created_at  DateTime @default(now()) @db.Timestamptz(6)
@@ -296,7 +296,7 @@ model ProposalRegion {
 model ProposalGovernorate {
     proposal_governorate_id  String @id @unique
     proposal_id         String 
-    proposal            proposal @relation(fields: [proposal_id], references: [id])
+    proposal            proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
     governorate_id           String
     governorate          Governorate @relation(fields: [governorate_id], references: [governorate_id])
     created_at  DateTime @default(now()) @db.Timestamptz(6)

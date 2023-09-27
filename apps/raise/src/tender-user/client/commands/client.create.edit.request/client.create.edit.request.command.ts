@@ -34,7 +34,6 @@ import {
 } from '../../dtos/requests';
 import { TenderClientRepository } from '../../repositories/tender-client.repository';
 import { TenderClientService } from '../../services/tender-client.service';
-import { logUtil } from '../../../../commons/utils/log-util';
 
 export class ClientCreateEditRequestCommand {
   user: TenderCurrentUser;
