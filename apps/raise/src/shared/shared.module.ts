@@ -13,7 +13,7 @@ import { DiscordModule } from 'src/libs/discord/discord.module';
   imports: [
     FusionAuthModule,
     BunnyModule,
-    AuthzedModule,
+    // AuthzedModule,
     EmailModule,
     GoogleCalendarModule,
     GoogleOAuth2Module,
