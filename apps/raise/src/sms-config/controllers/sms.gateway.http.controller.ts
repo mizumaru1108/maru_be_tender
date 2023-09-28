@@ -33,7 +33,7 @@ import { PayloadErrorException } from '../../tender-commons/exceptions/payload-e
 import { BasePrismaErrorException } from '../../tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { RequestErrorException } from '../../tender-commons/exceptions/request-error.exception';
 import { manualPaginationHelper } from '../../tender-commons/helpers/manual-pagination-helper';
-import { InvalidTrackIdException } from '../../tender-track/track/exceptions/invalid-track-id.excception';
+import { InvalidTrackIdException } from '../../track-management/track/exceptions/invalid-track-id.excception';
 import {
   SmsConfigCreateCommand,
   SmsConfigCreateCommandResult,

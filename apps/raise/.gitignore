@@ -254,4 +254,6 @@ $RECYCLE.BIN/
 # google service account
 service-account.json
 
+.idea
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,linux,node,visualstudiocode,yarn

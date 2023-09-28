@@ -9,7 +9,7 @@ import { QaProposalCreateNewModeratorStateCommandHandler } from './commands/qa.p
 import { QaProposalCreateNewSupervisorCommandHandler } from './commands/qa.proposal.create.new.supervisor/qa.proposal.create.new.supervisor.command';
 import { QaProposalDeleteCommandHandler } from './commands/qa.proposal.delete/qa.proposal.delete.command';
 import { QaHelperControllers } from './controllers/qa-helper.controller';
-import { TrackModule } from '../tender-track/track.module';
+import { TrackModule } from '../track-management/track/track.module';
 import { PurgeUserCommandHandler } from './commands/purge.user.command.ts/purge.user.command';
 
 const commands: Provider[] = [

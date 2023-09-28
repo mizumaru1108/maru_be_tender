@@ -2,7 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ProposalRepository } from 'src/proposal-management/proposal/repositories/proposal.repository';
 import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
 import { BeneficiaryEntity } from '../../../../beneficiary/entity/beneficiary.entity';
-import { TrackEntity } from '../../../../tender-track/track/entities/track.entity';
+import { TrackEntity } from '../../../../track-management/track/entities/track.entity';
 import { UserEntity } from '../../../../tender-user/user/entities/user.entity';
 import { ProposalFollowUpEntity } from '../../../follow-up/entities/proposal.follow.up.entity';
 import { ChequeEntity } from '../../../payment/entities/cheque.entity';

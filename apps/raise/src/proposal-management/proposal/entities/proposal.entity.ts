@@ -2,7 +2,7 @@ import { AggregateRoot } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
 import { BeneficiaryEntity } from '../../../beneficiary/entity/beneficiary.entity';
 import { CreateNotificationEvent } from '../../../notification-management/notification/event/create.notification.event';
-import { TrackEntity } from '../../../tender-track/track/entities/track.entity';
+import { TrackEntity } from '../../../track-management/track/entities/track.entity';
 import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 import { ProposalCloseReportEntity } from '../../closing-report/entity/proposal.close.report.entity';
 import { ProposalFollowUpEntity } from '../../follow-up/entities/proposal.follow.up.entity';

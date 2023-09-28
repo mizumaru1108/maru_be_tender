@@ -1,10 +1,10 @@
 import { Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { TrackCreateCommandCommandHandler } from './track/commands/track.create.command/track.create.command';
-import { TrackUpdateCommandHandler } from './track/commands/track.update.command/track.update.command';
-import { TrackController } from './track/controllers/track.controller';
-import { TrackFindManyQueryHandler } from './track/queries/track.find.many/track.find.many.query';
-import { TrackRepository } from './track/repositories/track.repository';
+import { TrackCreateCommandCommandHandler } from './commands/track.create.command/track.create.command';
+import { TrackUpdateCommandHandler } from './commands/track.update.command/track.update.command';
+import { TrackController } from './controllers/track.controller';
+import { TrackFindManyQueryHandler } from './queries/track.find.many/track.find.many.query';
+import { TrackRepository } from './repositories/track.repository';
 
 const importedModule = [CqrsModule];
 const controllers = [TrackController];

@@ -10,7 +10,7 @@ import { BannerTypeEnum } from 'src/banners/types/enums/banner.type.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UploadFilesJsonbDto } from 'src/tender-commons/dto/upload-files-jsonb.dto';
 import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
-import { TrackEntity } from 'src/tender-track/track/entities/track.entity';
+import { TrackEntity } from 'src/track-management/track/entities/track.entity';
 import { logUtil } from '../../commons/utils/log-util';
 
 export class BannerCreateProps {

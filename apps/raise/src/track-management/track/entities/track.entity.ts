@@ -1,4 +1,4 @@
-import { ProposalTrackSectionEntity } from '../../section/entities/proposal-track-section.entity';
+import { TrackSectionEntity } from '../../track-section/entities/track.section.entity';
 import { ProposalEntity } from '../../../proposal-management/proposal/entities/proposal.entity';
 import { UserEntity } from '../../../tender-user/user/entities/user.entity';
 
@@ -9,6 +9,6 @@ export class TrackEntity {
   created_at?: Date | null = new Date();
   is_deleted?: boolean | null = false;
   proposals?: ProposalEntity[];
-  sections?: ProposalTrackSectionEntity[];
+  sections?: TrackSectionEntity[];
   user?: UserEntity[];
 }

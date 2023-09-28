@@ -10,8 +10,8 @@ import {
   OutterStatusEnum,
   ProposalAction,
 } from '../../../../tender-commons/types/proposal';
-import { InvalidTrackIdException } from '../../../../tender-track/track/exceptions/invalid-track-id.excception';
-import { TrackRepository } from '../../../../tender-track/track/repositories/track.repository';
+import { InvalidTrackIdException } from '../../../../track-management/track/exceptions/invalid-track-id.excception';
+import { TrackRepository } from '../../../../track-management/track/repositories/track.repository';
 import { TenderCurrentUser } from '../../../../tender-user/user/interfaces/current-user.interface';
 import {
   CreateItemBugetProps,

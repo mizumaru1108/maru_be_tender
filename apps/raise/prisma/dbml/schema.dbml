@@ -607,12 +607,12 @@ Table track_section {
   id String [pk]
   name String [not null]
   budget Float [not null]
-  section_id String
+  parent_section_id String
   is_leaf Boolean [default: false]
   track_id String [not null]
-  is_deleted Boolean [default: false]
-  track_section track_section
-  other_track_section track_section [not null]
+  is_deleted Boolean [not null, default: false]
+  parent_section track_section
+  child_track_section track_section [not null]
   track track [not null]
 }
 
@@ -1702,7 +1702,7 @@ Ref: email_record.sender_id > user.id [delete: Restrict]
 
 Ref: recommended_support_consultant.proposal_id > proposal.id [delete: Cascade]
 
-Ref: track_section.section_id - track_section.id [delete: Restrict]
+Ref: track_section.parent_section_id - track_section.id [delete: Restrict]
 
 Ref: track_section.track_id > track.id [delete: Cascade]
 

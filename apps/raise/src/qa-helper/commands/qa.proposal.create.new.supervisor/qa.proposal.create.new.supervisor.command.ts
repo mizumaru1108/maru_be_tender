@@ -14,7 +14,7 @@ import {
 } from '../../mock/mock-data';
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
 import { DataNotFoundException } from '../../../tender-commons/exceptions/data-not-found.exception';
-import { TrackRepository } from '../../../tender-track/track/repositories/track.repository';
+import { TrackRepository } from '../../../track-management/track/repositories/track.repository';
 import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
 import { InnerStatusEnum } from 'src/tender-commons/types/proposal';
 

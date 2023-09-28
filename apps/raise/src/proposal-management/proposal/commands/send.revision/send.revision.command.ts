@@ -38,6 +38,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { ProposalAskedEditRequestRepository } from '../../../asked-edit-request/repositories/proposal.asked.edit.request.repository';
 import { ProposalLogRepository } from '../../../proposal-log/repositories/proposal.log.repository';
 import { TenderAppRoleEnum } from '../../../../tender-commons/types';
+import { ProposalGovernorateRepository } from '../../../proposal-regions/governorate/repositories/proposal.governorate.repository';
+import { ProposalRegionRepository } from '../../../proposal-regions/region/repositories/proposal.region.repository';
 
 export class SendRevisionCommand {
   userId: string;
@@ -65,6 +67,8 @@ export class SendRevisionCommandHandler
     private readonly editRequestRepo: ProposalEditRequestRepository,
     private readonly proposalAskedEditRequestRepo: ProposalAskedEditRequestRepository,
     private readonly itemBudgetRepo: ProposalItemBudgetRepository,
+    private readonly proposalRegionRepo: ProposalRegionRepository,
+    private readonly proposalGovernorateRepo: ProposalGovernorateRepository,
     private readonly timelineRepo: ProposalTimelinePostgresRepository,
     private readonly fileManagerRepo: TenderFileManagerRepository,
     private readonly notifRepo: TenderNotificationRepository,
@@ -92,6 +96,8 @@ export class SendRevisionCommandHandler
           'supervisor',
           'proposal_item_budgets',
           'bank_information',
+          'proposal_governorates',
+          'proposal_regions',
         ],
       });
 
@@ -129,8 +135,8 @@ export class SendRevisionCommandHandler
           //form 4
           amount_required_fsupport: request.amount_required_fsupport,
           proposal_bank_id: request.proposal_bank_id,
-          governorate_id: request.governorate_id,
-          region_id: request.region_id,
+          // governorate_id: request.governorate_id,
+          // region_id: request.region_id,
         },
       ).build();
 
@@ -160,6 +166,12 @@ export class SendRevisionCommandHandler
       const allowedKeys = Object.keys(rawAllowedKeys);
       const keySet = new Set(allowedKeys);
       const currentKeys = removeUndefinedKeys(proposalUpdateProps);
+      if (request.governorate_id) {
+        keySet.add('governorate_id'); // Add governorate_id to the key set
+      }
+      if (request.region_id) {
+        keySet.add('region_id'); // Add region_id to the key set
+      }
       // console.log({ allowedKeys });
       // console.log('update proposal key', Object.keys(currentKeys));
       // console.log('update proposal value', currentKeys);
@@ -340,6 +352,22 @@ export class SendRevisionCommandHandler
               `send_revision_for_${askedEditRequest.sender_role.toLowerCase()}_amandement` as ProposalAction;
           }
 
+          if (request.region_id) {
+            await this.proposalRegionRepo.arraySave(
+              proposalId,
+              request.region_id,
+              session,
+            );
+          }
+
+          if (request.governorate_id) {
+            await this.proposalGovernorateRepo.arraySave(
+              proposalId,
+              request.governorate_id,
+              session,
+            );
+          }
+
           // refetch the proposal for getting the updated result
           const updatedProposal = await this.proposalRepo.fetchById(
             {
@@ -348,6 +376,8 @@ export class SendRevisionCommandHandler
                 'proposal_item_budgets',
                 'project_timeline',
                 'bank_information',
+                'proposal_governorates',
+                'proposal_regions',
               ],
             },
             session,

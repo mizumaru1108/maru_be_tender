@@ -3,7 +3,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { ProposalProjectTimelineModule } from 'src/proposal-management/poject-timelines/proposal.project.timeline.module';
 import { SendRevisionCommandHandler } from 'src/proposal-management/proposal/commands/send.revision/send.revision.command';
 import { ProposalFindByIdQueryHandler } from 'src/proposal-management/proposal/queries/proposal.find.by.id.query/proposal.find.by.id.query';
-import { TrackModule } from '../../tender-track/track.module';
+import { TrackModule } from '../../track-management/track/track.module';
 import { ProposalAskedEditRequestModule } from '../asked-edit-request/proposal.asked.edit.request.module';
 import { ProposalEditRequestModule } from '../edit-requests/proposal.edit.request.module';
 import { ProposalItemBudgetModule } from '../item-budget/proposal.item.budget.module';

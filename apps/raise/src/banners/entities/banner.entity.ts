@@ -1,4 +1,4 @@
-import { TrackEntity } from 'src/tender-track/track/entities/track.entity';
+import { TrackEntity } from 'src/track-management/track/entities/track.entity';
 
 export class BannerEntity {
   id: string;

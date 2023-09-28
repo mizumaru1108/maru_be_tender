@@ -67,29 +67,41 @@ export class SendRevisionDto {
   @IsNotEmpty()
   beneficiary_id?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  governorate?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsString()
+  // @IsNotEmpty()
+  // region?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  governorate_id?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsString()
+  // @IsNotEmpty()
+  // region_id?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  region?: string;
+  @ApiProperty()
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  region_id?: string[];
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  region_id?: string;
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsString()
+  // @IsNotEmpty()
+  // governorate?: string;
+
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsString()
+  // @IsNotEmpty()
+  // governorate_id?: string;
+
+  @ApiProperty()
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  governorate_id?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()

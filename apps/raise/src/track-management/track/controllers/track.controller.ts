@@ -39,7 +39,7 @@ import {
   TrackFindManyQueryResult,
 } from '../queries/track.find.many/track.find.many.query';
 
-@ApiTags('TrackModule')
+@ApiTags('TrackModule/Track')
 @Controller('tender/track')
 export class TrackController {
   constructor(
@@ -122,7 +122,6 @@ export class TrackController {
   @UseGuards(TenderJwtGuard)
   @Get()
   async findMany(@Query() query: TrackFindManyQueryDto) {
-    console.log('kintil');
     const builder = Builder<TrackFindManyQuery>(TrackFindManyQuery, {
       ...query,
     });

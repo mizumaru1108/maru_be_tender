@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { PrismaService } from '../../prisma/prisma.service';
-import { TrackEntity } from '../../tender-track/track/entities/track.entity';
+import { TrackEntity } from '../../track-management/track/entities/track.entity';
 import { Builder } from 'builder-pattern';
 import { UserStatusEntity } from '../../tender-user/user/entities/user-status.entity';
 

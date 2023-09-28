@@ -1,7 +1,7 @@
 import { BankInformationEntity } from '../../../bank/entities/bank-information.entity';
 import { FileManagerEntity } from '../../../tender-file-manager/entities/file-manager.entity';
 import { ProposalEntity } from '../../../proposal-management/proposal/entities/proposal.entity';
-import { TrackEntity } from '../../../tender-track/track/entities/track.entity';
+import { TrackEntity } from '../../../track-management/track/entities/track.entity';
 import { ClientDataEntity } from '../../client/entities/client-data.entity';
 import { UserRoleEntity } from './user-role.entity';
 import { UserStatusEntity } from './user-status.entity';

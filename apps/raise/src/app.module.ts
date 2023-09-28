@@ -30,6 +30,7 @@ import { twilioConfig } from './commons/configs/twilio-config';
 import { ContactUsModule } from './contact-us/contact.us.module';
 import { NotificationManagementModule } from './notification-management/notification.management.module';
 import { QaHelperModule } from './qa-helper/qa-helper.module';
+import { RegionManagementModule } from './region-management/region.management.module';
 import { SmsConfigModule } from './sms-config/sms.config.module';
 import { TenderCommentsModule } from './tender-comments/tender-comments.module';
 import { TenderEventsModule } from './tender-events-gateway/tender-events.module';
@@ -37,8 +38,7 @@ import { TenderFileManagerModule } from './tender-file-manager/tender-file-manag
 import { TenderMessagesModule } from './tender-messaging/tender-messages.module';
 import { TenderStatisticsModule } from './tender-statistics/tender-statistics.module';
 import { UserManagementModule } from './tender-user/user.management.module';
-import { RegionManagementModule } from './region-management/region.management.module';
-import { TrackModule } from './tender-track/track.module';
+import { TrackManagementModule } from './track-management/track.management.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -153,7 +153,7 @@ const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
     ProposalManagementModule,
     TenderAppointmentModule,
     TenderAuthModule,
-    TrackModule,
+    TrackManagementModule,
     TenderCommentsModule,
     TenderMessagesModule,
     TenderStatisticsModule,

@@ -49,7 +49,7 @@ import { RequestErrorException } from 'src/tender-commons/exceptions/request-err
 import { BasePaginationApiOkResponse } from '../../../commons/decorators/base.pagination.api.ok.response.decorator';
 import { GetByIdDto } from '../../../commons/dtos/get-by-id.dto';
 import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
-import { InvalidTrackIdException } from '../../../tender-track/track/exceptions/invalid-track-id.excception';
+import { InvalidTrackIdException } from '../../../track-management/track/exceptions/invalid-track-id.excception';
 import { ProposalAskedEditRequestEntity } from '../../asked-edit-request/entities/proposal.asked.edit.request.entity';
 import {
   AskAmandementRequestCommand,

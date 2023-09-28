@@ -11,7 +11,7 @@ import { ProposalPaymentRepository } from './repositories/proposal-payment.repos
 import { ProposalPaymentService } from './services/proposal-payment.service';
 import { PaymentSubmitClosingReportCommandHandler } from 'src/proposal-management/payment/commands/payment.submit.closing.report.command';
 import { ProposalCloseReportModule } from 'src/proposal-management/closing-report/close.report.module';
-import { TrackModule } from '../../tender-track/track.module';
+import { TrackModule } from '../../track-management/track/track.module';
 
 const importedModule = [
   CqrsModule,
