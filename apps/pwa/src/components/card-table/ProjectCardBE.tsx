@@ -138,7 +138,7 @@ const ProjectCardBE = ({
       );
       // console.log({ rest });
       if (rest) {
-        enqueueSnackbar('Draft has been created', {
+        enqueueSnackbar('Draft has been deleted', {
           variant: 'success',
           preventDuplicate: true,
           autoHideDuration: 3000,

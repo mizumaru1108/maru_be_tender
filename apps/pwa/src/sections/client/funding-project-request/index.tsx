@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { getBeneficiariesList } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
+import RHFNestedRepeater from 'sections/client/funding-project-request/forms/TestingNestedFrom';
 import { useMutation, useQuery } from 'urql';
 import axiosInstance from 'utils/axios';
 import { ComboBoxOption } from '../../../components/hook-form/RHFComboBox';
@@ -275,7 +276,7 @@ const FundingProjectRequestForm = () => {
         const index = i; // Get the index for appending to FormData
 
         // Append the values for each object using template literals
-        formData.append(`regions_id[${index}]`, region_id.value);
+        formData.append(`region_id[${index}]`, region_id.value);
       }
     }
     if (datas && datas?.governorates_id && datas?.governorates_id?.length > 0) {
@@ -284,7 +285,7 @@ const FundingProjectRequestForm = () => {
         const index = i; // Get the index for appending to FormData
 
         // Append the values for each object using template literals
-        formData.append(`governorates_id[${index}]`, governoreate_id.value);
+        formData.append(`governorate_id[${index}]`, governoreate_id.value);
       }
     }
     if (datas && datas?.detail_project_budgets && datas?.detail_project_budgets?.length > 0) {
@@ -535,7 +536,7 @@ const FundingProjectRequestForm = () => {
         const index = i; // Get the index for appending to FormData
 
         // Append the values for each object using template literals
-        formData.append(`regions_id[${index}]`, region_id.value);
+        formData.append(`region_id[${index}]`, region_id.value);
       }
     }
     if (datas && datas?.governorates_id && datas?.governorates_id?.length > 0) {
@@ -545,7 +546,7 @@ const FundingProjectRequestForm = () => {
         // console.log({ governoreate_id });
 
         // Append the values for each object using template literals
-        formData.append(`governorates_id[${index}]`, governoreate_id.value);
+        formData.append(`governorate_id[${index}]`, governoreate_id.value);
       }
     }
     if (datas && datas?.detail_project_budgets && datas?.detail_project_budgets?.length > 0) {
@@ -752,7 +753,7 @@ const FundingProjectRequestForm = () => {
         const index = i; // Get the index for appending to FormData
 
         // Append the values for each object using template literals
-        formData.append(`regions_id[${index}]`, region_id.value);
+        formData.append(`region_id[${index}]`, region_id.value);
       }
     }
     if (datas && datas?.governorates_id && datas?.governorates_id?.length > 0) {
@@ -761,7 +762,7 @@ const FundingProjectRequestForm = () => {
         const index = i; // Get the index for appending to FormData
 
         // Append the values for each object using template literals
-        formData.append(`governorates_id[${index}]`, governoreate_id.value);
+        formData.append(`governorate_id[${index}]`, governoreate_id.value);
       }
     }
     if (datas && datas?.project_timeline && datas?.project_timeline?.length > 0) {
@@ -921,17 +922,37 @@ const FundingProjectRequestForm = () => {
             pm_name,
             pm_mobile,
             pm_email,
-            region,
-            region_id,
-            governorate,
-            governorate_id,
             amount_required_fsupport,
             proposal_item_budgets,
             project_timeline,
             timelines,
             step,
             beneficiary_details,
+            regions_id,
+            governorates_id,
           } = data.proposal_by_pk;
+          // console.log({ regions_id, governorates_id });
+          const tmpRegionsId =
+            regions_id && Array.isArray(regions_id)
+              ? regions_id?.map((item: any) => {
+                  const tmpItem = item;
+                  return {
+                    value: tmpItem?.region?.region_id || '',
+                    label: tmpItem?.region?.name || '',
+                  };
+                })
+              : [];
+          const tmpGovernoratesId =
+            governorates_id && Array.isArray(governorates_id)
+              ? governorates_id?.map((item: any) => {
+                  const tmpItem = item;
+                  return {
+                    value: tmpItem?.governorate?.governorate_id || '',
+                    label: tmpItem?.governorate?.name || '',
+                  };
+                })
+              : [];
+          // console.log({ tmpRegionsId, tmpGovernoratesId });
           setRequestState((prevRegisterState: any) => ({
             ...prevRegisterState,
             project_timeline: project_timeline || timelines || [],
@@ -975,12 +996,8 @@ const FundingProjectRequestForm = () => {
                 pm_name: pm_name.trim(),
                 pm_mobile: pm_mobile.trim(),
                 pm_email: pm_email.trim(),
-                region: region.trim(),
-                region_id,
-                governorate,
-                governorate_id,
-                regions_id: [],
-                governorates_id: [],
+                regions_id: tmpRegionsId,
+                governorates_id: tmpGovernoratesId,
               }),
             },
             form4: {
@@ -1031,10 +1048,6 @@ const FundingProjectRequestForm = () => {
               pm_name: pm_name.trim(),
               pm_mobile: pm_mobile.trim(),
               pm_email: pm_email.trim(),
-              region: region.trim(),
-              governorate,
-              region_id,
-              governorate_id,
               regions_id: [],
               governorates_id: [],
             }),

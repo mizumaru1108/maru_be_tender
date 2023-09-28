@@ -49,9 +49,20 @@ query MyQuery($id: String = "") {
     beneficiary_id
     governorate_id
     region_id
+    regions_id: proposal_regions {
+      region {
+        name
+        region_id
+      }
+    }
+    governorates_id: proposal_governorates {
+      governorate {
+        governorate_id
+        name
+      }
+    }
   }
 }
-
 
 
 `;

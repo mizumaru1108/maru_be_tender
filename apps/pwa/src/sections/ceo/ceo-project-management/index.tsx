@@ -84,7 +84,7 @@ function CeoProjectManagement() {
                   project.track_id &&
                   track_list &&
                   track_list.length > 0 &&
-                  track_list.find((item: tracks) => item.id === project.track_id)!.name) ||
+                  track_list.find((item: tracks) => item.id === project.track_id)?.name) ||
                 '',
               associationName: (project.user.employee_name as string) || '',
               createdAt: (project.created_at as string) || '',
@@ -123,7 +123,7 @@ function CeoProjectManagement() {
   }, [fetchingIncoming]);
 
   useEffect(() => {
-    dispatch(getTrackList(0, activeRole! as string));
+    dispatch(getTrackList(0, activeRole! as string, 0));
   }, [dispatch, activeRole]);
 
   const headerCells: ProjectManagementTableHeader[] = [
