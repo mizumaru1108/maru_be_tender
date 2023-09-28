@@ -180,6 +180,28 @@ export class ProposalRepository {
           },
         };
       }
+
+      if (relation === 'proposal_governorates') {
+        include = {
+          ...include,
+          proposal_governorates: {
+            include: {
+              governorate: true,
+            },
+          },
+        };
+      }
+
+      if (relation === 'proposal_regions') {
+        include = {
+          ...include,
+          proposal_regions: {
+            include: {
+              region: true,
+            },
+          },
+        };
+      }
     }
 
     return include;
@@ -2690,8 +2712,16 @@ export class ProposalRepository {
           },
           region_detail: true,
           governorate_detail: true,
-          proposal_governorates: true,
-          proposal_regions: true,
+          proposal_governorates: {
+            include: {
+              governorate: true,
+            },
+          },
+          proposal_regions: {
+            include: {
+              region: true,
+            },
+          },
         },
       });
       return proposal;

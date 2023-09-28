@@ -29,7 +29,9 @@ export type ProposalIncludeRelationsTypes =
   | 'project_timeline'
   | 'governorate_detail'
   | 'region_detail'
-  | 'proposal_closing_report';
+  | 'proposal_closing_report'
+  | 'proposal_governorates'
+  | 'proposal_regions';
 
 export interface ProposalFetchByIdProps {
   id: string;

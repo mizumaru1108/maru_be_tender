@@ -271,7 +271,7 @@ export class ProposalCreateCommandHandler
               : this.prismaService;
 
           // create proposal
-          console.log('payload', proposalCreatePayload);
+          // console.log('payload', proposalCreatePayload);
           const createdProposal = await this.proposalRepo.create(
             proposalCreatePayload,
             session,
@@ -336,6 +336,8 @@ export class ProposalCreateCommandHandler
                 'proposal_item_budgets',
                 'project_timeline',
                 'bank_information',
+                'proposal_regions',
+                'proposal_governorates',
               ],
             },
             session,
