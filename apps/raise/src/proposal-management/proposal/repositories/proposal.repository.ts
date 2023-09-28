@@ -1085,6 +1085,16 @@ export class ProposalRepository {
               beneficiary_id: true,
               proposal_bank_id: true,
               bank_information: true,
+              proposal_governorates: {
+                include: {
+                  governorate: true,
+                },
+              },
+              proposal_regions: {
+                include: {
+                  region: true,
+                },
+              },
             },
           },
         },
