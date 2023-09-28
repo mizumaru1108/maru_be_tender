@@ -2,56 +2,16 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Delete,
-  Get,
   HttpException,
   HttpStatus,
   InternalServerErrorException,
-  Param,
-  Patch,
   Post,
-  Query,
-  UploadedFiles,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
-import {
-  BannerCreateCommand,
-  BannerCreateCommandResult,
-} from 'src/banners/commands/banner.create/banner.create.command';
-import {
-  BannerDeleteCommand,
-  BannerDeleteCommandResult,
-} from 'src/banners/commands/banner.delete/banner.delete.command';
-import {
-  BannerUpdateCommand,
-  BannerUpdateCommandResult,
-} from 'src/banners/commands/banner.update/banner.update.command';
-import { BannerFindManyQueryDto } from 'src/banners/dtos/queries/banner.find.many.query.dto';
-import { BannerCreateDto } from 'src/banners/dtos/requests/banner.create.dto';
-import { BannerUpdateDto } from 'src/banners/dtos/requests/banner.update.dto';
-import { BannerEntity } from 'src/banners/entities/banner.entity';
-import {
-  BannerFindByIdQuery,
-  BannerFindByIdQueryResult,
-} from 'src/banners/queries/banner.find.by.id.query/banner.find.by.id.query';
-import {
-  BannerFindManyQuery,
-  BannerFindManyQueryResult,
-} from 'src/banners/queries/banner.find.many.query/banner.find.many.query';
-import {
-  BannerFindMyAdsQuery,
-  BannerFindMyAdsQueryResult,
-} from 'src/banners/queries/banner.find.my.ads.query/banner.find.my.ads.query';
-import { BannerFindManyResponse } from 'src/banners/repositories/banner.repository';
-import { BannerTypeEnum } from 'src/banners/types/enums/banner.type.enum';
 import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
-import { BasePaginationApiOkResponse } from 'src/commons/decorators/base.pagination.api.ok.response.decorator';
-import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { BaseResponse } from 'src/commons/dtos/base-response';
 import { baseResponseHelper } from 'src/commons/helpers/base-response-helper';
 import { TenderRoles } from 'src/tender-auth/decorators/tender-roles.decorator';
@@ -60,14 +20,15 @@ import { TenderRolesGuard } from 'src/tender-auth/guards/tender-roles.guard';
 import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-found.exception';
 import { PayloadErrorException } from 'src/tender-commons/exceptions/payload-error.exception';
 import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
-import { manualPaginationHelper } from 'src/tender-commons/helpers/manual-pagination-helper';
-import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
-import { BannerFindMineQueryDto } from '../../../banners/dtos/queries/banner.find.mine.query.dto';
+import {
+  TrackSectionCreateCommand,
+  TrackSectionCreateCommandResult,
+} from '../commands/track.section.create/track.section.create.command';
 import { TrackSectionCreateDto } from '../dtos/requests/track.section.create.dto';
 import { TrackSectionEntity } from '../entities/track.section.entity';
 
 @ApiTags('TrackModule/TrackSection')
-@Controller('tender/track-section')
+@Controller('tender/track-sections')
 export class TrackSectionHttpController {
   constructor(
     private readonly commandBus: CommandBus,
@@ -95,36 +56,38 @@ export class TrackSectionHttpController {
     throw new InternalServerErrorException(error);
   }
 
-  // @ApiOperation({
-  //   summary: 'Creating track section (admin only)',
-  // })
-  // @BaseApiOkResponse(TrackSectionEntity, 'object')
-  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  // @TenderRoles('tender_admin')
-  // @Post('create')
-  // async create(
-  //   @CurrentUser() currentUser: TenderCurrentUser,
-  //   @Body() dto: TrackSectionCreateDto,
-  // ): Promise<BaseResponse<TrackSectionEntity>> {
-  //   try {
-  //     const command = Builder<BannerCreateCommand>(BannerCreateCommand, {
-  //       ...dto,
-  //     }).build();
+  @ApiOperation({
+    summary: 'Creating track section (admin only)',
+  })
+  @BaseApiOkResponse(TrackSectionEntity, 'array')
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Post('create')
+  async create(
+    @Body() dto: TrackSectionCreateDto,
+  ): Promise<BaseResponse<TrackSectionEntity[]>> {
+    try {
+      const command = Builder<TrackSectionCreateCommand>(
+        TrackSectionCreateCommand,
+        {
+          ...dto,
+        },
+      ).build();
 
-  //     const result = await this.commandBus.execute<
-  //       BannerCreateCommand,
-  //       BannerCreateCommandResult
-  //     >(command);
+      const { data } = await this.commandBus.execute<
+        TrackSectionCreateCommand,
+        TrackSectionCreateCommandResult
+      >(command);
 
-  //     return baseResponseHelper(
-  //       result,
-  //       HttpStatus.CREATED,
-  //       'Advertisement Created Successfully!',
-  //     );
-  //   } catch (e) {
-  //     throw this.errorMapper(e);
-  //   }
-  // }
+      return baseResponseHelper(
+        data.created_sections,
+        HttpStatus.CREATED,
+        'Advertisement Created Successfully!',
+      );
+    } catch (e) {
+      throw this.errorMapper(e);
+    }
+  }
 
   // @ApiOperation({
   //   summary: 'Find banner either for internal or external (admin only)',
