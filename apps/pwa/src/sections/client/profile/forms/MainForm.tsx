@@ -27,6 +27,16 @@ const AuthoityArray = [
   },
 ];
 
+const OptionHeadquarters = [
+  {
+    label: 'register_form1.headquarters.options.own',
+    value: 'ملك',
+  },
+  {
+    label: 'register_form1.headquarters.options.rent',
+    value: 'أجار',
+  },
+];
 type FormProps = {
   children?: React.ReactNode;
   onSubmit: (data: any) => void;
@@ -290,6 +300,15 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
       } else {
         setValue('client_field', '');
       }
+      if (defaultValues) {
+        const isHeadquarters = OptionHeadquarters.some(
+          (item) => item.value === defaultValues?.headquarters
+        );
+        if (!isHeadquarters) {
+          setValue('headquarters', '');
+        }
+        // console.log({ isHeadquarters });
+      }
       //  else {
       //   alert('tmpClientId not found');
       // }
@@ -495,15 +514,13 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
           </RHFSelectNoGenerator> */}
           <RHFSelect
             name="headquarters"
+            disabled={isEdit}
             label={translate('register_form1.headquarters.label')}
             placeholder={translate('register_form1.headquarters.placeholder')}
           >
-            {[
-              'register_form1.headquarters.options.own',
-              'register_form1.headquarters.options.rent',
-            ].map((option, i) => (
-              <MenuItem key={i} value={translate(option)}>
-                {translate(option)}
+            {OptionHeadquarters.map((option, i) => (
+              <MenuItem key={i} value={option.value}>
+                {translate(option.label)}
               </MenuItem>
             ))}
           </RHFSelect>

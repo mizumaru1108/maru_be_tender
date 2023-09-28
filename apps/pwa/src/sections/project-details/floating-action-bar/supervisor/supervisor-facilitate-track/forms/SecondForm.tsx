@@ -1,26 +1,42 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
-import * as Yup from 'yup';
-import FormGenerator from 'components/FormGenerator';
-import { useMemo } from 'react';
-import { SecondFormData } from './form-data';
-import { useSelector } from 'redux/store';
-import { SupervisorStep2 } from '../../../../../../@types/supervisor-accepting-form';
-import useLocales from 'hooks/useLocales';
 import BaseField from 'components/hook-form/BaseField';
+import RHFComboBox, { ComboBoxOption } from 'components/hook-form/RHFComboBox';
+import useLocales from 'hooks/useLocales';
+import React, { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { useSelector } from 'redux/store';
 import { removeEmptyKey } from 'utils/remove-empty-key';
+import * as Yup from 'yup';
+import { SupervisorStep2 } from '../../../../../../@types/supervisor-accepting-form';
+
+interface Area {
+  regions_id: ComboBoxOption[];
+  governorates_id: ComboBoxOption[];
+}
 
 function SecondForm({ children, onSubmit }: any) {
   const { translate } = useLocales();
+  const [area, setArea] = React.useState<Area>({
+    governorates_id: [],
+    regions_id: [],
+  });
 
   const validationSchema = Yup.object().shape({
     organizationName: Yup.string().required(
       translate('errors.cre_proposal.organizationName.required')
     ),
-    region: Yup.string().required(translate('errors.cre_proposal.region.required')),
-    governorate: Yup.string().required(translate('errors.cre_proposal.governorate.required')),
+    // region: Yup.string().required(translate('errors.cre_proposal.region.required')),
+    // governorate: Yup.string().required(translate('errors.cre_proposal.governorate.required')),
+    regions_id: Yup.array()
+      .min(1, translate('portal_report.errors.region_id.required'))
+      .required(translate('portal_report.errors.region_id.required'))
+      .nullable(),
+    governorates_id: Yup.array()
+      .min(1, translate('portal_report.errors.governorate_id.required'))
+      .required(translate('portal_report.errors.governorate_id.required'))
+      .nullable(),
     date_of_esthablistmen: Yup.string().required(
       translate('errors.cre_proposal.date_of_esthablistmen.required')
     ),
@@ -38,7 +54,7 @@ function SecondForm({ children, onSubmit }: any) {
   });
 
   const { step2 } = useSelector((state) => state.supervisorAcceptingForm);
-  // console.log('cek region ', step2.region_detail);
+  // console.log({ step2 });
   // console.log('cek governorate ', step2.governorate_detail);
   const methods = useForm<SupervisorStep2>({
     resolver: yupResolver(validationSchema),
@@ -47,20 +63,50 @@ function SecondForm({ children, onSubmit }: any) {
 
   const {
     handleSubmit,
+    setValue,
+    watch,
+    resetField,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmitForm = async (data: SupervisorStep2) => {
-    let tmpValue: SupervisorStep2 = removeEmptyKey(data) as SupervisorStep2;
-    if (tmpValue.region_detail !== undefined || tmpValue.region_detail !== null) {
-      delete tmpValue.region_detail;
-    }
-    if (tmpValue.governorate_detail !== undefined || tmpValue.governorate_detail !== null) {
-      delete tmpValue.governorate_detail;
-    }
+    // let tmpValue: SupervisorStep2 = removeEmptyKey(data) as SupervisorStep2;
+    // if (tmpValue.region_detail !== undefined || tmpValue.region_detail !== null) {
+    //   delete tmpValue.region_detail;
+    // }
+    // if (tmpValue.governorate_detail !== undefined || tmpValue.governorate_detail !== null) {
+    //   delete tmpValue.governorate_detail;
+    // }
     // console.log({ tmpValue });
-    onSubmit(tmpValue);
+    onSubmit(data);
   };
+
+  React.useEffect(() => {
+    if (step2.proposal_governorates && Array.isArray(step2.proposal_governorates)) {
+      const tmpGovOption: ComboBoxOption[] = step2.proposal_governorates.map((item) => ({
+        label: item?.governorate?.name || 'TO_DO',
+        value: item.governorate_id || '',
+      }));
+
+      setArea((prev) => ({
+        ...prev,
+        governorates_id: tmpGovOption,
+      }));
+    }
+  }, [step2.proposal_governorates, setValue]);
+
+  React.useEffect(() => {
+    if (step2.proposal_regions && Array.isArray(step2.proposal_regions)) {
+      const tmpRegionOption: ComboBoxOption[] = step2.proposal_regions.map((item) => ({
+        label: item?.region?.name || 'TO_DO',
+        value: item.region_id || '',
+      }));
+      setArea((prev: Area) => ({
+        ...prev,
+        regions_id: tmpRegionOption,
+      }));
+    }
+  }, [step2.proposal_regions, setValue]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
@@ -75,7 +121,7 @@ function SecondForm({ children, onSubmit }: any) {
             placeholder="اسم الجهة*"
           />
         </Grid>
-        <Grid item md={6} xs={12}>
+        {/* <Grid item md={6} xs={12}>
           <BaseField
             disabled
             type="textField"
@@ -91,6 +137,38 @@ function SecondForm({ children, onSubmit }: any) {
             name="governorate"
             label="المحافظة *"
             placeholder="الرجاء اختيار المحافظة"
+          />
+        </Grid> */}
+        <Grid item md={6} xs={12}>
+          <RHFComboBox
+            disabled
+            name="regions_id"
+            label={translate('portal_report.region_id.label')}
+            data-cy="portal_report.region_id"
+            placeholder={translate('portal_report.region_id.placeholder')}
+            dataOption={[]}
+            value={area.regions_id || []}
+            limitTags={99}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFComboBox
+            disabled
+            name="governorates_id"
+            label={translate('portal_report.governorate_id.label')}
+            data-cy="portal_report.governorate_id"
+            placeholder={translate('portal_report.governorate_id.placeholder')}
+            // dataOption={
+            //   formField?.governorates && formField?.governorates.length > 0
+            //     ? formField?.governorates.map((governorate: IGovernorate, index: number) => ({
+            //         label: governorate.name,
+            //         value: governorate.governorate_id,
+            //       }))
+            //     : []
+            // }
+            dataOption={[]}
+            value={area.governorates_id || []}
+            limitTags={99}
           />
         </Grid>
         <Grid item md={6} xs={12}>

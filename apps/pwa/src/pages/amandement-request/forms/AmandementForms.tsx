@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Checkbox, Grid, Stack } from '@mui/material';
 import { FormProvider, RHFDatePicker, RHFTextField } from 'components/hook-form';
+import RHFComboBox, { ComboBoxOption } from 'components/hook-form/RHFComboBox';
 import useLocales from 'hooks/useLocales';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
@@ -10,10 +11,16 @@ import * as Yup from 'yup';
 import { AmandementFields, AmandementProposal } from '../../../@types/proposal';
 import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
 import RHFTextArea from '../../../components/hook-form/RHFTextArea';
+import Space from '../../../components/space/space';
 import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
 import { useSelector } from '../../../redux/store';
 import BankImageComp from '../../../sections/shared/BankImageComp';
 import { LeftField, RightField } from './FormFieldData';
+
+interface Area {
+  regions_id: ComboBoxOption[];
+  governorates_id: ComboBoxOption[];
+}
 
 type Props = {
   // onSubmit: (data: any) => void;
@@ -32,10 +39,16 @@ const AmandementForms = ({
   openConfirm,
   onSubmit,
 }: Props) => {
+  // console.log({ regions: defaultValues?.proposal_regions });
   const { translate } = useLocales();
   const params = useParams();
   const { proposal } = useSelector((state) => state.proposal);
   const [selectedCheckbox, setSelectedCheckbox] = useState<string[]>([]);
+  const [area, setArea] = React.useState<Area>({
+    governorates_id: [],
+    regions_id: [],
+  });
+
   const CreatingProposalForm2 = Yup.object().shape({
     num_ofproject_binicficiaries: Yup.string().required(
       translate('errors.cre_proposal.num_ofproject_binicficiaries.required')
@@ -72,6 +85,8 @@ const AmandementForms = ({
     proposal_bank_id: Yup.string().required(
       translate('errors.cre_proposal.bank_information.required')
     ),
+    region_id: Yup.string().required(translate('errors.cre_proposal.region.required')),
+    governorate_id: Yup.string().required(translate('errors.cre_proposal.governorate.required')),
   });
 
   const methods = useForm<AmandementFields>({
@@ -93,53 +108,90 @@ const AmandementForms = ({
       field !== 'letter_ofsupport_req' &&
       field !== 'project_attachments' &&
       field !== 'timelines' &&
-      field !== 'proposal_bank_id'
+      field !== 'proposal_bank_id' &&
+      field !== 'region_id' &&
+      field !== 'governorate_id'
     ) {
       setValue(field, newValues[field]);
     } else {
-      setValue(field, '-');
+      if (field === 'region_id') {
+        setValue('region_id', '-');
+        setValue('governorate_id', '-');
+      } else {
+        setValue(field, '-');
+      }
     }
   };
 
   useEffect(() => {
     // window.scrollTo(0, 0);
     if (!!defaultValues) {
-      const newValues = JSON.parse(JSON.stringify(defaultValues));
+      // const newValues = JSON.parse(JSON.stringify(defaultValues));
       // console.log('test newvalue:', newValues?.beneficiary_details?.name);
       reset({
-        amount_required_fsupport: String(newValues.amount_required_fsupport),
+        amount_required_fsupport: String(defaultValues.amount_required_fsupport),
         letter_ofsupport_req: '-',
-        num_ofproject_binicficiaries: String(newValues.num_ofproject_binicficiaries),
+        num_ofproject_binicficiaries: String(defaultValues.num_ofproject_binicficiaries),
         project_attachments: '-',
-        project_beneficiaries: newValues?.beneficiary_details?.name,
-        project_goals: newValues.project_goals,
-        project_idea: newValues.project_idea,
-        project_implement_date: String(newValues.project_implement_date),
-        project_location: newValues.project_location,
-        project_outputs: newValues.project_outputs,
-        project_risks: newValues.project_risks,
-        project_strengths: newValues.project_strengths,
-        region: newValues.region,
-        governorate: newValues.governorate,
+        project_beneficiaries: defaultValues?.beneficiary_details?.name,
+        project_goals: defaultValues.project_goals,
+        project_idea: defaultValues.project_idea,
+        project_implement_date: String(defaultValues.project_implement_date),
+        project_location: defaultValues.project_location,
+        project_outputs: defaultValues.project_outputs,
+        project_risks: defaultValues.project_risks,
+        project_strengths: defaultValues.project_strengths,
+        region: defaultValues.region,
+        governorate: defaultValues.governorate,
         timelines: '-',
         notes: '',
         proposal_bank_id: '-',
       });
     }
   }, [defaultValues, reset]);
+
+  useEffect(() => {
+    if (!!defaultValues) {
+      if (
+        defaultValues.proposal_governorates &&
+        Array.isArray(defaultValues.proposal_governorates)
+      ) {
+        const tmpGovOption: ComboBoxOption[] = defaultValues.proposal_governorates.map((item) => ({
+          label: item?.governorate?.name || 'TO_DO',
+          value: item.governorate_id || '',
+        }));
+
+        setArea((prev) => ({
+          ...prev,
+          governorates_id: tmpGovOption,
+        }));
+      }
+    }
+  }, [defaultValues, setValue]);
+
+  useEffect(() => {
+    if (!!defaultValues) {
+      if (defaultValues.proposal_regions && Array.isArray(defaultValues.proposal_regions)) {
+        const tmpRegionOption: ComboBoxOption[] = defaultValues.proposal_regions.map((item) => ({
+          label: item?.region?.name || 'TO_DO',
+          value: item.region_id || '',
+        }));
+        setArea((prev: Area) => ({
+          ...prev,
+          regions_id: tmpRegionOption,
+        }));
+      }
+    }
+  }, [defaultValues, setValue]);
+
   const handleChange = (e: any) => {
     const newSelectedValues = [...selectedCheckbox];
-    // console.log('test checked', e.target.value);
-    // console.log({ newSelectedValues });
     if (e.target.checked) {
-      // console.log('masuk true');
       newSelectedValues.push(e.target.value);
       selectedLength(newSelectedValues.length);
       setSelectedCheckbox(newSelectedValues);
     } else {
-      // console.log('masuk false');
       newSelectedValues.splice(newSelectedValues.indexOf(e.target.value), 1);
-      // resetForm(e.target.value as string);
       resetForm(e.target.value as string);
       selectedLength(newSelectedValues.length);
       setSelectedCheckbox(newSelectedValues);
@@ -147,7 +199,7 @@ const AmandementForms = ({
   };
   const onSubmitForm = async (data: AmandementFields) => {
     let selectedData = Object.entries(data)
-      .filter(([key]) => selectedCheckbox.includes(key))
+      .filter(([key]) => selectedCheckbox.includes(key) || key === 'governorate_id')
       .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
     selectedData = {
       ...selectedData,
@@ -159,15 +211,13 @@ const AmandementForms = ({
         notes: data.notes,
       };
     }
+    // console.log({ selectedData, data });
     openConfirm();
-    // setTmpValues(selectedData as AmandementFields);
-    // console.log({ selectedData });
     onSubmit(selectedData as AmandementFields);
-    // console.log({ selectedData });
   };
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
-      <Grid container spacing={4}>
+      <Grid container>
         <Grid item xs={12} md={6}>
           {LeftField.map((item, index) => (
             <Stack key={index} direction="row" alignItems="center" spacing={3} sx={{ my: 3 }}>
@@ -196,7 +246,7 @@ const AmandementForms = ({
         </Grid>
         <Grid item xs={12} md={6}>
           {RightField.map((item, index) => (
-            <Stack key={index} direction="row" alignItems="center" spacing={3} sx={{ my: 3 }}>
+            <Stack key={index} direction="row" alignItems="center" sx={{ my: 3 }}>
               <Grid item xs={1} md={1}>
                 <Checkbox
                   checked={
@@ -220,6 +270,83 @@ const AmandementForms = ({
               </Grid>
             </Stack>
           ))}
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <Stack direction="row" alignItems="center" spacing={3} sx={{ mb: 3 }}>
+            <Grid item xs={1} md={1}>
+              <Checkbox
+                checked={
+                  selectedCheckbox.length > 0 ? selectedCheckbox.includes('region_id') : false
+                }
+                onChange={(e) => handleChange(e)}
+                value={'region_id'}
+                disabled={FEATURE_AMANDEMENT_FROM_FINANCE && isPaymentamandement}
+                data-cy={`region_id-checkbox`}
+              />
+            </Grid>
+            <Grid item xs={11} md={11}>
+              {selectedCheckbox.includes('region_id') ? (
+                <RHFTextField
+                  name={'region_id'}
+                  disabled={selectedCheckbox.includes('region_id') ? false : true}
+                  label={translate('portal_report.region_id.label')}
+                  data-cy="portal_report.region_id"
+                  placeholder={translate('portal_report.region_id.placeholder')}
+                />
+              ) : (
+                <RHFComboBox
+                  // disabled={selectedCheckbox.includes('regions_id') ? false : true}
+                  disabled
+                  name="regions"
+                  label={translate('portal_report.region_id.label')}
+                  data-cy="portal_report.region_id"
+                  placeholder={translate('portal_report.region_id.placeholder')}
+                  dataOption={[]}
+                  value={area.regions_id || []}
+                  limitTags={99}
+                />
+              )}
+            </Grid>
+          </Stack>
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <Stack direction="row" alignItems="center" sx={{ mb: 3 }}>
+            <Grid item xs={1} md={1}>
+              {/* <Checkbox
+                checked={
+                  selectedCheckbox.length > 0 ? selectedCheckbox.includes('governorate_id') : false
+                }
+                onChange={(e) => handleChange(e)}
+                value={'governorate_id'}
+                disabled={FEATURE_AMANDEMENT_FROM_FINANCE && isPaymentamandement}
+                data-cy={`governorate_id-checkbox`}
+              /> */}
+              <Space direction="vertical" size="small" />
+            </Grid>
+            <Grid item xs={11} md={11}>
+              {selectedCheckbox.includes('region_id') ? (
+                <RHFTextField
+                  name={'governorate_id'}
+                  disabled={selectedCheckbox.includes('region_id') ? false : true}
+                  label={translate('portal_report.governorate_id.label')}
+                  data-cy="portal_report.governorate_id"
+                  placeholder={translate('portal_report.governorate_id.placeholder')}
+                />
+              ) : (
+                <RHFComboBox
+                  // disabled={selectedCheckbox.includes('governorates_id') ? false : true}
+                  disabled
+                  name="governorates"
+                  label={translate('portal_report.governorate_id.label')}
+                  data-cy="portal_report.governorate_id"
+                  placeholder={translate('portal_report.governorate_id.placeholder')}
+                  dataOption={[]}
+                  value={area.governorates_id || []}
+                  limitTags={99}
+                />
+              )}
+            </Grid>
+          </Stack>
         </Grid>
         {defaultValues?.project_attachments && defaultValues.letter_ofsupport_req && (
           <Grid
@@ -294,7 +421,7 @@ const AmandementForms = ({
             </Grid>
           </Grid>
         )}
-        <Grid item xs={12} md={12} sx={{ display: 'flex', flexDirection: 'row' }}>
+        <Grid item xs={12} md={12} sx={{ display: 'flex', flexDirection: 'row', mt: 4 }}>
           {/* <Grid item xs={1} md={1}> */}
           <Stack>
             <Checkbox

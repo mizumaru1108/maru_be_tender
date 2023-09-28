@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import ReplayIcon from '@mui/icons-material/Replay';
 import { Button, Grid, MenuItem } from '@mui/material';
 import axios from 'axios';
 import { FormProvider, RHFSelect } from 'components/hook-form';
@@ -23,7 +24,6 @@ import { REGION } from '_mock/region';
 import { AmandementFields } from '../../../../@types/proposal';
 import { RegionNames } from '../../../../@types/region';
 import RHFComboBox, { ComboBoxOption } from '../../../../components/hook-form/RHFComboBox';
-import ReplayIcon from '@mui/icons-material/Replay';
 
 type FormValuesProps = {
   pm_name: string;
@@ -182,6 +182,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
       governorate_id: area?.governorate?.governorate_id || '',
       pm_mobile: newEntityMobile!,
     };
+    // console.log({ payload });
     onSubmit(removeEmptyKey(payload));
   };
 
@@ -547,7 +548,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
             <Grid item md={revised ? 12 : 6} xs={12}>
               <RHFComboBox
                 disabled={
-                  (!!revised && revised.hasOwnProperty('regions_id') ? false : !!revised && true) ||
+                  (!!revised && revised.hasOwnProperty('region_id') ? false : !!revised && true) ||
                   isLoadingRegions ||
                   regions.length === 0
                 }
@@ -568,7 +569,9 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
             <Grid item md={revised ? 12 : 6} xs={12}>
               <RHFComboBox
                 disabled={
-                  (!!revised && revised.hasOwnProperty('regions_id') ? false : !!revised && true) ||
+                  (!!revised && revised.hasOwnProperty('governorate_id')
+                    ? false
+                    : !!revised && true) ||
                   isLoadingRegions ||
                   !formField?.governorates ||
                   (formField?.governorates && formField?.governorates.length === 0)

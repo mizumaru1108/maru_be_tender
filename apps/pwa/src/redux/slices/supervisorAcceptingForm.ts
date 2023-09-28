@@ -133,9 +133,11 @@ const slice = createSlice({
       state.step2.region = action?.payload.region || '';
       state.step2.region_id = action?.payload?.region_detail?.region_id || '';
       state.step2.region_detail = action?.payload?.region_detail || undefined;
+      state.step2.proposal_regions = action?.payload?.proposal_regions || undefined;
       state.step2.governorate = action?.payload.governorate || '';
       state.step2.governorate_id = action?.payload?.governorate_detail?.governorate_id || '';
       state.step2.governorate_detail = action?.payload?.governorate_detail || undefined;
+      state.step2.proposal_governorates = action?.payload?.proposal_governorates || undefined;
       state.step2.date_of_esthablistmen =
         action.payload.user.client_data.date_of_esthablistmen ?? new Date();
       state.step2.num_of_beneficiaries = action.payload.user.client_data.num_of_beneficiaries ?? 0;

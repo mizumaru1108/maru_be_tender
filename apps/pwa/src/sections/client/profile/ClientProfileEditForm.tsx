@@ -68,6 +68,7 @@ function ClientProfileEditForm() {
   });
   const { translate } = useLocales();
   const { data, fetching, error } = result;
+  // console.log({ data });
   const initialValue = {
     form1: {
       client_field: '',

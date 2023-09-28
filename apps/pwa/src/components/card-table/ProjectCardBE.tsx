@@ -188,55 +188,56 @@ const ProjectCardBE = ({
   };
 
   const handleOnClick = async () => {
-    if (
-      ['tender_project_supervisor'].includes(role) &&
-      destination !== 'requests-in-process' &&
-      destination !== 'previous-funding-requests'
-    ) {
-      await updateAsigning({
-        _set: {
-          support_outputs: '-',
-          [`${RolesMap[role]!}`]: userAuth?.id,
-        },
-        where: {
-          id: {
-            _eq: id,
+    try {
+      if (
+        ['tender_project_supervisor'].includes(role) &&
+        destination !== 'requests-in-process' &&
+        destination !== 'previous-funding-requests'
+      ) {
+        await updateAsigning({
+          _set: {
+            support_outputs: '-',
+            [`${RolesMap[role]!}`]: userAuth?.id,
           },
-        },
-      });
-    }
+          where: {
+            id: {
+              _eq: id,
+            },
+          },
+        });
+      }
 
-    if (
-      [
-        'tender_finance',
-        'tender_cashier',
-        'tender_project_manager',
-        // 'tender_project_supervisor',
-      ].includes(role) &&
-      destination !== 'requests-in-process' &&
-      destination !== 'previous-funding-requests'
-    ) {
-      await updateAsigning({
-        _set: {
-          [`${RolesMap[role]!}`]: userAuth?.id,
-        },
-        where: {
-          id: {
-            _eq: id,
+      if (
+        [
+          'tender_finance',
+          'tender_cashier',
+          'tender_project_manager',
+          // 'tender_project_supervisor',
+        ].includes(role) &&
+        destination !== 'requests-in-process' &&
+        destination !== 'previous-funding-requests'
+      ) {
+        await updateAsigning({
+          _set: {
+            [`${RolesMap[role]!}`]: userAuth?.id,
           },
-        },
-      });
-    }
-    // getProposalCount(activeRole ?? 'test');
-    if (FEATURE_PROPOSAL_COUNTING) {
-      getProposalCount(activeRole ?? 'test');
-    }
-    if (destination) {
-      const x = location.pathname.split('/');
-      // console.log(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
-      navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
-    } else {
-      navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
+          where: {
+            id: {
+              _eq: id,
+            },
+          },
+        });
+      }
+      if (destination) {
+        const x = location.pathname.split('/');
+        // console.log(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
+        navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
+      } else {
+        navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
+      }
+      getProposalCount(role || '');
+    } catch (error) {
+      console.log({ error });
     }
   };
 

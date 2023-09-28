@@ -2701,6 +2701,8 @@ const en = {
         notes: 'Notes',
         region: 'Region',
         governorate: 'Governorate',
+        region_id: 'Region',
+        governorate_id: 'Governorate',
       },
     },
   },

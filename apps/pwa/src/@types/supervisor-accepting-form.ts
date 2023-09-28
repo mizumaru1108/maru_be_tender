@@ -1,3 +1,4 @@
+import { ComboBoxOption } from 'components/hook-form/RHFComboBox';
 import { IGovernorate } from 'sections/admin/governorate/list/types';
 import { IRegions } from 'sections/admin/region/list/types';
 
@@ -64,6 +65,22 @@ export interface SupervisorStep1 {
   payment_number?: number;
 }
 
+export interface ProposalGovernorates {
+  proposal_governorate_id?: string;
+  proposal_id?: string;
+  governorate_id?: string;
+  created_at?: Date;
+  governorate?: IGovernorate;
+}
+
+export interface ProposalRegions {
+  proposal_region_id?: string;
+  proposal_id?: string;
+  region_id?: string;
+  created_at?: Date;
+  region?: IRegions;
+}
+
 export interface SupervisorStep2 {
   organizationName: string;
   region: string;
@@ -78,6 +95,10 @@ export interface SupervisorStep2 {
   been_supported_before: boolean;
   most_clents_projects: string;
   num_of_beneficiaries: number;
+  proposal_governorates?: ProposalGovernorates[];
+  proposal_regions?: ProposalRegions[];
+  regions_id?: ComboBoxOption[];
+  governorates_id?: ComboBoxOption[];
 }
 
 export interface SupervisorStep3 {

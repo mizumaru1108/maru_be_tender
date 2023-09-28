@@ -134,9 +134,11 @@ export interface ComboBoxOption {
 type IProps = {
   name: string;
   label: string;
+  value?: ComboBoxOption[];
   placeholder?: string;
   disabled?: boolean;
   dataOption: ComboBoxOption[];
+  limitTags?: number;
 };
 
 type Props = IProps;
@@ -147,8 +149,10 @@ export default function RHFComboBox({
   name,
   label,
   placeholder,
+  value,
   disabled = false,
   dataOption,
+  limitTags = 2,
   ...other
 }: Props) {
   const { control, setValue, getValues, watch } = useFormContext();
@@ -169,6 +173,12 @@ export default function RHFComboBox({
     }
     setValue(name, tmpFieldValue);
   };
+
+  React.useEffect(() => {
+    if (value && Array.isArray(value) && value.length > 0) {
+      setValue(name, value);
+    }
+  }, [value, name, setValue]);
   // const chungkedArray = chunkArray([...dataOption], 5);
 
   return (
@@ -187,7 +197,7 @@ export default function RHFComboBox({
               },
             ]
           }
-          limitTags={2}
+          limitTags={limitTags}
           disableCloseOnSelect
           ListboxComponent={dataOption && dataOption.length > 0 ? ListboxComponent : undefined}
           getOptionLabel={(option) => option.label}
@@ -200,7 +210,12 @@ export default function RHFComboBox({
           renderTags={() => {
             const tags: ComboBoxOption[] = [...tmpValues];
             return tags.map((option: ComboBoxOption, index: number) => (
-              <Chip label={`${option.label}`} key={index} onDelete={() => handleOnChange(option)} />
+              <Chip
+                disabled={disabled}
+                label={`${option.label}`}
+                key={index}
+                onDelete={() => handleOnChange(option)}
+              />
             ));
           }}
           // ListboxComponent

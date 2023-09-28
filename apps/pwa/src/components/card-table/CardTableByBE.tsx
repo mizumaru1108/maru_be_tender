@@ -396,9 +396,6 @@ CardTablePropsByBE) {
             />
           ) : destination === 'current-project' ? (
             <>
-              <Typography variant="h4">
-                {translate('content.client.main_page.current_projects')}
-              </Typography>
               <Grid
                 container
                 spacing={0}

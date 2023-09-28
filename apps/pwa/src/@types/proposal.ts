@@ -2,6 +2,7 @@ import { IGovernorate } from 'sections/admin/governorate/list/types';
 import { IRegions } from 'sections/admin/region/list/types';
 import { ClosingReportData } from 'sections/client/project-report/types';
 import { InnerStatus, OutterStatus } from './commons';
+import { ProposalGovernorates, ProposalRegions } from './supervisor-accepting-form';
 
 export interface BankInformation {
   id: string;
@@ -130,6 +131,8 @@ export interface Proposal {
   createdItemBudgetPayload?: ItemBudget[];
   default_item_budgets?: ItemBudget[];
   proposal_closing_report?: ClosingReportData[];
+  proposal_governorates?: ProposalGovernorates[];
+  proposal_regions?: ProposalRegions[];
   // proposal_logs: {
   //   id: string;
   //   proposal_id: string;
@@ -250,7 +253,6 @@ export type AmandementProposal = Omit<
   | 'project_track'
   | 'user'
   | 'created_at'
-  | 'region'
   | 'execution_time'
   | 'bank_informations'
   | 'bank_information'
@@ -279,8 +281,8 @@ export type AmandementProposal = Omit<
   | 'follow_ups'
   | 'region_id'
   | 'governorate_id'
-  | 'region'
-  | 'governorate'
+  // | 'region'
+  // | 'governorate'
   // | 'timelines'
 >;
 
@@ -305,6 +307,8 @@ export interface AmandmentRequestForm extends AmandementProposal {
   governorate_id: string;
   proposal_item_budgets: ItemBudget[];
   proposal_bank_id: string;
+  proposal_governorates?: ProposalGovernorates[];
+  proposal_regions?: ProposalRegions[];
   // timelines: FormValuesProps;
 }
 

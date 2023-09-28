@@ -18,7 +18,7 @@ function IncomingFundingRequests() {
     <Grid item md={12}>
       <CardTableByBE
         title={translate('incoming_support_requests')}
-        destination="requests-in-process"
+        destination="incoming-funding-requests"
         endPoint="tender-proposal/request-in-process"
         limitShowCard={4}
         cardFooterButtonAction="show-details"

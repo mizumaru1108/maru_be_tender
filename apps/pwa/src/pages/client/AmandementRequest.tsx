@@ -1,20 +1,18 @@
-import { styled } from '@mui/material/styles';
 import { Button, Grid, Stack, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { Box, Container } from '@mui/system';
 import Page from 'components/Page';
-import FundingProjectRequestForm from 'sections/client/funding-project-request';
 import useLocales from 'hooks/useLocales';
-import { useNavigate, useParams } from 'react-router';
-import axiosInstance from '../../utils/axios';
-import useAuth from '../../hooks/useAuth';
-import React from 'react';
-import { AmandementFields, AmandmentRequestForm } from '../../@types/proposal';
 import { useSnackbar } from 'notistack';
-import AmandementClientForm from '../../sections/client/funding-project-request/amandement-project/AmandementClientForm';
-import Iconify from '../../components/Iconify';
-import { MotionValue } from 'framer-motion';
-import { dispatch, useSelector } from 'redux/store';
+import React from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { getBeneficiariesList } from 'redux/slices/proposal';
+import { dispatch, useSelector } from 'redux/store';
+import { AmandementFields, AmandmentRequestForm } from '../../@types/proposal';
+import Iconify from '../../components/Iconify';
+import useAuth from '../../hooks/useAuth';
+import AmandementClientForm from '../../sections/client/funding-project-request/amandement-project/AmandementClientForm';
+import axiosInstance from '../../utils/axios';
 const ContentStyle = styled('div')(({ theme }) => ({
   maxWidth: '100%',
   minHeight: '100vh',
@@ -147,10 +145,9 @@ const AmandementRequest = () => {
                     tmpValues.revised &&
                     Object.entries(tmpValues?.revised)
                       .filter(
-                        ([name, value]) =>
-                          name !== 'beneficiary_id' &&
-                          name !== 'region_id' &&
-                          name !== 'governorate_id'
+                        ([name, value]) => name !== 'beneficiary_id'
+                        // name !== 'region_id' &&
+                        // name !== 'governorate_id'
                       )
                       .map(([name, value]) => (
                         <Box key={name} sx={{ mb: 2 }}>

@@ -425,6 +425,7 @@ function FloatinActionBar() {
   React.useEffect(() => {
     dispatch(setStepsData(proposal, activeRole! as FusionAuthRoles));
   }, [proposal, dispatch, activeRole]);
+  // console.log({proposal})
 
   return (
     <>

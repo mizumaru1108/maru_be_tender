@@ -29,12 +29,12 @@ export const LeftField = [
     label: 'funding_project_request_form2.project_risk.label',
     placeholder: 'funding_project_request_form2.project_risk.placeholder',
   },
-  {
-    type: 'textArea',
-    name: 'region',
-    label: 'funding_project_request_form3.region.label',
-    placeholder: 'funding_project_request_form3.region.placeholder',
-  },
+  // {
+  //   type: 'textArea',
+  //   name: 'region',
+  //   label: 'funding_project_request_form3.region.label',
+  //   placeholder: 'funding_project_request_form3.region.placeholder',
+  // },
 ];
 export const RightField = [
   {
@@ -67,10 +67,10 @@ export const RightField = [
     label: 'funding_project_request_form4.amount_required_fsupport.label',
     placeholder: 'funding_project_request_form4.amount_required_fsupport.placeholder',
   },
-  {
-    type: 'textArea',
-    name: 'governorate',
-    label: 'funding_project_request_form3.city.label',
-    placeholder: 'funding_project_request_form3.city.placeholder',
-  },
+  // {
+  //   type: 'textArea',
+  //   name: 'governorate',
+  //   label: 'funding_project_request_form3.city.label',
+  //   placeholder: 'funding_project_request_form3.city.placeholder',
+  // },
 ];

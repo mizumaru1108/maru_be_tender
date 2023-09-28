@@ -33,6 +33,7 @@ type Props = {
   tmpValues?: ITmpValues;
 };
 const AmandementClientForm = ({ tmpValues }: Props) => {
+  // console.log({ tmpValues });
   const location = useLocation();
   const { user, activeRole } = useAuth();
   const navigate = useNavigate();
@@ -206,7 +207,9 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
     delete newValue.letter_ofsupport_req;
     delete newValue.project_timeline;
     delete newValue.regions_id;
+    delete newValue.region_id;
     delete newValue.governorates_id;
+    delete newValue.governorate_id;
     // delete newValue.detail_project_budgets;
 
     let filteredValue = Object.keys(newValue)
@@ -306,7 +309,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
       }
     }
     if (
-      tmpValues?.revised.hasOwnProperty('regions_id') &&
+      tmpValues?.revised.hasOwnProperty('region_id') &&
       requestState?.form3?.regions_id?.length > 0
     ) {
       for (let i = 0; i < requestState?.form3?.regions_id?.length; i++) {
@@ -314,11 +317,11 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         const index = i; // Get the index for appending to FormData
 
         // Append the values for each object using template literals
-        formData.append(`regions_id[${index}]`, region_id.value);
+        formData.append(`region_id[${index}]`, region_id.value);
       }
     }
     if (
-      tmpValues?.revised.hasOwnProperty('governorates_id') &&
+      tmpValues?.revised.hasOwnProperty('governorate_id') &&
       requestState?.form3?.governorates_id?.length > 0
     ) {
       for (let i = 0; i < requestState?.form3?.governorates_id?.length; i++) {
@@ -328,7 +331,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
         const index = i; // Get the index for appending to FormData
 
         // Append the values for each object using template literals
-        formData.append(`governorates_id[${index}]`, governorate_id.value);
+        formData.append(`governorate_id[${index}]`, governorate_id.value);
       }
     }
     if (tmpValues?.revised.hasOwnProperty('project_attachments')) {
@@ -432,6 +435,22 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
     // window.scrollTo(0, 0);
 
     if (tmpValues) {
+      const tmpRegionsId: ComboBoxOption[] =
+        (tmpValues?.data?.proposal_regions &&
+          Array.isArray(tmpValues?.data?.proposal_regions) &&
+          tmpValues?.data?.proposal_regions?.map((region) => ({
+            label: region.region?.name || '',
+            value: region?.region_id || '',
+          }))) ||
+        [];
+      const tmpGovernoratesId: ComboBoxOption[] =
+        (tmpValues?.data?.proposal_governorates &&
+          Array.isArray(tmpValues?.data?.proposal_governorates) &&
+          tmpValues?.data?.proposal_governorates?.map((governorate) => ({
+            label: governorate.governorate?.name || '',
+            value: governorate?.governorate_id || '',
+          }))) ||
+        [];
       const tuningTheState = () => {
         if (tmpValues.data) {
           setRequestState((prevRegisterState: any) => ({
@@ -476,6 +495,8 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
                 governorate: tmpValues?.data.governorate,
                 region_id: tmpValues?.data.region_id,
                 governorate_id: tmpValues?.data.governorate_id,
+                regions_id: tmpRegionsId,
+                governorates_id: tmpGovernoratesId,
               },
             },
             form4: {
@@ -497,6 +518,7 @@ const AmandementClientForm = ({ tmpValues }: Props) => {
       tuningTheState();
     }
   }, [tmpValues]);
+  // console.log({ requestState });
   return (
     <>
       <Box
