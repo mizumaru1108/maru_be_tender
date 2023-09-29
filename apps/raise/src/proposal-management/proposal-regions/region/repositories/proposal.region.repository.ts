@@ -104,6 +104,7 @@ export class ProposalRegionRepository {
     let whereClause: Prisma.ProposalRegionWhereInput = {};
 
     if (props.proposal_id) whereClause.proposal_id = props.proposal_id;
+
     if (include_relations && include_relations.length > 0) {
       args.include = this.applyInclude(include_relations);
     }
@@ -217,11 +218,15 @@ export class ProposalRegionRepository {
       const existingRegionIds = existingProposalRegions.map(
         (region) => region.region_id,
       );
+      // console.log('exist', { existingRegionIds });
+      // console.log('payload', { region_ids });
 
       // Delete proposal regions that are not in the provided IDs
       for (const existingRegion of existingProposalRegions) {
         if (!region_ids.includes(existingRegion.region_id)) {
-          // console.log('delete', existingRegion.proposal_region_id);
+          // console.log(
+          //   `delete proposal reg id ${existingRegion.proposal_region_id}, reg id ${existingRegion.region_id}`,
+          // );
           // Delete the proposal region with the provided ID
           this.delete(existingRegion.proposal_region_id, prisma);
         }

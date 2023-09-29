@@ -352,7 +352,7 @@ export class SendRevisionCommandHandler
               `send_revision_for_${askedEditRequest.sender_role.toLowerCase()}_amandement` as ProposalAction;
           }
 
-          if (request.region_id) {
+          if (request.region_id && request.region_id.length > 0) {
             await this.proposalRegionRepo.arraySave(
               proposalId,
               request.region_id,
@@ -360,7 +360,7 @@ export class SendRevisionCommandHandler
             );
           }
 
-          if (request.governorate_id) {
+          if (request.governorate_id && request.governorate_id.length > 0) {
             await this.proposalGovernorateRepo.arraySave(
               proposalId,
               request.governorate_id,

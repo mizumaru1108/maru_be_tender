@@ -109,6 +109,8 @@ export class ProposalGovernorateRepository {
     let args: Prisma.ProposalGovernorateFindManyArgs = {};
     let whereClause: Prisma.ProposalGovernorateWhereInput = {};
 
+    if (props.proposal_id) whereClause.proposal_id = props.proposal_id;
+
     if (include_relations && include_relations.length > 0) {
       args.include = this.applyInclude(include_relations);
     }
@@ -222,11 +224,15 @@ export class ProposalGovernorateRepository {
       const existingGovernorateIds = existingProposalGovernorate.map(
         (governorate) => governorate.governorate_id,
       );
+      // console.log('exist', { existingGovernorateIds });
+      // console.log('payload', { governorate_ids });
 
       // Delete proposal governorates that are not in the provided IDs
       for (const existingGov of existingProposalGovernorate) {
         if (!governorate_ids.includes(existingGov.governorate_id)) {
-          // console.log('delete', existingGov.proposal_governorate_id);
+          // console.log(
+          //   `delete proposal gov id: ${existingGov.proposal_governorate_id}, gov id: ${existingGov.governorate_id}`,
+          // );
           // Delete the proposal governorate with the provided ID
           this.delete(existingGov.proposal_governorate_id, prisma);
         }
