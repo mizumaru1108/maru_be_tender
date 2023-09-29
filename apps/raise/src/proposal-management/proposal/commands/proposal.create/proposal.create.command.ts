@@ -315,17 +315,21 @@ export class ProposalCreateCommandHandler
             }
           }
 
-          await this.proposalGovernorateRepo.arraySave(
-            createdProposal.id,
-            request.governorate_id,
-            session,
-          );
+          if (request.governorate_id) {
+            await this.proposalGovernorateRepo.arraySave(
+              createdProposal.id,
+              request.governorate_id,
+              session,
+            );
+          }
 
-          await this.proposalRegionRepo.arraySave(
-            createdProposal.id,
-            request.region_id,
-            session,
-          );
+          if (request.region_id) {
+            await this.proposalRegionRepo.arraySave(
+              createdProposal.id,
+              request.region_id,
+              session,
+            );
+          }
 
           const updatedProposal = await this.proposalRepo.fetchById(
             {

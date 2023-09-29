@@ -118,11 +118,12 @@ export class CreateProposalInterceptorDto {
   // @IsNotEmpty()
   // region?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
-  region_id: string[];
+  region_id?: string[];
 
   // @ApiPropertyOptional()
   // @IsOptional()
@@ -130,11 +131,12 @@ export class CreateProposalInterceptorDto {
   // @IsNotEmpty()
   // governorate?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
-  governorate_id: string[];
+  governorate_id?: string[];
   /* third form ---------------------------------------------------- */
 
   /* fourth form ---------------------------------------------------- */
