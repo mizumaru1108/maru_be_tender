@@ -2450,7 +2450,7 @@ export class ProposalRepository {
         whereClause = {
           ...whereClause,
           // OR: [{ finance_id: currentUser.id }, { finance_id: null }],
-          finance_id: currentUser.id,
+          finance_id: null,
           payments: {
             some: {
               status: { in: [PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER] },
