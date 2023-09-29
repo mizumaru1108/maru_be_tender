@@ -54,7 +54,6 @@ function ConfirmationModal({ open, handleClose, onSumbit, message }: Props) {
               backgroundColor: '#0E8478',
               ':hover': { backgroundColor: '#13B2A2' },
             }}
-            // loading={loading}
           >
             {/* اضافة */}
             {translate('button.confirm')}

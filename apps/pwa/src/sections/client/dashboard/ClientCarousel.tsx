@@ -1,19 +1,19 @@
-import Slider from 'react-slick';
-import React, { useRef } from 'react';
-import { useTheme } from '@mui/material/styles';
-import { Box, Stack, Typography } from '@mui/material';
-import { CarouselArrows, CarouselDots } from 'components/carousel';
 import { makeStyles } from '@material-ui/core/styles';
-import { FEATURE_BANNER } from 'config';
-import useLocales from 'hooks/useLocales';
-import useAuth from 'hooks/useAuth';
-import { useSnackbar } from 'notistack';
-import axiosInstance from 'utils/axios';
-import { AdvertisingTapeList } from 'components/table/admin/system-messages/types';
+import { Box, Stack, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { CarouselArrows, CarouselDots } from 'components/carousel';
 import DetailBannerDialog from 'components/modal-dialog/DetailBannerDialog';
-import { useSelector } from 'redux/store';
+import { AdvertisingTapeList } from 'components/table/admin/system-messages/types';
+import { FEATURE_BANNER } from 'config';
 import dayjs from 'dayjs';
-import { hasActive, hasExpired, isActiveToday } from 'utils/checkIsExpired';
+import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
+import { useSnackbar } from 'notistack';
+import React, { useRef } from 'react';
+import Slider from 'react-slick';
+import { useSelector } from 'redux/store';
+import axiosInstance from 'utils/axios';
+import { hasActive, isActiveToday } from 'utils/checkIsExpired';
 
 const data = [
   {

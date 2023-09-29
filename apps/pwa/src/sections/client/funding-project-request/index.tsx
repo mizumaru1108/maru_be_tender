@@ -15,6 +15,8 @@ import { useMutation, useQuery } from 'urql';
 import axiosInstance from 'utils/axios';
 import { ComboBoxOption } from '../../../components/hook-form/RHFComboBox';
 import Toast from '../../../components/toast';
+import { FEATURE_DISABLE_PROPOSAL_DATE } from '../../../config';
+import { hasDayExpired } from '../../../utils/checkIsExpired';
 import { removeEmptyKey } from '../../../utils/remove-empty-key';
 import {
   ConnectingInfoForm,
@@ -238,7 +240,7 @@ const FundingProjectRequestForm = () => {
   // on submit for creating a new project
   const onSubmit = async (data: any) => {
     // console.log({ data });
-    setIsLoading(true);
+
     const createdProposel = {
       ...(step >= 1 && { ...requestState.form1 }),
       ...(step >= 2 && { ...requestState.form2 }),
@@ -328,93 +330,57 @@ const FundingProjectRequestForm = () => {
       formData.append('letter_ofsupport_req[type]', datas?.letter_ofsupport_req?.type as string);
       formData.append('letter_ofsupport_req[size]', datas?.letter_ofsupport_req?.size as any);
     }
-    // try {
-    //   const rest = await axiosInstance.post(
-    //     'tender-proposal/create',
-    //     {
-    //       ...createdProposel,
-    //     },
-    //     {
-    //       headers: { 'x-hasura-role': activeRole! },
-    //       maxBodyLength: Infinity,
-    //       maxContentLength: Infinity,
-    //     }
-    //   );
-    //   if (rest) {
-    //     const spreadUrl = location.pathname.split('/');
-    //     enqueueSnackbar(translate('proposal_created'), {
-    //       variant: 'success',
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //       anchorOrigin: {
-    //         vertical: 'bottom',
-    //         horizontal: 'center',
-    //       },
-    //     });
-    //     navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
-    //   } else {
-    //     setIsLoading(false);
-    //     alert('Something went wrong');
-    //   }
-    // } catch (err) {
-    //   console.log(err);
-    //   setIsLoading(false);
-    // }
-
-    try {
-      const res = await axiosInstance.post('/tender-proposal/interceptor-create', formData, {
-        headers: { 'x-hasura-role': activeRole! },
-        maxBodyLength: Infinity,
-        maxContentLength: Infinity,
-      });
-      if (res) {
-        const spreadUrl = location.pathname.split('/');
-        enqueueSnackbar(translate('proposal_created'), {
-          variant: 'success',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
+    if (
+      (FEATURE_DISABLE_PROPOSAL_DATE &&
+        hasDayExpired({ expiredDate: FEATURE_DISABLE_PROPOSAL_DATE })) ||
+      !FEATURE_DISABLE_PROPOSAL_DATE
+    ) {
+      setIsLoading(true);
+      try {
+        const res = await axiosInstance.post('/tender-proposal/interceptor-create', formData, {
+          headers: { 'x-hasura-role': activeRole! },
+          maxBodyLength: Infinity,
+          maxContentLength: Infinity,
         });
-        navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
-      }
-    } catch (err) {
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
-      const statusCode = (err && err.statusCode) || 0;
-      const message = (err && err.message) || null;
-      enqueueSnackbar(
-        `${
-          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
-        }`,
-        {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
+        if (res) {
+          const spreadUrl = location.pathname.split('/');
+          enqueueSnackbar(translate('proposal_created'), {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+          navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/app`);
         }
-      );
-      setIsLoading(false);
-    } finally {
-      setIsLoading(false);
-      setIsDraft(false);
+      } catch (err) {
+        const statusCode = (err && err.statusCode) || 0;
+        const message = (err && err.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+        setIsDraft(false);
+      }
     }
   };
 
   const onSavingDraft = async (data: any) => {
-    setIsLoading(true);
     const newAttachment = {
       ...(lastIndex === step &&
       step >= 0 &&
@@ -590,48 +556,20 @@ const FundingProjectRequestForm = () => {
       formData.append('letter_ofsupport_req[type]', datas?.letter_ofsupport_req?.type as string);
       formData.append('letter_ofsupport_req[size]', datas?.letter_ofsupport_req?.size as any);
     }
-    if (!!id) {
-      const res = await axiosInstance.patch(
-        // witoutFormData
-        // '/tender-proposal/save-draft',
+    if (
+      (FEATURE_DISABLE_PROPOSAL_DATE &&
+        hasDayExpired({ expiredDate: FEATURE_DISABLE_PROPOSAL_DATE })) ||
+      !FEATURE_DISABLE_PROPOSAL_DATE
+    ) {
+      setIsLoading(true);
+      if (!!id) {
+        const res = await axiosInstance.patch(
+          // witoutFormData
+          // '/tender-proposal/save-draft',
 
-        // withFormData
-        '/tender-proposal/interceptor-save-draft',
-        // { ...datas },
-        formData,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-          maxBodyLength: Infinity,
-          maxContentLength: Infinity,
-        }
-      );
-      if (res) {
-        const spreadUrl = location.pathname.split('/');
-        enqueueSnackbar(translate('proposal_saving_draft'), {
-          variant: 'success',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-        navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
-        // setToast({
-      } else {
-        enqueueSnackbar(translate('Something went wrong'), {
-          variant: 'error',
-        });
-      }
-    } else {
-      try {
-        const rest = await axiosInstance.post(
-          // withoutFormData
-          // 'tender-proposal/create',
-          // {
-          //   ...datas,
-          // },
-          '/tender-proposal/interceptor-create',
+          // withFormData
+          '/tender-proposal/interceptor-save-draft',
+          // { ...datas },
           formData,
           {
             headers: { 'x-hasura-role': activeRole! },
@@ -639,9 +577,7 @@ const FundingProjectRequestForm = () => {
             maxContentLength: Infinity,
           }
         );
-        // setIsLoading(false);
-        // console.log({ rest });
-        if (rest) {
+        if (res) {
           const spreadUrl = location.pathname.split('/');
           enqueueSnackbar(translate('proposal_saving_draft'), {
             variant: 'success',
@@ -653,41 +589,80 @@ const FundingProjectRequestForm = () => {
             },
           });
           navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+          // setToast({
         } else {
-          setIsLoading(false);
-          alert('Something went wrong');
-        }
-      } catch (err) {
-        // console.log(err);
-        // enqueueSnackbar(err.message, {
-        //   variant: 'error',
-        //   preventDuplicate: true,
-        //   autoHideDuration: 3000,
-        //   anchorOrigin: {
-        //     vertical: 'bottom',
-        //     horizontal: 'center',
-        //   },
-        // });
-        const statusCode = (err && err.statusCode) || 0;
-        const message = (err && err.message) || null;
-        enqueueSnackbar(
-          `${
-            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
-          }`,
-          {
+          enqueueSnackbar(translate('Something went wrong'), {
             variant: 'error',
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'center',
-            },
+          });
+        }
+      } else {
+        try {
+          const rest = await axiosInstance.post(
+            // withoutFormData
+            // 'tender-proposal/create',
+            // {
+            //   ...datas,
+            // },
+            '/tender-proposal/interceptor-create',
+            formData,
+            {
+              headers: { 'x-hasura-role': activeRole! },
+              maxBodyLength: Infinity,
+              maxContentLength: Infinity,
+            }
+          );
+          // setIsLoading(false);
+          // console.log({ rest });
+          if (rest) {
+            const spreadUrl = location.pathname.split('/');
+            enqueueSnackbar(translate('proposal_saving_draft'), {
+              variant: 'success',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'center',
+              },
+            });
+            navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+          } else {
+            setIsLoading(false);
+            alert('Something went wrong');
           }
-        );
-        setIsLoading(false);
-      } finally {
-        setIsLoading(false);
-        setIsDraft(false);
+        } catch (err) {
+          // console.log(err);
+          // enqueueSnackbar(err.message, {
+          //   variant: 'error',
+          //   preventDuplicate: true,
+          //   autoHideDuration: 3000,
+          //   anchorOrigin: {
+          //     vertical: 'bottom',
+          //     horizontal: 'center',
+          //   },
+          // });
+          const statusCode = (err && err.statusCode) || 0;
+          const message = (err && err.message) || null;
+          enqueueSnackbar(
+            `${
+              statusCode < 500 && message
+                ? message
+                : translate('pages.common.internal_server_error')
+            }`,
+            {
+              variant: 'error',
+              preventDuplicate: true,
+              autoHideDuration: 3000,
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'center',
+              },
+            }
+          );
+          setIsLoading(false);
+        } finally {
+          setIsLoading(false);
+          setIsDraft(false);
+        }
       }
     }
   };
@@ -795,71 +770,77 @@ const FundingProjectRequestForm = () => {
       formData.append('letter_ofsupport_req[type]', datas?.letter_ofsupport_req?.type as string);
       formData.append('letter_ofsupport_req[size]', datas?.letter_ofsupport_req?.size as any);
     }
-    setIsLoading(true);
-    try {
-      const res = await axiosInstance.patch(
-        // witoutformData
-        // '/tender-proposal/save-draft',
-        // { ...saveLastDraft },
-        '/tender-proposal/interceptor-save-draft',
-        formData,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-          maxBodyLength: Infinity,
-          maxContentLength: Infinity,
-        }
-      );
-      if (res) {
-        const spreadUrl = location.pathname.split('/');
-        enqueueSnackbar(translate('proposal_created'), {
-          variant: 'success',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-        navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+    if (
+      (FEATURE_DISABLE_PROPOSAL_DATE &&
+        hasDayExpired({ expiredDate: FEATURE_DISABLE_PROPOSAL_DATE })) ||
+      !FEATURE_DISABLE_PROPOSAL_DATE
+    ) {
+      try {
+        setIsLoading(true);
+        const res = await axiosInstance.patch(
+          // witoutformData
+          // '/tender-proposal/save-draft',
+          // { ...saveLastDraft },
+          '/tender-proposal/interceptor-save-draft',
+          formData,
+          {
+            headers: { 'x-hasura-role': activeRole! },
+            maxBodyLength: Infinity,
+            maxContentLength: Infinity,
+          }
+        );
+        if (res) {
+          const spreadUrl = location.pathname.split('/');
+          enqueueSnackbar(translate('proposal_created'), {
+            variant: 'success',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          });
+          navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
 
-        // setToast({
-        //   open: true,
-        //   message: translate('proposal_created'),
-        // });
-        // setTimeout(() => {
-        //   navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
-        // }, 1000);
-      }
-    } catch (err) {
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
-      const statusCode = (err && err.statusCode) || 0;
-      const message = (err && err.message) || null;
-      enqueueSnackbar(
-        `${
-          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
-        }`,
-        {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
+          // setToast({
+          //   open: true,
+          //   message: translate('proposal_created'),
+          // });
+          // setTimeout(() => {
+          //   navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
+          // }, 1000);
         }
-      );
-      setIsLoading(false);
-    } finally {
-      setIsLoading(false);
-      setIsDraft(false);
+      } catch (err) {
+        // enqueueSnackbar(err.message, {
+        //   variant: 'error',
+        //   preventDuplicate: true,
+        //   autoHideDuration: 3000,
+        //   anchorOrigin: {
+        //     vertical: 'bottom',
+        //     horizontal: 'center',
+        //   },
+        // });
+        const statusCode = (err && err.statusCode) || 0;
+        const message = (err && err.message) || null;
+        enqueueSnackbar(
+          `${
+            statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+          }`,
+          {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+          }
+        );
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+        setIsDraft(false);
+      }
     }
   };
 

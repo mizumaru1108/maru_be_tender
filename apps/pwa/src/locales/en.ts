@@ -2521,6 +2521,9 @@ const en = {
     review: 'Review',
   },
   modal: {
+    disable_proposal: {
+      message: 'Dear User, you can start submitting from next week.',
+    },
     headline: {
       track: 'Track',
       add_new_track: 'Add New Track',

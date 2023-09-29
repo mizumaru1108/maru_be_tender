@@ -4,6 +4,9 @@ interface HasExpiredProps {
   expiredTime: string;
   expiredDate: string;
 }
+interface HasDayExpiredProps {
+  expiredDate: string;
+}
 
 interface IsActiveHoursProps {
   startTime: string;
@@ -21,6 +24,17 @@ export function hasExpired({ expiredDate, expiredTime }: HasExpiredProps): boole
   const check = dayjs(`${tmpExpiredDate} ${tmpExpiredTime}`, 'YYYY-MM-DD hh:mm A').isBefore(
     dayjs(curTime, 'YYYY-MM-DD hh:mm A')
   )
+    ? true
+    : false;
+  // console.log({ tmpExpiredDate, tmpExpiredTime, check });
+  return check;
+}
+
+export function hasDayExpired({ expiredDate }: HasDayExpiredProps): boolean {
+  const curTime = dayjs().format('YYYY-MM-DD');
+  const tmpExpiredDate = dayjs(expiredDate).format('YYYY-MM-DD');
+
+  const check = dayjs(`${tmpExpiredDate}`, 'YYYY-MM-DD').isBefore(dayjs(curTime, 'YYYY-MM-DD'))
     ? true
     : false;
   // console.log({ tmpExpiredDate, tmpExpiredTime, check });

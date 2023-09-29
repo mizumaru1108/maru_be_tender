@@ -2540,6 +2540,9 @@ const ar = {
     review: 'استعراض',
   },
   modal: {
+    disable_proposal: {
+      message: 'عزيزي المستخدم، يمكنك البدء في التقديم اعتبارًا من الأسبوع المقبل',
+    },
     headline: {
       track: 'مسار',
       add_new_track: 'إضافة مسار جديد',
