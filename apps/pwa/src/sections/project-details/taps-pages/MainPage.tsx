@@ -1,4 +1,4 @@
-import { Box, Divider, Grid, Stack, Typography, Link, Button } from '@mui/material';
+import { Box, Divider, Grid, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useSelector } from 'redux/store';
@@ -6,11 +6,10 @@ import BankImageComp from 'sections/shared/BankImageComp';
 import useLocales from '../../../hooks/useLocales';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
-import { FEATURE_PROJECT_DETAILS, REOPEN_TMRA_S480 } from '../../../config';
-import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
-import useAuth from '../../../hooks/useAuth';
 import { AmandementFields, AmandmentRequestForm } from '../../../@types/proposal';
-import { useSnackbar } from 'notistack';
+import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
+import { FEATURE_PROJECT_DETAILS, REOPEN_TMRA_S480 } from '../../../config';
+import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
 
 type ITmpValues = {
@@ -23,10 +22,14 @@ function MainPage() {
   const { activeRole } = useAuth();
   const { proposal, isLoading } = useSelector((state) => state.proposal);
   const { id } = useParams();
-  const { enqueueSnackbar } = useSnackbar();
+  // const { enqueueSnackbar } = useSnackbar();
   const location = useLocation();
   const navigate = useNavigate();
   const [tmpValues, setTmpValues] = React.useState<ITmpValues | null>(null);
+  // console.log({ proposal });
+  const tmpGovernorates = Array.isArray(proposal?.proposal_governorates)
+    ? proposal?.proposal_governorates
+    : [];
 
   // const {
   //   project_location,
@@ -414,9 +417,17 @@ function MainPage() {
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('governorate')}
               </Typography>
-              <Typography sx={{ mb: '15px' }}>
-                {(proposal && proposal.governorate) ?? '-No Data-'}
-              </Typography>
+              {tmpGovernorates.length > 0 ? (
+                tmpGovernorates.map((item) => (
+                  <Typography key={item.governorate_id} sx={{ mb: '15px' }}>
+                    {item?.governorate?.name || '-No Data-'}
+                  </Typography>
+                ))
+              ) : (
+                <Typography sx={{ mb: '15px' }}>
+                  {(proposal && proposal.governorate) ?? '-No Data-'}
+                </Typography>
+              )}
             </Stack>
             {activeRole !== 'tender_client' && (
               <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>

@@ -45,7 +45,7 @@ type Props = {
 const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const tmpDefaultValues = removeEmptyKey(defaultValues);
   // console.log({ revised });
-  // console.log({ tmpDefaultValues, defaultValues });
+  console.log({ tmpDefaultValues });
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -141,6 +141,21 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
               translate('errors.cre_proposal.governorate.required')
             ),
           }),
+      ...(tmpRevised &&
+      tmpRevised.hasOwnProperty('region_id') &&
+      tmpRevised.hasOwnProperty('governorate_id') &&
+      FEATURE_PROPOSAL_MULTIPLE_REGION_ENTITY_AREA
+        ? {
+            regions_id: Yup.array()
+              .min(1, translate('portal_report.errors.region_id.required'))
+              .required(translate('portal_report.errors.region_id.required'))
+              .nullable(),
+            governorates_id: Yup.array()
+              .min(1, translate('portal_report.errors.governorate_id.required'))
+              .required(translate('portal_report.errors.governorate_id.required'))
+              .nullable(),
+          }
+        : null),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [revised]);
@@ -227,7 +242,7 @@ const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Prop
           .filter((item) => item.governorate && item.governorate.length > 0)
           .map((item) => item.governorate)
           .flat();
-        // console.log('masuk sini');
+        // console.log();
         setFormField((prevState: any) => ({
           ...prevState,
           regions: tmpRegions && tmpRegions.length > 0 ? tmpRegions : null,
