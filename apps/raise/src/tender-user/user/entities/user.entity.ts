@@ -11,17 +11,17 @@ export class UserEntity {
   employee_name?: string | null;
   mobile_number?: string | null;
   email: string;
-  created_at?: Date | null = new Date();
-  updated_at?: Date | null = new Date();
+  created_at?: Date | null;
+  updated_at?: Date | null;
   employee_path?: string | null;
-  last_login?: Date | null = null;
+  last_login?: Date | null;
   status_id: string;
   status: UserStatusEntity;
-  address?: string | null = null;
+  address?: string | null;
   google_session: any; // jsonb
-  is_online?: boolean | null = null;
-  track_id?: string | null = null;
-  uid?: number | null = null;
+  is_online?: boolean | null;
+  track_id?: string | null;
+  uid?: number | null;
   bank_information?: BankInformationEntity[];
   roles: UserRoleEntity[];
   file_manager?: FileManagerEntity[];

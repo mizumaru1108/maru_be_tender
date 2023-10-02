@@ -74,6 +74,7 @@ export class UserCreateCommandHandler
       // }
 
       const emailExist = await this.userRepo.findFirst({ email });
+      // console.log({ emailExist });
       if (emailExist) {
         if (selectLang === 'en') {
           throw new ConflictException('Email already exist in our app!');
@@ -85,6 +86,7 @@ export class UserCreateCommandHandler
       }
 
       const phoneExist = await this.userRepo.findFirst({ mobile_number });
+      // console.log({ phoneExist });
       if (phoneExist) {
         throw new ConflictException('Phone already exist in our app!');
       }

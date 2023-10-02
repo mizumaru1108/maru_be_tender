@@ -209,6 +209,7 @@ export class TenderUserRepository {
         include: args.include,
       });
 
+      if (!rawRes) return null;
       // console.log({ args });
       // console.log({ rawRes });
       const foundedEntity = Builder<UserEntity>(UserEntity, {
