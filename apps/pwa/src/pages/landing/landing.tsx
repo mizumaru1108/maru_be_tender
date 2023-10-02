@@ -28,7 +28,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function LandingPage() {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const { logout, activeRole } = useAuth();
   const navigate = useNavigate();
 
@@ -104,7 +104,13 @@ export default function LandingPage() {
               >
                 gaith_support@hcharity.org
               </Typography>
-              <Typography sx={{ color: 'text.secondary', fontSize: '16px' }}>
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: '16px',
+                  direction: currentLang.value === 'ar' ? 'rtl' : 'ltr',
+                }}
+              >
                 +966500640054
               </Typography>
             </CardContent>
