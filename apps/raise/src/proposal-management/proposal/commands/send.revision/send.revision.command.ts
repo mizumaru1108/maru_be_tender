@@ -415,6 +415,12 @@ export class SendRevisionCommandHandler
                 project_timeline: request.project_timeline
                   ? updatedProposal?.project_timeline
                   : undefined,
+                proposal_regions: updatedProposal?.proposal_regions
+                  ? updatedProposal?.proposal_regions
+                  : undefined,
+                proposal_governorates: updatedProposal?.proposal_governorates
+                  ? updatedProposal?.proposal_governorates
+                  : undefined,
               },
               old_values: {
                 ...proposal,
