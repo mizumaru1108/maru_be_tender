@@ -370,7 +370,7 @@ const ar = {
             },
           },
           governorate: {
-            list_of_governorate: 'المناطق',
+            list_of_governorate: 'المحافظات',
             add_governorate: 'اضافة منطقة',
             modal: {
               success_edit_governorate: 'المناطق تم تحديثها بنجاح',
@@ -703,6 +703,7 @@ const ar = {
         required: 'كلمة المرور مطلوبة',
         new_password: 'كلمة المرور مطلوبة',
         confirm_password: 'كلمة المرور غير متطابقة',
+        min: 'كلمة المرور لا تقل عن 8 أحرف',
       },
       ceo_name: {
         message: '',
@@ -1615,7 +1616,7 @@ const ar = {
   customization_for_dropdown: 'تخصيص القوائم المنسدلة',
   authority: 'الجهة المشرفة',
   entity_area: 'المناطق',
-  regions_project_location: 'المناطق - مكان المشروع',
+  regions_project_location: 'المناطق',
   entity_classification: 'تصنيف الجهة',
   bank_name: 'اسم البنك',
   beneficiaries: 'المستفيدين',
@@ -2207,6 +2208,8 @@ const ar = {
   },
   closing_project_by_client: 'إغلاق مشروع',
   review: {
+    proposal_regions: 'المناطق',
+    proposal_governorates: 'المحافظات',
     region: 'المنطقة',
     governorate: 'المحافظة',
     pm_name: 'مدير المشروع',

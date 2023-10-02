@@ -1,33 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 // @mui
-import { useTheme } from '@mui/material/styles';
-import {
-  TableRow,
-  Checkbox,
-  TableCell,
-  Typography,
-  Button,
-  IconButton,
-  Tooltip,
-  Menu,
-  MenuItem,
-} from '@mui/material';
+import { Button, Checkbox, Menu, MenuItem, TableCell, TableRow, Typography } from '@mui/material';
+import { darken, useTheme, alpha } from '@mui/material/styles';
 // components
-import Label from '../Label';
-import Iconify from '../Iconify';
 import { LoadingButton } from '@mui/lab';
 import ConfirmationModals from 'components/confirmation-modals';
+import Iconify from '../Iconify';
+import Label from '../Label';
 // hooks
-import { IPropsTablesList } from './type';
-import moment from 'moment';
-import useLocales from 'hooks/useLocales';
 import useAuth from 'hooks/useAuth';
-import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
-import { useNavigate, useLocation } from 'react-router-dom';
+import useLocales from 'hooks/useLocales';
+import moment from 'moment';
 import { useSnackbar } from 'notistack';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
 import axiosInstance from 'utils/axios';
-import { async } from '@firebase/util';
+import { IPropsTablesList } from './type';
 
 // ----------------------------------------------------------------------
 
@@ -296,7 +285,15 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
               (editRequest && status_id === 'REJECTED' && 'error') ||
               'error'
             }
-            sx={{ textTransform: 'capitalize' }}
+            sx={{
+              textTransform: 'capitalize',
+              ...(account_status === 'SUSPENDED_ACCOUNT' &&
+                !editRequest &&
+                'success' && {
+                  backgroundColor: alpha('#F7C191', 0.21),
+                  color: darken('#F7C191', 0.35),
+                }),
+            }}
           >
             {!editRequest
               ? (account_status === 'ACTIVE_ACCOUNT' &&
@@ -304,8 +301,11 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
                 ((account_status === 'WAITING_FOR_ACTIVATION' ||
                   account_status === 'REVISED_ACCOUNT') &&
                   translate('account_manager.table.td.label_waiting_activation')) ||
+                (account_status === 'SUSPENDED_ACCOUNT' &&
+                  translate('account_manager.table.td.label_suspended_account')) ||
                 (account_status !== 'WAITING_FOR_ACTIVATION' &&
                 account_status !== 'ACTIVE_ACCOUNT' &&
+                account_status !== 'SUSPENDED_ACCOUNT' &&
                 account_status === 'CANCELED_ACCOUNT'
                   ? translate('account_manager.table.td.label_canceled_account')
                   : translate('account_manager.table.td.label_rejected_account'))

@@ -656,6 +656,7 @@ const en = {
         required: 'Password is required',
         new_password: 'New password is required',
         confirm_password: 'Confirm password must be the same as the new password',
+        min: 'Password at least 8 characters',
       },
       license_number: {
         message: '',
@@ -2186,6 +2187,8 @@ const en = {
   },
   closing_project_by_client: 'Closing Project By Client',
   review: {
+    proposal_regions: 'Regions',
+    proposal_governorates: 'Governorate',
     region: 'Region',
     governorate: 'Governorate',
     pm_name: 'Project Manager',

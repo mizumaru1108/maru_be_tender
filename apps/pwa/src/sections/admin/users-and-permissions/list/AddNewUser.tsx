@@ -82,7 +82,7 @@ function AddNewUser() {
     //   const isLength = val?.length === 8;
     //   return isLength;
     // });
-    .test('len', translate('password at least 8 characters'), (val) => {
+    .test('len', translate('errors.register.password.min'), (val) => {
       if (val === undefined) {
         return true;
       } else {

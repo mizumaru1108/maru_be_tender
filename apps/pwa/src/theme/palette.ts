@@ -13,6 +13,7 @@ interface GradientsPaletteOptions {
   info: string;
   success: string;
   warning: string;
+  // suspend: string;
   error: string;
 }
 
@@ -89,6 +90,13 @@ const SUCCESS = {
   dark: '#229A16',
   darker: '#08660D',
 };
+// const SUSPEND = {
+//   lighter: lighten('#FF9F6A', 0.3),
+//   light: lighten('#FF9F6A', 0.1),
+//   main: '#FF9F6A',
+//   dark: darken('#FF9F6A', 0.1),
+//   darker: darken('#FF9F6A', 0.3),
+// };
 const WARNING = {
   lighter: '#FFF7CD',
   light: '#FFE16A',
@@ -129,6 +137,7 @@ const GRADIENTS = {
   primary: createGradient(PRIMARY.light, PRIMARY.main),
   info: createGradient(INFO.light, INFO.main),
   success: createGradient(SUCCESS.light, SUCCESS.main),
+  // suspend: createGradient(SUSPEND.light, SUSPEND.main),
   warning: createGradient(WARNING.light, WARNING.main),
   error: createGradient(ERROR.light, ERROR.main),
 };
@@ -148,6 +157,7 @@ const COMMON = {
   info: { ...INFO, contrastText: '#fff' },
   success: { ...SUCCESS, contrastText: GREY[800] },
   warning: { ...WARNING, contrastText: GREY[800] },
+  // suspend: { ...SUSPEND, contrastText: GREY[800] },
   error: { ...ERROR, contrastText: '#fff' },
   grey: GREY,
   gradients: GRADIENTS,

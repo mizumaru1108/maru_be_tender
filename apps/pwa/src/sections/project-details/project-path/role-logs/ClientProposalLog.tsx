@@ -24,6 +24,11 @@ function ClientProposalLog() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // check if there is a multiple governorate
+  const tmpGovernorates = Array.isArray(proposal?.proposal_governorates)
+    ? proposal?.proposal_governorates
+    : [];
+
   const handleOpenProjectOwnerDetails = () => {
     const submiterId = proposal.submitter_user_id;
     const urls = location.pathname.split('/');
@@ -218,9 +223,17 @@ function ClientProposalLog() {
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('governorate')}
               </Typography>
-              <Typography sx={{ mb: '15px' }}>
-                {(proposal && proposal.governorate) ?? '-No Data-'}
-              </Typography>
+              {tmpGovernorates.length > 0 ? (
+                tmpGovernorates.map((item) => (
+                  <Typography key={item.governorate_id} sx={{ mb: '15px' }}>
+                    {item?.governorate?.name || '-No Data-'}
+                  </Typography>
+                ))
+              ) : (
+                <Typography sx={{ mb: '15px' }}>
+                  {(proposal && proposal.governorate) ?? '-No Data-'}
+                </Typography>
+              )}
             </Stack>
           </Stack>
         </Grid>

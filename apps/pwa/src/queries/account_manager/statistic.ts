@@ -19,12 +19,13 @@ query activePartners {
 
 export const rejectedPartners = `
 query rejectedPartners {
-  user_aggregate(where: {roles: {user_type_id: {_eq: CLIENT}}, _and: {status_id: {_eq: CANCELED_ACCOUNT}}}) {
+  user_aggregate(where: {roles: {user_type_id: {_eq: CLIENT}}, _and: {status_id: {_in: [DELETED, CANCELED_ACCOUNT]}}}) {
     aggregate {
       count(columns: created_at)
     }
   }
 }
+
 `;
 
 export const suspendedPartners = `

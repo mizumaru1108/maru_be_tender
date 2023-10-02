@@ -79,7 +79,6 @@ export default function LandingPage() {
           <Card sx={{ backgroundColor: '#fff', maxWidth: 850, padding: 9 }}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Typography sx={{ color: 'text.primary', fontSize: '19.39px' }}>
-                {/* {translate('forgot_password_details')} */}
                 {/* عملائنا الأعزاء، لقد تم تحديث نظام المنح. يرجى استخدام الرابط التالي لاستخدام النظام
                 الجديد. * في حال استخدامك للنظام الجديد لأول مرة يرجى إعادة ضبط كلمة المرور وسيتم
                 إرسال رابط الاستعادة إلى بريدكم المسجل في النظام */}
@@ -100,8 +99,13 @@ export default function LandingPage() {
               <Typography sx={{ color: 'text.secondary', fontSize: '16px' }}>
                 إذا كانت لديكم أي أسئلة أو استفسارات، يرجى التواصل معنا على البريد التالي:
               </Typography>
-              <Typography sx={{ color: '#0E8478', fontSize: '16px', fontWeight: 'bold' }}>
+              <Typography
+                sx={{ color: '#0E8478', fontSize: '16px', fontWeight: 'bold', paddingY: 1 }}
+              >
                 gaith_support@hcharity.org
+              </Typography>
+              <Typography sx={{ color: 'text.secondary', fontSize: '16px' }}>
+                +966500640054
               </Typography>
             </CardContent>
           </Card>

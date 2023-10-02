@@ -23,13 +23,23 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     email: Yup.string()
       .required(translate('errors.register.email.required'))
       .email(translate('errors.register.email.email')),
-    current_password: Yup.string().required(translate('errors.register.password.required')),
+    current_password: Yup.string()
+      .required(translate('errors.register.password.required'))
+      .test('len', translate('errors.register.password.min'), (val) => {
+        if (val === undefined) {
+          return true;
+        } else {
+          return val!.length === 0 || val!.length > 7;
+        }
+      }),
   });
+
   const EmployeeInformationChangeSchema = Yup.object().shape({
     email: Yup.string()
       .required(translate('errors.register.email.required'))
       .email(translate('errors.register.email.email')),
     employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
+
     mobile_number: Yup.string()
       .required(translate('errors.register.entity_mobile.required'))
       .test('len', translate('errors.register.entity_mobile.length'), (val) => {
@@ -39,14 +49,38 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
 
         return val.length === 0 || val!.length === 9;
       }),
-    current_password: Yup.string().required(translate('errors.register.password.required')),
+    current_password: Yup.string()
+      .required(translate('errors.register.password.required'))
+      .test('len', translate('errors.register.password.min'), (val) => {
+        if (val === undefined) {
+          return true;
+        } else {
+          return val!.length === 0 || val!.length > 7;
+        }
+      }),
   });
   const ClientPasswordChangeSchema = Yup.object().shape({
     email: Yup.string()
       .required(translate('errors.register.email.required'))
       .email(translate('errors.register.email.email')),
-    current_password: Yup.string().required(translate('errors.register.password.required')),
-    new_password: Yup.string().required(translate('errors.register.password.new_password')),
+    current_password: Yup.string()
+      .required(translate('errors.register.password.required'))
+      .test('len', translate('errors.register.password.min'), (val) => {
+        if (val === undefined) {
+          return true;
+        } else {
+          return val!.length === 0 || val!.length > 7;
+        }
+      }),
+    new_password: Yup.string()
+      .required(translate('errors.register.password.new_password'))
+      .test('len', translate('errors.register.password.min'), (val) => {
+        if (val === undefined) {
+          return true;
+        } else {
+          return val!.length === 0 || val!.length > 7;
+        }
+      }),
     confirm_password: Yup.string().oneOf(
       [Yup.ref('new_password'), null],
       translate('errors.register.password.confirm_password')
@@ -65,9 +99,33 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
 
         return val.length === 0 || val!.length === 9;
       }),
-    employee_name: Yup.string().required(translate('errors.register.employee_name.required')),
-    current_password: Yup.string().required(translate('errors.register.password.required')),
-    new_password: Yup.string().required(translate('errors.register.password.new_password')),
+    employee_name: Yup.string()
+      .required(translate('errors.register.employee_name.required'))
+      .test('len', translate('errors.register.password.min'), (val) => {
+        if (val === undefined) {
+          return true;
+        } else {
+          return val!.length === 0 || val!.length > 7;
+        }
+      }),
+    current_password: Yup.string()
+      .required(translate('errors.register.password.required'))
+      .test('len', translate('errors.register.password.min'), (val) => {
+        if (val === undefined) {
+          return true;
+        } else {
+          return val!.length === 0 || val!.length > 7;
+        }
+      }),
+    new_password: Yup.string()
+      .required(translate('errors.register.password.new_password'))
+      .test('len', translate('errors.register.password.min'), (val) => {
+        if (val === undefined) {
+          return true;
+        } else {
+          return val!.length === 0 || val!.length > 7;
+        }
+      }),
     confirm_password: Yup.string().oneOf(
       [Yup.ref('new_password'), null],
       translate('errors.register.password.confirm_password')

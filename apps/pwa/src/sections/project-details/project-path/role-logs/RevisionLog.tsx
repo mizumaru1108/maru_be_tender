@@ -11,6 +11,10 @@ import {
   ItemBudget,
   timeline,
 } from '../../../../@types/proposal';
+import {
+  ProposalGovernorates,
+  ProposalRegions,
+} from '../../../../@types/supervisor-accepting-form';
 import ButtonDownloadFiles from '../../../../components/button/ButtonDownloadFiles';
 import { FormProvider, RHFDatePicker, RHFTextField } from '../../../../components/hook-form';
 import BankImageComp from '../../../shared/BankImageComp';
@@ -191,34 +195,36 @@ function RevisionLog({ stepGeneralLog }: Props) {
                       </Grid>
                     );
                   }
-                  if (key === 'region_id' && tmpValue) {
-                    const tmpRegion = region_list.find((item) => item.region_id === tmpValue);
+                  if (key === 'proposal_regions' && tmpValue) {
+                    const tmpRegions: ProposalRegions[] = value;
                     return (
                       <Grid key={key} item md={6} xs={12}>
                         <Typography variant="h6">{translate(`review.${key}`)}</Typography>
                         <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                          <Typography>{tmpRegion?.name || 'no Data'}</Typography>
+                          {Array.isArray(tmpRegions) && tmpRegions.length > 0 ? (
+                            tmpRegions.map((item, index) => (
+                              <Typography key={index}>{item?.region?.name}</Typography>
+                            ))
+                          ) : (
+                            <Typography>{'no data'}</Typography>
+                          )}
                         </Stack>
                       </Grid>
                     );
                   }
-                  if (key === 'governorate_id' && tmpValue) {
-                    const tmpRegion = region_list.find(
-                      (item) =>
-                        item.governorate &&
-                        item.governorate?.length > 0 &&
-                        item.governorate.find((item) => item.governorate_id === tmpValue)
-                    );
-                    const tmpGovernorate = tmpRegion?.governorate?.find(
-                      (item) => item.governorate_id === tmpValue
-                    )?.name;
-                    // console.log({ tmpGovernorate });
-                    // const tmpRegion = region_list.find((item) => item.region_id === tmpValue);
+                  if (key === 'proposal_governorates' && tmpValue) {
+                    const tmpGovernorates: ProposalGovernorates[] = value;
                     return (
                       <Grid key={key} item md={6} xs={12}>
                         <Typography variant="h6">{translate(`review.${key}`)}</Typography>
                         <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                          <Typography>{tmpGovernorate || 'no Data'}</Typography>
+                          {Array.isArray(tmpGovernorates) && tmpGovernorates.length > 0 ? (
+                            tmpGovernorates.map((item, index) => (
+                              <Typography key={index}>{item?.governorate?.name}</Typography>
+                            ))
+                          ) : (
+                            <Typography>{'no data'}</Typography>
+                          )}
                         </Stack>
                       </Grid>
                     );
