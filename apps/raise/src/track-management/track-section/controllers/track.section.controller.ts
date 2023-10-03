@@ -8,7 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
@@ -24,16 +24,13 @@ import {
   TrackSectionCreateCommand,
   TrackSectionCreateCommandResult,
 } from '../commands/track.section.create/track.section.create.command';
-import { TrackSectionCreateDto } from '../dtos/requests/track.section.create.dto';
+import { TrackSectionsCreateDto } from '../dtos/requests/track.sections.create.dto';
 import { TrackSectionEntity } from '../entities/track.section.entity';
 
 @ApiTags('TrackModule/TrackSection')
 @Controller('tender/track-sections')
 export class TrackSectionHttpController {
-  constructor(
-    private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   errorMapper(error: any) {
     if (
@@ -62,16 +59,14 @@ export class TrackSectionHttpController {
   @BaseApiOkResponse(TrackSectionEntity, 'array')
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
-  @Post('create')
-  async create(
-    @Body() dto: TrackSectionCreateDto,
+  @Post('save')
+  async save(
+    @Body() dto: TrackSectionsCreateDto,
   ): Promise<BaseResponse<TrackSectionEntity[]>> {
     try {
       const command = Builder<TrackSectionCreateCommand>(
         TrackSectionCreateCommand,
-        {
-          ...dto,
-        },
+        { sections: dto.sections },
       ).build();
 
       const { data } = await this.commandBus.execute<
@@ -82,7 +77,7 @@ export class TrackSectionHttpController {
       return baseResponseHelper(
         data.created_sections,
         HttpStatus.CREATED,
-        'Advertisement Created Successfully!',
+        'Section Saved Successfully!',
       );
     } catch (e) {
       throw this.errorMapper(e);

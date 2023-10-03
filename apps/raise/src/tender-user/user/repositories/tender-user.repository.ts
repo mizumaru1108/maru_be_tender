@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, project_tracks, track, user, user_type } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { v4 as uuidv4 } from 'uuid';
-import { logUtil } from '../../../commons/utils/log-util';
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -12,8 +11,6 @@ import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-t
 import { SearchUserFilterRequest } from '../dtos/requests';
 import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 import { UserEntity } from '../entities/user.entity';
-import { UpdateUserPayload } from '../interfaces/update-user-payload.interface';
-import { UserStatus } from '../types/user_status';
 export class CreateUserProps {
   id?: string;
   employee_name: string;
@@ -69,22 +66,12 @@ export class TenderUserRepository {
       }
 
       if (email && email !== '') {
-        orClause.push({
-          email: {
-            contains: email,
-            mode: 'insensitive',
-          },
-        });
+        orClause.push({ email });
       }
 
       if (license_number && license_number !== '') {
         orClause.push({
-          client_data: {
-            license_number: {
-              contains: license_number,
-              mode: 'insensitive',
-            },
-          },
+          client_data: { license_number },
         });
       }
 

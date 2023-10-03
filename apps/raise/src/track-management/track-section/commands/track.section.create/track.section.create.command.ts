@@ -1,14 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import {
-  TrackSectionCreateProps,
-  TrackSectionRepository,
-} from '../../repositories/track.section.repository';
-import { Builder } from 'builder-pattern';
+import { TrackSectionCreateDto } from '../../dtos/requests/track.sections.create.dto';
 import { TrackSectionEntity } from '../../entities/track.section.entity';
+import { TrackSectionRepository } from '../../repositories/track.section.repository';
+import { PrismaService } from '../../../../prisma/prisma.service';
 export class TrackSectionCreateCommand {
-  name: string;
-  budget: number;
-  track_ids: string[];
+  sections: TrackSectionCreateDto[];
 }
 
 export class TrackSectionCreateCommandResult {
@@ -22,25 +18,48 @@ export class TrackSectionCreateCommandHandler
   implements
     ICommandHandler<TrackSectionCreateCommand, TrackSectionCreateCommandResult>
 {
-  constructor(private readonly trackSectionRepo: TrackSectionRepository) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly trackSectionRepo: TrackSectionRepository,
+  ) {}
 
   async execute(
     command: TrackSectionCreateCommand,
   ): Promise<TrackSectionCreateCommandResult> {
+    const { sections } = command;
     try {
-      const createdSection: TrackSectionEntity[] = [];
-      for (const track_id of command.track_ids) {
-        const section = await this.trackSectionRepo.create({
-          name: command.name,
-          budget: command.budget,
-          track_id: track_id,
-        });
-        createdSection.push(section);
-      }
+      const dbRes = await this.prismaService.$transaction(
+        async (session) => {
+          const tx =
+            session instanceof PrismaService ? session : this.prismaService;
+
+          await this.trackSectionRepo.deleteByTrackId(sections[0].track_id, tx);
+
+          const createdEntity: TrackSectionEntity[] = [];
+          for (const section of sections) {
+            const entity = await this.trackSectionRepo.create(
+              {
+                id: section.id,
+                name: section.name,
+                budget: section.budget,
+                parent_section_id: section.parent_section_id,
+                track_id: section.track_id,
+              },
+              tx,
+            );
+            createdEntity.push(entity);
+          }
+
+          return createdEntity;
+        },
+        {
+          timeout: 70000,
+        },
+      );
 
       return {
         data: {
-          created_sections: createdSection,
+          created_sections: dbRes,
         },
       };
     } catch (error) {

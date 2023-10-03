@@ -256,6 +256,24 @@ export class TrackSectionRepository {
     }
   }
 
+  async deleteByTrackId(
+    track_id: string,
+    session?: PrismaService,
+  ): Promise<number> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      const rawDeleted = await prisma.track_section.deleteMany({
+        where: { track_id },
+      });
+
+      return rawDeleted.count;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
+  }
+
   // async arraySave(
   //   proposal_id: string,
   //   governorate_ids: string[],
