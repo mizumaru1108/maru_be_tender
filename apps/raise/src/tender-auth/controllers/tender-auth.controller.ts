@@ -75,7 +75,8 @@ export class TenderAuthController {
       error instanceof FusionAuthRegisterError ||
       error instanceof PayloadErrorException ||
       error instanceof InvalidFileExtensionException ||
-      error instanceof InvalidFileSizeException
+      error instanceof InvalidFileSizeException ||
+      error instanceof BadRequestException
     ) {
       return new BadRequestException(error.message);
     }

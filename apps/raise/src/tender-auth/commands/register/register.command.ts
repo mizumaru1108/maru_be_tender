@@ -39,7 +39,8 @@ import {
 } from '../../../tender-user/user/repositories/tender-user.repository';
 import { RegisterTenderDto } from '../../dtos/requests/register-tender.dto';
 import { TenderAuthRepository } from '../../repositories/tender-auth.repository';
-import { ConflictException } from '@nestjs/common';
+import { BadRequestException, ConflictException } from '@nestjs/common';
+import { InvalidFileExtensionException } from '../../../tender-commons/exceptions/invalid-file-extension.exception';
 
 export class RegisterClientCommand {
   request: RegisterTenderDto;
@@ -114,6 +115,13 @@ export class RegisterClientCommandHandler
         ...fileObj,
       };
     } catch (error) {
+      if (error instanceof InvalidFileExtensionException) {
+        if (file.fileExtension === 'pdf') {
+          throw new BadRequestException(
+            'pdf يرجى التأكد من أن ملف الترخيص وملف قرار تشكيل مجلس الإدارة بصيغة ',
+          );
+        }
+      }
       throw error;
     }
   }
