@@ -436,6 +436,15 @@ export class TenderUserRepository {
           mode: 'insensitive',
         },
       });
+
+      orQuery.push({
+        client_data: {
+          entity: {
+            contains: employee_name,
+            mode: 'insensitive',
+          },
+        },
+      });
     }
 
     if (account_status) {
