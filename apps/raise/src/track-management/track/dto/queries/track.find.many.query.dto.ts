@@ -1,6 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsIn } from 'class-validator';
+import { IsString, IsOptional, IsIn, IsNotEmpty } from 'class-validator';
 import { BaseFilterRequest } from '../../../../commons/dtos/base-filter-request.dto';
+import { Transform } from 'class-transformer';
+import { TrackIncludeRelationsTypes } from '../../repositories/track.repository';
 
 export class TrackFindManyQueryDto extends BaseFilterRequest {
   @ApiPropertyOptional()
@@ -18,4 +20,15 @@ export class TrackFindManyQueryDto extends BaseFilterRequest {
   @IsString()
   @IsIn(['1', '0'])
   is_deleted?: '1' | '0';
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @Transform(({ value }) => {
+    if (value && typeof value === 'string') {
+      return value.split(',');
+    }
+    return value;
+  })
+  include_relations?: TrackIncludeRelationsTypes[];
 }

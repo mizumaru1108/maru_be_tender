@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TrackEntity } from '../entities/track.entity';
-import { logUtil } from '../../../commons/utils/log-util';
+import { TrackMapper } from '../mapper/track.mapper';
 
 export class TrackCreateProps {
   id?: string;
@@ -18,22 +18,31 @@ export class TrackUpdateProps {
   with_consultation?: boolean;
   is_deleted?: boolean;
 }
+
+export enum TrackIncludeRelationsTypeEnum {
+  PROPOSAL = 'proposal',
+  TRACK_SECTIONS = 'track_sections',
+}
+
+export type TrackIncludeRelationsTypes = 'proposal' | 'track_sections';
 export class TrackFindFirstProps {
   id?: string;
   name?: string;
   exclude_id?: string;
-  include_relations?: string[];
+  budget_info?: '0' | '1';
+  include_relations?: TrackIncludeRelationsTypes[];
 }
 
 export class TrackFindManyProps {
   track_name?: string;
   include_general?: '1' | '0';
   is_deleted?: '1' | '0';
+  budget_info?: '0' | '1';
   limit?: number;
   page?: number;
   sort_by?: string;
   sort_direction?: string;
-  include_relations?: string[];
+  include_relations?: TrackIncludeRelationsTypes[];
 }
 
 @Injectable()
@@ -41,7 +50,10 @@ export class TrackRepository {
   private readonly logger = ROOT_LOGGER.child({
     'log.logger': TrackRepository.name,
   });
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly trackMapper: TrackMapper,
+  ) {}
 
   async findById(id: string) {
     try {
@@ -54,7 +66,51 @@ export class TrackRepository {
     }
   }
 
-  applyInclude() {}
+  applyInclude(include_relations: TrackIncludeRelationsTypes[]) {
+    let include: Prisma.trackInclude = {};
+    // console.log({ include_relations });
+    for (const relation of include_relations) {
+      if (relation === 'proposal') {
+        include = {
+          ...include,
+          proposal: {
+            select: {
+              id: true,
+              track_id: true,
+              fsupport_by_supervisor: true,
+            },
+          },
+        };
+      }
+
+      if (relation === 'track_sections') {
+        include = {
+          ...include,
+          track_section: {
+            where: {
+              parent_section_id: null,
+            },
+            include: {
+              child_track_section: {
+                include: {
+                  child_track_section: {
+                    include: {
+                      child_track_section: {
+                        include: {
+                          child_track_section: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        };
+      }
+    }
+    return include;
+  }
 
   findFirstFilter(props: TrackFindFirstProps) {
     const args: Prisma.trackFindFirstArgs = {};
@@ -63,23 +119,41 @@ export class TrackRepository {
     if (props.id) whereClause.id = props.id;
     if (props.name) whereClause.name = props.name;
     if (props.exclude_id) whereClause.id = { notIn: [props.exclude_id] };
+
+    if (props.budget_info) {
+      if (props.include_relations) {
+        props.include_relations.push('proposal');
+      } else {
+        props.include_relations = ['proposal'];
+      }
+    }
+
     args.where = whereClause;
+
+    if (props.include_relations && props.include_relations.length > 0) {
+      args.include = this.applyInclude(props.include_relations);
+    }
 
     return args;
   }
 
-  async findFirst(props: TrackFindFirstProps, tx?: PrismaService) {
+  async findFirst(
+    props: TrackFindFirstProps,
+    tx?: PrismaService,
+  ): Promise<TrackEntity | null> {
     let prisma = this.prismaService;
     if (tx) prisma = tx;
     try {
       const args = this.findFirstFilter(props);
       const rawTrack = await prisma.track.findFirst({
         where: args.where,
+        include: args.include,
       });
 
       if (!rawTrack) return null;
 
-      return Builder<TrackEntity>(TrackEntity, rawTrack).build();
+      const entity = this.trackMapper.toDomain(rawTrack);
+      return entity;
     } catch (err) {
       this.logger.error(`error when finding track by id ${err}`);
       throw err;
@@ -163,6 +237,10 @@ export class TrackRepository {
       };
     }
 
+    if (props.include_relations && props.include_relations.length > 0) {
+      args.include = this.applyInclude(props.include_relations);
+    }
+
     args.where = whereClause;
     return args;
   }
@@ -177,7 +255,6 @@ export class TrackRepository {
       const getSortDirection = sort_direction ? sort_direction : 'desc';
 
       const options = this.findManyFilters(props);
-      // console.log(logUtil(options));
       let queryOptions: Prisma.trackFindManyArgs = {
         where: options.where,
 
@@ -197,10 +274,8 @@ export class TrackRepository {
       }
 
       const rawResults = await prisma.track.findMany(queryOptions);
-      const entities = rawResults.map((rawResult) => {
-        return Builder<TrackEntity>(TrackEntity, rawResult).build();
-      });
 
+      const entities = this.trackMapper.toDomainList(rawResults);
       return entities;
     } catch (error) {
       throw error;

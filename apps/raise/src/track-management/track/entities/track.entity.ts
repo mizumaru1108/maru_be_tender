@@ -11,4 +11,9 @@ export class TrackEntity {
   proposals?: ProposalEntity[];
   sections?: TrackSectionEntity[];
   user?: UserEntity[];
+
+  // virtual props by query/sum
+  budget?: number;
+  total_budget_used?: number;
+  remaining_budget?: number;
 }

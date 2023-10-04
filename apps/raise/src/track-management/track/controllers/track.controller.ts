@@ -7,6 +7,7 @@ import {
   HttpStatus,
   InternalServerErrorException,
   NotFoundException,
+  Param,
   Patch,
   Post,
   Query,
@@ -38,6 +39,11 @@ import {
   TrackFindManyQuery,
   TrackFindManyQueryResult,
 } from '../queries/track.find.many/track.find.many.query';
+import { TrackFindByIdQueryDto } from '../dto/queries/track.find.by.id.query.dto';
+import {
+  TrackFindByIdQuery,
+  TrackFindByIdQueryResult,
+} from '../queries/track.find.by.id/track.find.by.id.query';
 
 @ApiTags('TrackModule/Track')
 @Controller('tender/track')
@@ -48,6 +54,7 @@ export class TrackController {
   ) {}
 
   errorMapper(e: any) {
+    console.trace(e);
     if (
       e instanceof BadRequestException ||
       e instanceof NotFoundException ||
@@ -56,6 +63,8 @@ export class TrackController {
     ) {
       return e;
     }
+
+    return new InternalServerErrorException(e);
   }
 
   @ApiOperation({
@@ -139,5 +148,36 @@ export class TrackController {
       HttpStatus.OK,
       'Track List Fetched Successfully!',
     );
+  }
+
+  @ApiOperation({
+    summary: 'find track by id',
+  })
+  @BaseApiOkResponse(TrackEntity, 'object')
+  @UseGuards(TenderJwtGuard)
+  @Get('/:track_id')
+  async findById(
+    @Param('track_id') track_id: string,
+    @Query() queryParam: TrackFindByIdQueryDto,
+  ) {
+    try {
+      const queries = Builder<TrackFindByIdQuery>(TrackFindByIdQuery, {
+        track_id,
+        ...queryParam,
+      }).build();
+
+      const { data } = await this.queryBus.execute<
+        TrackFindByIdQuery,
+        TrackFindByIdQueryResult
+      >(queries);
+
+      return baseResponseHelper(
+        data,
+        HttpStatus.OK,
+        'Banner Fetched Successfully!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
   }
 }

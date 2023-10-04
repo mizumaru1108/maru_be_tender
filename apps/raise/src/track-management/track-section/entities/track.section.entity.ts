@@ -9,6 +9,6 @@ export class TrackSectionEntity {
   track_id: string;
   is_deleted: boolean;
   parent_section: TrackSectionEntity;
-  chile_track_section: TrackSectionEntity[];
+  child_track_section: TrackSectionEntity[];
   track: TrackEntity;
 }

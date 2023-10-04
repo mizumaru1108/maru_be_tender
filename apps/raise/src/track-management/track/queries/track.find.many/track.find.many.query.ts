@@ -1,7 +1,10 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { BannerRepository } from 'src/banners/repositories/banner.repository';
 import { TrackEntity } from '../../entities/track.entity';
-import { TrackRepository } from '../../repositories/track.repository';
+import {
+  TrackIncludeRelationsTypes,
+  TrackRepository,
+} from '../../repositories/track.repository';
 
 export class TrackFindManyQuery {
   track_name?: string;
@@ -11,7 +14,7 @@ export class TrackFindManyQuery {
   page?: number;
   sort_by?: string;
   sort_direction?: string;
-  include_relations?: string[];
+  include_relations?: TrackIncludeRelationsTypes[];
 }
 
 export class TrackFindManyQueryResult {
@@ -26,7 +29,6 @@ export class TrackFindManyQueryHandler
   constructor(private readonly trackRepo: TrackRepository) {}
 
   async execute(query: TrackFindManyQuery): Promise<TrackFindManyQueryResult> {
-    // console.log('kintil2');
     const data = await this.trackRepo.findMany({
       ...query,
     });

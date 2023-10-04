@@ -5,6 +5,8 @@ import { TrackUpdateCommandHandler } from './commands/track.update.command/track
 import { TrackController } from './controllers/track.controller';
 import { TrackFindManyQueryHandler } from './queries/track.find.many/track.find.many.query';
 import { TrackRepository } from './repositories/track.repository';
+import { TrackFindByIdQueryHandler } from './queries/track.find.by.id/track.find.by.id.query';
+import { TrackMapper } from './mapper/track.mapper';
 
 const importedModule = [CqrsModule];
 const controllers = [TrackController];
@@ -13,12 +15,16 @@ const commands: Provider[] = [
   TrackCreateCommandCommandHandler,
   TrackUpdateCommandHandler,
 ];
-const queries: Provider[] = [TrackFindManyQueryHandler];
+const queries: Provider[] = [
+  TrackFindByIdQueryHandler,
+  TrackFindManyQueryHandler,
+];
+const mapper: Provider[] = [TrackMapper];
 const exportedProviders: Provider[] = [...repositories];
 @Module({
   imports: [...importedModule],
   controllers: [...controllers],
-  providers: [...repositories, ...commands, ...queries],
+  providers: [...repositories, ...commands, ...mapper, ...queries],
   exports: [...exportedProviders],
 })
 export class TrackModule {}

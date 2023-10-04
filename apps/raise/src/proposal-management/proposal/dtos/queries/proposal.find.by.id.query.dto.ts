@@ -15,11 +15,6 @@ export class ProposalFindByIdQueryRequest {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
-  @IsEnum(ProposalIncludeRelationsEnum, {
-    message: `relations must be one of ${Object.values(
-      ProposalIncludeRelationsEnum,
-    ).join(', ')}`,
-  })
   @Transform(({ value }) => {
     if (value && typeof value === 'string') {
       return value.split(',');
