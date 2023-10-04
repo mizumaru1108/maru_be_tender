@@ -321,53 +321,53 @@ export class ProposalService {
     return deletedProposal;
   }
 
-  async askAmandementRequest(
-    currentUser: TenderCurrentUser,
-    request: AskAmandementRequestDto,
-  ) {
-    const { proposal_id } = request;
-    const proposal = await this.proposalRepo.fetchProposalById(proposal_id);
-    if (!proposal) throw new BadRequestException('Proposal Not Found!');
+  // async askAmandementRequest(
+  //   currentUser: TenderCurrentUser,
+  //   request: AskAmandementRequestDto,
+  // ) {
+  //   const { proposal_id } = request;
+  //   const proposal = await this.proposalRepo.fetchProposalById(proposal_id);
+  //   if (!proposal) throw new BadRequestException('Proposal Not Found!');
 
-    if (proposal.outter_status === OutterStatusEnum.ON_REVISION) {
-      throw new BadRequestException(
-        'Proposal aready asked for client to be revised!',
-      );
-    }
+  //   if (proposal.outter_status === OutterStatusEnum.ON_REVISION) {
+  //     throw new BadRequestException(
+  //       'Proposal aready asked for client to be revised!',
+  //     );
+  //   }
 
-    if (
-      proposal.outter_status === OutterStatusEnum.ASKED_FOR_AMANDEMENT ||
-      proposal.outter_status === OutterStatusEnum.ASKED_FOR_AMANDEMENT_PAYMENT
-    ) {
-      throw new BadRequestException(
-        'Proposal already asked to supervisor for an amandement to the user!',
-      );
-    }
+  //   if (
+  //     proposal.outter_status === OutterStatusEnum.ASKED_FOR_AMANDEMENT ||
+  //     proposal.outter_status === OutterStatusEnum.ASKED_FOR_AMANDEMENT_PAYMENT
+  //   ) {
+  //     throw new BadRequestException(
+  //       'Proposal already asked to supervisor for an amandement to the user!',
+  //     );
+  //   }
 
-    const createAskEditRequestPayload = CreateProposalAskedEditRequestMapper(
-      currentUser,
-      request,
-    );
+  //   const createAskEditRequestPayload = CreateProposalAskedEditRequestMapper(
+  //     currentUser,
+  //     request,
+  //   );
 
-    const proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput = {
-      // outter_status: OutterStatusEnum.outter_status,
-    };
+  //   const proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput = {
+  //     // outter_status: OutterStatusEnum.outter_status,
+  //   };
 
-    if (currentUser.choosenRole === 'tender_finance') {
-      proposalUpdatePayload.outter_status =
-        OutterStatusEnum.ASKED_FOR_AMANDEMENT_PAYMENT;
-    } else {
-      proposalUpdatePayload.outter_status =
-        OutterStatusEnum.ASKED_FOR_AMANDEMENT;
-    }
+  //   if (currentUser.choosenRole === 'tender_finance') {
+  //     proposalUpdatePayload.outter_status =
+  //       OutterStatusEnum.ASKED_FOR_AMANDEMENT_PAYMENT;
+  //   } else {
+  //     proposalUpdatePayload.outter_status =
+  //       OutterStatusEnum.ASKED_FOR_AMANDEMENT;
+  //   }
 
-    return await this.proposalRepo.askForAmandementRequest(
-      currentUser,
-      proposal_id,
-      createAskEditRequestPayload,
-      proposalUpdatePayload,
-    );
-  }
+  //   return await this.proposalRepo.askForAmandementRequest(
+  //     currentUser,
+  //     proposal_id,
+  //     createAskEditRequestPayload,
+  //     proposalUpdatePayload,
+  //   );
+  // }
 
   async getAmandementByProposalId(proposalId: string) {
     const amandement = await this.proposalRepo.findAmandementByProposalId(

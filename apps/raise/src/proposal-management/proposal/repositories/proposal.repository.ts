@@ -206,6 +206,7 @@ export class ProposalRepository {
 
     return include;
   }
+
   async findByIdFilter(
     props: ProposalFetchByIdProps,
   ): Promise<Prisma.proposalFindFirstArgs> {
@@ -941,105 +942,105 @@ export class ProposalRepository {
     }
   }
 
-  async askForAmandementRequest(
-    currentUser: TenderCurrentUser,
-    id: string,
-    createAskEditRequestPayload: Prisma.proposal_asked_edit_requestUncheckedCreateInput,
-    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
-  ) {
-    try {
-      return await this.prismaService.$transaction(
-        async (prisma) => {
-          this.logger.info(
-            `Updating proposal ${id}, with payload of\n${logUtil(
-              proposalUpdatePayload,
-            )}`,
-          );
-          const updatedProposal = await prisma.proposal.update({
-            where: { id },
-            data: proposalUpdatePayload,
-          });
+  // async askForAmandementRequest(
+  //   currentUser: TenderCurrentUser,
+  //   id: string,
+  //   createAskEditRequestPayload: Prisma.proposal_asked_edit_requestUncheckedCreateInput,
+  //   proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+  // ) {
+  //   try {
+  //     return await this.prismaService.$transaction(
+  //       async (prisma) => {
+  //         this.logger.info(
+  //           `Updating proposal ${id}, with payload of\n${logUtil(
+  //             proposalUpdatePayload,
+  //           )}`,
+  //         );
+  //         const updatedProposal = await prisma.proposal.update({
+  //           where: { id },
+  //           data: proposalUpdatePayload,
+  //         });
 
-          this.logger.info(
-            `Creating new proposal asked edit request with payload of \n${logUtil(
-              createAskEditRequestPayload,
-            )}`,
-          );
+  //         this.logger.info(
+  //           `Creating new proposal asked edit request with payload of \n${logUtil(
+  //             createAskEditRequestPayload,
+  //           )}`,
+  //         );
 
-          await prisma.proposal_asked_edit_request.create({
-            data: createAskEditRequestPayload,
-          });
+  //         await prisma.proposal_asked_edit_request.create({
+  //           data: createAskEditRequestPayload,
+  //         });
 
-          const lastLog = await prisma.proposal_log.findFirst({
-            where: { proposal_id: id },
-            select: {
-              created_at: true,
-            },
-            orderBy: {
-              created_at: 'desc',
-            },
-            take: 1,
-          });
+  //         const lastLog = await prisma.proposal_log.findFirst({
+  //           where: { proposal_id: id },
+  //           select: {
+  //             created_at: true,
+  //           },
+  //           orderBy: {
+  //             created_at: 'desc',
+  //           },
+  //           take: 1,
+  //         });
 
-          await prisma.proposal_log.create({
-            data: {
-              id: nanoid(),
-              proposal_id: id,
-              user_role: appRoleMappers[currentUser.choosenRole],
-              reviewer_id: currentUser.id,
-              action: ProposalAction.ASK_FOR_AMANDEMENT_REQUEST, //ask to supervisor for amandement request
-              state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
-              notes: createAskEditRequestPayload.notes,
-              response_time: lastLog?.created_at
-                ? Math.round(
-                    (new Date().getTime() - lastLog.created_at.getTime()) /
-                      60000,
-                  )
-                : null,
-            },
-            select: {
-              action: true,
-              created_at: true,
-              reviewer: {
-                select: {
-                  id: true,
-                  employee_name: true,
-                  email: true,
-                  mobile_number: true,
-                },
-              },
-              proposal: {
-                select: {
-                  project_name: true,
-                  user: {
-                    select: {
-                      id: true,
-                      employee_name: true,
-                      email: true,
-                      mobile_number: true,
-                    },
-                  },
-                },
-              },
-            },
-          });
+  //         await prisma.proposal_log.create({
+  //           data: {
+  //             id: nanoid(),
+  //             proposal_id: id,
+  //             user_role: appRoleMappers[currentUser.choosenRole],
+  //             reviewer_id: currentUser.id,
+  //             action: ProposalAction.ASK_FOR_AMANDEMENT_REQUEST, //ask to supervisor for amandement request
+  //             state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+  //             notes: createAskEditRequestPayload.notes,
+  //             response_time: lastLog?.created_at
+  //               ? Math.round(
+  //                   (new Date().getTime() - lastLog.created_at.getTime()) /
+  //                     60000,
+  //                 )
+  //               : null,
+  //           },
+  //           select: {
+  //             action: true,
+  //             created_at: true,
+  //             reviewer: {
+  //               select: {
+  //                 id: true,
+  //                 employee_name: true,
+  //                 email: true,
+  //                 mobile_number: true,
+  //               },
+  //             },
+  //             proposal: {
+  //               select: {
+  //                 project_name: true,
+  //                 user: {
+  //                   select: {
+  //                     id: true,
+  //                     employee_name: true,
+  //                     email: true,
+  //                     mobile_number: true,
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         });
 
-          return {
-            updatedProposal,
-          };
-        },
-        { maxWait: 500000, timeout: 1500000 },
-      );
-    } catch (err) {
-      const theError = prismaErrorThrower(
-        err,
-        ProposalRepository.name,
-        'Saving Draft Proposal error details: ',
-        'Saving Proposal Draft!',
-      );
-      throw theError;
-    }
-  }
+  //         return {
+  //           updatedProposal,
+  //         };
+  //       },
+  //       { maxWait: 500000, timeout: 1500000 },
+  //     );
+  //   } catch (err) {
+  //     const theError = prismaErrorThrower(
+  //       err,
+  //       ProposalRepository.name,
+  //       'Saving Draft Proposal error details: ',
+  //       'Saving Proposal Draft!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
   async findAmandementByProposalId(proposal_id: string): Promise<any> {
     try {
@@ -2746,50 +2747,50 @@ export class ProposalRepository {
     }
   }
 
-  async updateProposal(
-    proposalId: string,
-    proposalPayload: Prisma.proposalUpdateInput,
-    itemBudgetPayloads?: proposal_item_budget[] | null,
-  ) {
-    try {
-      if (itemBudgetPayloads) {
-        return await this.prismaService.$transaction([
-          // delete all previous item budget
-          this.prismaService.proposal_item_budget.deleteMany({
-            where: {
-              proposal_id: proposalId,
-            },
-          }),
-          // create a new one
-          this.prismaService.proposal_item_budget.createMany({
-            data: itemBudgetPayloads,
-          }),
-          // update the proposal
-          this.prismaService.proposal.update({
-            where: {
-              id: proposalId,
-            },
-            data: proposalPayload,
-          }),
-        ]);
-      } else {
-        return await this.prismaService.proposal.update({
-          where: {
-            id: proposalId,
-          },
-          data: proposalPayload,
-        });
-      }
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        ProposalRepository.name,
-        'updateProposal error details: ',
-        'updating proposal!',
-      );
-      throw theError;
-    }
-  }
+  // async updateProposal(
+  //   proposalId: string,
+  //   proposalPayload: Prisma.proposalUpdateInput,
+  //   itemBudgetPayloads?: proposal_item_budget[] | null,
+  // ) {
+  //   try {
+  //     if (itemBudgetPayloads) {
+  //       return await this.prismaService.$transaction([
+  //         // delete all previous item budget
+  //         this.prismaService.proposal_item_budget.deleteMany({
+  //           where: {
+  //             proposal_id: proposalId,
+  //           },
+  //         }),
+  //         // create a new one
+  //         this.prismaService.proposal_item_budget.createMany({
+  //           data: itemBudgetPayloads,
+  //         }),
+  //         // update the proposal
+  //         this.prismaService.proposal.update({
+  //           where: {
+  //             id: proposalId,
+  //           },
+  //           data: proposalPayload,
+  //         }),
+  //       ]);
+  //     } else {
+  //       return await this.prismaService.proposal.update({
+  //         where: {
+  //           id: proposalId,
+  //         },
+  //         data: proposalPayload,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       ProposalRepository.name,
+  //       'updateProposal error details: ',
+  //       'updating proposal!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
   async updateProposalState(
     proposalId: string,
