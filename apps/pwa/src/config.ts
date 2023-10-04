@@ -339,5 +339,11 @@ export const FEATURE_PROPOSAL_MULTIPLE_REGION_ENTITY_AREA: boolean =
     ? true
     : false;
 
+export const FEATURE_NESTED_TRACK_BUDGET: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_NESTED_TRACK_BUDGET &&
+  process.env.REACT_APP_CONFIG_FEATURE_NESTED_TRACK_BUDGET === 'true'
+    ? true
+    : false;
+
 export const FEATURE_DISABLE_PROPOSAL_DATE =
   process.env.REACT_APP_CONFIG_FEATURE_DISABLE_PROPOSAL_DATE;

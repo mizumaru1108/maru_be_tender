@@ -12,6 +12,7 @@ import axiosInstance from 'utils/axios';
 import { useQuery } from 'urql';
 //
 import { useSnackbar } from 'notistack';
+import { FEATURE_NESTED_TRACK_BUDGET } from 'config';
 
 // ------------------------------------------------------------------------------------------
 
@@ -46,9 +47,7 @@ export default function TrackBudgetPage() {
     try {
       const { status, data } = await axiosInstance.get(
         '/tender/proposal/payment/find-track-budgets',
-        {
-          headers: { 'x-hasura-role': activeRole! },
-        }
+        { params: { is_deleted: '0' }, headers: { 'x-hasura-role': activeRole! } }
       );
 
       if (status === 200) {
@@ -148,14 +147,16 @@ export default function TrackBudgetPage() {
     <React.Fragment>
       {!loadingPage && !fetching && data ? (
         <Grid container spacing={3}>
-          <ModalDialog
-            styleContent={{ p: 4, backgroundColor: '#fff' }}
-            isOpen={open}
-            maxWidth="md"
-            title={translate('pages.admin.tracks_budget.heading.add_new_budget')}
-            content={<AddNewBudget onClose={handleOnClose} tracks={data.track} />}
-            onClose={handleOnClose}
-          />
+          {FEATURE_NESTED_TRACK_BUDGET ? null : (
+            <ModalDialog
+              styleContent={{ p: 4, backgroundColor: '#fff' }}
+              isOpen={open}
+              maxWidth="md"
+              title={translate('pages.admin.tracks_budget.heading.add_new_budget')}
+              content={<AddNewBudget onClose={handleOnClose} tracks={data.track} />}
+              onClose={handleOnClose}
+            />
+          )}
           <Grid item xs={12}>
             <Stack
               direction="row"
@@ -168,18 +169,20 @@ export default function TrackBudgetPage() {
               <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
                 {translate('pages.admin.tracks_budget.heading.main')}
               </Typography>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: '#0E8478',
-                  color: '#fff',
-                  ':hover': { backgroundColor: '#13B2A2' },
-                }}
-                size="large"
-                onClick={handleOpen}
-              >
-                {translate('pages.admin.tracks_budget.btn.add_budget')}
-              </Button>
+              {FEATURE_NESTED_TRACK_BUDGET ? null : (
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: '#0E8478',
+                    color: '#fff',
+                    ':hover': { backgroundColor: '#13B2A2' },
+                  }}
+                  size="large"
+                  onClick={handleOpen}
+                >
+                  {translate('pages.admin.tracks_budget.btn.add_budget')}
+                </Button>
+              )}
             </Stack>
           </Grid>
           {tracksTempValue.length

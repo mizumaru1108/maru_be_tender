@@ -1,9 +1,9 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import useResponsive from 'hooks/useResponsive';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { FusionAuthRoles, role_url_map } from '../../../@types/commons';
+import { stringTruncate } from 'utils/stringTruncate';
+import { role_url_map } from '../../../@types/commons';
 
 import useAuth from '../../../hooks/useAuth';
 
@@ -65,7 +65,7 @@ export default function AccountPopover() {
                   fontSize: '12px',
                 }}
               >
-                {user?.firstName}
+                {stringTruncate(user?.firstName, 31)}
               </Typography>
               <Typography sx={{ color: '#1E1E1E', fontSize: '14px' }}>{translate(role)}</Typography>
             </Stack>

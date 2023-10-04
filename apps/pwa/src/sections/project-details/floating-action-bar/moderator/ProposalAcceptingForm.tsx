@@ -180,10 +180,6 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
                   MenuProps: { PaperProps: { style: { maxHeight: 300 } } },
                 }}
               >
-                {/* <MenuItem value="MOSQUES">{translate('MOSQUES')}</MenuItem>
-                <MenuItem value="CONCESSIONAL_GRANTS">{translate('CONCESSIONAL_GRANTS')}</MenuItem>
-                <MenuItem value="INITIATIVES">{translate('INITIATIVES')}</MenuItem>
-                <MenuItem value="BAPTISMS">{translate('BAPTISMS')}</MenuItem> */}
                 {track_list &&
                   track_list
                     .filter((item: tracks) => item.is_deleted === false)

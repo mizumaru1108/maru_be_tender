@@ -676,13 +676,15 @@ const ar = {
       license_file: {
         message: '',
         size: 'حجم الملف يجب أن يكون أقل من 3 ميجا',
-        fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
+        // fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
+        fileExtension: 'يجب أن يكون الملف من نوع pdf',
         required: 'ملف الرخصة مطلوب',
       },
       board_ofdec_file: {
         message: '',
         size: 'حجم الملف يجب أن يكون أقل من 3 ميجا',
-        fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
+        // fileExtension: 'يجب أن يكون الملف من نوع pdf, png, jpg, jpeg',
+        fileExtension: 'يجب أن يكون الملف من نوع pdf',
         required: 'ملف مجلس الإدارة مطلوب',
       },
       twitter_acount: {
@@ -2541,6 +2543,7 @@ const ar = {
     save: 'حفظ',
     amandement: 'تعديل',
     review: 'استعراض',
+    add_one_section: 'إضافة قسم جديد',
   },
   modal: {
     disable_proposal: {
@@ -2941,6 +2944,15 @@ const ar = {
     project_created_date: {
       label: 'تاريخ البناء*',
       placeholder: 'تاريخ البناء',
+    },
+  },
+  track_budgets: {
+    item: 'غرض',
+    nested_field: {
+      section_one: 'القسم الاول',
+      section_two: 'القسم الثاني',
+      section_three: 'القسم الثالث',
+      section_four: 'القسم الرابع',
     },
   },
 };

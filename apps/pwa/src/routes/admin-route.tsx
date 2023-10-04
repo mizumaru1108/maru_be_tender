@@ -16,6 +16,7 @@ import {
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
   FEATURE_MENU_ADMIN_REGIONS,
   FEATURE_MENU_CLIENT_FILES,
+  FEATURE_NESTED_TRACK_BUDGET,
   MENU_ADMIN_PORTAL_REPORTS,
 } from 'config';
 
@@ -57,6 +58,9 @@ const NonClientProfileEdit = Loadable(
 );
 const SectionTracks = Loadable(
   lazy(() => import('sections/admin/track-budget/section-track/SectionTracks'))
+);
+const NewSectionTracks = Loadable(
+  lazy(() => import('sections/admin/track-budget/section-track/NewSectionTracks'))
 );
 const Searching = Loadable(lazy(() => import('pages/searching')));
 
@@ -111,7 +115,10 @@ export const adminRoute = {
           path: 'tracks-budget',
           children: [
             { path: '', element: <TracksBudget /> },
-            { path: ':id/show', element: <SectionTracks /> },
+            {
+              path: ':id/show',
+              element: FEATURE_NESTED_TRACK_BUDGET ? <NewSectionTracks /> : <SectionTracks />,
+            },
           ],
         },
         { path: 'gregorian-year', element: <GregorianYear /> },

@@ -704,13 +704,15 @@ const en = {
       license_file: {
         message: '',
         size: 'The file size must be less than 5 MB',
-        fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
+        // fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
+        fileExtension: 'The file extension must be one of the following: pdf',
         required: 'License file is required',
       },
       board_ofdec_file: {
         message: '',
         size: 'The file size must be less than 5 MB',
-        fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
+        // fileExtension: 'The file extension must be one of the following: pdf, png, jpg, jpeg',
+        fileExtension: 'The file extension must be one of the following: pdf',
         required: 'Board of directors file is required',
       },
       num_of_employed_facility: {
@@ -2522,6 +2524,7 @@ const en = {
     save: 'Save',
     amandement: 'Amandement',
     review: 'Review',
+    add_one_section: 'Add New Section',
   },
   modal: {
     disable_proposal: {
@@ -2923,6 +2926,20 @@ const en = {
     project_created_date: {
       label: 'Project Created Date *',
       placeholder: 'Project Created Date',
+    },
+  },
+  track_budgets: {
+    item: 'Item',
+    nested_field: {
+      section_one: 'Section One',
+      section_two: 'Section Two',
+      section_three: 'Section Three',
+      section_four: 'Section Four',
+    },
+    errors: {
+      budgets: {
+        min: 'The budget must be greater than 0',
+      },
     },
   },
 };

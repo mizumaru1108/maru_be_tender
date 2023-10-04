@@ -88,16 +88,6 @@ function EditRequestDetails() {
         // console.log({ rest });
       }
     } catch (err) {
-      // console.log(err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       // handle error fetching
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;

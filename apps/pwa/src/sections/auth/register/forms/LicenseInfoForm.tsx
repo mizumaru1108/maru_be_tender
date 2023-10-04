@@ -35,12 +35,7 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
       })
       .test('fileExtension', translate('errors.register.license_file.fileExtension'), (value) => {
         if (value) {
-          if (
-            value.type !== 'application/pdf' &&
-            value.type !== 'image/png' &&
-            value.type !== 'image/jpeg' &&
-            value.type !== 'image/jpg'
-          ) {
+          if (value.type !== 'application/pdf') {
             return false;
           }
         }
@@ -61,20 +56,7 @@ const LicenseInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
         translate('errors.register.board_ofdec_file.fileExtension'),
         (value) => {
           if (value) {
-            if (
-              value.type !== 'application/pdf' &&
-              // value.type !== 'application/msword' &&
-              // value.type !==
-              //   'application/vnd.openxmlformats-officedocument.wordprocessingml.document' &&
-              // value.type !== 'application/vnd.ms-excel' &&
-              // value.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
-              // value.type !== 'application/vnd.ms-powerpoint' &&
-              // value.type !==
-              //   'application/vnd.openxmlformats-officedocument.presentationml.presentation' &&
-              value.type !== 'image/png' &&
-              value.type !== 'image/jpeg' &&
-              value.type !== 'image/jpg'
-            ) {
+            if (value.type !== 'application/pdf') {
               return false;
             }
           }
