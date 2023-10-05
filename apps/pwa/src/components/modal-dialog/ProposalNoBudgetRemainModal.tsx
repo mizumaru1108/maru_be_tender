@@ -6,23 +6,16 @@ import useLocales from '../../hooks/useLocales';
 
 type Props = {
   open: boolean;
-  // handleClose: () => void;
   // onSumbit: () => void;
-  redirectType?: 'home' | 'back';
+  handleClose: () => void;
   message: string;
 };
 
-function ProposalDisableModal({ open, message, redirectType = 'home' }: Props) {
+function ProposalNoBudgetRemainModal({ open, message, handleClose }: Props) {
   const { translate } = useLocales();
   const navigate = useNavigate();
   const handleRedirect = async () => {
-    if (redirectType === 'home') {
-      navigate('/');
-    } else {
-      navigate(-1);
-    }
-    // onSumbit();
-    // handleClose();
+    navigate(-1);
   };
 
   return (
@@ -55,12 +48,10 @@ function ProposalDisableModal({ open, message, redirectType = 'home' }: Props) {
         </Stack>
       }
       isOpen={open}
-      onClose={() => {
-        console.log('disable proposal this week');
-      }}
+      onClose={handleClose}
       styleContent={{ padding: '1em', backgroundColor: '#fff' }}
     />
   );
 }
 
-export default ProposalDisableModal;
+export default ProposalNoBudgetRemainModal;

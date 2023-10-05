@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import useAuth from 'hooks/useAuth';
 import { useLocation, useParams } from 'react-router';
 import ProjectManagerFloatingActionBar from './project-manager';
@@ -18,21 +18,47 @@ import FinanceFloatingActionBar from 'sections/project-details/floating-action-b
 import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
 import PaymentAmandementFloatingActionBar from './supervisor/SendPaymentAmandement';
 import { getTracks } from 'redux/slices/track';
+import ProposalDisableModal from '../../../components/modal-dialog/ProposalDisableModal';
+import useLocales from '../../../hooks/useLocales';
+import ProposalNoBudgetRemainModal from '../../../components/modal-dialog/ProposalNoBudgetRemainModal';
 
 //
 
 function FloatinActonBar() {
   const { actionType } = useParams();
-
   const location = useLocation();
-
+  const { translate } = useLocales();
   const { activeTap, proposal, loadingPayment } = useSelector((state) => state.proposal);
-
+  const { track, isLoading } = useSelector((state) => state.tracks);
   const { activeRole } = useAuth();
-
   const role = activeRole!;
-
   const pathName = location.pathname.split('/');
+  const [open, setOpen] = useState(false);
+  console.log({ open });
+
+  const isAvailBudget = useMemo(() => {
+    let tmpIsAvail = false;
+    if (track?.remaining_budget && track?.remaining_budget <= 0) {
+      tmpIsAvail = false;
+    } else {
+      if (track?.budget && track?.budget > 0) {
+        tmpIsAvail = true;
+      } else {
+        tmpIsAvail = false;
+      }
+    }
+    return tmpIsAvail;
+  }, [track]);
+
+  useEffect(() => {
+    if (isAvailBudget === false) {
+      setOpen(true);
+    }
+  }, [isAvailBudget]);
+
+  const handleCloseModal = () => {
+    setOpen(false);
+  };
 
   const [result] = useQuery({
     query: getProposalClosingReport,
@@ -46,8 +72,18 @@ function FloatinActonBar() {
   return (
     <>
       {/* ’Moderator is done */}
-      {loadingPayment ? null : (
+      {loadingPayment || isLoading ? null : (
         <React.Fragment>
+          <ProposalNoBudgetRemainModal
+            open={open}
+            message={`ميزانية المشروع تتخطى الميزانية المخصصة للمسار
+            ${
+              track?.remaining_budget && track?.remaining_budget <= 0 ? 0 : track?.remaining_budget
+            } الميزانية المحددة للمشروع هي ${
+              proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport || 0
+            } ، الميزانية المتبقية في المسار هي `}
+            handleClose={handleCloseModal}
+          />
           {activeTap &&
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
@@ -59,23 +95,22 @@ function FloatinActonBar() {
             actionType === 'show-details' &&
             role === 'tender_project_supervisor' &&
             proposal.inner_status !== 'DONE_BY_CASHIER' &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && (
-              <SupervisorFloatingActionBar />
-            )}
+            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
+            isAvailBudget && <SupervisorFloatingActionBar />}
           {/* Projectmanager is done */}
           {activeTap &&
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
             role === 'tender_project_manager' &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && (
-              <ProjectManagerFloatingActionBar />
-            )}
+            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
+            isAvailBudget && <ProjectManagerFloatingActionBar />}
           {/* CEO is done */}
           {activeTap &&
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
             ['tender_ceo'].includes(role) &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && <CeoFloatingActionBar />}
+            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
+            isAvailBudget && <CeoFloatingActionBar />}
           {/* Consultant is done */}
           {activeTap &&
             ['project-path', 'supervisor-revision'].includes(activeTap) &&

@@ -40,7 +40,7 @@ function SupervisorFloatingActionBar() {
 
   if (error) return <>Opps, Something went wrong</>;
 
-  console.log({ employeePath });
+  // console.log({ employeePath });
 
   return (
     <>

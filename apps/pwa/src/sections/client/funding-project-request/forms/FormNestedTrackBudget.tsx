@@ -6,6 +6,7 @@ import useLocales from 'hooks/useLocales';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
+import { TrackSection } from '../../../../@types/commons';
 import { Proposal } from '../../../../@types/proposal';
 import Space from '../../../../components/space/space';
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
@@ -47,6 +48,38 @@ function flattenChildTrackSections(arr: TrackSection[], track_id: string): Track
   return result;
 }
 
+function checkBudgetSum(data: TrackSection[], initBugdet: number): boolean {
+  const parentMap = new Map<string, number>();
+
+  for (const item of data) {
+    if (item.parent_section_id) {
+      const parentId = item.parent_section_id;
+      // const childBudget = item.budget;
+      const childBudget =
+        data
+          .filter((track_section) => track_section.parent_section_id === item.parent_section_id)
+          .reduce((acc, k) => acc + (k.budget || 0), 0) || 0;
+      // const parentBudget = parentMap.get(parentId) || 0;
+      const parentBudget =
+        data.find((track_section) => track_section.id === item.parent_section_id)?.budget || 0;
+
+      // console.log({ parentBudget, childBudget });
+
+      if (childBudget && childBudget !== parentBudget) {
+        throw new Error(
+          // `Summary Budget exceeded for all budget in the same section with ${item.name}`
+          'child_budget_error_message'
+        );
+      }
+      if (childBudget) {
+        parentMap.set(parentId, parentBudget - childBudget);
+      }
+    }
+  }
+
+  return true;
+}
+
 export interface FormTrackBudget {
   id?: string;
   name?: string;
@@ -57,16 +90,6 @@ export interface FormTrackBudget {
   with_consultation?: boolean;
   total_budget_used?: number;
   sections?: TrackSection[];
-}
-
-export interface TrackSection {
-  id?: string;
-  track_id?: string;
-  name?: string;
-  budget?: number;
-  child_track_section?: TrackSection[];
-  parent_section_id?: string;
-  is_deleted?: boolean;
 }
 
 interface Props {
@@ -98,8 +121,7 @@ export default function FormNestedTrackBudget({
   const SubmitFormSchema = useMemo(() => {
     const tmpSchema = Yup.object().shape({
       budget: Yup.number()
-        .positive()
-        .integer()
+        .nullable()
         .min(1, translate(translate('track_budgets.errors.budgets.min')))
         .required(translate('errors.cre_proposal.detail_project_budgets.amount.required')),
       track_id: Yup.string().required(translate('portal_report.errors.track_id.required')),
@@ -169,25 +191,52 @@ export default function FormNestedTrackBudget({
     defaultValues: !!defaultValuesTrackBudget ? defaultValuesTrackBudget : defaultValues,
     // defaultValues,
   });
-  const { control, register, handleSubmit, getValues, reset, setValue, watch } = methods;
+  const { control, register, handleSubmit, getValues, setValue, watch, setError } = methods;
   const onSubmit = (data: FormTrackBudget) => {
     const tmpPayload = data;
-    const tmpTotalSummary = sumBudget(tmpPayload?.sections || []);
+    // const tmpTotalSummary = sumBudget(tmpPayload?.sections || []);
+    const tmpTotalSummary =
+      (tmpPayload?.sections &&
+        tmpPayload?.sections
+          .filter((track_section) => !track_section.parent_section_id)
+          .reduce((acc, k) => acc + (k.budget || 0), 0)) ||
+      0;
     const tmpFlatArray = flattenChildTrackSections(
       tmpPayload?.sections || [],
       defaultValuesTrackBudget?.track_id || '-'
     );
-    if (tmpPayload.budget !== tmpTotalSummary) {
+    if (tmpTotalSummary > 0 && tmpPayload.budget !== tmpTotalSummary) {
       setBudgetError({
         open: true,
         message: `${translate('budget_error_message')} (${tmpTotalSummary} : ${tmpPayload.budget})`,
       });
     } else {
-      setBudgetError({
-        open: true,
-        message: '',
-      });
-      onSubmitForm(tmpFlatArray);
+      if (tmpFlatArray.length === 0) {
+        setBudgetError({
+          open: true,
+          message: `${translate('min_budget_error_message')}`,
+        });
+      } else {
+        if (tmpPayload.budget) {
+          try {
+            checkBudgetSum(tmpFlatArray, tmpPayload.budget);
+            setBudgetError({
+              open: false,
+              message: '',
+            });
+            onSubmitForm(tmpFlatArray);
+          } catch (error) {
+            // console.log({ error });
+            setBudgetError({
+              open: true,
+              message: translate(error.message),
+            });
+          }
+        }
+      }
+
+      // console.log({ checkExceedBudget, tmpFlatArray });
+      // onSubmitForm(tmpFlatArray);
     }
   };
 

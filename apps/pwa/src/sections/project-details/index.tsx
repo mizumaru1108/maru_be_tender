@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'redux/store';
 import { FEATURE_PROJECT_DETAILS } from 'config';
 import useAuth from 'hooks/useAuth';
 import AmandementProposalDialog from '../client/funding-project-request/AmandementProposalDialog';
+import { getTracksById } from '../../redux/slices/track';
 
 function ProjectDetailsMainPage() {
   const { id, actionType } = useParams();
@@ -32,6 +33,7 @@ function ProjectDetailsMainPage() {
   const { translate, currentLang } = useLocales();
 
   const { proposal, isLoading, error, loadingCount } = useSelector((state) => state.proposal);
+  const { isLoading: load } = useSelector((state) => state.tracks);
 
   const navigate = useNavigate();
 
@@ -56,6 +58,12 @@ function ProjectDetailsMainPage() {
     dispatch(getTrackList(0, role as string));
     dispatch(getRegionList());
   }, [dispatch, id, role, handleFetching]);
+
+  React.useEffect(() => {
+    if (proposal?.track_id) {
+      dispatch(getTracksById(role!, proposal?.track_id || ''));
+    }
+  }, [dispatch, proposal, role]);
 
   if (isLoading || loadingCount) return <>... Loading</>;
 
@@ -106,7 +114,7 @@ function ProjectDetailsMainPage() {
         </Typography>
         {actionType && actionType !== 'show-project' ? <FollowUpsAction /> : null}
       </Stack>
-      <ActionTap />
+      {!load && <ActionTap />}
       {!FEATURE_PROJECT_DETAILS ? null : <FloatinActonBar />}
     </Box>
   );

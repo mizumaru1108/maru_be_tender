@@ -13,8 +13,10 @@ import axiosInstance from 'utils/axios';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import FormNestedTrackBudget, {
   FormTrackBudget,
-  TrackSection,
 } from '../../../client/funding-project-request/forms/FormNestedTrackBudget';
+import { TrackSection } from '../../../../@types/commons';
+import { dispatch, useSelector } from '../../../../redux/store';
+import { getTracksById } from '../../../../redux/slices/track';
 
 // ------------------------------------------------------------------------------------------
 
@@ -40,58 +42,10 @@ export default function NewSectionTracks() {
   const { activeRole } = useAuth();
   const { id: track_id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [trackValues, setTrackValues] = useState<FormTrackBudget>();
-
   const { currentLang, translate } = useLocales();
 
-  const fetchingTrackBudget = useCallback(async () => {
-    const params = {
-      include_relations: `track_sections,proposal`,
-    };
-    try {
-      setIsLoading(true);
-      const res = await axiosInstance.get(`/tender/track/${track_id}`, {
-        params: {
-          ...params,
-        },
-        headers: { 'x-hasura-role': activeRole! },
-      });
-      setTrackValues({
-        ...res.data.data,
-        track_id: track_id || '-',
-      });
-    } catch (error) {
-      const statusCode = (error && error.statusCode) || 0;
-      const message = (error && error.message) || null;
-      if (message && statusCode !== 0) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      } else {
-        enqueueSnackbar(translate('pages.common.internal_server_error'), {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        });
-      }
-    } finally {
-      setIsLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [track_id]);
+  const [submitting, setSubmitting] = useState(false);
+  const { track, isLoading: load, error } = useSelector((state) => state.tracks);
 
   const handleSubmitForm = async (data: TrackSection[]) => {
     try {
@@ -108,7 +62,7 @@ export default function NewSectionTracks() {
         preventDuplicate: true,
         autoHideDuration: 3000,
       });
-      fetchingTrackBudget();
+      dispatch(getTracksById(activeRole!, track_id || ''));
     } catch (error) {
       if (typeof error.message === 'object') {
         error.message.forEach((el: any) => {
@@ -141,14 +95,35 @@ export default function NewSectionTracks() {
     }
   };
 
+  // fetching track by id
   useEffect(() => {
-    fetchingTrackBudget();
-  }, [fetchingTrackBudget]);
+    dispatch(getTracksById(activeRole!, track_id || ''));
+  }, [activeRole, track_id]);
 
-  if (isLoading) return <>{translate('pages.common.loading')}</>;
-  // if (error) return <>Opps, something went wrong ...</>;
+  // handle error
+  useEffect(() => {
+    if (!!error) {
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
 
-  // console.log({ data });
+  if (load) return <>{translate('pages.common.loading')}</>;
 
   return (
     <Container>
@@ -175,13 +150,13 @@ export default function NewSectionTracks() {
           <Grid item md={12} xs={12}>
             <Stack direction="row" justifyContent="space-between">
               <Typography flex={1} variant="h4">
-                {formatCapitalizeText(trackValues?.name || '-')}
+                {formatCapitalizeText(track?.name || '-')}
               </Typography>
             </Stack>
           </Grid>
           <Grid item md={12} xs={12}>
             <FormNestedTrackBudget
-              defaultValuesTrackBudget={trackValues}
+              defaultValuesTrackBudget={track}
               isLoading={submitting}
               onSubmitForm={handleSubmitForm}
             />

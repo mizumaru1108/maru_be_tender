@@ -1,3 +1,5 @@
+import { Proposal } from './proposal';
+
 export type FusionAuthRoles =
   | 'cluster_admin'
   | 'tender_accounts_manager'
@@ -155,6 +157,16 @@ export interface UpdateTrackProps {
   is_deleted: boolean;
 }
 
+export interface TrackSection {
+  id?: string;
+  track_id?: string;
+  name?: string;
+  budget?: number;
+  child_track_section?: TrackSection[];
+  parent_section_id?: string;
+  is_deleted?: boolean;
+}
+
 export interface TrackProps {
   id: string;
   name: string;
@@ -162,6 +174,11 @@ export interface TrackProps {
   created_at: string;
   updated_at: string;
   is_deleted: boolean;
+  budget?: number;
+  proposal?: Proposal[];
+  total_budget_used?: number;
+  remaining_budget?: number;
+  sections?: TrackSection[];
 }
 
 export interface BankReduxProps {

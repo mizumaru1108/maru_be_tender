@@ -112,22 +112,12 @@ export default function RHFTextField({ name, ...other }: Props) {
             cleanedValue = cleanedValue.slice(0, 22);
             cleanedValue = cleanedValue.replace(/(.{4})/g, '$1 ');
             field.onChange(
-              [
-                // 'phone',
-                // 'data_entry_mobile',
-                // 'entity_mobile',
-                // 'ceo_mobile',
-                // 'chairman_mobile',
-                // 'pm_mobile',
-                'mobile_number_login',
-                'execution_time',
-              ].includes(name)
+              ['mobile_number_login', 'execution_time'].includes(name)
                 ? newDial
                 : ['bank_account_number'].includes(name)
                 ? cleanedValue
                 : [
                     'mobile_number',
-                    // 'phone',
                     'data_entry_mobile',
                     'entity_mobile',
                     'ceo_mobile',

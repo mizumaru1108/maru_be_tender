@@ -7,13 +7,25 @@ import { dispatch } from 'redux/store';
 
 interface TrackState {
   tracks: TrackProps[] | [];
+  track: TrackProps;
   isLoading: boolean;
-  error: Error | string | null;
+  error: any;
 }
 
 const initialState: TrackState = {
   isLoading: false,
   error: null,
+  track: {
+    id: '-1',
+    created_at: '01-01-2023',
+    updated_at: '01-01-2023',
+    is_deleted: false,
+    name: 'test',
+    with_consultation: false,
+    budget: 0,
+    total_budget_used: 0,
+    remaining_budget: 0,
+  },
   tracks: [
     {
       id: '1',
@@ -38,6 +50,10 @@ const slice = createSlice({
     endLoading(state) {
       state.isLoading = false;
     },
+    // STATE ISLOADING
+    setLoading(state, action) {
+      state.isLoading = action.payload;
+    },
     // HAS ERROR
     hasError(state, action) {
       state.isLoading = false;
@@ -47,11 +63,15 @@ const slice = createSlice({
     setTracks: (state, action) => {
       state.tracks = action.payload;
     },
+    //SET TRACK
+    setTrack: (state, action) => {
+      state.track = action.payload;
+    },
   },
 });
 
 // ACTIONS
-export const { setTracks } = slice.actions;
+export const { setTracks, setTrack } = slice.actions;
 
 // Reducer
 export default slice.reducer;
@@ -69,6 +89,29 @@ export const getTracks = (role: string) => async () => {
     dispatch(slice.actions.endLoading);
   } catch (error) {
     dispatch(slice.actions.hasError(error));
+  }
+};
+
+export const getTracksById = (role: string, track_id: string) => async () => {
+  const params = {
+    include_relations: `track_sections,proposal`,
+  };
+  dispatch(slice.actions.setLoading(true));
+  try {
+    const response = await axiosInstance.get(`/tender/track/${track_id}`, {
+      params: {
+        ...params,
+      },
+      headers: { 'x-hasura-role': role },
+    });
+    if (response.data.statusCode === 200) {
+      dispatch(slice.actions.setTrack(response.data.data));
+    }
+  } catch (error) {
+    dispatch(slice.actions.hasError(error));
+    // throw new Error(error);
+  } finally {
+    dispatch(slice.actions.setLoading(false));
   }
 };
 

@@ -2162,6 +2162,9 @@ const en = {
   login_message_error: 'This email or password is not correct',
   budget_error_message:
     "The sum of the budget's items should be the exact same as the whole budget",
+  child_budget_error_message:
+    "The sum of the child budget's items should be the exact same as it parent budget",
+  min_budget_error_message: 'At least have one budget item or section',
   banking_error_message: 'Please select a bank card to continue',
   sign_out: 'Sign-out',
   tender_accounts_manager: 'Account Manager',

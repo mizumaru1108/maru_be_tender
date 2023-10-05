@@ -2182,6 +2182,9 @@ const ar = {
   projects: 'مشاريع',
   login_message_error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
   budget_error_message: 'مجموع الميزانية يجب أن يكون مساوٍ للرقم المطلوب',
+  child_budget_error_message:
+    'يجب أن يكون مجموع بنود الميزانية الفرعية مطابقًا تمامًا للميزانية الأصلية',
+  min_budget_error_message: 'أن يكون لديك على الأقل بند أو قسم واحد في الميزانية',
   banking_error_message: 'الرجاء اختيار بطاقة بنك للمتابعة',
   sign_out: 'تسجيل الخروج',
   tender_accounts_manager: 'مدير الحسابات',
