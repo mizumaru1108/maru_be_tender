@@ -70,7 +70,7 @@ export class EmailService {
 
     try {
       const emailLogs = await this.mailerService.sendMail(param);
-      console.log(emailLogs);
+      // console.log(emailLogs);
       return emailLogs;
     } catch (error) {
       console.trace(error);

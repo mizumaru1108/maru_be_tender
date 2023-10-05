@@ -80,16 +80,13 @@ export class TrackMapper {
                 return Builder<TrackSectionEntity>(TrackSectionEntity, {
                   ...c,
                   child_track_section: c.child_track_section.map((cc) => {
-                    budget += cc.budget;
                     return Builder<TrackSectionEntity>(TrackSectionEntity, {
                       ...cc,
                       child_track_section: cc.child_track_section.map((ccc) => {
-                        budget += ccc.budget;
                         return Builder<TrackSectionEntity>(TrackSectionEntity, {
                           ...ccc,
                           child_track_section: ccc.child_track_section.map(
                             (cccc) => {
-                              budget += cccc.budget;
                               return Builder<TrackSectionEntity>(
                                 TrackSectionEntity,
                                 {

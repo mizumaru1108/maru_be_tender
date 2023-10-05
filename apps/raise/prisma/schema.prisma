@@ -575,14 +575,18 @@ model schedule {
 }
 
 model email_record {
-  id          String    @id(map: "email_history_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email_record_id          String    @id(map: "email_history_pkey")
   title       String    @db.VarChar
   content     String
   sender_id   String
-  receiver_id String
-  created_at  DateTime? @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
-  receiver    user      @relation("email_record_receiver_idTouser", fields: [receiver_id], references: [id], onDelete:Restrict, onUpdate: Restrict)
+  receiver_id String?
+  attachments  Json?
+  user_on_app Boolean   @default(true)
+  receiver_name String?
+  receiver_email String?
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
+  receiver    user?      @relation("email_record_receiver_idTouser", fields: [receiver_id], references: [id], onDelete:Restrict, onUpdate: Restrict)
   sender      user      @relation("email_record_sender_idTouser", fields: [sender_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
 }
 

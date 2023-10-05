@@ -39,6 +39,7 @@ import { TenderMessagesModule } from './tender-messaging/tender-messages.module'
 import { TenderStatisticsModule } from './tender-statistics/tender-statistics.module';
 import { UserManagementModule } from './tender-user/user.management.module';
 import { TrackManagementModule } from './track-management/track.management.module';
+import { EmailRecordModule } from './email-records/email.record.module';
 
 // const OpenTelemetryModuleConfig = OpenTelemetryModule.forRoot({
 //   metrics: {
@@ -169,6 +170,7 @@ const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
     SmsConfigModule,
     UserManagementModule,
     RegionManagementModule,
+    EmailRecordModule,
   ],
   controllers: [],
 })

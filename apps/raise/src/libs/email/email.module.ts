@@ -1,11 +1,10 @@
-import { Global, Module } from '@nestjs/common';
-import { EmailService } from './email.service';
-import { EmailController } from './email.controller';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { Global, Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
-import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
+import { EmailController } from './email.controller';
+import { EmailService } from './email.service';
 @Global()
 @Module({
   imports: [
