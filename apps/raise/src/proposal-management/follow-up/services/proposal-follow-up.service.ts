@@ -282,7 +282,7 @@ export class ProposalFollowUpService {
 
   //   const baseSendEmail: Omit<SendEmailDto, 'to'> = {
   //     mailType: 'template',
-  //     from: 'no-reply@hcharity.org',
+  //     from: 'hello@hcharity.org',
   //     subject,
   //     templatePath: `tender/${selected_lang || 'ar'}/proposal/project_followup`,
   //   };

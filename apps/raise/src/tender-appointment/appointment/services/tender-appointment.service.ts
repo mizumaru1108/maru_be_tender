@@ -151,7 +151,7 @@ export class TenderAppointmentService {
     const clientEmailPayload: SendEmailDto = {
       mailType: 'template',
       to: appointment.client.email,
-      from: 'no-reply@hcharity.org',
+      from: 'hello@hcharity.org',
       subject,
       templatePath: `tender/${
         request.selectLang || 'ar'
@@ -167,7 +167,7 @@ export class TenderAppointmentService {
     //   to: appointment.employee.email,
     //   subject,
     //   content: employeeContent,
-    //   from: 'no-reply@hcharity.org',
+    //   from: 'hello@hcharity.org',
     // };
 
     this.emailService.sendMail(clientEmailPayload);
@@ -271,12 +271,12 @@ export class TenderAppointmentService {
     const clientEmailPayload: SendEmailDto = {
       mailType: 'plain',
       to: client.email,
-      from: 'no-reply@hcharity.org',
+      from: 'hello@hcharity.org',
     };
     const employeeEmailPayload: SendEmailDto = {
       mailType: 'plain',
       to: employee.email,
-      from: 'no-reply@hcharity.org',
+      from: 'hello@hcharity.org',
     };
 
     let clientNotif: CreateNotificationDto | undefined = undefined;

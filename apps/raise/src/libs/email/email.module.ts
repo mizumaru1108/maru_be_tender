@@ -19,7 +19,7 @@ import { envLoadErrorHelper } from '../../commons/helpers/env-loaderror-helper';
         return {
           transport: transporterUrl,
           defaults: {
-            from: 'hello@tmra.io',
+            from: 'hello@hcharity.org',
           },
           template: {
             dir: join(__dirname, './templates'),

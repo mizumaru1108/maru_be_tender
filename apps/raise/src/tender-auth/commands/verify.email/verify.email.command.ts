@@ -51,7 +51,7 @@ export class VerifyEmailCommandHandler
       // this.emailService.sendMail({
       //   mailType: 'template',
       //   to: loginResponse.user.email,
-      //   from: 'no-reply@hcharity.org',
+      //   from: 'hello@hcharity.org',
       //   subject: 'Email Verified',
       //   templateContext: {
       //     user_email: loginResponse.user.email,

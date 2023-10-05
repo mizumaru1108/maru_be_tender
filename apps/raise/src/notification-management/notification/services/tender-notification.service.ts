@@ -114,7 +114,7 @@ export class TenderNotificationService {
 
     const baseSendEmail: Omit<SendEmailDto, 'to' | 'mailType'> = {
       subject,
-      from: 'no-reply@hcharity.org',
+      from: 'hello@hcharity.org',
     };
 
     const clientEmailNotif: SendEmailDto = {
@@ -209,8 +209,8 @@ export class TenderNotificationService {
         subject: clientSubject,
         from:
           generalHostEmail && generalHostEmail === 'tmra'
-            ? 'hello@tmra.io' // no-reply@tmra.io
-            : 'no-reply@hcharity.org',
+            ? 'hello@hcharity.org' // no-reply@tmra.io
+            : 'hello@hcharity.org',
         attachments:
           clientAttachmentFiles && clientAttachmentFiles.length
             ? clientAttachmentFiles

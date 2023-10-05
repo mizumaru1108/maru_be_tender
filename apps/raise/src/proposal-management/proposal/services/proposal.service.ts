@@ -1351,7 +1351,7 @@ export class ProposalService {
       // const employeeEmailNotifPayload: SendEmailDto = {
       //   mailType: 'plain',
       //   to: log.data.reviewer.email,
-      //   from: 'no-reply@hcharity.org',
+      //   from: 'hello@hcharity.org',
       //   subject,
       //   content: employeeContent,
       // };
@@ -1363,7 +1363,7 @@ export class ProposalService {
     const clientEmailNotifPayload: SendEmailDto = {
       mailType: 'template',
       to: log.data.proposal.user.email,
-      from: 'no-reply@hcharity.org',
+      from: 'hello@hcharity.org',
       subject,
       templatePath: `tender/ar/proposal/${
         log.data.action === 'reject' ? 'project_declined' : 'project_approved'

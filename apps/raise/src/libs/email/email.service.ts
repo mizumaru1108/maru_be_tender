@@ -39,7 +39,7 @@ export class EmailService {
 
     const param: ISendMailOptions = {
       to: to,
-      from: from ? from : 'hello@tmra.io',
+      from: from ? from : 'hello@hcharity.org',
     };
 
     if (mailType === 'plain') {
@@ -106,7 +106,7 @@ export class EmailService {
 
     const param: ISendMailOptions = {
       to: to,
-      from: from ? from : 'hello@tmra.io',
+      from: from ? from : 'hello@hcharity.org',
     };
 
     if (mailType === 'plain') {
@@ -155,7 +155,7 @@ export class EmailService {
         subject: subject,
         template: template,
         context: data,
-        from: from ? from : 'hello@tmra.io',
+        from: from ? from : 'hello@hcharity.org',
       });
       console.log(resp);
     } catch (error) {
@@ -182,7 +182,7 @@ export class EmailService {
         template: template,
         context: data,
         attachments: attachment,
-        from: from ? from : 'hello@tmra.io',
+        from: from ? from : 'hello@hcharity.org',
       });
       console.log(resp);
     } catch (error) {
