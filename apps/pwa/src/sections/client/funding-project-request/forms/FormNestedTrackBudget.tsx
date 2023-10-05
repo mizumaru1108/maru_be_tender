@@ -110,7 +110,7 @@ export default function FormNestedTrackBudget({
   });
 
   const defaultValues: FormTrackBudget = {
-    track_id: defaultValuesTrackBudget?.track_id || '#',
+    track_id: defaultValuesTrackBudget?.id || '#',
     name: defaultValuesTrackBudget?.name
       ? formatCapitalizeText(defaultValuesTrackBudget?.name)
       : '-',
@@ -224,6 +224,7 @@ export default function FormNestedTrackBudget({
               open: false,
               message: '',
             });
+            // console.log({ tmpFlatArray });
             onSubmitForm(tmpFlatArray);
           } catch (error) {
             // console.log({ error });

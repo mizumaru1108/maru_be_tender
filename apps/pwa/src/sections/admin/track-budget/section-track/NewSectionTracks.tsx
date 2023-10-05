@@ -1,5 +1,5 @@
 // react
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 // @mui
 import { Button, Container, Grid, Stack, styled, Typography } from '@mui/material';
@@ -11,12 +11,10 @@ import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import axiosInstance from 'utils/axios';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
-import FormNestedTrackBudget, {
-  FormTrackBudget,
-} from '../../../client/funding-project-request/forms/FormNestedTrackBudget';
 import { TrackSection } from '../../../../@types/commons';
-import { dispatch, useSelector } from '../../../../redux/store';
 import { getTracksById } from '../../../../redux/slices/track';
+import { dispatch, useSelector } from '../../../../redux/store';
+import FormNestedTrackBudget from '../../../client/funding-project-request/forms/FormNestedTrackBudget';
 
 // ------------------------------------------------------------------------------------------
 
@@ -156,7 +154,10 @@ export default function NewSectionTracks() {
           </Grid>
           <Grid item md={12} xs={12}>
             <FormNestedTrackBudget
-              defaultValuesTrackBudget={track}
+              defaultValuesTrackBudget={{
+                ...track,
+                track_id: track.id,
+              }}
               isLoading={submitting}
               onSubmitForm={handleSubmitForm}
             />
