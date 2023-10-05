@@ -3,7 +3,7 @@ import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { nanoid } from 'nanoid';
 import { useMutation } from 'urql';
 import { useLocation, useNavigate, useParams } from 'react-router';
@@ -32,6 +32,21 @@ function FloatinActionBar() {
   const dispatch = useDispatch();
 
   const { proposal } = useSelector((state) => state.proposal);
+  const { track } = useSelector((state) => state.tracks);
+
+  const isAvailBudget = useMemo(() => {
+    let tmpIsAvail = false;
+    if (track?.remaining_budget && track?.remaining_budget <= 0) {
+      tmpIsAvail = false;
+    } else {
+      if (track?.budget && track?.budget > 0) {
+        tmpIsAvail = true;
+      } else {
+        tmpIsAvail = false;
+      }
+    }
+    return tmpIsAvail;
+  }, [track]);
 
   const { conversations } = useSelector((state) => state.wschat);
   const location = useLocation();
@@ -444,8 +459,9 @@ function FloatinActionBar() {
           <Grid item md={4} xs={12}>
             <Stack direction="row" gap={2} justifyContent="space-between">
               <Button
+                disabled={!isAvailBudget}
                 onClick={() => {
-                  setAction('ACCEPT');
+                  if (isAvailBudget) setAction('ACCEPT');
                 }}
                 variant="contained"
                 color="primary"

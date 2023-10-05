@@ -34,7 +34,6 @@ function FloatinActonBar() {
   const role = activeRole!;
   const pathName = location.pathname.split('/');
   const [open, setOpen] = useState(false);
-  console.log({ open });
 
   const isAvailBudget = useMemo(() => {
     let tmpIsAvail = false;
@@ -95,8 +94,9 @@ function FloatinActonBar() {
             actionType === 'show-details' &&
             role === 'tender_project_supervisor' &&
             proposal.inner_status !== 'DONE_BY_CASHIER' &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
-            isAvailBudget && <SupervisorFloatingActionBar />}
+            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && (
+              <SupervisorFloatingActionBar />
+            )}
           {/* Projectmanager is done */}
           {activeTap &&
             ['project-path', 'project-budget'].includes(activeTap) &&

@@ -1,28 +1,27 @@
-import { Box, Button, Menu, MenuItem, Stack, useTheme } from '@mui/material';
-import { UpdateAction } from '../../../../@types/project-details';
+import { Box, Menu, MenuItem, Stack, useTheme } from '@mui/material';
 import Iconify from 'components/Iconify';
+import NotesModal from 'components/notes-modal';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
 import { updateProposalByCEO } from 'queries/ceo/updateProposalByCEO';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useMutation } from 'urql';
-import NotesModal from 'components/notes-modal';
+import { UpdateAction } from '../../../../@types/project-details';
 //
-import axiosInstance from 'utils/axios';
 import { LoadingButton } from '@mui/lab';
-import uuidv4 from 'utils/uuidv4';
-import { addConversation, setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
-import { dispatch, useSelector } from 'redux/store';
-import moment from 'moment';
-import { Conversation } from '../../../../@types/wschat';
-import FacilitateSupervisorAcceptingForm from '../supervisor/supervisor-facilitate-track/forms';
-import { setStepsData } from '../../../../redux/slices/supervisorAcceptingForm';
-import { getProposalCount } from '../../../../redux/slices/proposal';
 import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import moment from 'moment';
+import { addConversation, setActiveConversationId } from 'redux/slices/wschat';
+import { dispatch, useSelector } from 'redux/store';
+import axiosInstance from 'utils/axios';
+import uuidv4 from 'utils/uuidv4';
 import { FusionAuthRoles } from '../../../../@types/commons';
+import { Conversation } from '../../../../@types/wschat';
+import { getProposalCount } from '../../../../redux/slices/proposal';
+import { setStepsData } from '../../../../redux/slices/supervisorAcceptingForm';
+import FacilitateSupervisorAcceptingForm from '../supervisor/supervisor-facilitate-track/forms';
 
 function FloatingActionBar() {
   const { user, activeRole } = useAuth();
@@ -32,6 +31,8 @@ function FloatingActionBar() {
   const theme = useTheme();
 
   const { proposal, track_list } = useSelector((state) => state.proposal);
+  const { track } = useSelector((state) => state.tracks);
+
   const { conversations } = useSelector((state) => state.wschat);
   const location = useLocation();
   const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
@@ -49,6 +50,20 @@ function FloatingActionBar() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const open = Boolean(anchorEl);
+
+  const isAvailBudget = useMemo(() => {
+    let tmpIsAvail = false;
+    if (track?.remaining_budget && track?.remaining_budget <= 0) {
+      tmpIsAvail = false;
+    } else {
+      if (track?.budget && track?.budget > 0) {
+        tmpIsAvail = true;
+      } else {
+        tmpIsAvail = false;
+      }
+    }
+    return tmpIsAvail;
+  }, [track]);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
@@ -459,9 +474,12 @@ function FloatingActionBar() {
         >
           <Stack spacing={2} direction="row" alignItems="center">
             <LoadingButton
+              disabled={!isAvailBudget}
               variant="contained"
               color="primary"
-              onClick={() => setAction('ACCEPT')}
+              onClick={() => {
+                if (isAvailBudget) setAction('ACCEPT');
+              }}
               loading={isSubmitting}
             >
               {translate('project_acceptance')}

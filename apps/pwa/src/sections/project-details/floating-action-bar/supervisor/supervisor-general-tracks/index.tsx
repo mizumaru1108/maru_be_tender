@@ -1,33 +1,27 @@
-import { Box, Button, Grid, Menu, MenuItem, Stack, useTheme } from '@mui/material';
-import Iconify from 'components/Iconify';
-import useLocales from 'hooks/useLocales';
-import { useNavigate, useParams, useLocation } from 'react-router';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
-import React, { useState } from 'react';
-import ProposalAcceptingForm from './ProposalAcceptingForm';
-import { nanoid } from 'nanoid';
-import useAuth from 'hooks/useAuth';
-import { useSnackbar } from 'notistack';
-import { useMutation } from 'urql';
-import {
-  ProposalAcceptBySupervisor,
-  ProposalRejectBySupervisor,
-} from 'queries/project-supervisor/ProposalAcceptBySupervisor';
-import { UpdateAction, PendingRequest } from '../../../../../@types/project-details';
-import NotesModal from 'components/notes-modal';
 import { LoadingButton } from '@mui/lab';
+import { Box, Button, Grid, Menu, MenuItem, Stack, useTheme } from '@mui/material';
+import Iconify from 'components/Iconify';
+import NotesModal from 'components/notes-modal';
+import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
+import { useSnackbar } from 'notistack';
+import React, { useMemo, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router';
+import { PendingRequest, UpdateAction } from '../../../../../@types/project-details';
+import ProposalAcceptingForm from './ProposalAcceptingForm';
 
 //
-import { useDispatch, useSelector } from 'redux/store';
-import { addConversation, setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
-import { Conversation } from '../../../../../@types/wschat';
-import uuidv4 from 'utils/uuidv4';
 import moment from 'moment';
+import { addConversation, setActiveConversationId } from 'redux/slices/wschat';
+import { useDispatch, useSelector } from 'redux/store';
 import axiosInstance from 'utils/axios';
-import PendingProposalRequestSending from '../PendingProposalRequestSending';
+import uuidv4 from 'utils/uuidv4';
+import { Conversation } from '../../../../../@types/wschat';
 import { FEATURE_AMANDEMENT_PROPOSAL, FEATURE_PROPOSAL_COUNTING } from '../../../../../config';
 import { getProposalCount } from '../../../../../redux/slices/proposal';
+import PendingProposalRequestSending from '../PendingProposalRequestSending';
 
 function FloatingActionBar() {
   const { id: pid } = useParams();
@@ -54,8 +48,23 @@ function FloatingActionBar() {
 
   const dispatch = useDispatch();
   const { proposal } = useSelector((state) => state.proposal);
+  const { track } = useSelector((state) => state.tracks);
   const { conversations } = useSelector((state) => state.wschat);
   const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
+
+  const isAvailBudget = useMemo(() => {
+    let tmpIsAvail = false;
+    if (track?.remaining_budget && track?.remaining_budget <= 0) {
+      tmpIsAvail = false;
+    } else {
+      if (track?.budget && track?.budget > 0) {
+        tmpIsAvail = true;
+      } else {
+        tmpIsAvail = false;
+      }
+    }
+    return tmpIsAvail;
+  }, [track]);
 
   const open = Boolean(anchorEl);
 
@@ -500,7 +509,10 @@ function FloatingActionBar() {
           <Grid item md={5} xs={12}>
             <Stack direction="row" gap={2} justifyContent="space-around">
               <LoadingButton
-                onClick={() => setAction('ACCEPT')}
+                disabled={!isAvailBudget}
+                onClick={() => {
+                  if (isAvailBudget) setAction('ACCEPT');
+                }}
                 variant="contained"
                 color="primary"
                 endIcon={<CheckIcon />}
