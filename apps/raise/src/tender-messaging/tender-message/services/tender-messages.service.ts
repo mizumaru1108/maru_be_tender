@@ -284,8 +284,8 @@ export class TenderMessagesService {
     createManyWebNotif.push({
       id: uuidv4(),
       user_id: partner.id,
-      content: `Ther's new incoming message from ${sender.employee_name}`,
-      subject: `New message`,
+      content: `لديك رسالة واردة جديدة من ${sender.employee_name}`,
+      subject: `رسالة جديدة`, //new message
       type: 'ACCOUNT',
       specific_type: 'NEW_MESSAGE',
     });
