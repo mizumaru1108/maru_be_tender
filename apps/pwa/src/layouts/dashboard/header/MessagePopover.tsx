@@ -257,11 +257,12 @@ export default function MessagePopover() {
       }),
     [currentData, oneDayAgo]
   );
-  // console.log({
-  //   message: currentData.filter((item) => item.specific_type === 'NEW_MESSAGE'),
-  //   totalToday,
-  //   data,
-  // });
+
+  console.log({
+    message: currentData.filter((item) => item.specific_type === 'NEW_MESSAGE'),
+    totalToday,
+    data,
+  });
 
   const totalPrevious = React.useMemo(() => {
     if (!currentData) return [];
@@ -569,7 +570,7 @@ function NotificationItem({
     if (handleClose) {
       handleClose();
     }
-    if (message.read_status) {
+    if (message.read_status === false) {
       handleMarkRead();
     }
   };
