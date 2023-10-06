@@ -13,6 +13,7 @@ import { useQuery } from 'urql';
 //
 import { useSnackbar } from 'notistack';
 import { FEATURE_NESTED_TRACK_BUDGET } from 'config';
+import { FormTrackBudget } from '../../client/funding-project-request/forms/FormNestedTrackBudget';
 
 // ------------------------------------------------------------------------------------------
 
@@ -37,18 +38,18 @@ export default function TrackBudgetPage() {
   const { activeRole } = useAuth();
 
   const [open, setOpen] = useState<boolean>(false);
-  const [tracksValue, setTrackValues] = useState<IDataTracks[] | []>([]);
-  const [tracksTempValue, setTrackTempValues] = useState<IDataTracks[] | []>([]);
+  // const [tracksValue, setTrackValues] = useState<IDataTracks[] | []>([]);
+  const [tracksTempValue, setTrackTempValues] = useState<FormTrackBudget[] | []>([]);
   const [loadingPage, setLoadingPage] = useState<boolean>(false);
 
   const getTrackDatas = async () => {
     // setLoadingPage(true);
 
     try {
-      const { status, data } = await axiosInstance.get(
-        '/tender/proposal/payment/find-track-budgets',
-        { params: { is_deleted: '0' }, headers: { 'x-hasura-role': activeRole! } }
-      );
+      const { status, data } = await axiosInstance.get('/tender/track', {
+        params: { is_deleted: '0', include_general: '0', include_relations: 'track_sections' },
+        headers: { 'x-hasura-role': activeRole! },
+      });
 
       if (status === 200) {
         setTrackTempValues(data.data);
@@ -119,7 +120,7 @@ export default function TrackBudgetPage() {
 
   useEffect(() => {
     const firstArray = tracksTempValue;
-    const combinedArray: IDataTracks[] = [];
+    const combinedArray: FormTrackBudget[] = [];
 
     if (data) {
       for (const item of data.track) {
@@ -136,7 +137,7 @@ export default function TrackBudgetPage() {
       }
     }
 
-    setTrackValues(combinedArray);
+    // setTrackValues(combinedArray);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tracksTempValue, data]);
@@ -187,8 +188,8 @@ export default function TrackBudgetPage() {
           </Grid>
           {tracksTempValue.length
             ? tracksTempValue
-                .sort((orderA, orderB) => orderB.budget - orderA.budget)
-                .map((item: IDataTracks, index: number) => (
+                .sort((orderA, orderB) => (orderB?.budget || 0) - (orderA?.budget || 0))
+                .map((item: FormTrackBudget, index: number) => (
                   <Grid item md={12} xs={12} key={index}>
                     <Track key={index} name={item.name} id={item.id} budget={item.budget} />
                   </Grid>
