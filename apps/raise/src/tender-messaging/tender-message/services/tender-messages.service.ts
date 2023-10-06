@@ -288,6 +288,7 @@ export class TenderMessagesService {
       subject: `رسالة جديدة`, //new message
       type: 'ACCOUNT',
       specific_type: 'NEW_MESSAGE',
+      message_id: createdMessage?.id,
     });
 
     await this.tenderNotifRepo.createManyNotification(createManyWebNotif);
