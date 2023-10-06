@@ -1,26 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import useAuth from 'hooks/useAuth';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
-import ProjectManagerFloatingActionBar from './project-manager';
-import SupervisorFloatingActionBar from './supervisor';
-import CeoFloatingActionBar from './ceo';
-import ModeratorActionBar from './moderator';
-import { dispatch, useSelector } from 'redux/store';
-import ConsultantFloatingActionBar from './consultant';
-import RejectProjectsActionBar from './reject-project';
-import FloatingCloseReportSPV from '../floating-close-report/FloatingSpv';
+import { useSelector } from 'redux/store';
 import FloatingClientSubmit from '../floating-close-report/FloatingClientSubmit';
+import FloatingCloseReportSPV from '../floating-close-report/FloatingSpv';
+import CeoFloatingActionBar from './ceo';
+import ConsultantFloatingActionBar from './consultant';
+import ModeratorActionBar from './moderator';
+import ProjectManagerFloatingActionBar from './project-manager';
+import RejectProjectsActionBar from './reject-project';
+import SupervisorFloatingActionBar from './supervisor';
 
 //
-import { useQuery } from 'urql';
 import { getProposalClosingReport } from 'queries/client/getProposalClosingReport';
 import FinanceFloatingActionBar from 'sections/project-details/floating-action-bar/finance';
-import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
-import PaymentAmandementFloatingActionBar from './supervisor/SendPaymentAmandement';
-import { getTracks } from 'redux/slices/track';
-import ProposalDisableModal from '../../../components/modal-dialog/ProposalDisableModal';
-import useLocales from '../../../hooks/useLocales';
+import { useQuery } from 'urql';
 import ProposalNoBudgetRemainModal from '../../../components/modal-dialog/ProposalNoBudgetRemainModal';
+import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
+import useLocales from '../../../hooks/useLocales';
+import PaymentAmandementFloatingActionBar from './supervisor/SendPaymentAmandement';
 
 //
 
@@ -50,10 +48,10 @@ function FloatinActonBar() {
   }, [track]);
 
   useEffect(() => {
-    if (isAvailBudget === false) {
+    if (isAvailBudget === false && ['tender_project_supervisor'].includes(role)) {
       setOpen(true);
     }
-  }, [isAvailBudget]);
+  }, [isAvailBudget, role]);
 
   const handleCloseModal = () => {
     setOpen(false);
@@ -102,15 +100,15 @@ function FloatinActonBar() {
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
             role === 'tender_project_manager' &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
-            isAvailBudget && <ProjectManagerFloatingActionBar />}
+            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && (
+              <ProjectManagerFloatingActionBar />
+            )}
           {/* CEO is done */}
           {activeTap &&
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
             ['tender_ceo'].includes(role) &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
-            isAvailBudget && <CeoFloatingActionBar />}
+            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && <CeoFloatingActionBar />}
           {/* Consultant is done */}
           {activeTap &&
             ['project-path', 'supervisor-revision'].includes(activeTap) &&

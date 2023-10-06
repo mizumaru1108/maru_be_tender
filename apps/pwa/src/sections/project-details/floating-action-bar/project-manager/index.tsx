@@ -34,8 +34,7 @@ function FloatingActionBar() {
 
   const { user, activeRole } = useAuth();
 
-  const { proposal, track_list } = useSelector((state) => state.proposal);
-  const { track } = useSelector((state) => state.tracks);
+  const { proposal } = useSelector((state) => state.proposal);
   const { conversations } = useSelector((state) => state.wschat);
   const location = useLocation();
   const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
@@ -43,20 +42,6 @@ function FloatingActionBar() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
   const [isSubmittingStepback, setIsSubmittingStepback] = useState<boolean>(false);
-
-  const isAvailBudget = React.useMemo(() => {
-    let tmpIsAvail = false;
-    if (track?.remaining_budget && track?.remaining_budget <= 0) {
-      tmpIsAvail = false;
-    } else {
-      if (track?.budget && track?.budget > 0) {
-        tmpIsAvail = true;
-      } else {
-        tmpIsAvail = false;
-      }
-    }
-    return tmpIsAvail;
-  }, [track]);
 
   const employee_id = user?.id;
 
@@ -686,9 +671,8 @@ function FloatingActionBar() {
                 {translate('reject_project')}
               </LoadingButton>
               <LoadingButton
-                disabled={!isAvailBudget}
                 onClick={() => {
-                  if (isAvailBudget) setAction('ACCEPT');
+                  setAction('ACCEPT');
                 }}
                 variant="contained"
                 color="primary"

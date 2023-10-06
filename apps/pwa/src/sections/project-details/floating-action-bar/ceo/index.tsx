@@ -31,7 +31,6 @@ function FloatingActionBar() {
   const theme = useTheme();
 
   const { proposal, track_list } = useSelector((state) => state.proposal);
-  const { track } = useSelector((state) => state.tracks);
 
   const { conversations } = useSelector((state) => state.wschat);
   const location = useLocation();
@@ -50,20 +49,6 @@ function FloatingActionBar() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const open = Boolean(anchorEl);
-
-  const isAvailBudget = useMemo(() => {
-    let tmpIsAvail = false;
-    if (track?.remaining_budget && track?.remaining_budget <= 0) {
-      tmpIsAvail = false;
-    } else {
-      if (track?.budget && track?.budget > 0) {
-        tmpIsAvail = true;
-      } else {
-        tmpIsAvail = false;
-      }
-    }
-    return tmpIsAvail;
-  }, [track]);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
@@ -474,11 +459,10 @@ function FloatingActionBar() {
         >
           <Stack spacing={2} direction="row" alignItems="center">
             <LoadingButton
-              disabled={!isAvailBudget}
               variant="contained"
               color="primary"
               onClick={() => {
-                if (isAvailBudget) setAction('ACCEPT');
+                setAction('ACCEPT');
               }}
               loading={isSubmitting}
             >

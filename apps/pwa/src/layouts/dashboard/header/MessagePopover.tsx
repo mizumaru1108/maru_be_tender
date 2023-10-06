@@ -34,8 +34,10 @@ import Scrollbar from '../../../components/Scrollbar';
 import useLocales from '../../../hooks/useLocales';
 import { messageNotificationCount } from '../../../queries/commons/subMessageNotificationCount';
 import { setMessageNotifyCount } from '../../../redux/slices/notification';
-import { useDispatch, useSelector } from '../../../redux/store';
+import { dispatch, useDispatch, useSelector } from '../../../redux/store';
 import axiosInstance from '../../../utils/axios';
+import { useLocation, useNavigate } from 'react-router';
+import { setActiveConversationId } from '../../../redux/slices/wschat';
 
 // ----------------------------------------------------------------------
 const _messages = [...Array(2)].map((_, index) => ({
@@ -144,14 +146,10 @@ export default function MessagePopover() {
 
   const { data, fetching, error } = result;
   const { data: dataNotifCount, fetching: fetchingNotifCount, error: NotifCountError } = notifCount;
-  // console.log({ data, dataNotifCount });
 
   const memoResult = React.useMemo(() => data, [data]);
   const memoResultError = React.useMemo(() => error, [error]);
   const memoNotifCount = React.useMemo(() => dataNotifCount, [dataNotifCount]);
-  // console.log({ data, memoResult });
-
-  // console.log(memoResult, 'RESULT');
 
   useEffect(() => {
     if (FEATURE_NOTIFICATION_SYSTEM) {
@@ -164,17 +162,8 @@ export default function MessagePopover() {
         const filteredData = memoResult.notification
           .filter((item: NotificationItemProps) => item.specific_type === 'NEW_MESSAGE')
           .map((item: NotificationItemProps) => item);
-        // console.log({ filteredData });
-        // if(filteredData){
-        //   setCurrentData(filteredData);
-        // }
-        // console.log({ filteredData });
         setCurrentData(memoResult.notification);
       }
-
-      // if (!fetching && memoResultError) {
-      //   setOpenAlert(true);
-      // }
     }
   }, [dispatch, data, currentData, fetching, memoResult, memoNotifCount, memoResultError]);
 
@@ -256,42 +245,23 @@ export default function MessagePopover() {
     }).length;
   }, [currentData, oneDayAgo]);
 
-  // const totalToday = React.useMemo(
-  //   () =>
-  //     currentData?.filter((item: any) => {
-  //       const createdAt = new Date(item?.created_at);
-
-  //       if (createdAt.getTime() >= oneDayAgo) {
-  //         return item?.message;
-  //       }
-  //       return false;
-  //     }),
-  //   [currentData, oneDayAgo]
-  // );
-
-  // const totalPrevious = React.useMemo(
-  //   () =>
-  //     currentData?.filter((item: any) => {
-  //       const createdAt = new Date(item?.created_at);
-
-  //       if (createdAt.getTime() < oneDayAgo) {
-  //         return item?.message;
-  //       }
-  //       return false;
-  //     }),
-  //   [currentData, oneDayAgo]
-  // );
   const totalToday = React.useMemo(
     () =>
       currentData?.filter((item: any) => {
         const createdAt = new Date(item.created_at);
-        if (createdAt.getTime() >= oneDayAgo) {
+        const isRead = item.read_status;
+        if (createdAt.getTime() >= oneDayAgo && isRead === false) {
           return item;
         }
         return false;
       }),
     [currentData, oneDayAgo]
   );
+  // console.log({
+  //   message: currentData.filter((item) => item.specific_type === 'NEW_MESSAGE'),
+  //   totalToday,
+  //   data,
+  // });
 
   const totalPrevious = React.useMemo(() => {
     if (!currentData) return [];
@@ -361,14 +331,6 @@ export default function MessagePopover() {
               px: 2.5,
             }}
           >
-            {/* <Box sx={{ display: 'flex', alignItems: 'center', py: 2, px: 2.5 }}>
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="subtitle1">الرسائل</Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              لديك {totalUnRead} رسائل غير مقروئة
-            </Typography>
-          </Box> */}
-
             <Box>
               <Typography variant="subtitle1">{translate('notification.header')}</Typography>
               <TabList
@@ -462,9 +424,17 @@ export default function MessagePopover() {
                     <React.Fragment>
                       {currentData &&
                         currentData
-                          .filter((item) => item.specific_type === 'NEW_MESSAGE')
+                          .filter(
+                            (item) =>
+                              item.specific_type === 'NEW_MESSAGE' && item.read_status === false
+                          )
                           .map((item: NotificationItemProps, index: any) => (
-                            <NotificationItem key={index} message={item} tabValue={activeTap} />
+                            <NotificationItem
+                              key={index}
+                              message={item}
+                              tabValue={activeTap}
+                              handleClose={handleClose}
+                            />
                           ))}
                     </React.Fragment>
                   ) : (
@@ -545,10 +515,20 @@ export default function MessagePopover() {
 function NotificationItem({
   message,
   tabValue,
+  handleClose,
 }: {
   message: NotificationItemProps;
   tabValue: any;
+  handleClose?: () => void;
 }) {
+  const { activeRole } = useAuth();
+  const navigate = useNavigate();
+  // for url redirect open message
+  const location = useLocation();
+  const path = location.pathname.split('/');
+  const urlToMessage = `/${path[1]}/${path[2]}/messages`;
+  const roomId = message?.message?.room_id || '';
+
   // const { description } = renderContent(message);
   const { translate, currentLang } = useLocales();
 
@@ -573,6 +553,27 @@ function NotificationItem({
     return tempSubject;
   };
 
+  const handleMarkRead = async () => {
+    await axiosInstance.patch(
+      'tender/notification/read',
+      { notificationId: message.id },
+      {
+        headers: { 'x-hasura-role': activeRole! },
+      }
+    );
+  };
+
+  const handleOpenMessage = () => {
+    dispatch(setActiveConversationId(roomId));
+    navigate(urlToMessage);
+    if (handleClose) {
+      handleClose();
+    }
+    if (message.read_status) {
+      handleMarkRead();
+    }
+  };
+
   return (
     <React.Fragment>
       {tabValue === '1' ? (
@@ -592,6 +593,7 @@ function NotificationItem({
                 <Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>
               </ListItemAvatar> */}
               <ListItemText
+                onClick={handleOpenMessage}
                 primary={translate(`${subject(message.subject)}`)}
                 secondary={
                   <Stack direction="column">
@@ -633,6 +635,7 @@ function NotificationItem({
               <Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>
             </ListItemAvatar> */}
             <ListItemText
+              onClick={handleOpenMessage}
               primary={translate(`${subject(message.subject)}`)}
               secondary={
                 <Stack direction="column">
