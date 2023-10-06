@@ -376,8 +376,8 @@ export class ProposalCreateCommandHandler
         notif_type: 'EMAIL',
         user_id: dbRes.created_proposal.submitter_user_id!,
         user_email: dbRes.created_proposal?.user?.email,
-        subject: '',
-        content: '',
+        subject: 'تم إرسال مقترح المشروع الخاص بك بنجاح',
+        content: 'تم إرسال مقترح المشروع الخاص بك بنجاح',
         email_type: 'template',
         emailTemplateContext: {
           projectName: dbRes.created_proposal.project_name,
