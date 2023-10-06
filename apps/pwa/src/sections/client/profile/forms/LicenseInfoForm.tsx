@@ -16,6 +16,7 @@ type FormProps = {
 };
 
 const LicenseInfoForm = ({ children, onSubmit, defaultValues, isEdit }: FormProps) => {
+  // console.log({ defaultValues });
   const { translate } = useLocales();
   const [tmpLicenseValues, setTmpLicenseValues] = useState<LicenseValuesProps>(defaultValues);
   const RegisterSchema = Yup.object().shape({

@@ -299,6 +299,17 @@ function ClientProfileEditForm() {
       } else if (typeof board_ofdec_file === 'object') {
         newval.push(board_ofdec_file);
       }
+      const tmpLicenseFile = license_file?.url
+        ? license_file
+        : {
+            url: '',
+            size: undefined,
+            type: '',
+            base64Data: '',
+            fileExtension: '',
+            fullName: '',
+          };
+      // console.log({ tmpLicenseFile });
       setProfileState((prevState: any) => ({
         ...prevState,
         form1: {
@@ -331,7 +342,7 @@ function ClientProfileEditForm() {
           license_issue_date,
           license_expired,
           license_file: {
-            ...license_file,
+            ...tmpLicenseFile,
           },
           board_ofdec_file: newval,
           // {
