@@ -1,5 +1,5 @@
 import useAuth from 'hooks/useAuth';
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { useLocation, useParams } from 'react-router';
 import { useSelector } from 'redux/store';
 import FloatingClientSubmit from '../floating-close-report/FloatingClientSubmit';
@@ -15,9 +15,7 @@ import SupervisorFloatingActionBar from './supervisor';
 import { getProposalClosingReport } from 'queries/client/getProposalClosingReport';
 import FinanceFloatingActionBar from 'sections/project-details/floating-action-bar/finance';
 import { useQuery } from 'urql';
-import ProposalNoBudgetRemainModal from '../../../components/modal-dialog/ProposalNoBudgetRemainModal';
 import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
-import useLocales from '../../../hooks/useLocales';
 import PaymentAmandementFloatingActionBar from './supervisor/SendPaymentAmandement';
 
 //
@@ -25,37 +23,11 @@ import PaymentAmandementFloatingActionBar from './supervisor/SendPaymentAmandeme
 function FloatinActonBar() {
   const { actionType } = useParams();
   const location = useLocation();
-  const { translate } = useLocales();
   const { activeTap, proposal, loadingPayment } = useSelector((state) => state.proposal);
-  const { track, isLoading } = useSelector((state) => state.tracks);
+  const { isLoading } = useSelector((state) => state.tracks);
   const { activeRole } = useAuth();
   const role = activeRole!;
   const pathName = location.pathname.split('/');
-  const [open, setOpen] = useState(false);
-
-  const isAvailBudget = useMemo(() => {
-    let tmpIsAvail = false;
-    if (track?.remaining_budget && track?.remaining_budget <= 0) {
-      tmpIsAvail = false;
-    } else {
-      if (track?.budget && track?.budget > 0) {
-        tmpIsAvail = true;
-      } else {
-        tmpIsAvail = false;
-      }
-    }
-    return tmpIsAvail;
-  }, [track]);
-
-  useEffect(() => {
-    if (isAvailBudget === false && ['tender_project_supervisor'].includes(role)) {
-      setOpen(true);
-    }
-  }, [isAvailBudget, role]);
-
-  const handleCloseModal = () => {
-    setOpen(false);
-  };
 
   const [result] = useQuery({
     query: getProposalClosingReport,
@@ -71,16 +43,6 @@ function FloatinActonBar() {
       {/* ’Moderator is done */}
       {loadingPayment || isLoading ? null : (
         <React.Fragment>
-          <ProposalNoBudgetRemainModal
-            open={open}
-            message={`ميزانية المشروع تتخطى الميزانية المخصصة للمسار
-            ${
-              track?.remaining_budget && track?.remaining_budget <= 0 ? 0 : track?.remaining_budget
-            } الميزانية المحددة للمشروع هي ${
-              proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport || 0
-            } ، الميزانية المتبقية في المسار هي `}
-            handleClose={handleCloseModal}
-          />
           {activeTap &&
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&

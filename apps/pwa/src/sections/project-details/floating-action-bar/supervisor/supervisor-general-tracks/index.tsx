@@ -22,6 +22,7 @@ import { Conversation } from '../../../../../@types/wschat';
 import { FEATURE_AMANDEMENT_PROPOSAL, FEATURE_PROPOSAL_COUNTING } from '../../../../../config';
 import { getProposalCount } from '../../../../../redux/slices/proposal';
 import PendingProposalRequestSending from '../PendingProposalRequestSending';
+import ProposalNoBudgetRemainModal from '../../../../../components/modal-dialog/ProposalNoBudgetRemainModal';
 
 function FloatingActionBar() {
   const { id: pid } = useParams();
@@ -41,6 +42,8 @@ function FloatingActionBar() {
   const [action, setAction] = useState<UpdateAction>('');
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const [openBudgetModal, setOpenBudgetModal] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmittingRejected, setIsSubmittingRejected] = useState<boolean>(false);
@@ -488,12 +491,26 @@ function FloatingActionBar() {
     );
   };
 
+  const handleCloseBudgetModal = () => {
+    setOpenBudgetModal(false);
+  };
+
   const pendingProposal = (data: PendingRequest) => {
     console.log(data);
   };
 
   return (
     <>
+      <ProposalNoBudgetRemainModal
+        open={openBudgetModal}
+        message={`ميزانية المشروع تتخطى الميزانية المخصصة للمسار
+            ${
+              track?.remaining_budget && track?.remaining_budget <= 0 ? 0 : track?.remaining_budget
+            } الميزانية المحددة للمشروع هي ${
+          proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport || 0
+        } ، الميزانية المتبقية في المسار هي `}
+        handleClose={handleCloseBudgetModal}
+      />
       <Box
         sx={{
           backgroundColor: 'white',
@@ -509,9 +526,13 @@ function FloatingActionBar() {
           <Grid item md={5} xs={12}>
             <Stack direction="row" gap={2} justifyContent="space-around">
               <LoadingButton
-                disabled={!isAvailBudget}
+                // disabled={!isAvailBudget}
                 onClick={() => {
-                  if (isAvailBudget) setAction('ACCEPT');
+                  if (isAvailBudget) {
+                    setAction('ACCEPT');
+                  } else {
+                    setOpenBudgetModal(true);
+                  }
                 }}
                 variant="contained"
                 color="primary"

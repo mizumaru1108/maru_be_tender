@@ -27,9 +27,13 @@ import { Conversation } from '../../../../../@types/wschat';
 import { LoadingButton } from '@mui/lab';
 import { getProposalCount } from '../../../../../redux/slices/proposal';
 import { FusionAuthRoles } from '../../../../../@types/commons';
+import ProposalNoBudgetRemainModal from '../../../../../components/modal-dialog/ProposalNoBudgetRemainModal';
 
 function FloatinActionBar() {
   const dispatch = useDispatch();
+
+  // state open budget modal state
+  const [openBudgetModal, setOpenBudgetModal] = useState(false);
 
   const { proposal } = useSelector((state) => state.proposal);
   const { track } = useSelector((state) => state.tracks);
@@ -222,38 +226,6 @@ function FloatinActionBar() {
   };
 
   const handleRejected = async (values: any) => {
-    // reject({
-    //   proposal_id,
-    //   new_values: {
-    //     inner_status: 'REJECTED_BY_SUPERVISOR',
-    //     outter_status: 'CANCELED',
-    //     state: 'PROJECT_SUPERVISOR',
-    //   },
-    //   log: {
-    //     id: nanoid(),
-    //     proposal_id,
-    //     reviewer_id: user?.id!,
-    //     action: 'reject',
-    //     message: 'تم رفض المشروع من قبل مشرف المشاريع',
-    //     notes: values.notes,
-    //     user_role: 'PROJECT_SUPERVISOR',
-    //     state: 'PROJECT_SUPERVISOR',
-    //   },
-    // }).then((res) => {
-    //   if (res.error) {
-    //     enqueueSnackbar(res.error.message, {
-    //       variant: 'error',
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //     });
-    //   } else {
-    //     enqueueSnackbar(translate('proposal_accept'), {
-    //       variant: 'success',
-    //     });
-    //     navigate(`/project-supervisor/dashboard/app`);
-    //   }
-    // });
-
     setIsSubmittingRejected(true);
 
     try {
@@ -433,9 +405,9 @@ function FloatinActionBar() {
     );
   };
 
-  // useEffect(() => {
-  //   dispatch(setStepsData(proposal));
-  // }, [dispatch, proposal]);
+  const handleCloseBudgetModal = () => {
+    setOpenBudgetModal(false);
+  };
 
   React.useEffect(() => {
     dispatch(setStepsData(proposal, activeRole! as FusionAuthRoles));
@@ -444,6 +416,16 @@ function FloatinActionBar() {
 
   return (
     <>
+      <ProposalNoBudgetRemainModal
+        open={openBudgetModal}
+        message={`ميزانية المشروع تتخطى الميزانية المخصصة للمسار
+            ${
+              track?.remaining_budget && track?.remaining_budget <= 0 ? 0 : track?.remaining_budget
+            } الميزانية المحددة للمشروع هي ${
+          proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport || 0
+        } ، الميزانية المتبقية في المسار هي `}
+        handleClose={handleCloseBudgetModal}
+      />
       <Box
         sx={{
           backgroundColor: 'white',
@@ -459,9 +441,13 @@ function FloatinActionBar() {
           <Grid item md={4} xs={12}>
             <Stack direction="row" gap={2} justifyContent="space-between">
               <Button
-                disabled={!isAvailBudget}
+                // disabled={!isAvailBudget}
                 onClick={() => {
-                  if (isAvailBudget) setAction('ACCEPT');
+                  if (isAvailBudget) {
+                    setAction('ACCEPT');
+                  } else {
+                    setOpenBudgetModal(true);
+                  }
                 }}
                 variant="contained"
                 color="primary"
