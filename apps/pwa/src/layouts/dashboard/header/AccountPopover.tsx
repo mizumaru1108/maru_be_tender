@@ -11,6 +11,7 @@ export default function AccountPopover() {
   const navigate = useNavigate();
   const isMobile = useResponsive('down', 'sm');
   const { user, activeRole } = useAuth();
+  // console.log({ user });
   const role = activeRole!;
   const { translate } = useLocales();
   return (
@@ -65,7 +66,7 @@ export default function AccountPopover() {
                   fontSize: '12px',
                 }}
               >
-                {stringTruncate(user?.firstName, 31)}
+                {stringTruncate(user?.firstName || user?.fullName, 31)}
               </Typography>
               <Typography sx={{ color: '#1E1E1E', fontSize: '14px' }}>{translate(role)}</Typography>
             </Stack>

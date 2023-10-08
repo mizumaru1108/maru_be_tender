@@ -130,8 +130,8 @@ function AuthProvider({ children }: AuthProviderProps) {
           if (!user.registrations) {
             throw new Error(`User ${user?.id} does not have registrations`);
           }
-          const userRegistration = user.registrations?.[0];
-          const activeRole = userRegistration.roles?.[activeRoleIndex];
+          const userRegistration = user?.registrations?.[0];
+          const activeRole = userRegistration?.roles?.[activeRoleIndex];
           if (!activeRole) {
             throw new Error(`User ${user?.id} must have valid activeRole`);
           }
@@ -142,7 +142,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             name: user?.fullName,
             email: user?.email,
             role: activeRole,
-            roles: userRegistration.roles,
+            roles: userRegistration?.roles,
           });
 
           dispatch({
