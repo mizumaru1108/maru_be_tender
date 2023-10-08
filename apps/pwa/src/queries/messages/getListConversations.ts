@@ -22,6 +22,9 @@ subscription ListConversationMessage($user_id: String = "") {
       read_status
       receiver {
         employee_name
+        client_data {
+          entity
+        }
       }
       sender {
         employee_name
@@ -29,4 +32,5 @@ subscription ListConversationMessage($user_id: String = "") {
     }
   }
 }
+
 `;

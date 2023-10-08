@@ -615,7 +615,7 @@ export default function NewMessageModalForm({
                           }}
                         >
                           <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
-                            {v.employee_name}
+                            {v?.client_data?.entity || v?.employee_name}
                           </Typography>
                           <Typography variant="caption">
                             {translate(`tender_${v.roles[0].user_type_id.toLowerCase()}`)}

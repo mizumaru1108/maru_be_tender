@@ -35,6 +35,7 @@ const MessageMenu = ({ accountType, user, fetching }: IMenu) => {
   const [corespondence, setCorespondence] = useState('external');
 
   const [newConversation, setNewConversation] = useState<Conversation[] | []>(conversations);
+  // console.log({ newConversation });
 
   const handleChangeTabsItem = (event: React.SyntheticEvent, newValue: number) => {
     setValueTabItem(newValue);

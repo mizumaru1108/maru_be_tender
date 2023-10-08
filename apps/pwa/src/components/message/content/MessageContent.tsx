@@ -64,6 +64,7 @@ export default function MessageContent() {
   const [getMessageGrouped, setGetMessageGrouped] = useState<IMassageGrouped[] | []>(
     messageGrouped!
   );
+  // console.log({ getMessageGrouped });
 
   // setValueNewMessage
   const [messageValue, setMessageValue] = useState<string>('');

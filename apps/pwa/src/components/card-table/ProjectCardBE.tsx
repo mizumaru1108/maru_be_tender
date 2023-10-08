@@ -251,6 +251,8 @@ const ProjectCardBE = ({
     return formattedDate;
   };
 
+  // console.log({user})
+
   return (
     <Card sx={{ backgroundColor: '#fff' }}>
       <CardContent>

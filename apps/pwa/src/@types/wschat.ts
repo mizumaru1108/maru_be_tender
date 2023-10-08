@@ -33,6 +33,9 @@ export type TextMessage = {
   receiver_role_as?: string | null;
   receiver?: {
     employee_name: string | null;
+    client_data?: {
+      entity: string;
+    };
   } | null;
   read_status?: boolean;
 };
@@ -54,6 +57,9 @@ export type ImageMessage = {
   receiver_role_as?: string | null;
   receiver?: {
     employee_name: string | null;
+    client_data?: {
+      entity: string;
+    };
   } | null;
   read_status?: boolean;
 };

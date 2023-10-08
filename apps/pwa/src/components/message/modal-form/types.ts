@@ -22,4 +22,8 @@ export interface UserDataTracks {
   }[];
   is_online: boolean | null;
   last_login: Date | string;
+  client_data: {
+    id: string;
+    entity: string;
+  };
 }

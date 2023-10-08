@@ -23,6 +23,7 @@ type IPropsMessageItem = {
 };
 
 export default function MessageMenuItem({ data, activeRole }: IPropsMessageItem) {
+  // console.log({ data });
   const theme = useTheme();
   const { user } = useAuth();
   const { currentLang, translate } = useLocales();
@@ -109,7 +110,8 @@ export default function MessageMenuItem({ data, activeRole }: IPropsMessageItem)
                   }}
                 >
                   {item.messages[0].owner_id === user?.id
-                    ? item.messages[0].receiver?.employee_name
+                    ? item.messages[0].receiver?.client_data?.entity ||
+                      item.messages[0].receiver?.employee_name
                     : item.messages[0].sender?.employee_name}
                 </Typography>
                 <Typography
