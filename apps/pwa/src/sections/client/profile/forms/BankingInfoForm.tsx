@@ -140,7 +140,7 @@ const BankingInfoForm = ({
       )
         ? true
         : false;
-    if (checkAllImageCard) {
+    if (checkAllImageCard || tmpBank?.length === 0) {
       tmpIsCardImage = true;
     }
     return tmpIsCardImage;
