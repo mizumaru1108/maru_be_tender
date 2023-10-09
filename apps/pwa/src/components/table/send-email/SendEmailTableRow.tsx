@@ -3,10 +3,10 @@ import useLocales from 'hooks/useLocales';
 import { useNavigate } from 'react-router';
 import useAuth from 'hooks/useAuth';
 import { role_url_map } from '../../../@types/commons';
-import { EmailToClienRow } from 'components/table/email-to-client/types';
+import { EmailToClienRow } from 'components/table/send-email/types';
 // import { role_url_map } from '../../../../@types/commons';
 
-export default function EmailToClientTableRow({ row, selected, onSelectRow }: EmailToClienRow) {
+export default function SendEmailTableRow({ row, selected, onSelectRow }: EmailToClienRow) {
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
 

@@ -2683,6 +2683,10 @@ const en = {
   email_to_client: {
     page_title: 'Send Email',
     title: 'Send Email',
+    new_email: 'New Email',
+    button: {
+      add_new: 'Send new emails',
+    },
     headercell: {
       email_content: 'Email Content',
       employee_name: 'Partner Name',

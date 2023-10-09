@@ -56,7 +56,9 @@ const BookingAMeeting = Loadable(lazy(() => import('pages/project-supervisor/Boo
 const ClientListPage = Loadable(lazy(() => import('pages/project-supervisor/ClientListPage')));
 const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/PreviewPayment')));
 const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
-const EmailToClient = Loadable(lazy(() => import('pages/project-supervisor/EmailToClient')));
+const EmailToClient = Loadable(lazy(() => import('pages/project-supervisor/TableSendEmail')));
+const SendEmailForm = Loadable(lazy(() => import('pages/project-supervisor/SendEmail')));
+
 export const projectSupervisorRoute = {
   path: 'project-supervisor',
   element: (
@@ -205,7 +207,17 @@ export const projectSupervisorRoute = {
         },
         FEATURE_SEND_EMAIL_TO_CLIENT && {
           path: 'send-email',
-          element: <EmailToClient />,
+          // element: <EmailToClient />,
+          children: [
+            {
+              path: '',
+              element: <EmailToClient />,
+            },
+            {
+              path: 'new',
+              element: <SendEmailForm />,
+            },
+          ],
         },
       ],
     },

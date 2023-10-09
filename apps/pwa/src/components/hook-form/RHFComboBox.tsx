@@ -4,14 +4,11 @@ import { Controller, useFormContext } from 'react-hook-form';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import { Checkbox, Chip, TextField, Typography, useTheme } from '@mui/material';
-import Autocomplete, { AutocompleteProps, autocompleteClasses } from '@mui/material/Autocomplete';
-import { chunkArray } from 'utils/chunkArray';
-import { useDebounce } from 'hooks/useDebounce';
-import * as React from 'react';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import Autocomplete from '@mui/material/Autocomplete';
 import ListSubheader from '@mui/material/ListSubheader';
-import Popper from '@mui/material/Popper';
-import { VariableSizeList, ListChildComponentProps } from 'react-window';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import * as React from 'react';
+import { ListChildComponentProps, VariableSizeList } from 'react-window';
 //
 // ----------------------------------------------------------------------
 
@@ -139,6 +136,7 @@ type IProps = {
   disabled?: boolean;
   dataOption: ComboBoxOption[];
   limitTags?: number;
+  isMultiple?: boolean;
 };
 
 type Props = IProps;
@@ -151,6 +149,7 @@ export default function RHFComboBox({
   placeholder,
   value,
   disabled = false,
+  isMultiple = true,
   dataOption,
   limitTags = 2,
   ...other
@@ -158,12 +157,12 @@ export default function RHFComboBox({
   const { control, setValue, getValues, watch } = useFormContext();
   const theme = useTheme();
   const tmpValues = watch(name);
-  // console.log('name:', name, tmpValues);
+  console.log({ tmpValues });
   // const [searchName, setSearchName] = React.useState('');
   // const debouncedValue = useDebounce<string>(searchName || '', 500);
   const handleOnChange = (option: ComboBoxOption) => {
     const tmpFieldValue: ComboBoxOption[] = getValues(name) || [];
-    if (tmpValues) {
+    if (tmpValues && isMultiple) {
       const findIndex = tmpValues.findIndex((item: ComboBoxOption) => item.value === option.value);
       if (findIndex > -1) {
         tmpFieldValue.splice(findIndex, 1);
@@ -171,14 +170,24 @@ export default function RHFComboBox({
         tmpFieldValue.push(option);
       }
     }
-    setValue(name, tmpFieldValue);
+    if (isMultiple) {
+      setValue(name, tmpFieldValue);
+    } else {
+      setValue(name, option);
+    }
   };
 
   React.useEffect(() => {
-    if (value && Array.isArray(value) && value.length > 0) {
+    if (value && Array.isArray(value) && value.length > 0 && isMultiple) {
       setValue(name, value);
     }
-  }, [value, name, setValue]);
+    if (!isMultiple) {
+      setValue(name, {
+        label: '',
+        value: '',
+      });
+    }
+  }, [value, name, setValue, isMultiple]);
   // const chungkedArray = chunkArray([...dataOption], 5);
 
   return (
@@ -188,7 +197,7 @@ export default function RHFComboBox({
       render={({ field, fieldState: { error } }) => (
         <Autocomplete
           disabled={disabled}
-          multiple
+          multiple={isMultiple}
           options={
             dataOption || [
               {

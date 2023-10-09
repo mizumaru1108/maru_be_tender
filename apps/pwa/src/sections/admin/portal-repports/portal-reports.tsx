@@ -1,8 +1,6 @@
 import { Grid, Stack, Typography } from '@mui/material';
 import Space from 'components/space/space';
-import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import React from 'react';
 import PortalReportsForm from 'sections/admin/portal-repports/portal-report-form';
 
 export default function AdminPortalReportsPage() {

@@ -108,12 +108,6 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
             return true;
           }
         ),
-      // project_beneficiaries_specific_type: Yup.string().when('project_beneficiaries', {
-      //   is: 'GENERAL',
-      //   then: Yup.string().required(
-      //     translate('errors.cre_proposal.project_beneficiaries_specific_type.required')
-      //   ),
-      // }),
       ...(tmpReivsed
         ? null
         : {

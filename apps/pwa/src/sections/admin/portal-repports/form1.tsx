@@ -8,7 +8,7 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useSelector, dispatch } from 'redux/store';
+import { useSelector } from 'redux/store';
 import { IGovernorate } from 'sections/admin/governorate/list/types';
 import { IRegions } from 'sections/admin/region/list/types';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
@@ -61,15 +61,10 @@ export default function PortalReportsForm1({ defaultValuesForm, children, onSubm
     tracks?: tracks[];
     beneficiaries?: BeneficiaryDetail[];
   } | null>(null);
-  // console.log({ area, governorates });
 
   const supportSchema = Yup.object().shape({
     partner_id: Yup.array().min(1, translate('portal_report.errors.partner_name.required')),
     outter_status: Yup.array().min(1, translate('portal_report.errors.outter_status.required')),
-    // track_id: Yup.array().min(1, translate('portal_report.errors.track_id.required')),
-    // region_id: Yup.array().min(1, translate('portal_report.errors.region_id.required')),
-    // governorate_id: Yup.array().min(1, translate('portal_report.errors.governorate_id.required')),
-    // beneficiary_id: Yup.array().min(1, translate('portal_report.errors.beneficiary_id.required')),
     start_date: Yup.string().required(translate('portal_report.errors.start_date.required')),
     end_date: Yup.string().required(translate('portal_report.errors.end_date.required')),
   });
@@ -198,9 +193,6 @@ export default function PortalReportsForm1({ defaultValuesForm, children, onSubm
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container rowSpacing={4} columnSpacing={7}>
-          {/* <Grid md={12}>
-            <Virtualize />
-          </Grid> */}
           <Grid item md={6} xs={12}>
             <RHFComboBox
               disabled={loadingProps.laodingClient}

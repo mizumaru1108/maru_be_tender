@@ -2694,6 +2694,10 @@ const ar = {
   old_proposal: {
     page_title: 'مشاريع المنصة',
     title: 'مشاريع المنصة',
+    new_email: 'بريد إلكتروني جديد',
+    button: {
+      add_new: 'إرسال بريد إلكتروني جديد',
+    },
     headercell: {
       project_name: 'اسم المشروع',
       project_number: 'رقم المشروع',

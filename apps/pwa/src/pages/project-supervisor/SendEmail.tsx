@@ -1,6 +1,6 @@
 import { Container, styled } from '@mui/material';
-import EmailToClientTable from 'components/table/email-to-client/EmailToClientTable';
 import { FEATURE_SEND_EMAIL_TO_CLIENT } from 'config';
+import SendEmail from 'sections/project-supervisor/send-mail/send-email';
 import Page from '../../components/Page';
 import useLocales from '../../hooks/useLocales';
 
@@ -17,9 +17,9 @@ function SendEmailToClient() {
   const { translate } = useLocales();
   return (
     // <Page title="Messages">
-    <Page title={translate('email_to_client.title')}>
+    <Page title={translate('email_to_client.new_email')}>
       <Container>
-        <ContentStyle>{FEATURE_SEND_EMAIL_TO_CLIENT && <EmailToClientTable />}</ContentStyle>
+        <ContentStyle>{FEATURE_SEND_EMAIL_TO_CLIENT && <SendEmail />}</ContentStyle>
       </Container>
     </Page>
   );
