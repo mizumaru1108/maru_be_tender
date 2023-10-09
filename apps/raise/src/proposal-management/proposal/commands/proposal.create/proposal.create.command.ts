@@ -21,6 +21,7 @@ import { ProposalRepository } from '../../repositories/proposal.repository';
 import { ProposalCreateProps } from '../../types';
 import { ProposalRegionRepository } from '../../../proposal-regions/region/repositories/proposal.region.repository';
 import { ProposalGovernorateRepository } from '../../../proposal-regions/governorate/repositories/proposal.governorate.repository';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 export class ProposalCreateCommand {
   userId: string;
@@ -363,7 +364,7 @@ export class ProposalCreateCommandHandler
           );
 
           return {
-            created_proposal: createdProposal,
+            created_proposal: updatedProposal,
           };
         },
         {
@@ -371,11 +372,23 @@ export class ProposalCreateCommandHandler
         },
       );
 
+      if (!dbRes.created_proposal) {
+        throw new UnprocessableEntityException(
+          'proposal does not created properly!',
+        );
+      }
+
+      if (!dbRes.created_proposal.user) {
+        throw new UnprocessableEntityException(
+          'proposal cant fetch client data properly!',
+        );
+      }
+
       const notifPayloads: ISendNotificaitonEvent[] = [];
       notifPayloads.push({
         notif_type: 'EMAIL',
-        user_id: dbRes.created_proposal.submitter_user_id!,
-        user_email: dbRes.created_proposal?.user?.email,
+        user_id: dbRes.created_proposal.submitter_user_id,
+        user_email: dbRes.created_proposal.user.email,
         subject: 'تم إرسال مقترح المشروع الخاص بك بنجاح',
         content: 'تم إرسال مقترح المشروع الخاص بك بنجاح',
         email_type: 'template',
@@ -405,6 +418,7 @@ export class ProposalCreateCommandHandler
         }
       }
 
+      // console.log({ notifPayloads });
       return dbRes.created_proposal;
     } catch (error) {
       if (fileManagerPayload.length > 0) {

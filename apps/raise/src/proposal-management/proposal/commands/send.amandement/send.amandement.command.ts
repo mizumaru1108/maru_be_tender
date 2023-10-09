@@ -251,19 +251,19 @@ export class SendAmandementCommandHandler
       // );
 
       for (const notifPayload of result.notif_payload) {
-        if (notifPayload.notif_type === 'SMS' && notifPayload.user_phone) {
-          const clientPhone = isExistAndValidPhone(notifPayload.user_phone);
+        // if (notifPayload.notif_type === 'SMS' && notifPayload.user_phone) {
+        //   const clientPhone = isExistAndValidPhone(notifPayload.user_phone);
 
-          // sms notif for send amandement
-          if (clientPhone) {
-            await this.msegatService.sendSMSAsync({
-              numbers: clientPhone.includes('+')
-                ? clientPhone.substring(1)
-                : clientPhone,
-              msg: notifPayload.subject + notifPayload.content,
-            });
-          }
-        }
+        //   // sms notif for send amandement
+        //   if (clientPhone) {
+        //     await this.msegatService.sendSMSAsync({
+        //       numbers: clientPhone.includes('+')
+        //         ? clientPhone.substring(1)
+        //         : clientPhone,
+        //       msg: notifPayload.subject + notifPayload.content,
+        //     });
+        //   }
+        // }
 
         // email notif for send amandement
         if (

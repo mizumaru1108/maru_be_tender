@@ -481,29 +481,29 @@ export class ProposalUpdatePaymentCommandHandler
         });
 
         // validate client phone
-        this.logger.log(
-          'info',
-          `validating client phone ${proposal.user.mobile_number}`,
-        );
-        const clientPhone = isExistAndValidPhone(proposal.user.mobile_number);
+        // this.logger.log(
+        //   'info',
+        //   `validating client phone ${proposal.user.mobile_number}`,
+        // );
+        // const clientPhone = isExistAndValidPhone(proposal.user.mobile_number);
 
-        // sms notif for payment release
-        if (clientPhone) {
-          this.logger.log(
-            'info',
-            `valid phone number, trying to sending sms to ${clientPhone}`,
-          );
-          await this.msegatService.sendSMSAsync({
-            numbers: clientPhone.includes('+')
-              ? clientPhone.substring(1)
-              : clientPhone,
-            msg:
-              'إصدار دفع جديد' +
-              ',' +
-              `مرحباً ${proposal.user.employee_name}، نود إخبارك أن المشروع '${proposal.project_name}' تم إرسال الدفعة.
-            يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات ، أو انقر هنا.`,
-          });
-        }
+        // // sms notif for payment release
+        // if (clientPhone) {
+        //   this.logger.log(
+        //     'info',
+        //     `valid phone number, trying to sending sms to ${clientPhone}`,
+        //   );
+        //   await this.msegatService.sendSMSAsync({
+        //     numbers: clientPhone.includes('+')
+        //       ? clientPhone.substring(1)
+        //       : clientPhone,
+        //     msg:
+        //       'إصدار دفع جديد' +
+        //       ',' +
+        //       `مرحباً ${proposal.user.employee_name}، نود إخبارك أن المشروع '${proposal.project_name}' تم إرسال الدفعة.
+        //     يرجى التحقق من حسابك الشخصي للحصول على مزيد من المعلومات ، أو انقر هنا.`,
+        //   });
+        // }
       }
 
       return result;

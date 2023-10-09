@@ -1421,28 +1421,28 @@ export class ProposalService {
       log.data.proposal.user.mobile_number,
     );
 
-    if (clientPhone) {
-      this.logger.log('info', `valid client phone ${clientPhone}`);
-      if (actions === ProposalAction.ACCEPT) {
-        if (reviewerRole === 'tender_ceo') {
-          await this.msegatService.sendSMSAsync({
-            numbers: clientPhone.includes('+')
-              ? clientPhone.substring(1)
-              : clientPhone,
-            msg: subject + ',' + clientContent,
-          });
-        }
-      }
+    // if (clientPhone) {
+    //   this.logger.log('info', `valid client phone ${clientPhone}`);
+    //   if (actions === ProposalAction.ACCEPT) {
+    //     if (reviewerRole === 'tender_ceo') {
+    //       await this.msegatService.sendSMSAsync({
+    //         numbers: clientPhone.includes('+')
+    //           ? clientPhone.substring(1)
+    //           : clientPhone,
+    //         msg: subject + ',' + clientContent,
+    //       });
+    //     }
+    //   }
 
-      if (actions === ProposalAction.REJECT) {
-        await this.msegatService.sendSMSAsync({
-          numbers: clientPhone.includes('+')
-            ? clientPhone.substring(1)
-            : clientPhone,
-          msg: subject + ',' + clientContent,
-        });
-      }
-    }
+    //   if (actions === ProposalAction.REJECT) {
+    //     await this.msegatService.sendSMSAsync({
+    //       numbers: clientPhone.includes('+')
+    //         ? clientPhone.substring(1)
+    //         : clientPhone,
+    //       msg: subject + ',' + clientContent,
+    //     });
+    //   }
+    // }
   }
 
   async handleUpdateProposalTrackInfo(
