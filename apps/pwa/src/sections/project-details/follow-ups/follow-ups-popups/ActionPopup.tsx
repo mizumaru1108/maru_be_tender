@@ -111,9 +111,10 @@ function ActionPopup({ open, handleClose }: Props) {
       }
     } else {
       try {
+        const url = 'tender-proposal/follow-up/create-cqrs';
         // addFollowups({ content: data.action, proposal_id, follow_up_type: 'plain' }, role)
         const response = await axiosInstance.post(
-          'tender-proposal/follow-up/create',
+          url,
           {
             content: data.action,
             proposal_id,

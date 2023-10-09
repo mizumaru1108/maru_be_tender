@@ -2671,13 +2671,20 @@ const en = {
     success: 'Successfully created an appointment',
     success_set_your_time: 'Successfully set your time',
   },
-  //old proposal Table
   old_proposal: {
     page_title: 'Platform Projects',
     title: 'Platform Projects',
     headercell: {
       project_name: 'Project Name',
       project_number: 'Project Number',
+      employee_name: 'Partner Name',
+    },
+  },
+  email_to_client: {
+    page_title: 'Send Email',
+    title: 'Send Email',
+    headercell: {
+      email_content: 'Email Content',
       employee_name: 'Partner Name',
     },
   },

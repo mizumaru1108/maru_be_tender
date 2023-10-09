@@ -20,7 +20,6 @@ function OldProposalPage() {
       <Container>
         <ContentStyle>
           <OldProposalTable />
-          {/* Under constraction ... */}
         </ContentStyle>
       </Container>
     </Page>

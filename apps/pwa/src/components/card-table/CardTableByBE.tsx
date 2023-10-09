@@ -75,10 +75,12 @@ CardTablePropsByBE) {
         `${url}${sortingFilter}${searchName}${statusFilter}${clientName}${startDate}${trackFilter}${sortingRangedDate.filter}`,
         {
           headers: { 'x-hasura-role': activeRole! },
+          // params: {
+          //   include_relations: 'client_data',
+          // },
         }
       );
       if (rest) {
-        // console.log('rest.data.data', rest.data.data);
         const tmpTotalPage = Math.ceil(rest.data.total / limit);
         setTotalPage(tmpTotalPage);
         if (destination === 'incoming-amandment-requests') {

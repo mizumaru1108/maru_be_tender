@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 // @mui
 import {
   Box,
-  Button,
   Card,
+  Checkbox,
   FormControl,
   InputLabel,
   ListItemText,
   MenuItem,
+  OutlinedInput,
   Select,
   SelectChangeEvent,
   Stack,
@@ -16,21 +17,18 @@ import {
   TableContainer,
   TablePagination,
   Typography,
-  OutlinedInput,
-  Checkbox,
 } from '@mui/material';
-import Iconify from 'components/Iconify';
 import Scrollbar from 'components/Scrollbar';
-import { SearchbarTable, TableEmptyRows, TableHeadCustom, TableNoData } from 'components/table';
+import { SearchbarTable, TableHeadCustom, TableNoData } from 'components/table';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import useTable, { getComparator } from 'hooks/useTable';
 import useTabs from 'hooks/useTabs';
 import axiosInstance from 'utils/axios';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 import TableSkeleton from '../TableSkeleton';
 import OldProposalTableRow from './OldProposalTableRow';
 import { OldProposalsList } from './types';
-import { generateHeader } from '../../../utils/generateProposalNumber';
 
 const TABLE_HEAD = [
   { id: 'project_number', label: 'old_proposal.headercell.project_number' },
@@ -310,44 +308,6 @@ export default function OldProposalTable() {
       <Typography variant="h3" gutterBottom sx={{ marginBottom: '50px' }}>
         {translate('old_proposal.page_title')}
       </Typography>
-      <Box>
-        {/* <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
-          <Box display="flex" alignItems="center">
-            <Typography variant="body2" sx={{ fontSize: '14px', color: 'grey.600' }}>
-              {translate('table_filter.sortby_title')} &nbsp;
-            </Typography>
-            <Select
-              value={sortValue}
-              onChange={handleSortData}
-              size="small"
-              sx={{ fontSize: '14px', width: 200 }}
-            >
-              {sortOptions.map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  {item.title}
-                </MenuItem>
-              ))}
-            </Select>
-          </Box>
-          <Box>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: 'black',
-                color: 'white',
-                p: 1,
-                '&:hover': {
-                  backgroundColor: 'black',
-                  color: 'white',
-                },
-              }}
-            >
-              {translate('commons.filter_button_label')}
-              <Iconify icon="bx:bx-filter-alt" sx={{ ml: 1 }} />
-            </Button>
-          </Box>
-        </Stack> */}
-      </Box>
       <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
         <FormControl size="small" sx={{ m: 1, width: 200 }}>
           <InputLabel id="demo-multiple-checkbox-label">
@@ -412,12 +372,6 @@ export default function OldProposalTable() {
                 rowCount={tableData.length}
                 numSelected={selected.length}
                 onSort={onSort}
-                // onSelectAllRows={(checked) =>
-                //   onSelectAllRows(
-                //     checked,
-                //     tableData.map((row) => row?.user_id)
-                //   )
-                // }
               />
 
               <TableBody>

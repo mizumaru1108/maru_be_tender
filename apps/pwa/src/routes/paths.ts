@@ -163,6 +163,7 @@ export const PATH_PROJECT_SUPERVISOR = {
   old_proposal: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/old-proposal'),
   client_list: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/client-list'),
   client_files: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/client-files'),
+  emails: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/send-email'),
 };
 
 export const PATH_ACCOUNTS_MANAGER = {

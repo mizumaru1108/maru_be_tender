@@ -19,6 +19,7 @@ import {
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
   FEATURE_MENU_ADMIN_REGIONS,
   FEATURE_MENU_CLIENT_FILES,
+  FEATURE_SEND_EMAIL_TO_CLIENT,
 } from 'config';
 
 // ----------------------------------------------------------------------
@@ -116,6 +117,7 @@ const ICONS = {
     messages: getIcon('message-bar'),
     appointments_with_partners: getIcon('appointments-with-partners'),
     old_proposal: getIcon('previous-request'),
+    emails: getIcon('system-messages'),
   },
   tender_moderator: {
     main: getIcon('main'),
@@ -543,6 +545,11 @@ const navConfig = {
           title: 'messages',
           path: PATH_PROJECT_SUPERVISOR.messages,
           icon: ICONS.tender_project_supervisor.messages,
+        },
+        FEATURE_SEND_EMAIL_TO_CLIENT && {
+          title: 'emails',
+          path: PATH_PROJECT_SUPERVISOR.emails,
+          icon: ICONS.tender_project_supervisor.emails,
         },
         {
           title: 'appointments_with_partners',

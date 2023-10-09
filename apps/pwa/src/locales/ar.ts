@@ -2700,6 +2700,14 @@ const ar = {
       employee_name: 'اسم الموظف',
     },
   },
+  email_to_client: {
+    page_title: 'ارسل بريد الكتروني',
+    title: 'ارسل بريد الكتروني',
+    headercell: {
+      email_content: 'محتوى البريد الإلكتروني',
+      employee_name: 'اسم شريك',
+    },
+  },
   client_files: {
     title: 'ملفات الشريك',
     administrative_data: 'البيانات الإدارية',

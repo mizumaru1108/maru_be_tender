@@ -345,5 +345,11 @@ export const FEATURE_NESTED_TRACK_BUDGET: boolean =
     ? true
     : false;
 
+export const FEATURE_SEND_EMAIL_TO_CLIENT: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_SEND_EMAIL_TO_CLIENT &&
+  process.env.REACT_APP_CONFIG_FEATURE_SEND_EMAIL_TO_CLIENT === 'true'
+    ? true
+    : false;
+
 export const FEATURE_DISABLE_PROPOSAL_DATE =
   process.env.REACT_APP_CONFIG_FEATURE_DISABLE_PROPOSAL_DATE;
