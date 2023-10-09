@@ -1792,7 +1792,11 @@ export class ProposalRepository {
         where: whereClause,
         skip: offset,
         include: {
-          user: true,
+          user: {
+            include: {
+              client_data: true,
+            },
+          },
           payments: true,
         },
         orderBy: order_by,
@@ -2059,7 +2063,11 @@ export class ProposalRepository {
         where: whereClause,
         skip: offset,
         include: {
-          user: true,
+          user: {
+            include: {
+              client_data: true,
+            },
+          },
         },
         orderBy: order_by,
       };
@@ -2289,7 +2297,11 @@ export class ProposalRepository {
         where: whereClause,
         skip: offset,
         include: {
-          user: true,
+          user: {
+            include: {
+              client_data: true,
+            },
+          },
         },
         orderBy: order_by,
       };
@@ -2516,7 +2528,11 @@ export class ProposalRepository {
         where: whereClause,
         skip: offset,
         include: {
-          user: true,
+          user: {
+            include: {
+              client_data: true,
+            },
+          },
         },
         orderBy: order_by,
       };
