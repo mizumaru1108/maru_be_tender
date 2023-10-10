@@ -76,20 +76,20 @@ export class UserUpdateProfileCommandHandler
         }
       }
 
-      if (
-        command.request.mobile_number &&
-        command.request.mobile_number !== existingUserData.mobile_number
-      ) {
-        const isNumExist = await this.userRepo.checkExistance(
-          command.request.mobile_number,
-          '',
-          '',
-          existingUserData.id,
-        );
-        if (isNumExist.length > 0) {
-          throw new BadRequestException('رقم الجوال  المستخدم وموجود بالفعل!');
-        }
-      }
+      // if (
+      //   command.request.mobile_number &&
+      //   command.request.mobile_number !== existingUserData.mobile_number
+      // ) {
+      //   const isNumExist = await this.userRepo.checkExistance(
+      //     command.request.mobile_number,
+      //     '',
+      //     '',
+      //     existingUserData.id,
+      //   );
+      //   if (isNumExist.length > 0) {
+      //     throw new BadRequestException('رقم الجوال  المستخدم وموجود بالفعل!');
+      //   }
+      // }
 
       const dbRes = await this.prismaService.$transaction(async (session) => {
         const tx =

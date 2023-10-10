@@ -200,15 +200,15 @@ export class RegisterClientCommandHandler
       }
 
       // data exist and phone number same as data entry mobile
-      if (emailExist && emailExist.mobile_number === dataEntryMobile) {
-        if (selectLang === 'en') {
-          throw new UserAlreadyExistException('Data Entry Mobile in our app!');
-        } else {
-          throw new UserAlreadyExistException(
-            'البريد الإلكتروني مُسجل بالفعل في تطبيقنا!',
-          );
-        }
-      }
+      // if (emailExist && emailExist.mobile_number === dataEntryMobile) {
+      //   if (selectLang === 'en') {
+      //     throw new UserAlreadyExistException('Data Entry Mobile in our app!');
+      //   } else {
+      //     throw new UserAlreadyExistException(
+      //       'البريد الإلكتروني مُسجل بالفعل في تطبيقنا!',
+      //     );
+      //   }
+      // }
 
       // creating user on fusion auth
       const registerFusionAuth =

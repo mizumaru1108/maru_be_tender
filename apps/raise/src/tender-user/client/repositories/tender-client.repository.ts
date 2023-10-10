@@ -514,23 +514,23 @@ export class TenderClientRepository {
     }
   }
 
-  async findClientByMobileNum(mobile_number: string) {
-    try {
-      return await this.prismaService.client_data.findFirst({
-        where: {
-          entity_mobile: mobile_number,
-        },
-      });
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        TenderClientRepository.name,
-        'Find Client By Mobile Number error details: ',
-        'Finding Client By Mobile Number!',
-      );
-      throw theError;
-    }
-  }
+  // async findClientByMobileNum(mobile_number: string) {
+  //   try {
+  //     return await this.prismaService.client_data.findFirst({
+  //       where: {
+  //         entity_mobile: mobile_number,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     const theError = prismaErrorThrower(
+  //       error,
+  //       TenderClientRepository.name,
+  //       'Find Client By Mobile Number error details: ',
+  //       'Finding Client By Mobile Number!',
+  //     );
+  //     throw theError;
+  //   }
+  // }
 
   async findMyProfile(userId: string) {
     try {

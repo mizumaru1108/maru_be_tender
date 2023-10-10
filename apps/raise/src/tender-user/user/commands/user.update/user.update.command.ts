@@ -118,22 +118,22 @@ export class UserUpdateCommandHandler
         }
       }
 
-      if (
-        command.dto.mobile_number &&
-        command.dto.mobile_number !== isUserExist.mobile_number
-      ) {
-        // console.log('new mobile number');
-        const phoneExist = await this.userRepo.checkExistance(
-          updateUserPayload.mobile_number,
-          '',
-          '',
-          command.dto.id,
-        );
-        // console.log(logUtil(phoneExist));
-        if (phoneExist.length > 0) {
-          throw new ConflictException('Phone already exist in our app!');
-        }
-      }
+      // if (
+      //   command.dto.mobile_number &&
+      //   command.dto.mobile_number !== isUserExist.mobile_number
+      // ) {
+      //   // console.log('new mobile number');
+      //   const phoneExist = await this.userRepo.checkExistance(
+      //     updateUserPayload.mobile_number,
+      //     '',
+      //     '',
+      //     command.dto.id,
+      //   );
+      //   // console.log(logUtil(phoneExist));
+      //   if (phoneExist.length > 0) {
+      //     throw new ConflictException('Phone already exist in our app!');
+      //   }
+      // }
 
       const dbRes = await this.prismaService.$transaction(
         async (prismaSession) => {

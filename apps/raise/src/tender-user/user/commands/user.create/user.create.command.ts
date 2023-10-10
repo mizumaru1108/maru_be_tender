@@ -85,11 +85,11 @@ export class UserCreateCommandHandler
         }
       }
 
-      const phoneExist = await this.userRepo.findFirst({ mobile_number });
-      // console.log({ phoneExist });
-      if (phoneExist) {
-        throw new ConflictException('Phone already exist in our app!');
-      }
+      // const phoneExist = await this.userRepo.findFirst({ mobile_number });
+      // // console.log({ phoneExist });
+      // if (phoneExist) {
+      //   throw new ConflictException('Phone already exist in our app!');
+      // }
 
       // create fusion auth user.
       fusionAuthResult =
