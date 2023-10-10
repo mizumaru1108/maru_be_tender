@@ -2143,21 +2143,23 @@ export class ProposalRepository {
         step: 'ZERO',
       };
 
-      // if (['tender_project_manager'].indexOf(currentUser.choosenRole) > -1) {
-      //   const reviewer = await this.prismaService.user.findUnique({
-      //     where: { id: currentUser.id },
-      //     include: { track: true },
-      //   });
-      //   if (!reviewer || !reviewer.track) {
-      //     throw new BadRequestException('cant find track of this user');
-      //   }
+      if (['tender_project_manager'].indexOf(currentUser.choosenRole) > -1) {
+        const reviewer = await this.prismaService.user.findUnique({
+          where: { id: currentUser.id },
+          include: { track: true },
+        });
+        if (!reviewer || !reviewer.track) {
+          throw new BadRequestException('cant find track of this user');
+        }
 
-      //   if (reviewer.track.name !== 'GENERAL') {
-      //     whereClause = {
-      //       ...whereClause,
-      //       track_id: reviewer.track.id,
-      //     };
-      //   }
+        if (reviewer.track.name !== 'GENERAL') {
+          whereClause = {
+            ...whereClause,
+            track_id: reviewer.track.id,
+          };
+        }
+      }
+
       // } else {
       if (track_id) {
         whereClause = {

@@ -128,7 +128,7 @@ async function bootstrap() {
 
 try {
   bootstrap()
-    .then(() => console.log('App started at port: ', process.env.APP_PORT))
+    .then(() => console.log('App started at port: ', process.env.PORT))
     .catch((e) => console.log(e));
 } catch (error) {
   console.log(error);
