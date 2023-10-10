@@ -2398,6 +2398,7 @@ const ar = {
   email: 'البريد الإلكتروني:',
   mobile_number: 'رقم الجوال:',
   pm_email: 'بريد مدير المشروع:',
+  supervisor_name: 'اسم مشرف المشروع:',
   pm_mobile: 'جوال مدير المشروع:',
   governorate: 'المحافظة:',
   amount_required_for_support: 'المبلغ المطلوب للدعم:',

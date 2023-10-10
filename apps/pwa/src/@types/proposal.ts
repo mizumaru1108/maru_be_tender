@@ -182,6 +182,9 @@ export interface Proposal {
     };
     bank_informations: BankInformation[];
   };
+  supervisor?: {
+    employee_name: string;
+  };
   created_at: Date;
   num_ofproject_binicficiaries: number;
   region: string;

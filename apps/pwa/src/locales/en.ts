@@ -2379,6 +2379,7 @@ const en = {
   email: 'E-mail:',
   mobile_number: 'Mobile number:',
   pm_email: 'Project Management E-mail:',
+  supervisor_name: 'Project Supervisor Name:',
   pm_mobile: 'Project Management Mobile number:',
   governorate: 'Governorate:',
   amount_required_for_support: 'Amount required for support:',
