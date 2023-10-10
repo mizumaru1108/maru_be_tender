@@ -6,6 +6,7 @@ import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TrackEntity } from '../entities/track.entity';
 import { TrackMapper } from '../mapper/track.mapper';
+import { PaymentStatusEnum } from '../../../proposal-management/payment/types/enums/payment.status.enum';
 
 export class TrackCreateProps {
   id?: string;
@@ -78,6 +79,11 @@ export class TrackRepository {
               id: true,
               track_id: true,
               fsupport_by_supervisor: true,
+              payments: {
+                include: {
+                  cheques: true,
+                },
+              },
             },
           },
         };

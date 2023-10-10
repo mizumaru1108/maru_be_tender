@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, track, track_section } from '@prisma/client';
+import { Prisma, cheque, payment, track, track_section } from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { ProposalEntity } from '../../../proposal-management/proposal/entities/proposal.entity';
 import { TrackSectionEntity } from '../../track-section/entities/track.section.entity';
 import { TrackEntity } from '../entities/track.entity';
+import { ProposalPaymentEntity } from '../../../proposal-management/payment/entities/proposal-payment.entity';
+import { ChequeEntity } from '../../../proposal-management/payment/entities/cheque.entity';
+import { PaymentStatusEnum } from '../../../proposal-management/payment/types/enums/payment.status.enum';
 
 export type TrackModel = track & {
   proposal?: {
@@ -11,6 +14,9 @@ export type TrackModel = track & {
     project_name: string;
     track_id: string;
     fsupport_by_supervisor: Prisma.Decimal | null;
+    payments: (payment & {
+      cheques: cheque[];
+    })[];
   }[];
   track_section?: (track_section & {
     child_track_section: (track_section & {
@@ -35,15 +41,52 @@ export class TrackMapper {
     if (proposal) {
       let proposals: ProposalEntity[] = [];
 
-      let sum_total_budget = 0;
+      let sum_spending_budget = 0;
+      let sum_reserved_budget = 0;
       if (proposal.length > 0) {
         for (const p of proposal) {
+          let payments: ProposalPaymentEntity[] = [];
+          if (p.payments.length > 0) {
+            for (const payment of p.payments) {
+              if (payment.status === PaymentStatusEnum.DONE) {
+                let tmp = payment.payment_amount
+                  ? parseFloat(payment.payment_amount.toString())
+                  : 0;
+
+                sum_reserved_budget += tmp;
+              }
+
+              payments.push(
+                Builder<ProposalPaymentEntity>(ProposalPaymentEntity, {
+                  ...payment,
+                  payment_amount: payment.payment_amount
+                    ? parseFloat(payment.payment_amount.toString())
+                    : null,
+                  order: payment.order
+                    ? parseInt(payment.order.toString())
+                    : null,
+                  number_of_payments: payment.number_of_payments
+                    ? parseInt(payment.number_of_payments.toString())
+                    : null,
+                  cheques: payment.cheques
+                    ? payment.cheques.map((item) => {
+                        return Builder<ChequeEntity>(
+                          ChequeEntity,
+                          item,
+                        ).build();
+                      })
+                    : [],
+                }).build(),
+              );
+            }
+          }
+
           let fSupport =
             p.fsupport_by_supervisor !== null
               ? parseFloat(p.fsupport_by_supervisor.toString())
               : 0;
 
-          sum_total_budget += fSupport;
+          sum_spending_budget += fSupport;
 
           proposals.push(
             Builder<ProposalEntity>(ProposalEntity, {
@@ -56,13 +99,15 @@ export class TrackMapper {
               number_of_payments_by_supervisor: undefined,
               execution_time: undefined,
               follow_ups: undefined,
+              payments,
             }).build(),
           );
         }
       }
 
       trackBuilder.proposals(proposals);
-      trackBuilder.total_budget_used(sum_total_budget);
+      trackBuilder.total_spending_budget(sum_spending_budget);
+      trackBuilder.total_reserved_budget(sum_reserved_budget);
     }
 
     if (track_section) {
@@ -106,15 +151,15 @@ export class TrackMapper {
       }
 
       trackBuilder.sections(tSections);
-      trackBuilder.budget(budget);
+      trackBuilder.total_budget(budget);
     }
 
     const buildedTrack = trackBuilder.build();
 
-    if (buildedTrack.budget && buildedTrack.total_budget_used) {
-      buildedTrack.remaining_budget =
-        buildedTrack.budget - buildedTrack.total_budget_used;
-    }
+    // if (buildedTrack.total_budget && buildedTrack.total_spending_budget) {
+    //   buildedTrack.total_reserved_budget =
+    //     buildedTrack.total_budget - buildedTrack.total_spending_budget;
+    // }
 
     return buildedTrack;
   }
