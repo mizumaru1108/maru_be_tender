@@ -157,7 +157,6 @@ export default function RHFComboBox({
   const { control, setValue, getValues, watch } = useFormContext();
   const theme = useTheme();
   const tmpValues = watch(name);
-  console.log({ tmpValues });
   // const [searchName, setSearchName] = React.useState('');
   // const debouncedValue = useDebounce<string>(searchName || '', 500);
   const handleOnChange = (option: ComboBoxOption) => {

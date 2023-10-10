@@ -51,12 +51,12 @@ const ar = {
           about_project: 'حول المشروع',
           form: {
             number_project_duration: {
-              label: 'عدد مدة المشروع *',
-              placeholder: 'عدد مدة المشروع ',
+              label: 'المدة *',
+              placeholder: 'المدة ',
             },
             number_project_repeated: {
-              label: 'عدد المشاريع المتكررة *',
-              placeholder: 'عدد المشاريع المتكررة ',
+              label: 'عدد مرات التكرار *',
+              placeholder: 'عدد مرات التكرار (0 اذا كان المشروع غير مكرر) ',
             },
             execution_places: {
               selected_value: {
@@ -64,18 +64,18 @@ const ar = {
                 placeholder: 'مكان تنفيذ المشروع',
               },
               number: {
-                label: 'رقم مكان تنفيذ المشروع *',
-                placeholder: 'رقم مكان تنفيذ المشروع',
+                label: 'عدد المستفيدين في مكان التنفيذ*',
+                placeholder: 'عدد المستفيدين في مكان التنفيذ',
               },
             },
             beneficiaries: {
               selected_value: {
                 label: 'الشريحة المستهدفة من المشروع *',
-                placeholder: 'الجزء المستهدف من المشروع',
+                placeholder: 'الشريحة المستهدفة من المشروع',
               },
               number: {
-                label: 'رقم الشريحة المستهدفة من المشروع *',
-                placeholder: 'رقم الجزء المستهدف من المشروع',
+                label: 'عددهم *',
+                placeholder: 'عددهم',
               },
             },
             genders: {
@@ -84,12 +84,12 @@ const ar = {
                 placeholder: 'جنس المستفيدين',
               },
               number: {
-                label: 'عدد جنس المستفيدين *',
-                placeholder: 'عدد جنس المستفيدين',
+                label: 'عددهم*',
+                placeholder: 'عددهم',
               },
             },
             number_of_beneficiaries: {
-              label: '*عدد المستفيدين',
+              label: 'عدد المستفيدين*',
               placeholder: 'عدد المستفيدين',
             },
             target_beneficiaries: {
@@ -109,7 +109,7 @@ const ar = {
               placeholder: 'الرجاء تحديد مدة المشروع',
             },
             project_repeated: {
-              label: '*مشروع متكرر',
+              label: 'تكرار المشروع *',
               placeholder: 'يرجى تحديد المدة في حالة تكرار المشروع',
             },
             number_of_volunteer: {
@@ -146,7 +146,7 @@ const ar = {
               label: 'مدة المشروع',
             },
             project_repeated: {
-              label: 'مشروع متكرر',
+              label: 'تكرار المشروع',
             },
             number_of_volunteer: {
               label: 'عدد المتطوعين',
@@ -170,15 +170,15 @@ const ar = {
             district: 'يصرف',
             regency: 'ريجنسي',
             province: 'مقاطعة',
-            years: 'سنين',
+            years: 'بالسنوات',
             annual: 'سنوي',
-            months: 'شهور',
+            months: 'بالأشهر',
             monthly: 'شهريا',
-            days: ' يوم',
-            weeks: 'شهر',
-            //
-            daily: 'أيام',
-            yearly: 'سنين',
+            days: 'بالأيام',
+            weeks: 'بالأسابيع',
+            daily: 'يوميا',
+            yearly: 'سنويا',
+            no_repeats: 'غير متكرر',
             execution_places: {
               village: 'قرية',
               center: 'مركز',
@@ -290,8 +290,8 @@ const ar = {
           client_list: 'قائمة العملاء',
           users_and_permissions: 'المستخدمين والصلاحيات',
           authority: 'الجهة المشرفة',
-          entity_area: 'المناطق',
-          regions_project_location: 'المناطق - مكان المشروع',
+          entity_area: 'المحافظات',
+          regions_project_location: 'المناطق',
           entity_classification: 'تصنيف الجهة',
           bank_name: 'اسم البنك',
           list_of_bank: 'قائمة البنك',
@@ -307,7 +307,7 @@ const ar = {
             client_field_name: 'اسم حقل العميل',
             permissions: 'سماحيات',
             amendment: 'تعديل',
-            modify: 'يُعدِّل',
+            modify: 'تعديل',
             delete: 'حذف',
             client_field: {
               main: 'رئيسي',
@@ -371,11 +371,11 @@ const ar = {
           },
           governorate: {
             list_of_governorate: 'المحافظات',
-            add_governorate: 'اضافة منطقة',
+            add_governorate: 'إضافة محافظة',
             modal: {
               success_edit_governorate: 'المناطق تم تحديثها بنجاح',
               success_delete_governorate: 'تم حذف المناطق بنجاح',
-              add_governorate: 'اضافة منطقة',
+              add_governorate: 'إضافة محافظة',
               edit_governorate: 'تحرير المناطق',
             },
             form: {
@@ -412,7 +412,7 @@ const ar = {
     landing: { landing: 'الرئيسية' },
     cashier: {
       previous_funding_request: 'طلبات الدعم السابقة',
-      main: 'صفحة الخزينة الرئيسية',
+      main: 'الصفحة الرئيسية',
       requests_in_process: 'طلبات قيد الإجراء',
     },
     ceo: {
@@ -1399,7 +1399,7 @@ const ar = {
     step: 'اسم مدير المشروع',
     project_manager_name: {
       label: 'اسم مدير المشروع*',
-      placeholder: 'الرجاء كتابة اسم مدير الإدارة',
+      placeholder: 'الرجاء كتابة اسم مدير المشروع',
     },
     mobile_number: {
       label: '*رقم الجوال',
@@ -2518,19 +2518,21 @@ const ar = {
     to_project: 'انتقل إلى المشروع',
     appointment: 'انظر التعيين',
     join_now: 'نضم الان',
-    no_notifications_today: 'الرسائل',
+    no_notifications_today: 'الإشعارات',
+    no_message_notifications_today: 'الرسائل',
     no_notifications: 'لا إشعارات',
     proposal_accepted: 'إخطار قبول الاقتراح',
     proposal_rejected: 'الإخطار برفض الاقتراح',
     proposal_item_budget_empty: 'يجب عليك ملء ميزانية المشروع أولا',
     proposal_reviewed: 'تم استلام الإخطار بالاقتراح',
-    header: 'لا يوجد رسائل لديك',
+    header: 'لا يوجد إشعارات لديك',
+    message_header: 'لا يوجد رسائل لديك',
     tender_appointment: 'موعد العطاء الجديد',
     subject_five_min_appointment: 'موعدك سيبدأ قريبا!',
     content_five_min_appointment: 'سيستمر هذا الاجتماع 5 دقائق ، يمكنك الانضمام إلى الاجتماع الآن',
     subject_payment: 'إصدار دفع جديد',
     content_payment: 'تم تحميل إيصال الدفع الخاص بك بواسطة أمين الصندوق في',
-    proof_of_funds: 'الدليل على الأموال',
+    proof_of_funds: 'إيصال الدفع',
     error_exceeds_amount: 'إجمالي ميزانيات المشروع يتجاوز مبلغ الدعم المقدم',
     error_not_same_amount: 'إجمالي ميزانيات المشروع لا يتطابق مع مبلغ الدعم المطلوب',
   },
