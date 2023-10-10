@@ -151,7 +151,7 @@ export class EmailRecordCreateCommandHandler
       return { data: dbRes.email_record };
     } catch (error) {
       if (fileManagerPayload.length > 0) {
-        console.log(
+        console.trace(
           'error occured, and uploaded file exist, deleteing files',
           fileManagerPayload,
         );

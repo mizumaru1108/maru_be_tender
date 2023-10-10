@@ -69,7 +69,7 @@ export class GoogleOAuth2CalendarGuard implements CanActivate {
 
     // if there is no google session on the current user and there's no auth code
     if (!user.google_session && !authCode) {
-      console.log("no google session and no auth code, let's login first");
+      // console.log("no google session and no auth code, let's login first");
       const authUrl = await this.googleOAuth2Service.getLoginUrl(
         [
           'profile', // get the user's profile
@@ -86,7 +86,7 @@ export class GoogleOAuth2CalendarGuard implements CanActivate {
 
     //if there's no google session on the current user and there's auth code attached on request.body
     if (!user.google_session && authCode) {
-      console.log(`no google session but there is auth code ${authCode}`);
+      // console.log(`no google session but there is auth code ${authCode}`);
       const result = await this.googleOAuth2Service.getNewRefreshToken(
         authCode,
       );
@@ -110,7 +110,7 @@ export class GoogleOAuth2CalendarGuard implements CanActivate {
 
         // if the token is not expired yet
         if (userGoogleSession.expiry_date > new Date().getTime()) {
-          console.log('token is not expired yet, renewing the token');
+          // console.log('token is not expired yet, renewing the token');
           // renew the token
           const newToken = await this.googleOAuth2Service.renewRefreshToken(
             userGoogleSession,
@@ -119,7 +119,7 @@ export class GoogleOAuth2CalendarGuard implements CanActivate {
           return true;
         } else {
           // if the token is expired (expiry_date < now)
-          console.log('token is expired, deleting the session');
+          // console.log('token is expired, deleting the session');
           await deleteGoogleSession(user.id);
           const authUrl = await this.googleOAuth2Service.getLoginUrl(
             [
@@ -137,7 +137,7 @@ export class GoogleOAuth2CalendarGuard implements CanActivate {
       } else {
         // if google session is empty object and there's auth code
         if (authCode) {
-          console.log("google session is empty object and there's auth code");
+          // console.log("google session is empty object and there's auth code");
           const result = await this.googleOAuth2Service.getNewRefreshToken(
             authCode,
           );
@@ -145,9 +145,9 @@ export class GoogleOAuth2CalendarGuard implements CanActivate {
           return true;
         } else {
           // if google session is empty object and there's no auth code
-          console.log(
-            "google session is empty object and there's no auth code",
-          );
+          // console.log(
+          //   "google session is empty object and there's no auth code",
+          // );
           const authUrl = await this.googleOAuth2Service.getLoginUrl(
             [
               'profile', // get the user's profile

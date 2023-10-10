@@ -52,8 +52,8 @@ export class UserUpdateCommandHandler
       });
 
       const isUserExist = await this.userRepo.findFirst({ id });
-      console.log({ command });
-      console.log({ isUserExist });
+      // console.log({ command });
+      // console.log({ isUserExist });
       if (!isUserExist) throw new NotFoundException('User Not Found!');
       if (!!isUserExist.client_data) {
         throw new BadRequestException(

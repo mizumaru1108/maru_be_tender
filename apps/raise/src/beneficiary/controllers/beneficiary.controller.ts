@@ -27,11 +27,7 @@ export class BeneficiariesController {
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Post('create')
-  async create(
-    @CurrentUser() user: any,
-    @Body() request: CreateBeneficiariesDto,
-  ) {
-    console.log({ user });
+  async create(@Body() request: CreateBeneficiariesDto) {
     const beneficiary = await this.beneficiariesService.create(request);
     return baseResponseHelper(
       beneficiary,

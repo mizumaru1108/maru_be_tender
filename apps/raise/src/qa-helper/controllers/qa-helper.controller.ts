@@ -39,7 +39,6 @@ export class QaHelperControllers {
   @TenderRoles('tender_admin')
   @Post('create-moderator')
   async createProposal(@Body() request: QaProposalCreateDto) {
-    console.log({ request });
     try {
       const createProposalCommand =
         Builder<QaProposalCreateNewModeratorStateCommand>(

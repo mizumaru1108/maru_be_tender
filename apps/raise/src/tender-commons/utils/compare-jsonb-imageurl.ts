@@ -15,9 +15,9 @@ export async function compareUrl(
     oldValue['url'] !== file.url // if old value url is not equal to new url
   ) {
     // delete the old file
-    console.log(
-      "the old image url is different from the new one, let's delete it",
-    );
+    // console.log(
+    //   "the old image url is different from the new one, let's delete it",
+    // );
 
     if (oldValue['url'].includes('https://media.tmra.io/')) {
       oldValue['url'] = oldValue['url'].replace('https://media.tmra.io/', '');

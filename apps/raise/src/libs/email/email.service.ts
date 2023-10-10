@@ -6,6 +6,7 @@ import {
 import { ROOT_LOGGER } from '../../libs/root-logger';
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import { SendEmailDto } from './dtos/requests/send-email.dto';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 /**
  * Send email Services
@@ -13,9 +14,7 @@ import { SendEmailDto } from './dtos/requests/send-email.dto';
  */
 @Injectable()
 export class EmailService {
-  private readonly logger = ROOT_LOGGER.child({
-    'log.logger': EmailService.name,
-  });
+  @InjectPinoLogger(EmailService.name) private logger: PinoLogger;
 
   constructor(private mailerService: MailerService) {}
 
@@ -35,7 +34,7 @@ export class EmailService {
       templateContext,
       attachments,
     } = sendMailDto;
-    this.logger.debug(`Sending email to ${to}`);
+    this.logger.info(`Sending [%j] email to %j`, mailType, to);
 
     const param: ISendMailOptions = {
       to: to,
@@ -101,7 +100,7 @@ export class EmailService {
       templateContext,
       attachments,
     } = sendMailDto;
-    this.logger.log('info', `Sending ${mailType} email to ${to}`);
+    this.logger.info(`Sending [%j] email to %j`, mailType, to);
     // console.log(`Sending email to ${to}`);
 
     const param: ISendMailOptions = {

@@ -26,7 +26,7 @@ export class ClientFindNameAndIdQueryHandler
     query: ClientFindNameAndIdQuery,
   ): Promise<ClientFindNameAndIdQueryResult> {
     const result = await this.clientRepo.findManyNameAndId({ ...query });
-    console.log({ result });
+    // console.log({ result });
     const total = await this.clientRepo.countMany({ ...query });
     return {
       result,

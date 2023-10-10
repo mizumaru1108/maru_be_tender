@@ -41,7 +41,7 @@ export class GoogleCalendarService {
       (this.configService.get('tenderAppConfig.baseUrl') as string) +
       googleCalendarPrefixUrl;
 
-    console.log({ callbackGoogleEndpoint });
+    // console.log({ callbackGoogleEndpoint });
 
     this.oauth2Client = new OAuth2Client(
       this.configService.get('gapiConfig.clientId') as string, // will use tender gapi config
@@ -49,7 +49,7 @@ export class GoogleCalendarService {
       callbackGoogleEndpoint,
     );
 
-    console.log(this.oauth2Client);
+    // console.log(this.oauth2Client);
 
     this.oauth2Client.setCredentials(creds);
     this.gCalendar = google.calendar({
