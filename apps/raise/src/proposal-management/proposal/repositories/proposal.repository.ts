@@ -2703,6 +2703,11 @@ export class ProposalRepository {
               bank_information: true,
             },
           },
+          supervisor: {
+            select: {
+              employee_name: true,
+            },
+          },
           beneficiary_details: true,
           follow_ups: {
             include: {
