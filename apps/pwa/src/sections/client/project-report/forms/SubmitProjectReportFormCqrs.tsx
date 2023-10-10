@@ -79,11 +79,11 @@ export default function SubmitProjectReportFormCqrs({
     number_project_repeated: Yup.number()
       .positive()
       .integer()
-      .min(1, translate('errors.clo_report.number_value.min')),
+      .min(0, translate('errors.clo_report.number_value.min')),
     number_of_volunteer: Yup.number()
       .positive()
       .integer()
-      .min(1, translate('errors.clo_report.number_value.min')),
+      .min(0, translate('errors.clo_report.number_value.min')),
     number_of_staff: Yup.number()
       .positive()
       .integer()
@@ -133,56 +133,6 @@ export default function SubmitProjectReportFormCqrs({
     onSubmit(data);
   };
 
-  // const getBeneficiaries = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const rest = await axiosInstance.get(`/tender/proposal/beneficiaries/find-all?limit=0`, {
-  //       headers: { 'x-hasura-role': activeRole! },
-  //     });
-  //     if (rest) {
-  //       const test = rest.data.data
-  //         .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
-  //         .map((bank: any) => bank);
-  //       setBeneficiaries(test);
-  //     }
-  //   } catch (error) {
-  //     // console.error(error.message);
-  //     setBeneficiaries([]);
-  //     const statusCode = (error && error.statusCode) || 0;
-  //     const message = (error && error.message) || null;
-  //     if (message && statusCode !== 0) {
-  //       enqueueSnackbar(error.message, {
-  //         variant: 'error',
-  //         preventDuplicate: true,
-  //         autoHideDuration: 3000,
-  //         anchorOrigin: {
-  //           vertical: 'bottom',
-  //           horizontal: 'center',
-  //         },
-  //       });
-  //     } else {
-  //       enqueueSnackbar(translate('pages.common.internal_server_error'), {
-  //         variant: 'error',
-  //         preventDuplicate: true,
-  //         autoHideDuration: 3000,
-  //         anchorOrigin: {
-  //           vertical: 'bottom',
-  //           horizontal: 'center',
-  //         },
-  //       });
-  //     }
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // React.useEffect(() => {
-  //   getBeneficiaries();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
-  // if (isLoading) return <>{translate('pages.common.loading')}</>;
-
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container spacing={4} sx={{ pb: 5 }}>
@@ -204,11 +154,6 @@ export default function SubmitProjectReportFormCqrs({
             data-cy="pages.common.close_report.text.form.number_of_beneficiaries.placeholder"
           />
         </Grid>
-        {/* <Grid item xs={12}>
-          <Typography variant="body1" sx={{ fontWeight: 500 }}>
-            {translate('pages.common.close_report.text.form.genders.label')}
-          </Typography>
-        </Grid> */}
         <BaseField
           type="repeater"
           disabled={isEdit || loading}
@@ -250,11 +195,6 @@ export default function SubmitProjectReportFormCqrs({
           enableAddButton={tmpGenders && tmpGenders?.length < 2 ? true : false}
           enableRemoveButton={true}
         />
-        {/* <Grid item xs={12}>
-          <Typography variant="body1" sx={{ fontWeight: 500 }}>
-            {translate('pages.common.close_report.text.form.execution_places.label')}
-          </Typography>
-        </Grid> */}
         <Space direction="horizontal" size="small" />
         <BaseField
           type="repeater"
@@ -314,67 +254,6 @@ export default function SubmitProjectReportFormCqrs({
           enableRemoveButton={true}
         />
         <Space direction="horizontal" size="small" />
-        {/* <Grid item xs={12} md={6}>
-          <RHFSelect
-            name="target_beneficiaries"
-            size="medium"
-            label={translate('pages.common.close_report.text.form.target_beneficiaries.label')}
-            placeholder={translate(
-              'pages.common.close_report.text.form.target_beneficiaries.placeholder'
-            )}
-          >
-            {beneficiaries.length > 0 &&
-              beneficiaries.map((item, index) => (
-                <MenuItem
-                  data-cy={`pages.common.close_report.text.target_beneficiaries.option${index}`}
-                  key={index}
-                  value={item.name}
-                >
-                  {item.name}
-                </MenuItem>
-              ))}
-          </RHFSelect>
-        </Grid> */}
-        {/* <Grid item xs={12} md={12}>
-          <RHFSelect
-            name="execution_place"
-            size="medium"
-            label={translate('pages.common.close_report.text.form.execution_place.label')}
-            placeholder={translate(
-              'pages.common.close_report.text.form.execution_place.placeholder'
-            )}
-          >
-            <MenuItem value="village">
-              {translate('pages.common.close_report.text.option.village')}
-            </MenuItem>
-            <MenuItem value="district">
-              {translate('pages.common.close_report.text.option.district')}
-            </MenuItem>
-            <MenuItem value="regency">
-              {translate('pages.common.close_report.text.option.regency')}
-            </MenuItem>
-            <MenuItem value="province">
-              {translate('pages.common.close_report.text.option.province')}
-            </MenuItem>
-          </RHFSelect>
-        </Grid> */}
-        {/* <Grid item xs={12} md={6}>
-          <RHFRadioGroup
-            name="gender"
-            label={translate('pages.common.close_report.text.form.gender.label')}
-            placeholder={translate('pages.common.close_report.text.form.gender.placeholder')}
-            options={[
-              { label: translate('section_portal_reports.heading.gender.woman'), value: 'woman' },
-              { label: translate('section_portal_reports.heading.gender.men'), value: 'men' },
-            ]}
-          />
-        </Grid> */}
-
-        {/* <Grid item xs={12}>
-          <Typography variant="body1" sx={{ fontWeight: 700, mt: 1 }}>
-            {translate('pages.common.close_report.text.about_project')}
-          </Typography>
-        </Grid> */}
         <Grid item xs={12} md={6}>
           <RHFSelect
             disabled={isEdit || loading}
@@ -421,6 +300,9 @@ export default function SubmitProjectReportFormCqrs({
             {/* <MenuItem value="annual">
               {translate('pages.common.close_report.text.option.annual')}
             </MenuItem> */}
+            <MenuItem value="no-repeats" data-cy="pages.common.close_report.text.option.no_repeats">
+              {translate('pages.common.close_report.text.option.no_repeats')}
+            </MenuItem>
             <MenuItem value="days" data-cy="pages.common.close_report.text.option.daily">
               {translate('pages.common.close_report.text.option.daily')}
             </MenuItem>

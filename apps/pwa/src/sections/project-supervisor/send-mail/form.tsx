@@ -55,9 +55,9 @@ export default function SendEmailForm(props: Props) {
     receiver_name: Yup.string().required(
       translate('email_to_client.errors.receiver_name.required')
     ),
-    receiver_email: Yup.string().required(
-      translate('email_to_client.errors.receiver_email.required')
-    ),
+    receiver_email: Yup.string()
+      .required(translate('email_to_client.errors.receiver_email.required'))
+      .email(translate('email_to_client.errors.receiver_email.wrong_format')),
     email_subject: Yup.string().required(
       translate('email_to_client.errors.email_subject.required')
     ),
@@ -116,6 +116,18 @@ export default function SendEmailForm(props: Props) {
       }
     }
   }, [watchName, setValue, client_list, watchIsAssociation]);
+
+  useEffect(() => {
+    if (watchIsAssociation && watchIsAssociation === 'true') {
+      setValue('receiver_name', {
+        label: '',
+        value: '',
+      });
+    } else {
+      setValue('receiver_name', '');
+    }
+    setValue('receiver_email', '');
+  }, [watchIsAssociation, setValue]);
 
   const onSubmit = async (data: FormSendEmail) => {
     // console.log('data', data);

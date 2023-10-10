@@ -175,6 +175,7 @@ const en = {
             monthly: 'Months',
             days: 'Days',
             weeks: 'Weeks',
+            no_repeats: 'No Repeats',
             //
             daily: 'Days',
             yearly: 'Years',

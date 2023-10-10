@@ -333,7 +333,9 @@ export default function MessagePopover() {
             }}
           >
             <Box>
-              <Typography variant="subtitle1">{translate('notification.header')}</Typography>
+              <Typography variant="subtitle1">
+                {translate('notification.message_header')}
+              </Typography>
               <TabList
                 value={activeTap}
                 onChange={handleTapChange}
@@ -446,7 +448,9 @@ export default function MessagePopover() {
                         mt: '1px',
                       }}
                     >
-                      <ListItemText primary={translate(`notification.no_notifications_today`)} />
+                      <ListItemText
+                        primary={translate(`notification.no_message_notifications_today`)}
+                      />
                     </ListItemButton>
                   )}
                 </React.Fragment>
