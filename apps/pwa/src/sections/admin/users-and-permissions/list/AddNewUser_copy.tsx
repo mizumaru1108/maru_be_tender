@@ -129,7 +129,7 @@ function AddNewUser_copy() {
     // console.log({ data });
     // console.log('submit: ', data);
     const newData = { ...removeEmptyKey(data) };
-    console.log('newData: ', newData);
+    // console.log('newData: ', newData);
     try {
       setIsLoading(true);
       await axiosInstance.post(
@@ -397,9 +397,6 @@ function AddNewUser_copy() {
                 >
                   <Stack justifyContent="center" direction="row" gap={3}>
                     <Button
-                      onClick={() => {
-                        console.log('asdklasdlkasd');
-                      }}
                       sx={{
                         color: 'text.primary',
                         width: { xs: '100%', sm: '200px' },

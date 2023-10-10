@@ -60,7 +60,7 @@ export default function PortarReportsTable({ params, selectedColums, onReturn }:
   const [isLoading, setIsLoading] = React.useState(false);
   const [tableData, setTableData] = React.useState<any[]>([]);
   const componentRef = useRef<HTMLDivElement>(null);
-  console.log({ selectedColums });
+  // console.log({ selectedColums });
 
   const fetchingTableData = React.useCallback(async () => {
     setIsLoading(true);
@@ -73,7 +73,7 @@ export default function PortarReportsTable({ params, selectedColums, onReturn }:
         headers: { 'x-hasura-role': activeRole! },
       });
       if (res) {
-        console.log('res', res.data.data);
+        // console.log('res', res.data.data);
         // const newArray = [...res.data.data].map((item) => {
         //   return selectedColums.reduce((obj: any, key: string) => {
         //     obj[key] = item.user[key] || item[key];

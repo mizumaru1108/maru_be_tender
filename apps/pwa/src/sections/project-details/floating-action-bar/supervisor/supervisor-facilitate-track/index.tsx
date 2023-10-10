@@ -40,10 +40,10 @@ function FloatinActionBar() {
 
   const isAvailBudget = useMemo(() => {
     let tmpIsAvail = false;
-    if (track?.remaining_budget && track?.remaining_budget <= 0) {
+    if (track?.total_reserved_budget && track?.total_reserved_budget <= 0) {
       tmpIsAvail = false;
     } else {
-      if (track?.budget && track?.budget > 0) {
+      if (track?.total_budget && track?.total_budget > 0) {
         tmpIsAvail = true;
       } else {
         tmpIsAvail = false;
@@ -139,8 +139,6 @@ function FloatinActionBar() {
         notes: data.notes,
         selectLang: currentLang.value,
       };
-
-      console.log('payloadStepBackSupervisor', payload);
 
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
@@ -321,9 +319,7 @@ function FloatinActionBar() {
     }
   };
 
-  const pendingProposal = (data: PendingRequest) => {
-    console.log(data);
-  };
+  const pendingProposal = (data: PendingRequest) => {};
 
   const handleMessage = () => {
     const proposalSubmitter = proposal.user;
@@ -412,7 +408,6 @@ function FloatinActionBar() {
   React.useEffect(() => {
     dispatch(setStepsData(proposal, activeRole! as FusionAuthRoles));
   }, [proposal, dispatch, activeRole]);
-  // console.log({proposal})
 
   return (
     <>
@@ -420,7 +415,9 @@ function FloatinActionBar() {
         open={openBudgetModal}
         message={`ميزانية المشروع تتخطى الميزانية المخصصة للمسار
             ${
-              track?.remaining_budget && track?.remaining_budget <= 0 ? 0 : track?.remaining_budget
+              track?.total_reserved_budget && track?.total_reserved_budget <= 0
+                ? 0
+                : track?.total_reserved_budget
             } الميزانية المحددة للمشروع هي ${
           proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport || 0
         } ، الميزانية المتبقية في المسار هي `}

@@ -45,13 +45,11 @@ function FollowUpsFile(item: FollowUps) {
 
   function fileTypes(typeFile: string) {
     const fileType = typeFile ? typeFile.split('/')[1] : 'pdf';
-    console.log({ fileType });
     return ['png', 'jpg', 'jpeg'].includes(fileType)
       ? '/icons/img-icon.png'
       : '/icons/pdf-icon.svg';
   }
 
-  console.log(item.attachments, 'atachment');
   if (role === 'tender_client')
     return (
       <>

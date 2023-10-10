@@ -453,9 +453,6 @@ function AddNewUser() {
                 >
                   <Stack justifyContent="center" direction="row" gap={3}>
                     <Button
-                      onClick={() => {
-                        console.log('asdklasdlkasd');
-                      }}
                       sx={{
                         color: 'text.primary',
                         width: { xs: '100%', sm: '200px' },

@@ -63,8 +63,8 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
         .test('size', translate('errors.cre_proposal.letter_ofsupport_req.fileSize'), (value) => {
           if (value) {
             const maxSize = 1024 * 1024 * 200;
-            console.log('size:', value.size);
-            console.log('maxSize: ', maxSize);
+            // console.log('size:', value.size);
+            // console.log('maxSize: ', maxSize);
             if (value.size > 1024 * 1024 * 200) {
               return false;
             }

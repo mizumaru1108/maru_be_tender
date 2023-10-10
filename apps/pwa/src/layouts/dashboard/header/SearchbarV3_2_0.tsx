@@ -263,7 +263,7 @@ export default function Searchbar() {
           }
           return false;
         });
-        console.log({ currentStatus, newFilterStatus });
+        // console.log({ currentStatus, newFilterStatus });
         // const joinFilterStatus = newFilterStatus.join('&');
         const setNew = newFilterStatus.map((filterStatus: any) => `outter_status=${filterStatus}`);
         const joinFilterStatus = setNew.join('&');
@@ -293,6 +293,7 @@ export default function Searchbar() {
       dispatch(setFiltered(null));
     }
     dispatch(setSort(sortBy));
+
     // const res = await axiosInstance.get('/tender-user/find-users', {
     //   params: { employee_name: 'yayan' },
     //   headers: { 'x-hasura-role': activeRole! },
@@ -309,6 +310,7 @@ export default function Searchbar() {
       } else {
         handleSearch();
       }
+      setText('');
     }
   };
 
@@ -394,6 +396,7 @@ export default function Searchbar() {
             <Input
               sx={{ width: '100%' }}
               disableUnderline={true}
+              value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder={translate('search_component.placeholder')}
               onKeyUp={handleKeyUp}

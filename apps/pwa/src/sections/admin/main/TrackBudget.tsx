@@ -16,9 +16,9 @@ import { fCurrencyNumber } from 'utils/formatNumber';
 
 export interface ITrackList {
   name: string;
-  budget: number;
-  total_budget_used: number;
-  remaining_budget: number;
+  total_budget: number;
+  total_spending_budget: number;
+  total_reserved_budget: number;
 }
 
 interface IPropTrackBudgets {
@@ -141,7 +141,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                             fontWeight: 700,
                           }}
                         >
-                          {fCurrencyNumber(item.remaining_budget || 0)}
+                          {fCurrencyNumber(item.total_reserved_budget || 0)}
                         </Typography>
                       </Grid>
                       <Grid item md={4} xs={12} sx={styleBox}>
@@ -154,7 +154,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                           {translate('content.administrative.statistic.heading.totalSpendBudget')}
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                          {fCurrencyNumber(item.total_budget_used || 0)}
+                          {fCurrencyNumber(item.total_spending_budget || 0)}
                         </Typography>
                       </Grid>
                       <Grid item md={4} xs={12} sx={styleBox}>
@@ -167,7 +167,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                           {translate('content.administrative.statistic.heading.totalBudget')}
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                          {fCurrencyNumber(item.budget || 0)}
+                          {fCurrencyNumber(item.total_budget || 0)}
                         </Typography>
                       </Grid>
                     </Grid>

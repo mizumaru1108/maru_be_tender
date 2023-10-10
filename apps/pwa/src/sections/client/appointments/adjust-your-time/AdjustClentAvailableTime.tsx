@@ -128,7 +128,7 @@ function AdjustClentAvailableTime() {
           day: day,
         };
       });
-    console.log({ setAvailableTimePayload });
+    // console.log({ setAvailableTimePayload });
     try {
       const rest = await axiosInstance.post(
         'tender/schedules/upsert-schedules',
@@ -274,7 +274,7 @@ function AdjustClentAvailableTime() {
                 label={``}
                 onClick={() => {
                   if (availableTimes[index].day) {
-                    console.log('mask sini');
+                    // console.log('mask sini');
                     setValue(`availableTime.${index}`, {
                       day: false,
                       start_time: '',

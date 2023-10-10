@@ -117,7 +117,6 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
         .required(translate('errors.cre_proposal.payment_number.required'))
         .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {
           const number_of_payment = Number(val) > 0;
-          console.log('number_of_payment', number_of_payment);
           return number_of_payment;
         }),
     });
@@ -532,7 +531,6 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
                     // console.log('test 2');
                   }
                 }
-                console.log('e.target.value', e.target.value);
               }}
               label="هل مبلغ السداد شامل لضريبة القيمة المضافة*"
               options={[

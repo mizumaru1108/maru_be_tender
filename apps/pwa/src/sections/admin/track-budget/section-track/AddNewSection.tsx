@@ -37,7 +37,7 @@ export default function AddNewSection({ onClose, tracks }: IPropsNewBudget) {
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
-  console.log({ tracks });
+  // console.log({ tracks });
 
   const SubmitFormSchema = Yup.object().shape({
     budget: Yup.number()

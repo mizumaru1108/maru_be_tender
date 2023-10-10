@@ -124,7 +124,6 @@ export default function SubmitProjectReportFormCqrs({
   const tmpGenders = watch('genders');
   const tmpExecutionPlaces = watch('execution_places');
   const tmpBeneficiaries = watch('beneficiaries');
-  console.log({ tmpGenders, tmpExecutionPlaces, tmpBeneficiaries });
 
   const onSubmitForm = async (data: CloseReportForm) => {
     // console.log({ data });

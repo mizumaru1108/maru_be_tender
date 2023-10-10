@@ -60,7 +60,7 @@ function ProjectDetailsMainPage() {
   }, [dispatch, id, role, handleFetching]);
 
   React.useEffect(() => {
-    if (proposal?.track_id) {
+    if (proposal?.track_id && proposal?.track_id !== 'test') {
       dispatch(getTracksById(role!, proposal?.track_id || ''));
     }
   }, [dispatch, proposal, role]);

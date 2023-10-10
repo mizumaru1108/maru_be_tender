@@ -41,7 +41,6 @@ function ProposalAcceptingForm({ onSubmit, onClose, loading }: FormProps) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
   const { track_list } = useSelector((state) => state.proposal);
-  console.log({ track_list });
   const { enqueueSnackbar } = useSnackbar();
   const [employeeByPath, setEmployeeByPath] = React.useState<IEmployeeByTrack[]>([]);
   // console.log({ employeeByPath });

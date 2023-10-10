@@ -76,13 +76,13 @@ const ClientCard = ({
   const [_, updateAsigning] = useMutation(asignProposalToAUser);
   // const valueLocale = localStorage.getItem('i18nextLng');
 
-  const onDeleteDraftClick = () => {
-    console.log('onDeleteDraftClick');
-  };
+  // const onDeleteDraftClick = () => {
+  //   console.log('onDeleteDraftClick');
+  // };
 
-  const onContinuingDraftClick = () => {
-    console.log('onContinuingDraftClick');
-  };
+  // const onContinuingDraftClick = () => {
+  //   console.log('onContinuingDraftClick');
+  // };
 
   // const handleOnClick = async () => {
   //   if (

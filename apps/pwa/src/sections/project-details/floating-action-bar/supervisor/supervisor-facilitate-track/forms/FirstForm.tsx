@@ -1,23 +1,22 @@
 // @ts-nocheck
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid, MenuItem, Typography } from '@mui/material';
-import { FormProvider, RHFRadioGroup, RHFSelect, RHFTextField } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
-import * as Yup from 'yup';
+import { Grid } from '@mui/material';
+import { FormProvider, RHFRadioGroup } from 'components/hook-form';
 import BaseField from 'components/hook-form/BaseField';
-import React, { useEffect, useMemo, useState } from 'react';
-import { _supportGoals } from '_mock/_supportgoals';
-import { useSelector } from 'redux/store';
-import { SupervisorStep1 } from '../../../../../../@types/supervisor-accepting-form';
 import useLocales from 'hooks/useLocales';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useSelector } from 'redux/store';
+import * as Yup from 'yup';
+import { SupervisorStep1 } from '../../../../../../@types/supervisor-accepting-form';
 //
-import { fCurrencyNumber } from 'utils/formatNumber';
-import { removeEmptyKey } from 'utils/remove-empty-key';
 import useAuth from 'hooks/useAuth';
+import { removeEmptyKey } from 'utils/remove-empty-key';
 
 function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubmited }: any) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
+  const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
   const { proposal } = useSelector((state) => state.proposal);
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
@@ -26,8 +25,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
     proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
       ? true
       : false;
-
-  // console.log('isStepBack', isStepBack);
 
   const validationSchema = React.useMemo(() => {
     const tmpIsVat = isVat;
@@ -73,7 +70,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         .required(translate('errors.cre_proposal.payment_number.required'))
         .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {
           const number_of_payment = Number(val) > 0;
-          console.log('number_of_payment', number_of_payment);
           return number_of_payment;
         }),
       // accreditation_type_id: Yup.string().required('Procedures is required!'),
@@ -96,11 +92,9 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
   const vat = watch('vat');
   const support_type = watch('support_type');
   const paymentNum = watch('payment_number');
-  // console.log({ support_type });
   // const inclu_or_exclu = watch('inclu_or_exclu');
 
   const onSubmitForm = async (data: SupervisorStep1) => {
-    // console.log('data', data);
     setIsSubmited(true);
     const { vat_percentage, ...rest } = data;
     const tmpValues = {
@@ -123,7 +117,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       // } else {
       //   setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
       // }
-      // console.log('proposal.amount_required_fsupport', proposal.amount_required_fsupport);
     }
   }, [proposal, setValue]);
 
@@ -132,7 +125,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       setPaymentNumber(Number(paymentNum));
     }
   }, [paymentNum, setPaymentNumber]);
-  // console.log({ proposal });
 
   useEffect(() => {
     if (
@@ -151,6 +143,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled={!isSupevisor}
             data-cy="acc_form_consulation_support_type"
             type="radioGroup"
             name="support_type"
@@ -172,6 +165,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled={!isSupevisor}
             data-cy="acc_form_consulation_closing_report"
             type="radioGroup"
             name="closing_report"
@@ -185,6 +179,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
 
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled={!isSupevisor}
             data-cy="acc_form_consulation_need_picture"
             type="radioGroup"
             name="need_picture"
@@ -197,6 +192,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled={!isSupevisor}
             data-cy="acc_form_consulation_does_an_agreement"
             type="radioGroup"
             name="does_an_agreement"
@@ -219,6 +215,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             ]}
           /> */}
           <RHFRadioGroup
+            disabled={!isSupevisor}
             data-cy="acc_form_consulation_vat"
             type="radioGroup"
             name="vat"
@@ -232,7 +229,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
                   setValue('vat_percentage', '');
                 }
               }
-              // console.log('e.target.value', e.target.value);
             }}
             // label="هل يشمل المشروع ضريبة القيمة المضافة"
             label="هل مبلغ السداد شامل لضريبة القيمة المضافة*"
@@ -251,7 +247,9 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             placeholder="مبلغ الدعم"
             // disabled={isSupport ? false : true}
             disabled={
-              support_type === 'false' || !support_type || support_type === undefined ? false : true
+              support_type === 'false' || !support_type || support_type === undefined
+                ? false
+                : true || !isSupevisor
             }
           />
         </Grid>
@@ -259,6 +257,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         {isVat && (
           <Grid item md={6} xs={12}>
             <BaseField
+              disabled={!isSupevisor}
               data-cy="acc_form_consulation_vat_percentage"
               type="numberField"
               name="vat_percentage"
@@ -270,6 +269,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         {isVat && (
           <Grid item md={6} xs={12}>
             <BaseField
+              disabled={!isSupevisor}
               data-cy="acc_form_consulation_inclu_or_exclu"
               type="radioGroup"
               name="inclu_or_exclu"
@@ -290,6 +290,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             label="عدد الدفعات"
           /> */}
           <BaseField
+            disabled={!isSupevisor}
             data-cy="acc_form_consulation_payment_number"
             type="numberField"
             name="payment_number"
@@ -299,6 +300,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
+            disabled={!isSupevisor}
             data-cy="acc_form_consulation_notes"
             type="textArea"
             name="notes"
@@ -308,6 +310,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
+            disabled={!isSupevisor}
             data-cy="acc_form_consulation_support_outputs"
             type="textArea"
             name="support_outputs"

@@ -75,8 +75,6 @@ function ConsultantFloatingActionBar() {
         selectLang: currentLang.value,
       };
 
-      console.log('payloadApprovalConsultant', payload);
-
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
           headers: { 'x-hasura-role': activeRole! },
@@ -172,8 +170,6 @@ function ConsultantFloatingActionBar() {
         selectLang: currentLang.value,
       };
 
-      console.log('payloadRejectedConsultant', payload);
-
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
           headers: { 'x-hasura-role': activeRole! },
@@ -268,8 +264,6 @@ function ConsultantFloatingActionBar() {
         notes: values.notes,
         selectLang: currentLang.value,
       };
-
-      console.log('payloadStepbackToManager', payload);
 
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {

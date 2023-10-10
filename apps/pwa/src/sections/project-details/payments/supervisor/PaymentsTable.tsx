@@ -132,7 +132,6 @@ function PaymentsTable() {
     const payments = [...proposal.payments].sort(
       (a: any, b: any) => parseInt(a.order) - parseInt(b.order)
     );
-    console.log({ payments });
     for (var i = 0; i < payments.length; i++) {
       if (
         payments[i].status === 'set_by_supervisor' ||

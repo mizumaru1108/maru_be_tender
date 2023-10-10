@@ -62,10 +62,10 @@ const ListTrack = () => {
   });
 
   const onSubmitForm = async (data: any) => {
-    console.log({ data });
+    // console.log({ data });
   };
 
-  console.log({ trackItems });
+  // console.log({ trackItems });
 
   return (
     <FormProvider methods={methods}>

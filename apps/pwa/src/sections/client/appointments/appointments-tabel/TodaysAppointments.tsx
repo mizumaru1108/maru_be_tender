@@ -103,7 +103,6 @@ function TodaysAppointments() {
               fontSize: '15px',
             }}
             variant="outlined"
-            onClick={() => console.log('asdlamsdkl')}
           >
             بدء الاجتماع
           </Button>
@@ -170,7 +169,6 @@ function TodaysAppointments() {
               height: '45px',
               fontSize: '15px',
             }}
-            onClick={() => console.log('asdlamsdkl')}
           >
             طلب إعادة جدولة
           </Button>
@@ -202,7 +200,6 @@ function TodaysAppointments() {
               fontSize: '15px',
             }}
             variant="outlined"
-            onClick={() => console.log('asdlamsdkl')}
           >
             بدء الاجتماع
           </Button>

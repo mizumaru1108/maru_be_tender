@@ -86,9 +86,9 @@ export interface timeline {
 export interface TrackBudget {
   id: string;
   name: string;
-  budget: number;
-  total_budget_used: number;
-  remaining_budget: number;
+  total_budget: number;
+  total_spending_budget: number;
+  total_reserved_budget: number;
 }
 
 export interface BeneficiaryDetail {

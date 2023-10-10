@@ -54,10 +54,8 @@ function PaymentsTable({ payments, children }: { payments: PaymentProps[]; child
     });
   };
   useEffect(() => {
-    console.log(payments);
     for (var i = 0; i < payments.length; i++) {
       if (payments[i].status === 'set_by_supervisor') {
-        console.log(i);
         setCurrentIssuedPayament(i);
         break;
       }

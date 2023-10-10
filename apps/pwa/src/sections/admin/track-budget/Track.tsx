@@ -28,7 +28,7 @@ function Track({ id, name, budget }: any) {
 
   const handleDelete = () => {
     setLoadingDelete(true);
-    console.log({ id, name, budget });
+    // console.log({ id, name, budget });
   };
 
   return (

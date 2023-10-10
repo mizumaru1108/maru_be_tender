@@ -31,8 +31,6 @@ function CashierPaymentsPage() {
       const payment_actual_done = proposal.payments.filter(
         (el: { status: string }) => el.status === 'done'
       ).length;
-      console.log('payment_actual_done', payment_actual_done);
-      console.log('Number(acc_payments)', Number(acc_payments));
       if (
         payment_actual_done === Number(acc_payments) &&
         proposal.inner_status !== 'DONE_BY_CASHIER'

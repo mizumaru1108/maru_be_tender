@@ -14,7 +14,7 @@ const TransactionProgressionPage = () => {
   const [open, setOpen] = React.useState<boolean>(false);
   const { tracks } = useSelector((state) => state.tracks);
 
-  console.log({ tracks });
+  // console.log({ tracks });
   const handleOpen = () => {
     setOpen(true);
   };

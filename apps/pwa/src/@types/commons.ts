@@ -161,6 +161,7 @@ export interface TrackSection {
   id?: string;
   track_id?: string;
   name?: string;
+  total_budget?: number;
   budget?: number;
   child_track_section?: TrackSection[];
   parent_section_id?: string;
@@ -174,10 +175,11 @@ export interface TrackProps {
   created_at: string;
   updated_at: string;
   is_deleted: boolean;
+  total_budget?: number;
   budget?: number;
   proposal?: Proposal[];
-  total_budget_used?: number;
-  remaining_budget?: number;
+  total_spending_budget?: number;
+  total_reserved_budget?: number;
   sections?: TrackSection[];
 }
 

@@ -137,7 +137,7 @@ export default function AddNewBudget({ onClose, tracks }: IPropsNewBudget) {
     }
   };
 
-  console.log({ formState });
+  // console.log({ formState });
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container spacing={3} sx={{ mt: 1 }}>

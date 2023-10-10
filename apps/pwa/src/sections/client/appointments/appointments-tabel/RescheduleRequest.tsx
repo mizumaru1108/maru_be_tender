@@ -82,9 +82,6 @@ function RescheduleRequest({ open, handleClose }: any) {
                   </Button>
                   <Button
                     type="submit"
-                    onClick={() => {
-                      console.log('asdkmasdlkmasd');
-                    }}
                     sx={{
                       backgroundColor: 'background.paper',
                       color: '#fff',

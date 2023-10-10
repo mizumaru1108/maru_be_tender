@@ -147,7 +147,6 @@ export default function UsersAndPermissionsTable() {
 
   const handleEditRow = (id: string) => {
     // navigate(PATH_ADMIN.user.edit(paramCase(id)));
-    console.log('masukedit');
     navigate(PATH_ADMIN.users_and_permissions_edit(paramCase(id)));
   };
 

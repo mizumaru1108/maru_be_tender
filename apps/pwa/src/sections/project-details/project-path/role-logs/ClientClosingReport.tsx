@@ -63,8 +63,6 @@ function ClientClosingReport({ stepGransLog }: Props) {
   // if (fetching) return <>Loading...</>;
   // if (error) return <>Error...</>;
 
-  console.log(closingReport, 'proposal grant');
-
   return (
     <React.Fragment>
       {closingReport && stepGransLog.action === 'project_completed' && (

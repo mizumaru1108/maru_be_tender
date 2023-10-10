@@ -36,7 +36,7 @@ const RHFRepeater = ({
         result[key] = '';
       }
     }
-    console.log({ result, fields });
+    // console.log({ result, fields });
     return result;
   };
 

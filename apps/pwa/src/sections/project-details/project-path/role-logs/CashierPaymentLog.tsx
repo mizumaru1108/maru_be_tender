@@ -16,7 +16,6 @@ function CashierPaymentLog({ stepGeneralLog }: Props) {
   if (stepGeneralLog && stepGeneralLog.message) {
     batch = Number(stepGeneralLog.message.split('_')[1]);
   }
-  console.log('masuk sini, proposal.payments', batch);
   // console.log('proposal.payments', proposal.payments);
 
   return (

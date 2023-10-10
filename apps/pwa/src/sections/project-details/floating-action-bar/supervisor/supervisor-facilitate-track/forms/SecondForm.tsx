@@ -10,6 +10,7 @@ import { useSelector } from 'redux/store';
 import { removeEmptyKey } from 'utils/remove-empty-key';
 import * as Yup from 'yup';
 import { SupervisorStep2 } from '../../../../../../@types/supervisor-accepting-form';
+import useAuth from '../../../../../../hooks/useAuth';
 
 interface Area {
   regions_id: ComboBoxOption[];
@@ -18,6 +19,9 @@ interface Area {
 
 function SecondForm({ children, onSubmit }: any) {
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
+  const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
+
   const [area, setArea] = React.useState<Area>({
     governorates_id: [],
     regions_id: [],
@@ -29,14 +33,14 @@ function SecondForm({ children, onSubmit }: any) {
     ),
     // region: Yup.string().required(translate('errors.cre_proposal.region.required')),
     // governorate: Yup.string().required(translate('errors.cre_proposal.governorate.required')),
-    regions_id: Yup.array()
-      .min(1, translate('portal_report.errors.region_id.required'))
-      .required(translate('portal_report.errors.region_id.required'))
-      .nullable(),
-    governorates_id: Yup.array()
-      .min(1, translate('portal_report.errors.governorate_id.required'))
-      .required(translate('portal_report.errors.governorate_id.required'))
-      .nullable(),
+    // regions_id: Yup.array()
+    //   .min(1, translate('portal_report.errors.region_id.required'))
+    //   .required(translate('portal_report.errors.region_id.required'))
+    //   .nullable(),
+    // governorates_id: Yup.array()
+    //   .min(1, translate('portal_report.errors.governorate_id.required'))
+    //   .required(translate('portal_report.errors.governorate_id.required'))
+    //   .nullable(),
     date_of_esthablistmen: Yup.string().required(
       translate('errors.cre_proposal.date_of_esthablistmen.required')
     ),
@@ -212,6 +216,7 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled={!isSupevisor}
             type="textField"
             name="most_clents_projects"
             label="أبرز أعمال الجهة*"

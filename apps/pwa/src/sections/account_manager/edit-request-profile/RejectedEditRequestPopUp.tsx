@@ -86,7 +86,7 @@ function RejectedEditRequestPopUp({ open, handleClose, requestId }: Props) {
       });
       // console.log(err);
     }
-    console.log({ data });
+    // console.log({ data });
   };
   return (
     <FormProvider methods={methods}>

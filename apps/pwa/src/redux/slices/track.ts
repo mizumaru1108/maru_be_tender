@@ -22,9 +22,9 @@ const initialState: TrackState = {
     is_deleted: false,
     name: 'test',
     with_consultation: false,
-    budget: 0,
-    total_budget_used: 0,
-    remaining_budget: 0,
+    total_budget: 0,
+    total_spending_budget: 0,
+    total_reserved_budget: 0,
   },
   tracks: [
     {

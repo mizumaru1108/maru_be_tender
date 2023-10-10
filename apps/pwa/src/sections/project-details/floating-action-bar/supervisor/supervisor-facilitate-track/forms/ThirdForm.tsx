@@ -1,19 +1,20 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid } from '@mui/material';
-import { FormProvider, RHFRadioGroup } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
-import * as Yup from 'yup';
 import FormGenerator from 'components/FormGenerator';
-import { useMemo } from 'react';
-import { ThirdFormData } from './form-data';
-import { useSelector } from 'redux/store';
-import { SupervisorStep3 } from '../../../../../../@types/supervisor-accepting-form';
-import BaseField from 'components/hook-form/BaseField';
-import RHFSelectNoGenerator from 'components/hook-form/RHFSelectNoGen';
+import { FormProvider } from 'components/hook-form';
 import useLocales from 'hooks/useLocales';
+import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { useSelector } from 'redux/store';
+import * as Yup from 'yup';
+import { SupervisorStep3 } from '../../../../../../@types/supervisor-accepting-form';
+import BaseField from '../../../../../../components/hook-form/BaseField';
+import useAuth from '../../../../../../hooks/useAuth';
+import { ThirdFormData } from './form-data';
 
 function ThirdForm({ children, onSubmit }: any) {
-  const { beneficiaries_list } = useSelector((state) => state.proposal);
+  const { activeRole } = useAuth();
+  const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
   const { step3 } = useSelector((state) => state.supervisorAcceptingForm);
   const { translate } = useLocales();
   const validationSchema = Yup.object().shape({
@@ -72,8 +73,8 @@ function ThirdForm({ children, onSubmit }: any) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
-        <FormGenerator data={ThirdFormData} />
-        {/* <Grid item md={12} xs={12}>
+        {/* <FormGenerator data={ThirdFormData} /> */}
+        <Grid item md={12} xs={12}>
           <BaseField
             type="textField"
             name="project_name"
@@ -115,17 +116,16 @@ function ThirdForm({ children, onSubmit }: any) {
             name="added_value"
             label="القيمة المضافة على المشروع*"
             placeholder="الرجاء كتابة القيمة المضافة على المشروع"
-            disabled
+            disabled={!isSupevisor}
           />
-        </Grid> */}
-
-        {/* <Grid item md={6} xs={12}>
+        </Grid>
+        <Grid item md={6} xs={12}>
           <BaseField
             type="textField"
             name="reasons_to_accept"
             label="مسوغات دعم المشروع*"
             placeholder="الرجاء كتابة مسوغات دعم المشروع"
-            disabled
+            disabled={!isSupevisor}
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -137,34 +137,143 @@ function ThirdForm({ children, onSubmit }: any) {
             disabled
           />
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid item md={4} xs={4}>
           <BaseField
             type="textField"
             name="target_group_num"
             label="عددهم*"
             placeholder="الرجاء كتابة عددهم"
+            disabled={!isSupevisor}
           />
-        </Grid> */}
-        {/* 
-        <Grid item md={6} xs={12}>
-          <RHFSelectNoGenerator
-            name="project_beneficiaries"
-            label={translate('funding_project_request_form1.target_group_type.label')}
-            placeholder={translate('funding_project_request_form1.target_group_type.placeholder')}
+        </Grid>
+
+        <Grid item md={4} xs={4}>
+          <BaseField
+            type="selectWithoutGenerator"
+            name="target_group_type"
+            label="نوعهم*"
+            placeholder="الرجاء اختيار نوعهم"
+            disabled={!isSupevisor}
           >
-            {beneficiaries_list.length > 0 &&
-              beneficiaries_list.map((item, index) => (
-                <option
-                  data-cy={`funding_project_request_form1.target_group_type${index}`}
-                  key={index}
-                  value={item?.id}
-                  style={{ backgroundColor: '#fff' }}
-                >
-                  {item?.name}
-                </option>
-              ))}
-          </RHFSelectNoGenerator>
-        </Grid> */}
+            <>
+              <option value="YOUTHS" style={{ backgroundColor: '#fff' }}>
+                شباب
+              </option>
+              <option value="GIRLS" style={{ backgroundColor: '#fff' }}>
+                فتيات
+              </option>
+              <option value="CHILDREN" style={{ backgroundColor: '#fff' }}>
+                أطفال
+              </option>
+              <option value="FAMILY" style={{ backgroundColor: '#fff' }}>
+                أسرة
+              </option>
+              <option value="PARENTS" style={{ backgroundColor: '#fff' }}>
+                أباء
+              </option>
+              <option value="MOMS" style={{ backgroundColor: '#fff' }}>
+                أمهات
+              </option>
+              <option value="EMPLOYEMENT" style={{ backgroundColor: '#fff' }}>
+                عمالة
+              </option>
+              <option value="PUBLIC_BENEFIT" style={{ backgroundColor: '#fff' }}>
+                نفع عام
+              </option>
+              <option value="CHARITABLE_ORGANIZATIONS" style={{ backgroundColor: '#fff' }}>
+                جهات خيرية
+              </option>
+              <option value="CHARITABLE_WORKERS" style={{ backgroundColor: '#fff' }}>
+                عاملين في الجهات الخيرية
+              </option>
+            </>
+          </BaseField>
+        </Grid>
+
+        <Grid item md={4} xs={4}>
+          <BaseField
+            type="selectWithoutGenerator"
+            name="target_group_age"
+            label="أعمارهم*"
+            placeholder="الرجاء كتابة أعمارهم"
+            disabled={!isSupevisor}
+          >
+            <>
+              <option value="AGE_1TH_TO_13TH" style={{ backgroundColor: '#fff' }}>
+                من 1 سنة إلى 13
+              </option>
+              <option value="AGE_14TH_TO_30TH" style={{ backgroundColor: '#fff' }}>
+                من 14 سنة إلى 30
+              </option>
+              <option value="AGE_31TH_TO_50TH" style={{ backgroundColor: '#fff' }}>
+                من 31 إلى 50
+              </option>
+              <option value="AGE_51TH_TO_60TH" style={{ backgroundColor: '#fff' }}>
+                من 51 إلى 60
+              </option>
+              <option value="AGE_OVER_60TH" style={{ backgroundColor: '#fff' }}>
+                من 61 فأكثر
+              </option>
+              <option value="ALL_AGE" style={{ backgroundColor: '#fff' }}>
+                جميع الفئات العمرية
+              </option>
+            </>
+          </BaseField>
+        </Grid>
+
+        <Grid item md={6} xs={12}>
+          <BaseField
+            type="textField"
+            name="project_implement_date"
+            label="تاريخ بداية المشروع*"
+            placeholder="الرجاء تحديد تاريخ بداية المشروع"
+            disabled
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <BaseField
+            type="textField"
+            name="execution_time"
+            label="مدة المشروع*"
+            placeholder="الرجاء كتابة مدة المشروع"
+            disabled
+          />
+        </Grid>
+
+        <Grid item md={6} xs={12}>
+          <BaseField
+            type="textField"
+            name="project_location"
+            label="مكان إقامته المشروع؟*"
+            placeholder="الرجاء كتابة مكان إقامته المشروع؟"
+            disabled
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <BaseField
+            type="radioGroup"
+            name="been_made_before"
+            label="مكان إقامته المشروع؟*"
+            disabled={!isSupevisor}
+            options={[
+              { label: 'نعم', value: true },
+              { label: 'لا', value: false },
+            ]}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <BaseField
+            type="radioGroup"
+            name="remote_or_insite"
+            label="عن بُعد أو حضوري؟*"
+            disabled={!isSupevisor}
+            options={[
+              { label: 'حضوري', value: 'insite' },
+              { label: 'اونلاين', value: 'remote' },
+              { label: 'كلاهما', value: 'both' },
+            ]}
+          />
+        </Grid>
         <Grid item xs={12}>
           {children}
         </Grid>

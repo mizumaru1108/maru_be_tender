@@ -129,9 +129,9 @@ const initialState: ProposalItme = {
     track_budget: {
       id: '-1',
       name: 'no-data',
-      budget: 0,
-      remaining_budget: 0,
-      total_budget_used: 0,
+      total_budget: 0,
+      total_reserved_budget: 0,
+      total_spending_budget: 0,
     },
     project_timeline: [
       {

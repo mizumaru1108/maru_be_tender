@@ -63,7 +63,6 @@ function ClientProfileEditForm() {
   const onSubmit1 = async (data: UserInfoFormProps) => {
     setLoading(true);
     window.scrollTo(0, 0);
-    console.log(data);
     try {
       const rest: any = await axiosInstance.patch(
         'tender-user/update-profile',
@@ -72,7 +71,6 @@ function ClientProfileEditForm() {
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      console.log({ rest });
       if (rest.status >= 200 && rest.status < 300) {
         setOpen(true);
         // timeout

@@ -146,7 +146,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      console.log({ rest });
+      // console.log({ rest });
       setLinkForgotPassword(rest.data.data);
       // window.location.reload();
     } catch (err) {

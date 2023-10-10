@@ -88,7 +88,7 @@ export const SecondFormData = [
 export const ThirdFormData = [
   {
     type: 'textField',
-    label: 'اسم المشروع*',
+    label: 'اسم المشروع *',
     name: 'project_name',
     placeholder: 'الرجاء كتابة اسم المشروع',
     disabled: true,
@@ -155,14 +155,7 @@ export const ThirdFormData = [
     md: 4,
     xs: 4,
   },
-  // {
-  //   type: 'textField',
-  //   name: 'target_group_type',
-  //   label: 'نوعهم *',
-  //   placeholder: 'الرجاء اختيار نوعهم ',
-  //   md: 4,
-  //   xs: 4,
-  // },
+
   {
     type: 'selectWithoutGenerator',
     name: 'target_group_type',
@@ -172,15 +165,6 @@ export const ThirdFormData = [
     xs: 4,
     children: (
       <>
-        {/* <option value="MEN" style={{ backgroundColor: '#fff' }}>
-          رجال
-        </option>
-        <option value="WOMEN" style={{ backgroundColor: '#fff' }}>
-          نساء
-        </option>
-        <option value="GENERAL" style={{ backgroundColor: '#fff' }}>
-          عام
-        </option> */}
         <option value="YOUTHS" style={{ backgroundColor: '#fff' }}>
           شباب
         </option>
@@ -214,14 +198,6 @@ export const ThirdFormData = [
       </>
     ),
   },
-  // {
-  //   type: 'textField',
-  //   name: 'target_group_age',
-  //   label: 'أعمارهم*',
-  //   placeholder: 'الرجاء كتابة أعمارهم',
-  //   md: 4,
-  //   xs: 4,
-  // },
   {
     type: 'selectWithoutGenerator',
     name: 'target_group_age',
@@ -295,9 +271,6 @@ export const ThirdFormData = [
     name: 'remote_or_insite',
     label: 'عن بُعد أو حضوري؟',
     options: [
-      // { label: 'حضوري', value: false },
-      // { label: 'اونلاين', value: true },
-      // { label: 'كلاهما', value: true },
       { label: 'حضوري', value: 'insite' },
       { label: 'اونلاين', value: 'remote' },
       { label: 'كلاهما', value: 'both' },

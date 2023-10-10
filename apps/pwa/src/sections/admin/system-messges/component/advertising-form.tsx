@@ -72,8 +72,8 @@ export default function AdvertisingForm({
         .test('size', translate('system_messages.form.errors.image.size'), (value) => {
           if (value) {
             const maxSize = 1024 * 1024 * 200;
-            console.log('size:', value.size);
-            console.log('maxSize: ', maxSize);
+            // console.log('size:', value.size);
+            // console.log('maxSize: ', maxSize);
             if (value.size > 1024 * 1024 * 200) {
               return false;
             }

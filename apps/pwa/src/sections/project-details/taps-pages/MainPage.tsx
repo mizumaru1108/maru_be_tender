@@ -287,6 +287,7 @@ function MainPage() {
           <Stack direction="row" justifyContent="space-between" gap={3}>
             {(proposal.letter_ofsupport_req && (
               <ButtonDownloadFiles
+                type="board_ofdec_file"
                 files={proposal.letter_ofsupport_req}
                 border={tmpValues?.revised.letter_ofsupport_req !== undefined ? 'green' : undefined}
               />
@@ -294,6 +295,7 @@ function MainPage() {
               null}
             {(proposal.project_attachments && (
               <ButtonDownloadFiles
+                type="attachments"
                 files={proposal.project_attachments}
                 border={tmpValues?.revised.project_attachments !== undefined ? 'green' : undefined}
               />

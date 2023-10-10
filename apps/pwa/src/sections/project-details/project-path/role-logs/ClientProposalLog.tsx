@@ -274,11 +274,19 @@ function ClientProposalLog() {
         <Grid item md={12} xs={12}>
           <Stack direction="row" justifyContent="space-between" gap={3}>
             {(proposal.letter_ofsupport_req && (
-              <ButtonDownloadFiles files={proposal.letter_ofsupport_req} border={undefined} />
+              <ButtonDownloadFiles
+                type="board_ofdec_file"
+                files={proposal.letter_ofsupport_req}
+                border={undefined}
+              />
             )) ??
               null}
             {(proposal.project_attachments && (
-              <ButtonDownloadFiles files={proposal.project_attachments} border={undefined} />
+              <ButtonDownloadFiles
+                type="attachments"
+                files={proposal.project_attachments}
+                border={undefined}
+              />
             )) ??
               null}
           </Stack>

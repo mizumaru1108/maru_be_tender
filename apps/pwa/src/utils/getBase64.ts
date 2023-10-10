@@ -38,7 +38,6 @@ export const fileToBinary = (file: any): Promise<Uint8Array> => {
     fileReader.onloadend = () => {
       const arrayBuffer = fileReader.result as ArrayBuffer;
       const binaryData = new Uint8Array(arrayBuffer);
-      console.log(arrayBuffer);
       return resolve(binaryData);
     };
   });
@@ -49,7 +48,6 @@ export const getArrayBuffer = (file: any): Promise<string> => {
   const reader = new FileReader();
   reader.onload = () => {
     const arrayBuffer = reader.result;
-    console.log(arrayBuffer);
   };
   reader.readAsArrayBuffer(file);
   return new Promise((resolve, reject) => {

@@ -51,7 +51,6 @@ function NonClientProfileEditForm() {
   useEffect(() => {
     if (data?.user_by_pk) {
       const { email, mobile_number, employee_name } = data?.user_by_pk;
-      console.log('data:', data?.user_by_pk);
       setProfileState((prevState: any) => ({
         ...prevState,
         form1: {

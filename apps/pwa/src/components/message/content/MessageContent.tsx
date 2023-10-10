@@ -70,7 +70,7 @@ export default function MessageContent() {
   const [messageValue, setMessageValue] = useState<string>('');
   const [corespondenceType, setCorespondenceType] = useState<string>('EXTERNAL');
   const [partner, setPartner] = useState<{
-    partner_name: string;
+    partner_name?: string | null;
     roles: string;
   } | null>(null);
   const [sentStatus, setSentStatus] = useState<'sent' | 'pending' | 'failed'>('sent');
@@ -292,6 +292,7 @@ export default function MessageContent() {
       const findConversation: Conversation = conversations.find(
         (el) => el.id === activeConversationId
       )!;
+      // console.log({ findConversation });
 
       if (findConversation) {
         setCorespondenceType(findConversation.correspondance_category_id);
@@ -299,7 +300,8 @@ export default function MessageContent() {
           setPartner({
             partner_name:
               findConversation.messages[0].owner_id === user?.id
-                ? findConversation.messages[0].receiver?.employee_name!
+                ? findConversation.messages[0].receiver?.client_data?.entity ||
+                  findConversation.messages[0].receiver?.employee_name
                 : findConversation.messages[0].sender?.employee_name!,
             roles:
               findConversation.messages[0].owner_id === user?.id
@@ -342,7 +344,8 @@ export default function MessageContent() {
           setPartner({
             partner_name:
               findConversation.messages[0].owner_id === user?.id
-                ? findConversation.messages[0].receiver?.employee_name!
+                ? findConversation.messages[0].receiver?.client_data?.entity ||
+                  findConversation.messages[0].receiver?.employee_name
                 : findConversation.messages[0].sender?.employee_name!,
             roles:
               findConversation.messages[0].owner_id === user?.id
@@ -463,7 +466,7 @@ export default function MessageContent() {
                   <Image src="/assets/icons/users-alt-green.svg" alt="logo" />
                 </Box>
                 <Typography>
-                  {partner && `${partner.partner_name} - ${translate(partner.roles)}`}
+                  {partner && `${partner?.partner_name} - ${translate(partner?.roles)}`}
                 </Typography>
               </Stack>
               <Box

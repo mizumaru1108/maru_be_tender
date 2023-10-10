@@ -48,7 +48,6 @@ function PaymentsTable() {
           action: payment_action,
         })
       ).then((res) => {
-        console.log({ res });
         if (res.statusCode === 200 || res.statusCode === 201) {
           enqueueSnackbar('تم قبول أذن الصرف بنجاح', {
             variant: 'success',
@@ -116,7 +115,6 @@ function PaymentsTable() {
           url: url,
         })
       ).then((res) => {
-        console.log({ res });
         if (res.statusCode === 200 || res.statusCode === 201) {
           enqueueSnackbar('تم رفض أذن الصرف بنجاح', {
             variant: 'success',

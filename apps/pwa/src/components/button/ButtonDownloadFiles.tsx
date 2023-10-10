@@ -4,19 +4,25 @@ import useLocales from '../../hooks/useLocales';
 import { convertBytesToMB } from '../../utils/convertByteToMBString';
 import { FileProp } from '../upload';
 
+const TYPEMAPPERS = {
+  attachments: 'review.attachments',
+  board_ofdec_file: 'account_manager.partner_details.board_ofdec_file',
+};
+
 interface Props {
   files: UploadFilesJsonbDto;
   // fileType?: string;
   border?: string;
   isMessageAttachment?: boolean;
+  type?: 'attachments' | 'board_ofdec_file';
 }
 
-function ButtonDownloadFiles({ files, border, isMessageAttachment }: Props) {
+function ButtonDownloadFiles({ files, border, isMessageAttachment, type = 'attachments' }: Props) {
   const { translate } = useLocales();
   // console.log('files', files);
   const fileType = files?.type ? files?.type!.split('/')[1] : 'pdf';
-  const fileName = files && files.url ? (files?.url.split('/').pop() as string) : '';
-  const fileSize = files && files.size ? convertBytesToMB(files.size) : '';
+  const fileName = files && files?.url ? (files?.url.split('/').pop() as string) : '';
+  const fileSize = files && files?.size ? convertBytesToMB(files.size) : '';
   // console.log('fileName', fileName);
   return (
     <Button
@@ -60,6 +66,9 @@ function ButtonDownloadFiles({ files, border, isMessageAttachment }: Props) {
           />
         </Stack>
         <Stack direction="column">
+          <Typography gutterBottom sx={{ fontSize: '13px' }}>
+            {translate(TYPEMAPPERS[`${type}`])}
+          </Typography>
           <Typography gutterBottom sx={{ fontSize: '13px' }}>
             {`${fileName.substring(0, 7)}... .${fileType}` ?? '-'}
           </Typography>

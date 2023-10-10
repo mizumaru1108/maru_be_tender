@@ -175,8 +175,6 @@ function FloatingActionBar() {
         selectLang: currentLang.value,
       };
 
-      console.log('payloadRejectedCeo', payload);
-
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
           headers: { 'x-hasura-role': activeRole! },
@@ -267,8 +265,6 @@ function FloatingActionBar() {
         selectLang: currentLang.value,
       };
 
-      console.log('payloadStepBackCeo', payload);
-
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
           headers: { 'x-hasura-role': activeRole! },
@@ -353,7 +349,6 @@ function FloatingActionBar() {
   };
   const handleMessage = () => {
     const proposalSubmitter: any = proposal.user;
-    console.log('proposalSubmitter', proposalSubmitter);
     const proposalStateRole = proposal.state;
     const x = location.pathname.split('/');
     const urlToMessage = `/${x[1]}/${x[2]}/messages`;
@@ -481,7 +476,7 @@ function FloatingActionBar() {
             </LoadingButton>
           </Stack>
           <Stack spacing={2} direction="row" alignItems="center">
-            <LoadingButton
+            {/* <LoadingButton
               variant="outlined"
               color="inherit"
               endIcon={<Iconify icon="eva:message-circle-outline" />}
@@ -489,7 +484,7 @@ function FloatingActionBar() {
               loading={isSubmitting || isSubmittingRejected}
             >
               {translate('partner_details.send_messages')}
-            </LoadingButton>
+            </LoadingButton> */}
             <LoadingButton
               variant="contained"
               onClick={handleClick}

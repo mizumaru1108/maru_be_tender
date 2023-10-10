@@ -84,7 +84,6 @@ function FloatingActionBar() {
 
   const checkConsultation =
     data && data.user && data.user.track && data.user.track.with_consultation;
-  // console.log({ checkConsultation, data });
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -110,8 +109,6 @@ function FloatingActionBar() {
         notes: values.notes,
         selectLang: currentLang.value,
       };
-
-      console.log('payloadApprovalGeneralPM', payload);
 
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
@@ -207,8 +204,6 @@ function FloatingActionBar() {
         notes: values.notes,
         selectLang: currentLang.value,
       };
-
-      // console.log('payloadApprovalConsultant', payload);
 
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
@@ -306,8 +301,6 @@ function FloatingActionBar() {
         selectLang: currentLang.value,
       };
 
-      console.log('payloadRejectPM', payload);
-
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
           headers: { 'x-hasura-role': activeRole! },
@@ -403,8 +396,6 @@ function FloatingActionBar() {
         selectLang: currentLang.value,
       };
 
-      console.log('payloadStepbackToSupervisor', payload);
-
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
           headers: { 'x-hasura-role': activeRole! },
@@ -490,7 +481,6 @@ function FloatingActionBar() {
 
   const handleMessage = () => {
     const proposalSubmitter: any = proposal.user;
-    console.log('proposalSubmitter', proposalSubmitter);
     const proposalStateRole = proposal.state;
     const x = location.pathname.split('/');
     const urlToMessage = `/${x[1]}/${x[2]}/messages`;

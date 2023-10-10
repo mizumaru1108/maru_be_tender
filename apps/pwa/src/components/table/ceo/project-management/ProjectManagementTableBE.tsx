@@ -143,6 +143,7 @@ export default function ProjectManagementTableBE({
             }}
             size="small"
             sx={{ fontSize: '12px', width: 200 }}
+            MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
           >
             <MenuItem value={'all'}>{'كل القائمة'}</MenuItem>
             {track_list.map((item) => (

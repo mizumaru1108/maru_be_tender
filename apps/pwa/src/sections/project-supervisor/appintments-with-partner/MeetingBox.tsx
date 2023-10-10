@@ -61,7 +61,6 @@ function MeetingBox({ id, date, client_name }: MeetingData) {
             height: '45px',
             fontSize: '15px',
           }}
-          onClick={() => console.log('asdlamsdkl')}
         >
           تعديل
         </Button>
@@ -93,7 +92,6 @@ function MeetingBox({ id, date, client_name }: MeetingData) {
             fontSize: '15px',
           }}
           variant="outlined"
-          onClick={() => console.log('asdlamsdkl')}
         >
           بدء الاجتماع
         </Button>

@@ -43,7 +43,7 @@ export default function ProjectManagementTableRow({
     } else {
       url = `/${x[1]}/${x[2]}/project-management/${row.id}/show-details`;
     }
-    console.log({ url });
+    // console.log({ url });
     if (destination && activeRole === 'tender_ceo' && destination !== 'reject-project') {
       // navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${row.id}/show-details`);
       navigate(`/${x[1]}/${x[2]}/project-management/${row.id}/${destination}`);

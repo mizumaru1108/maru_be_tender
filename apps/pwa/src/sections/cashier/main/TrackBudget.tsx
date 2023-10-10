@@ -57,9 +57,9 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
           return {
             ...tmpItem,
             name: tmpValue.name,
-            total_budget: tmpValue.budget,
-            total_spend_budget: tmpValue.total_budget_used,
-            total_reserved_budget: tmpValue.remaining_budget,
+            total_budget: tmpValue.total_budget,
+            total_spend_budget: tmpValue.total_spending_budget,
+            total_reserved_budget: tmpValue.total_reserved_budget,
           };
         });
       }

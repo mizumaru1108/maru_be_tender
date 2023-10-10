@@ -64,7 +64,7 @@ export default function BankNameTable() {
         const test = rest.data.data
           .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
           .map((bank: any) => bank);
-        console.log({ test });
+        // console.log({ test });
         // console.log(rest.data.data);
         setBankValue(test);
         dispatch(setBankList(test));
@@ -147,7 +147,6 @@ export default function BankNameTable() {
 
   if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
-  console.log({ bankValue });
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
       <FormModalBank

@@ -45,7 +45,6 @@ type Props = {
 const ConnectingInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const tmpDefaultValues = removeEmptyKey(defaultValues);
   // console.log({ revised });
-  console.log({ tmpDefaultValues });
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
 

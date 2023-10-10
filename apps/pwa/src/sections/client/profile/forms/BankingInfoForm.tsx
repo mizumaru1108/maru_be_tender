@@ -75,9 +75,7 @@ const BankingInfoForm = ({
     });
     if (data && data.id) {
       setTmpBank(updatedBankAccount);
-      console.log('masuk update');
     } else {
-      console.log('masuk create');
       setTmpBank([...tmpBank, newData]);
     }
   };

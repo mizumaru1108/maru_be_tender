@@ -17,6 +17,8 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
   const { step4, step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const { proposal } = useSelector((state) => state.proposal);
   const { activeRole } = useAuth();
+  const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
+
   const isStepBack =
     proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
       ? true
@@ -283,6 +285,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
+                      disabled={!isSupevisor}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].clause`}
                       {...field}
                       InputLabelProps={{ shrink: true }}
@@ -308,6 +311,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
+                      disabled={!isSupevisor}
                       {...field}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].explanation`}
                       InputLabelProps={{ shrink: true }}
@@ -335,6 +339,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
+                      disabled={!isSupevisor}
                       {...field}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].amount`}
                       InputLabelProps={{ shrink: true }}

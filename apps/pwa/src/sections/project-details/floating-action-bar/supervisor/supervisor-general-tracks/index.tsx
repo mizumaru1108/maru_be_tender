@@ -57,10 +57,10 @@ function FloatingActionBar() {
 
   const isAvailBudget = useMemo(() => {
     let tmpIsAvail = false;
-    if (track?.remaining_budget && track?.remaining_budget <= 0) {
+    if (track?.total_reserved_budget && track?.total_reserved_budget <= 0) {
       tmpIsAvail = false;
     } else {
-      if (track?.budget && track?.budget > 0) {
+      if (track?.total_budget && track?.total_budget > 0) {
         tmpIsAvail = true;
       } else {
         tmpIsAvail = false;
@@ -99,8 +99,6 @@ function FloatingActionBar() {
         },
         selectLang: currentLang.value,
       };
-
-      // console.log('acceptSupervisor', payload);
 
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
@@ -197,8 +195,6 @@ function FloatingActionBar() {
         reject_reason: values.reject_reason,
         selectLang: currentLang.value,
       };
-
-      console.log('rejectedSupervisor', payload);
 
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
@@ -329,8 +325,6 @@ function FloatingActionBar() {
         notes: data.notes,
         selectLang: currentLang.value,
       };
-
-      // console.log('payloadStepBackSupervisor', payload);
 
       await axiosInstance
         .patch('/tender-proposal/change-state', payload, {
@@ -495,9 +489,7 @@ function FloatingActionBar() {
     setOpenBudgetModal(false);
   };
 
-  const pendingProposal = (data: PendingRequest) => {
-    console.log(data);
-  };
+  const pendingProposal = (data: PendingRequest) => {};
 
   return (
     <>
@@ -505,7 +497,9 @@ function FloatingActionBar() {
         open={openBudgetModal}
         message={`ميزانية المشروع تتخطى الميزانية المخصصة للمسار
             ${
-              track?.remaining_budget && track?.remaining_budget <= 0 ? 0 : track?.remaining_budget
+              track?.total_reserved_budget && track?.total_reserved_budget <= 0
+                ? 0
+                : track?.total_reserved_budget
             } الميزانية المحددة للمشروع هي ${
           proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport || 0
         } ، الميزانية المتبقية في المسار هي `}
