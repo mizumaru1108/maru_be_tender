@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { BaseFilterRequest } from '../../../../commons/dtos/base-filter-request.dto';
 import { OutterStatusEnum } from '../../../../tender-commons/types/proposal';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class FetchProposalFilterRequest extends BaseFilterRequest {
   @ApiPropertyOptional()
@@ -21,13 +21,19 @@ export class FetchProposalFilterRequest extends BaseFilterRequest {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString({ each: true })
-  @IsNotEmpty({ each: true })
-  @IsEnum(OutterStatusEnum, {
-    message: `Status must be one of ${Object.values(OutterStatusEnum).join(
-      ', ',
-    )}`,
-    each: true,
+  @IsString()
+  @IsNotEmpty()
+  // @IsEnum(OutterStatusEnum, {
+  //   message: `Status must be one of ${Object.values(OutterStatusEnum).join(
+  //     ', ',
+  //   )}`,
+  //   each: true,
+  // })
+  @Transform(({ value }) => {
+    if (value && typeof value === 'string') {
+      return value.toUpperCase();
+    }
+    return value;
   })
   outter_status?: OutterStatusEnum[];
 
