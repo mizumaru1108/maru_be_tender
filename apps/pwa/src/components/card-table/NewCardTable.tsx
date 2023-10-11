@@ -1,20 +1,18 @@
 import { Box, Button, Grid, Stack, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { NewCardTableProps, FilteredValues } from './types';
-import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { useQuery } from 'urql';
-import { useTheme } from '@mui/material/styles';
-import ProjectTableBE from './ProjectCardBE';
-import CardTableNoData from './CardTableNoData';
-import LoadingPage from './LoadingPage';
-import useLocales from 'hooks/useLocales';
-import axiosInstance from 'utils/axios';
+import Select from '@mui/material/Select';
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
+import { useSnackbar } from 'notistack';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'redux/store';
-import ProjectCard from './ProjectCard';
-import ClientCard from './ClientCard';
+import axiosInstance from 'utils/axios';
 import { generateHeader } from '../../utils/generateProposalNumber';
+import CardTableNoData from './CardTableNoData';
+import ClientCard from './ClientCard';
+import LoadingPage from './LoadingPage';
+import ProjectCard from './ProjectCard';
+import { FilteredValues, NewCardTableProps } from './types';
 
 function NewCardTable({
   title,
@@ -24,6 +22,7 @@ function NewCardTable({
   url,
   headersProps,
 }: NewCardTableProps) {
+  const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
   const [page, setPage] = useState(1);
   const { translate } = useLocales();
@@ -49,14 +48,14 @@ function NewCardTable({
     try {
       setLoading(true);
       if (activeRole === 'tender_accounts_manager') {
-        if (filtered !== null) {
+        try {
           const res = await axiosInstance.get(url, {
             params: {
               limit: params.limit,
               page: page,
               employee_name: activeOptions.client_name ? filtered : undefined,
               user_type_id: activeOptions.account_status ? filtered : undefined,
-              association_name: filtered,
+              association_name: filtered || undefined,
               hide_internal: '1',
             },
             headers: headersProps,
@@ -64,7 +63,14 @@ function NewCardTable({
           if (res.data.statusCode === 200) {
             setData(res.data);
           }
-          // setLoading(false);
+        } catch (error) {
+          const statusCode = (error && error.statusCode) || 0;
+          const message = (error && error.message) || null;
+          enqueueSnackbar(`${statusCode < 500 && message ? message : 'something went wrong!'}`, {
+            variant: 'error',
+            preventDuplicate: true,
+            autoHideDuration: 3000,
+          });
         }
         // return res.data;
       } else {

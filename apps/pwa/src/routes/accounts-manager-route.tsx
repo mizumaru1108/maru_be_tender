@@ -3,7 +3,6 @@ import DashboardLayout from '../layouts/dashboard';
 import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
-import ProjectDetails from 'pages/project-details/ProjectDetails';
 
 const MainManagerPage = Loadable(lazy(() => import('pages/accounts-manager/MainManagerPage')));
 const NewJoinRequestPage = Loadable(lazy(() => import('pages/accounts-manager/new/join-request')));
@@ -37,6 +36,10 @@ const ProjectOwnerDetails = Loadable(
 );
 const Searching = Loadable(lazy(() => import('pages/searching')));
 
+const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
+
+const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
+
 export const accoutsManagerRoute = {
   path: 'accounts-manager',
   element: (
@@ -54,6 +57,14 @@ export const accoutsManagerRoute = {
         { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         { path: 'new/join-request', element: <NewJoinRequestPage /> },
         { path: 'info/update-request', element: <InfoUpdateRequestPage /> },
+        {
+          path: 'current-project',
+          children: [
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+            { path: 'preview/:id', element: <ProjectPreview /> },
+            { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
+          ],
+        },
         {
           path: 'partner',
           children: [

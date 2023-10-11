@@ -44,28 +44,6 @@ function ProjectOwnerDetailsMainPage() {
 
   const HEADERS = { 'x-hasura-role': activeRole! };
 
-  // const getAllProposalByClient = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await axiosInstance.get(
-  //       // `tender/client/proposal/list?page=1&limit=5`,
-  //       `tender/client/proposals?user_id=${submiterId}`,
-  //       {
-  //         headers: { 'x-hasura-role': activeRole! },
-  //       }
-  //     );
-  //     if (response.data.statusCode === 200) {
-  //       console.log(response.data);
-
-  //       setIsLoading(false);
-  //     }
-  //     return response.data;
-  //   } catch (error) {
-  //     setIsLoading(false);
-  //     throw error;
-  //   }
-  // };
-
   const [result, _] = useQuery({
     query: getSummaryProjectOwner,
     variables: { id: submiterId },

@@ -1,19 +1,10 @@
-import { Box, Grid, Link, Stack, Typography } from '@mui/material';
+import { Box, Grid, Stack, Typography } from '@mui/material';
 import { FEATURE_PROJECT_DETAILS } from 'config';
 import useLocales from 'hooks/useLocales';
-import moment from 'moment';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useSelector } from 'redux/store';
-import { useQuery } from 'urql';
-import { PropsalLogGrants } from '../../../../@types/proposal';
-import {
-  BeneficiariesMap,
-  target_age_map,
-  target_type_map,
-} from '../../../../@types/supervisor-accepting-form';
 import ButtonDownloadFiles from '../../../../components/button/ButtonDownloadFiles';
-import { getOneClosingReport } from '../../../../queries/commons/getOneClosingReport';
 import { fCurrencyNumber } from '../../../../utils/formatNumber';
 import BankImageComp from '../../../shared/BankImageComp';
 

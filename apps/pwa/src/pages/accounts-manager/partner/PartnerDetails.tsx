@@ -39,6 +39,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import uuidv4 from '../../../utils/uuidv4';
 import { addConversation, setActiveConversationId } from '../../../redux/slices/wschat';
+import { FEATURE_PROJECT_DETAILS } from 'config';
 
 // -------------------------------------------------------------------------------
 
@@ -291,6 +292,13 @@ function AccountPartnerDetails() {
         headers: { 'x-hasura-role': activeRole! },
       }
     );
+  };
+
+  const handleOpenProjectOwnerDetails = () => {
+    const submiterId = partnerId;
+    const urls = location.pathname.split('/');
+    const url = location.pathname.split('/').slice(0, 3).join('/');
+    navigate(`/${urls[1]}/dashboard/current-project/owner/${submiterId}`);
   };
 
   useEffect(() => {
@@ -835,6 +843,31 @@ function AccountPartnerDetails() {
                             '- No Data -'}
                         </Typography>
                       </Stack>
+                      {/* </Box> */}
+                    </Grid>
+                    <Grid item xs={12} md={12} alignItems="start">
+                      {/* <Box> */}
+                      <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>
+                        <Stack direction="column">
+                          <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+                            {translate('project_owner_details.card_title')}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              color: '#1E1E1E',
+                              fontSize: '12px',
+                              mb: '5px',
+                              textDecoration: 'underline',
+                              cursor: 'pointer',
+                            }}
+                            onClick={
+                              FEATURE_PROJECT_DETAILS ? handleOpenProjectOwnerDetails : undefined
+                            }
+                          >
+                            {translate('project_owner_details.card_href')}
+                          </Typography>
+                        </Stack>
+                      </Box>
                       {/* </Box> */}
                     </Grid>
                   </Grid>
