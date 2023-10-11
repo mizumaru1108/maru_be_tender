@@ -38,14 +38,12 @@ export default function TrackBudgetPage() {
   const { activeRole } = useAuth();
 
   const [open, setOpen] = useState<boolean>(false);
-  // const [tracksValue, setTrackValues] = useState<IDataTracks[] | []>([]);
   const [tracksTempValue, setTrackTempValues] = useState<FormTrackBudget[] | []>([]);
   const [loadingPage, setLoadingPage] = useState<boolean>(false);
 
   const getTrackDatas = async () => {
-    // setLoadingPage(true);
-
     try {
+      setLoadingPage(true);
       const { status, data } = await axiosInstance.get('/tender/track', {
         params: { is_deleted: '0', include_general: '0', include_relations: 'track_sections' },
         headers: { 'x-hasura-role': activeRole! },
@@ -64,11 +62,6 @@ export default function TrackBudgetPage() {
           });
         });
       } else {
-        // enqueueSnackbar(err.message, {
-        //   variant: 'error',
-        //   preventDuplicate: true,
-        //   autoHideDuration: 3000,
-        // });
         const statusCode = (err && err.statusCode) || 0;
         const message = (err && err.message) || null;
         enqueueSnackbar(
@@ -86,6 +79,8 @@ export default function TrackBudgetPage() {
           }
         );
       }
+    } finally {
+      setLoadingPage(false);
     }
   };
 
@@ -117,30 +112,6 @@ export default function TrackBudgetPage() {
     getTrackDatas();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    const firstArray = tracksTempValue;
-    const combinedArray: FormTrackBudget[] = [];
-
-    if (data) {
-      for (const item of data.track) {
-        const matchingItem = firstArray.find((i) => i.name === item.name);
-        if (matchingItem) {
-          matchingItem.budget = item.budget ?? matchingItem.budget ?? 0;
-          combinedArray.push(matchingItem);
-        } else {
-          combinedArray.push({
-            ...item,
-            budget: item.budget ?? 0,
-          });
-        }
-      }
-    }
-
-    // setTrackValues(combinedArray);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tracksTempValue, data]);
 
   if (error) return <>Opss. somthing went wrong</>;
 
@@ -188,10 +159,10 @@ export default function TrackBudgetPage() {
           </Grid>
           {tracksTempValue.length
             ? tracksTempValue
-                .sort((orderA, orderB) => (orderB?.budget || 0) - (orderA?.budget || 0))
+                .sort((orderA, orderB) => (orderB?.total_budget || 0) - (orderA?.total_budget || 0))
                 .map((item: FormTrackBudget, index: number) => (
                   <Grid item md={12} xs={12} key={index}>
-                    <Track key={index} name={item.name} id={item.id} budget={item.budget} />
+                    <Track key={index} name={item.name} id={item.id} budget={item.total_budget} />
                   </Grid>
                 ))
             : null}

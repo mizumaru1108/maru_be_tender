@@ -2,43 +2,49 @@
 import { Grid } from '@mui/material';
 import DailyStatistics from './DailyStatistics';
 import IncomingAmandementRequest from './IncomingAmandementRequest';
+import IncomingCloseReport from './IncomingCloseReport';
 import IncomingFundingRequests from './IncomingFundingRequests';
 import PaymentAdjustment from './PaymentAdjustment';
 import ProposalOnAmandement from './ProposalOnAmandement';
 import RequestsInProcess from './RequestsInProcess';
 import TrackBudget from './TrackBudget';
-import IncomingCloseReport from './IncomingCloseReport';
 // hooks
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 // urql + query
-import { useQuery } from 'urql';
-import { getOneEmployee } from 'queries/admin/getAllTheEmployees';
-import React from 'react';
-import { useSnackbar } from 'notistack';
-import { dispatch, useSelector } from 'redux/store';
-import { getTrackList } from 'redux/slices/proposal';
-import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
-import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
 import Space from 'components/space/space';
+import { getUserData } from 'queries/commons/getUserData';
+import React from 'react';
+import { getTrackList } from 'redux/slices/proposal';
+import { getTracksById } from 'redux/slices/track';
+import { dispatch, useSelector } from 'redux/store';
+import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
+import { useQuery } from 'urql';
+import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
+import { getOneEmployee } from 'queries/admin/getAllTheEmployees';
 
 function Main() {
   const { translate } = useLocales();
   const { user } = useAuth();
+  // console.log({ user });
+  const { isLoading: loadingTrack } = useSelector((state) => state.tracks);
 
-  const [{ data, fetching, error }] = useQuery({
+  const [result] = useQuery({
     query: getOneEmployee,
     variables: { id: user?.id },
   });
+  const { data, fetching, error } = result;
 
   const { activeRole } = useAuth();
   const { loadingCount } = useSelector((state) => state.proposal);
   React.useEffect(() => {
     dispatch(getTrackList(1, activeRole! as string));
-  }, [activeRole]);
+    if (data?.data?.track_id) {
+      dispatch(getTracksById(activeRole!, data?.data?.track_id || ''));
+    }
+  }, [activeRole, data?.data?.track_id]);
 
-  if (fetching || loadingCount) return <>{translate('pages.common.loading')}</>;
-  if (error) return <>{error.message}</>;
+  if (loadingCount) return <>{translate('pages.common.loading')}</>;
 
   return (
     <Grid container spacing={4}>
@@ -49,7 +55,8 @@ function Main() {
         <DailyStatistics />
       </Grid>
       <Grid item md={12}>
-        <TrackBudget path={data.data.employee_path} track_id={data.data.track_id} />
+        {(loadingTrack || fetching) && !error && !data ? null : <TrackBudget />}
+        {error && !fetching ? 'Oops something went wrong' : null}
       </Grid>
       <IncomingFundingRequests />
       <Space direction="horizontal" size="small" />

@@ -37,9 +37,6 @@ function Main() {
       <Grid item md={12} xs={12}>
         <DailyStatistics />
       </Grid>
-      {/* <Grid item md={12}>
-        <TrackBudget path={data.data.employee_path} track_id={data.data.track_id} />
-      </Grid> */}
       <IncomingExchangePermissionRequests />
       <Space direction="horizontal" size="small" />
       <RequestsInProcess />

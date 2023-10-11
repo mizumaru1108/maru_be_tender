@@ -61,7 +61,8 @@ function checkBudgetSum(data: TrackSection[], initBugdet: number): boolean {
           .reduce((acc, k) => acc + (k.budget || 0), 0) || 0;
       // const parentBudget = parentMap.get(parentId) || 0;
       const parentBudget =
-        data.find((track_section) => track_section.id === item.parent_section_id)?.budget || 0;
+        data.find((track_section) => track_section.id === item.parent_section_id)?.total_budget ||
+        0;
 
       // console.log({ parentBudget, childBudget });
 
@@ -84,6 +85,7 @@ export interface FormTrackBudget {
   id?: string;
   name?: string;
   budget?: number;
+  total_budget?: number;
   track_id?: string;
   proposal?: Proposal[];
   is_deleted?: boolean;
@@ -114,13 +116,13 @@ export default function FormNestedTrackBudget({
     name: defaultValuesTrackBudget?.name
       ? formatCapitalizeText(defaultValuesTrackBudget?.name)
       : '-',
-    budget: 0,
+    total_budget: 0,
     sections: [],
   };
 
   const SubmitFormSchema = useMemo(() => {
     const tmpSchema = Yup.object().shape({
-      budget: Yup.number()
+      total_budget: Yup.number()
         .nullable()
         .min(1, translate(translate('track_budgets.errors.budgets.min')))
         .required(translate('errors.cre_proposal.detail_project_budgets.amount.required')),
@@ -192,6 +194,7 @@ export default function FormNestedTrackBudget({
     // defaultValues,
   });
   const { control, register, handleSubmit, getValues, setValue, watch, setError } = methods;
+
   const onSubmit = (data: FormTrackBudget) => {
     const tmpPayload = data;
     // const tmpTotalSummary = sumBudget(tmpPayload?.sections || []);
@@ -205,10 +208,12 @@ export default function FormNestedTrackBudget({
       tmpPayload?.sections || [],
       defaultValuesTrackBudget?.track_id || '-'
     );
-    if (tmpTotalSummary > 0 && tmpPayload.budget !== tmpTotalSummary) {
+    if (tmpTotalSummary > 0 && tmpPayload.total_budget !== tmpTotalSummary) {
       setBudgetError({
         open: true,
-        message: `${translate('budget_error_message')} (${tmpTotalSummary} : ${tmpPayload.budget})`,
+        message: `${translate('budget_error_message')} (${tmpTotalSummary} : ${
+          tmpPayload.total_budget
+        })`,
       });
     } else {
       if (tmpFlatArray.length === 0) {
@@ -217,9 +222,9 @@ export default function FormNestedTrackBudget({
           message: `${translate('min_budget_error_message')}`,
         });
       } else {
-        if (tmpPayload.budget) {
+        if (tmpPayload.total_budget) {
           try {
-            checkBudgetSum(tmpFlatArray, tmpPayload.budget);
+            checkBudgetSum(tmpFlatArray, tmpPayload.total_budget);
             setBudgetError({
               open: false,
               message: '',
@@ -248,7 +253,7 @@ export default function FormNestedTrackBudget({
         <Grid item md={12} xs={12} sx={{ padding: '0 7px' }}>
           <RHFTextField
             disabled={isLoading}
-            name="budget"
+            name="total_budget"
             type="number"
             size="medium"
             label={translate('pages.admin.tracks_budget.form.amount.label')}

@@ -11,25 +11,11 @@ import DashboardProjectManagement from './ProjectManagement';
 
 function CeoDashboard() {
   const { translate } = useLocales();
-  // const { isLoading } = useSelector((state) => state.proposal);
-  // const { user } = useAuth();
-
-  // const [{ data, fetching, error }] = useQuery({
-  //   query: getOneEmployee,
-  //   variables: { id: user?.id },
-  // });
-
-  // useEffect(() => {
-  //   dispatch(getTrackList(0, role as string));
-  // }, [activeRole, role]);
-
-  // if (fetching || isLoading) return <>{translate('pages.common.loading')}</>;
-  // if (error) return <>{error.message}</>;
 
   const { activeRole } = useAuth();
   const { loadingCount } = useSelector((state) => state.proposal);
   React.useEffect(() => {
-    dispatch(getTrackList(1, activeRole! as string));
+    dispatch(getTrackList(0, activeRole! as string, 0));
   }, [activeRole]);
 
   if (loadingCount) return <>{translate('pages.common.loading')}</>;

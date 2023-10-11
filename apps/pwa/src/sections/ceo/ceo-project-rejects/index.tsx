@@ -142,7 +142,7 @@ function CeoProjectRejects() {
 
   useEffect(() => {
     // dispatch(setTracks(filteredTrack));
-    dispatch(getTrackList(1, activeRole! as string));
+    dispatch(getTrackList(0, activeRole! as string, 0));
   }, [dispatch, activeRole]);
 
   const headerCells: ProjectManagementTableHeader[] = [

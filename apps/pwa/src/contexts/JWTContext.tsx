@@ -189,6 +189,10 @@ function AuthProvider({ children }: AuthProviderProps) {
               roles: userRegistration.roles,
             });
 
+            // TODO retrive new userData
+            // const url = `${TMRA_RAISE_URL}/tender-auth/login`;
+            // const response = await axios.get(url);
+
             window.location.reload();
             dispatch({
               type: Types.Initial,
@@ -292,6 +296,11 @@ function AuthProvider({ children }: AuthProviderProps) {
     // }
     setSession(accessToken!, refreshToken!);
 
+    const tmpUser = {
+      ...user,
+      userData: response?.data?.data?.userData || null,
+    };
+
     // Datadog RUM
     datadogRum.setUser({
       id: user?.id,
@@ -304,7 +313,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     dispatch({
       type: Types.Login,
       payload: {
-        user,
+        user: tmpUser,
         activeRole: activeRole as FusionAuthRoles,
         token: accessToken,
         refreshToken: refreshToken,

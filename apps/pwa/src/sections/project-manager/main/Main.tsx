@@ -1,38 +1,41 @@
 import { Grid } from '@mui/material';
 import DailyStatistics from './DailyStatistics';
-import IncomingFundingRequests from './IncomingFundingRequests';
 import ExchangePermission from './ExchangePermission';
+import IncomingFundingRequests from './IncomingFundingRequests';
 import RequestsInProcess from './RequestsInProcess';
-import ProposalOnAmandement from './ProposalOnAmandement';
 // hooks
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 // urql + query
-import { useQuery } from 'urql';
-import { getOneEmployee } from 'queries/admin/getAllTheEmployees';
-import TrackBudget from 'sections/project-manager/main/TrackBudget';
-import React from 'react';
-import { dispatch, useSelector } from 'redux/store';
-import { getTrackList } from 'redux/slices/proposal';
-import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
 import Space from 'components/space/space';
+import { getOneEmployee } from 'queries/admin/getAllTheEmployees';
+import React from 'react';
+import { getTrackList } from 'redux/slices/proposal';
+import { getTracksById } from 'redux/slices/track';
+import { dispatch, useSelector } from 'redux/store';
+import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
+import TrackBudget from 'sections/project-supervisor/main/TrackBudget';
+import { useQuery } from 'urql';
 
 function Main() {
   const { translate } = useLocales();
   const { user, activeRole } = useAuth();
+  const { isLoading: loadingTrack } = useSelector((state) => state.tracks);
+  const { loadingCount } = useSelector((state) => state.proposal);
 
   const [{ data, fetching, error }] = useQuery({
     query: getOneEmployee,
     variables: { id: user?.id },
   });
 
-  const { loadingCount } = useSelector((state) => state.proposal);
   React.useEffect(() => {
     dispatch(getTrackList(1, activeRole! as string));
-  }, [activeRole]);
+    if (data?.data?.track_id) {
+      dispatch(getTracksById(activeRole!, data?.data?.track_id));
+    }
+  }, [activeRole, data?.data?.track_id]);
 
-  if (fetching || loadingCount) return <>{translate('pages.common.loading')}</>;
-  if (error) return <>{error.message}</>;
+  if (loadingCount) return <>{translate('pages.common.loading')}</>;
 
   return (
     <Grid container spacing={4}>
@@ -43,7 +46,8 @@ function Main() {
         <DailyStatistics />
       </Grid>
       <Grid item md={12}>
-        <TrackBudget path={data.data.employee_path} track_id={data.data.track_id} />
+        {(loadingTrack || fetching) && !error && !data ? null : <TrackBudget />}
+        {error && !fetching ? 'Oops something went wrong' : null}
       </Grid>
       <IncomingFundingRequests />
       <Space direction="horizontal" size="small" />
