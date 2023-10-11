@@ -29,6 +29,9 @@ import { generateHeader } from '../../../utils/generateProposalNumber';
 import TableSkeleton from '../TableSkeleton';
 import OldProposalTableRow from './OldProposalTableRow';
 import { OldProposalsList } from './types';
+import { useSelector } from 'redux/store';
+import EmptyContent from 'components/EmptyContent';
+import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 
 const TABLE_HEAD = [
   { id: 'project_number', label: 'old_proposal.headercell.project_number' },
@@ -37,35 +40,18 @@ const TABLE_HEAD = [
     label: 'old_proposal.headercell.project_name',
     align: 'left',
   },
-  // {
-  //   id: 'employee_name',
-  //   label: 'old_proposal.headercell.employee_name',
-  //   align: 'left',
-  // },
   { id: 'events', label: 'client_list_headercell.events', align: 'left' },
 ];
 
-// const ITEM_HEIGHT = 48;
-// const ITEM_PADDING_TOP = 8;
-// const MenuProps = {
-//   PaperProps: {
-//     style: {
-//       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-//       width: 250,
-//     },
-//   },
-// };
-
 const status = [
-  'Pending',
-  'Canceled',
-  'Completed',
-  'Ongoing',
-  'On Revision',
-  'Asked for Amandement',
+  'COMPLETED',
+  'CANCELED',
+  'PENDING',
+  'ONGOING',
+  'ON_REVISION',
+  'ASKED_FOR_AMENDMENT',
+  'ASKED_FOR_AMENDMENT_PAYMENT',
 ];
-
-const tracks = ['Mosques', 'Concessional grants', 'Initiatives', 'Baptisms'];
 
 export default function OldProposalTable() {
   const {
@@ -85,28 +71,11 @@ export default function OldProposalTable() {
 
   const { translate } = useLocales();
   const { activeRole } = useAuth();
-  const [sortOrder, setSortOrder] = useState<any>({ employee_name: 'asc' });
-
-  // const [{ data, fetching, error }, mutate] = useQuery({
-  //   query: allClientData,
-  //   variables: {
-  //     limit: rowsPerPage,
-  //     offset: page * rowsPerPage,
-  //     order_by: sortOrder,
-  //   },
-  // });
+  const { track_list } = useSelector((state) => state.proposal);
 
   const [tableData, setTableData] = useState<Array<OldProposalsList>>([]);
 
-  const [filterName, setFilterName] = useState('');
-
-  const [filterRole, setFilterRole] = useState('all');
-
   const [isLoading, setIsLoading] = useState(false);
-
-  const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('all');
-
-  const [sortValue, setSortValue] = useState<string>('employee_name asc');
 
   const [projectName, setProjectName] = useState('');
 
@@ -134,102 +103,28 @@ export default function OldProposalTable() {
     );
   };
 
-  const sortOptions = [
-    {
-      value: 'employee_name asc',
-      // title: 'Client Name (ASC)',
-      title: translate('table_filter.sortby_options.client_name_az'),
-    },
-    {
-      value: 'employee_name desc',
-      // title: 'Client Name (DESC)',
-      title: translate('table_filter.sortby_options.client_name_za'),
-    },
-    {
-      value: 'email asc',
-      // title: 'Email (ASC)',
-      title: translate('table_filter.sortby_options.email_az'),
-    },
-    {
-      value: 'email desc',
-      // title: 'Email (DESC)',
-      title: translate('table_filter.sortby_options.email_za'),
-    },
-    {
-      value: 'governorate asc',
-      // title: 'governorate (ASC)',
-      title: translate('table_filter.sortby_options.governorate_az'),
-    },
-    {
-      value: 'governorate desc',
-      // title: 'governorate (DESC)',
-      title: translate('table_filter.sortby_options.governorate_za'),
-    },
-  ];
-
   const handleChange = (name: string) => {
-    setProjectName(`&project_name=${name}`);
-    let project_name: string = `&project_name=${name}`;
-    const filterStatus = projectStatus.map((status) => {
-      if (status === 'Pending') {
-        return `PENDING`;
-      } else if (status === 'Canceled') {
-        return `CANCELED`;
-      } else if (status === 'Completed') {
-        return `COMPLETED`;
-      } else if (status === 'Ongoing') {
-        return `ONGOING`;
-      } else if (status === 'On Revision') {
-        return `ON_REVISION`;
-      } else if (status === 'Asked for Amandement') {
-        return `ASKED_FOR_AMANDEMENT`;
-      }
-      return false;
-    });
-
-    const filterTracks = projectTrack.map((track) => {
-      if (track === 'Mosques') {
-        return `MOSQUES`;
-      } else if (track === 'Concessional grants') {
-        return `CONCESSIONAL_GRANTS`;
-      } else if (track === 'Initiatives') {
-        return `INITIATIVES`;
-      } else if (track === 'Baptisms') {
-        return `BAPTISMS`;
-      }
-      return false;
-    });
-
-    const statusParams = filterStatus.map((status: any) => `outter_status=${status}`);
-    const trackParams = filterTracks.map((track: any) => `project_track=${track}`);
-    const joinFilterStatus = statusParams.join('&');
-    const joinFilterTrack = trackParams.join('&');
-
-    if (name && projectTrack.length > 0 && projectStatus.length > 0) {
-      setProjectName(`${project_name}&${joinFilterStatus}&${joinFilterTrack}`);
-    } else if (name && projectStatus.length > 0) {
-      setProjectName(`${project_name}&${joinFilterStatus}`);
-    } else if (name && projectTrack.length > 0) {
-      setProjectName(`${project_name}&${joinFilterTrack}`);
-    } else if (name) {
-      setProjectName(project_name);
+    if (name) {
+      setProjectName(name);
     } else {
       setProjectName('');
     }
-    setPage(0);
   };
 
   const getDataClient = async () => {
-    let currentPage = page + 1;
+    const url = 'tender-proposal/old/list';
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(
-        // `tender/client/proposal/list?page=${currentPage}&limit=${rowsPerPage}`,
-        `tender-proposal/old/list?limit=${rowsPerPage}&page=${currentPage}${projectName}`,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-        }
-      );
+      const response = await axiosInstance.get(url, {
+        headers: { 'x-hasura-role': activeRole! },
+        params: {
+          page: page + 1,
+          limit: rowsPerPage,
+          track_id: projectTrack.length > 0 ? projectTrack.join(',') : undefined,
+          status: projectStatus.length > 0 ? projectStatus.join(',') : undefined,
+          project_name: projectName || undefined,
+        },
+      });
       if (response.data.statusCode === 200) {
         setTableData(
           response.data.data.map((item: any, index: any) => ({
@@ -239,69 +134,23 @@ export default function OldProposalTable() {
               item && item.project_number && item.project_number ? item.project_number : item.id
             ),
             employee_name: item.user.employee_name ?? 'No Record',
-            // client_name: item.employee_name,
-            // email: item.email,
-            // number_phone: item.mobile_number,
-            // governorate: item.governorate,
-            // user_id: item.id,
-            // total_proposal: item.proposal_count,
           }))
         );
         setTotal(response.data.total as number);
-        setIsLoading(false);
       }
-      return response.data;
     } catch (error) {
-      setIsLoading(false);
+      console.log({ error });
       return <>...Opss, something went wrong</>;
-    }
-  };
-
-  const handleFilterName = (filterName: string) => {
-    setFilterName(filterName);
-    setPage(0);
-  };
-
-  const handleFilterRole = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterRole(event.target.value);
-  };
-
-  const dataFiltered = applySortFilter({
-    tableData,
-    comparator: getComparator(order, orderBy),
-    filterName,
-    filterRole,
-    filterStatus,
-  });
-
-  const denseHeight = dense ? 52 : 72;
-
-  const isNotFound =
-    (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterRole) ||
-    (!dataFiltered.length && !!filterStatus);
-
-  const handleSortData = (event: any) => {
-    const { value } = event.target;
-    setSortValue(event.target.value as string);
-    const [key, order] = value.split(' ');
-    if (key === 'governorate') {
-      const newOrder = { client_data: { [key]: order } };
-      setSortOrder(newOrder);
-    } else {
-      const newOrder = { [key]: order };
-
-      setSortOrder(newOrder);
+    } finally {
+      setIsLoading(false);
+      onChangePage(null, 0);
     }
   };
 
   useEffect(() => {
     getDataClient();
-    // mutate();
     // eslint-disable-next-line
-  }, [page, rowsPerPage, orderBy, projectName]);
-
-  // if (error) return <>...Opss, something went wrong</>;
+  }, [page, rowsPerPage, projectName, projectStatus, projectTrack]);
 
   return (
     <Box>
@@ -320,15 +169,26 @@ export default function OldProposalTable() {
             value={projectStatus}
             onChange={handleSelectedStatus}
             input={<OutlinedInput label={translate('search_component.by_project_status')} />}
-            renderValue={(selected) => selected.join(', ')}
+            // renderValue={(selected) => selected.join(', ')}
+            renderValue={(selected) => {
+              const newSelected = selected.map((item) =>
+                translate(`portal_report.outter_status.${item.toLowerCase()}`)
+              );
+              return newSelected.join(', ');
+            }}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: 300,
+                },
+              },
+            }}
           >
             {status.map((item) => (
               <MenuItem key={item} value={item}>
                 <Checkbox checked={projectStatus.indexOf(item) > -1} />
                 <ListItemText
-                  primary={translate(
-                    `outter_status.${item.replace(/ /g, '_').toUpperCase()}`
-                  ).toLowerCase()}
+                  primary={translate(`portal_report.outter_status.${item.toLowerCase()}`)}
                 />
               </MenuItem>
             ))}
@@ -342,18 +202,22 @@ export default function OldProposalTable() {
           <Select
             labelId="demo-multiple-checkbox-label"
             id="demo-multiple-checkbox"
-            multiple
             value={projectTrack}
             onChange={handleSelectedTrack}
             input={<OutlinedInput label={translate('search_component.by_track_name')} />}
             renderValue={(selected) => selected.join(', ')}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: 300,
+                },
+              },
+            }}
           >
-            {tracks.map((track) => (
-              <MenuItem key={track} value={track}>
-                <Checkbox checked={projectTrack.indexOf(track) > -1} />
-                <ListItemText
-                  primary={translate(`${track.replace(/ /g, '_').toUpperCase()}`).toLowerCase()}
-                />
+            {track_list.map((track) => (
+              <MenuItem key={track.id} value={track.id}>
+                <Checkbox checked={projectTrack.indexOf(track.id) > -1} />
+                {formatCapitalizeText(track?.name)}
               </MenuItem>
             ))}
           </Select>
@@ -377,17 +241,15 @@ export default function OldProposalTable() {
               <TableBody>
                 {isLoading
                   ? [...Array(rowsPerPage)].map((item, index) => <TableSkeleton key={index} />)
-                  : dataFiltered.map((row) => (
-                      <OldProposalTableRow
-                        key={row.id}
-                        row={row}
-                        // selected={selected.includes(row?.user_id)}
-                        // onSelectRow={() => onSelectRow(row?.user_id)}
-                      />
-                    ))}
-                {!isLoading && dataFiltered.length === 0 && <TableNoData isNotFound={isNotFound} />}
-                {/* {isNotFound && <TableNoData isNotFound={isNotFound} />} */}
-                {/* <TableEmptyRows height={denseHeight} emptyRows={0} /> */}
+                  : tableData.map((row) => <OldProposalTableRow key={row.id} row={row} />)}
+                {!isLoading && tableData.length === 0 && (
+                  <EmptyContent
+                    title="لا يوجد بيانات"
+                    sx={{
+                      '& span.MuiBox-root': { height: 160 },
+                    }}
+                  />
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -410,44 +272,3 @@ export default function OldProposalTable() {
 }
 
 // ----------------------------------------------------------------------
-
-function applySortFilter({
-  tableData,
-  comparator,
-  filterName,
-  filterStatus,
-  filterRole,
-}: {
-  tableData: OldProposalsList[];
-  comparator: (a: any, b: any) => number;
-  filterName: string;
-  filterStatus: string;
-  filterRole: string;
-}) {
-  const stabilizedThis = tableData.map((el, index) => [el, index] as const);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  tableData = stabilizedThis.map((el) => el[0]);
-
-  if (filterName) {
-    tableData = tableData.filter(
-      (item: Record<string, any>) =>
-        item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
-  }
-
-  if (filterStatus !== 'all') {
-    tableData = tableData.filter((item: Record<string, any>) => item.status === filterStatus);
-  }
-
-  if (filterRole !== 'all') {
-    tableData = tableData.filter((item: Record<string, any>) => item.role === filterRole);
-  }
-
-  return tableData;
-}

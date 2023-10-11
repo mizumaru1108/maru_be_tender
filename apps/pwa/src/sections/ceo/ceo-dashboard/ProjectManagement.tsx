@@ -91,20 +91,6 @@ function DashboardProjectManagement() {
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       console.log({ err });
-      // enqueueSnackbar(
-      //   `${
-      //     statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
-      //   }`,
-      //   {
-      //     variant: 'error',
-      //     preventDuplicate: true,
-      //     autoHideDuration: 3000,
-      //     anchorOrigin: {
-      //       vertical: 'bottom',
-      //       horizontal: 'center',
-      //     },
-      //   }
-      // );
       enqueueSnackbar('ini error', {
         variant: 'error',
         preventDuplicate: true,
@@ -124,10 +110,6 @@ function DashboardProjectManagement() {
     fetchingIncoming();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchingIncoming]);
-
-  // useEffect(() => {
-  //   dispatch(getTrackList(0, activeRole! as string));
-  // }, [dispatch, activeRole]);
 
   const headerCells: ProjectManagementTableHeader[] = [
     {

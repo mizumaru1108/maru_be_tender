@@ -523,7 +523,7 @@ export const getProposal = (id: string, role: string) => async () => {
 };
 export const getTrackList = (isGeneral: number, role: string, isDeleted?: number) => async () => {
   // console.log('masuk sini');
-  const tmpIsDeleted = !!isDeleted ? isDeleted : undefined;
+  // const tmpIsDeleted = !!isDeleted ? isDeleted : undefined;
   try {
     dispatch(slice.actions.startLoadingTrack(true));
     let url = '/tender/track';
