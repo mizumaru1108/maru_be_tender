@@ -21,7 +21,7 @@ import { BannerModule } from 'src/banners/banner.module';
 import { discordConfig } from 'src/commons/configs/discord.config';
 import { HealthModule } from 'src/health/health.module';
 import { AuthorityManagementModule } from './authority-management/authority.management.module';
-import { BankModule } from './bank/bank.module';
+import { BankInformationModule } from './bank/bank.module';
 import { BeneficiaryModule } from './beneficiary/beneficiary.module';
 import { gapiConfig } from './commons/configs/gapi-config';
 import { mseGatConfig } from './commons/configs/msegat-config';
@@ -161,7 +161,7 @@ const PINO_LOGGER_EXCLUDE_HOSTNAME_PID = { base: undefined };
     TenderEventsModule,
     NotificationManagementModule,
     TenderFileManagerModule,
-    BankModule,
+    BankInformationModule,
     QaHelperModule,
     BannerModule,
     HealthModule,

@@ -7,11 +7,14 @@ import { TenderClientRepository } from './repositories/tender-client.repository'
 import { TenderClientService } from './services/tender-client.service';
 import { ClientCreateEditRequestCommandHandler } from './commands/client.create.edit.request/client.create.edit.request.command';
 import { EditRequestModule } from '../edit-requests/edit.request.module';
+import { ClientApproveEditRequestCommandHandler } from './commands/client.approve.edit.request/client.approve.edit.request.command';
+import { BankInformationModule } from '../../bank/bank.module';
 
 const importedModule = [
   CqrsModule,
   forwardRef(() => UserModule),
   EditRequestModule,
+  BankInformationModule,
 ];
 const controllers = [TenderClientController];
 const repositories: Provider[] = [TenderClientRepository];
@@ -19,6 +22,7 @@ const commands: Provider[] = [
   // Client Domain
   TenderClientService,
   ClientCreateEditRequestCommandHandler,
+  ClientApproveEditRequestCommandHandler,
 ];
 const queries: Provider[] = [ClientFindNameAndIdQueryHandler];
 const exportedProviders: Provider[] = [

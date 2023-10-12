@@ -5,4 +5,4 @@ import { BankInformationRepository } from './repositories/bank-information.repos
   providers: [BankInformationRepository],
   exports: [BankInformationRepository],
 })
-export class BankModule {}
+export class BankInformationModule {}

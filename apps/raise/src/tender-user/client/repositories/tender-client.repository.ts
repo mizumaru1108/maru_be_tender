@@ -254,6 +254,7 @@ export class TenderClientRepository {
     let whereClause: Prisma.client_dataWhereInput = {};
 
     if (props.license_number) whereClause.license_number = props.license_number;
+    if (props.user_id) whereClause.user_id = props.user_id;
 
     args.where = whereClause;
 

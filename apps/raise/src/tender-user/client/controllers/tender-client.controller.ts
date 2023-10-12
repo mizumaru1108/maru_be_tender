@@ -38,6 +38,11 @@ import {
   ClientFindNameAndIdQueryResult,
 } from '../queries/client.find.name.and.id/client.find.name.and.id.query';
 import { TenderClientService } from '../services/tender-client.service';
+import { BannerTypeEnum } from '../../../banners/types/enums/banner.type.enum';
+import {
+  ClientApproveEditRequestCommand,
+  ClientApproveEditRequestCommandResult,
+} from '../commands/client.approve.edit.request/client.approve.edit.request.command';
 @ApiTags('ClientModule')
 @Controller('tender/client')
 export class TenderClientController {
@@ -257,6 +262,25 @@ export class TenderClientController {
     );
   }
 
+  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  // @TenderRoles('tender_accounts_manager')
+  // @Patch('approve-edit-requests')
+  // async approveEditRequests(
+  //   @CurrentUser() user: TenderCurrentUser,
+  //   @Body() editRequest: EditRequestByIdDto,
+  // ): Promise<BaseResponse<any>> {
+  //   const response = await this.tenderClientService.acceptEditRequests(
+  //     user.id,
+  //     editRequest.requestId,
+  //   );
+
+  //   return baseResponseHelper(
+  //     response,
+  //     HttpStatus.OK,
+  //     'Asking for changes successfully applied!',
+  //   );
+  // }
+
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_accounts_manager')
   @Patch('approve-edit-requests')
@@ -264,16 +288,28 @@ export class TenderClientController {
     @CurrentUser() user: TenderCurrentUser,
     @Body() editRequest: EditRequestByIdDto,
   ): Promise<BaseResponse<any>> {
-    const response = await this.tenderClientService.acceptEditRequests(
-      user.id,
-      editRequest.requestId,
-    );
+    try {
+      const command = Builder<ClientApproveEditRequestCommand>(
+        ClientApproveEditRequestCommand,
+        {
+          reviewerId: user.id,
+          requestId: editRequest.requestId,
+        },
+      ).build();
 
-    return baseResponseHelper(
-      response,
-      HttpStatus.OK,
-      'Asking for changes successfully applied!',
-    );
+      const result = await this.commandBus.execute<
+        ClientApproveEditRequestCommand,
+        ClientApproveEditRequestCommandResult
+      >(command);
+
+      return baseResponseHelper(
+        result,
+        HttpStatus.CREATED,
+        'Asking for changes successfully applied!',
+      );
+    } catch (e) {
+      throw e;
+    }
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)

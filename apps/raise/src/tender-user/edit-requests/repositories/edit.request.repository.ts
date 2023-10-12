@@ -15,8 +15,6 @@ export class EditRequestCreateProps {
   reviewer_id: string;
   status_id: string;
   reject_reason: string;
-  rejected_at: string;
-  accepted_at: string;
 }
 
 export class EditRequestUpdateProps {
@@ -27,10 +25,16 @@ export class EditRequestUpdateProps {
   reviewer_id?: string;
   status_id?: string;
   reject_reason?: string;
-  rejected_at?: string;
-  accepted_at?: string;
+  rejected_at?: Date | null;
+  accepted_at?: Date | null;
 }
 
+export class EditRequestFindFirstProps {
+  id?: string;
+  include_relations?: EditRequestIncludeRelationsTypes[];
+}
+
+export type EditRequestIncludeRelationsTypes = 'reviewer' | 'user';
 export class EditRequestDeleteManyProps {
   user_id: string;
   status_id: Array<'APPROVED' | 'REJECTED'>;
@@ -59,6 +63,71 @@ export class EditRequestRepository {
     throw new InternalServerErrorException(error);
   }
 
+  applyInclude(include_relations: EditRequestIncludeRelationsTypes[]) {
+    let include: Prisma.edit_requestsInclude = {};
+
+    for (const relation of include_relations) {
+      if (relation === 'reviewer') {
+        include = {
+          ...include,
+          reviewer: true,
+        };
+      }
+
+      if (relation === 'user') {
+        include = {
+          ...include,
+          user: true,
+        };
+      }
+    }
+    return include;
+  }
+
+  findFirstFilter(props: EditRequestFindFirstProps) {
+    const args: Prisma.edit_requestsFindFirstArgs = {};
+    let whereClause: Prisma.edit_requestsWhereInput = {};
+
+    if (props.id) {
+      whereClause.id = props.id;
+    }
+
+    args.where = whereClause;
+
+    if (props.include_relations && props.include_relations.length > 0) {
+      args.include = this.applyInclude(props.include_relations);
+    }
+
+    return args;
+  }
+
+  async findFirst(
+    props: EditRequestFindFirstProps,
+    tx?: PrismaService,
+  ): Promise<EditRequestEntity | null> {
+    let prisma = this.prismaService;
+    if (tx) prisma = tx;
+    try {
+      const args = this.findFirstFilter(props);
+      const rawMailing = await prisma.edit_requests.findFirst({
+        where: args.where,
+        include: args.include,
+      });
+
+      if (!rawMailing) return null;
+
+      const entity = Builder<EditRequestEntity>(
+        EditRequestEntity,
+        rawMailing,
+      ).build();
+
+      return entity;
+    } catch (err) {
+      this.logger.error(`error when finding edit_requests by id ${err}`);
+      throw err;
+    }
+  }
+
   async create(
     props: EditRequestCreateProps,
     session?: PrismaService,
@@ -75,8 +144,6 @@ export class EditRequestRepository {
           reviewer_id: props.reviewer_id,
           status_id: props.status_id,
           reject_reason: props.reject_reason,
-          rejected_at: props.rejected_at,
-          accepted_at: props.accepted_at,
         },
       });
 
@@ -95,6 +162,7 @@ export class EditRequestRepository {
   ): Promise<EditRequestEntity> {
     let prisma = this.prismaService;
     if (session) prisma = session;
+    console.log({ props });
     try {
       const rawUpdated = await prisma.edit_requests.update({
         where: { id: props.id },

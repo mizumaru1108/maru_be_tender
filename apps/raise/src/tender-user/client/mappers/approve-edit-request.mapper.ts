@@ -31,7 +31,7 @@ export function ApproveEditRequestMapper(
     num_of_beneficiaries,
     num_of_employed_facility,
     phone,
-    region,
+    // region,
     region_id,
     twitter_acount,
     website,

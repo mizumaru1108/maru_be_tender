@@ -9,7 +9,6 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { bank_information, client_data, Prisma } from '@prisma/client';
 import moment from 'moment';
-import { v4 as uuidv4 } from 'uuid';
 import { FileMimeTypeEnum } from '../../../commons/enums/file-mimetype.enum';
 import { envLoadErrorHelper } from '../../../commons/helpers/env-loaderror-helper';
 import { isExistAndValidPhone } from '../../../commons/utils/is-exist-and-valid-phone';
@@ -23,11 +22,9 @@ import { TwilioService } from '../../../libs/twilio/services/twilio.service';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
-import { isTenderFilePayload } from '../../../tender-commons/utils/is-tender-file-payload';
 import { isUploadFileJsonb } from '../../../tender-commons/utils/is-upload-file-jsonb';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { ClientEditRequestFieldDto } from '../dtos/requests/client-edit-request-field.dto';
-import { ExistingClientBankInformation } from '../dtos/requests/existing-bank-information.dto';
 import { RejectEditRequestDto } from '../dtos/requests/reject-edit-request.dto';
 import { SearchEditRequestFilter } from '../dtos/requests/search-edit-request-filter-request.dto';
 import { RawCreateEditRequestResponse } from '../dtos/responses/raw-create-edit-request-response.dto';
@@ -36,8 +33,6 @@ import { ApproveEditRequestMapper } from '../mappers/approve-edit-request.mapper
 import { TenderClientRepository } from '../repositories/tender-client.repository';
 
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
-import { logUtil } from '../../../commons/utils/log-util';
 import { CreateNotificationDto } from '../../../notification-management/notification/dtos/requests/create-notification.dto';
 import { TenderNotificationRepository } from '../../../notification-management/notification/repository/tender-notification.repository';
 import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
@@ -45,6 +40,7 @@ import { finalUploadFileJson } from '../../../tender-commons/dto/final-upload-fi
 import { TenderUserRepository } from '../../user/repositories/tender-user.repository';
 import { SearchClientProposalFilter } from '../dtos/requests/search-client-proposal-filter-request.dto';
 import { SearchSpecificClientProposalFilter } from '../dtos/requests/search-specific-client-proposal-filter-request.dto';
+import { logUtil } from '../../../commons/utils/log-util';
 @Injectable()
 export class TenderClientService {
   private readonly appEnv: string;
@@ -683,13 +679,13 @@ export class TenderClientService {
 
       // updateClientPayload.board_ofdec_file = [new_data.board_ofdec_file];
 
-      // console.log({ deletedFileManagerUrls });
-      // console.log({ old_data });
-      // console.log({ new_data });
-      // console.log({ updateClientPayload });
-      // console.log(logUtil(deleted_bank));
+      console.log({ deletedFileManagerUrls });
+      console.log({ old_data });
+      console.log({ new_data });
+      console.log({ updateClientPayload });
+      console.log(logUtil(deleted_bank));
 
-      // throw new BadRequestException('lagi di debug');
+      throw new BadRequestException('lagi di debug');
       const response = await this.tenderClientRepository.approveEditRequests(
         requestId,
         reviewerId,

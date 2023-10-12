@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { CqrsModule } from '@nestjs/cqrs';
-import { BankModule } from '../bank/bank.module';
+import { BankInformationModule } from '../bank/bank.module';
 import { ClientModule } from '../tender-user/client/client.module';
 import { UserModule } from '../tender-user/user/user.module';
 import { AskForgotPasswordUrlCommandHandler } from './commands/ask-forgot-password-url/ask.forgot.password.url.command';
@@ -24,7 +24,12 @@ const commands = [
   SubmitChangePasswordCommandHandler,
 ];
 
-const importedModules = [CqrsModule, ClientModule, UserModule, BankModule];
+const importedModules = [
+  CqrsModule,
+  ClientModule,
+  UserModule,
+  BankInformationModule,
+];
 @Module({
   controllers: [TenderAuthController],
   providers: [TenderAuthRepository, ...commands],
