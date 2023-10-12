@@ -77,10 +77,14 @@ export const { setTracks, setTrack } = slice.actions;
 export default slice.reducer;
 
 export const getTracks = (role: string) => async () => {
+  const params = {
+    include_relations: `track_sections,proposal`,
+  };
   try {
     dispatch(slice.actions.startLoading);
 
     const response = await axiosInstance.get(`tender/track?is_deleted=0`, {
+      params: { ...params },
       headers: { 'x-hasura-role': role },
     });
     if (response.data.statusCode === 200) {

@@ -453,20 +453,10 @@ export const getProposal = (id: string, role: string) => async () => {
       role === 'tender_finance' ||
       role === 'tender_client' ||
       role === 'tender_cashier' ||
-      role === 'tender_consultant'
+      role === 'tender_consultant' ||
+      role === 'tender_accounts_manager'
     ) {
-      // console.log('masuk sni');
       try {
-        // const proposalApi = new DefaultApi(await getRaiseConfiguration(role));
-        // await proposalApi
-        //   .fetchById({ id }, { headers: { 'x-hasura-role': role } })
-        //   .then((res) => {
-        //     console.log('testing openApiGenerator: ', res.data);
-        //   })
-        //   .catch((err) => {
-        //     console.log(err);
-        //   });
-        // const url = `tender-proposal/find-by-id?id=${id}&relations=user,beneficiary_details,follow_ups,track,proposal_item_budgets,supervisor,proposal_logs,payments,bank_information,project_timeline`;
         const url = `tender-proposal/fetch-by-id?id=${id}`;
 
         const response = await axiosInstance.get(url, {

@@ -1,17 +1,16 @@
-import { Taps } from './action-bar-taps';
-import { useParams } from 'react-router';
-import useAuth from 'hooks/useAuth';
-import React from 'react';
+import { Box, Tab, Tabs } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { Tabs, Tab, Box } from '@mui/material';
+import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
+import React from 'react';
+import { useParams } from 'react-router';
+import { setActiveTap } from 'redux/slices/proposal';
+import { useDispatch, useSelector } from 'redux/store';
+import { ActiveTap } from '../../@types/proposal';
+import { Taps } from './action-bar-taps';
+import { FollowUps } from './follow-ups';
 import { ProjectPath } from './project-path';
 import { MainPage, Payments, ProjectBudget, SupervisorRevision, TimeLine } from './taps-pages';
-import { FollowUps } from './follow-ups';
-import { useDispatch, useSelector } from 'redux/store';
-import { setActiveTap } from 'redux/slices/proposal';
-import { ActiveTap } from '../../@types/proposal';
-import { FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL } from 'config';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -61,7 +60,10 @@ function ActionTap() {
   const { actionType } = useParams();
 
   const [active, setActive] = React.useState<string>(
-    activeRole === 'tender_client' || activeRole === 'tender_admin' || actionType === 'old-proposal'
+    activeRole === 'tender_client' ||
+      activeRole === 'tender_admin' ||
+      activeRole === 'tender_accounts_manager' ||
+      actionType === 'old-proposal'
       ? 'main'
       : 'project-path'
   );
