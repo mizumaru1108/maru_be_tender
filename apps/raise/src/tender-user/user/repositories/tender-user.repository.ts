@@ -412,6 +412,8 @@ export class TenderUserRepository {
       client_field,
       single_role,
       account_status,
+      license_number,
+      entity_mobile,
       include_schedule = '0',
       hide_external = '0',
       hide_internal = '0',
@@ -617,6 +619,27 @@ export class TenderUserRepository {
       };
     }
 
+    if (entity_mobile) {
+      orQuery.push({
+        client_data: {
+          entity_mobile: {
+            contains: entity_mobile,
+            mode: 'insensitive',
+          },
+        },
+      });
+    }
+
+    if (license_number) {
+      orQuery.push({
+        client_data: {
+          license_number: {
+            contains: license_number,
+            mode: 'insensitive',
+          },
+        },
+      });
+    }
     let include: Prisma.userInclude = {};
 
     if (hide_internal === '1') {

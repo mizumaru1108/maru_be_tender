@@ -104,4 +104,16 @@ export class SearchUserFilterRequest extends BaseFilterRequest {
   @IsNotEmpty()
   @IsIn(['1', '0'], { message: 'split_roles must be 1 or 0' })
   split_roles?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  entity_mobile?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  license_number?: string;
 }
