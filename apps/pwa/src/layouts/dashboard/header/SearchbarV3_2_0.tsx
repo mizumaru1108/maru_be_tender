@@ -65,6 +65,7 @@ export default function Searchbar() {
 
   const dispatch = useDispatch();
   const { sort, filtered } = useSelector((state) => state.searching);
+  // console.log({ filtered });
   const [show, setShow] = React.useState(false);
   const [advancedOptions, setAdvancedOptions] = React.useState(false);
   const [arrowStatus, setArrowStatus] = React.useState(false);
@@ -92,11 +93,14 @@ export default function Searchbar() {
     client_name: true,
     account_status: false,
     entity_name: true,
+    entity_mobile: false,
+    license_number: false,
+    email: false,
   });
   // State Account Manager
-  const { client_name, account_status, entity_name } = stateAccManager;
+  const { client_name, email, entity_mobile, license_number } = stateAccManager;
   const filteredAccManager = Object.fromEntries(
-    Object.entries({ client_name, account_status }).filter(([_, v]) => v)
+    Object.entries(stateAccManager).filter(([_, v]) => v)
   );
   const errorAccManager = Object.keys(filteredAccManager).length !== 1;
 
@@ -235,15 +239,15 @@ export default function Searchbar() {
     const filters = Object.keys(filteredState);
     const newFilters = filters.map((filter) => {
       if (filter === 'project') {
-        return `project_name=${text}`;
+        return `project_name=${filtered}`;
       } else if (filter === 'client') {
-        return `employee_name=${text}`;
+        return `employee_name=${filtered}`;
       } else if (filter === 'track') {
-        return `project_track=${text}`;
+        return `project_track=${filtered}`;
       } else if (filter === 'number') {
-        let projectNumber: number = parseInt(text, 10);
+        let projectNumber: number = parseInt(filtered || '0', 10);
         if (projectNumber) {
-          return `project_number=${parseInt(text, 10)}`;
+          return `project_number=${parseInt(filtered || '0', 10)}`;
         } else return null;
       } else if (filter === 'status') {
         const currentStatus = Object.keys(filterStatus);
@@ -274,7 +278,7 @@ export default function Searchbar() {
     });
 
     const joinFilter = newFilters.join('&');
-    if (text) {
+    if (filterStatus) {
       dispatch(setFiltered(joinFilter));
     } else {
       dispatch(setFiltered(null));
@@ -287,8 +291,8 @@ export default function Searchbar() {
     navigate(`/${role_url_map[`${role}`]}/searching`);
     setShow(false);
     dispatch(setActiveOptionAccountManager(stateAccManager));
-    if (text) {
-      dispatch(setFiltered(text));
+    if (filtered) {
+      dispatch(setFiltered(filtered));
     } else {
       dispatch(setFiltered(null));
     }
@@ -310,7 +314,7 @@ export default function Searchbar() {
       } else {
         handleSearch();
       }
-      setText('');
+      // setText('');
     }
   };
 
@@ -394,10 +398,17 @@ export default function Searchbar() {
               sx={{ height: 20, mx: '8px', color: '#0E8478' }}
             />
             <Input
+              onBlur={() => {
+                dispatch(setFiltered(''));
+                // console.log('test onFocus', e);
+              }}
               sx={{ width: '100%' }}
               disableUnderline={true}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
+              value={filtered}
+              onChange={(e) => {
+                dispatch(setFiltered(e.target.value));
+                // setText(e.target.value);
+              }}
               placeholder={translate('search_component.placeholder')}
               onKeyUp={handleKeyUp}
             />
@@ -448,16 +459,32 @@ export default function Searchbar() {
                         }
                         label={translate('search_component.by_client_name')}
                       />
-                      {/* <FormControlLabel
+                      <FormControlLabel
                         control={
                           <Checkbox
-                            checked={account_status}
+                            checked={entity_mobile}
                             onChange={onChangeAccManager}
-                            name="account_status"
+                            name="entity_mobile"
                           />
                         }
-                        label={translate('search_component.by_account_status')}
-                      /> */}
+                        label={translate('search_component.by_entity_mobile')}
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={license_number}
+                            onChange={onChangeAccManager}
+                            name="license_number"
+                          />
+                        }
+                        label={translate('search_component.by_license_number')}
+                      />
+                      <FormControlLabel
+                        control={
+                          <Checkbox checked={email} onChange={onChangeAccManager} name="email" />
+                        }
+                        label={translate('search_component.by_email')}
+                      />
                     </FormGroup>
                     {/* <FormHelperText>You can display an error</FormHelperText> */}
                   </FormControl>

@@ -301,117 +301,22 @@ function MainPage() {
               />
             )) ??
               null}
-            {/* <Button
-              component={Link}
-              href={letter_ofsupport_req.url}
-              download="ملف خطاب طلب الدعم"
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{
-                flex: 1,
-                '&:hover': { backgroundColor: '#00000014' },
-                backgroundColor: '#93A3B014',
-                px: '5px',
-              }}
-            >
-              <Stack
-                spacing={2}
-                alignItems="center"
-                justifyContent="space-between"
-                direction={{ xs: 'column', md: 'row' }}
-                sx={{
-                  textAlign: { xs: 'center', md: 'left' },
-                  borderRadius: '10px',
-                }}
-                flex={1}
-              >
-                <Stack direction="row" gap={2}>
-                  <Stack direction="column" justifyContent="center">
-                    <img src={`/icons/doc-icon.svg`} alt="" />
-                  </Stack>
-                  <Stack direction="column">
-                    <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                      {translate('support_letter_file')}
-                    </Typography>
-                    <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                      {letter_ofsupport_req.size !== undefined
-                        ? `${letter_ofsupport_req.size.toFixed(2)}KB`
-                        : '126KB'}
-                    </Typography>
-                  </Stack>
-                </Stack>
-                <img
-                  src={`/assets/icons/download-icon.svg`}
-                  alt=""
-                  style={{ width: 25, height: 25 }}
-                />
-              </Stack>
-            </Button>
-            <Button
-              component={Link}
-              href={project_attachments.url}
-              download="ملف مرفقات المشروع"
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{
-                flex: 1,
-                '&:hover': { backgroundColor: '#00000014' },
-                backgroundColor: '#93A3B014',
-              }}
-            >
-              <Stack
-                spacing={2}
-                alignItems="center"
-                justifyContent="space-between"
-                direction={{ xs: 'column', md: 'row' }}
-                sx={{
-                  textAlign: { xs: 'center', md: 'left' },
-                  padding: '8px',
-                  borderRadius: '10px',
-                }}
-                flex={1}
-              >
-                <Stack direction="row" gap={2}>
-                  <Stack direction="column" justifyContent="center">
-                    <img src={`/icons/pdf-icon.svg`} alt="" />
-                  </Stack>
-                  <Stack direction="column">
-                    <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                      {translate('project_attachment_file')}
-                    </Typography>
-                    <Typography gutterBottom sx={{ fontSize: '13px' }}>
-                      {project_attachments.size !== undefined
-                        ? `${project_attachments.size.toFixed(2)}KB`
-                        : '126KB'}
-                    </Typography>
-                  </Stack>
-                </Stack>
-                <img
-                  src={`/assets/icons/download-icon.svg`}
-                  alt=""
-                  style={{ width: 25, height: 25 }}
-                />
-              </Stack>
-            </Button> */}
           </Stack>
         </Grid>
         <Grid item md={4} xs={12}>
           <Stack direction="column">
             <Stack direction="column">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+                {translate('funding_project_request_form3.project_manager_name.label')}
+              </Typography>
+              <Typography sx={{ mb: '15px' }}>{proposal?.pm_name || '-No Data-'}</Typography>
+            </Stack>
+            <Stack direction="column">
+              <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('pm_email')}
               </Typography>
               <Typography sx={{ mb: '15px' }}>
                 {(proposal.pm_email && proposal.pm_email) ?? '-No Data-'}
-              </Typography>
-            </Stack>
-            <Stack direction="column">
-              <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                {translate('supervisor_name')}
-              </Typography>
-              <Typography sx={{ mb: '15px' }}>
-                {(proposal.supervisor?.employee_name && proposal.supervisor?.employee_name) ??
-                  '-No Data-'}
               </Typography>
             </Stack>
             <Stack direction="column" alignItems="start">

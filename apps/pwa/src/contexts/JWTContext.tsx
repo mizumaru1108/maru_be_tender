@@ -1,7 +1,8 @@
 import { createContext, ReactNode, useEffect, useReducer } from 'react';
 import { isValidToken, setSession } from '../utils/jwt';
 // @types
-import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
+import { datadogRum } from '@datadog/browser-rum';
+import axios from 'axios';
 import {
   FEATURE_LOGIN_BY_LICENSE,
   FEATURE_LOGIN_BY_PHONE,
@@ -9,9 +10,8 @@ import {
   TMRA_RAISE_URL,
 } from 'config';
 import { fusionAuthClient } from 'utils/fusionAuth';
+import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 import { FusionAuthRoles } from '../@types/commons';
-import { datadogRum } from '@datadog/browser-rum';
-import axios from 'axios';
 
 enum Types {
   Initial = 'INITIALIZE',

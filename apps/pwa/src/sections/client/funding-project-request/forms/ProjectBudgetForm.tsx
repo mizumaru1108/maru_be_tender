@@ -1,12 +1,10 @@
-import * as Yup from 'yup';
-import { useEffect, useState } from 'react';
-import { Alert, Grid } from '@mui/material';
-import { FormProvider, RHFRepeater, RHFTextField } from 'components/hook-form';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ProjectBudgetData } from '../Forms-Data';
-import FormGenerator from 'components/FormGenerator';
+import { Alert, Grid } from '@mui/material';
+import { FormProvider, RHFTextField } from 'components/hook-form';
 import useLocales from 'hooks/useLocales';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
 import { AmandementFields } from '../../../../@types/proposal';
 import BaseField from '../../../../components/hook-form/BaseField';
 type FormValuesProps = {
