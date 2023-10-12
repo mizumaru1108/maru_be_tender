@@ -13,6 +13,7 @@ import { useQuery } from 'urql';
 import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import NewCardTable from 'components/card-table/NewCardTable';
+import ClientProposaCardTable from 'components/card-table/ClientProposaCardTable';
 
 function ProjectOwnerDetailsMainPage() {
   const { currentLang, translate } = useLocales();
@@ -105,7 +106,7 @@ function ProjectOwnerDetailsMainPage() {
           // outter_status: { outter_status: { _neq: 'ONGOING' } },
         }}
       /> */}
-      <NewCardTable
+      <ClientProposaCardTable
         title={translate('project_owner_details.table_title') + userInfo.entity}
         cardFooterButtonAction="show-project"
         url={DATA_URL}

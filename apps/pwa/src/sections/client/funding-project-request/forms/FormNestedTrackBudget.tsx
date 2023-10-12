@@ -277,7 +277,7 @@ export default function FormNestedTrackBudget({
 
         <Space direction="horizontal" size="small" />
         {/* fragment of total amount track budget */}
-        <Grid md={12}>
+        <Grid item md={12}>
           <RHFBaseRepeater
             isLoading={isLoading}
             {...{ control, register, defaultValues, getValues, setValue, watch }}
@@ -292,7 +292,7 @@ export default function FormNestedTrackBudget({
             <Alert severity="error">{budgetError.message}</Alert>
           </Grid>
         )}
-        <Grid md={12}>
+        <Grid item md={12}>
           <Button disabled={isLoading} type="submit" variant="contained" size="large">
             {/* Submit */}
             {translate('button.save')}
