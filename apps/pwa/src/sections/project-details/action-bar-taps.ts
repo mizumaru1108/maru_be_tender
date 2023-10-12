@@ -24,6 +24,12 @@ export const Taps = {
         value: 'payments',
       },
     ],
+    'old-proposal': [
+      {
+        title: 'project_details.actions.main',
+        value: 'main',
+      },
+    ],
   },
   tender_ceo: {
     'show-details': [
@@ -48,6 +54,12 @@ export const Taps = {
         value: 'follow-ups',
       },
     ],
+    'old-proposal': [
+      {
+        title: 'project_details.actions.main',
+        value: 'main',
+      },
+    ],
   },
   tender_moderator: {
     'show-details': [
@@ -70,6 +82,12 @@ export const Taps = {
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
+      },
+    ],
+    'old-proposal': [
+      {
+        title: 'project_details.actions.main',
+        value: 'main',
       },
     ],
   },
@@ -132,6 +150,12 @@ export const Taps = {
       {
         title: 'project_details.actions.payments',
         value: 'payments',
+      },
+    ],
+    'old-proposal': [
+      {
+        title: 'project_details.actions.main',
+        value: 'main',
       },
     ],
   },
@@ -198,6 +222,12 @@ export const Taps = {
         value: 'payments',
       },
     ],
+    'old-proposal': [
+      {
+        title: 'project_details.actions.main',
+        value: 'main',
+      },
+    ],
   },
   tender_project_supervisor: {
     'show-details': [
@@ -260,6 +290,12 @@ export const Taps = {
       {
         title: 'project_details.actions.payments',
         value: 'payments',
+      },
+    ],
+    'old-proposal': [
+      {
+        title: 'project_details.actions.main',
+        value: 'main',
       },
     ],
   },
@@ -326,6 +362,12 @@ export const Taps = {
         value: 'payments',
       },
     ],
+    'old-proposal': [
+      {
+        title: 'project_details.actions.main',
+        value: 'main',
+      },
+    ],
   },
   tender_consultant: {
     'show-details': [
@@ -367,6 +409,12 @@ export const Taps = {
           : null),
       },
     ],
+    'old-proposal': [
+      {
+        title: 'project_details.actions.main',
+        value: 'main',
+      },
+    ],
   },
   tender_admin: {
     'show-details': [
@@ -393,6 +441,12 @@ export const Taps = {
       {
         title: 'project_details.actions.follow_ups',
         value: 'follow-ups',
+      },
+    ],
+    'old-proposal': [
+      {
+        title: 'project_details.actions.main',
+        value: 'main',
       },
     ],
   },
@@ -426,6 +480,12 @@ export const Taps = {
       {
         title: 'مراجعات المشرف',
         value: 'supervisor-revision',
+      },
+    ],
+    'old-proposal': [
+      {
+        title: 'project_details.actions.main',
+        value: 'main',
       },
     ],
   },

@@ -61,7 +61,9 @@ function ActionTap() {
   const { actionType } = useParams();
 
   const [active, setActive] = React.useState<string>(
-    activeRole === 'tender_client' || activeRole === 'tender_admin' ? 'main' : 'project-path'
+    activeRole === 'tender_client' || activeRole === 'tender_admin' || actionType === 'old-proposal'
+      ? 'main'
+      : 'project-path'
   );
 
   const handleChange = (event: React.SyntheticEvent, newValue: ActiveTap) => {
@@ -70,12 +72,10 @@ function ActionTap() {
   };
 
   React.useEffect(() => {
-    if (activeRole !== 'tender_client') {
+    if (activeRole !== 'tender_client' && actionType !== 'old-proposal') {
       dispatch(setActiveTap('project-path'));
     }
-  }, [proposal, activeRole, dispatch]);
-
-  // console.log({ activeTap });
+  }, [proposal, activeRole, actionType, dispatch]);
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -92,7 +92,9 @@ function ActionTap() {
       >
         {Taps[`${activeRole!}`][
           `${
-            actionType === 'show-details' || actionType === 'completing-exchange-permission'
+            actionType === 'show-details' ||
+            actionType === 'completing-exchange-permission' ||
+            actionType === 'old-proposal'
               ? actionType
               : 'show-details'
           }`

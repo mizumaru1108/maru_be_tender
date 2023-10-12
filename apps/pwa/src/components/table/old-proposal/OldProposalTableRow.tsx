@@ -13,9 +13,6 @@ export default function OldProposalTableRow({ row, selected, onSelectRow }: OldP
   const navigate = useNavigate();
   return (
     <TableRow hover selected={selected}>
-      {/* <TableCell padding="checkbox">
-        <Checkbox checked={selected} onClick={onSelectRow} />
-      </TableCell> */}
       <TableCell align="left">
         <Typography variant="subtitle2" noWrap>
           {row.project_number}
@@ -30,35 +27,11 @@ export default function OldProposalTableRow({ row, selected, onSelectRow }: OldP
           {row.project_name}
         </Typography>
       </TableCell>
-      {/* <TableCell align="left">
-        <Typography
-          variant="subtitle2"
-          noWrap
-          sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
-        >
-          {row.employee_name}
-        </Typography>
-      </TableCell> */}
-      {/* <TableCell align="left">
-        <Typography variant="subtitle2" noWrap>
-          {row.email}
-        </Typography>
-      </TableCell>
-      <TableCell align="left">
-        <Typography variant="subtitle2" noWrap>
-          {row.governorate}
-        </Typography>
-      </TableCell>
-      <TableCell align="left">
-        <Typography variant="subtitle2" noWrap>
-          {row.total_proposal}
-        </Typography>
-      </TableCell> */}
       <TableCell align="left">
         <Button
           onClick={() => {
             navigate(
-              `/${role_url_map[activeRole!]}/dashboard/current-project/${row.id}/show-project`
+              `/${role_url_map[activeRole!]}/dashboard/current-project/${row.id}/old-proposal`
             );
           }}
           size="small"
