@@ -5,6 +5,9 @@ interface ActiveOptionSerachingAccountManagers {
   client_name: boolean;
   account_status: boolean;
   entity_name: boolean;
+  entity_mobile: boolean;
+  license_number: boolean;
+  email: boolean;
 }
 
 interface FilteredState {
@@ -20,6 +23,9 @@ const initialState: FilteredState = {
     account_status: true,
     client_name: true,
     entity_name: true,
+    entity_mobile: true,
+    license_number: true,
+    email: true,
   },
 };
 

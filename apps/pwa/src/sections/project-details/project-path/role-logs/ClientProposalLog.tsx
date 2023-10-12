@@ -192,6 +192,14 @@ function ClientProposalLog() {
         </Grid>
         <Grid item md={4} xs={12} sx={{ marginBottom: '10px' }}>
           <Stack direction="column">
+            {/*  */}
+            <Stack direction="column">
+              <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+                {translate('funding_project_request_form3.project_manager_name.label')}
+              </Typography>
+              <Typography sx={{ mb: '15px' }}>{proposal?.pm_name || '-No Data-'}</Typography>
+            </Stack>
+
             <Stack direction="column">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('pm_email')}
@@ -200,15 +208,7 @@ function ClientProposalLog() {
                 {(proposal.pm_email && proposal.pm_email) ?? '-No Data-'}
               </Typography>
             </Stack>
-            <Stack direction="column">
-              <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-                {translate('supervisor_name')}
-              </Typography>
-              <Typography sx={{ mb: '15px' }}>
-                {(proposal.supervisor?.employee_name && proposal.supervisor?.employee_name) ??
-                  '-No Data-'}
-              </Typography>
-            </Stack>
+
             <Stack direction="column" alignItems="start">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('pm_mobile')}

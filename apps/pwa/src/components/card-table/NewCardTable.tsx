@@ -5,7 +5,8 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'redux/store';
+import { setFiltered } from 'redux/slices/searching';
+import { dispatch, useSelector } from 'redux/store';
 import axiosInstance from 'utils/axios';
 import { generateHeader } from '../../utils/generateProposalNumber';
 import CardTableNoData from './CardTableNoData';
@@ -26,7 +27,7 @@ function NewCardTable({
   const { activeRole } = useAuth();
   const [page, setPage] = useState(1);
   const { translate } = useLocales();
-  const { sort, filtered, activeOptions } = useSelector((state) => state.searching);
+  const { filtered, activeOptions } = useSelector((state) => state.searching);
   const [params, setParams] = useState({
     limit: limitShowCard ? limitShowCard : 6,
   });
@@ -57,6 +58,9 @@ function NewCardTable({
               user_type_id: activeOptions.account_status ? filtered : undefined,
               association_name: filtered || undefined,
               hide_internal: '1',
+              email: activeOptions.email ? filtered : undefined,
+              entity_mobile: activeOptions.entity_mobile ? filtered : undefined,
+              license_number: activeOptions.license_number ? filtered : undefined,
             },
             headers: headersProps,
           });
@@ -83,9 +87,11 @@ function NewCardTable({
         }
         // return res.data;
       }
-      setLoading(false);
     } catch (error) {
       throw error;
+    } finally {
+      setLoading(false);
+      dispatch(setFiltered(''));
     }
   };
 
@@ -115,8 +121,6 @@ function NewCardTable({
   }, [params, page]);
 
   useEffect(() => {}, [data]);
-
-  console.log(data, 'DATA');
 
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>

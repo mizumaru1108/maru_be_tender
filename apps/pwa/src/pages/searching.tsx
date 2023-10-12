@@ -2,19 +2,13 @@ import { Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import NewCardTable from 'components/card-table/NewCardTable';
 import CardSearching from 'components/card-table/searching/CardSearching';
-import { ProjectCardProps } from 'components/card-table/types';
 import Page from 'components/Page';
 import useAuth from 'hooks/useAuth';
-import { useState } from 'react';
-import { useSelector } from 'redux/store';
 import useLocales from '../hooks/useLocales';
 
 function PreviousSupportRequests() {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
-  const { sort, filtered } = useSelector((state) => state.searching);
-  const [supportRequests, setSupportRequests] = useState<ProjectCardProps[]>([]);
-  const [data, setData] = useState([]);
 
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
