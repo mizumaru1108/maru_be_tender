@@ -27,7 +27,14 @@ import useAuth from 'hooks/useAuth';
 import { role_url_map } from '../../../@types/commons';
 import useLocales from '../../../hooks/useLocales';
 import { useDispatch, useSelector } from 'redux/store';
-import { setSort, setFiltered, setActiveOptionAccountManager } from 'redux/slices/searching';
+import {
+  setSort,
+  setFiltered,
+  setActiveOptionAccountManager,
+  setOutterStatus,
+  ActiveOptionsSearching,
+  setActiveOptionsSearching,
+} from 'redux/slices/searching';
 import axiosInstance from 'utils/axios';
 // ----------------------------------------------------------------------
 const APPBAR_MOBILE = 64;
@@ -89,6 +96,22 @@ export default function Searchbar() {
     track: false,
     number: true,
   });
+  const [stateSearchProposal, setStateSearchProposal] = React.useState<ActiveOptionsSearching>({
+    employee_name: true,
+    outter_status: false,
+    project_name: true,
+    project_number: true,
+    project_track: false,
+  });
+  // console.log({ stateSearchProposal });
+
+  const onChangeSearchProposal = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStateSearchProposal({
+      ...stateSearchProposal,
+      [event.target.name]: event.target.checked,
+    });
+  };
+
   const [stateAccManager, setStateAccManager] = React.useState({
     client_name: true,
     account_status: false,
@@ -193,7 +216,7 @@ export default function Searchbar() {
       track: false,
       number: true,
     });
-    setAdvancedOptions(false);
+    // setAdvancedOptions(false);
     setArrowStatus(false);
     setSortBy('asc');
   };
@@ -203,7 +226,11 @@ export default function Searchbar() {
       ...state,
       status: false,
     });
-    setAdvancedOptions(!advancedOptions);
+    setStateSearchProposal({
+      ...stateSearchProposal,
+      outter_status: !stateSearchProposal.outter_status,
+    });
+    // setAdvancedOptions(!advancedOptions);
   };
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -211,30 +238,7 @@ export default function Searchbar() {
   };
 
   const handleSearch = () => {
-    navigate(`/${role_url_map[`${role}`]}/searching`);
     setShow(false);
-    // Object.keys(filteredState).forEach((key) => {
-    //   switch (key) {
-    //     case 'project':
-    //       // console.log('ada dari project');
-    //       dispatch(setProjectName(`project_name=${text}`));
-    //       break;
-    //     case 'client':
-    //       // console.log('ada dari client');
-    //       dispatch(setClientName(`client_name=${text}`));
-    //       break;
-    //     case 'status':
-    //       // console.log('ada dari status');
-    //       dispatch(setProjectStatus(`project_status=${text}`));
-    //       break;
-    //     case 'track':
-    //       // console.log('ada dari track');
-    //       dispatch(setTrackName(`project_track=${text}`));
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // });
 
     const filters = Object.keys(filteredState);
     const newFilters = filters.map((filter) => {
@@ -277,13 +281,31 @@ export default function Searchbar() {
       return false;
     });
 
-    const joinFilter = newFilters.join('&');
-    if (filterStatus) {
-      dispatch(setFiltered(joinFilter));
-    } else {
-      dispatch(setFiltered(null));
-    }
+    // for status
+    const currentStatus = Object.keys(filterStatus);
+    const newFilterStatus = currentStatus
+      .map((status) => {
+        if (status === 'pending') {
+          return `PENDING`;
+        } else if (status === 'canceled') {
+          return `CANCELED`;
+        } else if (status === 'completed') {
+          return `COMPLETED`;
+        } else if (status === 'ongoing') {
+          return `ONGOING`;
+        } else if (status === 'revision') {
+          return `ON_REVISION`;
+        } else if (status === 'amandament') {
+          return `ASKED_FOR_AMANDEMENT`;
+        }
+        return false;
+      })
+      .toString();
+
+    dispatch(setOutterStatus(newFilterStatus));
+    dispatch(setActiveOptionsSearching(stateSearchProposal));
     dispatch(setSort(sortBy));
+    navigate(`/${role_url_map[`${role}`]}/searching`);
     // console.log({ joinFilter, filters, filteredState });
   };
 
@@ -297,14 +319,6 @@ export default function Searchbar() {
       dispatch(setFiltered(null));
     }
     dispatch(setSort(sortBy));
-
-    // const res = await axiosInstance.get('/tender-user/find-users', {
-    //   params: { employee_name: 'yayan' },
-    //   headers: { 'x-hasura-role': activeRole! },
-    // });
-    // if (res.data.statusCode === 200) {
-    //   console.log(res.data);
-    // }
   };
 
   const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -493,23 +507,35 @@ export default function Searchbar() {
                     <FormGroup>
                       <FormControlLabel
                         control={
-                          <Checkbox checked={project} onChange={handleChange} name="project" />
+                          <Checkbox
+                            checked={stateSearchProposal.project_name}
+                            onChange={onChangeSearchProposal}
+                            name="project"
+                          />
                         }
                         label={translate('search_component.by_project_name')}
                       />
                       <FormControlLabel
                         control={
-                          <Checkbox checked={client} onChange={handleChange} name="client" />
+                          <Checkbox
+                            checked={stateSearchProposal.employee_name}
+                            onChange={onChangeSearchProposal}
+                            name="client"
+                          />
                         }
                         label={translate('search_component.by_client_name')}
                       />
                       <FormControlLabel
                         control={
-                          <Checkbox checked={number} onChange={handleChange} name="number" />
+                          <Checkbox
+                            checked={stateSearchProposal.project_number}
+                            onChange={onChangeSearchProposal}
+                            name="number"
+                          />
                         }
                         label={translate('search_component.by_project_number')}
                       />
-                      {advancedOptions && (
+                      {stateSearchProposal.outter_status && (
                         <Box>
                           <Stack direction="row" alignItems="center">
                             <FormControlLabel
@@ -586,7 +612,7 @@ export default function Searchbar() {
                   textDecoration: 'underline',
                 }}
               >
-                {advancedOptions
+                {stateSearchProposal.outter_status
                   ? translate('search_component.default_options')
                   : translate('search_component.advanced_options')}
               </Link>

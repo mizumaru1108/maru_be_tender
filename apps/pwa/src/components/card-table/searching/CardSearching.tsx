@@ -25,7 +25,12 @@ function CardSearching({
   const { activeRole } = useAuth();
   const [page, setPage] = useState(1);
   const { translate } = useLocales();
-  const { sort, filtered } = useSelector((state) => state.searching);
+  const {
+    sort,
+    filtered,
+    activeOptionsSearching,
+    outter_status: filter_outter_status,
+  } = useSelector((state) => state.searching);
   const { enqueueSnackbar } = useSnackbar();
   const [params, setParams] = useState({
     limit: limitShowCard ? limitShowCard : 6,
@@ -45,13 +50,25 @@ function CardSearching({
   const getData = async () => {
     try {
       if (filtered !== null) {
+        const tmpParams = {
+          limit: params.limit,
+          page: page,
+          sort: sort || undefined,
+          project_name: activeOptionsSearching.project_name && filtered ? filtered : undefined,
+          employee_name: activeOptionsSearching.employee_name && filtered ? filtered : undefined,
+          // project_number: activeOptionsSearching.project_number && filtered ? filtered : undefined,
+          outter_status:
+            activeOptionsSearching.outter_status && filter_outter_status
+              ? filter_outter_status
+              : undefined,
+        };
         setLoading(true);
-        const res = await axiosInstance.get(
-          `tender-proposal/list?limit=${params.limit}&page=${page}&sort=${sort}&${filtered}`,
-          {
-            headers: { 'x-hasura-role': activeRole! },
-          }
-        );
+        const res = await axiosInstance.get(`tender-proposal/list`, {
+          params: {
+            ...tmpParams,
+          },
+          headers: { 'x-hasura-role': activeRole! },
+        });
         if (res.data.statusCode === 200) {
           setData(res.data);
         }
