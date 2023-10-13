@@ -28,6 +28,12 @@ import useLocales from 'hooks/useLocales';
 import { IPropsTablesList } from './type';
 import { Link as RouterLink } from 'react-router-dom';
 import EmptyContent from 'components/EmptyContent';
+import { useSnackbar } from 'notistack';
+import { ChangeStatusRequest } from './TableRowsData';
+import axiosInstance from '../../utils/axios';
+import useAuth from '../../hooks/useAuth';
+import ModalDialog from '../modal-dialog';
+import { LoadingButton } from '@mui/lab';
 
 // -------------------------------------------------------------------------------
 
@@ -61,9 +67,12 @@ export default function TableAMCustom({
   lengthRowsPerPage?: number;
   editRequest?: boolean;
 }) {
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const [tableData, setTableData] = useState<IPropsTablesList[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const { activeRole } = useAuth();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {
     page,
@@ -120,13 +129,8 @@ export default function TableAMCustom({
       filterName: '',
     })
   );
-  const [query, setQuery] = useState('');
 
-  // const dataFiltered = applySortFilter({
-  //   tableData,
-  //   comparator: getComparator(order, orderBy),
-  //   filterName: '',
-  // });
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
     const dataFiltered = applySortFilter({
@@ -137,8 +141,51 @@ export default function TableAMCustom({
     setDataTable(dataFiltered);
   }, [order, orderBy, tableData, query]);
 
-  const deleteRowValue = () => {
-    alert('data');
+  const deleteRowValue = async () => {
+    // try {
+    //   setIsLoading(true);
+    //   await axiosInstance.patch<ChangeStatusRequest, any>(
+    //     '/tender-user/update-status',
+    //     {
+    //       status: status,
+    //       user_id: 'id',
+    //       selectLang: currentLang.value,
+    //     } as ChangeStatusRequest,
+    //     {
+    //       headers: { 'x-hasura-role': activeRole! },
+    //     }
+    //   );
+
+    //   let notif = '';
+    //   if (status === 'ACTIVE_ACCOUNT') {
+    //     notif = 'account_manager.partner_details.notification.activate_account';
+    //   } else if (status === 'SUSPENDED_ACCOUNT') {
+    //     notif = 'account_manager.partner_details.notification.disabled_account';
+    //   } else if (status === 'CANCELED_ACCOUNT') {
+    //     notif = 'account_manager.partner_details.notification.deleted_account';
+    //   }
+
+    //   enqueueSnackbar(`${translate(notif)}`, {
+    //     variant: 'success',
+    //   });
+    //   setDeleteDialogOpen(false);
+    //   setSelected([]);
+    //   window.location.reload();
+    // } catch (err) {
+    //   const statusCode = (err && err.statusCode) || 0;
+    //   const message = (err && err.message) || null;
+
+    //   enqueueSnackbar(`${statusCode < 500 && message ? message : 'something went wrong!'}`, {
+    //     variant: 'error',
+    //   });
+
+    //   console.log(err);
+    // } finally {
+    //   setIsLoading(false);
+    // }
+
+    // console.log({ selected });
+    alert('work around');
   };
 
   // Searchbar
@@ -156,6 +203,7 @@ export default function TableAMCustom({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // console.log({ tableData });
   return (
     <>
       <Stack direction="row" spacing={6} justifyContent="space-between" alignItems="center">
@@ -201,7 +249,12 @@ export default function TableAMCustom({
             rowCount={tableData.length}
             onSort={onSort}
             onSelectAllRows={(checked) =>
-              onSelectAllRows(checked, tableData.map((row) => row.id) as string[])
+              onSelectAllRows(
+                checked,
+                tableData
+                  .filter((row) => row.account_status !== 'CANCELED_ACCOUNT')
+                  .map((row) => row.id) as string[]
+              )
             }
             sx={{
               minWidth: '100%',
@@ -246,7 +299,7 @@ export default function TableAMCustom({
           }}
         />
       </TableContainer>
-      <Dialog
+      {/* <Dialog
         open={deleteDialogOpen}
         onClose={() => {
           setDeleteDialogOpen(false);
@@ -276,7 +329,53 @@ export default function TableAMCustom({
             </Button>
           </Box>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
+      <ModalDialog
+        maxWidth="md"
+        title={
+          <Stack display="flex">
+            <Typography variant="h5" sx={{ flex: 1, marginLeft: 2 }}>
+              {`${translate('pages.admin.tracks_budget.notification.confirm_delete')} ?`}
+            </Typography>
+          </Stack>
+        }
+        showCloseIcon={true}
+        actionBtn={
+          <Stack direction="row" justifyContent="space-around" gap={4}>
+            <Button
+              sx={{
+                color: '#000',
+                size: 'large',
+                width: { xs: '100%', sm: '200px' },
+                hieght: { xs: '100%', sm: '50px' },
+                ':hover': { backgroundColor: '#efefef' },
+              }}
+              onClick={() => setDeleteDialogOpen(false)}
+            >
+              رجوع
+            </Button>
+            <LoadingButton
+              onClick={deleteRowValue}
+              sx={{
+                color: '#fff',
+                width: { xs: '100%', sm: '200px' },
+                hieght: { xs: '100%', sm: '50px' },
+                backgroundColor: '#0E8478',
+                ':hover': { backgroundColor: '#13B2A2' },
+              }}
+              loading={isLoading}
+            >
+              اضافة
+            </LoadingButton>
+          </Stack>
+        }
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setSelected([]);
+        }}
+        styleContent={{ padding: '1em', backgroundColor: '#fff' }}
+      />
     </>
   );
 }

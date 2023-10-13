@@ -100,7 +100,6 @@ const AmandementForms = ({
     reset,
     setValue,
   } = methods;
-
   const resetForm = (field: any) => {
     const newValues = JSON.parse(JSON.stringify(defaultValues));
     // console.log('field value', { defaultValues });
@@ -142,6 +141,8 @@ const AmandementForms = ({
         project_risks: defaultValues.project_risks,
         project_strengths: defaultValues.project_strengths,
         region: defaultValues.region,
+        region_id: '-',
+        governorate_id: '-',
         governorate: defaultValues.governorate,
         timelines: '-',
         notes: '',

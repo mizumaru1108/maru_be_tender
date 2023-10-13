@@ -95,13 +95,6 @@ function ConfirmApprovedEditRequest({ open, handleClose }: Props) {
           </Typography>
         </Stack>
       }
-      // content={
-      //   <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
-      //     <Grid item md={12} xs={12}>
-      //       <BaseField type="textArea" name="reject_reason" placeholder="ملء سبب الرفض" />
-      //     </Grid>
-      //   </Grid>
-      // }
       showCloseIcon={true}
       actionBtn={
         <Stack direction="row" justifyContent="space-around" gap={4}>

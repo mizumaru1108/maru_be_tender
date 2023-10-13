@@ -381,7 +381,12 @@ export default function Searchbar() {
   }, [status]);
 
   return (
-    <ClickAwayListener onClickAway={() => setShow(false)}>
+    <ClickAwayListener
+      onClickAway={() => {
+        dispatch(setFiltered(''));
+        setShow(false);
+      }}
+    >
       <SearchbarStyle>
         <Box
           sx={{
@@ -413,8 +418,11 @@ export default function Searchbar() {
             />
             <Input
               onBlur={() => {
-                dispatch(setFiltered(''));
-                // console.log('test onFocus', e);
+                if (show === false) {
+                  setTimeout(() => {
+                    dispatch(setFiltered(''));
+                  }, 500);
+                }
               }}
               sx={{ width: '100%' }}
               disableUnderline={true}

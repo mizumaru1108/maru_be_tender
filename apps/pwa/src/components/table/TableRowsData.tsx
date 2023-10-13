@@ -38,7 +38,7 @@ type UserStatus =
   | 'REVISED_ACCOUNT'
   | 'WAITING_FOR_EDITING_APPROVAL';
 
-interface ChangeStatusRequest {
+export interface ChangeStatusRequest {
   status: UserStatus;
   user_id: string;
   selectLang: 'ar' | 'en';
@@ -86,10 +86,8 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
     id: string,
     status: 'ACTIVE_ACCOUNT' | 'SUSPENDED_ACCOUNT' | 'CANCELED_ACCOUNT'
   ) => {
-    // console.log({ id, status });
-    setIsSubimitting(true);
-
     try {
+      setIsSubimitting(true);
       await axiosInstance.patch<ChangeStatusRequest, any>(
         '/tender-user/update-status',
         {
@@ -111,7 +109,6 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
         notif = 'account_manager.partner_details.notification.deleted_account';
       }
 
-      setIsSubimitting(false);
       enqueueSnackbar(`${translate(notif)}`, {
         variant: 'success',
       });
@@ -120,7 +117,6 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
 
       window.location.reload();
     } catch (err) {
-      setIsSubimitting(false);
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
 
@@ -130,6 +126,8 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
 
       setAction('INFORMATION');
       console.log(err);
+    } finally {
+      setIsSubimitting(false);
     }
   };
 
@@ -260,7 +258,9 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
       <TableRow hover selected={selected}>
         {!editRequest && (
           <TableCell padding="checkbox">
-            <Checkbox checked={selected} onClick={onSelectRow} />
+            {account_status !== 'CANCELED_ACCOUNT' && (
+              <Checkbox checked={selected} onClick={onSelectRow} />
+            )}
           </TableCell>
         )}
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
