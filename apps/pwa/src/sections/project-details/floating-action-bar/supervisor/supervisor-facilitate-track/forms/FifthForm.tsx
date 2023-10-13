@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid, TextField } from '@mui/material';
+import { Grid, TextField, Button, IconButton } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -12,12 +12,14 @@ import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import uuidv4 from 'utils/uuidv4';
 import { getMissingItems } from '../../../../../../utils/checkDeletedArray';
+import { CloseIcon } from 'theme/overrides/CustomIcons';
 
 function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmited }: any) {
   const { step4, step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const { proposal } = useSelector((state) => state.proposal);
   const { activeRole } = useAuth();
   const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
+  const [edit, setEdit] = useState<boolean>(true);
 
   const isStepBack =
     proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
@@ -55,7 +57,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
 
   const methods = useForm<SupervisorStep4>({
     resolver: yupResolver(validationSchema),
-    // defaultValues: useMemo(() => step4, [step4]),
+    // defaultValues: tmpStep4,
     defaultValues:
       // activeRole !== 'tender_project_supervisor'
       //   ? tmpStep4
@@ -285,7 +287,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
-                      disabled={!isSupevisor}
+                      disabled={edit}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].clause`}
                       {...field}
                       InputLabelProps={{ shrink: true }}
@@ -311,7 +313,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
-                      disabled={!isSupevisor}
+                      disabled={edit}
                       {...field}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].explanation`}
                       InputLabelProps={{ shrink: true }}
@@ -339,7 +341,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
-                      disabled={!isSupevisor}
+                      disabled={edit}
                       {...field}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].amount`}
                       InputLabelProps={{ shrink: true }}
@@ -360,7 +362,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                   )}
                 />
               </Grid>
-              {/* <Grid item xs={2}>
+              <Grid item xs={2}>
                 <IconButton
                   data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].delete`}
                   color="error"
@@ -391,10 +393,10 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                 >
                   <CloseIcon />
                 </IconButton>
-              </Grid> */}
+              </Grid>
             </Grid>
           ))}
-          {/* <Button
+          <Button
             type="button"
             variant="contained"
             color="inherit"
@@ -408,9 +410,26 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                 id: uuidv4(),
               });
             }}
+            disabled={edit}
           >
             {translate('add_new_line')}
-          </Button> */}
+          </Button>
+        </Grid>
+        <Grid
+          item
+          md={12}
+          xs={12}
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Button
+            variant={edit ? 'outlined' : 'contained'}
+            data-cy="acc_form_non_consulation_support_edit_button"
+            onClick={() => {
+              setEdit(!edit);
+            }}
+          >
+            {edit ? translate('button.re_edit') : translate('button.save_edit')}
+          </Button>
         </Grid>
         <Grid item xs={12}>
           {children}

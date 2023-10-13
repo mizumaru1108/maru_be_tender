@@ -2536,6 +2536,7 @@ const en = {
     delete: 'Delete',
     cancel: 'Cancel',
     re_edit: 'Re-Edit',
+    save_edit: 'Save Edit',
     save: 'Save',
     amandement: 'Amandement',
     review: 'Review',

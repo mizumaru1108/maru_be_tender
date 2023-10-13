@@ -1,9 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid } from '@mui/material';
+import { Grid, Button } from '@mui/material';
 import FormGenerator from 'components/FormGenerator';
 import { FormProvider } from 'components/hook-form';
 import useLocales from 'hooks/useLocales';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'redux/store';
 import * as Yup from 'yup';
@@ -15,6 +15,7 @@ import { ThirdFormData } from './form-data';
 function ThirdForm({ children, onSubmit }: any) {
   const { activeRole } = useAuth();
   const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
+  const [edit, setEdit] = useState<boolean>(true);
   const { step3 } = useSelector((state) => state.supervisorAcceptingForm);
   const { translate } = useLocales();
   const validationSchema = Yup.object().shape({
@@ -89,7 +90,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="project_idea"
             label="فكرة المشروع*"
             placeholder="الرجاء كتابة فكرة المشروع"
-            disabled
+            disabled={edit}
           />
         </Grid>
         <Grid item md={12} xs={12}>
@@ -98,16 +99,16 @@ function ThirdForm({ children, onSubmit }: any) {
             name="project_goals"
             label="أهداف المشروع*"
             placeholder="الرجاء كتابة أهداف المشروع"
-            disabled
+            disabled={edit}
           />
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            type="textField"
+            type="numberField"
             name="amount_required_fsupport"
             label="التكلفة الإجمالية*"
             placeholder="الرجاء كتابة التكلفة الإجمالية"
-            disabled
+            disabled={edit}
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -116,7 +117,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="added_value"
             label="القيمة المضافة على المشروع*"
             placeholder="الرجاء كتابة القيمة المضافة على المشروع"
-            disabled={!isSupevisor}
+            disabled={edit}
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -125,7 +126,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="reasons_to_accept"
             label="مسوغات دعم المشروع*"
             placeholder="الرجاء كتابة مسوغات دعم المشروع"
-            disabled={!isSupevisor}
+            disabled={edit}
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -134,7 +135,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="project_beneficiaries"
             label="الفئة المستهدفة*"
             placeholder="الرجاء اختيار الفئة المستهدفة"
-            disabled
+            disabled={edit}
           />
         </Grid>
         <Grid item md={4} xs={4}>
@@ -143,7 +144,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="target_group_num"
             label="عددهم*"
             placeholder="الرجاء كتابة عددهم"
-            disabled={!isSupevisor}
+            disabled={edit}
           />
         </Grid>
 
@@ -153,7 +154,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="target_group_type"
             label="نوعهم*"
             placeholder="الرجاء اختيار نوعهم"
-            disabled={!isSupevisor}
+            disabled={edit}
           >
             <>
               <option value="YOUTHS" style={{ backgroundColor: '#fff' }}>
@@ -196,7 +197,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="target_group_age"
             label="أعمارهم*"
             placeholder="الرجاء كتابة أعمارهم"
-            disabled={!isSupevisor}
+            disabled={edit}
           >
             <>
               <option value="AGE_1TH_TO_13TH" style={{ backgroundColor: '#fff' }}>
@@ -223,11 +224,11 @@ function ThirdForm({ children, onSubmit }: any) {
 
         <Grid item md={6} xs={12}>
           <BaseField
-            type="textField"
+            type={!edit ? 'datePicker' : 'textField'}
             name="project_implement_date"
             label="تاريخ بداية المشروع*"
             placeholder="الرجاء تحديد تاريخ بداية المشروع"
-            disabled
+            disabled={edit}
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -236,7 +237,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="execution_time"
             label="مدة المشروع*"
             placeholder="الرجاء كتابة مدة المشروع"
-            disabled
+            disabled={edit}
           />
         </Grid>
 
@@ -246,7 +247,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="project_location"
             label="مكان إقامته المشروع؟*"
             placeholder="الرجاء كتابة مكان إقامته المشروع؟"
-            disabled
+            disabled={edit}
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -254,7 +255,7 @@ function ThirdForm({ children, onSubmit }: any) {
             type="radioGroup"
             name="been_made_before"
             label="مكان إقامته المشروع؟*"
-            disabled={!isSupevisor}
+            disabled={edit}
             options={[
               { label: 'نعم', value: true },
               { label: 'لا', value: false },
@@ -266,13 +267,29 @@ function ThirdForm({ children, onSubmit }: any) {
             type="radioGroup"
             name="remote_or_insite"
             label="عن بُعد أو حضوري؟*"
-            disabled={!isSupevisor}
+            disabled={edit}
             options={[
               { label: 'حضوري', value: 'insite' },
               { label: 'اونلاين', value: 'remote' },
               { label: 'كلاهما', value: 'both' },
             ]}
           />
+        </Grid>
+        <Grid
+          item
+          md={12}
+          xs={12}
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Button
+            variant={edit ? 'outlined' : 'contained'}
+            data-cy="acc_form_non_consulation_support_edit_button"
+            onClick={() => {
+              setEdit(!edit);
+            }}
+          >
+            {edit ? translate('button.re_edit') : translate('button.save_edit')}
+          </Button>
         </Grid>
         <Grid item xs={12}>
           {children}

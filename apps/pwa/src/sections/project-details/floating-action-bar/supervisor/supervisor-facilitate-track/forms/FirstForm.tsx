@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { FormProvider, RHFRadioGroup } from 'components/hook-form';
 import BaseField from 'components/hook-form/BaseField';
 import useLocales from 'hooks/useLocales';
@@ -19,6 +19,9 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
   const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
   const { proposal } = useSelector((state) => state.proposal);
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
+
+  const [save, setSave] = useState<boolean>(true);
+
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
 
   const isStepBack =
@@ -99,11 +102,9 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
     const { vat_percentage, ...rest } = data;
     const tmpValues = {
       vat_percentage: vat_percentage ? Number(vat_percentage) : undefined,
-      // vat_percentage: Number(vat_percentage),
       ...rest,
     };
     onSubmit(removeEmptyKey(tmpValues));
-    // onSubmit(tmpValues);
   };
 
   useEffect(() => {
@@ -143,7 +144,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={!isSupevisor}
+            disabled={save}
             data-cy="acc_form_consulation_support_type"
             type="radioGroup"
             name="support_type"
@@ -165,7 +166,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={!isSupevisor}
+            disabled={save}
             data-cy="acc_form_consulation_closing_report"
             type="radioGroup"
             name="closing_report"
@@ -179,7 +180,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
 
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={!isSupevisor}
+            disabled={save}
             data-cy="acc_form_consulation_need_picture"
             type="radioGroup"
             name="need_picture"
@@ -192,7 +193,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={!isSupevisor}
+            disabled={save}
             data-cy="acc_form_consulation_does_an_agreement"
             type="radioGroup"
             name="does_an_agreement"
@@ -215,7 +216,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             ]}
           /> */}
           <RHFRadioGroup
-            disabled={!isSupevisor}
+            disabled={save}
             data-cy="acc_form_consulation_vat"
             type="radioGroup"
             name="vat"
@@ -257,7 +258,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         {isVat && (
           <Grid item md={6} xs={12}>
             <BaseField
-              disabled={!isSupevisor}
+              disabled={save}
               data-cy="acc_form_consulation_vat_percentage"
               type="numberField"
               name="vat_percentage"
@@ -269,7 +270,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         {isVat && (
           <Grid item md={6} xs={12}>
             <BaseField
-              disabled={!isSupevisor}
+              disabled={save}
               data-cy="acc_form_consulation_inclu_or_exclu"
               type="radioGroup"
               name="inclu_or_exclu"
@@ -290,7 +291,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             label="عدد الدفعات"
           /> */}
           <BaseField
-            disabled={!isSupevisor}
+            disabled={save}
             data-cy="acc_form_consulation_payment_number"
             type="numberField"
             name="payment_number"
@@ -300,7 +301,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
-            disabled={!isSupevisor}
+            disabled={save}
             data-cy="acc_form_consulation_notes"
             type="textArea"
             name="notes"
@@ -310,13 +311,29 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         </Grid>
         <Grid item md={12} xs={12}>
           <BaseField
-            disabled={!isSupevisor}
+            disabled={save}
             data-cy="acc_form_consulation_support_outputs"
             type="textArea"
             name="support_outputs"
             label="مخرجات الدعم (لصالح)*"
             placeholder="اكتب هنا"
           />
+        </Grid>
+        <Grid
+          item
+          md={12}
+          xs={12}
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Button
+            variant={save ? 'outlined' : 'contained'}
+            data-cy="acc_form_non_consulation_support_edit_button"
+            onClick={() => {
+              setSave(!save);
+            }}
+          >
+            {save ? translate('button.re_edit') : translate('button.save_edit')}
+          </Button>
         </Grid>
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
           {children}

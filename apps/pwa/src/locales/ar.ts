@@ -2556,6 +2556,7 @@ const ar = {
     delete: 'يمسح',
     cancel: 'إلغاء',
     re_edit: 'تعديل',
+    save_edit: 'حفظ تحرير',
     save: 'حفظ',
     amandement: 'تعديل',
     review: 'استعراض',

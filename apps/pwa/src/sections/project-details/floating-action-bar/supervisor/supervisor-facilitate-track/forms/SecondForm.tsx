@@ -1,10 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid } from '@mui/material';
+import { Grid, Button } from '@mui/material';
 import { FormProvider } from 'components/hook-form';
 import BaseField from 'components/hook-form/BaseField';
 import RHFComboBox, { ComboBoxOption } from 'components/hook-form/RHFComboBox';
 import useLocales from 'hooks/useLocales';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'redux/store';
 import { removeEmptyKey } from 'utils/remove-empty-key';
@@ -21,6 +21,7 @@ function SecondForm({ children, onSubmit }: any) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
   const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
+  const [edit, setEdit] = useState<boolean>(true);
 
   const [area, setArea] = React.useState<Area>({
     governorates_id: [],
@@ -145,19 +146,19 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid> */}
         <Grid item md={6} xs={12}>
           <RHFComboBox
-            disabled
+            disabled={edit}
             name="regions_id"
             label={translate('portal_report.region_id.label')}
             data-cy="portal_report.region_id"
             placeholder={translate('portal_report.region_id.placeholder')}
-            dataOption={[]}
+            dataOption={edit ? area.regions_id : []}
             value={area.regions_id || []}
             limitTags={99}
           />
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFComboBox
-            disabled
+            disabled={edit}
             name="governorates_id"
             label={translate('portal_report.governorate_id.label')}
             data-cy="portal_report.governorate_id"
@@ -170,15 +171,15 @@ function SecondForm({ children, onSubmit }: any) {
             //       }))
             //     : []
             // }
-            dataOption={[]}
+            dataOption={edit ? area.governorates_id : []}
             value={area.governorates_id || []}
             limitTags={99}
           />
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled
-            type="textField"
+            disabled={edit}
+            type={!edit ? 'datePicker' : 'textField'}
             name="date_of_esthablistmen"
             label="تأريخ تأسيس الجهة*"
             placeholder="الرجاء تحديد تأريخ تأسيس الجهة"
@@ -186,7 +187,7 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled
+            disabled={edit}
             type="textField"
             name="chairman_of_board_of_directors"
             label="رئيس مجلس الإدارة*"
@@ -195,7 +196,7 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled
+            disabled={edit}
             type="textField"
             name="ceo"
             label="المدير التنفيذي*"
@@ -204,7 +205,7 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled
+            disabled={edit}
             type="radioGroup"
             name="been_supported_before"
             label="هل دعمت سابقًا؟"
@@ -216,7 +217,7 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={!isSupevisor}
+            disabled={edit}
             type="textField"
             name="most_clents_projects"
             label="أبرز أعمال الجهة*"
@@ -225,12 +226,28 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled
+            disabled={edit}
             type="textField"
             name="num_of_beneficiaries"
             label="العدد المستفيد من الجهة*"
             placeholder="الرجاء كتابة العدد المستفيد من الجهة"
           />
+        </Grid>
+        <Grid
+          item
+          md={12}
+          xs={12}
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Button
+            variant={edit ? 'outlined' : 'contained'}
+            data-cy="acc_form_non_consulation_support_edit_button"
+            onClick={() => {
+              setEdit(!edit);
+            }}
+          >
+            {edit ? translate('button.re_edit') : translate('button.save_edit')}
+          </Button>
         </Grid>
         <Grid item xs={12}>
           {children}
