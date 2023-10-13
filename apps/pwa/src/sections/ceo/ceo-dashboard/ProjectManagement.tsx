@@ -4,16 +4,15 @@ import {
 } from '../../../components/table/ceo/project-management/project-management';
 
 import ProjectManagementTableBE from 'components/table/ceo/project-management/ProjectManagementTableBE';
+import { REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 } from 'config';
 import { useSnackbar } from 'notistack';
-import React, { useEffect, useState } from 'react';
-import { getTrackList } from 'redux/slices/proposal';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'redux/store';
 import useAuth from '../../../hooks/useAuth';
 import useLocales from '../../../hooks/useLocales';
 import axiosInstance from '../../../utils/axios';
 import { generateHeader } from '../../../utils/generateProposalNumber';
 import { getDelayProjects } from '../../../utils/get-delay-projects';
-import { REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 } from 'config';
 
 export interface tracks {
   id: string;
@@ -21,9 +20,14 @@ export interface tracks {
   with_consultation: boolean;
 }
 
+export type ProjectManagementFilterParams = {
+  track_id?: string | null;
+  range_start_date?: string | null;
+  range_end_date?: string | null;
+};
+
 function DashboardProjectManagement() {
   const { translate, currentLang } = useLocales();
-  const dispatch = useDispatch();
   const { track_list } = useSelector((state) => state.proposal);
   const [projectManagementData, setProjectManagementData] = useState<ProjectManagement[]>([]);
 
@@ -37,27 +41,28 @@ function DashboardProjectManagement() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState<number | null>(null);
-  const [filter, setFilter] = useState('');
-  const [filterValue, setFilterValue] = useState('');
+  const [filterParams, setFilterParams] = useState<ProjectManagementFilterParams>({
+    range_start_date: null,
+    range_end_date: null,
+    track_id: null,
+  });
+  // console.log({ filterParams });
   // console.log({ filter, filterValue });
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
-    let url = '';
-    if (filter && filterValue && filterValue !== 'all') {
-      url = `tender-proposal/request-in-process?limit=${limit}&page=${page}&${filter}=${filterValue}`;
-    } else {
-      url = `tender-proposal/request-in-process?limit=${limit}&page=${page}`;
-    }
-    if (searchName && REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006) {
-      url = `${url}&project_name=${searchName}`;
-    }
-    // console.log('rest', url);
+    const url = `tender-proposal/request-in-process`;
     try {
       const rest = await axiosInstance.get(url, {
         headers: { 'x-hasura-role': activeRole! },
+        params: {
+          page: page,
+          limit: limit,
+          project_name: searchName || null,
+          range_start_date: filterParams?.range_start_date || null,
+          range_end_date: filterParams?.range_end_date || null,
+          track_id: filterParams?.track_id || null,
+        },
       });
-      // console.log('rest', rest.data);
-      // setTotal(rest.data.total);
       if (rest) {
         setTotal(rest.data.total);
         const tmpDatas = rest.data.data.map((item: any) => ({
@@ -104,7 +109,7 @@ function DashboardProjectManagement() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, currentLang, limit, page, filter, filterValue, searchName]);
+  }, [activeRole, enqueueSnackbar, currentLang, limit, page, searchName, filterParams]);
 
   React.useEffect(() => {
     fetchingIncoming();
@@ -143,14 +148,6 @@ function DashboardProjectManagement() {
 
   return (
     <>
-      {/* {!isFetchingData && !isLoading && (
-        <ProjectManagementTable
-          headline={translate('project_management_table.headline')}
-          isLoading={isFetchingData}
-          headerCell={headerCells}
-          data={projectManagementData ?? []}
-        />
-      )} */}
       <ProjectManagementTableBE
         data-cy="project-management-table"
         headline={translate('project_management_table.headline')}
@@ -158,26 +155,19 @@ function DashboardProjectManagement() {
         data={projectManagementData ?? []}
         headerCell={headerCells}
         total={total || 0}
+        filterparams={filterParams}
         onChangeRowsPage={(rowPage: number) => {
           setLimit(rowPage);
         }}
-        onFilterChange={(filter, value) => {
-          setFilter(filter);
-          setFilterValue(value);
-        }}
+        onFilterChange={setFilterParams}
         onPageChange={(page: number) => {
           setPage(page);
         }}
-        onSearch={(value) => {
-          setSearchName(value);
-        }}
+        onSearch={setSearchName}
         reFetch={() => {
           setSearchName('');
-          // fetchingIncoming();
         }}
       />
-      {/* {!loadingCount && (
-      )} */}
     </>
   );
 }

@@ -219,21 +219,6 @@ export default function TableAMCustom({
             {dataTable.length > 0 &&
               dataTable
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                // .filter((v) => {
-                //   if (editRequest) {
-                //     if (query === '') {
-                //       return v;
-                //     } else if (v.partner_name?.toLowerCase().includes(query.toLowerCase())) {
-                //       return v;
-                //     }
-                //   } else {
-                //     if (query === '') {
-                //       return v;
-                //     } else if (v.partner_name?.toLowerCase().includes(query.toLowerCase())) {
-                //       return v;
-                //     }
-                //   }
-                // })
                 .map((x, key) => (
                   <TableRowsData
                     key={key}

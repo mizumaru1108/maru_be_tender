@@ -25,11 +25,12 @@ function ConfirmApprovedEditRequest({ open, handleClose }: Props) {
     setLoading(true);
     const payload = {
       requestId: params.requestId,
+      status: 'APPROVED',
     };
     // console.log({ payload });
     try {
       const rest = await axiosInstance.patch(
-        'tender/client/approve-edit-requests',
+        'tender/client/edit-requests/change-status',
         {
           ...payload,
         },

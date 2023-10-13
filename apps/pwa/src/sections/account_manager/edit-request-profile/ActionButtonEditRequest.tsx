@@ -40,7 +40,7 @@ function ActionButtonEditRequest({ EditStatus, setOpen }: Props) {
             onClick={() => handleAccepted()}
             variant="contained"
             color="primary"
-            disabled={EditStatus === 'REJECTED' || EditStatus === 'APPROVED'}
+            disabled={EditStatus === 'APPROVED'}
             // disabled
           >
             {translate('account_manager.button.approveEdit')}

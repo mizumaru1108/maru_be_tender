@@ -33,6 +33,9 @@ import ProjectManagementTableRow from './ProjectManagementRow';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import SearchField from 'components/sorting/searchField';
 import { REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 } from 'config';
+import SearchDateField from '../../../sorting/date-filter';
+import dayjs from 'dayjs';
+import useAuth from '../../../../hooks/useAuth';
 
 export default function ProjectManagementTableBE({
   data,
@@ -41,6 +44,7 @@ export default function ProjectManagementTableBE({
   isLoading,
   total = 0,
   table_type = 'show-details',
+  filterparams,
   onPageChange,
   onFilterChange,
   onChangeRowsPage,
@@ -48,6 +52,7 @@ export default function ProjectManagementTableBE({
   reFetch,
 }: ProjectManagementTableBEProps) {
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
   const { track_list } = useSelector((state) => state.proposal);
 
   const [tableData, setTableData] = useState<ProjectManagement[]>([]);
@@ -129,8 +134,10 @@ export default function ProjectManagementTableBE({
         container
         data-cy="select-option-track-list"
         display={'flex'}
-        justifyContent={'space-between'}
         alignItems={'center'}
+        // gap={2}
+        spacing={2}
+        mb={2}
       >
         <Grid item md={2} xs={12}>
           <Select
@@ -139,10 +146,13 @@ export default function ProjectManagementTableBE({
             disabled={isLoading}
             onChange={(e) => {
               setSelectedTrack(e.target.value as string);
-              onFilterChange('track_id', e.target.value as string);
+              onFilterChange({
+                ...filterparams,
+                track_id: e.target.value as string,
+              });
             }}
-            size="small"
-            sx={{ fontSize: '12px', width: 200 }}
+            size="medium"
+            fullWidth
             MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
           >
             <MenuItem value={'all'}>{'كل القائمة'}</MenuItem>
@@ -153,6 +163,79 @@ export default function ProjectManagementTableBE({
             ))}
           </Select>
         </Grid>
+        {activeRole === 'tender_ceo' && table_type === 'show-details' ? (
+          <>
+            <Grid item md={4} xs={6}>
+              <Stack
+                data-cy="select-option-track-list"
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <SearchDateField
+                  fullWidth
+                  disabled={isLoading}
+                  label={translate('sorting.label.range_start_date')}
+                  focused={true}
+                  onReturnDate={(event: string) => {
+                    if (event && event !== '') {
+                      onFilterChange({
+                        ...filterparams,
+                        range_start_date: event as string,
+                        range_end_date: null,
+                      });
+                    } else {
+                      onFilterChange({
+                        ...filterparams,
+                        range_start_date: null,
+                        range_end_date: null,
+                      });
+                    }
+                  }}
+                  sx={{ mr: 1 }}
+                />
+                <SearchDateField
+                  fullWidth
+                  focused={true}
+                  disabled={
+                    filterparams.range_start_date === '' ||
+                    filterparams.range_start_date === null ||
+                    isLoading
+                  }
+                  label={
+                    filterparams.range_start_date === '' || filterparams.range_start_date === null
+                      ? null
+                      : translate('sorting.label.range_end_date')
+                  }
+                  minDate={
+                    filterparams.range_start_date
+                      ? dayjs(filterparams.range_start_date)
+                          .add(1, 'day')
+                          .toISOString()
+                          .split('T')[0]
+                      : ''
+                  }
+                  onReturnDate={(event: string) => {
+                    if (event && event !== '') {
+                      const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
+                      onFilterChange({
+                        ...filterparams,
+                        range_end_date: tmpNewEndDate,
+                      });
+                    } else {
+                      onFilterChange({
+                        ...filterparams,
+                        range_end_date: null,
+                      });
+                    }
+                  }}
+                  sx={{ ml: 1 }}
+                />
+              </Stack>
+            </Grid>
+          </>
+        ) : null}
+
         {REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 && (
           <Grid item md={4} xs={12}>
             <SearchField
@@ -187,22 +270,6 @@ export default function ProjectManagementTableBE({
           data-cy="project-table-management-table_container"
           sx={{ minWidth: 800, position: 'relative' }}
         >
-          {/* {selected.length > 0 && (
-              <TableSelectedActions
-                numSelected={selected.length}
-                rowCount={data.length}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(checked, data.map((row) => row.id) as string[])
-                }
-                actions={
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={() => setDeleteDialogOpen(true)}>
-                      <Iconify icon={'eva:trash-2-outline'} />
-                    </IconButton>
-                  </Tooltip>
-                }
-              />
-            )} */}
           <Table
             data-cy="project-table-management-table"
             size="medium"

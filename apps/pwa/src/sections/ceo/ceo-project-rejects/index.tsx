@@ -17,6 +17,7 @@ import axiosInstance from '../../../utils/axios';
 import { getDelayProjects } from '../../../utils/get-delay-projects';
 import ProjectManagementTableBE from 'components/table/ceo/project-management/ProjectManagementTableBE';
 import { REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 } from 'config';
+import { ProjectManagementFilterParams } from '../ceo-dashboard/ProjectManagement';
 
 export interface tracks {
   id: string;
@@ -30,22 +31,8 @@ function CeoProjectRejects() {
   const dispatch = useDispatch();
   const { tracks, isLoading, track_list } = useSelector((state) => state.proposal);
   const [projectManagementData, setProjectManagementData] = useState<ProjectManagement[]>([]);
-  // const [filteredTrack, setFilteredTrack] = useState([
-  //   'MOSQUES',
-  //   'CONCESSIONAL_GRANTS',
-  //   'INITIATIVES',
-  //   'BAPTISMS',
-  // ]);
-
-  // const [projectList, fetchProject] = useQuery({
-  //   query: GetProjectList,
-  //   variables: { track: tracks },
-  // });
-
-  // const { data: projectDatas, fetching, error } = projectList;
 
   //fetching using API
-
   const [isFetching, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
@@ -57,23 +44,26 @@ function CeoProjectRejects() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [total, setTotal] = useState<number | null>(null);
-  const [filter, setFilter] = useState('');
-  const [filterValue, setFilterValue] = useState('');
+  const [filterParams, setFilterParams] = useState<ProjectManagementFilterParams>({
+    range_start_date: null,
+    range_end_date: null,
+    track_id: null,
+  });
 
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
-    let url = '';
-    if (filter && filterValue && filterValue !== 'all') {
-      url = `tender-proposal/rejection-list?limit=${limit}&page=${page}&${filter}=${filterValue}`;
-    } else {
-      url = `tender-proposal/rejection-list?limit=${limit}&page=${page}`;
-    }
-    if (searchName && REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006) {
-      url = `${url}&project_name=${searchName}`;
-    }
+    const url = 'tender-proposal/rejection-list';
     try {
       const rest = await axiosInstance.get(url, {
         headers: { 'x-hasura-role': activeRole! },
+        params: {
+          page: page,
+          limit: limit,
+          project_name: searchName || null,
+          range_start_date: filterParams?.range_start_date || null,
+          range_end_date: filterParams?.range_end_date || null,
+          track_id: filterParams?.track_id || null,
+        },
       });
       if (rest) {
         const tmpDatas = rest.data.data.map((item: any) => ({
@@ -127,7 +117,7 @@ function CeoProjectRejects() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, currentLang, limit, page, filter, filterValue, searchName]);
+  }, [activeRole, enqueueSnackbar, currentLang, limit, page, filterParams, searchName]);
 
   // if (error) {
   //   console.log(error);
@@ -189,13 +179,11 @@ function CeoProjectRejects() {
       headerCell={headerCells}
       total={total || 0}
       table_type={'reject-project'}
+      filterparams={filterParams}
       onChangeRowsPage={(rowPage: number) => {
         setLimit(rowPage);
       }}
-      onFilterChange={(filter, value) => {
-        setFilter(filter);
-        setFilterValue(value);
-      }}
+      onFilterChange={setFilterParams}
       onPageChange={(page: number) => {
         setPage(page);
       }}

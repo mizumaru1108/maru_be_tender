@@ -17,6 +17,7 @@ import axiosInstance from '../../../utils/axios';
 import { getDelayProjects } from '../../../utils/get-delay-projects';
 import ProjectManagementTableBE from 'components/table/ceo/project-management/ProjectManagementTableBE';
 import { REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 } from 'config';
+import { ProjectManagementFilterParams } from '../ceo-dashboard/ProjectManagement';
 
 export interface tracks {
   id: string;
@@ -42,24 +43,26 @@ function CeoProjectManagement() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState<number | null>(null);
-  const [filter, setFilter] = useState('');
-  const [filterValue, setFilterValue] = useState('');
-
+  const [filterParams, setFilterParams] = useState<ProjectManagementFilterParams>({
+    range_start_date: null,
+    range_end_date: null,
+    track_id: null,
+  });
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
-    let url = '';
-    if (filter && filterValue && filterValue !== 'all') {
-      url = `tender-proposal/request-in-process?limit=${limit}&page=${page}&${filter}=${filterValue}`;
-    } else {
-      url = `tender-proposal/request-in-process?limit=${limit}&page=${page}`;
-    }
-    if (searchName && REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006) {
-      url = `${url}&project_name=${searchName}`;
-    }
+    const url = `tender-proposal/request-in-process`;
     // console.log('rest', url);
     try {
       const rest = await axiosInstance.get(url, {
         headers: { 'x-hasura-role': activeRole! },
+        params: {
+          page: page,
+          limit: limit,
+          project_name: searchName || null,
+          range_start_date: filterParams?.range_start_date || null,
+          range_end_date: filterParams?.range_end_date || null,
+          track_id: filterParams?.track_id || null,
+        },
       });
       // console.log('rest', rest.data);
       // setTotal(rest.data.total);
@@ -115,7 +118,7 @@ function CeoProjectManagement() {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar, currentLang, limit, page, filter, filterValue, searchName]);
+  }, [activeRole, enqueueSnackbar, currentLang, limit, page, filterParams, searchName]);
 
   React.useEffect(() => {
     fetchingIncoming();
@@ -169,13 +172,11 @@ function CeoProjectManagement() {
         data={projectManagementData ?? []}
         headerCell={headerCells}
         total={total || 0}
+        filterparams={filterParams}
         onChangeRowsPage={(rowPage: number) => {
           setLimit(rowPage);
         }}
-        onFilterChange={(filter, value) => {
-          setFilter(filter);
-          setFilterValue(value);
-        }}
+        onFilterChange={setFilterParams}
         onPageChange={(page: number) => {
           setPage(page);
         }}

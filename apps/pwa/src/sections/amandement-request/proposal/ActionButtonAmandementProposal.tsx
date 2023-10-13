@@ -1,11 +1,10 @@
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Grid, useTheme } from '@mui/material';
+import { Box, Grid, useTheme } from '@mui/material';
 import useLocales from 'hooks/useLocales';
-import { useState } from 'react';
 import { useNavigate } from 'react-router';
 // import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.svg';
-import ReplyOutlinedIcon from '@mui/icons-material/ReplyOutlined';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
+import ReplyOutlinedIcon from '@mui/icons-material/ReplyOutlined';
 // import ConfirmApprovedEditRequest from './ConfirmApprovedEditRequest';
 interface Props {
   // EditStatus: string;
@@ -92,7 +91,6 @@ function ActionButtonAmandementProposal({ isLoad, isDisabled }: Props) {
               {translate('going_back_one_step')}
             </LoadingButton>
           }
-          {/* <ConfirmApprovedEditRequest open={openModal} handleClose={() => setOpenModal(false)} /> */}
         </Grid>
       </Grid>
     </Box>

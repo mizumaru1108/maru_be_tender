@@ -1,4 +1,5 @@
 import { BasePaginateResponse } from '../../../../@types/commons';
+import { ProjectManagementFilterParams } from '../../../../sections/ceo/ceo-dashboard/ProjectManagement';
 
 export interface ProjectManagement extends BasePaginateResponse {
   id: string;
@@ -47,9 +48,10 @@ export interface ProjectManagementTableBEProps {
   isLoading?: boolean;
   total: number;
   table_type?: TCeoTable;
+  filterparams: ProjectManagementFilterParams;
   onPageChange: (page: number) => void;
   onChangeRowsPage: (rowsPerPage: number) => void;
-  onFilterChange: (filter: filter, value: string) => void;
+  onFilterChange: React.Dispatch<React.SetStateAction<ProjectManagementFilterParams>>;
   onSearch?: (value: string) => void;
   reFetch?: () => void;
 }
