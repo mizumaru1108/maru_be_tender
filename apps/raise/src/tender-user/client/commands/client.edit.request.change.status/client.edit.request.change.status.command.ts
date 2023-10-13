@@ -12,7 +12,10 @@ import { PrismaService } from '../../../../prisma/prisma.service';
 import { finalUploadFileJson } from '../../../../tender-commons/dto/final-upload-file-jsonb.dto';
 import { UploadFilesJsonbDto } from '../../../../tender-commons/dto/upload-files-jsonb.dto';
 import { prismaErrorThrower } from '../../../../tender-commons/utils/prisma-error-thrower';
-import { EditRequestRepository } from '../../../edit-requests/repositories/edit.request.repository';
+import {
+  EditRequestRepository,
+  EditRequestUpdateProps,
+} from '../../../edit-requests/repositories/edit.request.repository';
 import {
   TenderUserRepository,
   UpdateUserProps,
@@ -27,21 +30,23 @@ import { isUploadFileJsonb } from '../../../../tender-commons/utils/is-upload-fi
 import { FusionAuthService } from '../../../../libs/fusionauth/services/fusion-auth.service';
 import { EditRequestEntity } from '../../../edit-requests/entities/edit.request.entity';
 
-export class ClientApproveEditRequestCommand {
+export class ClientEditRequestChangeStatusCommand {
   reviewerId: string;
   requestId: string;
+  status: 'APPROVED' | 'REJECTED';
+  reject_reason?: string;
 }
 
-export class ClientApproveEditRequestCommandResult {
+export class ClientEditRequestChangeStatusCommandResult {
   data: EditRequestEntity;
 }
 
-@CommandHandler(ClientApproveEditRequestCommand)
-export class ClientApproveEditRequestCommandHandler
+@CommandHandler(ClientEditRequestChangeStatusCommand)
+export class ClientEditRequestChangeStatusCommandHandler
   implements
     ICommandHandler<
-      ClientApproveEditRequestCommand,
-      ClientApproveEditRequestCommandResult
+      ClientEditRequestChangeStatusCommand,
+      ClientEditRequestChangeStatusCommandResult
     >
 {
   constructor(
@@ -54,9 +59,14 @@ export class ClientApproveEditRequestCommandHandler
   ) {}
 
   async execute(
-    command: ClientApproveEditRequestCommand,
-  ): Promise<ClientApproveEditRequestCommandResult> {
+    command: ClientEditRequestChangeStatusCommand,
+  ): Promise<ClientEditRequestChangeStatusCommandResult> {
     const { requestId, reviewerId } = command;
+    if (command.status === 'REJECTED' && !command.reject_reason) {
+      throw new BadRequestException(
+        'Reject reason is required when rejecting edit request!',
+      );
+    }
     const requestData = await this.editRequestRepo.findFirst({ id: requestId });
 
     if (!requestData) {
@@ -174,13 +184,29 @@ export class ClientApproveEditRequestCommandHandler
         clientDataUpdateProps.board_ofdec_file = tmpArr as any;
       }
 
-      userDataUpdateProps.status_id = 'ACTIVE_ACCOUNT';
-
       // console.log('user data', logUtil(userDataUpdateProps));
       // console.log('client data', logUtil(clientDataUpdateProps));
       // console.log('created bank', logUtil(created_bank));
       // console.log('updated bank', logUtil(updated_bank));
       // console.log('deleted bank', logUtil(deleted_bank));
+
+      const erPayload = Builder<EditRequestUpdateProps>(
+        EditRequestUpdateProps,
+        {
+          id: requestId,
+          reviewer_id: reviewerId,
+          status_id: command.status,
+          reject_reason: command.reject_reason,
+        },
+      ).build();
+
+      if (command.status === 'APPROVED') {
+        erPayload.accepted_at = new Date();
+        erPayload.reject_reason = null;
+        erPayload.rejected_at = null;
+      }
+
+      if (command.status === 'REJECTED') erPayload.rejected_at = new Date();
 
       const dbRes = await this.prismaService.$transaction(
         async (session) => {
@@ -188,156 +214,161 @@ export class ClientApproveEditRequestCommandHandler
             session instanceof PrismaService ? session : this.prismaService;
 
           // console.log('updating client');
-          if (clientDataUpdateProps) {
-            await this.clientDataRepo.update(clientDataUpdateProps, tx);
-          }
-
-          // not just user id
-          // console.log('updating USER');
-          if (Object.keys(userDataUpdateProps).length > 1) {
-            await this.userRepo.update(userDataUpdateProps, tx);
-
-            // also update the fusion auth
-            await this.fusionAuthService.fusionAuthUpdateUser(user_id, {
-              firstName:
-                userDataUpdateProps.employee_name &&
-                !!userDataUpdateProps.employee_name
-                  ? (userDataUpdateProps.employee_name as string)
-                  : undefined,
-              mobilePhone:
-                userDataUpdateProps.mobile_number &&
-                !!userDataUpdateProps.mobile_number
-                  ? (userDataUpdateProps.mobile_number as string)
-                  : undefined,
-            });
-          }
-
-          // console.log('create bank');
-          if (created_bank && created_bank.length > 0) {
-            for (const cBank of created_bank) {
-              await this.bankInfoRepo.create(cBank, tx);
+          if (command.status === 'APPROVED') {
+            if (clientDataUpdateProps) {
+              await this.clientDataRepo.update(clientDataUpdateProps, tx);
             }
-          }
 
-          // console.log('update bank');
-          if (updated_bank && updated_bank.length > 0) {
-            for (let i = 0; i < updated_bank.length; i++) {
-              const oldBank = await tx.bank_information.findUnique({
-                where: {
-                  id: updated_bank[i].id,
-                },
+            // not just user id
+            // console.log('updating USER');
+            if (Object.keys(userDataUpdateProps).length > 1) {
+              await this.userRepo.update(userDataUpdateProps, tx);
+
+              // also update the fusion auth
+              await this.fusionAuthService.fusionAuthUpdateUser(user_id, {
+                firstName:
+                  userDataUpdateProps.employee_name &&
+                  !!userDataUpdateProps.employee_name
+                    ? (userDataUpdateProps.employee_name as string)
+                    : undefined,
+                mobilePhone:
+                  userDataUpdateProps.mobile_number &&
+                  !!userDataUpdateProps.mobile_number
+                    ? (userDataUpdateProps.mobile_number as string)
+                    : undefined,
               });
+            }
 
-              if (
-                oldBank &&
-                oldBank.card_image &&
-                isUploadFileJsonb(oldBank.card_image) &&
-                updated_bank[i].card_image &&
-                isUploadFileJsonb(updated_bank[i].card_image)
-              ) {
-                const tmpOldbank: UploadFilesJsonbDto =
-                  oldBank.card_image as any;
-                const tmpNewBank: UploadFilesJsonbDto = updated_bank[i]
-                  .card_image as any;
+            // console.log('create bank');
+            if (created_bank && created_bank.length > 0) {
+              for (const cBank of created_bank) {
+                await this.bankInfoRepo.create(cBank, tx);
+              }
+            }
 
-                if (tmpOldbank.url !== tmpNewBank.url) {
-                  const oldData = await tx.file_manager.findUnique({
-                    where: {
-                      url: tmpOldbank.url,
-                    },
-                  });
+            // console.log('update bank');
+            if (updated_bank && updated_bank.length > 0) {
+              for (let i = 0; i < updated_bank.length; i++) {
+                const oldBank = await tx.bank_information.findUnique({
+                  where: {
+                    id: updated_bank[i].id,
+                  },
+                });
 
-                  if (oldData !== null) {
-                    await tx.file_manager.update({
+                if (
+                  oldBank &&
+                  oldBank.card_image &&
+                  isUploadFileJsonb(oldBank.card_image) &&
+                  updated_bank[i].card_image &&
+                  isUploadFileJsonb(updated_bank[i].card_image)
+                ) {
+                  const tmpOldbank: UploadFilesJsonbDto =
+                    oldBank.card_image as any;
+                  const tmpNewBank: UploadFilesJsonbDto = updated_bank[i]
+                    .card_image as any;
+
+                  if (tmpOldbank.url !== tmpNewBank.url) {
+                    const oldData = await tx.file_manager.findUnique({
                       where: {
-                        id: oldData.id,
-                      },
-                      data: {
-                        is_deleted: true,
+                        url: tmpOldbank.url,
                       },
                     });
+
+                    if (oldData !== null) {
+                      await tx.file_manager.update({
+                        where: {
+                          id: oldData.id,
+                        },
+                        data: {
+                          is_deleted: true,
+                        },
+                      });
+                    }
                   }
                 }
-              }
 
-              await tx.bank_information.update({
-                where: {
-                  id: updated_bank[i].id,
-                },
-                data: {
-                  user_id: updated_bank[i].user_id,
-                  bank_name: updated_bank[i].bank_name,
-                  bank_id: updated_bank[i].bank_id,
-                  bank_account_name: updated_bank[i].bank_account_name,
-                  bank_account_number: updated_bank[i].bank_account_number,
-                  card_image: updated_bank[i].card_image,
-                } as Prisma.bank_informationUncheckedUpdateInput,
-              });
-            }
-          }
-
-          // console.log('delete bank');
-          if (deleted_bank && deleted_bank.length > 0) {
-            for (let i = 0; i < deleted_bank.length; i++) {
-              const oldBank = await tx.bank_information.findUnique({
-                where: {
-                  id: deleted_bank[i].id,
-                },
-              });
-
-              if (!!oldBank) {
                 await tx.bank_information.update({
+                  where: {
+                    id: updated_bank[i].id,
+                  },
+                  data: {
+                    user_id: updated_bank[i].user_id,
+                    bank_name: updated_bank[i].bank_name,
+                    bank_id: updated_bank[i].bank_id,
+                    bank_account_name: updated_bank[i].bank_account_name,
+                    bank_account_number: updated_bank[i].bank_account_number,
+                    card_image: updated_bank[i].card_image,
+                  } as Prisma.bank_informationUncheckedUpdateInput,
+                });
+              }
+            }
+
+            // console.log('delete bank');
+            if (deleted_bank && deleted_bank.length > 0) {
+              for (let i = 0; i < deleted_bank.length; i++) {
+                const oldBank = await tx.bank_information.findUnique({
                   where: {
                     id: deleted_bank[i].id,
                   },
-                  data: {
-                    is_deleted: true,
-                  },
                 });
-              }
 
-              const { url } = deleted_bank[i].card_image as any;
-              const oldFileManager = await tx.file_manager.findUnique({
-                where: {
-                  url,
-                },
-              });
+                if (!!oldBank) {
+                  await tx.bank_information.update({
+                    where: {
+                      id: deleted_bank[i].id,
+                    },
+                    data: {
+                      is_deleted: true,
+                    },
+                  });
+                }
 
-              if (oldFileManager !== null) {
-                await tx.file_manager.update({
+                const { url } = deleted_bank[i].card_image as any;
+                const oldFileManager = await tx.file_manager.findUnique({
                   where: {
                     url,
                   },
-                  data: {
-                    is_deleted: true,
-                  },
                 });
+
+                if (oldFileManager !== null) {
+                  await tx.file_manager.update({
+                    where: {
+                      url,
+                    },
+                    data: {
+                      is_deleted: true,
+                    },
+                  });
+                }
               }
             }
-          }
 
-          // console.log('delete file manager');
-          if (deletedFileManagerUrls && deletedFileManagerUrls.length > 0) {
-            for (let i = 0; i < deletedFileManagerUrls.length; i++) {
-              const fileManager = await tx.file_manager.findFirst({
-                where: { url: deletedFileManagerUrls[i] },
-              });
-              if (fileManager) {
-                await tx.file_manager.update({
+            // console.log('delete file manager');
+            if (deletedFileManagerUrls && deletedFileManagerUrls.length > 0) {
+              for (let i = 0; i < deletedFileManagerUrls.length; i++) {
+                const fileManager = await tx.file_manager.findFirst({
                   where: { url: deletedFileManagerUrls[i] },
-                  data: { is_deleted: true },
                 });
+                if (fileManager) {
+                  await tx.file_manager.update({
+                    where: { url: deletedFileManagerUrls[i] },
+                    data: { is_deleted: true },
+                  });
+                }
               }
             }
           }
 
-          // console.log('updateing edit request');
           const editRequestResult = await this.editRequestRepo.update(
+            erPayload,
+            tx,
+          );
+
+          // activate the user
+          await this.userRepo.update(
             {
-              id: requestId,
-              reviewer_id: reviewerId,
-              status_id: 'APPROVED',
-              accepted_at: new Date(),
+              id: user_id,
+              status_id: 'ACTIVE_ACCOUNT',
             },
             tx,
           );

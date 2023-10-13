@@ -12,6 +12,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { TenderCurrentUser } from 'src/tender-user/user/interfaces/current-user.interface';
+import { BaseApiOkResponse } from '../../../commons/decorators/base.api.ok.response.decorator';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
 import { baseResponseHelper } from '../../../commons/helpers/base-response-helper';
@@ -20,29 +21,29 @@ import { TenderJwtGuard } from '../../../tender-auth/guards/tender-jwt.guard';
 import { TenderRolesGuard } from '../../../tender-auth/guards/tender-roles.guard';
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
+import { EditRequestEntity } from '../../edit-requests/entities/edit.request.entity';
 import {
   ClientCreateEditRequestCommand,
   ClientCreateEditRequestCommandResult,
 } from '../commands/client.create.edit.request/client.create.edit.request.command';
+import {
+  ClientEditRequestChangeStatusCommand,
+  ClientEditRequestChangeStatusCommandResult,
+} from '../commands/client.edit.request.change.status/client.edit.request.change.status.command';
 import { ClientFieldAndIdQueryDto } from '../dtos/queries/client.find.name.and.id.query.dto';
 import {
   ClientEditRequestFieldDto,
   EditRequestByIdDto,
-  RejectEditRequestDto,
   SearchClientProposalFilter,
   SearchEditRequestFilter,
   SearchSpecificClientProposalFilter,
 } from '../dtos/requests';
+import { EditRequestChangeStatusDto } from '../dtos/requests/edit.request.change.status.dto';
 import {
   ClientFindNameAndIdQuery,
   ClientFindNameAndIdQueryResult,
 } from '../queries/client.find.name.and.id/client.find.name.and.id.query';
 import { TenderClientService } from '../services/tender-client.service';
-import { BannerTypeEnum } from '../../../banners/types/enums/banner.type.enum';
-import {
-  ClientApproveEditRequestCommand,
-  ClientApproveEditRequestCommandResult,
-} from '../commands/client.approve.edit.request/client.approve.edit.request.command';
 @ApiTags('ClientModule')
 @Controller('tender/client')
 export class TenderClientController {
@@ -262,72 +263,36 @@ export class TenderClientController {
     );
   }
 
-  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  // @TenderRoles('tender_accounts_manager')
-  // @Patch('approve-edit-requests')
-  // async approveEditRequests(
-  //   @CurrentUser() user: TenderCurrentUser,
-  //   @Body() editRequest: EditRequestByIdDto,
-  // ): Promise<BaseResponse<any>> {
-  //   const response = await this.tenderClientService.acceptEditRequests(
-  //     user.id,
-  //     editRequest.requestId,
-  //   );
-
-  //   return baseResponseHelper(
-  //     response,
-  //     HttpStatus.OK,
-  //     'Asking for changes successfully applied!',
-  //   );
-  // }
-
+  @ApiOperation({ summary: 'Edit Request Change Status' })
+  @BaseApiOkResponse(EditRequestEntity, 'object')
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_accounts_manager')
-  @Patch('approve-edit-requests')
-  async approveEditRequests(
+  @Patch('edit-requests/change-status')
+  async changeStatus(
     @CurrentUser() user: TenderCurrentUser,
-    @Body() editRequest: EditRequestByIdDto,
+    @Body() request: EditRequestChangeStatusDto,
   ): Promise<BaseResponse<any>> {
     try {
-      const command = Builder<ClientApproveEditRequestCommand>(
-        ClientApproveEditRequestCommand,
+      const command = Builder<ClientEditRequestChangeStatusCommand>(
+        ClientEditRequestChangeStatusCommand,
         {
+          ...request,
           reviewerId: user.id,
-          requestId: editRequest.requestId,
         },
       ).build();
 
       const result = await this.commandBus.execute<
-        ClientApproveEditRequestCommand,
-        ClientApproveEditRequestCommandResult
+        ClientEditRequestChangeStatusCommand,
+        ClientEditRequestChangeStatusCommandResult
       >(command);
 
       return baseResponseHelper(
         result,
-        HttpStatus.CREATED,
-        'Asking for changes successfully applied!',
+        HttpStatus.OK,
+        'Edit Request Status Changed!',
       );
     } catch (e) {
       throw e;
     }
-  }
-
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_accounts_manager')
-  @Patch('reject-edit-requests')
-  async rejectEditRequests(
-    @CurrentUser() user: TenderCurrentUser,
-    @Body() request: RejectEditRequestDto,
-  ): Promise<BaseResponse<any>> {
-    const response = await this.tenderClientService.rejectEditRequests(
-      user.id,
-      request,
-    );
-
-    return baseResponseHelper(
-      response,
-      HttpStatus.OK,
-      'Asking for changes successfully applied!',
-    );
   }
 }

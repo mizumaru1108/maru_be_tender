@@ -24,7 +24,7 @@ export class EditRequestUpdateProps {
   user_id?: string;
   reviewer_id?: string;
   status_id?: string;
-  reject_reason?: string;
+  reject_reason?: string | null;
   rejected_at?: Date | null;
   accepted_at?: Date | null;
 }

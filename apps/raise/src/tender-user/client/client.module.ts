@@ -1,14 +1,14 @@
 import { Module, Provider, forwardRef } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { BankInformationModule } from '../../bank/bank.module';
+import { EditRequestModule } from '../edit-requests/edit.request.module';
 import { UserModule } from '../user/user.module';
+import { ClientCreateEditRequestCommandHandler } from './commands/client.create.edit.request/client.create.edit.request.command';
+import { ClientEditRequestChangeStatusCommandHandler } from './commands/client.edit.request.change.status/client.edit.request.change.status.command';
 import { TenderClientController } from './controllers/tender-client.controller';
 import { ClientFindNameAndIdQueryHandler } from './queries/client.find.name.and.id/client.find.name.and.id.query';
 import { TenderClientRepository } from './repositories/tender-client.repository';
 import { TenderClientService } from './services/tender-client.service';
-import { ClientCreateEditRequestCommandHandler } from './commands/client.create.edit.request/client.create.edit.request.command';
-import { EditRequestModule } from '../edit-requests/edit.request.module';
-import { ClientApproveEditRequestCommandHandler } from './commands/client.approve.edit.request/client.approve.edit.request.command';
-import { BankInformationModule } from '../../bank/bank.module';
 
 const importedModule = [
   CqrsModule,
@@ -22,7 +22,7 @@ const commands: Provider[] = [
   // Client Domain
   TenderClientService,
   ClientCreateEditRequestCommandHandler,
-  ClientApproveEditRequestCommandHandler,
+  ClientEditRequestChangeStatusCommandHandler,
 ];
 const queries: Provider[] = [ClientFindNameAndIdQueryHandler];
 const exportedProviders: Provider[] = [
