@@ -205,7 +205,8 @@ query getInvoicePaymentData(
   $submitter_user_id: String = ""
   $supervisor_id: String = "",
   $project_manager_id: String = "",
-  $finance_id: String = ""
+  $finance_id: String = "",
+  $cashier_id: String = "",
 ){
   client_name: user_by_pk(id: $submitter_user_id) {
     employee_name
@@ -217,6 +218,9 @@ query getInvoicePaymentData(
     employee_name
   }
   finance_name: user_by_pk(id: $finance_id) {
+    employee_name
+  }
+  cashier_name: user_by_pk(id: $cashier_id) {
     employee_name
   }
   ceo_name:proposal_log(where: {proposal_id: {_eq: $proposal_id}, reviewer: {roles: {user_type_id: {_eq: CEO}}}}, distinct_on: reviewer_id) {

@@ -116,7 +116,6 @@ export default function PrintProposal() {
             sx={{
               backgroundColor: theme.palette.common.white,
               padding: '50px 50px 0 50px',
-              // mt: 1,
               borderRadius: 1,
             }}
           >

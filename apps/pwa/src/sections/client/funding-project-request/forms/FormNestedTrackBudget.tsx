@@ -61,10 +61,7 @@ function checkBudgetSum(data: TrackSection[], initBugdet: number): boolean {
           .reduce((acc, k) => acc + (k.budget || 0), 0) || 0;
       // const parentBudget = parentMap.get(parentId) || 0;
       const parentBudget =
-        data.find((track_section) => track_section.id === item.parent_section_id)?.total_budget ||
-        0;
-
-      // console.log({ parentBudget, childBudget });
+        data.find((track_section) => track_section.id === item.parent_section_id)?.budget || 0;
 
       if (childBudget && childBudget !== parentBudget) {
         throw new Error(
@@ -197,7 +194,6 @@ export default function FormNestedTrackBudget({
 
   const onSubmit = (data: FormTrackBudget) => {
     const tmpPayload = data;
-    // const tmpTotalSummary = sumBudget(tmpPayload?.sections || []);
     const tmpTotalSummary =
       (tmpPayload?.sections &&
         tmpPayload?.sections
@@ -229,10 +225,8 @@ export default function FormNestedTrackBudget({
               open: false,
               message: '',
             });
-            // console.log({ tmpFlatArray });
             onSubmitForm(tmpFlatArray);
           } catch (error) {
-            // console.log({ error });
             setBudgetError({
               open: true,
               message: translate(error.message),
@@ -240,9 +234,6 @@ export default function FormNestedTrackBudget({
           }
         }
       }
-
-      // console.log({ checkExceedBudget, tmpFlatArray });
-      // onSubmitForm(tmpFlatArray);
     }
   };
 
