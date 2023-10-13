@@ -1568,6 +1568,8 @@ export class ProposalRepository {
         vat,
         track_id,
         project_name,
+        range_end_date,
+        range_start_date,
       } = filter;
 
       const offset = (page - 1) * limit;
@@ -1596,6 +1598,34 @@ export class ProposalRepository {
           project_name: {
             contains: project_name,
             mode: 'insensitive',
+          },
+        };
+      }
+
+      if (range_start_date) {
+        whereClause = {
+          ...whereClause,
+          created_at: {
+            gte: range_start_date,
+          },
+        };
+      }
+
+      if (range_end_date) {
+        whereClause = {
+          ...whereClause,
+          created_at: {
+            lte: range_end_date,
+          },
+        };
+      }
+
+      if (range_start_date && range_end_date) {
+        whereClause = {
+          ...whereClause,
+          created_at: {
+            gte: range_start_date,
+            lte: range_end_date,
           },
         };
       }
@@ -2770,51 +2800,6 @@ export class ProposalRepository {
     }
   }
 
-  // async updateProposal(
-  //   proposalId: string,
-  //   proposalPayload: Prisma.proposalUpdateInput,
-  //   itemBudgetPayloads?: proposal_item_budget[] | null,
-  // ) {
-  //   try {
-  //     if (itemBudgetPayloads) {
-  //       return await this.prismaService.$transaction([
-  //         // delete all previous item budget
-  //         this.prismaService.proposal_item_budget.deleteMany({
-  //           where: {
-  //             proposal_id: proposalId,
-  //           },
-  //         }),
-  //         // create a new one
-  //         this.prismaService.proposal_item_budget.createMany({
-  //           data: itemBudgetPayloads,
-  //         }),
-  //         // update the proposal
-  //         this.prismaService.proposal.update({
-  //           where: {
-  //             id: proposalId,
-  //           },
-  //           data: proposalPayload,
-  //         }),
-  //       ]);
-  //     } else {
-  //       return await this.prismaService.proposal.update({
-  //         where: {
-  //           id: proposalId,
-  //         },
-  //         data: proposalPayload,
-  //       });
-  //     }
-  //   } catch (error) {
-  //     const theError = prismaErrorThrower(
-  //       error,
-  //       ProposalRepository.name,
-  //       'updateProposal error details: ',
-  //       'updating proposal!',
-  //     );
-  //     throw theError;
-  //   }
-  // }
-
   async updateProposalState(
     proposalId: string,
     proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
@@ -2832,12 +2817,6 @@ export class ProposalRepository {
     try {
       return await this.prismaService.$transaction(
         async (prismaTrans) => {
-          // this.logger.log(
-          //   'info',
-          //   `updating proposal ${proposalId}, with payload of \n${logUtil(
-          //     proposalUpdatePayload,
-          //   )}`,
-          // );
           const proposal = await prismaTrans.proposal.update({
             where: {
               id: proposalId,

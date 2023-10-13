@@ -1,14 +1,15 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseFilterRequest } from '../../../../commons/dtos/base-filter-request.dto';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsBoolean,
+  IsDate,
   IsIn,
   IsNotEmpty,
-  IsString,
   IsOptional,
-  IsBoolean,
+  IsString,
   IsUUID,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { BaseFilterRequest } from '../../../../commons/dtos/base-filter-request.dto';
 
 export class RequestInProcessFilterRequest extends BaseFilterRequest {
   @ApiPropertyOptional()
@@ -46,4 +47,18 @@ export class RequestInProcessFilterRequest extends BaseFilterRequest {
   @IsNotEmpty()
   @IsString()
   project_name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDate()
+  @IsNotEmpty()
+  @Type(() => Date)
+  range_start_date?: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDate()
+  @IsNotEmpty()
+  @Type(() => Date)
+  range_end_date?: Date;
 }
