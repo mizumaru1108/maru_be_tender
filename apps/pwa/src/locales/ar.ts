@@ -2396,6 +2396,7 @@ const ar = {
   implementation_period: 'مدة التنفيذ:',
   target_group_type: 'نوع الفئة المستهدفة:',
   support_type: 'مبلغ الدعم:',
+  budget_from_client: 'الميزانية من العميل',
   full_support: 'دعم كلي',
   partial_support: 'دعم جزئي',
   with: 'مع',

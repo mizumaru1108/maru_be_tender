@@ -2377,6 +2377,7 @@ const en = {
   implementation_period: 'Implementation period:',
   target_group_type: 'Target group type:',
   support_type: 'Support type:',
+  budget_from_client: 'Budget from client:',
   full_support: 'Full support',
   partial_support: 'Partial support',
   with: 'with',

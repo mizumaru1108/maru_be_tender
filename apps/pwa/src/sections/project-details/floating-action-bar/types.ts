@@ -38,3 +38,14 @@ export interface ProposalApprovePayloadSupervisor {
     amount: number;
   }[];
 }
+
+export interface ProposalApprovePayloadSpv1 {}
+export interface ProposalApprovePayloadSpv2 {
+  detail_project_budgets: {
+    clause: string;
+    explanation: string;
+    amount: number;
+  }[];
+  notes: string;
+  support_goals: string;
+}
