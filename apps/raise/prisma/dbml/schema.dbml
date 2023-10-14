@@ -207,6 +207,7 @@ Table proposal {
   partial_support_amount Decimal
   project_beneficiaries_specific_type String
   track_id String
+  section_id String
   updated_at DateTime [default: `now()`]
   clasification_field String
   closing_report Boolean
@@ -245,6 +246,7 @@ Table proposal {
   accreditation_type accreditation_type
   proposal_beneficiaries proposal_beneficiaries
   project_tracks project_tracks
+  track_section track_section
   project_manager user
   bank_information bank_information
   proposal_request proposal_request
@@ -618,6 +620,7 @@ Table track_section {
   parent_section track_section
   child_track_section track_section [not null]
   track track [not null]
+  proposal proposal [not null]
 }
 
 Table user_status {
@@ -1621,6 +1624,8 @@ Ref: proposal.accreditation_type_id > accreditation_type.id
 Ref: proposal.project_beneficiaries > proposal_beneficiaries.id [delete: Cascade]
 
 Ref: proposal.project_track > project_tracks.id [delete: Restrict]
+
+Ref: proposal.section_id > track_section.id
 
 Ref: proposal.project_manager_id > user.id [delete: Restrict]
 

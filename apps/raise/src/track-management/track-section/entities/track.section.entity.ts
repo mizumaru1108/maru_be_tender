@@ -11,4 +11,8 @@ export class TrackSectionEntity {
   parent_section: TrackSectionEntity;
   child_track_section: TrackSectionEntity[];
   track: TrackEntity;
+
+  section_budget?: number;
+  section_spending_budget?: number;
+  section_reserved_budget?: number;
 }

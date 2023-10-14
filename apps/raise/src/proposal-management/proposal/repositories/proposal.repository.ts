@@ -942,106 +942,6 @@ export class ProposalRepository {
     }
   }
 
-  // async askForAmandementRequest(
-  //   currentUser: TenderCurrentUser,
-  //   id: string,
-  //   createAskEditRequestPayload: Prisma.proposal_asked_edit_requestUncheckedCreateInput,
-  //   proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
-  // ) {
-  //   try {
-  //     return await this.prismaService.$transaction(
-  //       async (prisma) => {
-  //         this.logger.info(
-  //           `Updating proposal ${id}, with payload of\n${logUtil(
-  //             proposalUpdatePayload,
-  //           )}`,
-  //         );
-  //         const updatedProposal = await prisma.proposal.update({
-  //           where: { id },
-  //           data: proposalUpdatePayload,
-  //         });
-
-  //         this.logger.info(
-  //           `Creating new proposal asked edit request with payload of \n${logUtil(
-  //             createAskEditRequestPayload,
-  //           )}`,
-  //         );
-
-  //         await prisma.proposal_asked_edit_request.create({
-  //           data: createAskEditRequestPayload,
-  //         });
-
-  //         const lastLog = await prisma.proposal_log.findFirst({
-  //           where: { proposal_id: id },
-  //           select: {
-  //             created_at: true,
-  //           },
-  //           orderBy: {
-  //             created_at: 'desc',
-  //           },
-  //           take: 1,
-  //         });
-
-  //         await prisma.proposal_log.create({
-  //           data: {
-  //             id: nanoid(),
-  //             proposal_id: id,
-  //             user_role: appRoleMappers[currentUser.choosenRole],
-  //             reviewer_id: currentUser.id,
-  //             action: ProposalAction.ASK_FOR_AMANDEMENT_REQUEST, //ask to supervisor for amandement request
-  //             state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
-  //             notes: createAskEditRequestPayload.notes,
-  //             response_time: lastLog?.created_at
-  //               ? Math.round(
-  //                   (new Date().getTime() - lastLog.created_at.getTime()) /
-  //                     60000,
-  //                 )
-  //               : null,
-  //           },
-  //           select: {
-  //             action: true,
-  //             created_at: true,
-  //             reviewer: {
-  //               select: {
-  //                 id: true,
-  //                 employee_name: true,
-  //                 email: true,
-  //                 mobile_number: true,
-  //               },
-  //             },
-  //             proposal: {
-  //               select: {
-  //                 project_name: true,
-  //                 user: {
-  //                   select: {
-  //                     id: true,
-  //                     employee_name: true,
-  //                     email: true,
-  //                     mobile_number: true,
-  //                   },
-  //                 },
-  //               },
-  //             },
-  //           },
-  //         });
-
-  //         return {
-  //           updatedProposal,
-  //         };
-  //       },
-  //       { maxWait: 500000, timeout: 1500000 },
-  //     );
-  //   } catch (err) {
-  //     const theError = prismaErrorThrower(
-  //       err,
-  //       ProposalRepository.name,
-  //       'Saving Draft Proposal error details: ',
-  //       'Saving Proposal Draft!',
-  //     );
-  //     throw theError;
-  //   }
-  // }
-
   async findAmandementByProposalId(proposal_id: string): Promise<any> {
     try {
       this.logger.info(
@@ -1768,7 +1668,18 @@ export class ProposalRepository {
         if (currentUser.choosenRole === 'tender_project_manager') {
           whereClause = {
             ...whereClause,
-            inner_status: InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
+            state: {
+              in: [
+                TenderAppRoleEnum.PROJECT_SUPERVISOR,
+                TenderAppRoleEnum.PROJECT_MANAGER,
+              ],
+            },
+            inner_status: {
+              in: [
+                InnerStatusEnum.REJECTED_BY_SUPERVISOR,
+                InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
+              ],
+            },
           };
         }
 
@@ -1839,8 +1750,8 @@ export class ProposalRepository {
         };
       }
 
-      console.log(logUtil(whereClause));
-      console.log(logUtil(queryOptions));
+      // console.log(logUtil(whereClause));
+      // console.log(logUtil(queryOptions));
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({

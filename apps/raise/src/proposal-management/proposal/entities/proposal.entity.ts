@@ -15,6 +15,7 @@ import { RegionEntity } from '../../../region-management/region/entities/region.
 import { GovernorateEntity } from '../../../region-management/governorate/entities/governorate.entity';
 import { ProposalGovernorateEntity } from '../../proposal-regions/governorate/entities/proposal.governorate.entity';
 import { ProposalRegionEntity } from '../../proposal-regions/region/entities/proposal.region.entity';
+import { TrackSectionEntity } from '../../../track-management/track-section/entities/track.section.entity';
 
 export interface ISendNotificaitonEvent {
   notif_type: 'EMAIL' | 'SMS';
@@ -110,6 +111,8 @@ export class ProposalEntity extends AggregateRoot {
   target_group_type?: string | null;
   track?: TrackEntity | null;
   track_id?: string | null;
+  section_id?: string | null;
+  track_section?: TrackSectionEntity | null;
   updated_at?: Date | null;
   vat?: boolean | null;
   vat_percentage?: number | null;
