@@ -130,82 +130,84 @@ function ProjectBudget() {
           </Typography>
         </Box>
       </Box>
-      {activeRole !== 'tender_client' && (
-        <Box sx={{ width: '100%' }}>
-          <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
-            {translate('support_type')}
-          </Typography>
-          <Typography sx={{ mb: '20px' }}>
-            {!proposal.support_type ? translate('full_support') : translate('partial_support')}
-          </Typography>
-          <Box
-            sx={{
-              mt: '20px',
-              backgroundColor: '#fff',
-              display: 'flex',
-              justifyContent: 'start',
-              direction: 'row',
-              gap: 3,
-              padding: '10px',
-              borderRadius: '10px',
-            }}
-          >
-            <Typography variant="h6" flex={2}>
-              البند
+      {activeRole !== 'tender_client' &&
+        proposal.inner_status !== 'CREATED_BY_CLIENT' &&
+        proposal.inner_status !== 'ACCEPTED_BY_MODERATOR' && (
+          <Box sx={{ width: '100%' }}>
+            <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
+              {translate('support_type')}
             </Typography>
-            <Typography variant="h6" flex={3}>
-              الشرح
+            <Typography sx={{ mb: '20px' }}>
+              {!proposal.support_type ? translate('full_support') : translate('partial_support')}
             </Typography>
-            <Typography variant="h6" flex={2}>
-              المبلغ
-            </Typography>
-          </Box>
-          {acceptingBudgets.length ? (
-            acceptingBudgets.map((item, index) => (
-              <React.Fragment key={index}>
-                <Stack direction="row" key={index} gap={3} sx={{ padding: '10px' }}>
-                  <Typography flex={2} sx={{ color: '#1E1E1E' }}>
-                    {item.clause}
-                  </Typography>
-                  <Typography flex={3} sx={{ color: '#1E1E1E' }}>
-                    {item.explanation}
-                  </Typography>
-                  <Typography flex={2} sx={{ color: '#1E1E1E' }}>
-                    {fCurrencyNumber(item.amount)}
-                  </Typography>
-                </Stack>
-                <Divider />
-              </React.Fragment>
-            ))
-          ) : (
-            <Typography
-              flex={2}
-              variant="body2"
-              sx={{ color: '#1E1E1E', mt: 2, ml: 1, fontStyle: 'italic' }}
+            <Box
+              sx={{
+                mt: '20px',
+                backgroundColor: '#fff',
+                display: 'flex',
+                justifyContent: 'start',
+                direction: 'row',
+                gap: 3,
+                padding: '10px',
+                borderRadius: '10px',
+              }}
             >
-              {translate('content.client.main_page.no_budgets_projects')}
-            </Typography>
-          )}
-          <Box
-            sx={{
-              mt: '20px',
-              backgroundColor: '#fff',
-              display: 'flex',
-              justifyContent: 'start',
-              direction: 'row',
-              gap: 3,
-              padding: '10px',
-              borderRadius: '10px',
-            }}
-          >
-            <Box flex={2} />
-            <Box flex={2} />
-            <Typography variant="h6" flex={2.8}>
-              {`المبلغ الإجمالي : ${fCurrencyNumber(summaryAcceptAmount)}`}
-            </Typography>
+              <Typography variant="h6" flex={2}>
+                البند
+              </Typography>
+              <Typography variant="h6" flex={3}>
+                الشرح
+              </Typography>
+              <Typography variant="h6" flex={2}>
+                المبلغ
+              </Typography>
+            </Box>
+            {acceptingBudgets.length ? (
+              acceptingBudgets.map((item, index) => (
+                <React.Fragment key={index}>
+                  <Stack direction="row" key={index} gap={3} sx={{ padding: '10px' }}>
+                    <Typography flex={2} sx={{ color: '#1E1E1E' }}>
+                      {item.clause}
+                    </Typography>
+                    <Typography flex={3} sx={{ color: '#1E1E1E' }}>
+                      {item.explanation}
+                    </Typography>
+                    <Typography flex={2} sx={{ color: '#1E1E1E' }}>
+                      {fCurrencyNumber(item.amount)}
+                    </Typography>
+                  </Stack>
+                  <Divider />
+                </React.Fragment>
+              ))
+            ) : (
+              <Typography
+                flex={2}
+                variant="body2"
+                sx={{ color: '#1E1E1E', mt: 2, ml: 1, fontStyle: 'italic' }}
+              >
+                {translate('content.client.main_page.no_budgets_projects')}
+              </Typography>
+            )}
+            <Box
+              sx={{
+                mt: '20px',
+                backgroundColor: '#fff',
+                display: 'flex',
+                justifyContent: 'start',
+                direction: 'row',
+                gap: 3,
+                padding: '10px',
+                borderRadius: '10px',
+              }}
+            >
+              <Box flex={2} />
+              <Box flex={2} />
+              <Typography variant="h6" flex={2.8}>
+                {`المبلغ الإجمالي : ${fCurrencyNumber(summaryAcceptAmount)}`}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-      )}
+        )}
     </Container>
   );
 }
