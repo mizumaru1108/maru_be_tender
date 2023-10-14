@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsUUID,
   IsOptional,
+  IsArray,
 } from 'class-validator';
 import { UserStatusEnum } from '../../types/user_status';
 
@@ -26,8 +27,8 @@ export class UserStatusUpdateDto {
   status: UserStatusEnum;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @IsUUID()
+  @IsNotEmpty({ each: true })
+  @IsString({ each: true })
+  @IsArray()
   user_id: string[];
 }
