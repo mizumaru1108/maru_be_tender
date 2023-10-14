@@ -29,5 +29,5 @@ export class UserStatusUpdateDto {
   @IsNotEmpty()
   @IsString()
   @IsUUID()
-  user_id: string;
+  user_id: string[];
 }

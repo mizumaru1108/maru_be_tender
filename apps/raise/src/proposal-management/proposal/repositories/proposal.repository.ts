@@ -2415,12 +2415,9 @@ export class ProposalRepository {
       };
 
       if (
-        [
-          'tender_project_supervisor',
-          'tender_project_manager',
-          'tender_cashier',
-          'tender_finance',
-        ].indexOf(currentUser.choosenRole) > -1
+        ['tender_project_supervisor', 'tender_project_manager'].indexOf(
+          currentUser.choosenRole,
+        ) > -1
       ) {
         const reviewer = await this.prismaService.user.findUnique({
           where: { id: currentUser.id },
@@ -2576,7 +2573,7 @@ export class ProposalRepository {
         };
       }
 
-      // console.log(logUtil(queryOptions));
+      console.log(logUtil(queryOptions));
 
       const data = await this.prismaService.proposal.findMany(queryOptions);
 

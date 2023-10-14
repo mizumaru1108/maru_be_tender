@@ -11,6 +11,7 @@ import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-t
 import { SearchUserFilterRequest } from '../dtos/requests';
 import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 import { UserEntity } from '../entities/user.entity';
+import { logUtil } from '../../../commons/utils/log-util';
 export class CreateUserProps {
   id?: string;
   employee_name: string;
@@ -410,7 +411,6 @@ export class TenderUserRepository {
       sorting_field,
       association_name,
       client_field,
-      single_role,
       account_status,
       license_number,
       entity_mobile,
@@ -425,13 +425,6 @@ export class TenderUserRepository {
     let orQuery: Prisma.userWhereInput[] = [];
 
     if (employee_name) {
-      // query = {
-      //   ...query,
-      // employee_name: {
-      //   contains: employee_name,
-      //   mode: 'insensitive',
-      // },
-      // };
       orQuery.push({
         employee_name: {
           contains: employee_name,
@@ -510,13 +503,6 @@ export class TenderUserRepository {
     }
 
     if (email) {
-      // query = {
-      //   ...query,
-      //   email: {
-      //     contains: email,
-      //     mode: 'insensitive',
-      //   },
-      // };
       orQuery.push({
         email: {
           contains: email,
@@ -565,15 +551,6 @@ export class TenderUserRepository {
     }
 
     if (association_name) {
-      // query = {
-      //   ...query,
-      //   client_data: {
-      //     entity: {
-      //       contains: association_name,
-      //       mode: 'insensitive',
-      //     },
-      //   },
-      // };
       orQuery.push({
         client_data: {
           entity: {
@@ -628,6 +605,20 @@ export class TenderUserRepository {
           },
         },
       });
+      orQuery.push({
+        client_data: {
+          phone: {
+            contains: entity_mobile,
+            mode: 'insensitive',
+          },
+        },
+      });
+      orQuery.push({
+        mobile_number: {
+          contains: entity_mobile,
+          mode: 'insensitive',
+        },
+      });
     }
 
     if (license_number) {
@@ -676,48 +667,12 @@ export class TenderUserRepository {
       order_by.updated_at = sort;
     }
 
-    // if (findOnlyActive === false) {
-    // if (employee_name) {
-    //   query = {
-    //     employee_name: {
-    //       contains: employee_name,
-    //       mode: 'insensitive',
-    //     },
-    //   };
-    // }
-    // if (account_status) {
-    //   query = {
-    //     status_id: {
-    //       contains: account_status,
-    //       mode: 'insensitive',
-    //     },
-    //   };
-    // }
-    // if (employee_name && account_status) {
-    //   query = {
-    //     OR: [
-    //       {
-    //         status_id: {
-    //           contains: account_status,
-    //           mode: 'insensitive',
-    //         },
-    //       },
-    //       {
-    //         employee_name: {
-    //           contains: employee_name,
-    //           mode: 'insensitive',
-    //         },
-    //       },
-    //     ],
-    //   };
-    // }
-    // }
     query.OR = orQuery;
 
     try {
       // console.log(logUtil(filter));
       // console.log(logUtil(query));
-      // this.logger.debug(`applied filter: ${logUtil(query)}`);
+      // console.log(`applied filter: ${logUtil(query)}`);
       const users: FindUserResponse['data'] =
         await this.prismaService.user.findMany({
           where: {
