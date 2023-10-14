@@ -28,22 +28,18 @@ export class TrackSectionCreateCommandHandler
   ): Promise<TrackSectionCreateCommandResult> {
     const { sections } = command;
     try {
-      const dbRes = await this.prismaService.$transaction(
-        async (session) => {
-          const tx =
-            session instanceof PrismaService ? session : this.prismaService;
+      // await this.prismaService.$transaction(
+      //   async (session) => {
+      //     const tx =
+      //       session instanceof PrismaService ? session : this.prismaService;
 
-          await this.trackSectionRepo.arraySave(
-            sections[0].track_id,
-            sections,
-            tx,
-          );
-        },
-        {
-          timeout: 70000,
-        },
-      );
+      //   },
+      //   {
+      //     timeout: 120000,
+      //   },
+      // );
 
+      await this.trackSectionRepo.arraySave(sections[0].track_id, sections);
       return {
         data: {
           created_sections: sections,

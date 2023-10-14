@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TrackSectionEntity } from '../entities/track.section.entity';
 import { TrackSectionCreateDto } from '../dtos/requests/track.sections.create.dto';
+import { logUtil } from '../../../commons/utils/log-util';
 
 export type TrackSectionIncludeTypes = 'parent_section' | 'child_track_section';
 
@@ -50,6 +51,7 @@ export class TrackSectionRepository {
   ): Promise<TrackSectionEntity> {
     let prisma = this.prismaService;
     if (session) prisma = session;
+    console.log({ props });
     try {
       const rawCreated = await prisma.track_section.create({
         data: {
@@ -77,6 +79,7 @@ export class TrackSectionRepository {
   ): Promise<TrackSectionEntity> {
     let prisma = this.prismaService;
     if (session) prisma = session;
+    // console.log({ props });
     try {
       const rawUpdated = await prisma.track_section.update({
         where: { id: props.id },
@@ -89,6 +92,8 @@ export class TrackSectionRepository {
           is_deleted: props.is_deleted,
         },
       });
+
+      // console.log({ rawUpdated });
 
       const updatedEntity = Builder<TrackSectionEntity>(TrackSectionEntity, {
         ...rawUpdated,
@@ -188,7 +193,7 @@ export class TrackSectionRepository {
     try {
       const { limit = 0, page = 0, sort_by, sort_direction } = props;
       const offset = (page - 1) * limit;
-      const getSortBy = sort_by ? sort_by : 'created_at';
+      const getSortBy = sort_by ? sort_by : 'name';
       const getSortDirection = sort_direction ? sort_direction : 'desc';
 
       const args = this.findManyFilter(props);
@@ -295,28 +300,32 @@ export class TrackSectionRepository {
         prisma,
       );
 
+      // console.log(logUtil(existingTrackSection));
       // get track id
       const existingTrackIds = existingTrackSection.map((track) => track.id);
 
       for (const section of sectionPayloads) {
         //  if it doesnt exist
         if (!existingTrackIds.includes(section.id)) {
-          this.create(section, prisma);
+          const cPayload = Builder<TrackSectionCreateProps>(
+            TrackSectionCreateProps,
+            {
+              ...section,
+            },
+          ).build();
+          this.create(cPayload, prisma);
         }
 
         // if it exist
         if (existingTrackIds.includes(section.id)) {
-          this.update(
+          const uPayload = Builder<TrackSectionUpdateProps>(
+            TrackSectionUpdateProps,
             {
-              id: section.id,
-              name: section.name,
-              budget: section.budget,
-              parent_section_id: section.parent_section_id,
-              track_id: section.track_id,
-              is_deleted: section.is_deleted,
+              ...section,
             },
-            prisma,
-          );
+          ).build();
+
+          this.update(uPayload, prisma);
         }
       }
     } catch (error) {
