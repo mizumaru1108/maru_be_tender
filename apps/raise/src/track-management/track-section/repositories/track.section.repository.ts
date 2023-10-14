@@ -3,11 +3,14 @@ import { Prisma } from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { TrackSectionEntity } from '../entities/track.section.entity';
 import { TrackSectionCreateDto } from '../dtos/requests/track.sections.create.dto';
-import { logUtil } from '../../../commons/utils/log-util';
+import { TrackSectionEntity } from '../entities/track.section.entity';
+import { TrackSectionMapper } from '../mapper/track.section.mapper';
 
-export type TrackSectionIncludeTypes = 'parent_section' | 'child_track_section';
+export type TrackSectionIncludeTypes =
+  | 'parent_section'
+  | 'child_track_section'
+  | 'proposal';
 
 export class TrackSectionCreateProps {
   id?: string;
@@ -43,7 +46,10 @@ export class TrackSectionFindManyProps {
 
 @Injectable()
 export class TrackSectionRepository {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly trackSectionMapper: TrackSectionMapper,
+  ) {}
 
   async create(
     props: TrackSectionCreateProps,
@@ -51,7 +57,6 @@ export class TrackSectionRepository {
   ): Promise<TrackSectionEntity> {
     let prisma = this.prismaService;
     if (session) prisma = session;
-    console.log({ props });
     try {
       const rawCreated = await prisma.track_section.create({
         data: {
@@ -63,9 +68,10 @@ export class TrackSectionRepository {
         },
       });
 
-      const createdEntity = Builder<TrackSectionEntity>(TrackSectionEntity, {
-        ...rawCreated,
-      }).build();
+      // const createdEntity = Builder<TrackSectionEntity>(TrackSectionEntity, {
+      //   ...rawCreated,
+      // }).build();
+      const createdEntity = this.trackSectionMapper.toDomain(rawCreated);
       return createdEntity;
     } catch (error) {
       console.trace(error);
@@ -79,7 +85,6 @@ export class TrackSectionRepository {
   ): Promise<TrackSectionEntity> {
     let prisma = this.prismaService;
     if (session) prisma = session;
-    // console.log({ props });
     try {
       const rawUpdated = await prisma.track_section.update({
         where: { id: props.id },
@@ -93,11 +98,11 @@ export class TrackSectionRepository {
         },
       });
 
-      // console.log({ rawUpdated });
+      // const updatedEntity = Builder<TrackSectionEntity>(TrackSectionEntity, {
+      //   ...rawUpdated,
+      // }).build();
 
-      const updatedEntity = Builder<TrackSectionEntity>(TrackSectionEntity, {
-        ...rawUpdated,
-      }).build();
+      const updatedEntity = this.trackSectionMapper.toDomain(rawUpdated);
 
       return updatedEntity;
     } catch (error) {
@@ -118,7 +123,35 @@ export class TrackSectionRepository {
       if (relation === 'child_track_section') {
         include = {
           ...include,
-          child_track_section: true,
+          child_track_section: {
+            include: {
+              child_track_section: {
+                include: {
+                  child_track_section: {
+                    include: {
+                      child_track_section: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        };
+      }
+
+      if (relation === 'proposal') {
+        include = {
+          ...include,
+          proposal: {
+            select: {
+              fsupport_by_supervisor: true,
+              payments: {
+                include: {
+                  cheques: true,
+                },
+              },
+            },
+          },
         };
       }
     }
@@ -172,11 +205,11 @@ export class TrackSectionRepository {
         include: args.include,
       });
 
-      // console.log({ args });
-      // console.log({ rawRes });
-      const foundedEntity = Builder<TrackSectionEntity>(TrackSectionEntity, {
-        ...rawRes,
-      }).build();
+      if (!rawRes) return null;
+      // const foundedEntity = Builder<TrackSectionEntity>(TrackSectionEntity, {
+      //   ...rawRes,
+      // }).build();
+      const foundedEntity = this.trackSectionMapper.toDomain(rawRes);
 
       return foundedEntity;
     } catch (error) {
@@ -214,11 +247,12 @@ export class TrackSectionRepository {
       }
 
       const rawResult = await prisma.track_section.findMany(queryOptions);
-      const entities = rawResult.map((rawResult) => {
-        return Builder<TrackSectionEntity>(TrackSectionEntity, {
-          ...rawResult,
-        }).build();
-      });
+      // const entities = rawResult.map((rawResult) => {
+      //   return Builder<TrackSectionEntity>(TrackSectionEntity, {
+      //     ...rawResult,
+      //   }).build();
+      // });
+      const entities = this.trackSectionMapper.toDomainList(rawResult);
 
       return entities;
     } catch (error) {

@@ -2,13 +2,16 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   InternalServerErrorException,
+  Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
@@ -28,11 +31,20 @@ import {
   TrackSectionCreateDto,
   TrackSectionsCreateDto,
 } from '../dtos/requests/track.sections.create.dto';
+import { TrackSectionEntity } from '../entities/track.section.entity';
+import {
+  TrackSectionFindByIdQuery,
+  TrackSectionFindByIdQueryResult,
+} from '../queries/track.section.find.by.id.query';
+import { TrackSectionFindByIdQueryDto } from '../dtos/queries/track.section.find.by.id.query.dto';
 
 @ApiTags('TrackModule/TrackSection')
 @Controller('tender/track-sections')
 export class TrackSectionHttpController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
   errorMapper(error: any) {
     if (
@@ -156,45 +168,36 @@ export class TrackSectionHttpController {
   //   );
   // }
 
-  // @ApiOperation({
-  //   summary:
-  //     'find advertisement by id either for internal or external (admin only)',
-  // })
-  // @BaseApiOkResponse(BannerEntity, 'object')
-  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  // @TenderRoles(
-  //   'tender_admin',
-  //   'tender_client',
-  //   'tender_finance',
-  //   'tender_moderator',
-  //   'tender_project_manager',
-  //   'tender_project_supervisor',
-  //   'tender_accounts_manager',
-  //   'tender_cashier',
-  //   'tender_ceo',
-  //   'tender_consultant',
-  // )
-  // @Get('/:banner_id')
-  // async findById(@Param('banner_id') banner_id: string) {
-  //   try {
-  //     const queries = Builder<BannerFindByIdQuery>(BannerFindByIdQuery, {
-  //       banner_id,
-  //     }).build();
+  @ApiOperation({ summary: 'find track sections' })
+  @BaseApiOkResponse(TrackSectionEntity, 'object')
+  @Get('/:section_id')
+  async findById(
+    @Param('section_id') section_id: string,
+    @Query() queries: TrackSectionFindByIdQueryDto,
+  ) {
+    try {
+      const query = Builder<TrackSectionFindByIdQuery>(
+        TrackSectionFindByIdQuery,
+        {
+          id: section_id,
+          ...queries,
+        },
+      ).build();
 
-  //     const result = await this.queryBus.execute<
-  //       BannerFindByIdQuery,
-  //       BannerFindByIdQueryResult
-  //     >(queries);
+      const { data } = await this.queryBus.execute<
+        TrackSectionFindByIdQuery,
+        TrackSectionFindByIdQueryResult
+      >(query);
 
-  //     return baseResponseHelper(
-  //       result.banner,
-  //       HttpStatus.OK,
-  //       'Banner Fetched Successfully!',
-  //     );
-  //   } catch (error) {
-  //     throw this.errorMapper(error);
-  //   }
-  // }
+      return baseResponseHelper(
+        data,
+        HttpStatus.OK,
+        'Sections Fetched Successfully!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
+  }
 
   // @ApiOperation({
   //   summary: 'updating banner either for internal or external',
