@@ -164,13 +164,6 @@ function CeoProjectRejects() {
   if (isFetching && isLoading) return <>Loading</>;
 
   return (
-    // <ProjectManagementTable
-    //   headline={translate('rejection_list_table.headline')}
-    //   isLoading={fetching || isLoading}
-    //   headerCell={headerCells}
-    //   data={projectManagementData ?? []}
-    //   destination={'reject-project'}
-    // />
     <ProjectManagementTableBE
       data-cy="rejection-list-table"
       headline={translate('rejection_list_table.headline')}
