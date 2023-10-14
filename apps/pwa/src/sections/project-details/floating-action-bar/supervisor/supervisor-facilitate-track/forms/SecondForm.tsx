@@ -146,7 +146,7 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid> */}
         <Grid item md={6} xs={12}>
           <RHFComboBox
-            disabled={edit}
+            disabled
             name="regions_id"
             label={translate('portal_report.region_id.label')}
             data-cy="portal_report.region_id"
@@ -158,7 +158,7 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <RHFComboBox
-            disabled={edit}
+            disabled
             name="governorates_id"
             label={translate('portal_report.governorate_id.label')}
             data-cy="portal_report.governorate_id"
@@ -178,8 +178,8 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={edit}
-            type={!edit ? 'datePicker' : 'textField'}
+            disabled
+            type="textField"
             name="date_of_esthablistmen"
             label="تأريخ تأسيس الجهة*"
             placeholder="الرجاء تحديد تأريخ تأسيس الجهة"
@@ -187,7 +187,6 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={edit}
             type="textField"
             name="chairman_of_board_of_directors"
             label="رئيس مجلس الإدارة*"
@@ -196,7 +195,6 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={edit}
             type="textField"
             name="ceo"
             label="المدير التنفيذي*"
@@ -205,7 +203,6 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={edit}
             type="radioGroup"
             name="been_supported_before"
             label="هل دعمت سابقًا؟"
@@ -226,7 +223,7 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={edit}
+            disabled
             type="textField"
             name="num_of_beneficiaries"
             label="العدد المستفيد من الجهة*"
