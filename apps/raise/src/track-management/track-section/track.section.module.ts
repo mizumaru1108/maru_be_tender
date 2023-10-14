@@ -4,12 +4,13 @@ import { TrackSectionHttpController } from './controllers/track.section.controll
 import { TrackSectionRepository } from './repositories/track.section.repository';
 import { TrackSectionCreateCommandHandler } from './commands/track.section.create/track.section.create.command';
 import { TrackSectionMapper } from './mapper/track.section.mapper';
+import { TrackSectionFindByIdQueryHandler } from './queries/track.section.find.by.id.query';
 
 const importedModule = [CqrsModule];
 const controllers = [TrackSectionHttpController];
 const repositories: Provider[] = [TrackSectionRepository];
 const commands: Provider[] = [TrackSectionCreateCommandHandler];
-const queries: Provider[] = [];
+const queries: Provider[] = [TrackSectionFindByIdQueryHandler];
 const exportedProviders: Provider[] = [TrackSectionRepository];
 const mapper: Provider[] = [TrackSectionMapper];
 @Module({
