@@ -129,11 +129,6 @@ function FloatingActionBar() {
               });
             });
           } else {
-            // enqueueSnackbar(err.message, {
-            //   variant: 'error',
-            //   preventDuplicate: true,
-            //   autoHideDuration: 3000,
-            // });
             const statusCode = (err && err.statusCode) || 0;
             const message = (err && err.message) || null;
             enqueueSnackbar(
@@ -157,12 +152,6 @@ function FloatingActionBar() {
           setIsSubmitting(false);
         });
     } catch (error) {
-      // enqueueSnackbar(error.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      // });
-
       const statusCode = (error && error.statusCode) || 0;
       const message = (error && error.message) || null;
       enqueueSnackbar(

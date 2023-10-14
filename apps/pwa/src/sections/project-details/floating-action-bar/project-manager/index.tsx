@@ -28,6 +28,7 @@ import { setStepsData, stepResetActive } from '../../../../redux/slices/supervis
 import { getProposalCount } from '../../../../redux/slices/proposal';
 import { FEATURE_PROPOSAL_COUNTING } from 'config';
 import { FusionAuthRoles } from '../../../../@types/commons';
+import ProposalAcceptingForm from 'sections/project-details/floating-action-bar/supervisor/supervisor-general-tracks/ProposalAcceptingForm';
 
 function FloatingActionBar() {
   const { id: proposal_id } = useParams();
@@ -722,16 +723,21 @@ function FloatingActionBar() {
       )} */}
 
       {action === 'ACCEPT' && !checkConsultation && (
-        <NotesModal
-          title="قبول المشروع"
-          onClose={handleCloseModal}
+        // <NotesModal
+        //   title="قبول المشروع"
+        //   onClose={handleCloseModal}
+        //   onSubmit={handleApproval}
+        //   action={{
+        //     actionType: action,
+        //     actionLabel: 'قبول',
+        //     backgroundColor: 'background.paper',
+        //     hoverColor: '#13B2A2',
+        //   }}
+        //   loading={isSubmitting}
+        // />
+        <ProposalAcceptingForm
           onSubmit={handleApproval}
-          action={{
-            actionType: action,
-            actionLabel: 'قبول',
-            backgroundColor: 'background.paper',
-            hoverColor: '#13B2A2',
-          }}
+          onClose={handleCloseModal}
           loading={isSubmitting}
         />
       )}

@@ -22,6 +22,7 @@ import { Conversation } from '../../../../@types/wschat';
 import { getProposalCount } from '../../../../redux/slices/proposal';
 import { setStepsData } from '../../../../redux/slices/supervisorAcceptingForm';
 import FacilitateSupervisorAcceptingForm from '../supervisor/supervisor-facilitate-track/forms';
+import ProposalAcceptingForm from 'sections/project-details/floating-action-bar/supervisor/supervisor-general-tracks/ProposalAcceptingForm';
 
 function FloatingActionBar() {
   const { user, activeRole } = useAuth();
@@ -592,16 +593,21 @@ function FloatingActionBar() {
       {action === 'ACCEPT' &&
         track_list.find((item: any) => item.id === proposal.track_id)?.with_consultation ===
           false && (
-          <NotesModal
-            title="قبول المشروع"
-            onClose={handleCloseModal}
+          // <NotesModal
+          //   title="قبول المشروع"
+          //   onClose={handleCloseModal}
+          //   onSubmit={handleApproval}
+          //   action={{
+          //     actionType: action,
+          //     actionLabel: 'قبول',
+          //     backgroundColor: 'background.paper',
+          //     hoverColor: '#13B2A2',
+          //   }}
+          //   loading={isSubmitting}
+          // />
+          <ProposalAcceptingForm
             onSubmit={handleApproval}
-            action={{
-              actionType: action,
-              actionLabel: 'قبول',
-              backgroundColor: 'background.paper',
-              hoverColor: '#13B2A2',
-            }}
+            onClose={handleCloseModal}
             loading={isSubmitting}
           />
         )}

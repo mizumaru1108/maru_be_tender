@@ -106,11 +106,13 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
   const onSubmitForm = (data: SupervisorStep4) => {
     setIsSubmited(true);
     let totalAmount: number | undefined = undefined;
-    const fSupportBySpv: number = Number(
-      Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
-        ? step1?.fsupport_by_supervisor
-        : proposal?.amount_required_fsupport
-    );
+    // const fSupportBySpv: number = Number(
+    //   Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
+    //     ? step1?.fsupport_by_supervisor
+    //     : proposal?.amount_required_fsupport
+    // );
+    const fSupportBySpv: number = Number(proposal?.amount_required_fsupport);
+
     if (data.proposal_item_budgets.length) {
       totalAmount = Number(
         data

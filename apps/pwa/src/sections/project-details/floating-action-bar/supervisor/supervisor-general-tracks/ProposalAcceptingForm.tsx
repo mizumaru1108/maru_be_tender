@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 // hooks
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
@@ -12,6 +12,7 @@ import {
   stepBackOne,
   setStepFive,
   stepResetActive,
+  setStepsData,
 } from 'redux/slices/supervisorAcceptingForm';
 import { ModalProposalType } from '../../../../../@types/project-details';
 import { IsFormSubmited } from '../supervisor-facilitate-track/forms';
@@ -24,16 +25,18 @@ import { FEATURE_PROPOSAL_COUNTING } from 'config';
 import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import { getProposalCount } from 'redux/slices/proposal';
+import { FusionAuthRoles } from '../../../../../@types/commons';
 
 const steps = ['معلومات الدعم', 'التوصية بالدعم من المشرف'];
 
-function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType) {
+function ProposalAcceptingForm({ onClose }: ModalProposalType) {
   const { translate, currentLang } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
 
   const { activeRole } = useAuth();
 
   const { activeStep, step1 } = useSelector((state) => state.supervisorAcceptingForm);
+  const { proposal } = useSelector((state) => state.proposal);
 
   const { id: proposal_id } = useParams();
 
@@ -49,8 +52,13 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   });
 
   const handleSubmitFirstForm = (data: any) => {
+    const tmpData = {
+      ...data,
+      payment_number: Number(data?.payment_number),
+      fsupport_by_supervisor: Number(data?.fsupport_by_supervisor),
+    };
     setIsSubmitting(true);
-    dispatch(setStepOne(data));
+    dispatch(setStepOne(tmpData));
     setIsSubmitting(false);
   };
 
@@ -65,14 +73,10 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
     setIsSubmitting(true);
 
     try {
-      const lenghtOfNumberOfPayments = data.proposal_item_budgets.length;
-      const totalFSupport = data.proposal_item_budgets
-        .map((el: { amount: any }) => Number(el.amount))
-        .reduce((acc: any, curr: any) => acc + (curr || 0), 0);
-
       let payload: any = {
         proposal_id,
-        action: editedBy === 'project-manager' || editedBy === 'ceo' ? 'update' : 'accept',
+        // action: editedBy === 'project-manager' || editedBy === 'ceo' ? 'update' : 'accept',
+        action: 'accept',
         message: 'تم قبول المشروع من قبل مشرف المشاريع',
         notes,
         selectLang: currentLang.value,
@@ -80,17 +84,17 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
 
       const newData = {
         ...restStep1,
-        fsupport_by_supervisor: totalFSupport,
-        number_of_payments_by_supervisor: lenghtOfNumberOfPayments,
+        fsupport_by_supervisor: Number(step1?.fsupport_by_supervisor),
+        number_of_payments_by_supervisor: Number(step1?.payment_number),
         clause: null,
         clasification_field: null,
         accreditation_type_id: null,
-        support_goal_id: null,
+        support_goal_id: step1?.support_goal_id,
         created_proposal_budget: data.created_proposal_budget,
         updated_proposal_budget: data.updated_proposal_budget,
         deleted_proposal_budget: data.deleted_proposal_budget,
       };
-
+      // console.log({ newData, step1 });
       if (editedBy === 'project-manager') {
         payload = {
           ...payload,
@@ -188,6 +192,10 @@ function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType
   const onBack = () => {
     dispatch(stepBackOne({}));
   };
+
+  React.useEffect(() => {
+    dispatch(setStepsData(proposal, activeRole! as FusionAuthRoles));
+  }, [proposal, activeRole]);
 
   return (
     <ModalDialogStepper

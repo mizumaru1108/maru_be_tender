@@ -38,7 +38,7 @@ const initialState: SupervisorAcceptingForm = {
     need_picture: undefined,
     does_an_agreement: undefined,
     fsupport_by_supervisor: undefined,
-    // number_of_payments_by_supervisor: undefined,
+    number_of_payments_by_supervisor: undefined,
     notes: '',
     support_outputs: '',
     vat: undefined,
@@ -119,7 +119,10 @@ const slice = createSlice({
       state.step1.closing_report = action.payload.closing_report ?? undefined;
       state.step1.need_picture = action.payload.need_picture ?? undefined;
       state.step1.does_an_agreement = action.payload.does_an_agreement ?? undefined;
-      state.step1.fsupport_by_supervisor = action.payload.fsupport_by_supervisor ?? undefined;
+      state.step1.fsupport_by_supervisor =
+        action.payload.fsupport_by_supervisor ||
+        action.payload?.amount_required_fsupport ||
+        undefined;
       state.step1.notes = action.payload.notes ?? '';
       state.step1.support_outputs = action.payload.support_outputs ?? '';
       state.step1.vat = action.payload.vat ?? undefined;
@@ -127,7 +130,7 @@ const slice = createSlice({
       state.step1.inclu_or_exclu = action.payload.inclu_or_exclu ?? undefined;
       state.step1.support_goal_id = action.payload.support_goal_id ?? '';
       state.step1.accreditation_type_id = action.payload.accreditation_type_id ?? '';
-      // state.step1.payment_number = action.payload.proposal_item_budgets.length ?? 0;
+      state.step1.payment_number = action.payload.number_of_payments_by_supervisor || 0;
       //step 2
       state.step2.organizationName = action.payload.user.employee_name ?? '';
       state.step2.region = action?.payload.region || '';

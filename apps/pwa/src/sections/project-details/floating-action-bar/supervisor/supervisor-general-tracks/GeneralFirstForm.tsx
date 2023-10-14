@@ -25,7 +25,8 @@ export default function GeneralFirstForm({
   // const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
   const { proposal } = useSelector((state) => state.proposal);
   const { track } = useSelector((state) => state.tracks);
-  const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
+  const { step1, step4 } = useSelector((state) => state.supervisorAcceptingForm);
+  // console.log({ step1, step4 });
 
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
 
@@ -97,31 +98,31 @@ export default function GeneralFirstForm({
   };
 
   useEffect(() => {
-    if (proposal) {
-      setValue(
-        'fsupport_by_supervisor',
-        proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport
-      );
-    }
-  }, [proposal, setValue]);
-
-  useEffect(() => {
     if (paymentNumber) {
       setPaymentNumber(Number(paymentNumber));
     }
   }, [paymentNumber, setPaymentNumber]);
 
   useEffect(() => {
-    if (
-      (proposal.proposal_item_budgets &&
-        (activeRole! === 'tender_project_manager' || activeRole! === 'tender_ceo')) ||
-      (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep1) ||
-      ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep1)
-    ) {
-      setValue('payment_number', proposal.proposal_item_budgets.length);
+    if (proposal && !isSubmited) {
+      setValue(
+        'fsupport_by_supervisor',
+        proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport
+      );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proposal, setValue, activeRole]);
+  }, [proposal, setValue, isSubmited]);
+
+  // useEffect(() => {
+  //   if (
+  //     (proposal.proposal_item_budgets &&
+  //       (activeRole! === 'tender_project_manager' || activeRole! === 'tender_ceo')) ||
+  //     (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep1) ||
+  //     ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep1)
+  //   ) {
+  //     setValue('payment_number', proposal.proposal_item_budgets.length);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [proposal, setValue, activeRole]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>

@@ -27,6 +27,7 @@ export default function GeneralSecondForm({
   const { step4, step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const { proposal } = useSelector((state) => state.proposal);
   const { activeRole } = useAuth();
+  // console.log({ step1 });
 
   const isStepBack =
     proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
@@ -120,11 +121,12 @@ export default function GeneralSecondForm({
   const onSubmitForm = (data: any) => {
     setIsSubmited(true);
     let totalAmount: number | undefined = undefined;
-    const fSupportBySpv: number = Number(
-      Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
-        ? step1?.fsupport_by_supervisor
-        : proposal?.amount_required_fsupport
-    );
+    // const fSupportBySpv: number = Number(
+    //   Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
+    //     ? step1?.fsupport_by_supervisor
+    //     : proposal?.amount_required_fsupport
+    // );
+    const fSupportBySpv: number = Number(proposal?.amount_required_fsupport);
 
     const itemBudgets: ItemBudget[] = data.proposal_item_budgets;
 

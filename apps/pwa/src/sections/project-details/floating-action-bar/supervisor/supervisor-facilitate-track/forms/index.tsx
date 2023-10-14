@@ -123,8 +123,8 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
       };
       const newData = {
         ...restStep1,
-        fsupport_by_supervisor: totalFSupport,
-        number_of_payments_by_supervisor: lenghtOfNumberOfPayments,
+        fsupport_by_supervisor: Number(step1?.fsupport_by_supervisor),
+        number_of_payments_by_supervisor: Number(step1?.payment_number),
         clause: null,
         clasification_field: null,
         accreditation_type_id: null,
@@ -139,13 +139,6 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
         target_group_age: step3.target_group_age,
         been_made_before: step3.been_made_before,
         remote_or_insite: step3.remote_or_insite,
-        // created_recommended_support: [], // data.created_recommended_support
-        // updated_recommended_support: [], // data.updated_recommended_support
-        // deleted_recommended_support: [], // data.deleted_recommended_support
-        // item_budget_support
-        // created_recommended_support: data.created_proposal_budget,
-        // updated_recommended_support: data.updated_proposal_budget,
-        // deleted_recommended_support: data.deleted_proposal_budget,
         created_proposal_budget: data.created_proposal_budget,
         updated_proposal_budget: data.updated_proposal_budget,
         deleted_proposal_budget: data.deleted_proposal_budget,
