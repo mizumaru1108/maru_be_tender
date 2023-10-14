@@ -90,7 +90,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="project_idea"
             label="فكرة المشروع*"
             placeholder="الرجاء كتابة فكرة المشروع"
-            disabled={edit}
+            disabled
           />
         </Grid>
         <Grid item md={12} xs={12}>
@@ -99,7 +99,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="project_goals"
             label="أهداف المشروع*"
             placeholder="الرجاء كتابة أهداف المشروع"
-            disabled={edit}
+            disabled
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -108,7 +108,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="amount_required_fsupport"
             label="التكلفة الإجمالية*"
             placeholder="الرجاء كتابة التكلفة الإجمالية"
-            disabled={edit}
+            disabled
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -135,7 +135,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="project_beneficiaries"
             label="الفئة المستهدفة*"
             placeholder="الرجاء اختيار الفئة المستهدفة"
-            disabled={edit}
+            disabled
           />
         </Grid>
         <Grid item md={4} xs={4}>
@@ -224,11 +224,11 @@ function ThirdForm({ children, onSubmit }: any) {
 
         <Grid item md={6} xs={12}>
           <BaseField
-            type={!edit ? 'datePicker' : 'textField'}
+            type="textField"
             name="project_implement_date"
             label="تاريخ بداية المشروع*"
             placeholder="الرجاء تحديد تاريخ بداية المشروع"
-            disabled={edit}
+            disabled
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -237,7 +237,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="execution_time"
             label="مدة المشروع*"
             placeholder="الرجاء كتابة مدة المشروع"
-            disabled={edit}
+            disabled
           />
         </Grid>
 
@@ -247,7 +247,7 @@ function ThirdForm({ children, onSubmit }: any) {
             name="project_location"
             label="مكان إقامته المشروع؟*"
             placeholder="الرجاء كتابة مكان إقامته المشروع؟"
-            disabled={edit}
+            disabled
           />
         </Grid>
         <Grid item md={6} xs={12}>

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 // @mui
 import { Button, Checkbox, Menu, MenuItem, TableCell, TableRow, Typography } from '@mui/material';
-import { darken, useTheme, alpha } from '@mui/material/styles';
+import { alpha, darken, useTheme } from '@mui/material/styles';
 // components
 import { LoadingButton } from '@mui/lab';
 import ConfirmationModals from 'components/confirmation-modals';
@@ -40,7 +40,7 @@ type UserStatus =
 
 export interface ChangeStatusRequest {
   status: UserStatus;
-  user_id: string;
+  user_id: string[];
   selectLang: 'ar' | 'en';
 }
 
@@ -92,7 +92,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
         '/tender-user/update-status',
         {
           status: status,
-          user_id: id,
+          user_id: [id],
           selectLang: currentLang.value,
         } as ChangeStatusRequest,
         {
@@ -252,6 +252,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
     user,
     email,
   } = row;
+
   // console.log({ id });
   return (
     <React.Fragment>

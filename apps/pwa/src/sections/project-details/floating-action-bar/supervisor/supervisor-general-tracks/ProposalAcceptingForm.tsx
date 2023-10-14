@@ -37,6 +37,7 @@ import { getMissingItems } from 'utils/checkDeletedArray';
 function ProposalAcceptingForm({ onClose, onSubmit, loading }: ModalProposalType) {
   const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
+  const { track } = useSelector((state) => state.tracks);
   const { enqueueSnackbar } = useSnackbar();
   const [isVat, setIsVat] = useState<boolean>(false);
   const { id: pid } = useParams();

@@ -510,7 +510,10 @@ export default function MessageContent() {
                                         user?.id === v.owner_id
                                           ? ' rgba(147, 163, 176, 0.24)'
                                           : '#0E8478',
-                                      color: user?.id === v.owner_id ? '#000000' : '#000000',
+                                      color:
+                                        user?.id === v.owner_id
+                                          ? '#000000'
+                                          : theme.palette.primary.contrastText,
                                       borderRadius: '8px',
                                       p: 1.25,
                                     }}

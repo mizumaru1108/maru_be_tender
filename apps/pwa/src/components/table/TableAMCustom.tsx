@@ -1,39 +1,36 @@
 /* eslint-disable array-callback-return */
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import { useEffect, useState } from 'react';
 // material
 import {
+  Button,
+  IconButton,
   Link,
+  Stack,
   Table,
   TableBody,
-  TablePagination,
   TableContainer,
+  TablePagination,
   Tooltip,
-  IconButton,
-  Box,
-  Dialog,
-  DialogContent,
   Typography,
-  Button,
-  Stack,
-  TableRow,
 } from '@mui/material';
+
 // components
-import { TableHeadCustom, TableRowsData, TableSelectedActions } from 'components/table';
 import Iconify from 'components/Iconify';
+import { TableHeadCustom, TableRowsData, TableSelectedActions } from 'components/table';
 import SearchbarTable from './SearchbarTable';
 // hooks
-import useTable, { getComparator } from 'hooks/useTable';
 import useLocales from 'hooks/useLocales';
+import useTable, { getComparator } from 'hooks/useTable';
 //
-import { IPropsTablesList } from './type';
-import { Link as RouterLink } from 'react-router-dom';
+import { LoadingButton } from '@mui/lab';
 import EmptyContent from 'components/EmptyContent';
 import { useSnackbar } from 'notistack';
-import { ChangeStatusRequest } from './TableRowsData';
-import axiosInstance from '../../utils/axios';
+import { Link as RouterLink } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
+import axiosInstance from '../../utils/axios';
 import ModalDialog from '../modal-dialog';
-import { LoadingButton } from '@mui/lab';
+import { ChangeStatusRequest } from './TableRowsData';
+import { IPropsTablesList } from './type';
 
 // -------------------------------------------------------------------------------
 
@@ -60,15 +57,22 @@ export default function TableAMCustom({
   headline,
   lengthRowsPerPage,
   editRequest,
+  // isLoading
+  refetch,
 }: {
   data: IPropsTablesList[];
   view_all?: string;
   headline: string;
   lengthRowsPerPage?: number;
   editRequest?: boolean;
+  refetch?: () => void;
 }) {
+  // console.log({
+  //   testClientData:
+  //     data && data.find((item: any) => item.id === '5c1d3ef7-773a-4552-b8c5-dfd22ed72afd'),
+  // });
   const { translate, currentLang } = useLocales();
-  const [tableData, setTableData] = useState<IPropsTablesList[]>([]);
+  // const [tableData, setTableData] = useState<IPropsTablesList[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
@@ -124,7 +128,7 @@ export default function TableAMCustom({
   };
   const [dataTable, setDataTable] = useState<IPropsTablesList[]>(
     applySortFilter({
-      tableData,
+      tableData: data,
       comparator: getComparator(order, orderBy),
       filterName: '',
     })
@@ -134,58 +138,55 @@ export default function TableAMCustom({
 
   useEffect(() => {
     const dataFiltered = applySortFilter({
-      tableData,
+      tableData: data,
       comparator: getComparator(order, orderBy),
       filterName: query,
     });
     setDataTable(dataFiltered);
-  }, [order, orderBy, tableData, query]);
+  }, [order, orderBy, data, query]);
 
   const deleteRowValue = async () => {
-    // try {
-    //   setIsLoading(true);
-    //   await axiosInstance.patch<ChangeStatusRequest, any>(
-    //     '/tender-user/update-status',
-    //     {
-    //       status: status,
-    //       user_id: 'id',
-    //       selectLang: currentLang.value,
-    //     } as ChangeStatusRequest,
-    //     {
-    //       headers: { 'x-hasura-role': activeRole! },
-    //     }
-    //   );
+    try {
+      setIsLoading(true);
+      await axiosInstance.patch<ChangeStatusRequest, any>(
+        '/tender-user/update-status',
+        {
+          status: 'CANCELED_ACCOUNT',
+          user_id: selected,
+          selectLang: currentLang.value,
+        } as ChangeStatusRequest,
+        {
+          headers: { 'x-hasura-role': activeRole! },
+        }
+      );
 
-    //   let notif = '';
-    //   if (status === 'ACTIVE_ACCOUNT') {
-    //     notif = 'account_manager.partner_details.notification.activate_account';
-    //   } else if (status === 'SUSPENDED_ACCOUNT') {
-    //     notif = 'account_manager.partner_details.notification.disabled_account';
-    //   } else if (status === 'CANCELED_ACCOUNT') {
-    //     notif = 'account_manager.partner_details.notification.deleted_account';
-    //   }
+      const notif = 'account_manager.partner_details.notification.deleted_account';
 
-    //   enqueueSnackbar(`${translate(notif)}`, {
-    //     variant: 'success',
-    //   });
-    //   setDeleteDialogOpen(false);
-    //   setSelected([]);
-    //   window.location.reload();
-    // } catch (err) {
-    //   const statusCode = (err && err.statusCode) || 0;
-    //   const message = (err && err.message) || null;
+      enqueueSnackbar(`${translate(notif)}`, {
+        variant: 'success',
+      });
+      setDeleteDialogOpen(false);
+      setSelected([]);
+      if (refetch) {
+        refetch();
+      } else {
+        window.location.reload();
+      }
+    } catch (err) {
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
 
-    //   enqueueSnackbar(`${statusCode < 500 && message ? message : 'something went wrong!'}`, {
-    //     variant: 'error',
-    //   });
+      enqueueSnackbar(`${statusCode < 500 && message ? message : 'something went wrong!'}`, {
+        variant: 'error',
+      });
 
-    //   console.log(err);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
 
     // console.log({ selected });
-    alert('work around');
+    // alert('work around');
   };
 
   // Searchbar
@@ -198,10 +199,10 @@ export default function TableAMCustom({
     setPage(0);
   };
 
-  useEffect(() => {
-    setTableData(data);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   setTableData(data);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   // console.log({ tableData });
   return (
@@ -246,12 +247,12 @@ export default function TableAMCustom({
             order={order}
             orderBy={orderBy}
             headLabel={editRequest ? TABLE_HEAD_EDIT : TABLE_HEAD}
-            rowCount={tableData.length}
+            rowCount={data.length}
             onSort={onSort}
             onSelectAllRows={(checked) =>
               onSelectAllRows(
                 checked,
-                tableData
+                data
                   .filter((row) => row.account_status !== 'CANCELED_ACCOUNT')
                   .map((row) => row.id) as string[]
               )
@@ -352,7 +353,7 @@ export default function TableAMCustom({
               }}
               onClick={() => setDeleteDialogOpen(false)}
             >
-              رجوع
+              {translate('button.cancel')}
             </Button>
             <LoadingButton
               onClick={deleteRowValue}
@@ -365,7 +366,7 @@ export default function TableAMCustom({
               }}
               loading={isLoading}
             >
-              اضافة
+              {translate('button.confirm')}
             </LoadingButton>
           </Stack>
         }
