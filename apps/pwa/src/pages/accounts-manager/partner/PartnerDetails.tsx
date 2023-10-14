@@ -1,45 +1,44 @@
 import { useEffect, useState } from 'react';
 // material
 import {
-  Container,
-  styled,
-  Typography,
-  Button,
-  Stack,
   Box,
-  useTheme,
+  Button,
+  Container,
   Divider,
   Grid,
   Skeleton,
+  Stack,
+  styled,
+  Typography,
+  useTheme,
 } from '@mui/material';
 // components
-import Page from 'components/Page';
 import Iconify from 'components/Iconify';
 import Label from 'components/Label';
+import Page from 'components/Page';
 // sections
 import BankImageComp from 'sections/shared/BankImageComp';
 // hooks
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import useLocales from 'hooks/useLocales';
-import { useQuery, useMutation } from 'urql';
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
+import { useSnackbar } from 'notistack';
 import {
-  detailsClientData,
   changeClientStatus,
   deleteClientData,
+  detailsClientData,
 } from 'queries/account_manager/detailsClientData';
-import { useSnackbar } from 'notistack';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useMutation, useQuery } from 'urql';
 //
-import { PartnerDetailsProps } from '../../../@types/client_data';
-import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
-import axiosInstance from '../../../utils/axios';
-import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
-import { Conversation } from '../../../@types/wschat';
-import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
-import uuidv4 from '../../../utils/uuidv4';
-import { addConversation, setActiveConversationId } from '../../../redux/slices/wschat';
 import { FEATURE_PROJECT_DETAILS } from 'config';
+import moment from 'moment';
+import { useDispatch, useSelector } from 'react-redux';
+import { Conversation } from '../../../@types/wschat';
+import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
+import { ChangeStatusRequest } from '../../../components/table/TableRowsData';
+import { addConversation, setActiveConversationId } from '../../../redux/slices/wschat';
+import axiosInstance from '../../../utils/axios';
+import uuidv4 from '../../../utils/uuidv4';
 
 // -------------------------------------------------------------------------------
 
@@ -48,13 +47,7 @@ type UserStatus =
   | 'SUSPENDED_ACCOUNT'
   | 'CANCELED_ACCOUNT'
   | 'ACTIVE_ACCOUNT'
-  | 'REVISED_ACCOUNT'
-  | 'WAITING_FOR_EDITING_APPROVAL';
-interface ChangeStatusRequest {
-  status: UserStatus;
-  user_id: string;
-  selectLang: 'ar' | 'en';
-}
+  | 'REVISED_ACCOUNT';
 
 // -------------------------------------------------------------------------------
 
@@ -141,7 +134,7 @@ function AccountPartnerDetails() {
         '/tender-user/update-status',
         {
           status: status,
-          user_id: id,
+          user_id: [id],
           selectLang: currentLang.value,
         } as ChangeStatusRequest,
         {
