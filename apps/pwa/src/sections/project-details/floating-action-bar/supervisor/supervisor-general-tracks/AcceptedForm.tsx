@@ -549,13 +549,6 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
               placeholder="الرجاء اختيار أهداف الدعم"
               label="اهداف الدعم*"
             >
-              {/* {_supportGoals[
-                `${proposalData.proposal.project_track as keyof typeof _supportGoals}`
-              ].map((item) => (
-                <MenuItem value={item.value} key={item.value}>
-                  {item.title}
-                </MenuItem>
-              ))} */}
               {_supportGoalsArr.map((item) => (
                 <MenuItem
                   data-cy={`acc_form_non_consulation_support_goal_id_${item.index}`}
@@ -572,14 +565,7 @@ function AcceptedForm({ onEdit }: EditAccModalForm) {
               data-cy="acc_form_non_consulation_payment_number"
               type={'number'}
               size={'small'}
-              disabled={
-                // save
-                //   ? true
-                //   : support_type === 'false' || !support_type || support_type === undefined
-                //   ? false
-                //   : true
-                save
-              }
+              disabled={save}
               name="payment_number"
               placeholder="عدد الدفعات"
               label="عدد الدفعات*"

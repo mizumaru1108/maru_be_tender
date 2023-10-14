@@ -1,26 +1,31 @@
-// @ts-nocheck
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Grid } from '@mui/material';
-import { FormProvider, RHFRadioGroup } from 'components/hook-form';
-import BaseField from 'components/hook-form/BaseField';
-import useLocales from 'hooks/useLocales';
-import React, { useEffect, useMemo, useState } from 'react';
+import { Grid, MenuItem } from '@mui/material';
+import { FormProvider, RHFRadioGroup, RHFSelect, RHFTextField } from 'components/hook-form';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'redux/store';
 import * as Yup from 'yup';
-import { SupervisorStep1 } from '../../../../../../@types/supervisor-accepting-form';
 //
 import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
+import { SupervisorStep1 } from '../../../../../@types/supervisor-accepting-form';
 import { removeEmptyKey } from 'utils/remove-empty-key';
+import BaseField from 'components/hook-form/BaseField';
+import { _supportGoalsArr } from '_mock/_supportGoalsArr';
 
-function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubmited }: any) {
+export default function GeneralFirstForm({
+  children,
+  onSubmit,
+  setPaymentNumber,
+  isSubmited,
+  setIsSubmited,
+}: any) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
-  const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
+  // const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
   const { proposal } = useSelector((state) => state.proposal);
+  const { track } = useSelector((state) => state.tracks);
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
-
-  const [save, setSave] = useState<boolean>(true);
 
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
 
@@ -29,11 +34,9 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       ? true
       : false;
 
-  const validationSchema = React.useMemo(() => {
+  const validationSchema = useMemo(() => {
     const tmpIsVat = isVat;
     return Yup.object().shape({
-      // clause: Yup.string().required('Procedures is required!'),
-      // clasification_field: Yup.string().required('Procedures is required!'),
       support_type: Yup.boolean().required(translate('errors.cre_proposal.support_type.required')),
       closing_report: Yup.boolean().required(
         translate('errors.cre_proposal.closing_report.required')
@@ -45,43 +48,30 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       fsupport_by_supervisor: Yup.string().required(
         translate('errors.cre_proposal.fsupport_by_supervisor.required')
       ),
-      // number_of_payments_by_supervisor: Yup.number(),
-      notes: Yup.string(),
-      support_outputs: Yup.string().required(
-        translate('errors.cre_proposal.support_outputs.required')
-      ),
       vat: Yup.boolean().required(translate('errors.cre_proposal.vat.required')),
-      // vat_percentage: Yup.string()
-      //   // .integer()
-      //   .nullable()
-      //   .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
-      //     if (!val) return true;
-      //     return Number(val) > 0;
-      //   }),
       ...(tmpIsVat && {
         vat_percentage: Yup.string()
-          // .integer()
           .required(translate('errors.cre_proposal.vat_percentage.greater_than_0'))
-          // .nullable()
           .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
             if (!val) return true;
             return Number(val) > 0;
           }),
       }),
       inclu_or_exclu: Yup.boolean(),
+      support_goal_id: Yup.string().required(
+        translate('errors.cre_proposal.support_goal_id.required')
+      ),
       payment_number: Yup.string()
         .required(translate('errors.cre_proposal.payment_number.required'))
         .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {
           const number_of_payment = Number(val) > 0;
           return number_of_payment;
         }),
-      // accreditation_type_id: Yup.string().required('Procedures is required!'),
-      // support_goal_id: Yup.string().required('Procedures is required!'),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isVat]);
+
   const tmpStep1 = useMemo(() => step1, [step1]);
-  // const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
   const methods = useForm<SupervisorStep1>({
     resolver: yupResolver(validationSchema),
     defaultValues:
@@ -92,10 +82,8 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
 
   const { handleSubmit, watch, setValue, resetField, reset } = methods;
 
-  const vat = watch('vat');
   const support_type = watch('support_type');
-  const paymentNum = watch('payment_number');
-  // const inclu_or_exclu = watch('inclu_or_exclu');
+  const paymentNumber = watch('payment_number');
 
   const onSubmitForm = async (data: SupervisorStep1) => {
     setIsSubmited(true);
@@ -104,6 +92,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       vat_percentage: vat_percentage ? Number(vat_percentage) : undefined,
       ...rest,
     };
+
     onSubmit(removeEmptyKey(tmpValues));
   };
 
@@ -117,10 +106,10 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
   }, [proposal, setValue]);
 
   useEffect(() => {
-    if (paymentNum) {
-      setPaymentNumber(Number(paymentNum));
+    if (paymentNumber) {
+      setPaymentNumber(Number(paymentNumber));
     }
-  }, [paymentNum, setPaymentNumber]);
+  }, [paymentNumber, setPaymentNumber]);
 
   useEffect(() => {
     if (
@@ -136,23 +125,13 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
-      <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
+      <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: 0.5 }}>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={save}
-            data-cy="acc_form_consulation_support_type"
+            data-cy="acc_form_non_consulation_support_type"
             type="radioGroup"
             name="support_type"
             label="نوع الدعم*"
-            onClick={(e) => {
-              if (e && e.target.value) {
-                if (e.target.value === 'true') {
-                  setIsSupport(false);
-                } else {
-                  setIsSupport(true);
-                }
-              }
-            }}
             options={[
               { label: 'دعم جزئي', value: false },
               { label: 'دعم كلي', value: true },
@@ -161,8 +140,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={save}
-            data-cy="acc_form_consulation_closing_report"
+            data-cy="acc_form_non_consulation_closing_report"
             type="radioGroup"
             name="closing_report"
             label="تقرير الإغلاق*"
@@ -172,11 +150,9 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             ]}
           />
         </Grid>
-
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={save}
-            data-cy="acc_form_consulation_need_picture"
+            data-cy="acc_form_non_consulation_need_picture"
             type="radioGroup"
             name="need_picture"
             label="هل يحتاج إلى صور*"
@@ -188,8 +164,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={save}
-            data-cy="acc_form_consulation_does_an_agreement"
+            data-cy="acc_form_non_consulation_agreement"
             type="radioGroup"
             name="does_an_agreement"
             label="هل يحتاج اتفاقية*"
@@ -199,39 +174,56 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             ]}
           />
         </Grid>
-
         <Grid item md={6} xs={12}>
-          {/* <BaseField
-            type="radioGroup"
-            name="vat"
-            label="هل يشمل المشروع ضريبة القيمة المضافة"
-            options={[
-              { label: 'نعم', value: true },
-              { label: 'لا', value: false },
-            ]}
-          /> */}
           <RHFRadioGroup
-            disabled={save}
-            data-cy="acc_form_consulation_vat"
-            type="radioGroup"
+            data-cy="acc_form_non_consulation_vat"
             name="vat"
-            onClick={(e) => {
+            onClick={(e: any) => {
               if (e && e.target.value) {
                 if (e.target.value === 'true') {
                   setIsVat(true);
-                  setValue('vat_percentage', '0');
+                  setValue('vat_percentage', 0);
                 } else {
                   setIsVat(false);
-                  setValue('vat_percentage', '');
+                  setValue('vat_percentage', undefined);
                 }
               }
             }}
-            // label="هل يشمل المشروع ضريبة القيمة المضافة"
             label="هل مبلغ السداد شامل لضريبة القيمة المضافة*"
             options={[
               { label: 'نعم', value: true },
               { label: 'لا', value: false },
             ]}
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFSelect
+            data-cy="acc_form_non_consulation_support_goal_id"
+            type="select"
+            size="small"
+            name="support_goal_id"
+            placeholder="الرجاء اختيار أهداف الدعم"
+            label="اهداف الدعم*"
+          >
+            {_supportGoalsArr.map((item, index) => (
+              <MenuItem
+                data-cy={`acc_form_non_consulation_support_goal_id_${index}`}
+                value={item.value}
+                key={item.value}
+              >
+                {item.title}
+              </MenuItem>
+            ))}
+          </RHFSelect>
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFTextField
+            data-cy="acc_form_non_consulation_payment_number"
+            type={'number'}
+            size={'small'}
+            name="payment_number"
+            placeholder="عدد الدفعات"
+            label="عدد الدفعات*"
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -242,34 +234,30 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             label="مبلغ الدعم*"
             placeholder="مبلغ الدعم"
             disabled={
-              save ||
-              (support_type === 'false' || !support_type || support_type === undefined
-                ? false
-                : true)
+              support_type === 'false' || !support_type || support_type === undefined ? false : true
             }
           />
         </Grid>
-
         {isVat && (
           <Grid item md={6} xs={12}>
-            <BaseField
-              disabled={save}
-              data-cy="acc_form_consulation_vat_percentage"
-              type="numberField"
+            <RHFTextField
+              data-cy="acc_form_non_consulation_vat_percentage"
+              type="number"
+              size="small"
               name="vat_percentage"
               label="النسبة المئوية من الضريبة*"
               placeholder="النسبة المئوية من الضريبة"
+              InputProps={{ inputProps: { min: 1 } }}
             />
           </Grid>
         )}
         {isVat && (
           <Grid item md={6} xs={12}>
             <BaseField
-              disabled={save}
-              data-cy="acc_form_consulation_inclu_or_exclu"
+              data-cy="acc_form_non_consulation_vat"
               type="radioGroup"
               name="inclu_or_exclu"
-              label={translate('review.support_amount_inclu')}
+              label="هل مبلغ السداد شامل أو غير شامل لضريبة القيمة المضافة"
               options={[
                 { label: 'نعم', value: true },
                 { label: 'لا', value: false },
@@ -277,59 +265,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             />
           </Grid>
         )}
-        <Grid item md={6} xs={12}>
-          {/* <RHFTextField
-            type={'number'}
-            size={'small'}
-            name="payment_number"
-            placeholder="عدد الدفعات"
-            label="عدد الدفعات"
-          /> */}
-          <BaseField
-            disabled={save}
-            data-cy="acc_form_consulation_payment_number"
-            type="numberField"
-            name="payment_number"
-            placeholder="عدد الدفعات"
-            label="عدد الدفعات*"
-          />
-        </Grid>
-        <Grid item md={12} xs={12}>
-          <BaseField
-            disabled={save}
-            data-cy="acc_form_consulation_notes"
-            type="textArea"
-            name="notes"
-            label="ملاحظات على المشروع"
-            placeholder="اكتب ملاحظاتك هنا"
-          />
-        </Grid>
-        <Grid item md={12} xs={12}>
-          <BaseField
-            disabled={save}
-            data-cy="acc_form_consulation_support_outputs"
-            type="textArea"
-            name="support_outputs"
-            label="مخرجات الدعم (لصالح)*"
-            placeholder="اكتب هنا"
-          />
-        </Grid>
-        <Grid
-          item
-          md={12}
-          xs={12}
-          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-          <Button
-            variant={save ? 'outlined' : 'contained'}
-            data-cy="acc_form_non_consulation_support_edit_button"
-            onClick={() => {
-              setSave(!save);
-            }}
-          >
-            {save ? translate('button.re_edit') : translate('button.save_edit')}
-          </Button>
-        </Grid>
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
           {children}
         </Grid>
@@ -337,5 +272,3 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
     </FormProvider>
   );
 }
-
-export default FirstForm;

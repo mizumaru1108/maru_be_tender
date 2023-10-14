@@ -1,32 +1,38 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid, TextField, Button, IconButton } from '@mui/material';
-import { FormProvider } from 'components/hook-form';
+import { FormProvider, RHFTextField } from 'components/hook-form';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'redux/store';
 import * as Yup from 'yup';
-import { SupervisorStep4 } from '../../../../../../@types/supervisor-accepting-form';
+import { SupervisorStep4 } from '../../../../../@types/supervisor-accepting-form';
 //
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import uuidv4 from 'utils/uuidv4';
-import { getMissingItems } from '../../../../../../utils/checkDeletedArray';
+import { getMissingItems } from 'utils/checkDeletedArray';
 import { CloseIcon } from 'theme/overrides/CustomIcons';
+import { ItemBudget } from '../../../../../@types/proposal';
 
-function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmited }: any) {
+export default function GeneralSecondForm({
+  children,
+  onSubmit,
+  paymentNumber,
+  isSubmited,
+  setIsSubmited,
+}: any) {
+  const { translate } = useLocales();
+
   const { step4, step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const { proposal } = useSelector((state) => state.proposal);
   const { activeRole } = useAuth();
-  const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
-  const [edit, setEdit] = useState<boolean>(true);
 
   const isStepBack =
     proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
       ? true
       : false;
 
-  const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
 
   const [basedBudget, setBasedBudget] = useState<
@@ -51,48 +57,38 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
           .required(translate('errors.cre_proposal.detail_project_budgets.amount.required')),
       })
     ),
+    notes: Yup.string(),
+    support_outputs: Yup.string().required(
+      translate('errors.cre_proposal.support_outputs.required')
+    ),
   });
 
   const tmpStep4 = useMemo(() => step4, [step4]);
 
-  const methods = useForm<SupervisorStep4>({
+  const methods = useForm({
     resolver: yupResolver(validationSchema),
+    // defaultValues: (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep4) ||
+    //   ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep4) || {
+    //     proposal_item_budgets: [
+    //       {
+    //         clause: '',
+    //         explanation: '',
+    //         amount: undefined,
+    //       },
+    //     ],
+    //   },
     defaultValues: tmpStep4,
-    // defaultValues:
-    //   // activeRole !== 'tender_project_supervisor'
-    //   //   ? tmpStep4
-    //   //   : {
-    //   //       proposal_item_budgets: [
-    //   //         {
-    //   //           clause: '',
-    //   //           explanation: '',
-    //   //           amount: undefined,
-    //   //         },
-    //   //       ],
-    //   //     },
-    //   (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep4) ||
-    //     ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep4) || {
-    //       proposal_item_budgets: [
-    //         {
-    //           clause: '',
-    //           explanation: '',
-    //           amount: undefined,
-    //         },
-    //       ],
-    //     },
   });
 
   const {
     handleSubmit,
-    control,
+    formState: { isSubmitting },
+    watch,
     setValue,
     resetField,
     getValues,
-    watch,
-    formState: { isSubmitting },
+    control,
   } = methods;
-
-  // const item_budgets = watch('proposal_item_budgets');
 
   const {
     fields: recommendedSupportItems,
@@ -103,7 +99,25 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
     name: 'proposal_item_budgets',
   });
 
-  const onSubmitForm = (data: SupervisorStep4) => {
+  const handleLoop = (loopNumber: number) => {
+    const initNumber = activeRole === 'tender_project_supervisor' ? 1 : 0;
+    for (let i = initNumber; i < loopNumber; i++) {
+      append({
+        amount: undefined,
+        clause: '',
+        explanation: '',
+        id: uuidv4(),
+      });
+    }
+  };
+
+  const handleRemoveLoop = (loopNumber: number) => {
+    for (let i = 0; i < loopNumber; i++) {
+      remove(proposal.proposal_item_budgets.length - 1 - i);
+    }
+  };
+
+  const onSubmitForm = (data: any) => {
     setIsSubmited(true);
     let totalAmount: number | undefined = undefined;
     const fSupportBySpv: number = Number(
@@ -111,32 +125,30 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
         ? step1?.fsupport_by_supervisor
         : proposal?.amount_required_fsupport
     );
-    if (data.proposal_item_budgets.length) {
+
+    const itemBudgets: ItemBudget[] = data.proposal_item_budgets;
+
+    if (itemBudgets.length) {
       totalAmount = Number(
-        data
-          ?.proposal_item_budgets!.map((item) => item.amount)
-          .reduce((acc, curr) => acc! + curr!, 0)
+        itemBudgets!.map((item) => item.amount).reduce((acc, curr) => acc! + curr!, 0)
       );
     }
-    // console.log(totalAmount);
-    if (data.proposal_item_budgets.length) {
-      data.created_proposal_budget = data.proposal_item_budgets
+
+    if (itemBudgets.length) {
+      data.created_proposal_budget = itemBudgets
         .filter((item) => !basedBudget.find((i) => i.id === item.id))
         .map((el) => ({
           ...el,
           amount: Number(el.amount),
         }));
 
-      // console.log(data.created_proposal_budget, 'testa');
-
-      data.updated_proposal_budget = data.proposal_item_budgets
+      data.updated_proposal_budget = itemBudgets
         .filter((item) => basedBudget.find((i) => i.id === item.id))
         .map((el) => ({
           ...el,
           amount: Number(el.amount),
         }));
 
-      // data.deleted_proposal_budget = tempDeletedBudget;
       data.deleted_proposal_budget = getMissingItems(
         proposal.proposal_item_budgets,
         data.proposal_item_budgets
@@ -144,27 +156,8 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
         ...el,
         amount: Number(el.amount),
       }));
-      // console.log('masuk sini', { step1, fSupportBySpv, totalAmount });
+
       if (step1 && fSupportBySpv && totalAmount) {
-        // console.log('mausk if sini');
-        // if (step1.support_type && totalAmount <= proposal.amount_required_fsupport!) {
-        //   onSubmit(data);
-        // } else {
-        //   if (totalAmount < proposal.amount_required_fsupport!) {
-        //     onSubmit(data);
-        //   } else {
-        //   enqueueSnackbar(
-        //     `${translate('notification.error_exceeds_amount')}: ${
-        //       proposal.amount_required_fsupport
-        //     }`,
-        //     {
-        //       variant: 'error',
-        //       preventDuplicate: true,
-        //       autoHideDuration: 3000,
-        //     }
-        //   );
-        // }
-        // }
         if (step1.support_type) {
           if (totalAmount === fSupportBySpv!) {
             onSubmit(data);
@@ -181,7 +174,6 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
         } else {
           if (totalAmount === fSupportBySpv!) {
             onSubmit(data);
-            // console.log('mausk else sini :', data);
           } else {
             enqueueSnackbar(`${translate('notification.error_exceeds_amount')}: ${fSupportBySpv}`, {
               variant: 'error',
@@ -199,30 +191,6 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
       });
 
       resetField('proposal_item_budgets');
-    }
-  };
-
-  // useEffect(() => {
-  //   // handleLoop();
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [paymentNumber]);
-
-  const handleLoop = (loopNumber: number) => {
-    const initNumber = activeRole === 'tender_project_supervisor' ? 1 : 0;
-    for (let i = initNumber; i < loopNumber; i++) {
-      append({
-        amount: undefined,
-        clause: '',
-        explanation: '',
-        id: uuidv4(),
-      });
-    }
-  };
-
-  const handleRemoveLoop = (loopNumber: number) => {
-    for (let i = 0; i < loopNumber; i++) {
-      remove(proposal.proposal_item_budgets.length - 1 - i);
     }
   };
 
@@ -255,26 +223,25 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
-      <Grid sx={{ mt: '10px', mb: 2, maxWidth: '83%' }}>
-        <TextField
-          fullWidth
-          placeholder="test"
-          size="small"
-          label="support amount"
-          // value={step1.fsupport_by_supervisor}
-          value={
-            // Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
-            //   ? step1?.fsupport_by_supervisor
-            //   : proposal?.amount_required_fsupport || 0
-            proposal?.amount_required_fsupport || 0
-          }
-          InputLabelProps={{ shrink: true }}
-          type="number"
-          disabled={true}
-        />
-      </Grid>
-      <Grid container rowSpacing={4} columnSpacing={7}>
-        {/* <FormGenerator data={FifthFormData} /> */}
+      <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: 0.5 }}>
+        <Grid item md={6} xs={12}>
+          <TextField
+            fullWidth
+            placeholder="test"
+            size="small"
+            label="support amount"
+            // value={step1.fsupport_by_supervisor}
+            value={
+              proposal?.amount_required_fsupport || 0
+              // Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
+              //   ? step1?.fsupport_by_supervisor
+              //   : proposal?.amount_required_fsupport || 0
+            }
+            InputLabelProps={{ shrink: true }}
+            type="number"
+            disabled={true}
+          />
+        </Grid>
         <Grid item xs={12}>
           {recommendedSupportItems.map((v, i) => (
             <Grid container key={v.id} spacing={3} sx={{ mb: 2 }}>
@@ -284,7 +251,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
-                      disabled={edit}
+                      // disabled={edit}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].clause`}
                       {...field}
                       InputLabelProps={{ shrink: true }}
@@ -310,7 +277,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
-                      disabled={edit}
+                      // disabled={edit}
                       {...field}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].explanation`}
                       InputLabelProps={{ shrink: true }}
@@ -338,7 +305,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
-                      disabled={edit}
+                      // disabled={edit}
                       {...field}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].amount`}
                       InputLabelProps={{ shrink: true }}
@@ -365,13 +332,6 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                   color="error"
                   onClick={() => {
                     const idGetValues = getValues(`proposal_item_budgets.${i}.id`);
-                    // data.updated_proposal_budget = data.proposal_item_budgets
-                    // .filter((item) => basedBudget.find((i) => i.id === item.id))
-                    // .map((el) => ({
-                    //   ...el,
-                    //   amount: Number(el.amount),
-                    // }));
-                    // const deleteValues = basedBudget.filter((item) => item.id === idGetValues);
                     const deleteValues = basedBudget
                       .filter((item) => item.id === idGetValues)
                       .map((el) => ({
@@ -407,26 +367,30 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                 id: uuidv4(),
               });
             }}
-            disabled={edit}
+            // disabled={edit}
           >
             {translate('add_new_line')}
           </Button>
         </Grid>
-        <Grid
-          item
-          md={12}
-          xs={12}
-          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-          <Button
-            variant={edit ? 'outlined' : 'contained'}
-            data-cy="acc_form_non_consulation_support_edit_button"
-            onClick={() => {
-              setEdit(!edit);
-            }}
-          >
-            {edit ? translate('button.re_edit') : translate('button.save_edit')}
-          </Button>
+        <Grid item md={12} xs={12}>
+          <RHFTextField
+            data-cy="acc_form_non_consulation_notes"
+            name="notes"
+            multiline
+            minRows={3}
+            label="ملاحظات على المشروع"
+            placeholder="اكتب ملاحظاتك هنا"
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <RHFTextField
+            data-cy="acc_form_non_consulation_support_outputs"
+            name="support_outputs"
+            multiline
+            minRows={3}
+            label="مخرجات الدعم (لصالح)*"
+            placeholder="اكتب هنا"
+          />
         </Grid>
         <Grid item xs={12}>
           {children}
@@ -435,5 +399,3 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
     </FormProvider>
   );
 }
-
-export default FifthForm;

@@ -34,7 +34,7 @@ const steps = [
   'التوصية بالدعم من المشرف',
 ];
 
-interface IsFormSubmited {
+export interface IsFormSubmited {
   form1: boolean;
   form5: boolean;
 }

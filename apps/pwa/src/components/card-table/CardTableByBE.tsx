@@ -375,6 +375,7 @@ CardTablePropsByBE) {
           <Grid item key={index} md={6} xs={12}>
             <ProjectTableBE
               {...item}
+              inquiryStatus={item.outter_status === 'CANCELED' ? 'canceled' : null}
               created_at={new Date(item.created_at)}
               // cardFooterButtonAction={cardFooterButtonAction}
               cardFooterButtonAction={
@@ -387,6 +388,7 @@ CardTablePropsByBE) {
             />
           </Grid>
         ))}
+
       {!isLoading && cardData.length === 0 && (
         <Grid item md={12} xs={12}>
           {activeRole !== 'tender_client' ? (

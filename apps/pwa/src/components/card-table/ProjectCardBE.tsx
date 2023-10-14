@@ -78,7 +78,7 @@ const ProjectCardBE = ({
   const [, deleteDrPro] = useMutation(deleteDraftProposal);
   const [loading, setLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { track_list } = useSelector((state) => state.proposal);
+  const { track_list, proposal } = useSelector((state) => state.proposal);
   // console.log({ track_list });
 
   // const urlArr: string[] = location.pathname.split('/');
@@ -206,7 +206,6 @@ const ProjectCardBE = ({
           },
         });
       }
-
       if (
         [
           'tender_finance',
@@ -228,16 +227,25 @@ const ProjectCardBE = ({
           },
         });
       }
-      if (destination) {
-        const x = location.pathname.split('/');
-        // console.log(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
-        navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
+      const x = location.pathname.split('/');
+      if (!inquiryStatus) {
+        if (destination) {
+          navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
+        } else {
+          navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
+        }
       } else {
-        navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
+        // navigate(`${location.pathname}/${id}/reject-project`);
+        if (destination) {
+          navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/reject-project`);
+        } else {
+          navigate(`${location.pathname}/${id}/reject-project`);
+        }
       }
-      getProposalCount(role || '');
     } catch (error) {
       console.log({ error });
+    } finally {
+      getProposalCount(role!);
     }
   };
 
