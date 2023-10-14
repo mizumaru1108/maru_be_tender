@@ -187,6 +187,7 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled
             type="textField"
             name="chairman_of_board_of_directors"
             label="رئيس مجلس الإدارة*"
@@ -195,6 +196,7 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled
             type="textField"
             name="ceo"
             label="المدير التنفيذي*"
@@ -203,6 +205,7 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled
             type="radioGroup"
             name="been_supported_before"
             label="هل دعمت سابقًا؟"
