@@ -206,7 +206,6 @@ const ProjectCardBE = ({
           },
         });
       }
-      // console.log('masuk sini 1', { destination });
       if (
         [
           'tender_finance',
@@ -217,7 +216,6 @@ const ProjectCardBE = ({
         destination !== 'requests-in-process' &&
         destination !== 'previous-funding-requests'
       ) {
-        // console.log('masuk sini 2');
         await updateAsigning({
           _set: {
             [`${RolesMap[role]!}`]: userAuth?.id,
@@ -230,9 +228,8 @@ const ProjectCardBE = ({
         });
       }
       const x = location.pathname.split('/');
-      if (proposal.outter_status !== 'CANCELED') {
+      if (!inquiryStatus) {
         if (destination) {
-          // console.log(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
           navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
         } else {
           navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
