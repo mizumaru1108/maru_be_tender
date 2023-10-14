@@ -19,6 +19,7 @@ export type Participant = {
 export type TextMessage = {
   id?: string;
   content?: string | null;
+  room_id?: string | null;
   content_title?: string | null;
   content_type_id?: string;
   attachment?: FileProp | null;
@@ -43,6 +44,7 @@ export type TextMessage = {
 export type ImageMessage = {
   id?: string;
   content?: string | null;
+  room_id?: string | null;
   content_title?: string | null;
   content_type_id?: string | null;
   attachment?: FileProp | null;
