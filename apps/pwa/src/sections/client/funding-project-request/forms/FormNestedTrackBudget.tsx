@@ -12,19 +12,13 @@ import Space from '../../../../components/space/space';
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
 
-function sumBudget(transactions: TrackSection[]): number {
-  let totalBudget = 0;
-
-  for (const transaction of transactions) {
-    totalBudget += transaction?.budget || 0;
-
-    if (transaction.child_track_section && transaction.child_track_section.length > 0) {
-      totalBudget += sumBudget(transaction.child_track_section);
-    }
-  }
-
-  return totalBudget;
-}
+const getArrayDifference = (arr1: TrackSection[], arr2: TrackSection[]) => {
+  const tmpArr1 = arr1;
+  return tmpArr1.filter((item1) => {
+    const tmpArr2 = arr2;
+    return !tmpArr2.some((item2) => item1.id === item2.id);
+  });
+};
 
 function flattenChildTrackSections(arr: TrackSection[], track_id: string): TrackSection[] {
   let result: TrackSection[] = [];
@@ -200,10 +194,21 @@ export default function FormNestedTrackBudget({
           .filter((track_section) => !track_section.parent_section_id)
           .reduce((acc, k) => acc + (k.budget || 0), 0)) ||
       0;
-    const tmpFlatArray = flattenChildTrackSections(
-      tmpPayload?.sections || [],
+    const baseFlatArray = flattenChildTrackSections(
+      defaultValuesTrackBudget?.sections || [],
       defaultValuesTrackBudget?.track_id || '-'
     );
+    const payloadFlatArray = flattenChildTrackSections(
+      tmpPayload?.sections || [],
+      defaultValuesTrackBudget?.track_id || '-'
+    ).map((item) => ({
+      ...item,
+      is_deleted: false,
+    }));
+    const differenceFlatArray = getArrayDifference(baseFlatArray, payloadFlatArray).map((item) => ({
+      ...item,
+      is_deleted: true,
+    }));
     if (tmpTotalSummary > 0 && tmpPayload.total_budget !== tmpTotalSummary) {
       setBudgetError({
         open: true,
@@ -212,7 +217,7 @@ export default function FormNestedTrackBudget({
         })`,
       });
     } else {
-      if (tmpFlatArray.length === 0) {
+      if (payloadFlatArray.length === 0) {
         setBudgetError({
           open: true,
           message: `${translate('min_budget_error_message')}`,
@@ -220,12 +225,12 @@ export default function FormNestedTrackBudget({
       } else {
         if (tmpPayload.total_budget) {
           try {
-            checkBudgetSum(tmpFlatArray, tmpPayload.total_budget);
+            checkBudgetSum(payloadFlatArray, tmpPayload.total_budget);
             setBudgetError({
               open: false,
               message: '',
             });
-            onSubmitForm(tmpFlatArray);
+            onSubmitForm(payloadFlatArray.concat(differenceFlatArray));
           } catch (error) {
             setBudgetError({
               open: true,

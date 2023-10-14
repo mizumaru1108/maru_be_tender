@@ -61,6 +61,7 @@ export default function NestedArrayLvlOne({
   };
 
   const handleRemove = (index: number) => {
+    // console.log({ index });
     remove(index);
     objectEmpty(watch(`sections.${nestIndex}.child_track_section[${index}]`), index);
   };
@@ -188,7 +189,7 @@ export default function NestedArrayLvlOne({
                         isLoading={isLoading}
                         nestIndex={nestIndex}
                         nestedOneIndex={k}
-                        parentSectionId={tmpWatch[k].id}
+                        parentSectionId={tmpWatch[k]?.id}
                         expanded={openItemsLvlOne.includes(item.id)}
                         {...{ control, register, watch, setValue }}
                       />

@@ -75,11 +75,14 @@ export default function RHFBaseRepeater({
   };
 
   const handleRemove = (index: number) => {
+    console.log({ index });
     remove(index);
-    objectEmpty(watch(`sections[${index}]`), index);
+    // objectEmpty(watch(`sections[${index}]`), index);
   };
 
+  const tmpWatchlastIndex = watch(`sections[0]`);
   const tmpWatch = watch(`sections`);
+  // console.log({ tmpWatch, fields });
 
   return (
     <>
@@ -97,7 +100,7 @@ export default function RHFBaseRepeater({
           {fields.map((item, index) => {
             const tmpItem = item;
             return (
-              <React.Fragment key={`${index}`}>
+              <React.Fragment key={tmpItem.id}>
                 <ListItem>
                   <Grid container alignItems="center">
                     <Grid item md={1} xs={12} sx={{ padding: '0 7px' }}>

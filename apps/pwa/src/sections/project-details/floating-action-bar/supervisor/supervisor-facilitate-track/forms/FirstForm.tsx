@@ -246,11 +246,11 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             name="fsupport_by_supervisor"
             label="مبلغ الدعم*"
             placeholder="مبلغ الدعم"
-            // disabled={isSupport ? false : true}
             disabled={
-              support_type === 'false' || !support_type || support_type === undefined
+              save ||
+              (support_type === 'false' || !support_type || support_type === undefined
                 ? false
-                : true || !isSupevisor
+                : true)
             }
           />
         </Grid>
