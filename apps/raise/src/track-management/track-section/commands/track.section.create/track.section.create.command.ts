@@ -9,7 +9,7 @@ export class TrackSectionCreateCommand {
 
 export class TrackSectionCreateCommandResult {
   data: {
-    created_sections: TrackSectionEntity[];
+    created_sections: TrackSectionCreateDto[];
   };
 }
 
@@ -33,24 +33,11 @@ export class TrackSectionCreateCommandHandler
           const tx =
             session instanceof PrismaService ? session : this.prismaService;
 
-          await this.trackSectionRepo.deleteByTrackId(sections[0].track_id, tx);
-
-          const createdEntity: TrackSectionEntity[] = [];
-          for (const section of sections) {
-            const entity = await this.trackSectionRepo.create(
-              {
-                id: section.id,
-                name: section.name,
-                budget: section.budget,
-                parent_section_id: section.parent_section_id,
-                track_id: section.track_id,
-              },
-              tx,
-            );
-            createdEntity.push(entity);
-          }
-
-          return createdEntity;
+          await this.trackSectionRepo.arraySave(
+            sections[0].track_id,
+            sections,
+            tx,
+          );
         },
         {
           timeout: 70000,
@@ -59,7 +46,7 @@ export class TrackSectionCreateCommandHandler
 
       return {
         data: {
-          created_sections: dbRes,
+          created_sections: sections,
         },
       };
     } catch (error) {

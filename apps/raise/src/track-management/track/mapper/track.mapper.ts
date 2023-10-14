@@ -116,7 +116,9 @@ export class TrackMapper {
       let budget = 0;
       if (track_section.length > 0) {
         for (const s of track_section) {
-          budget += s.budget;
+          if (s.is_deleted === false) {
+            budget += s.budget;
+          }
           tSections.push(
             Builder<TrackSectionEntity>(TrackSectionEntity, {
               ...s,

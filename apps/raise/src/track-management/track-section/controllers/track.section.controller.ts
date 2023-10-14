@@ -24,8 +24,10 @@ import {
   TrackSectionCreateCommand,
   TrackSectionCreateCommandResult,
 } from '../commands/track.section.create/track.section.create.command';
-import { TrackSectionsCreateDto } from '../dtos/requests/track.sections.create.dto';
-import { TrackSectionEntity } from '../entities/track.section.entity';
+import {
+  TrackSectionCreateDto,
+  TrackSectionsCreateDto,
+} from '../dtos/requests/track.sections.create.dto';
 
 @ApiTags('TrackModule/TrackSection')
 @Controller('tender/track-sections')
@@ -56,13 +58,13 @@ export class TrackSectionHttpController {
   @ApiOperation({
     summary: 'Creating track section (admin only)',
   })
-  @BaseApiOkResponse(TrackSectionEntity, 'array')
+  @BaseApiOkResponse(TrackSectionCreateDto, 'array')
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Post('save')
   async save(
     @Body() dto: TrackSectionsCreateDto,
-  ): Promise<BaseResponse<TrackSectionEntity[]>> {
+  ): Promise<BaseResponse<TrackSectionCreateDto[]>> {
     try {
       const command = Builder<TrackSectionCreateCommand>(
         TrackSectionCreateCommand,

@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -38,6 +39,11 @@ export class TrackSectionCreateDto {
   @IsString()
   @IsNotEmpty()
   parent_section_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  is_deleted?: boolean;
 }
 
 export class TrackSectionsCreateDto {

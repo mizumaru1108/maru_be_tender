@@ -4,6 +4,7 @@ import { Builder } from 'builder-pattern';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TrackSectionEntity } from '../entities/track.section.entity';
+import { TrackSectionCreateDto } from '../dtos/requests/track.sections.create.dto';
 
 export type TrackSectionIncludeTypes = 'parent_section' | 'child_track_section';
 
@@ -31,6 +32,7 @@ export class TrackSectionFindFirstProps {
 
 export class TrackSectionFindManyProps {
   proposal_id?: string;
+  track_id?: string;
   limit?: number;
   page?: number;
   sort_by?: string;
@@ -122,6 +124,8 @@ export class TrackSectionRepository {
     const { include_relations } = props;
     let args: Prisma.track_sectionFindManyArgs = {};
     let whereClause: Prisma.track_sectionWhereInput = {};
+
+    if (props.track_id) whereClause.track_id = props.track_id;
 
     if (include_relations && include_relations.length > 0) {
       args.include = this.applyInclude(include_relations);
@@ -274,55 +278,50 @@ export class TrackSectionRepository {
     }
   }
 
-  // async arraySave(
-  //   proposal_id: string,
-  //   governorate_ids: string[],
-  //   session?: PrismaService,
-  // ): Promise<void> {
-  //   let prisma = this.prismaService;
-  //   if (session) prisma = session;
+  async arraySave(
+    track_id: string,
+    sectionPayloads: TrackSectionCreateDto[],
+    session?: PrismaService,
+  ): Promise<void> {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
 
-  //   try {
-  //     // Find existing proposal governorates for the given proposal ID
-  //     const existingTrackSection = await this.findMany(
-  //       {
-  //         proposal_id,
-  //       },
-  //       prisma,
-  //     );
+    try {
+      // Find track sections
+      const existingTrackSection = await this.findMany(
+        {
+          track_id,
+        },
+        prisma,
+      );
 
-  //     // Get existing governorate IDs from the query result
-  //     const existingGovernorateIds = existingTrackSection.map(
-  //       (governorate) => governorate.governorate_id,
-  //     );
+      // get track id
+      const existingTrackIds = existingTrackSection.map((track) => track.id);
 
-  //     // Delete proposal governorates that are not in the provided IDs
-  //     for (const existingGov of existingTrackSection) {
-  //       if (!governorate_ids.includes(existingGov.governorate_id)) {
-  //         // console.log('delete', existingGov.proposal_governorate_id);
-  //         // Delete the proposal governorate with the provided ID
-  //         this.delete(existingGov.proposal_governorate_id, prisma);
-  //       }
-  //     }
+      for (const section of sectionPayloads) {
+        //  if it doesnt exist
+        if (!existingTrackIds.includes(section.id)) {
+          this.create(section, prisma);
+        }
 
-  //     // Create proposal governorates for IDs that exist in the array but not in existing governorates
-  //     for (const id of governorate_ids) {
-  //       if (!existingGovernorateIds.includes(id)) {
-  //         // console.log('create', proposal_id, id);
-  //         // Create a new proposal governorate
-  //         this.create(
-  //           {
-  //             proposal_governorate_id: nanoid(),
-  //             proposal_id,
-  //             governorate_id: id,
-  //           },
-  //           prisma,
-  //         );
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error(`Error during arraySave: ${error.message}`);
-  //     throw error;
-  //   }
-  // }
+        // if it exist
+        if (existingTrackIds.includes(section.id)) {
+          this.update(
+            {
+              id: section.id,
+              name: section.name,
+              budget: section.budget,
+              parent_section_id: section.parent_section_id,
+              track_id: section.track_id,
+              is_deleted: section.is_deleted,
+            },
+            prisma,
+          );
+        }
+      }
+    } catch (error) {
+      console.error(`Error during arraySave: ${error.message}`);
+      throw error;
+    }
+  }
 }

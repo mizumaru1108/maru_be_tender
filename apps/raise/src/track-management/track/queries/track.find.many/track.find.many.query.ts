@@ -1,5 +1,4 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { BannerRepository } from 'src/banners/repositories/banner.repository';
 import { TrackEntity } from '../../entities/track.entity';
 import {
   TrackIncludeRelationsTypes,

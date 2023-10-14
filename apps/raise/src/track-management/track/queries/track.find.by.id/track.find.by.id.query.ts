@@ -8,6 +8,8 @@ import { NotFoundException } from '@nestjs/common';
 
 export class TrackFindByIdQuery {
   track_id?: string;
+  include_general?: '1' | '0';
+  is_deleted?: '1' | '0';
   include_relations?: TrackIncludeRelationsTypes[];
 }
 

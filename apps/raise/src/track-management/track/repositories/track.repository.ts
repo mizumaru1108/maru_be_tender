@@ -30,6 +30,8 @@ export class TrackFindFirstProps {
   id?: string;
   name?: string;
   exclude_id?: string;
+  include_general?: '1' | '0';
+  is_deleted?: '1' | '0';
   budget_info?: '0' | '1';
   include_relations?: TrackIncludeRelationsTypes[];
 }
@@ -125,6 +127,29 @@ export class TrackRepository {
     if (props.id) whereClause.id = props.id;
     if (props.name) whereClause.name = props.name;
     if (props.exclude_id) whereClause.id = { notIn: [props.exclude_id] };
+
+    if (props.include_general === '0') {
+      whereClause = {
+        ...whereClause,
+        name: {
+          notIn: ['GENERAL'],
+        },
+      };
+    }
+
+    if (props.is_deleted === '1') {
+      whereClause = {
+        ...whereClause,
+        is_deleted: true,
+      };
+    }
+
+    if (props.is_deleted === '0') {
+      whereClause = {
+        ...whereClause,
+        is_deleted: false,
+      };
+    }
 
     if (props.budget_info) {
       if (props.include_relations) {
