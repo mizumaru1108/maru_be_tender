@@ -45,6 +45,9 @@ export default function GeneralFirstForm({
       does_an_agreement: Yup.boolean().required(
         translate('errors.cre_proposal.does_an_agreement.required')
       ),
+      fsupport_by_supervisor: Yup.string().required(
+        translate('errors.cre_proposal.fsupport_by_supervisor.required')
+      ),
       vat: Yup.boolean().required(translate('errors.cre_proposal.vat.required')),
       ...(tmpIsVat && {
         vat_percentage: Yup.string()
@@ -79,6 +82,7 @@ export default function GeneralFirstForm({
 
   const { handleSubmit, watch, setValue, resetField, reset } = methods;
 
+  const support_type = watch('support_type');
   const paymentNumber = watch('payment_number');
 
   const onSubmitForm = async (data: SupervisorStep1) => {
@@ -220,6 +224,18 @@ export default function GeneralFirstForm({
             name="payment_number"
             placeholder="عدد الدفعات"
             label="عدد الدفعات*"
+          />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <BaseField
+            data-cy="acc_form_consulation_fsupport_by_supervisor"
+            type="textField"
+            name="fsupport_by_supervisor"
+            label="مبلغ الدعم*"
+            placeholder="مبلغ الدعم"
+            disabled={
+              support_type === 'false' || !support_type || support_type === undefined ? false : true
+            }
           />
         </Grid>
         {isVat && (

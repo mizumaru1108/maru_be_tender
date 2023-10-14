@@ -113,11 +113,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         'fsupport_by_supervisor',
         proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport
       );
-      // if (proposal.fsupport_by_supervisor) {
-      //   setValue('fsupport_by_supervisor', proposal.fsupport_by_supervisor);
-      // } else {
-      //   setValue('fsupport_by_supervisor', proposal.amount_required_fsupport);
-      // }
     }
   }, [proposal, setValue]);
 

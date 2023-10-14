@@ -63,32 +63,21 @@ export default function GeneralSecondForm({
     ),
   });
 
-  const defaultValues = {
-    proposal_item_budgets: [
-      {
-        clause: '',
-        explanation: '',
-        amount: undefined,
-      },
-    ],
-    notes: '',
-    support_outputs: '',
-  };
-
   const tmpStep4 = useMemo(() => step4, [step4]);
 
   const methods = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues: (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep4) ||
-      ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep4) || {
-        proposal_item_budgets: [
-          {
-            clause: '',
-            explanation: '',
-            amount: undefined,
-          },
-        ],
-      },
+    // defaultValues: (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep4) ||
+    //   ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep4) || {
+    //     proposal_item_budgets: [
+    //       {
+    //         clause: '',
+    //         explanation: '',
+    //         amount: undefined,
+    //       },
+    //     ],
+    //   },
+    defaultValues: tmpStep4,
   });
 
   const {
@@ -210,24 +199,24 @@ export default function GeneralSecondForm({
       setBasedBudget(proposal.proposal_item_budgets);
     }
 
-    let loopNumber = -1;
-    if (activeRole !== 'tender_project_supervisor') {
-      if (paymentNumber > proposal.proposal_item_budgets.length) {
-        loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
-        if (loopNumber > 0) {
-          handleLoop(loopNumber);
-        }
-      }
-      if (paymentNumber < proposal.proposal_item_budgets.length) {
-        loopNumber = proposal.proposal_item_budgets.length - Number(paymentNumber);
-        handleRemoveLoop(loopNumber);
-      }
-    } else {
-      if (Number(paymentNumber) > 0 && !isStepBack) {
-        loopNumber = Number(paymentNumber);
-        handleLoop(loopNumber);
-      }
-    }
+    // let loopNumber = -1;
+    // if (activeRole !== 'tender_project_supervisor') {
+    //   if (paymentNumber > proposal.proposal_item_budgets.length) {
+    //     loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
+    //     if (loopNumber > 0) {
+    //       handleLoop(loopNumber);
+    //     }
+    //   }
+    //   if (paymentNumber < proposal.proposal_item_budgets.length) {
+    //     loopNumber = proposal.proposal_item_budgets.length - Number(paymentNumber);
+    //     handleRemoveLoop(loopNumber);
+    //   }
+    // } else {
+    //   if (Number(paymentNumber) > 0 && !isStepBack) {
+    //     loopNumber = Number(paymentNumber);
+    //     handleLoop(loopNumber);
+    //   }
+    // }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposal]);
@@ -243,9 +232,10 @@ export default function GeneralSecondForm({
             label="support amount"
             // value={step1.fsupport_by_supervisor}
             value={
-              Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
-                ? step1?.fsupport_by_supervisor
-                : proposal?.amount_required_fsupport || 0
+              proposal?.amount_required_fsupport || 0
+              // Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
+              //   ? step1?.fsupport_by_supervisor
+              //   : proposal?.amount_required_fsupport || 0
             }
             InputLabelProps={{ shrink: true }}
             type="number"

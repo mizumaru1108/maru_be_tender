@@ -57,29 +57,29 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
 
   const methods = useForm<SupervisorStep4>({
     resolver: yupResolver(validationSchema),
-    // defaultValues: tmpStep4,
-    defaultValues:
-      // activeRole !== 'tender_project_supervisor'
-      //   ? tmpStep4
-      //   : {
-      //       proposal_item_budgets: [
-      //         {
-      //           clause: '',
-      //           explanation: '',
-      //           amount: undefined,
-      //         },
-      //       ],
-      //     },
-      (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep4) ||
-        ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep4) || {
-          proposal_item_budgets: [
-            {
-              clause: '',
-              explanation: '',
-              amount: undefined,
-            },
-          ],
-        },
+    defaultValues: tmpStep4,
+    // defaultValues:
+    //   // activeRole !== 'tender_project_supervisor'
+    //   //   ? tmpStep4
+    //   //   : {
+    //   //       proposal_item_budgets: [
+    //   //         {
+    //   //           clause: '',
+    //   //           explanation: '',
+    //   //           amount: undefined,
+    //   //         },
+    //   //       ],
+    //   //     },
+    //   (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep4) ||
+    //     ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep4) || {
+    //       proposal_item_budgets: [
+    //         {
+    //           clause: '',
+    //           explanation: '',
+    //           amount: undefined,
+    //         },
+    //       ],
+    //     },
   });
 
   const {
@@ -229,30 +229,26 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
   useEffect(() => {
     if (proposal && proposal.proposal_item_budgets.length) {
       setBasedBudget(proposal.proposal_item_budgets);
-      // setValue('proposal_item_budgets', proposal?.proposal_item_budgets);
     }
-    // else {
-    //   resetField('proposal_item_budgets');
-    // }
 
-    let loopNumber = -1;
-    if (activeRole !== 'tender_project_supervisor') {
-      if (paymentNumber > proposal.proposal_item_budgets.length) {
-        loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
-        if (loopNumber > 0) {
-          handleLoop(loopNumber);
-        }
-      }
-      if (paymentNumber < proposal.proposal_item_budgets.length) {
-        loopNumber = proposal.proposal_item_budgets.length - Number(paymentNumber);
-        handleRemoveLoop(loopNumber);
-      }
-    } else {
-      if (Number(paymentNumber) > 0 && !isStepBack) {
-        loopNumber = Number(paymentNumber);
-        handleLoop(loopNumber);
-      }
-    }
+    // let loopNumber = -1;
+    // if (activeRole !== 'tender_project_supervisor') {
+    //   if (paymentNumber > proposal.proposal_item_budgets.length) {
+    //     loopNumber = Number(paymentNumber) - proposal.proposal_item_budgets.length;
+    //     if (loopNumber > 0) {
+    //       handleLoop(loopNumber);
+    //     }
+    //   }
+    //   if (paymentNumber < proposal.proposal_item_budgets.length) {
+    //     loopNumber = proposal.proposal_item_budgets.length - Number(paymentNumber);
+    //     handleRemoveLoop(loopNumber);
+    //   }
+    // } else {
+    //   if (Number(paymentNumber) > 0 && !isStepBack) {
+    //     loopNumber = Number(paymentNumber);
+    //     handleLoop(loopNumber);
+    //   }
+    // }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposal]);
@@ -267,9 +263,10 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
           label="support amount"
           // value={step1.fsupport_by_supervisor}
           value={
-            Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
-              ? step1?.fsupport_by_supervisor
-              : proposal?.amount_required_fsupport || 0
+            // Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
+            //   ? step1?.fsupport_by_supervisor
+            //   : proposal?.amount_required_fsupport || 0
+            proposal?.amount_required_fsupport || 0
           }
           InputLabelProps={{ shrink: true }}
           type="number"
