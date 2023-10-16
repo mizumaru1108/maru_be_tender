@@ -1754,7 +1754,7 @@ export class ProposalRepository {
       }
 
       // console.log(logUtil(whereClause));
-      console.log(logUtil(queryOptions));
+      // console.log(logUtil(queryOptions));
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
