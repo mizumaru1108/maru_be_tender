@@ -15,7 +15,7 @@ import { ThirdFormData } from './form-data';
 function ThirdForm({ children, onSubmit }: any) {
   const { activeRole } = useAuth();
   const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
-  const [edit, setEdit] = useState<boolean>(true);
+  const [edit, setEdit] = useState<boolean>(isSupevisor ? false : true);
   const { step3 } = useSelector((state) => state.supervisorAcceptingForm);
   const { translate } = useLocales();
   const validationSchema = Yup.object().shape({
@@ -275,22 +275,24 @@ function ThirdForm({ children, onSubmit }: any) {
             ]}
           />
         </Grid>
-        <Grid
-          item
-          md={12}
-          xs={12}
-          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-          <Button
-            variant={edit ? 'outlined' : 'contained'}
-            data-cy="acc_form_non_consulation_support_edit_button"
-            onClick={() => {
-              setEdit(!edit);
-            }}
+        {isSupevisor ? null : (
+          <Grid
+            item
+            md={12}
+            xs={12}
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
           >
-            {edit ? translate('button.re_edit') : translate('button.save_edit')}
-          </Button>
-        </Grid>
+            <Button
+              variant={edit ? 'outlined' : 'contained'}
+              data-cy="acc_form_non_consulation_support_edit_button"
+              onClick={() => {
+                setEdit(!edit);
+              }}
+            >
+              {edit ? translate('button.re_edit') : translate('button.save_edit')}
+            </Button>
+          </Grid>
+        )}
         <Grid item xs={12}>
           {children}
         </Grid>
