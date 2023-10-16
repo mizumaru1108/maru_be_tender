@@ -1676,12 +1676,12 @@ export class ProposalRepository {
             },
             inner_status: {
               in: [
-                // InnerStatusEnum.REJECTED_BY_SUPERVISOR,
+                InnerStatusEnum.REJECTED_BY_SUPERVISOR,
                 InnerStatusEnum.ACCEPTED_BY_SUPERVISOR,
               ],
             },
             outter_status: {
-              in: [OutterStatusEnum.PENDING_CANCELED],
+              in: [OutterStatusEnum.PENDING_CANCELED, OutterStatusEnum.ONGOING],
             },
           };
         }
@@ -1754,7 +1754,7 @@ export class ProposalRepository {
       }
 
       // console.log(logUtil(whereClause));
-      // console.log(logUtil(queryOptions));
+      console.log(logUtil(queryOptions));
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
       const total = await this.prismaService.proposal.count({
@@ -2512,7 +2512,7 @@ export class ProposalRepository {
         };
       }
 
-      console.log(logUtil(queryOptions));
+      // console.log(logUtil(queryOptions));
 
       const data = await this.prismaService.proposal.findMany(queryOptions);
 
