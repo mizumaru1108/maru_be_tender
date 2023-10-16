@@ -19,7 +19,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
   const { proposal } = useSelector((state) => state.proposal);
   const { activeRole } = useAuth();
   const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
-  const [edit, setEdit] = useState<boolean>(true);
+  const [edit, setEdit] = useState<boolean>(isSupevisor ? false : true);
 
   const isStepBack =
     proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
@@ -106,12 +106,12 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
   const onSubmitForm = (data: SupervisorStep4) => {
     setIsSubmited(true);
     let totalAmount: number | undefined = undefined;
-    // const fSupportBySpv: number = Number(
-    //   Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
-    //     ? step1?.fsupport_by_supervisor
-    //     : proposal?.amount_required_fsupport
-    // );
-    const fSupportBySpv: number = Number(proposal?.amount_required_fsupport);
+    const fSupportBySpv: number = Number(
+      Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
+        ? step1?.fsupport_by_supervisor
+        : proposal?.amount_required_fsupport
+    );
+    // const fSupportBySpv: number = Number(proposal?.amount_required_fsupport);
 
     if (data.proposal_item_budgets.length) {
       totalAmount = Number(
@@ -265,10 +265,10 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
           label="support amount"
           // value={step1.fsupport_by_supervisor}
           value={
-            // Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
-            //   ? step1?.fsupport_by_supervisor
-            //   : proposal?.amount_required_fsupport || 0
-            proposal?.amount_required_fsupport || 0
+            Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
+              ? step1?.fsupport_by_supervisor
+              : proposal?.amount_required_fsupport || 0
+            // proposal?.amount_required_fsupport || 0
           }
           InputLabelProps={{ shrink: true }}
           type="number"
@@ -414,22 +414,24 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
             {translate('add_new_line')}
           </Button>
         </Grid>
-        <Grid
-          item
-          md={12}
-          xs={12}
-          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-          <Button
-            variant={edit ? 'outlined' : 'contained'}
-            data-cy="acc_form_non_consulation_support_edit_button"
-            onClick={() => {
-              setEdit(!edit);
-            }}
+        {isSupevisor ? null : (
+          <Grid
+            item
+            md={12}
+            xs={12}
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
           >
-            {edit ? translate('button.re_edit') : translate('button.save_edit')}
-          </Button>
-        </Grid>
+            <Button
+              variant={edit ? 'outlined' : 'contained'}
+              data-cy="acc_form_non_consulation_support_edit_button"
+              onClick={() => {
+                setEdit(!edit);
+              }}
+            >
+              {edit ? translate('button.re_edit') : translate('button.save_edit')}
+            </Button>
+          </Grid>
+        )}
         <Grid item xs={12}>
           {children}
         </Grid>

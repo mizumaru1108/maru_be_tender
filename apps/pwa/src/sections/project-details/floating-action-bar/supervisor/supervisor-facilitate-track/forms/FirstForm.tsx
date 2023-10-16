@@ -20,7 +20,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
   const { proposal } = useSelector((state) => state.proposal);
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
 
-  const [save, setSave] = useState<boolean>(true);
+  const [save, setSave] = useState<boolean>(isSupevisor ? false : true);
 
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
 
@@ -314,22 +314,24 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             placeholder="اكتب هنا"
           />
         </Grid>
-        <Grid
-          item
-          md={12}
-          xs={12}
-          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-          <Button
-            variant={save ? 'outlined' : 'contained'}
-            data-cy="acc_form_non_consulation_support_edit_button"
-            onClick={() => {
-              setSave(!save);
-            }}
+        {isSupevisor ? null : (
+          <Grid
+            item
+            md={12}
+            xs={12}
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
           >
-            {save ? translate('button.re_edit') : translate('button.save_edit')}
-          </Button>
-        </Grid>
+            <Button
+              variant={save ? 'outlined' : 'contained'}
+              data-cy="acc_form_non_consulation_support_edit_button"
+              onClick={() => {
+                setSave(!save);
+              }}
+            >
+              {save ? translate('button.re_edit') : translate('button.save_edit')}
+            </Button>
+          </Grid>
+        )}
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
           {children}
         </Grid>

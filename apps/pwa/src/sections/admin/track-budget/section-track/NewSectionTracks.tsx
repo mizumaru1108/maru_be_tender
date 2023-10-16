@@ -48,19 +48,22 @@ export default function NewSectionTracks() {
   const handleSubmitForm = async (data: TrackSection[]) => {
     try {
       setSubmitting(true);
-      const res = await axiosInstance.post(
+      const { status } = await axiosInstance.post(
         `/tender/track-sections/save`,
         { sections: data },
         {
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      enqueueSnackbar(translate('pages.admin.tracks_budget.notification.success_add_section'), {
-        variant: 'success',
-        preventDuplicate: true,
-        autoHideDuration: 3000,
-      });
-      dispatch(getTracksById(activeRole!, track_id || ''));
+
+      if (status === 201) {
+        enqueueSnackbar(translate('pages.admin.tracks_budget.notification.success_add_section'), {
+          variant: 'success',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+        });
+        dispatch(getTracksById(activeRole!, track_id || ''));
+      }
     } catch (error) {
       if (typeof error.message === 'object') {
         error.message.forEach((el: any) => {

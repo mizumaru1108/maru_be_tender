@@ -121,12 +121,12 @@ export default function GeneralSecondForm({
   const onSubmitForm = (data: any) => {
     setIsSubmited(true);
     let totalAmount: number | undefined = undefined;
-    // const fSupportBySpv: number = Number(
-    //   Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
-    //     ? step1?.fsupport_by_supervisor
-    //     : proposal?.amount_required_fsupport
-    // );
-    const fSupportBySpv: number = Number(proposal?.amount_required_fsupport);
+    const fSupportBySpv: number = Number(
+      Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
+        ? step1?.fsupport_by_supervisor
+        : proposal?.amount_required_fsupport
+    );
+    // const fSupportBySpv: number = Number(proposal?.amount_required_fsupport);
 
     const itemBudgets: ItemBudget[] = data.proposal_item_budgets;
 
@@ -234,10 +234,10 @@ export default function GeneralSecondForm({
             label="support amount"
             // value={step1.fsupport_by_supervisor}
             value={
-              proposal?.amount_required_fsupport || 0
-              // Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
-              //   ? step1?.fsupport_by_supervisor
-              //   : proposal?.amount_required_fsupport || 0
+              // proposal?.amount_required_fsupport || 0
+              Number(step1?.fsupport_by_supervisor) !== Number(proposal?.amount_required_fsupport)
+                ? step1?.fsupport_by_supervisor
+                : proposal?.amount_required_fsupport || 0
             }
             InputLabelProps={{ shrink: true }}
             type="number"

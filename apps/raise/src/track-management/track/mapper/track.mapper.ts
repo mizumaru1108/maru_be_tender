@@ -118,37 +118,51 @@ export class TrackMapper {
         for (const s of track_section) {
           if (s.is_deleted === false) {
             budget += s.budget;
-          }
-          tSections.push(
-            Builder<TrackSectionEntity>(TrackSectionEntity, {
-              ...s,
-              child_track_section: s.child_track_section.map((c) => {
-                return Builder<TrackSectionEntity>(TrackSectionEntity, {
-                  ...c,
-                  child_track_section: c.child_track_section.map((cc) => {
+
+            tSections.push(
+              Builder<TrackSectionEntity>(TrackSectionEntity, {
+                ...s,
+                child_track_section: s.child_track_section
+                  .filter((v) => !v.is_deleted)
+                  .map((c) => {
                     return Builder<TrackSectionEntity>(TrackSectionEntity, {
-                      ...cc,
-                      child_track_section: cc.child_track_section.map((ccc) => {
-                        return Builder<TrackSectionEntity>(TrackSectionEntity, {
-                          ...ccc,
-                          child_track_section: ccc.child_track_section.map(
-                            (cccc) => {
-                              return Builder<TrackSectionEntity>(
-                                TrackSectionEntity,
-                                {
-                                  ...cccc,
-                                },
-                              ).build();
+                      ...c,
+                      child_track_section: c.child_track_section
+                        .filter((vv) => !vv.is_deleted)
+                        .map((cc) => {
+                          return Builder<TrackSectionEntity>(
+                            TrackSectionEntity,
+                            {
+                              ...cc,
+                              child_track_section: cc.child_track_section
+                                .filter((vvv) => !vvv.is_deleted)
+                                .map((ccc) => {
+                                  return Builder<TrackSectionEntity>(
+                                    TrackSectionEntity,
+                                    {
+                                      ...ccc,
+                                      child_track_section:
+                                        ccc.child_track_section
+                                          .filter((vvvv) => !vvvv.is_deleted)
+                                          .map((cccc) => {
+                                            return Builder<TrackSectionEntity>(
+                                              TrackSectionEntity,
+                                              {
+                                                ...cccc,
+                                              },
+                                            ).build();
+                                          }),
+                                    },
+                                  ).build();
+                                }),
                             },
-                          ),
-                        }).build();
-                      }),
+                          ).build();
+                        }),
                     }).build();
                   }),
-                }).build();
-              }),
-            }).build(),
-          );
+              }).build(),
+            );
+          }
         }
       }
 
