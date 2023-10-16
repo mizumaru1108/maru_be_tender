@@ -54,11 +54,11 @@ function RejectedEditRequestPopUp({ open, handleClose, requestId }: Props) {
     const payload = {
       requestId,
       reject_reason: data.reject_reason,
+      status: 'REJECTED',
     };
-    console.log({ payload });
     try {
       const rest = await axiosInstance.patch(
-        'tender/client/reject-edit-requests',
+        'tender/client/edit-requests/change-status',
         {
           ...payload,
         },
