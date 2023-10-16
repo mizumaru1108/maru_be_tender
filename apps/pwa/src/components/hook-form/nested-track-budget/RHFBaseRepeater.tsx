@@ -75,14 +75,12 @@ export default function RHFBaseRepeater({
   };
 
   const handleRemove = (index: number) => {
-    console.log({ index });
     remove(index);
     // objectEmpty(watch(`sections[${index}]`), index);
   };
 
   const tmpWatchlastIndex = watch(`sections[0]`);
   const tmpWatch = watch(`sections`);
-  // console.log({ tmpWatch, fields });
 
   return (
     <>
