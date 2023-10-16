@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsNotEmpty } from 'class-validator';
+import { IsOptional, IsString, IsNotEmpty, IsIn } from 'class-validator';
 import { BaseFilterRequest } from 'src/commons/dtos/base-filter-request.dto';
 
 export class FetchClosingReportListFilterRequest extends BaseFilterRequest {
@@ -8,4 +8,11 @@ export class FetchClosingReportListFilterRequest extends BaseFilterRequest {
   @IsString()
   @IsNotEmpty()
   project_name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @IsIn(['after_payment', 'after_submit'])
+  supervisor_status?: 'after_payment' | 'after_submit';
 }

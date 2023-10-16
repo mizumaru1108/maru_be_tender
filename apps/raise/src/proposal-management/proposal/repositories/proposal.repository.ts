@@ -2184,7 +2184,13 @@ export class ProposalRepository {
     filter: FetchClosingReportListFilterRequest,
   ) {
     try {
-      const { page = 1, limit = 10, sort = 'desc', sorting_field } = filter;
+      const {
+        page = 1,
+        limit = 10,
+        sort = 'desc',
+        sorting_field,
+        supervisor_status,
+      } = filter;
 
       const offset = (page - 1) * limit;
 
@@ -2224,11 +2230,30 @@ export class ProposalRepository {
       }
 
       if (currentUser.choosenRole === 'tender_project_supervisor') {
-        whereClause = {
-          ...whereClause,
-          supervisor_id: currentUser.id,
-          inner_status: { in: [InnerStatusEnum.DONE_BY_CASHIER] },
-        };
+        if (supervisor_status === 'after_payment') {
+          // after payment done by cashier
+          whereClause = {
+            ...whereClause,
+            supervisor_id: currentUser.id,
+            inner_status: { in: [InnerStatusEnum.DONE_BY_CASHIER] },
+          };
+        }
+
+        // after client done submit closing report
+        if (supervisor_status === 'after_submit') {
+          whereClause = {
+            ...whereClause,
+            inner_status: { in: [InnerStatusEnum.PROJECT_COMPLETED] },
+            outter_status: { in: [OutterStatusEnum.COMPLETED] },
+            state: TenderAppRoleEnum.CLIENT,
+            // there's history of sending closing report
+            proposal_logs: {
+              some: {
+                action: ProposalAction.SENDING_CLOSING_REPORT,
+              },
+            },
+          };
+        }
       }
 
       if (currentUser.choosenRole === 'tender_client') {
