@@ -80,19 +80,36 @@ export type OutterStatus =
   | 'ON_REVISION';
 
 export enum OutterStatusEnum {
+  /*  */
   PENDING = 'PENDING',
+
+  /*  */
   CANCELED = 'CANCELED',
+
+  /*  */
   COMPLETED = 'COMPLETED',
+
+  /*  */
   ONGOING = 'ONGOING',
+
+  /*  */
   ON_REVISION = 'ON_REVISION',
+
+  /*  */
   ASKED_FOR_AMANDEMENT = 'ASKED_FOR_AMANDEMENT',
+
+  /*  */
   ASKED_FOR_AMANDEMENT_PAYMENT = 'ASKED_FOR_AMANDEMENT_PAYMENT',
+
+  /* reject by supervisor but not directly cancelled */
+  PENDING_CANCELED = 'PENDING_CANCELED',
 }
 
 /* enum for proposal action and proposal_log action */
 export enum ProposalAction {
   ACCEPT = 'accept',
   UPDATE = 'update',
+  HOLD = 'hold',
   ACCEPT_AND_ASK_FOR_CONSULTATION = 'accept_and_ask_for_consultation', //is there any ?
   ASK_FOR_AMANDEMENT_REQUEST = 'ask_for_amandement_request',
   COMPLETE = 'complete',

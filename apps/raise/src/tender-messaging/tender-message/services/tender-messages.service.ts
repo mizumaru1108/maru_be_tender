@@ -261,9 +261,7 @@ export class TenderMessagesService {
       clientId: [partner.id],
       clientEmail: [partner.email],
       clientMobileNumber: [partner.mobile_number || ''],
-      clientEmailTemplatePath: `tender/${
-        request.selectLang || 'ar'
-      }/account/new_message`,
+      clientEmailTemplatePath: `tender/ar/account/new_message`,
       clientEmailTemplateContext: [
         {
           senderUsername: sender.employee_name,

@@ -1,21 +1,21 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsEnum,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
-  IsIn,
   Max,
   Min,
   ValidateNested,
-  IsEnum,
 } from 'class-validator';
+import { TargetGroupAgeEnum } from '../../enums/target-group-age.enum';
 import { CreateProjectBudgetDto } from './create-proposal-item-budget.dto';
 import { ExistingProjectBudgetDto } from './existing-proposal-item-budget.dto';
-import { TargetGroupAgeEnum } from '../../enums/target-group-age.enum';
 
 export class SupervisorChangeStatePayload {
   /* exist on regular track but can be exist on GRANT Track */
@@ -36,6 +36,12 @@ export class SupervisorChangeStatePayload {
   @IsString()
   @IsNotEmpty()
   support_goal_id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  section_id?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -168,12 +174,6 @@ export class SupervisorChangeStatePayload {
   @IsNotEmpty()
   target_group_type?: string;
 
-  // @ApiPropertyOptional()
-  // @IsOptional()
-  // @IsNumber({ maxDecimalPlaces: 2 })
-  // @Min(0.01)
-  // @Max(999999999999999999.99)
-  // target_group_age?: number;
   @ApiPropertyOptional()
   @IsOptional()
   @IsEnum(TargetGroupAgeEnum, {

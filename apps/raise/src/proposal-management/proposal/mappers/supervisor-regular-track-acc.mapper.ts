@@ -8,6 +8,10 @@ export const SupervisorRegularTrackAccMapper = (
   const newMappedUpdatePayload: Prisma.proposalUncheckedUpdateInput =
     prevUpdatePayload;
 
+  if (request.section_id !== undefined) {
+    newMappedUpdatePayload.section_id = request.section_id;
+  }
+
   if (request.inclu_or_exclu !== undefined) {
     newMappedUpdatePayload.inclu_or_exclu = request.inclu_or_exclu;
   }

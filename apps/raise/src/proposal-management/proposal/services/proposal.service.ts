@@ -659,6 +659,7 @@ export class ProposalService {
         ProposalAction.ACCEPT,
         ProposalAction.REJECT,
         ProposalAction.STEP_BACK,
+        ProposalAction.HOLD,
       ].indexOf(request.action) < 0
     ) {
       throw new BadRequestException(
@@ -736,15 +737,16 @@ export class ProposalService {
     /* reject (same for grants and not grants) DONE */
     if (request.action === ProposalAction.REJECT) {
       /* proposal */
-      proposalUpdatePayload.inner_status = 'REJECTED_BY_SUPERVISOR';
-      proposalUpdatePayload.outter_status = 'CANCELED';
-      proposalUpdatePayload.state = 'PROJECT_SUPERVISOR';
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.REJECTED_BY_SUPERVISOR;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.CANCELED;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalUpdatePayload.supervisor_id = currentUser.id;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.REJECT;
-      proposalLogCreateInput.state = 'PROJECT_SUPERVISOR';
-      proposalLogCreateInput.user_role = 'PROJECT_SUPERVISOR';
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalLogCreateInput.reject_reason = request.reject_reason;
     }
 
@@ -759,6 +761,19 @@ export class ProposalService {
       proposalLogCreateInput.action = ProposalAction.STEP_BACK;
       proposalLogCreateInput.state = 'PROJECT_SUPERVISOR';
       proposalLogCreateInput.user_role = 'PROJECT_SUPERVISOR';
+    }
+
+    if (request.action === ProposalAction.HOLD) {
+      /* proposal */
+      proposalUpdatePayload.outter_status = OutterStatusEnum.PENDING_CANCELED;
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.REJECTED_BY_SUPERVISOR;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.STEP_BACK;
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
     }
 
     return {
