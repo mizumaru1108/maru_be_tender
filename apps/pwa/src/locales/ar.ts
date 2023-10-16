@@ -46,6 +46,7 @@ const ar = {
           sidebar: 'تقرير ختامي',
           heading_spv: 'تقرير إغلاق وارد',
           project_report: 'تقرير المشروع',
+          complete_project_report: 'التقارير النهائية',
           finished: 'انتهى',
           main_information: 'المعلومات الرئيسية',
           about_project: 'حول المشروع',
@@ -1046,6 +1047,7 @@ const ar = {
     filter_button_label: 'تصفية',
     chip_ongoing: 'الطلب مستمر',
     chip_canceled: 'تم إلغاء الطلب',
+    chip_pending_canceled: 'الطلب معلق',
     chip_completed: 'الطلب كامل',
     chip_pending: 'الطلب معلق',
     chip_asked_for_amandement: 'تم طلب تعديلات',
@@ -2490,6 +2492,7 @@ const ar = {
     ON_REVISION: 'في المراجعة',
     ASKED_FOR_AMANDEMENT: 'طلب تعديل',
     ASKED_FOR_AMANDEMENT_PAYMENT: 'طلب تعديل الدفع',
+    PENDING_CANCELED: 'في انتظار الإلغاء',
   },
   project_beneficiaries: {
     KIDS: 'أطفال',
@@ -2567,6 +2570,8 @@ const ar = {
     amandement: 'تعديل',
     review: 'استعراض',
     add_one_section: 'إضافة قسم جديد',
+    confirm_rejection: 'تأكيد الرفض',
+    study_again: 'إرجاع المعاملة للدراسة',
   },
   modal: {
     disable_proposal: {
@@ -2912,6 +2917,7 @@ const ar = {
       on_revision: 'في مراجعة',
       asked_for_amendment: 'طلب تعديل',
       asked_for_amendment_payment: 'طلب تعديل مدفوع',
+      pending_canceled: 'في انتظار الإلغاء',
       label: 'حالة المشروع*',
       placeholder: 'حالة المشروع',
     },

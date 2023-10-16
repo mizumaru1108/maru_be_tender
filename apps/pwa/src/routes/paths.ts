@@ -151,6 +151,7 @@ export const PATH_PROJECT_SUPERVISOR = {
   app: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/app'),
   incoming_funding_requests: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/incoming-funding-requests'),
   incoming_close_reports: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/project-report'),
+  complete_close_reports: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/complete-project-report'),
   requests_in_process: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/requests-in-process'),
   previous_funding_requests: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/previous-funding-requests'),
   payment_adjustment: path(ROOTS_PROJECT_SUPERVISOR, '/dashboard/payment-adjustment'),

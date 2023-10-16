@@ -178,7 +178,8 @@ function FloatingActionBar() {
     try {
       const payload = {
         proposal_id: pid,
-        action: 'reject',
+        // action: 'reject',
+        action: 'hold',
         message: 'تم رفض المشروع من قبل مشرف المشاريع',
         notes: values.notes,
         reject_reason: values.reject_reason,

@@ -532,6 +532,11 @@ const navConfig = {
           icon: ICONS.tender_project_supervisor.payment_adjustment,
         },
         {
+          title: 'pages.common.close_report.text.complete_project_report',
+          path: PATH_PROJECT_SUPERVISOR.complete_close_reports,
+          icon: ICONS.tender_project_supervisor.payment_adjustment,
+        },
+        {
           title: 'client_list',
           path: PATH_PROJECT_SUPERVISOR.client_list,
           icon: ICONS.tender_ceo.client_list,

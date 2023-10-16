@@ -32,6 +32,7 @@ function ProjectStatus() {
             ASKED_FOR_AMANDEMENT: '#F2994A',
             ASKED_FOR_AMANDEMENT_PAYMENT: '#F2994A',
             CANCELED: '#EB5757',
+            PENDING_CANCELED: '#EB5757',
           }[`${proposal.outter_status}`],
           fontWeight: 600,
         }}

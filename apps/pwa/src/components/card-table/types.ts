@@ -173,17 +173,6 @@ export type CardTablePropsByBE = {
   endPoint?: string;
   // isIncoming?: boolean;
   typeRequest?: 'incoming' | 'inprocess';
-  // taps?: {
-  //   key: string;
-  //   options: Array<{
-  //     label: string;
-  //     value: any;
-  //   }>;
-  // };
-  // dateFilter?: boolean;
-  // alphabeticalOrder?: boolean;
-  // pagination?: boolean;
-  // filters?: filterInterfaceBE[];
   cardFooterButtonAction:
     | 'show-project' // Without the action bar at the end of the page.
     | 'show-details' // With the action bar at the end if the page.
@@ -198,12 +187,16 @@ export type CardTablePropsByBE = {
     | 'payment-adjustment'
     | 'exchange-permission' // it refers to the url that I came from and the url that I have to go to
     | 'project-report'
-    | 'incoming-amandment-requests';
+    | 'incoming-amandment-requests'
+    | 'complete-project-report';
 
   // example addCustomFilter: '&status=PENDING&include_relations=supervisor,sender,proposal'
   addCustomFilter?: string;
   navigateLink?: string;
   showPagination?: boolean;
+  // params?:{
+  //   type: 'incoming'
+  // }
 };
 
 interface GenerateFilterReturning {

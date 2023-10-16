@@ -1,25 +1,25 @@
-import { Button, Box, Stack } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Box, Stack } from '@mui/material';
 import NotesModal from 'components/notes-modal';
 import useAuth from 'hooks/useAuth';
-import { nanoid } from 'nanoid';
+import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import { updateProposalByProjectManager } from 'queries/project-manager/updateProposalByProjectManager';
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useMutation } from 'urql';
-import { LoadingButton } from '@mui/lab';
-import useLocales from 'hooks/useLocales';
 
 //
+import { FEATURE_PROPOSAL_COUNTING } from 'config';
 import axiosInstance from 'utils/axios';
 import { getProposalCount } from '../../../../redux/slices/proposal';
-import { useDispatch } from '../../../../redux/store';
-import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { useDispatch, useSelector } from '../../../../redux/store';
 
 function RejectProject() {
   const [action, setAction] = React.useState('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { translate, currentLang } = useLocales();
+  const { proposal } = useSelector((state) => state.proposal);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -34,6 +34,89 @@ function RejectProject() {
 
   const handleCloseModal = () => {
     setAction('');
+  };
+
+  const handleRejected = async (values: any) => {
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
+        proposal_id: proposal_id,
+        action: 'reject',
+        message: 'تم رفض المشروع من قبل مشرف المشاريع',
+        notes: values.notes,
+        reject_reason: values.reject_reason,
+        selectLang: currentLang.value,
+      };
+
+      await axiosInstance
+        .patch('/tender-proposal/change-state', payload, {
+          headers: { 'x-hasura-role': activeRole! },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            enqueueSnackbar(translate('proposal_rejected'), {
+              variant: 'success',
+            });
+          }
+          // for re count total proposal
+          if (FEATURE_PROPOSAL_COUNTING) {
+            dispatch(getProposalCount(activeRole ?? 'test'));
+          }
+          //
+          setIsSubmitting(false);
+          navigate(`/project-supervisor/dashboard/app`);
+        })
+        .catch((err) => {
+          if (typeof err.message === 'object') {
+            err.message.forEach((el: any) => {
+              enqueueSnackbar(el, {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+              });
+            });
+          } else {
+            const statusCode = (err && err.statusCode) || 0;
+            const message = (err && err.message) || null;
+            enqueueSnackbar(
+              `${
+                statusCode < 500 && message
+                  ? message
+                  : translate('pages.common.internal_server_error')
+              }`,
+              {
+                variant: 'error',
+                preventDuplicate: true,
+                autoHideDuration: 3000,
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                },
+              }
+            );
+          }
+        });
+    } catch (error) {
+      const statusCode = (error && error.statusCode) || 0;
+      const message = (error && error.message) || null;
+      enqueueSnackbar(
+        `${
+          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
+        }`,
+        {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        }
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const backToStudy = async (data: any) => {
@@ -62,7 +145,6 @@ function RejectProject() {
             });
           }
           // for re count total proposal
-          // dispatch(getProposalCount(activeRole ?? 'test'));
           if (FEATURE_PROPOSAL_COUNTING) {
             dispatch(getProposalCount(activeRole ?? 'test'));
           }
@@ -82,11 +164,6 @@ function RejectProject() {
               });
             });
           } else {
-            // enqueueSnackbar(err.message, {
-            //   variant: 'error',
-            //   preventDuplicate: true,
-            //   autoHideDuration: 3000,
-            // });
             const statusCode = (err && err.statusCode) || 0;
             const message = (err && err.message) || null;
             enqueueSnackbar(
@@ -110,11 +187,6 @@ function RejectProject() {
           setIsSubmitting(false);
         });
     } catch (error) {
-      // enqueueSnackbar(error.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      // });
       const statusCode = (error && error.statusCode) || 0;
       const message = (error && error.message) || null;
       enqueueSnackbar(
@@ -134,41 +206,6 @@ function RejectProject() {
 
       setIsSubmitting(true);
     }
-    // update({
-    //   proposal_id,
-    //   new_values: {
-    //     inner_status: 'CREATED_BY_CLIENT',
-    //     outter_status: 'ONGOING',
-    //     state: 'MODERATOR',
-    //     project_manager_id: null,
-    //     supervisor_id: null,
-    //   },
-    //   log: {
-    //     id: nanoid(),
-    //     proposal_id,
-    //     reviewer_id: user?.id!,
-    //     action: 'study_again',
-    //     message: 'تم إرجاع المشروع للدراسة من جديد',
-    //     user_role: activeRole === 'tender_ceo' ? 'CEO' : 'PROJECT_MANAGER',
-    //     state: activeRole === 'tender_ceo' ? 'CEO' : 'PROJECT_MANAGER',
-    //     notes: data.notes,
-    //   },
-    // }).then((res) => {
-    //   if (res.error) {
-    //     enqueueSnackbar(res.error.message, {
-    //       variant: 'error',
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //     });
-    //   } else {
-    //     enqueueSnackbar('تم إعادة المشروع للدراسة من جديد', {
-    //       variant: 'success',
-    //     });
-    //     navigate(
-    //       `/${activeRole === 'tender_project_manager' ? 'project-manager' : 'ceo'}/dashboard/app`
-    //     );
-    //   }
-    // });
   };
   return (
     <Box
@@ -184,17 +221,32 @@ function RejectProject() {
       }}
     >
       <Stack direction={{ sm: 'row', md: 'row' }} justifyContent="center">
+        {proposal.outter_status === 'PENDING_CANCELED' && (
+          <LoadingButton
+            variant="contained"
+            sx={{
+              backgroundColor: '#FF4842',
+              ':hover': { backgroundColor: '#FF170F' },
+              mx: 1,
+            }}
+            loading={isSubmitting}
+            onClick={() => setAction('REJECT')}
+          >
+            {translate('button.confirm_rejection')}
+          </LoadingButton>
+        )}
         <LoadingButton
           variant="contained"
           sx={(theme) => ({
             color: '#fff',
             backgroundColor: theme.palette.background.paper,
             ':hover': { backgroundColor: '#13B2A2' },
+            mx: 1,
           })}
           loading={isSubmitting}
-          onClick={() => setAction('STUDY_AGAIN')}
+          // onClick={() => setAction('STUDY_AGAIN')}
         >
-          إرجاع المعاملة للدراسة
+          {translate('button.study_again')}
         </LoadingButton>
       </Stack>
 
@@ -209,6 +261,20 @@ function RejectProject() {
             backgroundColor: '#0169DE',
             hoverColor: '#1482FE',
             actionType: 'STUDY_AGAIN',
+          }}
+        />
+      )}
+      {action === 'REJECT' && (
+        <NotesModal
+          title="رفض المشروع"
+          onClose={handleCloseModal}
+          onSubmit={handleRejected}
+          loading={isSubmitting}
+          action={{
+            actionType: action,
+            actionLabel: 'رفض',
+            backgroundColor: '#FF0000',
+            hoverColor: '#FF4842',
           }}
         />
       )}

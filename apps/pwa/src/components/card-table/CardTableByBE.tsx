@@ -375,7 +375,7 @@ CardTablePropsByBE) {
           <Grid item key={index} md={6} xs={12}>
             <ProjectTableBE
               {...item}
-              inquiryStatus={item.outter_status === 'CANCELED' ? 'canceled' : null}
+              inquiryStatus={item.outter_status === 'PENDING_CANCELED' ? 'canceled' : null}
               created_at={new Date(item.created_at)}
               // cardFooterButtonAction={cardFooterButtonAction}
               cardFooterButtonAction={

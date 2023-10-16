@@ -117,7 +117,8 @@ export type OutterStatus =
   | 'ONGOING'
   | 'ON_REVISION'
   | 'ASKED_FOR_AMANDEMENT'
-  | 'ASKED_FOR_AMANDEMENT_PAYMENT';
+  | 'ASKED_FOR_AMANDEMENT_PAYMENT'
+  | 'PENDING_CANCELED';
 
 /* Querry types */
 export interface updateProposalStatusAndState {

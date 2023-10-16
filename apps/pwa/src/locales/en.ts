@@ -45,6 +45,7 @@ const en = {
           sidebar: 'Closing Report',
           heading_spv: 'Incoming Close Report',
           project_report: 'Project Report',
+          complete_project_report: 'Complete Project Report',
           finished: 'finished',
           main_information: 'Main Information',
           about_project: 'About the Project',
@@ -1039,6 +1040,7 @@ const en = {
     filter_button_label: 'Filter',
     chip_ongoing: 'The request is ongoing',
     chip_canceled: 'The request is canceled',
+    chip_pending_canceled: 'The request is on hold',
     chip_completed: 'The request is complete',
     chip_pending: 'The request is pending',
     chip_on_revision: 'The request is on revision',
@@ -2472,6 +2474,7 @@ const en = {
     ON_REVISION: 'ON REVISION',
     ASKED_FOR_AMANDEMENT: 'ASKED FOR AMANDEMENT',
     ASKED_FOR_AMANDEMENT_PAYMENT: 'ASKED FOR PAYMENT AMANDEMENT',
+    PENDING_CANCELED: 'Pending Canceled',
   },
   project_beneficiaries: {
     KIDS: 'KIDS',
@@ -2547,6 +2550,8 @@ const en = {
     amandement: 'Amandement',
     review: 'Review',
     add_one_section: 'Add New Section',
+    confirm_rejection: 'Confirm Rejection',
+    study_again: 'Study Again',
   },
   modal: {
     disable_proposal: {
@@ -2892,6 +2897,7 @@ const en = {
       on_revision: 'On Revision',
       asked_for_amendment: 'Asked for Amendment',
       asked_for_amendment_payment: 'Asked for Amendment Payment',
+      pending_canceled: 'Pending Canceled',
       label: 'Project Status *',
       placeholder: 'Project Status',
     },

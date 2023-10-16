@@ -79,13 +79,9 @@ const ProjectCardBE = ({
   const [loading, setLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { track_list, proposal } = useSelector((state) => state.proposal);
-  // console.log({ track_list });
-
-  // const urlArr: string[] = location.pathname.split('/');
 
   function daysSinceCreated() {
     let getCreatedAt = new Date();
-    // if (updated_at && !urlArr.includes('previous-funding-requests')) {
     if (updated_at) {
       getCreatedAt = new Date(updated_at);
     } else {
@@ -99,6 +95,11 @@ const ProjectCardBE = ({
 
   const inquiryStatusStyle = {
     CANCELED: { color: '#FF4842', backgroundColor: '#FF484229', title: 'commons.chip_canceled' },
+    PENDING_CANCELED: {
+      color: '#FF4842',
+      backgroundColor: '#FF484229',
+      title: 'commons.chip_pending_canceled',
+    },
     COMPLETED: { color: '#0E8478', backgroundColor: '#0E847829', title: 'commons.chip_completed' },
     PENDING: { color: '#FFC107', backgroundColor: '#FFC10729', title: 'commons.chip_pending' },
     ON_REVISION: {
