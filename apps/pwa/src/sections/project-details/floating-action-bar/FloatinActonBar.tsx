@@ -90,7 +90,7 @@ function FloatinActonBar() {
 
           {activeTap &&
             ['project-path'].includes(activeTap) &&
-            actionType === 'show-details' &&
+            (actionType === 'show-details' || actionType === 'show-project') &&
             pathName &&
             pathName[3] === 'project-report' &&
             proposal.inner_status === 'DONE_BY_CASHIER' &&

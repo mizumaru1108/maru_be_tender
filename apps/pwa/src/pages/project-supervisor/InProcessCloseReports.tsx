@@ -22,11 +22,11 @@ function InProcessCloseReports() {
   }));
 
   return (
-    <Page title={translate('pages.common.close_report.text.complete_project_report')}>
+    <Page title={translate('pages.common.close_report.text.pending_project_report')}>
       <Container>
         <ContentStyle>
           <CardTableByBE
-            title={translate('pages.common.close_report.text.complete_project_report')}
+            title={translate('pages.common.close_report.text.pending_project_report')}
             destination="complete-project-report"
             endPoint="tender-proposal/closing-report-list"
             limitShowCard={6}

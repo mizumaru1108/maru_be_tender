@@ -419,9 +419,10 @@ export type ProposalCount = {
   incoming: number;
   inprocess: number;
   previous: number;
-  // payments: number;
   payment_adjustment: number;
   close_report: number;
+  pending_closing_report: number;
+  complete_close_report: number;
 };
 
 export interface PropsalLogGrants extends Log {

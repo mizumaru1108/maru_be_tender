@@ -99,6 +99,8 @@ const initialState: ProposalItme = {
     previous: 0,
     close_report: 0,
     payment_adjustment: 0,
+    complete_close_report: 0,
+    pending_closing_report: 0,
   },
   proposal: {
     id: '-1',

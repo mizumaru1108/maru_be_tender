@@ -49,8 +49,12 @@ export default function NavItem({ item, depth, active, open, isCollapse, count, 
         ? `( ${count?.payment_adjustment || 0} ) ${translate(title)}`
         : translate(title);
     } else if (title === 'pages.common.close_report.text.project_report') {
+      const sumCloseReport =
+        Number(count?.close_report) +
+        Number(count?.pending_closing_report) +
+        Number(count?.complete_close_report);
       tmpTitle = count?.close_report
-        ? `( ${count?.close_report || 0} ) ${translate(title)}`
+        ? `( ${sumCloseReport || 0} ) ${translate(title)}`
         : translate(title);
     } else {
       tmpTitle = translate(title);
