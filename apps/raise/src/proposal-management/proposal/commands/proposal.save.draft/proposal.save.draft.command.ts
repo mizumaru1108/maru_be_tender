@@ -92,6 +92,7 @@ export class ProposalSaveDraftCommandHandler
         {
           id: proposal.id,
           // form 1
+          project_name: request.project_name,
           project_idea: request.project_idea,
           project_location: request.project_location,
           project_implement_date: request.project_implement_date
@@ -109,14 +110,6 @@ export class ProposalSaveDraftCommandHandler
           pm_name: request.pm_name,
           pm_mobile: request.pm_mobile,
           pm_email: request.pm_email,
-          // region: request.region,
-          // region_id:
-          //   request && request.region_id ? request.region_id[0] : undefined,
-          // // governorate: request.governorate,
-          // governorate_id:
-          //   request && request.governorate_id
-          //     ? request.governorate_id[0]
-          //     : undefined,
           amount_required_fsupport: request.amount_required_fsupport,
         },
       ).build();
