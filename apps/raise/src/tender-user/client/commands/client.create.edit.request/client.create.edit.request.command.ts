@@ -89,49 +89,46 @@ export class ClientCreateEditRequestCommandHandler
         old_banks, // current existing bank_information that will be displayed as bank_information at the old data
         board_ofdec_file,
         license_file,
-        license_number,
-        data_entry_mobile,
-        selectLang,
       } = command.editRequest;
       const { user } = command;
 
-      const cd = await this.clientRepo.findClient;
+      // const cd = await this.clientRepo.findClient;
 
       // check data data_entry_mobile
-      if (data_entry_mobile) {
-        const isNumExist = await this.userRepo.checkExistance(
-          data_entry_mobile,
-          '',
-          '',
-          user.id,
-        );
-        if (isNumExist.length > 0) {
-          if (selectLang === 'en') {
-            throw new BadRequestException('Entity Mobile Already Used/Exist!');
-          } else {
-            throw new BadRequestException(
-              'رقم الجوال  المستخدم وموجود بالفعل!',
-            );
-          }
-        }
-      }
+      // if (data_entry_mobile) {
+      //   const isNumExist = await this.userRepo.checkExistance(
+      //     data_entry_mobile,
+      //     '',
+      //     '',
+      //     user.id,
+      //   );
+      //   if (isNumExist.length > 0) {
+      //     if (selectLang === 'en') {
+      //       throw new BadRequestException('Entity Mobile Already Used/Exist!');
+      //     } else {
+      //       throw new BadRequestException(
+      //         'رقم الجوال  المستخدم وموجود بالفعل!',
+      //       );
+      //     }
+      //   }
+      // }
 
       // check license number
-      if (license_number) {
-        const isLicenseExist = await this.userRepo.checkExistance(
-          '',
-          '',
-          license_number,
-          user.id,
-        );
-        if (isLicenseExist.length > 0) {
-          if (selectLang === 'en') {
-            throw new BadRequestException('License Number Already Used/Exist!');
-          } else {
-            throw new BadRequestException('رقم الترخيص مستخدم/موجود بالفعل!');
-          }
-        }
-      }
+      // if (license_number) {
+      //   const isLicenseExist = await this.userRepo.checkExistance(
+      //     '',
+      //     '',
+      //     license_number,
+      //     user.id,
+      //   );
+      //   if (isLicenseExist.length > 0) {
+      //     if (selectLang === 'en') {
+      //       throw new BadRequestException('License Number Already Used/Exist!');
+      //     } else {
+      //       throw new BadRequestException('رقم الترخيص مستخدم/موجود بالفعل!');
+      //     }
+      //   }
+      // }
 
       // check user is active or not if it is not active it will be fail
       const clientData = await this.clientRepo.findClientDataByUserId(user.id);
