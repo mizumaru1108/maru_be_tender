@@ -16,6 +16,9 @@ const IncomingCloseReports = Loadable(
 const CompleteCloseReports = Loadable(
   lazy(() => import('pages/project-supervisor/CompleteCloseReports'))
 );
+const PendingCloseReports = Loadable(
+  lazy(() => import('pages/project-supervisor/InProcessCloseReports'))
+);
 const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
 const RequestsInProcessProjectSupervisor = Loadable(
   lazy(() => import('pages/project-supervisor/RequestsInProcess'))
@@ -124,6 +127,20 @@ export const projectSupervisorRoute = {
           path: 'project-report',
           children: [
             { path: '', element: <IncomingCloseReports /> },
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+            {
+              path: ':id/:actionType/finished',
+              element: <ProjectReportFinished />,
+            },
+          ],
+        },
+        {
+          path: 'pending-project-report',
+          children: [
+            { path: '', element: <PendingCloseReports /> },
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,

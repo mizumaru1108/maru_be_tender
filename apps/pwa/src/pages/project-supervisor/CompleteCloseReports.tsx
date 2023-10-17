@@ -30,7 +30,7 @@ function CompleteCloseReports() {
             destination="complete-project-report"
             endPoint="tender-proposal/closing-report-list"
             limitShowCard={6}
-            cardFooterButtonAction="show-details"
+            cardFooterButtonAction="show-project"
             addCustomFilter="&supervisor_status=after_submit"
           />
         </ContentStyle>

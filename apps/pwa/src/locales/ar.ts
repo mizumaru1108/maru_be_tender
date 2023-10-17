@@ -47,6 +47,8 @@ const ar = {
           heading_spv: 'تقرير إغلاق وارد',
           project_report: 'تقرير المشروع',
           complete_project_report: 'التقارير النهائية',
+          pending_project_report: 'في انتظار تقرير المشروع',
+          incoming_project_report: 'تقرير المشروع الوارد',
           finished: 'انتهى',
           main_information: 'المعلومات الرئيسية',
           about_project: 'حول المشروع',

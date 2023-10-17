@@ -526,16 +526,29 @@ const navConfig = {
           path: PATH_PROJECT_SUPERVISOR.payment_adjustment,
           icon: ICONS.tender_project_supervisor.payment_adjustment,
         },
+
         {
           title: 'pages.common.close_report.text.project_report',
-          path: PATH_PROJECT_SUPERVISOR.incoming_close_reports,
           icon: ICONS.tender_project_supervisor.payment_adjustment,
+          children: [
+            {
+              title: 'pages.common.close_report.text.incoming_project_report',
+              path: PATH_PROJECT_SUPERVISOR.incoming_close_reports,
+              icon: ICONS.tender_project_supervisor.payment_adjustment,
+            },
+            {
+              title: 'pages.common.close_report.text.complete_project_report',
+              path: PATH_PROJECT_SUPERVISOR.complete_close_reports,
+              icon: ICONS.tender_project_supervisor.payment_adjustment,
+            },
+            {
+              title: 'pages.common.close_report.text.pending_project_report',
+              path: PATH_PROJECT_SUPERVISOR.pending_close_reports,
+              icon: ICONS.tender_project_supervisor.payment_adjustment,
+            },
+          ],
         },
-        {
-          title: 'pages.common.close_report.text.complete_project_report',
-          path: PATH_PROJECT_SUPERVISOR.complete_close_reports,
-          icon: ICONS.tender_project_supervisor.payment_adjustment,
-        },
+
         {
           title: 'client_list',
           path: PATH_PROJECT_SUPERVISOR.client_list,

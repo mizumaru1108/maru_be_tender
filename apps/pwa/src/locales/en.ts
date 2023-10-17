@@ -46,6 +46,8 @@ const en = {
           heading_spv: 'Incoming Close Report',
           project_report: 'Project Report',
           complete_project_report: 'Complete Project Report',
+          pending_project_report: 'Pending Project Report',
+          incoming_project_report: 'Incoming Project Report',
           finished: 'finished',
           main_information: 'Main Information',
           about_project: 'About the Project',

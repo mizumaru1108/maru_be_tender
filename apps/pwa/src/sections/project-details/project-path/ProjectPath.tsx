@@ -244,7 +244,7 @@ function ProjectPath() {
               {REOPEN_TMRA_f92ada8c1019457c874d79fc6d592d2c &&
                 logs &&
                 logs[logs.length - 1].action !== 'reject' &&
-                logs[logs.length - 1].user_role !== 'MODERATOR' &&
+                // logs[logs.length - 1].user_role !== 'MODERATOR' &&
                 (activeRole! === 'tender_moderator' || hasNonRejectAction) &&
                 !isCompleted && (
                   <>
