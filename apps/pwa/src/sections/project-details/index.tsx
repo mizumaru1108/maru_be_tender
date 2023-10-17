@@ -19,6 +19,7 @@ import { FEATURE_PROJECT_DETAILS } from 'config';
 import useAuth from 'hooks/useAuth';
 import AmandementProposalDialog from '../client/funding-project-request/AmandementProposalDialog';
 import { getTracksById } from '../../redux/slices/track';
+import moment from 'moment';
 
 function ProjectDetailsMainPage() {
   const { id, actionType } = useParams();
@@ -110,7 +111,7 @@ function ProjectDetailsMainPage() {
         <Typography sx={{ color: '#93A3B0', fontSize: '14px', mb: '5px' }}>
           {` ${translate('pages.project_details.created_by')} ${
             proposal.user.employee_name
-          } - ${new Date(proposal.created_at).toLocaleString()}`}
+          } - ${moment(proposal.created_at).locale(`${currentLang.value}`).format('L')}`}
         </Typography>
         {actionType && actionType !== 'show-project' ? <FollowUpsAction /> : null}
       </Stack>

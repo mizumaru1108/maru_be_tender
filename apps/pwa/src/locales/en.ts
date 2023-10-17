@@ -992,6 +992,24 @@ const en = {
           required: 'Notes is required',
         },
       },
+      section_level: {
+        section_id_level_one: {
+          label: 'The goal',
+          required: 'The goal is required',
+        },
+        section_id_level_two: {
+          label: 'Indicator',
+          required: 'Indicator is required',
+        },
+        section_id_level_three: {
+          label: 'The project',
+          required: 'The project is required',
+        },
+        section_id_level_four: {
+          label: 'Branch',
+          required: 'Branch is required',
+        },
+      },
     },
 
     reset_password: {

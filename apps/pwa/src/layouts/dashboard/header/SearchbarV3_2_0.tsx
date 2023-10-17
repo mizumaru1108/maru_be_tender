@@ -313,7 +313,7 @@ export default function Searchbar() {
     navigate(`/${role_url_map[`${role}`]}/searching`);
     setShow(false);
     dispatch(setActiveOptionAccountManager(stateAccManager));
-    if (filtered) {
+    if (filtered && filtered !== '') {
       dispatch(setFiltered(filtered));
     } else {
       dispatch(setFiltered(null));

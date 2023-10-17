@@ -289,6 +289,7 @@ const initialState: ProposalItme = {
       },
     },
     follow_ups: [],
+    section_id: '',
   },
 };
 

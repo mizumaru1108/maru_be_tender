@@ -63,6 +63,11 @@ export interface SupervisorStep1 {
   support_goal_id: string;
   accreditation_type_id: string;
   payment_number?: number;
+  section_id?: string;
+  section_id_level_one?: string;
+  section_id_level_two?: string;
+  section_id_level_three?: string;
+  section_id_level_four?: string;
 }
 
 export interface ProposalGovernorates {

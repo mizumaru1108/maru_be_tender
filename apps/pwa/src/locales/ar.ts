@@ -1001,6 +1001,24 @@ const ar = {
           required: 'ملاحظات مطلوبة',
         },
       },
+      section_level: {
+        section_id_level_one: {
+          label: '*الهدف',
+          required: '*الهدف مطلوب',
+        },
+        section_id_level_two: {
+          label: 'المؤشر',
+          required: '*المؤشر مطلوب',
+        },
+        section_id_level_three: {
+          label: 'المشروع',
+          required: '*المشروع مطلوب',
+        },
+        section_id_level_four: {
+          label: 'الفرع',
+          required: 'مطلوب فرع',
+        },
+      },
     },
     reset_password: {
       password: {

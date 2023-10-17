@@ -12,6 +12,8 @@ import { SupervisorStep1 } from '../../../../../@types/supervisor-accepting-form
 import { removeEmptyKey } from 'utils/remove-empty-key';
 import BaseField from 'components/hook-form/BaseField';
 import { _supportGoalsArr } from '_mock/_supportGoalsArr';
+import { TrackSection } from '../../../../../@types/commons';
+import selectDataById from 'utils/generateParentChild';
 
 export default function GeneralFirstForm({
   children,
@@ -26,7 +28,11 @@ export default function GeneralFirstForm({
   const { proposal } = useSelector((state) => state.proposal);
   const { track } = useSelector((state) => state.tracks);
   const { step1, step4 } = useSelector((state) => state.supervisorAcceptingForm);
-  // console.log({ step1, step4 });
+
+  const [sectionLevelOne, setSectionLevelOne] = useState<TrackSection[] | []>([]);
+  const [sectionLevelTwo, setSectionLevelTwo] = useState<TrackSection[]>([]);
+  const [sectionLevelThree, setSectionLevelThree] = useState<TrackSection[]>([]);
+  const [sectionLevelFour, setSectionLevelFour] = useState<TrackSection[]>([]);
 
   const [budgetError, setBudgetError] = useState({
     open: false,
@@ -84,6 +90,15 @@ export default function GeneralFirstForm({
           const number_of_payment = Number(val) > 0;
           return number_of_payment;
         }),
+      section_id: Yup.string().required(
+        translate('errors.cre_proposal.section_level.section_id_level_one.required')
+      ),
+      section_id_level_one: Yup.string().required(
+        translate('errors.cre_proposal.section_level.section_id_level_one.required')
+      ),
+      section_id_level_two: Yup.string(),
+      section_id_level_three: Yup.string(),
+      section_id_level_four: Yup.string(),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isVat]);
@@ -125,6 +140,54 @@ export default function GeneralFirstForm({
     }
   };
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    level: 'one' | 'two' | 'three' | 'four'
+  ) => {
+    switch (level) {
+      case 'one':
+        setValue('section_id', e.target.value);
+        setValue('section_id_level_one', e.target.value);
+        setValue('section_id_level_two', '');
+        setValue('section_id_level_three', '');
+        setValue('section_id_level_four', '');
+
+        const lvl1DataFound = sectionLevelOne.find((el) => el.id === e.target.value);
+
+        setSectionLevelTwo(lvl1DataFound?.child_track_section ?? []);
+        setSectionLevelThree([]);
+        setSectionLevelFour([]);
+        break;
+
+      case 'two':
+        setValue('section_id', e.target.value);
+        setValue('section_id_level_two', e.target.value);
+        setValue('section_id_level_three', '');
+        setValue('section_id_level_four', '');
+
+        const lvl2DataFound = sectionLevelTwo.find((el) => el.id === e.target.value);
+
+        setSectionLevelThree(lvl2DataFound?.child_track_section ?? []);
+        setSectionLevelFour([]);
+        break;
+      case 'three':
+        setValue('section_id', e.target.value);
+        setValue('section_id_level_three', e.target.value);
+        setValue('section_id_level_four', '');
+
+        const lvl3DataFound = sectionLevelThree.find((el) => el.id === e.target.value);
+
+        setSectionLevelFour(lvl3DataFound?.child_track_section ?? []);
+        break;
+      case 'four':
+        setValue('section_id', e.target.value);
+        setValue('section_id_level_four', e.target.value);
+        break;
+      default:
+        break;
+    }
+  };
+
   useEffect(() => {
     if (paymentNumber) {
       setPaymentNumber(Number(paymentNumber));
@@ -140,21 +203,205 @@ export default function GeneralFirstForm({
     }
   }, [proposal, setValue, isSubmited]);
 
-  // useEffect(() => {
-  //   if (
-  //     (proposal.proposal_item_budgets &&
-  //       (activeRole! === 'tender_project_manager' || activeRole! === 'tender_ceo')) ||
-  //     (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep1) ||
-  //     ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep1)
-  //   ) {
-  //     setValue('payment_number', proposal.proposal_item_budgets.length);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [proposal, setValue, activeRole]);
+  useEffect(() => {
+    if (proposal.section_id && proposal.section_id !== '') {
+      if (track.sections && track.sections.length) {
+        setSectionLevelOne(track.sections);
+        const testGenerate = selectDataById({
+          parent: track.sections,
+          section_id: proposal.section_id,
+        });
+
+        if (testGenerate.tempLvlOne.length) {
+          setValue('section_id_level_one', testGenerate.tempLvlOne[0].id);
+          setSectionLevelTwo(testGenerate.tempLvlOne[0].child_track_section ?? []);
+
+          if (testGenerate.tempLvlOne[0].child_track_section?.length) {
+            const find = testGenerate.tempLvlOne[0].child_track_section?.find(
+              (el) => el.id === proposal.section_id
+            );
+
+            if (find) {
+              setValue('section_id_level_two', find.id);
+            }
+          }
+        }
+
+        if (testGenerate.tempLvlTwo.length) {
+          setValue('section_id_level_two', testGenerate.tempLvlTwo[0].id);
+          setSectionLevelThree(testGenerate.tempLvlTwo[0].child_track_section ?? []);
+
+          if (testGenerate.tempLvlTwo[0].child_track_section?.length) {
+            const find = testGenerate.tempLvlTwo[0].child_track_section?.find(
+              (el) => el.id === proposal.section_id
+            );
+
+            if (find) {
+              setValue('section_id_level_three', find.id);
+            }
+          }
+        }
+
+        if (testGenerate.tempLvlThree.length) {
+          setValue('section_id_level_three', testGenerate.tempLvlThree[0].id);
+          setSectionLevelFour(testGenerate.tempLvlThree[0].child_track_section ?? []);
+
+          if (testGenerate.tempLvlThree[0].child_track_section?.length) {
+            const find = testGenerate.tempLvlThree[0].child_track_section?.find(
+              (el) => el.id === proposal.section_id
+            );
+            if (find) {
+              setValue('section_id_level_four', find.id);
+            }
+          }
+        }
+      }
+    } else {
+      if (track.sections && track.sections.length) {
+        setSectionLevelOne(track.sections);
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proposal, setValue, track]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: 0.5 }}>
+        <Grid item md={6} xs={12}>
+          <RHFSelect
+            data-cy="acc_form_non_consulation_section_id_level_one"
+            type="select"
+            size="small"
+            name="section_id_level_one"
+            label={translate('errors.cre_proposal.section_level.section_id_level_one.label')}
+            placeholder={translate('errors.cre_proposal.section_level.section_id_level_one.label')}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e, 'one')}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: { style: { maxHeight: 500 } },
+              },
+            }}
+            defaultValue=""
+          >
+            {!sectionLevelOne.length
+              ? null
+              : sectionLevelOne.map((v, i) => (
+                  <MenuItem
+                    data-cy={`acc_form_non_consulation_section_id_${v.id}`}
+                    value={v.id}
+                    selected={
+                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
+                    }
+                    key={i}
+                  >
+                    {v.name}
+                  </MenuItem>
+                ))}
+          </RHFSelect>
+        </Grid>
+
+        <Grid item md={6} xs={12}>
+          <RHFSelect
+            data-cy="acc_form_non_consulation_section_id_level_two"
+            type="select"
+            size="small"
+            name="section_id_level_two"
+            label={translate('errors.cre_proposal.section_level.section_id_level_two.label')}
+            placeholder={translate('errors.cre_proposal.section_level.section_id_level_two.label')}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e, 'two')}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: { style: { maxHeight: 500 } },
+              },
+            }}
+            disabled={!sectionLevelTwo.length}
+            defaultValue=""
+          >
+            {!sectionLevelTwo.length
+              ? null
+              : sectionLevelTwo.map((v, i) => (
+                  <MenuItem
+                    data-cy={`acc_form_non_consulation_section_id_${v.id}`}
+                    value={v.id}
+                    selected={
+                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
+                    }
+                    key={i}
+                  >
+                    {v.name}
+                  </MenuItem>
+                ))}
+          </RHFSelect>
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFSelect
+            data-cy="acc_form_non_consulation_section_id_level_three"
+            type="select"
+            size="small"
+            name="section_id_level_three"
+            label={translate('errors.cre_proposal.section_level.section_id_level_three.label')}
+            placeholder={translate(
+              'errors.cre_proposal.section_level.section_id_level_three.label'
+            )}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e, 'three')}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: { style: { maxHeight: 500 } },
+              },
+            }}
+            disabled={!sectionLevelThree.length}
+            defaultValue=""
+          >
+            {!sectionLevelThree.length
+              ? null
+              : sectionLevelThree.map((v, i) => (
+                  <MenuItem
+                    data-cy={`acc_form_non_consulation_section_id_${v.id}`}
+                    value={v.id}
+                    selected={
+                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
+                    }
+                    key={i}
+                  >
+                    {v.name}
+                  </MenuItem>
+                ))}
+          </RHFSelect>
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <RHFSelect
+            data-cy="acc_form_non_consulation_section_id_level_four"
+            type="select"
+            size="small"
+            name="section_id_level_four"
+            label={translate('errors.cre_proposal.section_level.section_id_level_four.label')}
+            placeholder={translate('errors.cre_proposal.section_level.section_id_level_four.label')}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e, 'four')}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: { style: { maxHeight: 500 } },
+              },
+            }}
+            disabled={!sectionLevelFour.length}
+            defaultValue=""
+          >
+            {!sectionLevelFour.length
+              ? null
+              : sectionLevelFour.map((v, i) => (
+                  <MenuItem
+                    data-cy={`acc_form_non_consulation_section_id_${v.id}`}
+                    value={v.id}
+                    selected={
+                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
+                    }
+                    key={i}
+                  >
+                    {v.name}
+                  </MenuItem>
+                ))}
+          </RHFSelect>
+        </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
             disabled={requestedBudget > remainBudget}
@@ -254,6 +501,7 @@ export default function GeneralFirstForm({
             name="payment_number"
             placeholder="عدد الدفعات"
             label="عدد الدفعات*"
+            InputProps={{ inputProps: { min: 1 } }}
           />
         </Grid>
         <Grid item md={6} xs={12}>

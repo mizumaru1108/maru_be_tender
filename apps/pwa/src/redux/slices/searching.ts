@@ -19,7 +19,7 @@ export interface ActiveOptionsSearching {
 }
 
 interface FilteredState {
-  filtered: string | null;
+  filtered: string;
   sort: string | null;
   outter_status: string | null;
   activeOptions: ActiveOptionSerachingAccountManagers;
@@ -27,7 +27,7 @@ interface FilteredState {
 }
 
 const initialState: FilteredState = {
-  filtered: null,
+  filtered: '',
   sort: 'asc',
   outter_status: null,
   activeOptions: {

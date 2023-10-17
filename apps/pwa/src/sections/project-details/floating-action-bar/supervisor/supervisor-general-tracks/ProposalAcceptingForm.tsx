@@ -56,6 +56,7 @@ function ProposalAcceptingForm({ onClose }: ModalProposalType) {
       ...data,
       payment_number: Number(data?.payment_number),
       fsupport_by_supervisor: Number(data?.fsupport_by_supervisor),
+      section_id: data?.section_id,
     };
     setIsSubmitting(true);
     dispatch(setStepOne(tmpData));

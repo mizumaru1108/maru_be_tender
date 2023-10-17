@@ -248,6 +248,7 @@ export interface Proposal {
   project_manager_id?: string | null;
   cashier_id?: string | null;
   finance_id?: string | null;
+  section_id?: string;
 }
 
 export type AmandementProposal = Omit<

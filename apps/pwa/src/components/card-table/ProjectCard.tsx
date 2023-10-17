@@ -456,26 +456,32 @@ const ProjectCard = ({
                     : moment(content.createdAtClient).locale(`${currentLang.value}`).format('LLLL')}
                 </Typography>
               </Stack>
-              <Chip
-                label={`${daysSinceCreated} ${
-                  daysSinceCreated < 2
-                    ? translate('project_management_headercell.day')
-                    : translate('project_management_headercell.days')
-                }`}
-                sx={{
-                  alignSelf: 'end',
-                  fontWeight: 500,
-                  backgroundColor:
-                    daysSinceCreated < 3
-                      ? '#0E84782E'
-                      : daysSinceCreated < 5
-                      ? '#FFC10729'
-                      : '#FF484229',
-                  color:
-                    daysSinceCreated < 3 ? '#0E8478' : daysSinceCreated < 5 ? '#FFC107' : '#FF4842',
-                  borderRadius: '10px',
-                }}
-              />
+              {content.projectStatus !== 'COMPLETED' && (
+                <Chip
+                  label={`${daysSinceCreated} ${
+                    daysSinceCreated < 2
+                      ? translate('project_management_headercell.day')
+                      : translate('project_management_headercell.days')
+                  }`}
+                  sx={{
+                    alignSelf: 'end',
+                    fontWeight: 500,
+                    backgroundColor:
+                      daysSinceCreated < 3
+                        ? '#0E84782E'
+                        : daysSinceCreated < 5
+                        ? '#FFC10729'
+                        : '#FF484229',
+                    color:
+                      daysSinceCreated < 3
+                        ? '#0E8478'
+                        : daysSinceCreated < 5
+                        ? '#FFC107'
+                        : '#FF4842',
+                    borderRadius: '10px',
+                  }}
+                />
+              )}
               {cardFooterButtonAction === 'draft' ? (
                 <Stack direction="row" gap={2}>
                   <Button

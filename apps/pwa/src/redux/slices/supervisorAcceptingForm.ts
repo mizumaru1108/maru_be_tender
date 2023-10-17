@@ -47,6 +47,11 @@ const initialState: SupervisorAcceptingForm = {
     support_goal_id: '',
     accreditation_type_id: '',
     payment_number: 0,
+    section_id: '',
+    section_id_level_one: '',
+    section_id_level_two: '',
+    section_id_level_three: '',
+    section_id_level_four: '',
   },
   step2: {
     organizationName: '',
@@ -131,6 +136,11 @@ const slice = createSlice({
       state.step1.support_goal_id = action.payload.support_goal_id ?? '';
       state.step1.accreditation_type_id = action.payload.accreditation_type_id ?? '';
       state.step1.payment_number = action.payload.number_of_payments_by_supervisor || 0;
+      state.step1.section_id = action.payload.section_id || '';
+      state.step1.section_id_level_one = action.payload.section_id_level_one || '';
+      state.step1.section_id_level_two = action.payload.section_id_level_two || '';
+      state.step1.section_id_level_three = action.payload.section_id_level_three || '';
+      state.step1.section_id_level_four = action.payload.section_id_level_four || '';
       //step 2
       state.step2.organizationName = action.payload.user.employee_name ?? '';
       state.step2.region = action?.payload.region || '';
