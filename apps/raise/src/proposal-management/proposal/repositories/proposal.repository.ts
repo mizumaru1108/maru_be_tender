@@ -2254,6 +2254,14 @@ export class ProposalRepository {
             },
           };
         }
+
+        if (supervisor_status === 'waiting_to_be_submitted') {
+          whereClause = {
+            ...whereClause,
+            submitter_user_id: currentUser.id,
+            inner_status: { in: [InnerStatusEnum.REQUESTING_CLOSING_FORM] },
+          };
+        }
       }
 
       if (currentUser.choosenRole === 'tender_client') {

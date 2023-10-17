@@ -246,7 +246,17 @@ export class ProposalService {
 
     const { total: closeReport } = await this.fetchClosingReportList(
       currentUser,
-      {},
+      { supervisor_status: 'after_payment' },
+    );
+
+    const { total: completeCloseReport } = await this.fetchClosingReportList(
+      currentUser,
+      { supervisor_status: 'after_submit' },
+    );
+
+    const { total: waitingForSubmit } = await this.fetchClosingReportList(
+      currentUser,
+      { supervisor_status: 'waiting_to_be_submitted' },
     );
 
     const { total: paymentAdjustment } = await this.fetchPaymentAdjustment(
@@ -259,6 +269,8 @@ export class ProposalService {
       inprocess,
       previous,
       close_report: closeReport,
+      complete_close_report: completeCloseReport,
+      pending_closing_report: waitingForSubmit,
       payment_adjustment: paymentAdjustment,
     };
   }
