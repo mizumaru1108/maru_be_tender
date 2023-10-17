@@ -18,12 +18,17 @@ import { ProposalItemBudgetRepository } from '../../../item-budget/repositories/
 import { ProposalTimelinePostgresRepository } from '../../../poject-timelines/repositories/proposal.project.timeline.repository';
 import { ProposalLogRepository } from '../../../proposal-log/repositories/proposal.log.repository';
 import { ProposalSaveDraftInterceptorDto } from '../../dtos/requests';
-import { ProposalEntity } from '../../entities/proposal.entity';
+import {
+  ISendNotificaitonEvent,
+  ProposalEntity,
+} from '../../entities/proposal.entity';
 import { ProposalRepository } from '../../repositories/proposal.repository';
 import { ProposalUpdateProps } from '../../types';
 import { ProposalRegionRepository } from '../../../proposal-regions/region/repositories/proposal.region.repository';
 import { ProposalGovernorateRepository } from '../../../proposal-regions/governorate/repositories/proposal.governorate.repository';
 import { logUtil } from '../../../../commons/utils/log-util';
+import { UnprocessableEntityException } from '@nestjs/common';
+import { EmailService } from '../../../../libs/email/email.service';
 
 export class ProposalSaveDraftCommand {
   userId: string;
@@ -52,6 +57,7 @@ export class ProposalSaveDraftCommandHandler
     private readonly proposalRegionRepo: ProposalRegionRepository,
     private readonly proposalGovernorateRepo: ProposalGovernorateRepository,
     private readonly fileManagerRepo: TenderFileManagerRepository,
+    private readonly emailService: EmailService,
   ) {}
 
   async execute(
@@ -92,6 +98,7 @@ export class ProposalSaveDraftCommandHandler
         {
           id: proposal.id,
           // form 1
+          project_name: request.project_name,
           project_idea: request.project_idea,
           project_location: request.project_location,
           project_implement_date: request.project_implement_date
@@ -109,14 +116,6 @@ export class ProposalSaveDraftCommandHandler
           pm_name: request.pm_name,
           pm_mobile: request.pm_mobile,
           pm_email: request.pm_email,
-          // region: request.region,
-          // region_id:
-          //   request && request.region_id ? request.region_id[0] : undefined,
-          // // governorate: request.governorate,
-          // governorate_id:
-          //   request && request.governorate_id
-          //     ? request.governorate_id[0]
-          //     : undefined,
           amount_required_fsupport: request.amount_required_fsupport,
         },
       ).build();
@@ -447,6 +446,10 @@ export class ProposalSaveDraftCommandHandler
             },
             session,
           );
+          if (!lastUpdatedProposal)
+            throw new UnprocessableEntityException(
+              `Cant fetch updated proposal data!`,
+            );
 
           return lastUpdatedProposal;
         },
@@ -455,6 +458,41 @@ export class ProposalSaveDraftCommandHandler
         },
       );
 
+      const notifPayloads: ISendNotificaitonEvent[] = [];
+      if (dbRes.step === 'ZERO') {
+        notifPayloads.push({
+          notif_type: 'EMAIL',
+          user_id: dbRes.submitter_user_id,
+          user_email: dbRes?.user?.email,
+          subject: 'تم إرسال مقترح المشروع الخاص بك بنجاح',
+          content: 'تم إرسال مقترح المشروع الخاص بك بنجاح',
+          email_type: 'template',
+          emailTemplateContext: {
+            projectName: dbRes.project_name,
+            clientName: dbRes?.user?.employee_name,
+          },
+          emailTemplatePath: `tender/ar/proposal/project_created`,
+        });
+      }
+
+      if (notifPayloads && notifPayloads.length > 0) {
+        for (const notifPayload of notifPayloads) {
+          if (
+            notifPayload.notif_type === 'EMAIL' &&
+            notifPayload.user_email &&
+            notifPayload.email_type
+          ) {
+            this.emailService.sendMail({
+              mailType: notifPayload.email_type,
+              to: notifPayload.user_email,
+              subject: notifPayload.subject,
+              content: notifPayload.content,
+              templateContext: notifPayload.emailTemplateContext,
+              templatePath: notifPayload.emailTemplatePath,
+            });
+          }
+        }
+      }
       return {
         updated_proposal: dbRes,
       };

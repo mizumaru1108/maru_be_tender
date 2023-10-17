@@ -385,19 +385,21 @@ export class ProposalCreateCommandHandler
       }
 
       const notifPayloads: ISendNotificaitonEvent[] = [];
-      notifPayloads.push({
-        notif_type: 'EMAIL',
-        user_id: dbRes.created_proposal.submitter_user_id,
-        user_email: dbRes.created_proposal.user.email,
-        subject: 'تم إرسال مقترح المشروع الخاص بك بنجاح',
-        content: 'تم إرسال مقترح المشروع الخاص بك بنجاح',
-        email_type: 'template',
-        emailTemplateContext: {
-          projectName: dbRes.created_proposal.project_name,
-          clientName: dbRes.created_proposal?.user?.employee_name,
-        },
-        emailTemplatePath: `tender/ar/proposal/project_created`,
-      });
+      if (dbRes.created_proposal.step === 'ZERO') {
+        notifPayloads.push({
+          notif_type: 'EMAIL',
+          user_id: dbRes.created_proposal.submitter_user_id,
+          user_email: dbRes.created_proposal.user.email,
+          subject: 'تم إرسال مقترح المشروع الخاص بك بنجاح',
+          content: 'تم إرسال مقترح المشروع الخاص بك بنجاح',
+          email_type: 'template',
+          emailTemplateContext: {
+            projectName: dbRes.created_proposal.project_name,
+            clientName: dbRes.created_proposal?.user?.employee_name,
+          },
+          emailTemplatePath: `tender/ar/proposal/project_created`,
+        });
+      }
 
       if (notifPayloads && notifPayloads.length > 0) {
         for (const notifPayload of notifPayloads) {

@@ -13,6 +13,9 @@ export class FetchClosingReportListFilterRequest extends BaseFilterRequest {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @IsIn(['after_payment', 'after_submit'])
-  supervisor_status?: 'after_payment' | 'after_submit';
+  @IsIn(['after_payment', 'after_submit', 'waiting_to_be_submitted'])
+  supervisor_status?:
+    | 'after_payment'
+    | 'after_submit'
+    | 'waiting_to_be_submitted';
 }
