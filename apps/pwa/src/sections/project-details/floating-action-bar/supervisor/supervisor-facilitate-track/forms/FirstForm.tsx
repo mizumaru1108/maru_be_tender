@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Grid } from '@mui/material';
-import { FormProvider, RHFRadioGroup } from 'components/hook-form';
+import { Alert, Button, Grid } from '@mui/material';
+import { FormProvider, RHFRadioGroup, RHFTextField } from 'components/hook-form';
 import BaseField from 'components/hook-form/BaseField';
 import useLocales from 'hooks/useLocales';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -18,7 +18,25 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
   const { activeRole } = useAuth();
   const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
   const { proposal } = useSelector((state) => state.proposal);
+  const { track } = useSelector((state) => state.tracks);
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
+
+  const [budgetError, setBudgetError] = useState({
+    open: false,
+    message: '',
+  });
+
+  const requestedBudget: number = useMemo(() => {
+    const reqBudget = proposal?.amount_required_fsupport || proposal?.fsupport_by_supervisor || 0;
+    return Number(reqBudget);
+  }, [proposal]);
+
+  const remainBudget: number = useMemo(() => {
+    const remainBudget = track
+      ? (track?.total_budget || 0) - (track?.total_spending_budget || 0)
+      : 0;
+    return Number(remainBudget);
+  }, [track]);
 
   const [save, setSave] = useState<boolean>(isSupevisor ? false : true);
 
@@ -32,8 +50,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
   const validationSchema = React.useMemo(() => {
     const tmpIsVat = isVat;
     return Yup.object().shape({
-      // clause: Yup.string().required('Procedures is required!'),
-      // clasification_field: Yup.string().required('Procedures is required!'),
       support_type: Yup.boolean().required(translate('errors.cre_proposal.support_type.required')),
       closing_report: Yup.boolean().required(
         translate('errors.cre_proposal.closing_report.required')
@@ -51,13 +67,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         translate('errors.cre_proposal.support_outputs.required')
       ),
       vat: Yup.boolean().required(translate('errors.cre_proposal.vat.required')),
-      // vat_percentage: Yup.string()
-      //   // .integer()
-      //   .nullable()
-      //   .test('len', translate('errors.cre_proposal.vat_percentage.greater_than_0'), (val) => {
-      //     if (!val) return true;
-      //     return Number(val) > 0;
-      //   }),
       ...(tmpIsVat && {
         vat_percentage: Yup.string()
           // .integer()
@@ -75,27 +84,25 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
           const number_of_payment = Number(val) > 0;
           return number_of_payment;
         }),
-      // accreditation_type_id: Yup.string().required('Procedures is required!'),
-      // support_goal_id: Yup.string().required('Procedures is required!'),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isVat]);
   const tmpStep1 = useMemo(() => step1, [step1]);
-  // const [isSupport, setIsSupport] = useState<boolean>(step1.support_type ?? false);
+  // console.log({ tmpStep1 });
   const methods = useForm<SupervisorStep1>({
     resolver: yupResolver(validationSchema),
-    defaultValues:
-      (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep1) ||
-      ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep1) ||
-      null,
+    defaultValues: (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep1) ||
+      ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep1) || {
+        support_type: false,
+      },
   });
 
   const { handleSubmit, watch, setValue, resetField, reset } = methods;
 
-  const vat = watch('vat');
+  // const vat = watch('vat');
   const support_type = watch('support_type');
+  // console.log({ support_type });
   const paymentNum = watch('payment_number');
-  // const inclu_or_exclu = watch('inclu_or_exclu');
 
   const onSubmitForm = async (data: SupervisorStep1) => {
     setIsSubmited(true);
@@ -104,7 +111,18 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       vat_percentage: vat_percentage ? Number(vat_percentage) : undefined,
       ...rest,
     };
-    onSubmit(removeEmptyKey(tmpValues));
+    if (Number(data.fsupport_by_supervisor) > remainBudget) {
+      setBudgetError({
+        open: true,
+        message: 'notification.error_exceeds_amount',
+      });
+    } else {
+      setBudgetError({
+        open: false,
+        message: '',
+      });
+      onSubmit(removeEmptyKey(tmpValues));
+    }
   };
 
   useEffect(() => {
@@ -123,6 +141,14 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
   }, [proposal, setValue, isSubmited]);
 
   // useEffect(() => {
+  //   if (requestedBudget > remainBudget) {
+  //     // setValue('support_type', false);
+
+  //     resetField('support_type', 'false');
+  //   }
+  // }, [remainBudget, requestedBudget, setValue]);
+
+  // useEffect(() => {
   //   if (
   //     (proposal.proposal_item_budgets &&
   //       (activeRole! === 'tender_project_manager' || activeRole! === 'tender_ceo')) ||
@@ -139,20 +165,11 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={save}
+            disabled={save || requestedBudget > remainBudget}
             data-cy="acc_form_consulation_support_type"
             type="radioGroup"
             name="support_type"
             label="نوع الدعم*"
-            onClick={(e) => {
-              if (e && e.target.value) {
-                if (e.target.value === 'true') {
-                  setIsSupport(false);
-                } else {
-                  setIsSupport(true);
-                }
-              }
-            }}
             options={[
               { label: 'دعم جزئي', value: false },
               { label: 'دعم كلي', value: true },
@@ -235,7 +252,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
           />
         </Grid>
         <Grid item md={6} xs={12}>
-          <BaseField
+          <RHFTextField
             data-cy="acc_form_consulation_fsupport_by_supervisor"
             type="textField"
             name="fsupport_by_supervisor"
@@ -330,6 +347,11 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             >
               {save ? translate('button.re_edit') : translate('button.save_edit')}
             </Button>
+          </Grid>
+        )}
+        {budgetError.open && (
+          <Grid item md={12} sx={{ my: 2 }}>
+            <Alert severity="error">{`${translate(budgetError.message)} (${remainBudget})`}</Alert>
           </Grid>
         )}
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>

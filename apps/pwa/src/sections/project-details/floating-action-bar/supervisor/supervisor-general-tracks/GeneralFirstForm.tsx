@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Grid, MenuItem } from '@mui/material';
+import { Alert, Grid, MenuItem } from '@mui/material';
 import { FormProvider, RHFRadioGroup, RHFSelect, RHFTextField } from 'components/hook-form';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -28,6 +28,22 @@ export default function GeneralFirstForm({
   const { step1, step4 } = useSelector((state) => state.supervisorAcceptingForm);
   // console.log({ step1, step4 });
 
+  const [budgetError, setBudgetError] = useState({
+    open: false,
+    message: '',
+  });
+
+  const requestedBudget: number = useMemo(() => {
+    const reqBudget = proposal?.amount_required_fsupport || proposal?.fsupport_by_supervisor || 0;
+    return Number(reqBudget);
+  }, [proposal]);
+
+  const remainBudget: number = useMemo(() => {
+    const remainBudget = track
+      ? (track?.total_budget || 0) - (track?.total_spending_budget || 0)
+      : 0;
+    return Number(remainBudget);
+  }, [track]);
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
 
   const isStepBack =
@@ -75,10 +91,10 @@ export default function GeneralFirstForm({
   const tmpStep1 = useMemo(() => step1, [step1]);
   const methods = useForm<SupervisorStep1>({
     resolver: yupResolver(validationSchema),
-    defaultValues:
-      (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep1) ||
-      ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep1) ||
-      null,
+    defaultValues: (activeRole === 'tender_project_supervisor' && isSubmited && tmpStep1) ||
+      ((isStepBack || activeRole !== 'tender_project_supervisor') && tmpStep1) || {
+        support_type: false,
+      },
   });
 
   const { handleSubmit, watch, setValue, resetField, reset } = methods;
@@ -94,7 +110,19 @@ export default function GeneralFirstForm({
       ...rest,
     };
 
-    onSubmit(removeEmptyKey(tmpValues));
+    // onSubmit(removeEmptyKey(tmpValues));
+    if (Number(data.fsupport_by_supervisor) > remainBudget) {
+      setBudgetError({
+        open: true,
+        message: 'notification.error_exceeds_amount',
+      });
+    } else {
+      setBudgetError({
+        open: false,
+        message: '',
+      });
+      onSubmit(removeEmptyKey(tmpValues));
+    }
   };
 
   useEffect(() => {
@@ -129,6 +157,7 @@ export default function GeneralFirstForm({
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: 0.5 }}>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled={requestedBudget > remainBudget}
             data-cy="acc_form_non_consulation_support_type"
             type="radioGroup"
             name="support_type"
@@ -264,6 +293,11 @@ export default function GeneralFirstForm({
                 { label: 'لا', value: false },
               ]}
             />
+          </Grid>
+        )}
+        {budgetError.open && (
+          <Grid item md={12} sx={{ my: 2 }}>
+            <Alert severity="error">{`${translate(budgetError.message)} (${remainBudget})`}</Alert>
           </Grid>
         )}
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
