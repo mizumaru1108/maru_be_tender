@@ -79,7 +79,8 @@ export class SendRevisionDto {
   // @IsNotEmpty()
   // region_id?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
@@ -97,7 +98,8 @@ export class SendRevisionDto {
   // @IsNotEmpty()
   // governorate_id?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
