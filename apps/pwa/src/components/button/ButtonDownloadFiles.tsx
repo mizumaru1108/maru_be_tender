@@ -5,8 +5,8 @@ import { convertBytesToMB } from '../../utils/convertByteToMBString';
 import { FileProp } from '../upload';
 
 const TYPEMAPPERS = {
-  attachments: 'review.attachments',
-  board_ofdec_file: 'account_manager.partner_details.board_ofdec_file',
+  attachments: 'button.attachment',
+  board_ofdec_file: 'button.board_ofdec_file',
 };
 
 interface Props {

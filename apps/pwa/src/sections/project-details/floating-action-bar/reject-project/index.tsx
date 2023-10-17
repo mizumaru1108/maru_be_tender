@@ -65,7 +65,7 @@ function RejectProject() {
           }
           //
           setIsSubmitting(false);
-          navigate(`/project-supervisor/dashboard/app`);
+          navigate(`/`);
         })
         .catch((err) => {
           if (typeof err.message === 'object') {
@@ -150,9 +150,10 @@ function RejectProject() {
           }
           //
           setIsSubmitting(false);
-          navigate(
-            `/${activeRole === 'tender_project_manager' ? 'project-manager' : 'ceo'}/dashboard/app`
-          );
+          // navigate(
+          //   `/${activeRole === 'tender_project_manager' ? 'project-manager' : 'ceo'}/dashboard/app`
+          // );
+          navigate('/');
         })
         .catch((err) => {
           if (typeof err.message === 'object') {

@@ -1118,6 +1118,7 @@ const en = {
   contact_us: 'Contact us',
   drafts: 'Drafts',
   previous_funding_requests: 'Previous funding requests',
+  // ceo_previous_funding_requests: 'Previous funding requests',
   messages: 'Messages',
   contact_support_title: 'Contact Support',
   register_first_tap: 'Main info',
@@ -2554,6 +2555,8 @@ const en = {
     add_one_section: 'Add New Section',
     confirm_rejection: 'Confirm Rejection',
     study_again: 'Study Again',
+    board_ofdec_file: 'Board ofdec file',
+    attachment: 'Project attachment',
   },
   modal: {
     disable_proposal: {

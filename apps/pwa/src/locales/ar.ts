@@ -1124,7 +1124,7 @@ const ar = {
   portal_reports: 'تقارير البوابة',
   contact_us: 'اتصل بنا',
   drafts: 'طلبات دعم مسودة ',
-  previous_funding_requests: 'طلبات دعم سابقة',
+  previous_funding_requests: 'طلبات الدعم',
   messages: 'الرسائل',
   contact_support_title: 'تواصل مع الدعم ',
   register_first_tap: 'المعلومات الرئيسية',
@@ -2433,7 +2433,7 @@ const ar = {
     accordion: {
       main_tab: {
         header: 'المعلومات الرئيسية',
-        entity_field: 'المناطق',
+        entity_field: 'نوع الجهة المشرفة',
         headquarters: 'المقر الرئيسي',
         date_of_establishment: 'تاريخ التأسيس',
         number_of_employees: 'عدد الموظفين الدوام الكامل للمنشأة',
@@ -2456,10 +2456,12 @@ const ar = {
         license_expiry_date: 'تاريخ انتهاء الترخيص',
         licnese_issue_date: 'تاريخ صدور الترخيص',
         license_file: 'ملف الترخيص',
-        letter_of_support_file: 'ملفات الدعم الرسمي',
+        // letter_of_support_file: 'ملفات الدعم الرسمي',
+        letter_of_support_file: 'ملف قرار تشكيل مجلس الإدارة',
       },
       administrative_tab: {
-        header: 'معلومات إدارية',
+        // header: 'معلومات إدارية',
+        header: 'المعلومات الإدارية',
         ceo_name: 'اسم رئيس مجلس الإدارة',
         ceo_mobile: 'جوال رئيس مجلس الإدارة',
         chairman_name: 'اسم الرئيس التنفيذي',
@@ -2561,7 +2563,7 @@ const ar = {
   button: {
     back: 'خلف',
     btn_final_save_as_draft: ' انهاء',
-    btn_create_proposal: ' انهاء',
+    btn_create_proposal: ' إرسال طلب الدعم',
     btn_next_save_as_draft: 'التالي',
     confirm: 'تأكيد',
     delete: 'يمسح',
@@ -2574,6 +2576,8 @@ const ar = {
     add_one_section: 'إضافة قسم جديد',
     confirm_rejection: 'تأكيد الرفض',
     study_again: 'إرجاع المعاملة للدراسة',
+    board_ofdec_file: 'خطاب طلب الدعم',
+    attachment: 'مرفقات',
   },
   modal: {
     disable_proposal: {

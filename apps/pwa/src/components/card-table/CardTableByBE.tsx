@@ -245,7 +245,7 @@ CardTablePropsByBE) {
                   }}
                 />
               </Grid>
-              <Grid item md={2} xs={6}>
+              {/* <Grid item md={2} xs={6}>
                 <SearchDateField
                   fullWidth
                   disabled={isLoading}
@@ -260,7 +260,7 @@ CardTablePropsByBE) {
                     }
                   }}
                 />
-              </Grid>
+              </Grid> */}
               {activeRole !== 'tender_client' ? (
                 <Grid item md={3} xs={6}>
                   <SearchField

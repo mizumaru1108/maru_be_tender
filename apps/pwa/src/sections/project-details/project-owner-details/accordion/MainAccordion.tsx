@@ -64,7 +64,15 @@ function MainAccordion({ userInfo }: Props) {
               <Typography sx={sxPropsText}>
                 {translate('project_owner_details.accordion.main_tab.entity_field')}
               </Typography>
-              <TextField disabled fullWidth value={userInfo?.client_field ?? '-'} />
+              <TextField
+                disabled
+                fullWidth
+                value={
+                  userInfo?.client_field === 'main'
+                    ? translate('register_form1.entity_area.options.main_entity_area')
+                    : translate('register_form1.entity_area.options.sub_entity_area')
+                }
+              />
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography sx={sxPropsText}>

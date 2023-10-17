@@ -1,15 +1,4 @@
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  Grid,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
 import React from 'react';
@@ -18,7 +7,6 @@ import { useQuery } from 'urql';
 import { IEditedValues } from '../../../@types/client_data';
 import { gettingUserDataForEdit } from '../../../queries/client/gettingUserDataForEdit';
 import AdministrativeAccording from './accordion/AdministrativeAccording';
-import BankInformationAccording from './accordion/BankInformationAccording';
 import ContactAccordion from './accordion/ContactAccordion';
 import LicenseAccording from './accordion/LicenseAccording';
 import MainAccordion from './accordion/MainAccordion';

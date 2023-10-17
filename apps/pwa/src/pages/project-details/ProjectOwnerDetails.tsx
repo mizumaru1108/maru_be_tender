@@ -1,10 +1,10 @@
 import { Container } from '@mui/material';
-import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import ProjectOwnerDetailsMainPage from '../../sections/project-details/project-owner-details/ProjectOwnerDetailsMainPage';
+import Page from 'components/Page';
 import { useParams } from 'react-router';
-import DetailClientInfo from '../../sections/project-details/project-owner-details/DetailClientInfo';
 import useLocales from '../../hooks/useLocales';
+import DetailClientInfo from '../../sections/project-details/project-owner-details/DetailClientInfo';
+import ProjectOwnerDetailsMainPage from '../../sections/project-details/project-owner-details/ProjectOwnerDetailsMainPage';
 
 function ProjectOwnerDetails() {
   const { translate } = useLocales();

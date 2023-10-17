@@ -34,11 +34,13 @@ export default function NavItem({ item, depth, active, open, isCollapse, count, 
       tmpTitle = count?.inprocess
         ? `( ${count?.inprocess || 0} ) ${translate(title)}`
         : translate(title);
-    } else if (title === 'previous_funding_requests') {
-      tmpTitle = count?.previous
-        ? `( ${count?.previous || 0} ) ${translate(title)}`
-        : translate(title);
-    } else if (
+    }
+    // else if (title === 'previous_funding_requests') {
+    //   tmpTitle = count?.previous
+    //     ? `( ${count?.previous || 0} ) ${translate(title)}`
+    //     : translate(title);
+    // }
+    else if (
       title === 'payment_adjustment' ||
       title === 'exchange_permission' ||
       title === 'incoming_exchange_permission_requests'

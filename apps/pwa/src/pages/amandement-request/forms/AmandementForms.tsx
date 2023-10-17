@@ -200,7 +200,12 @@ const AmandementForms = ({
   };
   const onSubmitForm = async (data: AmandementFields) => {
     let selectedData = Object.entries(data)
-      .filter(([key]) => selectedCheckbox.includes(key) || key === 'governorate_id')
+      // .filter(([key]) => selectedCheckbox.includes(key) || key === 'governorate_id')
+      .filter(
+        ([key]) =>
+          selectedCheckbox.includes(key) ||
+          (selectedCheckbox.includes('region_id') && key === 'governorate_id')
+      )
       .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
     selectedData = {
       ...selectedData,

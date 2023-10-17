@@ -48,7 +48,7 @@ const AmandementActionBox = ({ onReturn, step, isLoad }: PROPS) => {
               '&:hover': { backgroundColor: '#0E8478' },
             }}
           >
-            {step === 3 ? translate('send') : translate('next')}
+            {step === 5 ? translate('send') : translate('next')}
           </LoadingButton>
         </Stack>
       </Box>
