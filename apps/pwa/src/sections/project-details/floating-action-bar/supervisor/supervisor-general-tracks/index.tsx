@@ -57,7 +57,10 @@ function FloatingActionBar() {
 
   const isAvailBudget = useMemo(() => {
     let tmpIsAvail = false;
-    if (track?.total_reserved_budget && track?.total_reserved_budget <= 0) {
+    const remainBudget = track
+      ? (track?.total_budget || 0) - (track?.total_spending_budget || 0)
+      : 0;
+    if (remainBudget <= 0) {
       tmpIsAvail = false;
     } else {
       if (track?.total_budget && track?.total_budget > 0) {
@@ -486,11 +489,9 @@ function FloatingActionBar() {
       <ProposalNoBudgetRemainModal
         open={openBudgetModal}
         message={`ميزانية المشروع تتخطى الميزانية المخصصة للمسار
-            ${
-              track?.total_reserved_budget && track?.total_reserved_budget <= 0
-                ? 0
-                : track?.total_reserved_budget
-            } الميزانية المحددة للمشروع هي ${
+            (${
+              (track?.total_budget || 0) - (track.total_spending_budget || 0)
+            }) الميزانية المحددة للمشروع هي ${
           proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport || 0
         } ، الميزانية المتبقية في المسار هي `}
         handleClose={handleCloseBudgetModal}
