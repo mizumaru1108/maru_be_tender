@@ -6949,7 +6949,7 @@ __metadata:
     react-map-gl: ^7.0.16
     react-markdown: ^8.0.3
     react-organizational-chart: ^2.1.1
-    react-quill: ^2.0.0-beta.4
+    react-quill: ^2.0.0
     react-redux: ^8.0.2
     react-router: ^6.3.0
     react-router-dom: ^6.3.0
@@ -23034,7 +23034,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-quill@npm:^2.0.0-beta.4":
+"react-quill@npm:^2.0.0":
   version: 2.0.0
   resolution: "react-quill@npm:2.0.0"
   dependencies:
