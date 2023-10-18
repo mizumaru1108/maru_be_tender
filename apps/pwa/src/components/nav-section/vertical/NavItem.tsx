@@ -11,6 +11,7 @@ import Iconify from '../../Iconify';
 import { NavItemProps } from '../type';
 import { ListItemStyle, ListItemTextStyle, ListItemIconStyle } from './style';
 import React from 'react';
+import useAuth from 'hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
@@ -18,6 +19,7 @@ type Props = NavItemProps & ListItemButtonProps;
 
 export default function NavItem({ item, depth, active, open, isCollapse, count, ...other }: Props) {
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
   const theme = useTheme();
   const { title, icon, info, children, disabled, caption } = item;
   // console.log({ title, count });
@@ -49,18 +51,20 @@ export default function NavItem({ item, depth, active, open, isCollapse, count, 
         ? `( ${count?.payment_adjustment || 0} ) ${translate(title)}`
         : translate(title);
     } else if (title === 'pages.common.close_report.text.project_report') {
-      const sumCloseReport =
+      const sumCloseReportSpv =
         Number(count?.close_report) +
         Number(count?.pending_closing_report) +
         Number(count?.complete_close_report);
       tmpTitle = count?.close_report
-        ? `( ${sumCloseReport || 0} ) ${translate(title)}`
+        ? `( ${
+            activeRole === 'tender_client' ? count?.close_report : sumCloseReportSpv
+          } ) ${translate(title)}`
         : translate(title);
     } else {
       tmpTitle = translate(title);
     }
     return tmpTitle;
-  }, [title, translate, count]);
+  }, [title, translate, count, activeRole]);
   // console.log({ menuTitle });
   const renderContent = (
     <ListItemStyle

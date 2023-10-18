@@ -5,10 +5,9 @@ import useLocales from 'hooks/useLocales';
 
 type PROPS = {
   onReturn: () => void;
-  lastStep?: boolean;
   isLoad?: boolean;
 };
-const PortalReportActionBox = ({ onReturn, lastStep = false, isLoad }: PROPS) => {
+const SendEmailActionBox = ({ onReturn, isLoad }: PROPS) => {
   const { translate } = useLocales();
 
   return (
@@ -25,35 +24,32 @@ const PortalReportActionBox = ({ onReturn, lastStep = false, isLoad }: PROPS) =>
         <LoadingButton
           onClick={onReturn}
           loading={isLoad}
-          // endIcon={!isLoad && <MovingBack />}
           sx={{
             color: 'text.primary',
             width: { xs: '100%', sm: '200px' },
             hieght: { xs: '100%', sm: '50px' },
           }}
         >
-          {translate('going_back_one_step')}
+          {translate('back')}
         </LoadingButton>
         <Box sx={{ width: '10px' }} />
-        {lastStep ? null : (
-          <LoadingButton
-            loading={isLoad}
-            type="submit"
-            variant="outlined"
-            sx={{
-              backgroundColor: 'background.paper',
-              color: '#fff',
-              width: { xs: '100%', sm: '200px' },
-              hieght: { xs: '100%', sm: '50px' },
-              '&:hover': { backgroundColor: '#0E8478' },
-            }}
-          >
-            {translate('next')}
-          </LoadingButton>
-        )}
+        <LoadingButton
+          loading={isLoad}
+          type="submit"
+          variant="outlined"
+          sx={{
+            backgroundColor: 'background.paper',
+            color: '#fff',
+            width: { xs: '100%', sm: '200px' },
+            hieght: { xs: '100%', sm: '50px' },
+            '&:hover': { backgroundColor: '#0E8478' },
+          }}
+        >
+          {translate('send')}
+        </LoadingButton>
       </Box>
     </Stack>
   );
 };
 
-export default PortalReportActionBox;
+export default SendEmailActionBox;

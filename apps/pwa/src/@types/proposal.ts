@@ -101,6 +101,8 @@ export interface BaseAttachement {
   url: string;
   size: number | undefined;
   type: string;
+  fileExtension?: string;
+  file?: File[] | undefined;
 }
 
 export interface Proposal {
@@ -500,4 +502,5 @@ export type Log = {
   reviewer_id?: string;
   employee_name: string;
   new_values?: Proposal;
+  old_values?: Proposal;
 };

@@ -13,6 +13,7 @@ import { SupervisorStep1 } from '../../../../../../@types/supervisor-accepting-f
 import useAuth from 'hooks/useAuth';
 import { removeEmptyKey } from 'utils/remove-empty-key';
 import { TrackSection } from '../../../../../../@types/commons';
+import selectDataById from '../../../../../../utils/generateParentChild';
 
 function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubmited }: any) {
   const { translate } = useLocales();

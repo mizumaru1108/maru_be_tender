@@ -2775,6 +2775,58 @@ const ar = {
       download: 'تحميل',
       view: 'منظر',
     },
+    errors: {
+      attachments: {
+        fileSize: 'يجب أن يكون حجم الملف أقل من 200 ميغابايت',
+        fileExtension: 'يجب أن يكون الملف من نوع pdf',
+      },
+      receiver_name: {
+        required: 'اسم المتلقي مطلوب',
+      },
+      receiver_email: {
+        required: 'البريد الإلكتروني للمستلم مطلوب',
+        wrong_format: 'يجب أن يكون البريد الإلكتروني للمستلم عنوان بريد إلكتروني صالحًا',
+      },
+      email_subject: {
+        required: 'موضوع البريد الإلكتروني مطلوب',
+      },
+      email_content: {
+        required: 'محتوى البريد الإلكتروني مطلوب',
+      },
+    },
+    fields: {
+      is_association: {
+        label: 'هل الرابطة *',
+        placeholder: 'هل الرابطة',
+        option: {
+          yes: 'نعم',
+          no: 'لا',
+        },
+      },
+      email_content: {
+        label: 'محتوى البريد الإلكتروني *',
+        placeholder: 'محتوى البريد الإلكتروني',
+      },
+      receiver_email: {
+        label: 'البريد الإلكتروني المتلقي *',
+        placeholder: 'البريد الإلكتروني المتلقي',
+      },
+      email_subject: {
+        label: 'موضوع البريد الإلكتروني *',
+        placeholder: 'موضوع البريد الإلكتروني',
+      },
+      receiver_name: {
+        label: 'اسم المتلقي *',
+        placeholder: 'اسم المتلقي',
+      },
+      email_attachment: {
+        label: 'مرفق البريد الالكتروني *',
+        placeholder: 'مرفق البريد الالكتروني',
+      },
+    },
+    snack: {
+      success_send_email: 'تم إرسال البريد الإلكتروني بنجاح',
+    },
   },
   amandement: {
     client: {

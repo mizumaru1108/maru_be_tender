@@ -67,6 +67,7 @@ export default function GeneralSecondForm({
   });
 
   const tmpStep4 = useMemo(() => step4, [step4]);
+  const tmpStep1 = useMemo(() => step1, [step1]);
 
   const methods = useForm({
     resolver: yupResolver(validationSchema),
@@ -80,7 +81,7 @@ export default function GeneralSecondForm({
     //       },
     //     ],
     //   },
-    defaultValues: tmpStep4,
+    defaultValues: { ...tmpStep4, ...tmpStep1 },
   });
 
   const {

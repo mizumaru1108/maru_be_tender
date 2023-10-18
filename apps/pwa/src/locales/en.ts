@@ -2741,6 +2741,58 @@ const en = {
       email_content: 'Email Content',
       employee_name: 'Partner Name',
     },
+    errors: {
+      attachments: {
+        fileSize: 'The file size must be less than 200 MB',
+        fileExtension: 'The file extension must be one of the following: pdf',
+      },
+      receiver_name: {
+        required: 'Receiver name is required',
+      },
+      receiver_email: {
+        required: 'Receiver email is required',
+        wrong_format: 'Receiver email must be a valid email address',
+      },
+      email_subject: {
+        required: 'Email subject is required',
+      },
+      email_content: {
+        required: 'Email content is required',
+      },
+    },
+    fields: {
+      is_association: {
+        label: 'Is Association *',
+        placeholder: 'Is Association',
+        option: {
+          yes: 'Yes',
+          no: 'No',
+        },
+      },
+      email_content: {
+        label: 'Email Content *',
+        placeholder: 'Email Content',
+      },
+      receiver_email: {
+        label: 'Receiver Email *',
+        placeholder: 'Receiver Email',
+      },
+      email_subject: {
+        label: 'Email Subject *',
+        placeholder: 'Email Subject',
+      },
+      receiver_name: {
+        label: 'Receiver Name *',
+        placeholder: 'Receiver Name',
+      },
+      email_attachment: {
+        label: 'Email Attachment *',
+        placeholder: 'Email Attachment',
+      },
+    },
+    snack: {
+      success_send_email: 'Email sent successfully',
+    },
   },
   client_files: {
     title: 'Client Files',

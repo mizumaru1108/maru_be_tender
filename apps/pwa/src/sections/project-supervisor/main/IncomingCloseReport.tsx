@@ -17,9 +17,10 @@ export default function IncomingCloseReport() {
         destination="project-report"
         endPoint="tender-proposal/closing-report-list"
         limitShowCard={6}
-        cardFooterButtonAction="show-details"
+        cardFooterButtonAction="show-project"
         showPagination={false}
         navigateLink="/project-supervisor/dashboard/project-report"
+        addCustomFilter="&supervisor_status=after_payment"
       />
     </Grid>
   );

@@ -226,7 +226,13 @@ function ProjectPath() {
                                 alignSelf: 'start',
                               }}
                             >
-                              {(item && item.reviewer && item.reviewer.employee_name) ||
+                              {/* {(item && item.reviewer && item.reviewer.employee_name) ||
+                                proposal?.user?.client_data?.entity ||
+                                proposal?.user?.employee_name} */}
+                              {(item.user_role === 'CLIENT' &&
+                                (item?.old_values?.user?.client_data?.entity ||
+                                  item?.reviewer?.employee_name)) ||
+                                item?.reviewer?.employee_name ||
                                 proposal?.user?.client_data?.entity ||
                                 proposal?.user?.employee_name}
                             </Typography>

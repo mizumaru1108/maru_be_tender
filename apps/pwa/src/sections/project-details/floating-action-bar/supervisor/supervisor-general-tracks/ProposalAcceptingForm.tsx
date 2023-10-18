@@ -94,6 +94,7 @@ function ProposalAcceptingForm({ onClose }: ModalProposalType) {
         created_proposal_budget: data.created_proposal_budget,
         updated_proposal_budget: data.updated_proposal_budget,
         deleted_proposal_budget: data.deleted_proposal_budget,
+        support_outputs: data?.support_outputs || '-',
       };
       // console.log({ newData, step1 });
       if (editedBy === 'project-manager') {

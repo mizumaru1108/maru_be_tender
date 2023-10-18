@@ -103,12 +103,12 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   };
 
   const handleSubmit = async (data: any) => {
+    console.log({ data });
     const { notes, ...restStep1 } = step1;
     const editedBy = location.pathname.split('/')[1];
 
-    setIsSubmitting(true);
-
     try {
+      setIsSubmitting(true);
       // const lenghtOfNumberOfPayments = data.proposal_item_budgets.length;
       // const totalFSupport = data.proposal_item_budgets
       //   .map((el: { amount: any }) => Number(el.amount))
