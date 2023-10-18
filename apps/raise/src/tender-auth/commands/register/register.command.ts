@@ -1,3 +1,4 @@
+import { BadRequestException, ConflictException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
@@ -16,6 +17,7 @@ import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
+import { InvalidFileExtensionException } from '../../../tender-commons/exceptions/invalid-file-extension.exception';
 import { PayloadErrorException } from '../../../tender-commons/exceptions/payload-error.exception';
 import { PrismaTransactionExpiredException } from '../../../tender-commons/exceptions/prisma-error/prisma-transaction-expired.exception';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
@@ -39,8 +41,6 @@ import {
 } from '../../../tender-user/user/repositories/tender-user.repository';
 import { RegisterTenderDto } from '../../dtos/requests/register-tender.dto';
 import { TenderAuthRepository } from '../../repositories/tender-auth.repository';
-import { BadRequestException, ConflictException } from '@nestjs/common';
-import { InvalidFileExtensionException } from '../../../tender-commons/exceptions/invalid-file-extension.exception';
 
 export class RegisterClientCommand {
   request: RegisterTenderDto;

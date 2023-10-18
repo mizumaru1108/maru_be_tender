@@ -49,6 +49,7 @@ export interface ProposalFindManyProps {
   outter_status?: OutterStatusEnum[];
   limit?: number;
   page?: number;
+  step?: Array<'FIRST' | 'SECOND' | 'THIRD' | 'FOURTH' | 'FIFTH' | 'ZERO'>;
   sort_by?: string;
   sort_direction?: string;
   include_relations?: ProposalIncludeRelationsTypes[];
@@ -59,6 +60,11 @@ export interface ProposalFindManyProps {
 
 export interface ProposalDeleteProps {
   id: string;
+}
+
+export interface ProposalDeleteManyProps {
+  ids?: string[];
+  user_ids?: string[];
 }
 
 export class ProposalCreateProps {

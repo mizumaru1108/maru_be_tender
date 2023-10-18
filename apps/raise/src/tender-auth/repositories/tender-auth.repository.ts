@@ -58,7 +58,10 @@ export class TenderAuthRepository {
 
       // console.log(logUtil(clause));
       const result = await prisma.user.findFirst({
-        where: clause,
+        where: {
+          ...clause,
+          deleted_at: null,
+        },
       });
       // console.log(result);
       return result;

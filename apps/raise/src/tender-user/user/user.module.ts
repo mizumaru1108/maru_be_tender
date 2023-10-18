@@ -13,8 +13,14 @@ import { TenderUserRoleRepository } from './repositories/tender-user-role.reposi
 import { TenderUserStatusLogRepository } from './repositories/tender-user-status-log.repository';
 import { TenderUserRepository } from './repositories/tender-user.repository';
 import { TenderUserService } from './services/tender-user.service';
+import { ProposalModule } from '../../proposal-management/proposal/proposal.module';
 
-const importedModule = [CqrsModule, forwardRef(() => ClientModule)];
+const importedModule = [
+  CqrsModule,
+  forwardRef(() => ClientModule),
+  ProposalModule,
+];
+
 const controllers = [TenderUserController];
 const repositories: Provider[] = [];
 const commands: Provider[] = [

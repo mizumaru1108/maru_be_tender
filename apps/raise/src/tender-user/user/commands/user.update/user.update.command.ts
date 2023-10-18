@@ -64,30 +64,12 @@ export class UserUpdateCommandHandler
       const createRolePayload: CreateRoleProps[] = [];
 
       for (let i = 0; i < user_roles.length; i++) {
-        // const availableRoles = await this.userRepo.validateRoles(user_roles[i]);
-        // if (!availableRoles) {
-        //   throw new BadRequestException(
-        //     `Invalid user roles!, Roles [${user_roles[i]}] is not found!`,
-        //   );
-        // }
-
-        // if (availableRoles) {
         createRolePayload.push({
           id: uuidv4(),
           user_id: id,
           user_type_id: user_roles[i],
         });
-        // }
       }
-
-      // const track = await this.userRepo.validateTracks(track_id);
-      // if (!track) {
-      //   throw new BadRequestException(
-      //     'Invalid employee path!, Path is not found!',
-      //   );
-      // }
-
-      // const mappedRequest = UpdateUserMapper(isUserExist, request);
 
       const updateUserPayload = Builder<UpdateUserProps>(UpdateUserProps, {
         id,

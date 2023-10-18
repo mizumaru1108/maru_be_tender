@@ -269,7 +269,10 @@ export class PurgeUserCommandHandler
         },
       );
 
-      if (deleted_file_manager_ids.length === res.deletedFileCount) {
+      if (
+        deleted_file_manager_ids.length > 0 &&
+        deleted_file_manager_ids.length === res.deletedFileCount
+      ) {
         for (const url of deleted_file_manager_urls) {
           await this.bunnyService.deleteMedia(url, true);
         }

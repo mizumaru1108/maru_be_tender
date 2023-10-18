@@ -1,6 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ApiProperty } from '@nestjs/swagger';
+import { EmailService } from '../../../../libs/email/email.service';
+import { FusionAuthService } from '../../../../libs/fusionauth/services/fusion-auth.service';
 import { PrismaService } from '../../../../prisma/prisma.service';
+import {
+  ISendNotificaitonEvent,
+  ProposalEntity,
+} from '../../../../proposal-management/proposal/entities/proposal.entity';
+import { ProposalRepository } from '../../../../proposal-management/proposal/repositories/proposal.repository';
 import { RequestErrorException } from '../../../../tender-commons/exceptions/request-error.exception';
 import { UserStatusUpdateDto } from '../../dtos/requests';
 import { UserStatusLogEntity } from '../../entities/user-status-log.entity';
@@ -8,8 +15,6 @@ import { UserEntity } from '../../entities/user.entity';
 import { TenderUserStatusLogRepository } from '../../repositories/tender-user-status-log.repository';
 import { TenderUserRepository } from '../../repositories/tender-user.repository';
 import { UserStatusEnum } from '../../types/user_status';
-import { ISendNotificaitonEvent } from '../../../../proposal-management/proposal/entities/proposal.entity';
-import { EmailService } from '../../../../libs/email/email.service';
 export class UserUpdateStatusCommand {
   acc_manager_id: string;
   request: UserStatusUpdateDto;
@@ -20,6 +25,8 @@ export class UserUpdateStatusCommandResult {
   updated_user: UserEntity[];
   @ApiProperty()
   created_status_log: UserStatusLogEntity[];
+  @ApiProperty()
+  deleted_proposals: ProposalEntity[];
 }
 
 @CommandHandler(UserUpdateStatusCommand)
@@ -30,9 +37,12 @@ export class UserUpdateStatusCommandHandler
   constructor(
     private readonly prismaService: PrismaService,
     private readonly emailService: EmailService,
+    private readonly fusionAuthService: FusionAuthService,
     private readonly userRepo: TenderUserRepository,
     private readonly statusLogRepo: TenderUserStatusLogRepository,
+    private readonly proposalRepo: ProposalRepository,
   ) {}
+
   async execute(
     command: UserUpdateStatusCommand,
   ): Promise<UserUpdateStatusCommandResult> {
@@ -41,10 +51,14 @@ export class UserUpdateStatusCommandHandler
       // request.user_id jadi array
       let updatedUsers: UserEntity[] = [];
       let statusLogs: UserStatusLogEntity[] = [];
+      let deletedProposals: ProposalEntity[] = [];
+      let deletedUserIds: string[] = [];
+
       for (const user_id of request.user_id) {
         if (
           request.status === UserStatusEnum.SUSPENDED_ACCOUNT ||
-          request.status === UserStatusEnum.CANCELED_ACCOUNT
+          request.status === UserStatusEnum.CANCELED_ACCOUNT ||
+          request.status === UserStatusEnum.DELETED
         ) {
           if (user_id === acc_manager_id) {
             throw new RequestErrorException(
@@ -52,12 +66,18 @@ export class UserUpdateStatusCommandHandler
             );
           }
 
-          const haveProposal = await this.userRepo.isUserHasProposal(user_id);
+          const haveProposal = await this.userRepo.findUserOnGoingProposal(
+            user_id,
+          );
 
           if (haveProposal.length > 0) {
             throw new RequestErrorException(
               'Cant suspend user, user still have ongoing proposal!',
             );
+          }
+
+          if (request.status === UserStatusEnum.DELETED) {
+            deletedUserIds.push(user_id);
           }
         }
       }
@@ -73,6 +93,8 @@ export class UserUpdateStatusCommandHandler
             {
               id: user_id,
               status_id: request.status,
+              deleted_at:
+                request.status === UserStatusEnum.DELETED ? new Date() : null,
             },
             tx,
           );
@@ -87,8 +109,38 @@ export class UserUpdateStatusCommandHandler
             tx,
           );
           statusLogs.push(createdStatusLog);
+
+          if (request.status === UserStatusEnum.DELETED) {
+            const draftProposals = await this.proposalRepo.findMany(
+              {
+                step: ['ZERO'],
+              },
+              tx,
+            );
+
+            if (draftProposals.length > 0) {
+              deletedProposals = draftProposals;
+
+              const draftProposalIds = draftProposals.map(
+                (proposal) => proposal.id,
+              );
+              // delete the proposal
+              await this.proposalRepo.deleteMany(
+                {
+                  ids: draftProposalIds,
+                },
+                tx,
+              );
+            }
+          }
         }
       });
+
+      if (deletedUserIds.length > 0) {
+        for (const deletedUserId of deletedUserIds) {
+          await this.fusionAuthService.fusionAuthDeleteUser(deletedUserId);
+        }
+      }
 
       if (updatedUsers.length > 0) {
         for (const user of updatedUsers) {
@@ -134,6 +186,7 @@ export class UserUpdateStatusCommandHandler
       return {
         updated_user: updatedUsers,
         created_status_log: statusLogs,
+        deleted_proposals: deletedProposals,
       };
     } catch (error) {
       throw error;

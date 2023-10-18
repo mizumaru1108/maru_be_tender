@@ -8,9 +8,8 @@ import { LoginRequestDto } from '../../../auth/dtos';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { TenderUserRepository } from '../../../tender-user/user/repositories/tender-user.repository';
-import { TenderLoginResponseDto } from '../../dtos/responses/tender-login-response.dto';
 import { UserStatusEnum } from '../../../tender-user/user/types/user_status';
-import { logUtil } from '../../../commons/utils/log-util';
+import { TenderLoginResponseDto } from '../../dtos/responses/tender-login-response.dto';
 
 export class AuthLoginCommand {
   dto: LoginRequestDto;

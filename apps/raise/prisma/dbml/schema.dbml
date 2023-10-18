@@ -349,6 +349,7 @@ Table user {
   is_online Boolean
   track_id String
   uid Int
+  deleted_at DateTime
   appointment_appointment_employee_idTouser appointment [not null]
   appointment_appointment_user_idTouser appointment [not null]
   bank_information bank_information [not null]

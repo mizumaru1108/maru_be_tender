@@ -32,6 +32,7 @@ import { ProposalEntity } from '../entities/proposal.entity';
 import { ProposalMapper } from '../mapper/proposal.mapper';
 import {
   ProposalCreateProps,
+  ProposalDeleteManyProps,
   ProposalDeleteProps,
   ProposalFetchByIdProps,
   ProposalFindManyProps,
@@ -465,6 +466,58 @@ export class ProposalRepository {
   }
 
   /* Latest, already able to do passing session, and return entity instead of prisma model*/
+  async deleteMany(props: ProposalDeleteManyProps, session?: PrismaService) {
+    let prisma = this.prismaService;
+    if (session) prisma = session;
+    try {
+      if (!props.ids && !props.user_ids) {
+        throw new BadRequestException(
+          'At least one of ids or user_ids is required',
+        );
+      }
+
+      let whereClause: Prisma.proposalWhereInput = {};
+
+      if (props.ids) {
+        whereClause = {
+          ...whereClause,
+          id: {
+            in: props.ids,
+          },
+        };
+      }
+
+      if (props.user_ids) {
+        whereClause = {
+          ...whereClause,
+          OR: [
+            { submitter_user_id: { in: props.user_ids } },
+            { supervisor_id: { in: props.user_ids } },
+            { cashier_id: { in: props.user_ids } },
+            { finance_id: { in: props.user_ids } },
+          ],
+        };
+      }
+
+      const rawDeleteRes = await prisma.proposal.deleteMany({
+        where: whereClause,
+      });
+
+      return rawDeleteRes.count;
+    } catch (error) {
+      this.logger.info(`Delete Proposal Error details ${error}`);
+      if (error.code !== undefined && error.code === 'P2025') {
+        throw new DataNotFoundException(
+          `Code ${error.code}${
+            error.meta.cause ? `, ${error.meta.cause}` : ''
+          }`,
+        );
+      }
+      throw error;
+    }
+  }
+
+  /* Latest, already able to do passing session, and return entity instead of prisma model*/
   async findManyFilter(props: ProposalFindManyProps) {
     const {
       partner_name,
@@ -479,6 +532,7 @@ export class ProposalRepository {
       selected_columns,
       start_date,
       end_date,
+      step,
     } = props;
     // console.log({ props });
     let args: Prisma.proposalFindManyArgs = {};
@@ -489,6 +543,15 @@ export class ProposalRepository {
         ...whereClause,
         track_id: {
           in: track_id,
+        },
+      };
+    }
+
+    if (step) {
+      whereClause = {
+        ...whereClause,
+        step: {
+          in: step,
         },
       };
     }

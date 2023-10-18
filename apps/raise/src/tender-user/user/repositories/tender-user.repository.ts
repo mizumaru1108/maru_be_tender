@@ -7,11 +7,11 @@ import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { FusionAuthService } from '../../../libs/fusionauth/services/fusion-auth.service';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TenderAppRole } from '../../../tender-commons/types';
+import { OutterStatusEnum } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { SearchUserFilterRequest } from '../dtos/requests';
 import { FindUserResponse } from '../dtos/responses/find-user-response.dto';
 import { UserEntity } from '../entities/user.entity';
-import { logUtil } from '../../../commons/utils/log-util';
 export class CreateUserProps {
   id?: string;
   employee_name: string;
@@ -29,7 +29,8 @@ export class UpdateUserProps {
   status_id?: string;
   address?: string;
   track_id?: string;
-  is_deleted?: boolean;
+  // is_deleted?: boolean;
+  deleted_at?: Date | null;
 }
 
 export class UserFindFirstProps {
@@ -84,7 +85,10 @@ export class TenderUserRepository {
 
       // console.log(logUtil(clause));
       const result = await this.prismaService.user.findMany({
-        where: clause,
+        where: {
+          ...clause,
+          deleted_at: null,
+        },
         include: {
           client_data: true,
         },
@@ -136,6 +140,7 @@ export class TenderUserRepository {
           status_id: props.status_id,
           address: props.address,
           track_id: props.track_id,
+          deleted_at: props.deleted_at,
         },
       });
 
@@ -279,14 +284,21 @@ export class TenderUserRepository {
   //   }
   // }
 
-  async isUserHasProposal(userId: string) {
+  async findUserOnGoingProposal(userId: string) {
     try {
       return await this.prismaService.proposal.findMany({
         where: {
           AND: [
             {
               outter_status: {
-                in: ['ONGOING', 'ON_REVISION', 'PENDING'],
+                in: [
+                  OutterStatusEnum.ONGOING,
+                  OutterStatusEnum.ON_REVISION,
+                  OutterStatusEnum.ASKED_FOR_AMANDEMENT,
+                  OutterStatusEnum.ASKED_FOR_AMANDEMENT_PAYMENT,
+                  OutterStatusEnum.PENDING,
+                  OutterStatusEnum.PENDING_CANCELED,
+                ],
               },
             },
             {
