@@ -106,7 +106,7 @@ export interface BaseAttachement {
 export interface Proposal {
   id: string;
   project_name: string;
-  project_implement_date: Date;
+  project_implement_date: Date | string;
   project_location: string; // Orign
   project_track: string; // Tracks
   submitter_user_id: string;

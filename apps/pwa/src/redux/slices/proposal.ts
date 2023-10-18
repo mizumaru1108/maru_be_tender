@@ -20,6 +20,7 @@ import {
   tracks,
   UpdateStatus,
 } from '../../@types/proposal';
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
@@ -105,7 +106,7 @@ const initialState: ProposalItme = {
   proposal: {
     id: '-1',
     project_name: 'test',
-    project_implement_date: new Date('10-10-2022'),
+    project_implement_date: moment().format('YYYY-MM-DD'),
     project_location: 'test',
     project_track: 'test',
     submitter_user_id: 'test',

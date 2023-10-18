@@ -118,7 +118,7 @@ export interface SupervisorStep3 {
   target_group_type: string;
   // target_group_age: number | undefined;
   target_group_age: string;
-  project_implement_date: Date;
+  project_implement_date: Date | string;
   execution_time: number;
   project_location: string;
   been_made_before: boolean;

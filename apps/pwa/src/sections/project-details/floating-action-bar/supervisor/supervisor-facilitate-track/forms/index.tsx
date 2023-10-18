@@ -105,14 +105,14 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   const handleSubmit = async (data: any) => {
     const { notes, ...restStep1 } = step1;
     const editedBy = location.pathname.split('/')[1];
-    // console.log(data, 'data');
+
     setIsSubmitting(true);
 
     try {
-      const lenghtOfNumberOfPayments = data.proposal_item_budgets.length;
-      const totalFSupport = data.proposal_item_budgets
-        .map((el: { amount: any }) => Number(el.amount))
-        .reduce((acc: any, curr: any) => acc + (curr || 0), 0);
+      // const lenghtOfNumberOfPayments = data.proposal_item_budgets.length;
+      // const totalFSupport = data.proposal_item_budgets
+      //   .map((el: { amount: any }) => Number(el.amount))
+      //   .reduce((acc: any, curr: any) => acc + (curr || 0), 0);
 
       let payload: any = {
         proposal_id,
@@ -123,6 +123,7 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
       };
       const newData = {
         ...restStep1,
+        section_id: step1?.section_id,
         fsupport_by_supervisor: Number(step1?.fsupport_by_supervisor),
         number_of_payments_by_supervisor: Number(step1?.payment_number),
         clause: null,

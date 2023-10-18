@@ -27,7 +27,9 @@ export default function GeneralSecondForm({
   const { step4, step1 } = useSelector((state) => state.supervisorAcceptingForm);
   const { proposal } = useSelector((state) => state.proposal);
   const { activeRole } = useAuth();
-  // console.log({ step1 });
+
+  const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
+  const [edit, setEdit] = useState<boolean>(isSupevisor ? false : true);
 
   const isStepBack =
     proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
@@ -253,7 +255,7 @@ export default function GeneralSecondForm({
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
-                      // disabled={edit}
+                      disabled={edit}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].clause`}
                       {...field}
                       InputLabelProps={{ shrink: true }}
@@ -279,7 +281,7 @@ export default function GeneralSecondForm({
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
-                      // disabled={edit}
+                      disabled={edit}
                       {...field}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].explanation`}
                       InputLabelProps={{ shrink: true }}
@@ -307,7 +309,7 @@ export default function GeneralSecondForm({
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
-                      // disabled={edit}
+                      disabled={edit}
                       {...field}
                       data-cy={`acc_form_non_consulation_detail_project_budgets[${i}].amount`}
                       InputLabelProps={{ shrink: true }}
@@ -349,6 +351,7 @@ export default function GeneralSecondForm({
 
                     remove(i);
                   }}
+                  disabled={edit}
                 >
                   <CloseIcon />
                 </IconButton>
@@ -369,7 +372,7 @@ export default function GeneralSecondForm({
                 id: uuidv4(),
               });
             }}
-            // disabled={edit}
+            disabled={edit}
           >
             {translate('add_new_line')}
           </Button>
@@ -382,6 +385,7 @@ export default function GeneralSecondForm({
             minRows={3}
             label="ملاحظات على المشروع"
             placeholder="اكتب ملاحظاتك هنا"
+            disabled={edit}
           />
         </Grid>
         <Grid item md={12} xs={12}>
@@ -392,8 +396,27 @@ export default function GeneralSecondForm({
             minRows={3}
             label="مخرجات الدعم (لصالح)*"
             placeholder="اكتب هنا"
+            disabled={edit}
           />
         </Grid>
+        {isSupevisor ? null : (
+          <Grid
+            item
+            md={12}
+            xs={12}
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Button
+              variant={edit ? 'outlined' : 'contained'}
+              data-cy="acc_form_non_consulation_support_edit_button"
+              onClick={() => {
+                setEdit(!edit);
+              }}
+            >
+              {edit ? translate('button.re_edit') : translate('button.save_edit')}
+            </Button>
+          </Grid>
+        )}
         <Grid item xs={12}>
           {children}
         </Grid>

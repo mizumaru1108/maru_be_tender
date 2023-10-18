@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Alert, Grid, MenuItem } from '@mui/material';
+import { Alert, Grid, MenuItem, Button } from '@mui/material';
 import { FormProvider, RHFRadioGroup, RHFSelect, RHFTextField } from 'components/hook-form';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -24,7 +24,7 @@ export default function GeneralFirstForm({
 }: any) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
-  // const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
+  const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
   const { proposal } = useSelector((state) => state.proposal);
   const { track } = useSelector((state) => state.tracks);
   const { step1, step4 } = useSelector((state) => state.supervisorAcceptingForm);
@@ -51,6 +51,8 @@ export default function GeneralFirstForm({
     return Number(remainBudget);
   }, [track]);
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
+
+  const [save, setSave] = useState<boolean>(isSupevisor ? false : true);
 
   const isStepBack =
     proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
@@ -283,6 +285,7 @@ export default function GeneralFirstForm({
               },
             }}
             defaultValue=""
+            disabled={save}
           >
             {!sectionLevelOne.length
               ? null
@@ -315,7 +318,7 @@ export default function GeneralFirstForm({
                 PaperProps: { style: { maxHeight: 500 } },
               },
             }}
-            disabled={!sectionLevelTwo.length}
+            disabled={!sectionLevelTwo.length || save}
             defaultValue=""
           >
             {!sectionLevelTwo.length
@@ -350,7 +353,7 @@ export default function GeneralFirstForm({
                 PaperProps: { style: { maxHeight: 500 } },
               },
             }}
-            disabled={!sectionLevelThree.length}
+            disabled={!sectionLevelThree.length || save}
             defaultValue=""
           >
             {!sectionLevelThree.length
@@ -383,7 +386,7 @@ export default function GeneralFirstForm({
                 PaperProps: { style: { maxHeight: 500 } },
               },
             }}
-            disabled={!sectionLevelFour.length}
+            disabled={!sectionLevelFour.length || save}
             defaultValue=""
           >
             {!sectionLevelFour.length
@@ -404,7 +407,7 @@ export default function GeneralFirstForm({
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={requestedBudget > remainBudget}
+            disabled={save || requestedBudget > remainBudget}
             data-cy="acc_form_non_consulation_support_type"
             type="radioGroup"
             name="support_type"
@@ -417,6 +420,7 @@ export default function GeneralFirstForm({
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
+            disabled={save}
             data-cy="acc_form_non_consulation_closing_report"
             type="radioGroup"
             name="closing_report"
@@ -431,6 +435,7 @@ export default function GeneralFirstForm({
           <BaseField
             data-cy="acc_form_non_consulation_need_picture"
             type="radioGroup"
+            disabled={save}
             name="need_picture"
             label="هل يحتاج إلى صور*"
             options={[
@@ -443,6 +448,7 @@ export default function GeneralFirstForm({
           <BaseField
             data-cy="acc_form_non_consulation_agreement"
             type="radioGroup"
+            disabled={save}
             name="does_an_agreement"
             label="هل يحتاج اتفاقية*"
             options={[
@@ -455,6 +461,7 @@ export default function GeneralFirstForm({
           <RHFRadioGroup
             data-cy="acc_form_non_consulation_vat"
             name="vat"
+            disabled={save}
             onClick={(e: any) => {
               if (e && e.target.value) {
                 if (e.target.value === 'true') {
@@ -481,6 +488,7 @@ export default function GeneralFirstForm({
             name="support_goal_id"
             placeholder="الرجاء اختيار أهداف الدعم"
             label="اهداف الدعم*"
+            disabled={save}
           >
             {_supportGoalsArr.map((item, index) => (
               <MenuItem
@@ -498,6 +506,7 @@ export default function GeneralFirstForm({
             data-cy="acc_form_non_consulation_payment_number"
             type={'number'}
             size={'small'}
+            disabled={save}
             name="payment_number"
             placeholder="عدد الدفعات"
             label="عدد الدفعات*"
@@ -512,7 +521,10 @@ export default function GeneralFirstForm({
             label="مبلغ الدعم*"
             placeholder="مبلغ الدعم"
             disabled={
-              support_type === 'false' || !support_type || support_type === undefined ? false : true
+              save ||
+              (support_type === 'false' || !support_type || support_type === undefined
+                ? false
+                : true)
             }
           />
         </Grid>
@@ -522,6 +534,7 @@ export default function GeneralFirstForm({
               data-cy="acc_form_non_consulation_vat_percentage"
               type="number"
               size="small"
+              disabled={save}
               name="vat_percentage"
               label="النسبة المئوية من الضريبة*"
               placeholder="النسبة المئوية من الضريبة"
@@ -534,6 +547,7 @@ export default function GeneralFirstForm({
             <BaseField
               data-cy="acc_form_non_consulation_vat"
               type="radioGroup"
+              disabled={save}
               name="inclu_or_exclu"
               label="هل مبلغ السداد شامل أو غير شامل لضريبة القيمة المضافة"
               options={[
@@ -541,6 +555,24 @@ export default function GeneralFirstForm({
                 { label: 'لا', value: false },
               ]}
             />
+          </Grid>
+        )}
+        {isSupevisor ? null : (
+          <Grid
+            item
+            md={12}
+            xs={12}
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Button
+              variant={save ? 'outlined' : 'contained'}
+              data-cy="acc_form_non_consulation_support_edit_button"
+              onClick={() => {
+                setSave(!save);
+              }}
+            >
+              {save ? translate('button.re_edit') : translate('button.save_edit')}
+            </Button>
           </Grid>
         )}
         {budgetError.open && (
