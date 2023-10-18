@@ -2761,7 +2761,11 @@ export class ProposalRepository {
           proposal_item_budgets: true,
           proposal_logs: {
             include: {
-              reviewer: true,
+              reviewer: {
+                include: {
+                  client_data: true,
+                },
+              },
             },
             orderBy: {
               created_at: 'asc',
