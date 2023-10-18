@@ -94,7 +94,7 @@ export interface SupervisorStep2 {
   governorate: string;
   governorate_id?: string;
   governorate_detail?: IGovernorate;
-  date_of_esthablistmen: Date;
+  date_of_esthablistmen: Date | string;
   chairman_of_board_of_directors: string;
   ceo: string;
   been_supported_before: boolean;

@@ -12,6 +12,7 @@ import {
   target_type_map,
   target_age_map,
 } from '../../@types/supervisor-accepting-form';
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
@@ -59,7 +60,7 @@ const initialState: SupervisorAcceptingForm = {
     region_id: '',
     governorate: '',
     governorate_id: '',
-    date_of_esthablistmen: new Date(),
+    date_of_esthablistmen: moment().format('YYYY-MM-DD'),
     chairman_of_board_of_directors: '',
     ceo: '',
     been_supported_before: false,
@@ -152,7 +153,8 @@ const slice = createSlice({
       state.step2.governorate_detail = action?.payload?.governorate_detail || undefined;
       state.step2.proposal_governorates = action?.payload?.proposal_governorates || undefined;
       state.step2.date_of_esthablistmen =
-        action.payload.user.client_data.date_of_esthablistmen ?? new Date();
+        moment(action.payload.user.client_data.date_of_esthablistmen).format('YYYY-MM-DD') ??
+        moment().format('YYYY-MM-DD');
       state.step2.num_of_beneficiaries = action.payload.user.client_data.num_of_beneficiaries ?? 0;
       state.step2.chairman_of_board_of_directors =
         action.payload.user.client_data.chairman_name || '';
