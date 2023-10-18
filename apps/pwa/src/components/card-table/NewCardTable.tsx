@@ -54,13 +54,13 @@ function NewCardTable({
             params: {
               limit: params.limit,
               page: page,
-              employee_name: activeOptions.client_name ? filtered : undefined,
-              user_type_id: activeOptions.account_status ? filtered : undefined,
+              employee_name: activeOptions.client_name && filtered ? filtered : undefined,
+              user_type_id: activeOptions.account_status && filtered ? filtered : undefined,
               association_name: filtered || undefined,
               hide_internal: '1',
-              email: activeOptions.email ? filtered : undefined,
-              entity_mobile: activeOptions.entity_mobile ? filtered : undefined,
-              license_number: activeOptions.license_number ? filtered : undefined,
+              email: activeOptions.email && filtered ? filtered : undefined,
+              entity_mobile: activeOptions.entity_mobile && filtered ? filtered : undefined,
+              license_number: activeOptions.license_number && filtered ? filtered : undefined,
             },
             headers: headersProps,
           });

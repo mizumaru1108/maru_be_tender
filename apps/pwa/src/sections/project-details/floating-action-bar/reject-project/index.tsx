@@ -245,7 +245,7 @@ function RejectProject() {
             mx: 1,
           })}
           loading={isSubmitting}
-          // onClick={() => setAction('STUDY_AGAIN')}
+          onClick={() => setAction('STUDY_AGAIN')}
         >
           {translate('button.study_again')}
         </LoadingButton>
