@@ -2229,6 +2229,10 @@ const en = {
   },
   closing_project_by_client: 'Closing Project By Client',
   review: {
+    section_level_one: 'The goal',
+    section_level_two: 'Indicator',
+    section_level_three: 'The project',
+    section_level_four: 'Branch',
     proposal_regions: 'Regions',
     proposal_governorates: 'Governorate',
     region: 'Region',

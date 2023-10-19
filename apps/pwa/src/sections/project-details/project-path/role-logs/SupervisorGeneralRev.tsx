@@ -5,6 +5,8 @@ import React from 'react';
 import { useSelector } from 'redux/store';
 import { Log } from '../../../../@types/proposal';
 import { FEATURE_PROJECT_PATH_NEW } from '../../../../config';
+import { TrackSection } from '../../../../@types/commons';
+import { selectSectionProjectPath } from 'utils/generateParentChild';
 
 interface Props {
   stepGeneralLog: Log;
@@ -13,13 +15,31 @@ interface Props {
 function SupervisorGeneralRev({ stepGeneralLog }: Props) {
   const { proposal } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
+  const { track } = useSelector((state) => state.tracks);
+
+  const [valueLevelOne, setValueLevelOne] = React.useState<TrackSection | null>(null);
+  const [valueLevelTwo, setValueLevelTwo] = React.useState<TrackSection | null>(null);
+  const [valueLevelThree, setValueLevelThree] = React.useState<TrackSection | null>(null);
+  const [valueLevelFour, setValueLevelFour] = React.useState<TrackSection | null>(null);
+
   let batch: number = 0;
   if (stepGeneralLog && stepGeneralLog.message) {
     batch = Number(stepGeneralLog.message.split('_')[1]);
   }
-  // console.log('stepGeneralLog', stepGeneralLog);
-  // console.log('proposal', proposal);
-  // console.log('proposal.payments', proposal.payments);
+
+  React.useEffect(() => {
+    if (proposal && track.sections && track.sections.length) {
+      const generate = selectSectionProjectPath({
+        parent: track.sections!,
+        section_id: proposal.section_id,
+      });
+
+      setValueLevelOne(generate.levelOne);
+      setValueLevelTwo(generate.levelTwo);
+      setValueLevelThree(generate.levelThree);
+      setValueLevelFour(generate.levelFour);
+    }
+  }, [stepGeneralLog, proposal, track]);
 
   return (
     <React.Fragment>
@@ -37,6 +57,38 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
               </Stack>
             </Stack>
             <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.section_level_one`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>{valueLevelOne ? valueLevelOne.name : '-'}</Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.section_level_two`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>{valueLevelTwo ? valueLevelTwo.name : '-'}</Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.section_level_three`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>{valueLevelThree ? valueLevelThree.name : '-'}</Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6">{translate(`review.section_level_four`)}</Typography>
+                <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                  <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                    <Typography>{valueLevelFour ? valueLevelFour.name : '-'}</Typography>
+                  </Stack>
+                </Stack>
+              </Grid>
               <Grid item xs={6}>
                 <Typography variant="h6">{translate(`review.closing_report`)}</Typography>
                 <Stack direction="column" gap={2} sx={{ pb: 2 }}>
