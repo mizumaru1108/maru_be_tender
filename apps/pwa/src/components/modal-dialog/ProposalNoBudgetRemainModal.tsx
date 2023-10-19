@@ -6,12 +6,19 @@ import useLocales from '../../hooks/useLocales';
 
 type Props = {
   open: boolean;
-  // onSumbit: () => void;
-  handleClose: () => void;
   message: string;
+  isAvailBudget: boolean;
+  handleClose: () => void;
+  handleOnContinue: () => void;
 };
 
-function ProposalNoBudgetRemainModal({ open, message, handleClose }: Props) {
+function ProposalNoBudgetRemainModal({
+  open,
+  message,
+  isAvailBudget,
+  handleClose,
+  handleOnContinue,
+}: Props) {
   const { translate } = useLocales();
   const navigate = useNavigate();
   const handleRedirect = async () => {
@@ -31,20 +38,29 @@ function ProposalNoBudgetRemainModal({ open, message, handleClose }: Props) {
       showCloseIcon={false}
       actionBtn={
         <Stack direction="row" justifyContent="space-around" paddingY={2}>
-          <LoadingButton
-            data-cy="button.back"
+          <Button
+            variant="outlined"
             onClick={handleRedirect}
-            sx={{
-              color: '#fff',
-              width: { xs: '100%', sm: '200px' },
-              hieght: { xs: '100%', sm: '50px' },
-              backgroundColor: '#0E8478',
-              ':hover': { backgroundColor: '#13B2A2' },
-            }}
+            sx={{ width: { xs: '100%', sm: '200px' }, hieght: { xs: '100%', sm: '50px' }, mx: 1 }}
           >
-            {/* اضافة */}
             {translate('button.back')}
-          </LoadingButton>
+          </Button>
+          {isAvailBudget && (
+            <LoadingButton
+              data-cy="button.back"
+              onClick={handleOnContinue}
+              sx={{
+                color: '#fff',
+                width: { xs: '100%', sm: '200px' },
+                hieght: { xs: '100%', sm: '50px' },
+                mx: 1,
+                backgroundColor: '#0E8478',
+                ':hover': { backgroundColor: '#13B2A2' },
+              }}
+            >
+              {translate('button.continue')}
+            </LoadingButton>
+          )}
         </Stack>
       }
       isOpen={open}

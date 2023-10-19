@@ -2558,6 +2558,7 @@ const en = {
     },
   },
   button: {
+    continue: 'Continue',
     back: 'Back',
     btn_final_save_as_draft: 'Send',
     btn_create_proposal: 'Send',

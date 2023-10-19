@@ -2579,6 +2579,7 @@ const ar = {
     },
   },
   button: {
+    continue: ' يكمل',
     back: 'خلف',
     btn_final_save_as_draft: ' انهاء',
     btn_create_proposal: ' إرسال طلب الدعم',

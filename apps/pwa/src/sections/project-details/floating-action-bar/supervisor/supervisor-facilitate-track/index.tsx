@@ -40,11 +40,12 @@ function FloatinActionBar() {
 
   const isAvailBudget = useMemo(() => {
     let tmpIsAvail = false;
+    const budgetByClient =
+      proposal?.amount_required_fsupport || proposal?.fsupport_by_supervisor || 0;
     const remainBudget = track
       ? (track?.total_budget || 0) - (track?.total_spending_budget || 0)
       : 0;
-    // console.log({ remainBudget });
-    if (remainBudget <= 0) {
+    if (remainBudget <= budgetByClient) {
       tmpIsAvail = false;
     } else {
       if (track?.total_budget && track?.total_budget > 0) {
@@ -54,6 +55,13 @@ function FloatinActionBar() {
       }
     }
     return tmpIsAvail;
+  }, [track, proposal]);
+
+  const availBudget = useMemo(() => {
+    const remainBudget = track
+      ? (track?.total_budget || 0) - (track?.total_spending_budget || 0)
+      : 0;
+    return remainBudget;
   }, [track]);
 
   const { conversations } = useSelector((state) => state.wschat);
@@ -410,6 +418,11 @@ function FloatinActionBar() {
     setOpenBudgetModal(false);
   };
 
+  const handleContinueBudgetModal = () => {
+    setOpenBudgetModal(false);
+    setAction('ACCEPT');
+  };
+
   React.useEffect(() => {
     dispatch(setStepsData(proposal, activeRole! as FusionAuthRoles));
   }, [proposal, dispatch, activeRole]);
@@ -418,6 +431,7 @@ function FloatinActionBar() {
     <>
       <ProposalNoBudgetRemainModal
         open={openBudgetModal}
+        isAvailBudget={availBudget > 0 ? true : false}
         message={`ميزانية المشروع تتخطى الميزانية المخصصة للمسار
             (${
               (track?.total_budget || 0) - (track.total_spending_budget || 0)
@@ -425,6 +439,7 @@ function FloatinActionBar() {
           proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport || 0
         } ، الميزانية المتبقية في المسار هي `}
         handleClose={handleCloseBudgetModal}
+        handleOnContinue={handleContinueBudgetModal}
       />
       <Box
         sx={{

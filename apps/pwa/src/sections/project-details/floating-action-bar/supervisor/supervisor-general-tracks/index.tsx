@@ -57,10 +57,12 @@ function FloatingActionBar() {
 
   const isAvailBudget = useMemo(() => {
     let tmpIsAvail = false;
+    const budgetByClient =
+      proposal?.amount_required_fsupport || proposal?.fsupport_by_supervisor || 0;
     const remainBudget = track
       ? (track?.total_budget || 0) - (track?.total_spending_budget || 0)
       : 0;
-    if (remainBudget <= 0) {
+    if (remainBudget <= budgetByClient) {
       tmpIsAvail = false;
     } else {
       if (track?.total_budget && track?.total_budget > 0) {
@@ -70,6 +72,13 @@ function FloatingActionBar() {
       }
     }
     return tmpIsAvail;
+  }, [track, proposal]);
+
+  const availBudget = useMemo(() => {
+    const remainBudget = track
+      ? (track?.total_budget || 0) - (track?.total_spending_budget || 0)
+      : 0;
+    return remainBudget;
   }, [track]);
 
   const open = Boolean(anchorEl);
@@ -482,19 +491,26 @@ function FloatingActionBar() {
     setOpenBudgetModal(false);
   };
 
+  const handleContinueBudgetModal = () => {
+    setOpenBudgetModal(false);
+    setAction('ACCEPT');
+  };
+
   const pendingProposal = (data: PendingRequest) => {};
 
   return (
     <>
       <ProposalNoBudgetRemainModal
         open={openBudgetModal}
+        isAvailBudget={availBudget > 0 ? true : false}
         message={`ميزانية المشروع تتخطى الميزانية المخصصة للمسار
             (${
               (track?.total_budget || 0) - (track.total_spending_budget || 0)
             }) الميزانية المحددة للمشروع هي ${
-          proposal?.fsupport_by_supervisor || proposal?.amount_required_fsupport || 0
+          proposal?.amount_required_fsupport || proposal?.fsupport_by_supervisor || 0
         } ، الميزانية المتبقية في المسار هي `}
         handleClose={handleCloseBudgetModal}
+        handleOnContinue={handleContinueBudgetModal}
       />
       <Box
         sx={{
