@@ -1,6 +1,6 @@
 import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { CardSearchingProps, FilteredValues } from '../types';
+import { CardSearchingProps, EnumInquiryStatus, FilteredValues } from '../types';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useQuery } from 'urql';
@@ -15,6 +15,8 @@ import { useSelector } from 'redux/store';
 import ProjectCard from '../ProjectCard';
 import { generateHeader } from '../../../utils/generateProposalNumber';
 import { useSnackbar } from 'notistack';
+import { Proposal } from '../../../@types/proposal';
+import { CheckIsInProcessProposal } from '../../../utils/checkIsInProcessProposal';
 
 function CardSearching({
   title,
@@ -49,7 +51,7 @@ function CardSearching({
 
   const getData = async () => {
     try {
-      if (filtered !== null) {
+      if (filtered !== null && filtered !== '') {
         const tmpParams = {
           limit: params.limit,
           page: page,
@@ -132,32 +134,44 @@ function CardSearching({
 
       {loading && <LoadingPage />}
       {data && !loading ? (
-        data?.data.map((item: any, index: any) => (
-          <Grid item key={index} md={6} xs={12}>
-            <ProjectCard
-              title={{
-                id: item.id,
-                project_number: generateHeader(
-                  item && item.project_number && item.project_number ? item.project_number : item.id
-                ),
-                inquiryStatus: item.outter_status.toLowerCase(),
-              }}
-              content={{
-                projectName: item.project_name,
-                organizationName: item.user.employee_name,
-                sentSection: item.state,
-                employee: item.user.employee_name,
-                createdAtClient: new Date(item.created_at),
-                projectStatus: item.outter_status,
-              }}
-              footer={{
-                createdAt: new Date(item.updated_at),
-              }}
-              cardFooterButtonAction={cardFooterButtonAction}
-              // destination="current-project"
-            />
-          </Grid>
-        ))
+        data?.data.map((item: Proposal, index: any) => {
+          const isInProcess = CheckIsInProcessProposal(item, activeRole!);
+          // console.log({ isInProcess });
+          return (
+            <Grid item key={index} md={6} xs={12}>
+              <ProjectCard
+                title={{
+                  id: item.id,
+                  project_number: generateHeader(
+                    item && item.project_number && item.project_number
+                      ? item.project_number
+                      : item.id
+                  ),
+                  inquiryStatus: item.outter_status.toLowerCase() as EnumInquiryStatus,
+                }}
+                content={{
+                  projectName: item.project_name,
+                  organizationName: item.user.employee_name,
+                  sentSection: item.state,
+                  employee: item.user.employee_name,
+                  createdAtClient: new Date(item.created_at),
+                  projectStatus: item.outter_status,
+                }}
+                footer={{
+                  createdAt: new Date(item.updated_at),
+                }}
+                cardFooterButtonAction={
+                  isInProcess && item.outter_status !== 'PENDING_CANCELED'
+                    ? 'show-details'
+                    : item.outter_status === 'PENDING_CANCELED'
+                    ? 'reject-project'
+                    : cardFooterButtonAction
+                }
+                destination={isInProcess ? 'requests-in-process' : 'current-project'}
+              />
+            </Grid>
+          );
+        })
       ) : (
         <Grid item md={12} xs={12}>
           <CardTableNoData />

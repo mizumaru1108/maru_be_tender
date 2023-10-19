@@ -1885,6 +1885,7 @@ const en = {
         label_reset_password: 'Reset Password',
         label_deactivate_account: 'Deactivate Account',
         label_question_deactivate: 'Are you sure to Deactivated account for',
+        label_question_deleted: 'Are you sure to Delete account for',
         label_question_reset_password: 'Are you sure to send Reset Password to',
         label_question_information:
           'Due to the on-going project on this account you can’t deactivated this account.',
@@ -1936,6 +1937,7 @@ const en = {
       amendment_return_to_moderator: 'Return proposal to the moderator',
       amendment_cancel_proposal: 'Return the project to the partner to upload it at another time',
       btn_deleted_account: 'Delete account',
+      btn_canceled_account: 'Cancel account',
       btn_activate_account: 'Activate account',
       btn_disabled_account: 'Disable account',
       btn_amndreq_send_request: 'Send request',
@@ -1949,6 +1951,7 @@ const en = {
         disabled_account: 'Disabled Account is Successfull!',
         activate_account: 'Activate Account is Successfull!',
         deleted_account: 'Account Delete Is Successfull!',
+        canceled_account: 'Account Cancel Is Successfull!',
         reset_password: 'Password reset link has been sent!',
       },
     },

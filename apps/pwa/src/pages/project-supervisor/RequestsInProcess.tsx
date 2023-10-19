@@ -24,53 +24,6 @@ function RequestsInProcess() {
     <Page title={translate('pages.common.request_in_process')}>
       <Container>
         <ContentStyle>
-          {/* <CardTableBE
-            resource={gettingMyRequestedProcess}
-            title="طلبات قيد الإجراء"
-            cardFooterButtonAction="show-details"
-            alphabeticalOrder={true}
-            filters={[
-              {
-                name: 'entity',
-                title: 'اسم الجهة المشرفة',
-                // The options will be fitcehed before passing them
-                options: [
-                  { label: 'اسم المستخدم الأول', value: 'Essam Kayal' },
-                  { label: 'اسم المستخدم الثاني', value: 'hisham' },
-                  { label: 'اسم المستخدم الثالت', value: 'danang' },
-                  { label: 'اسم المستخدم الرابع', value: 'yamen' },
-                  { label: 'اسم المستخدم الخامس', value: 'hamdi' },
-                ],
-                generate_filter: (value: string) => ({
-                  user: { client_data: { entity: { _eq: value } } },
-                }),
-              },
-            ]}
-            // baseFilters={{
-            //   filter1: {
-            //     // supervisor_id: { _eq: user?.id },
-            //     clasification_field: { _is_null: false },
-            //     inner_status: {
-            //       _nin: [
-            //         'ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION',
-            //         'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR',
-            //       ],
-            //     },
-            //     outter_status: { _neq: 'ON_REVISION' },
-            //   },
-            // }}
-            baseFilters={{
-              filter1: {
-                // supervisor_id: { _eq: user?.id },
-                support_outputs: { _is_null: false },
-                inner_status: {
-                  _eq: 'ACCEPTED_BY_MODERATOR',
-                },
-                outter_status: { _nin: ['ON_REVISION', 'ASKED_FOR_AMANDEMENT', 'CANCELED'] },
-              },
-            }}
-            destination={'requests-in-process'}
-          /> */}
           <CardTableByBE
             title={translate('pages.common.request_in_process')}
             destination="requests-in-process"

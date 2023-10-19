@@ -57,7 +57,7 @@ export default function TableHeadCustom({
   return (
     <TableHead sx={sx}>
       <TableRow sx={{ px: '10px' }}>
-        {onSelectAllRows && !editRequest && (
+        {/* {onSelectAllRows && !editRequest && (
           <TableCell padding="checkbox" sx={{ boxShadow: 'inset 0 0 0 0 #fff !important' }}>
             <Checkbox
               indeterminate={numSelected > 0 && numSelected < rowCount}
@@ -67,7 +67,7 @@ export default function TableHeadCustom({
               }
             />
           </TableCell>
-        )}
+        )} */}
 
         {headLabel.map((headCell) => (
           <TableCell

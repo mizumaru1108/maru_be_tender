@@ -59,18 +59,6 @@ function PartnerManagementPage() {
       setClientData(resultAllClientData);
     }
   }, [fetchingAllClientRequest, resultAllClientRequest, activeButton]);
-  // console.log({ clientData });
-
-  // console.log({
-  //   testAccount: resultAllClientRequest?.user.find(
-  //     (item: any) => item.id === '5c1d3ef7-773a-4552-b8c5-dfd22ed72afd'
-  //   ),
-  //   testClientData:
-  //     clientData &&
-  //     clientData.find((item: any) => item.id === '5c1d3ef7-773a-4552-b8c5-dfd22ed72afd'),
-  // });
-  // if (fetchingAllClientRequest)
-  //   return <Skeleton variant="rectangular" sx={{ height: 250, borderRadius: 2 }} />;
 
   return (
     // <Page title="Partner Management">

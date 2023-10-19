@@ -262,6 +262,17 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       }
     }
 
+    const logs = Array.isArray(proposal.proposal_logs)
+      ? proposal.proposal_logs.filter((item) => item.action === 'accept')
+      : [];
+    if (logs.length > 0) {
+      const logsLength = logs.length;
+      if (!!logs[logsLength - 1]?.notes) {
+        setValue('notes', logs[logsLength - 1]?.notes);
+      } else {
+        setValue('notes', '');
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposal, setValue, track]);
 

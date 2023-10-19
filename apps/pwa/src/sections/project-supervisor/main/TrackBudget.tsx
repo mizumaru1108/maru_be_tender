@@ -55,7 +55,8 @@ export default function TrackBudget(props: IPropTrackBudgets) {
                     sx={{ display: 'inline-flex' }}
                   />
                   <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                    {translate('content.administrative.statistic.heading.totalReservedBudget')}
+                    {/* {translate('content.administrative.statistic.heading.totalReservedBudget')} */}
+                    {translate('content.administrative.statistic.heading.totalSpendBudget')}
                   </Typography>
                   <Typography
                     sx={{
@@ -81,7 +82,8 @@ export default function TrackBudget(props: IPropTrackBudgets) {
                     sx={{ display: 'inline-flex' }}
                   />
                   <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                    {translate('content.administrative.statistic.heading.totalSpendBudget')}
+                    {/* {translate('content.administrative.statistic.heading.totalSpendBudget')} */}
+                    {translate('content.administrative.statistic.heading.totalReservedBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                     {fCurrencyNumber(track?.total_spending_budget || 0)}

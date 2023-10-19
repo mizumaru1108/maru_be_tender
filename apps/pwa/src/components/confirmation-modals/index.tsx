@@ -13,7 +13,12 @@ import useLocales from 'hooks/useLocales';
 
 interface IPropsConfirmationModal {
   partner_name: string;
-  type: 'RESET_PASSWORD' | 'DEACTIVATE_ACCOUNT' | 'INFORMATION' | 'RESET_PASSWORD_LINK';
+  type:
+    | 'RESET_PASSWORD'
+    | 'DEACTIVATE_ACCOUNT'
+    | 'INFORMATION'
+    | 'RESET_PASSWORD_LINK'
+    | 'DELETED_ACCOUNT';
   onSubmit: () => void;
   onClose: () => void;
   loading?: boolean;
@@ -40,6 +45,9 @@ export default function ConfirmationModals({
     case 'DEACTIVATE_ACCOUNT':
       imgCover = '/assets/icons/confirmation_deactivate_account.svg';
       break;
+    case 'DELETED_ACCOUNT':
+      imgCover = '/assets/icons/confirmation_deactivate_account.svg';
+      break;
     case 'RESET_PASSWORD':
       imgCover = '/assets/icons/confirmation_reset_password.svg';
       break;
@@ -61,7 +69,7 @@ export default function ConfirmationModals({
       // title={<Stack>{null}</Stack>}
       content={
         <Grid container spacing={2} justifyContent="center" alignItems="center">
-          {type !== 'RESET_PASSWORD_LINK' && (
+          {type !== 'RESET_PASSWORD_LINK' && type !== 'DELETED_ACCOUNT' && (
             <>
               <Grid item>
                 <Typography variant="h4" component="p" sx={{ fontWeight: 600 }}>
@@ -156,6 +164,37 @@ export default function ConfirmationModals({
                   </Box>
                 </Grid>
               )}
+            </>
+          )}
+          {type === 'DELETED_ACCOUNT' && (
+            <>
+              <Grid item>
+                <Typography variant="h4" component="p" sx={{ fontWeight: 600 }}>
+                  {`${translate(
+                    'account_manager.table.td.label_question_deleted'
+                  )} "${partner_name}" ?`}
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Image src={imgCover!} alt="logo" sx={{ maxWidth: 205, mx: 'auto', py: 4 }} />
+              </Grid>
+              <Grid item>
+                <Stack component="div" spacing={3} direction="row" sx={{ pb: 8 }}>
+                  <LoadingButton
+                    variant="contained"
+                    size="medium"
+                    loading={loading}
+                    onClick={onSubmit}
+                  >
+                    {`${translate(
+                      'account_manager.table.td.label_question_deleted'
+                    )} "${partner_name}" ?`}
+                  </LoadingButton>
+                  <Button variant="contained" color="error" size="medium" onClick={onClose}>
+                    {translate('account_manager.table.td.label_cancel')}
+                  </Button>
+                </Stack>
+              </Grid>
             </>
           )}
         </Grid>

@@ -1898,6 +1898,7 @@ const ar = {
         label_reset_password: 'إعادة تعيين كلمة المرور',
         label_deactivate_account: 'تعطيل الحساب',
         label_question_deactivate: 'هل أنت متأكد من إلغاء تنشيط الحساب لـ',
+        label_question_deleted: 'هل أنت متأكد من حذف الحساب ل',
         label_question_reset_password: 'هل أنت متأكد من إرسال إعادة تعيين كلمة المرور إلى',
         label_question_information:
           'نظرًا للمشروع الجاري على هذا الحساب ، لا يمكنك إلغاء تنشيط هذا الحساب',
@@ -1950,6 +1951,7 @@ const ar = {
       amendment_return_to_moderator: 'ارجاع المعاملة الى مسؤول الفرز',
       amendment_cancel_proposal: 'اعادة المشروع للشريك لرفعه في وقت اخر',
       btn_deleted_account: 'حذف الحساب',
+      btn_canceled_account: 'إلغاء حساب',
       btn_activate_account: 'تفعيل الحساب',
       btn_disabled_account: 'تعطيل الحساب',
       btn_amndreq_send_request: 'ارسال الطلب',
@@ -1962,6 +1964,7 @@ const ar = {
         disabled_account: 'تم تعطيل الحساب بنجاح!',
         activate_account: 'تم تفعيل الحساب بنجاح!',
         deleted_account: 'تم حذف الحساب بنجاح!',
+        canceled_account: 'تم إلغاء الحساب بنجاح!',
         reset_password: 'تم إرسال رابط إعادة تعيين كلمة المرور',
       },
     },

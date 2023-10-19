@@ -188,6 +188,7 @@ export interface Proposal {
     employee_name: string;
   };
   created_at: Date;
+  updated_at: Date;
   num_ofproject_binicficiaries: number;
   region: string;
   region_id?: string;

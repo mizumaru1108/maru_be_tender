@@ -65,13 +65,14 @@ function ProposalAcceptingForm({ onClose }: ModalProposalType) {
 
   const handleSubmitFifthForm = async (data: any) => {
     dispatch(setStepFive(data));
-    await handleSubmit(data);
+    await handleSubmit(data, data?.notes || '');
   };
 
-  const handleSubmit = async (data: any) => {
-    const { notes, ...restStep1 } = step1;
+  const handleSubmit = async (data: any, notes: string) => {
+    const { ...restStep1 } = step1;
     const editedBy = location.pathname.split('/')[1];
     setIsSubmitting(true);
+    console.log({ notes });
 
     try {
       let payload: any = {
@@ -79,7 +80,7 @@ function ProposalAcceptingForm({ onClose }: ModalProposalType) {
         // action: editedBy === 'project-manager' || editedBy === 'ceo' ? 'update' : 'accept',
         action: 'accept',
         message: 'تم قبول المشروع من قبل مشرف المشاريع',
-        notes,
+        notes: notes,
         selectLang: currentLang.value,
       };
 

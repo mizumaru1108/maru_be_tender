@@ -219,6 +219,7 @@ const initialState: ProposalItme = {
     target_group_num: 0,
     target_group_type: '',
     created_at: new Date('10-10-2022'),
+    updated_at: new Date('10-10-2022'),
     num_ofproject_binicficiaries: 0,
     region: 'test',
     execution_time: 0,

@@ -257,13 +257,13 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
   return (
     <React.Fragment>
       <TableRow hover selected={selected}>
-        {!editRequest && (
+        {/* {!editRequest && (
           <TableCell padding="checkbox">
             {account_status !== 'CANCELED_ACCOUNT' && (
               <Checkbox checked={selected} onClick={onSelectRow} />
             )}
           </TableCell>
-        )}
+        )} */}
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography variant="subtitle2" noWrap>
             {editRequest && user?.client_data?.entity}

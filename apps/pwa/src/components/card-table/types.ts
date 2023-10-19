@@ -3,15 +3,17 @@ type CardFooter = {
   payments?: any;
 };
 
+export type EnumInquiryStatus =
+  | 'canceled'
+  | 'completed'
+  | 'pending'
+  | 'on_revision'
+  | 'ongoing'
+  | 'asked_for_amandement';
+
 type CardTitle = {
   id: string;
-  inquiryStatus?:
-    | 'canceled'
-    | 'completed'
-    | 'pending'
-    | 'on_revision'
-    | 'ongoing'
-    | 'asked_for_amandement';
+  inquiryStatus?: EnumInquiryStatus;
   project_number?: string;
 };
 
@@ -45,7 +47,8 @@ export type ProjectCardProps = {
     | 'show-project' // Without the action bar at the end of the page.
     | 'show-details' // With the action bar at the end if the page.
     | 'completing-exchange-permission' // With the action bar at the end if the page.
-    | 'draft'; // Without the action bar at the end of the page, but with the ability to continue or remove the project.
+    | 'draft' // Without the action bar at the end of the page, but with the ability to continue or remove the project.
+    | 'reject-project';
   destination?:
     | 'previous-funding-requests'
     | 'incoming-funding-requests'
@@ -130,7 +133,7 @@ export type ProjectCardPropsBE = {
     | 'current-project'
     | 'payment-adjustment'
     | 'exchange-permission'
-    | 'project-report'; // it refers to the url that I came from and the url that I have to go to
+    | 'project-report'; // it refers to the url'' that I came from and the url that I have to go to
   mutate: () => void;
 };
 

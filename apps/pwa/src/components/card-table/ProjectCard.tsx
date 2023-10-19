@@ -33,6 +33,11 @@ import { FEATURE_PROPOSAL_COUNTING } from 'config';
  */
 const inquiryStatusStyle = {
   canceled: { color: '#FF4842', backgroundColor: '#FF484229' },
+  pending_canceled: {
+    color: '#FF4842',
+    backgroundColor: '#FF484229',
+    title: 'commons.chip_pending_canceled',
+  },
   completed: { color: '#0E8478', backgroundColor: '#0E847829' },
   pending: { color: '#FFC107', backgroundColor: '#FFC10729' },
   on_revision: { color: '#FFC107', backgroundColor: '#FFC10729' }, // this is the same as pending
@@ -45,6 +50,7 @@ const cardFooterButtonActionLocal = {
   'show-project': 'show_project',
   'show-details': 'show_details',
   'completing-exchange-permission': 'completing_exchange_permission',
+  'reject-project': 'reject-project',
   draft: 'draft',
 };
 
@@ -140,9 +146,11 @@ const ProjectCard = ({
     }
     const url = location.pathname.split('/');
     if (destination) {
-      navigate(
-        `/${url[1] + '/' + url[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`
-      );
+      const tmp = `/${url[1]}/dashboard/${destination}/${title.id}/${cardFooterButtonAction}`;
+      // navigate(
+      //   `/${url[1] + '/' + url[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`
+      // );
+      navigate(tmp);
     } else {
       if (url.includes('searching')) {
         const tmp = `/${url[1]}/dashboard/current-project/${title.id}/${cardFooterButtonAction}`;

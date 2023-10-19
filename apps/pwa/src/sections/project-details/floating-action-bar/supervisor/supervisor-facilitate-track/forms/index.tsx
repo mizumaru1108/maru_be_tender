@@ -103,7 +103,6 @@ function FacilitateSupervisorAcceptingForm({ onClose }: any) {
   };
 
   const handleSubmit = async (data: any) => {
-    console.log({ data });
     const { notes, ...restStep1 } = step1;
     const editedBy = location.pathname.split('/')[1];
 

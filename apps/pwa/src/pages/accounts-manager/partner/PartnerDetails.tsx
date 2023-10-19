@@ -22,13 +22,9 @@ import BankImageComp from 'sections/shared/BankImageComp';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
-import {
-  changeClientStatus,
-  deleteClientData,
-  detailsClientData,
-} from 'queries/account_manager/detailsClientData';
+import { detailsClientData } from 'queries/account_manager/detailsClientData';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useMutation, useQuery } from 'urql';
+import { useQuery } from 'urql';
 //
 import { FEATURE_PROJECT_DETAILS } from 'config';
 import moment from 'moment';
@@ -39,6 +35,7 @@ import { ChangeStatusRequest } from '../../../components/table/TableRowsData';
 import { addConversation, setActiveConversationId } from '../../../redux/slices/wschat';
 import axiosInstance from '../../../utils/axios';
 import uuidv4 from '../../../utils/uuidv4';
+import ConfirmationModals from '../../../components/confirmation-modals';
 
 // -------------------------------------------------------------------------------
 
@@ -48,6 +45,8 @@ type UserStatus =
   | 'CANCELED_ACCOUNT'
   | 'ACTIVE_ACCOUNT'
   | 'REVISED_ACCOUNT';
+
+type Action = 'ACTIVE_ACCOUNT' | 'SUSPENDED_ACCOUNT' | 'CANCELED_ACCOUNT' | 'DELETED_ACCOUNT';
 
 // -------------------------------------------------------------------------------
 
@@ -89,12 +88,13 @@ function AccountPartnerDetails() {
 
   // Partner Details Data
   const [partnerDetails, setPartnerDetails] = useState<any>(null);
+  const [action, setAction] = useState<Action | null>(null);
 
   // Activate | Suspended Client
   /* old gql */
   // const [activateResult, activateClient] = useMutation(changeClientStatus);
-  const [suspendedResult, suspendedClient] = useMutation(changeClientStatus);
-  const [deleteResult, deleteClient] = useMutation(deleteClientData);
+  // const [suspendedResult, suspendedClient] = useMutation(changeClientStatus);
+  // const [deleteResult, deleteClient] = useMutation(deleteClientData);
   const [isSubmitting, setIsSubimitting] = useState(false);
 
   //Messages
@@ -124,17 +124,14 @@ function AccountPartnerDetails() {
   //   }
   // };
 
-  const handleChangeStatus = async (
-    id: string,
-    status: 'ACTIVE_ACCOUNT' | 'SUSPENDED_ACCOUNT' | 'CANCELED_ACCOUNT'
-  ) => {
+  const handleChangeStatus = async (id: string, status: Action) => {
     setIsSubimitting(true);
     try {
       await axiosInstance.patch<ChangeStatusRequest, any>(
         '/tender-user/update-status',
         {
           status: status,
-          user_id: [id],
+          user_id: status !== 'DELETED_ACCOUNT' ? [id] : id,
           selectLang: currentLang.value,
         } as ChangeStatusRequest,
         {
@@ -148,6 +145,8 @@ function AccountPartnerDetails() {
       } else if (status === 'SUSPENDED_ACCOUNT') {
         notif = 'account_manager.partner_details.notification.disabled_account';
       } else if (status === 'CANCELED_ACCOUNT') {
+        notif = 'account_manager.partner_details.notification.canceled_account';
+      } else if (status === 'DELETED_ACCOUNT') {
         notif = 'account_manager.partner_details.notification.deleted_account';
       }
       setDynamicState(status);
@@ -933,11 +932,20 @@ function AccountPartnerDetails() {
                   </Grid>
                   <Grid item>
                     <Button
-                      // disabled
                       variant="contained"
                       color="error"
                       onClick={() => handleChangeStatus(partnerId || '', 'CANCELED_ACCOUNT')}
                       disabled={isSubmitting || dynamicState === 'CANCELED_ACCOUNT'}
+                    >
+                      {translate('account_manager.partner_details.btn_canceled_account')}
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => setAction('DELETED_ACCOUNT')}
+                      disabled={isSubmitting}
                     >
                       {translate('account_manager.partner_details.btn_deleted_account')}
                     </Button>
@@ -969,6 +977,23 @@ function AccountPartnerDetails() {
                   </Grid> */}
                 </Grid>
               </Box>
+              {action === 'DELETED_ACCOUNT' && (
+                <ConfirmationModals
+                  type="DELETED_ACCOUNT"
+                  onSubmit={() => {
+                    console.log('DELETED_ACCOUNT');
+                    // handleChangeStatus(partnerId || '', 'DELETED_ACCOUNT')
+                  }}
+                  onClose={() => setAction(null)}
+                  partner_name={
+                    (partnerDetails &&
+                      partnerDetails?.client_data &&
+                      partnerDetails?.client_data?.entity) ||
+                    '- No Data -'
+                  }
+                  loading={isSubmitting}
+                />
+              )}
             </>
           )}
         </ContentStyle>
