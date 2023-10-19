@@ -254,7 +254,7 @@ function ThirdForm({ children, onSubmit }: any) {
           <BaseField
             type="radioGroup"
             name="been_made_before"
-            label="مكان إقامته المشروع؟*"
+            label="هل تمت إقامة المشروع مسبقا؟*"
             disabled={edit}
             options={[
               { label: 'نعم', value: true },

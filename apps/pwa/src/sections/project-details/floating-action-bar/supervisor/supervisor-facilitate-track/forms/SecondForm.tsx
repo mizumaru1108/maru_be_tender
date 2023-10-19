@@ -205,7 +205,8 @@ function SecondForm({ children, onSubmit }: any) {
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled
+            // disabled
+            disabled={edit}
             type="radioGroup"
             name="been_supported_before"
             label="هل دعمت سابقًا؟"
