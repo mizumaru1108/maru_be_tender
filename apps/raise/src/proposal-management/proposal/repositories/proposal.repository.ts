@@ -1282,12 +1282,22 @@ export class ProposalRepository {
         }
 
         if (currentUser.choosenRole === 'tender_ceo') {
+          // whereClause = {
+          //   ...whereClause,
+          //   inner_status: {
+          //     in: [
+          //       InnerStatusEnum.ACCEPTED_BY_CONSULTANT,
+          //       InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+          //     ],
+          //   },
+          // };
           whereClause = {
             ...whereClause,
             inner_status: {
-              in: [
-                InnerStatusEnum.ACCEPTED_BY_CONSULTANT,
-                InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+              notIn: [
+                InnerStatusEnum.CREATED_BY_CLIENT,
+                InnerStatusEnum.ACCEPTED_BY_MODERATOR,
+                InnerStatusEnum.REJECTED_BY_MODERATOR,
               ],
             },
           };
