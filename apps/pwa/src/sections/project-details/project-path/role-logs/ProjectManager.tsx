@@ -5,6 +5,7 @@ import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'redux/store';
 import { Log } from '../../../../@types/proposal';
+import { selectSectionProjectPath } from 'utils/generateParentChild';
 
 interface Props {
   // stepGeneralLog: Log;
@@ -14,18 +15,22 @@ interface Props {
 
 function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
   const { proposal } = useSelector((state) => state.proposal);
+  const { track } = useSelector((state) => state.tracks);
   const { translate, currentLang } = useLocales();
   const [dataGrants, setDataGrants] = React.useState<any>();
   let batch: number = 0;
   if (stepGeneralLog && stepGeneralLog.message) {
     batch = Number(stepGeneralLog.message.split('_')[1]);
   }
-  // console.log('test', stepGeneralLog?.new_values);
+
   React.useEffect(() => {
     if (proposal) {
       setDataGrants((currentProposal: any) => {
-        // console.log('test ');
-        const tmpValues = { ...currentProposal };
+        const generate = selectSectionProjectPath({
+          parent: track.sections!,
+          section_id: proposal.section_id,
+        });
+
         return {
           ...currentProposal,
           action: stepGeneralLog?.action || '',
@@ -34,6 +39,10 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
           updated_at: stepGeneralLog?.updated_at || '',
           user_role: stepGeneralLog?.user_role || '',
           proposal: {
+            section_level_one: generate.levelOne ? generate.levelOne.name : null,
+            section_level_two: generate.levelTwo ? generate.levelTwo.name : null,
+            section_level_three: generate.levelThree ? generate.levelThree.name : null,
+            section_level_four: generate.levelFour ? generate.levelFour.name : null,
             accreditation_type_id:
               stepGeneralLog?.new_values?.accreditation_type_id || proposal.accreditation_type_id,
             added_value: stepGeneralLog?.new_values?.added_value || proposal.added_value,
@@ -80,9 +89,7 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
         };
       });
     }
-  }, [stepGeneralLog, proposal]);
-
-  // console.log('proposal.payments', proposal.payments);
+  }, [stepGeneralLog, proposal, track]);
 
   return (
     <React.Fragment>

@@ -2248,6 +2248,10 @@ const ar = {
   },
   closing_project_by_client: 'إغلاق مشروع',
   review: {
+    section_level_one: 'الهدف',
+    section_level_two: 'المؤشر',
+    section_level_three: 'المشروع',
+    section_level_four: 'الفرع',
     proposal_regions: 'المناطق',
     proposal_governorates: 'المحافظات',
     region: 'المنطقة',

@@ -65,3 +65,61 @@ export default function selectDataById({ parent, section_id }: IPropSelectedData
 
   return { tempLvlOne, tempLvlTwo, tempLvlThree, tempLvlFour };
 }
+
+export function selectSectionProjectPath({ parent, section_id }: IPropSelectedData) {
+  let levelOne: TrackSection | null = null;
+  let levelTwo: TrackSection | null = null;
+  let levelThree: TrackSection | null = null;
+  let levelFour: TrackSection | null = null;
+
+  const findLevelOne = parent.find((el) => el.id === section_id);
+
+  if (!findLevelOne) {
+    for (const childLvlOne of parent) {
+      if (childLvlOne.child_track_section && childLvlOne.child_track_section.length) {
+        const findLvlTwo = childLvlOne.child_track_section.find((vv) => vv.id === section_id);
+
+        if (!findLvlTwo) {
+          for (const childLvlTwo of childLvlOne.child_track_section) {
+            if (childLvlTwo.child_track_section && childLvlTwo.child_track_section.length) {
+              const findLvlThree = childLvlTwo.child_track_section.find(
+                (vvv) => vvv.id === section_id
+              );
+
+              if (!findLvlThree) {
+                for (const childLvlThree of childLvlTwo.child_track_section) {
+                  if (
+                    childLvlThree.child_track_section &&
+                    childLvlThree.child_track_section.length
+                  ) {
+                    const findLvlFour = childLvlThree.child_track_section.find(
+                      (vvvv) => vvvv.id === section_id
+                    );
+
+                    if (findLvlFour) {
+                      levelFour = findLvlFour;
+                      levelThree = childLvlThree;
+                      levelTwo = childLvlTwo;
+                      levelOne = childLvlOne;
+                    }
+                  }
+                }
+              } else {
+                levelThree = findLvlThree;
+                levelTwo = childLvlTwo;
+                levelThree = childLvlOne;
+              }
+            }
+          }
+        } else {
+          levelOne = childLvlOne;
+          levelTwo = findLvlTwo;
+        }
+      }
+    }
+  } else {
+    levelOne = findLevelOne;
+  }
+
+  return { levelOne, levelTwo, levelThree, levelFour };
+}

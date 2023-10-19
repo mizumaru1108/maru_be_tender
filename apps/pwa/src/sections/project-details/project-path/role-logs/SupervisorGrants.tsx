@@ -4,6 +4,7 @@ import moment from 'moment';
 import React, { useEffect } from 'react';
 import { useSelector } from 'redux/store';
 import { PropsalLogGrants } from '../../../../@types/proposal';
+import { selectSectionProjectPath } from 'utils/generateParentChild';
 
 interface Props {
   stepGransLog: PropsalLogGrants;
@@ -11,20 +12,22 @@ interface Props {
 
 function SupervisorGrants({ stepGransLog }: Props) {
   const { proposal } = useSelector((state) => state.proposal);
+  const { track } = useSelector((state) => state.tracks);
   const { translate, currentLang } = useLocales();
   const [newProposal, setNewProposal] = React.useState<any>();
-  // console.log({ stepGransLog });
-  // const [isVat, setIsVat] = React.useState(false);
   let batch: number = 0;
   if (stepGransLog && stepGransLog.message) {
     batch = Number(stepGransLog.message.split('_')[1]);
   }
-  // console.log('test', stepGransLog?.new_values)
+
   useEffect(() => {
     if (proposal) {
       setNewProposal((currentProposal: any) => {
-        // console.log({ currentProposal });
-        const tmpValue = { ...currentProposal };
+        const generate = selectSectionProjectPath({
+          parent: track.sections!,
+          section_id: proposal.section_id,
+        });
+
         return {
           ...currentProposal,
           action: stepGransLog.action,
@@ -33,6 +36,10 @@ function SupervisorGrants({ stepGransLog }: Props) {
           updated_at: stepGransLog.updated_at,
           user_role: stepGransLog.user_role,
           proposal: {
+            section_level_one: generate.levelOne ? generate.levelOne.name : null,
+            section_level_two: generate.levelTwo ? generate.levelTwo.name : null,
+            section_level_three: generate.levelThree ? generate.levelThree.name : null,
+            section_level_four: generate.levelFour ? generate.levelFour.name : null,
             accreditation_type_id:
               stepGransLog?.new_values?.accreditation_type_id || proposal.accreditation_type_id,
             added_value: stepGransLog?.new_values?.added_value || proposal.added_value,
@@ -77,13 +84,7 @@ function SupervisorGrants({ stepGransLog }: Props) {
         };
       });
     }
-  }, [stepGransLog, proposal]);
-
-  // console.log({ newProposal });
-
-  // console.log(target_age_map, 'tesat');
-  // console.log({ stepGransLog });
-  // console.log('proposal.payments', proposal.payments);
+  }, [stepGransLog, proposal, track]);
 
   return (
     <React.Fragment>

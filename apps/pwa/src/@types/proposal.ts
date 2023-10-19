@@ -455,6 +455,7 @@ export interface PropsalLogGrants extends Log {
     target_group_type: string;
     vat: boolean;
     vat_percentage: number;
+    section_id?: string;
   };
 }
 
