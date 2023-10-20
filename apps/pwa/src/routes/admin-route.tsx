@@ -62,6 +62,9 @@ const SectionTracks = Loadable(
 const NewSectionTracks = Loadable(
   lazy(() => import('sections/admin/track-budget/section-track/NewSectionTracks'))
 );
+const ViewNewSectionTracks = Loadable(
+  lazy(() => import('sections/admin/track-budget/section-track/ViewNewSectionTracks'))
+);
 const Searching = Loadable(lazy(() => import('pages/searching')));
 
 const OldProposal = Loadable(lazy(() => import('pages/admin/OldProposal')));
@@ -118,6 +121,10 @@ export const adminRoute = {
             {
               path: ':id/show',
               element: FEATURE_NESTED_TRACK_BUDGET ? <NewSectionTracks /> : <SectionTracks />,
+            },
+            {
+              path: ':id/details',
+              element: FEATURE_NESTED_TRACK_BUDGET && <ViewNewSectionTracks />,
             },
           ],
         },

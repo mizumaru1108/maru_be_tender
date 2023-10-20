@@ -40,8 +40,12 @@ export const authRoute = {
       path: 'send-email',
       children: [
         {
-          path: 'resend',
-          element: <ResendMail />,
+          path: '',
+          element: (
+            <GuestGuard>
+              <ResendMail />
+            </GuestGuard>
+          ),
         },
         {
           path: ':email',

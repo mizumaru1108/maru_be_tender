@@ -283,7 +283,8 @@ function AuthProvider({ children }: AuthProviderProps) {
     }
     if (user?.verified === false) {
       // throw new Error(`User ${email} does not have verified`);
-      throw new Error(`حساب الشريك ${email} لم يتم تفعيله بعد`);
+      // throw new Error(`حساب الشريك ${email} لم يتم تفعيله بعد`);
+      throw new Error('un_verified');
     }
     const userRegistration = user.registrations?.[0];
     const activeRole = userRegistration.roles?.[activeRoleIndex];

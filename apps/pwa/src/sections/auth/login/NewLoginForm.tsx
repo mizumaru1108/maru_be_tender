@@ -12,6 +12,7 @@ import {
   Snackbar,
   MenuItem,
   useTheme,
+  Typography,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { PATH_AUTH } from '../../../routes/paths';
@@ -58,9 +59,11 @@ export default function NewLoginForm() {
   const theme = useTheme();
   const { login } = useAuth();
   const { translate, currentLang } = useLocales();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
   const [loginTypeId, setLoginTypeId] = useState('email');
+  const [loginId, setLoginId] = useState<string | null>(null);
 
   // styling
   const sxStyling: SxProps<Theme> | undefined = {
@@ -145,6 +148,14 @@ export default function NewLoginForm() {
   }, [loginIdType, setValue]);
   // console.log({ loginIdType });
 
+  const handleRedirect = () => {
+    if (loginId && loginIdType === 'email') {
+      navigate(`/auth/send-email/${loginId}`);
+    } else {
+      navigate('/auth/send-email');
+    }
+  };
+
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -156,6 +167,7 @@ export default function NewLoginForm() {
     let tmpLoginId = undefined;
     if (data.email && loginTypeId === 'email') {
       tmpLoginId = data.email;
+      setLoginId(data.email);
     } else if (data.mobile_number_login && loginTypeId === 'phone') {
       // const tmpPhone = `+966${data.mobile_number_login}`;
       const tmpPhone = formatPhone({ phone: data.mobile_number_login, prefix: '+966' });
@@ -169,6 +181,7 @@ export default function NewLoginForm() {
       dispatch(setActiveConversationId(null));
       dispatch(setConversation([]));
       dispatch(setMessageGrouped([]));
+      setLoginId(null);
     } catch (err) {
       // console.log({ err });
       // const { error, message } =
@@ -182,7 +195,7 @@ export default function NewLoginForm() {
       const tmpMessage =
         err?.response?.data?.message || err?.response?.message || err?.message || undefined;
       // console.log('cek err: ', { err: err?.response?.data });
-      // console.log('test 401', { statusCode }, statusCode === 401);
+      // console.log('test statusCode', { statusCode });
       reset();
       if (statusCode === 401 && statusCode !== undefined) {
         setError('afterSubmit', { message: translate('pages.auth.error.wrong_credential') });
@@ -197,7 +210,27 @@ export default function NewLoginForm() {
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={3} sx={{ mt: 5 }}>
-          {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
+          {!!errors.afterSubmit && (
+            <>
+              {errors.afterSubmit.message !== 'un_verified' ? (
+                <Alert severity="error">{errors.afterSubmit.message}</Alert>
+              ) : (
+                <Alert severity="error">
+                  <Typography>
+                    {/* {translate('pages.admin.settings.label.form.authorities.confirmation.delete')}{' '}
+                  <span style={{ fontWeight: 700 }}>{`${formatCapitalizeText(watch('name'))}`}</span>? */}
+                    {/* test1 */}
+                    البريد الالكتروني لم يتم تفعيله بعد
+                    <span style={{ cursor: 'pointer' }} onClick={handleRedirect}>
+                      <b>
+                        <u>.يرجى الضغط هنا لإعادة إرسال بريد التفعيل</u>
+                      </b>
+                    </span>
+                  </Typography>
+                </Alert>
+              )}
+            </>
+          )}
 
           <RHFSelect
             type="select"
