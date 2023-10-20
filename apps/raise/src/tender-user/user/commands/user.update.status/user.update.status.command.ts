@@ -82,59 +82,66 @@ export class UserUpdateStatusCommandHandler
         }
       }
 
-      await this.prismaService.$transaction(async (prismaSession) => {
-        const tx =
-          prismaSession instanceof PrismaService
-            ? prismaSession
-            : this.prismaService;
+      await this.prismaService.$transaction(
+        async (prismaSession) => {
+          const tx =
+            prismaSession instanceof PrismaService
+              ? prismaSession
+              : this.prismaService;
 
-        for (const user_id of request.user_id) {
-          const updatedUser = await this.userRepo.update(
-            {
-              id: user_id,
-              status_id: request.status,
-              deleted_at:
-                request.status === UserStatusEnum.DELETED ? new Date() : null,
-            },
-            tx,
-          );
-          updatedUsers.push(updatedUser);
-
-          const createdStatusLog = await this.statusLogRepo.create(
-            {
-              user_id: user_id,
-              status_id: request.status,
-              account_manager_id: acc_manager_id,
-            },
-            tx,
-          );
-          statusLogs.push(createdStatusLog);
-
-          if (request.status === UserStatusEnum.DELETED) {
-            const draftProposals = await this.proposalRepo.findMany(
+          for (const user_id of request.user_id) {
+            const updatedUser = await this.userRepo.update(
               {
-                step: ['ZERO'],
+                id: user_id,
+                status_id: request.status,
+                deleted_at:
+                  request.status === UserStatusEnum.DELETED ? new Date() : null,
               },
               tx,
             );
+            updatedUsers.push(updatedUser);
 
-            if (draftProposals.length > 0) {
-              deletedProposals = draftProposals;
+            const createdStatusLog = await this.statusLogRepo.create(
+              {
+                user_id: user_id,
+                status_id: request.status,
+                account_manager_id: acc_manager_id,
+              },
+              tx,
+            );
+            statusLogs.push(createdStatusLog);
 
-              const draftProposalIds = draftProposals.map(
-                (proposal) => proposal.id,
-              );
-              // delete the proposal
-              await this.proposalRepo.deleteMany(
+            if (request.status === UserStatusEnum.DELETED) {
+              const draftProposals = await this.proposalRepo.findMany(
                 {
-                  ids: draftProposalIds,
+                  step: ['ZERO'],
+                  submitter_user_id: user_id,
                 },
                 tx,
               );
+
+              if (draftProposals.length > 0) {
+                deletedProposals = draftProposals;
+
+                const draftProposalIds = draftProposals.map(
+                  (proposal) => proposal.id,
+                );
+
+                // delete the proposal
+                await this.proposalRepo.deleteMany(
+                  {
+                    ids: draftProposalIds,
+                  },
+                  tx,
+                );
+              }
             }
           }
-        }
-      });
+        },
+        {
+          timeout: 50000,
+        },
+      );
 
       if (deletedUserIds.length > 0) {
         for (const deletedUserId of deletedUserIds) {
