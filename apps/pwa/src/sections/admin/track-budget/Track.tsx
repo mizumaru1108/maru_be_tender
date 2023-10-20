@@ -21,10 +21,12 @@ function Track({ id, name, budget }: any) {
   const [openConfirm, setOpenConfirm] = useState<boolean>(false);
 
   const handleShow = () => {
-    navigate(`/admin/dashboard/tracks-budget/${id}/show`);
+    navigate(`/admin/dashboard/tracks-budget/${id}/details`);
   };
 
-  const handleEdit = () => {};
+  const handleEdit = () => {
+    navigate(`/admin/dashboard/tracks-budget/${id}/show`);
+  };
 
   const handleDelete = () => {
     setLoadingDelete(true);
@@ -147,7 +149,7 @@ function Track({ id, name, budget }: any) {
         >
           {translate('pages.admin.tracks_budget.btn.review')}
         </Button>
-        {/* <Button
+        <Button
           variant="contained"
           sx={{
             backgroundColor: '#0169DE',
@@ -179,7 +181,7 @@ function Track({ id, name, budget }: any) {
           size="medium"
         >
           {translate('pages.admin.tracks_budget.btn.amandment')}
-        </Button> */}
+        </Button>
         {/* <Button
           variant="contained"
           sx={{

@@ -46,7 +46,7 @@ type UserStatus =
   | 'ACTIVE_ACCOUNT'
   | 'REVISED_ACCOUNT';
 
-type Action = 'ACTIVE_ACCOUNT' | 'SUSPENDED_ACCOUNT' | 'CANCELED_ACCOUNT' | 'DELETE';
+type Action = 'ACTIVE_ACCOUNT' | 'SUSPENDED_ACCOUNT' | 'CANCELED_ACCOUNT' | 'DELETED';
 
 // -------------------------------------------------------------------------------
 
@@ -131,7 +131,8 @@ function AccountPartnerDetails() {
         '/tender-user/update-status',
         {
           status: status,
-          user_id: status !== 'DELETE' ? [id] : id,
+          // user_id: status !== 'DELETED' ? [id] : id,
+          user_id: [id],
           selectLang: currentLang.value,
         } as ChangeStatusRequest,
         {
@@ -146,7 +147,7 @@ function AccountPartnerDetails() {
         notif = 'account_manager.partner_details.notification.disabled_account';
       } else if (status === 'CANCELED_ACCOUNT') {
         notif = 'account_manager.partner_details.notification.canceled_account';
-      } else if (status === 'DELETE') {
+      } else if (status === 'DELETED') {
         notif = 'account_manager.partner_details.notification.deleted_account';
       }
       setDynamicState(status);
@@ -944,7 +945,7 @@ function AccountPartnerDetails() {
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={() => setAction('DELETE')}
+                      onClick={() => setAction('DELETED')}
                       disabled={isSubmitting}
                     >
                       {translate('account_manager.partner_details.btn_deleted_account')}
@@ -977,11 +978,11 @@ function AccountPartnerDetails() {
                   </Grid> */}
                 </Grid>
               </Box>
-              {action === 'DELETE' && (
+              {action === 'DELETED' && (
                 <ConfirmationModals
                   type="DELETED_ACCOUNT"
                   onSubmit={() => {
-                    handleChangeStatus(partnerId || '', 'DELETE');
+                    handleChangeStatus(partnerId || '', 'DELETED');
                   }}
                   onClose={() => setAction(null)}
                   partner_name={
