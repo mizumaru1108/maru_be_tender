@@ -26,6 +26,7 @@ import { getTracksById } from '../../../../redux/slices/track';
 import { dispatch, useSelector } from '../../../../redux/store';
 import { fCurrencyNumber } from '../../../../utils/formatNumber';
 import { TrackSection } from '../../../../@types/commons';
+import { lighten } from '@mui/material/styles';
 
 // ------------------------------------------------------------------------------------------
 
@@ -223,11 +224,9 @@ export default function ViewNewSectionTracks() {
                                 sx={{ display: 'flex', flexDirection: 'column' }}
                               >
                                 <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                                  {translate(
-                                    'content.administrative.statistic.heading.totalBudget'
-                                  )}
+                                  {translate('content.administrative.statistic.heading.budget')}
                                 </Typography>
-                                <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                                <Typography sx={{ color: lighten('#000', 0.1), fontWeight: 700 }}>
                                   {fCurrencyNumber(item?.budget || 0)}
                                 </Typography>
                               </Grid>
@@ -281,10 +280,12 @@ export default function ViewNewSectionTracks() {
                                         sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
                                       >
                                         {translate(
-                                          'content.administrative.statistic.heading.totalBudget'
+                                          'content.administrative.statistic.heading.budget'
                                         )}
                                       </Typography>
-                                      <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                                      <Typography
+                                        sx={{ color: lighten('#000', 0.2), fontWeight: 700 }}
+                                      >
                                         {fCurrencyNumber(item?.budget || 0)}
                                       </Typography>
                                     </Grid>
@@ -341,11 +342,11 @@ export default function ViewNewSectionTracks() {
                                               sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
                                             >
                                               {translate(
-                                                'content.administrative.statistic.heading.totalBudget'
+                                                'content.administrative.statistic.heading.budget'
                                               )}
                                             </Typography>
                                             <Typography
-                                              sx={{ color: 'text.tertiary', fontWeight: 700 }}
+                                              sx={{ color: lighten('#000', 0.35), fontWeight: 700 }}
                                             >
                                               {fCurrencyNumber(item?.budget || 0)}
                                             </Typography>

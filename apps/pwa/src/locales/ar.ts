@@ -547,6 +547,7 @@ const ar = {
           proposalStatistic: 'إحصائية المشروع',
           totalProposal: 'إجمالي المشاريع',
           totalBudget: 'الميزانية الإجمالية',
+          budget: 'الميزانيات',
           totalReservedBudget: 'إجمالي الميزانية المحجوزة',
           totalSpendBudget: 'إجمالي ميزانية الإنفاق',
           totalAcceptingBudget: 'إجمالي الميزانية المقبولة',
