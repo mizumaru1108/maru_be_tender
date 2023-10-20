@@ -14,6 +14,7 @@ import { useQuery } from 'urql';
 import { useSnackbar } from 'notistack';
 import { FEATURE_NESTED_TRACK_BUDGET } from 'config';
 import { FormTrackBudget } from '../../client/funding-project-request/forms/FormNestedTrackBudget';
+import { getOneEmployee } from '../../../queries/admin/getAllTheEmployees';
 
 // ------------------------------------------------------------------------------------------
 
@@ -35,17 +36,22 @@ export interface IDataTracks {
 export default function TrackBudgetPage() {
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
-  const { activeRole } = useAuth();
+  const { activeRole, user } = useAuth();
 
   const [open, setOpen] = useState<boolean>(false);
   const [tracksTempValue, setTrackTempValues] = useState<FormTrackBudget[] | []>([]);
   const [loadingPage, setLoadingPage] = useState<boolean>(false);
 
-  const getTrackDatas = async () => {
+  const getTrackDatas = async (track_id?: string) => {
     try {
       setLoadingPage(true);
       const { status, data } = await axiosInstance.get('/tender/track', {
-        params: { is_deleted: '0', include_general: '0', include_relations: 'track_sections' },
+        params: {
+          is_deleted: '0',
+          include_general: '0',
+          include_relations: 'track_sections',
+          track_id: track_id || undefined,
+        },
         headers: { 'x-hasura-role': activeRole! },
       });
 
@@ -84,6 +90,11 @@ export default function TrackBudgetPage() {
     }
   };
 
+  const [{ data: data_employee, fetching: fetching_employee, error: error_employee }] = useQuery({
+    query: getOneEmployee,
+    variables: { id: user?.id },
+  });
+
   const [{ data, fetching, error }] = useQuery({
     query: `
       query getListTrack {
@@ -109,15 +120,21 @@ export default function TrackBudgetPage() {
   };
 
   useEffect(() => {
-    getTrackDatas();
+    if (!fetching_employee && activeRole !== 'tender_project_manager') {
+      getTrackDatas();
+    } else {
+      if (data_employee?.track_id) {
+        getTrackDatas(data_employee?.track_id);
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetching_employee]);
 
-  if (error) return <>Opss. somthing went wrong</>;
+  if (error || error_employee) return <>Opss. somthing went wrong</>;
 
   return (
     <React.Fragment>
-      {!loadingPage && !fetching && data ? (
+      {!fetching_employee && !loadingPage && !fetching && data ? (
         <Grid container spacing={3}>
           {FEATURE_NESTED_TRACK_BUDGET ? null : (
             <ModalDialog

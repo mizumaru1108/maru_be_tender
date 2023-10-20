@@ -96,8 +96,6 @@ export default function ViewNewSectionTracks() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
-  console.log({ track });
-
   if (load) return <>{translate('pages.common.loading')}</>;
 
   return (
@@ -280,7 +278,7 @@ export default function ViewNewSectionTracks() {
                                         sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
                                       >
                                         {translate(
-                                          'content.administrative.statistic.heading.budget'
+                                          'content.administrative.statistic.heading.totalBudget'
                                         )}
                                       </Typography>
                                       <Typography
@@ -342,7 +340,7 @@ export default function ViewNewSectionTracks() {
                                               sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
                                             >
                                               {translate(
-                                                'content.administrative.statistic.heading.budget'
+                                                'content.administrative.statistic.heading.totalBudget'
                                               )}
                                             </Typography>
                                             <Typography
