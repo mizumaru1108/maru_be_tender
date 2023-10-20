@@ -109,6 +109,7 @@ export const PATH_CASHIER = {
 export const PATH_CEO = {
   root: ROOTS_CEO,
   app: path(ROOTS_CEO, '/dashboard/app'),
+  tracks_budget: path(ROOTS_CEO, '/dashboard/tracks-budget'),
   project_management: path(ROOTS_CEO, '/dashboard/project-management'),
   rejection_list: path(ROOTS_CEO, '/dashboard/rejection-list'),
   client_list: path(ROOTS_CEO, '/dashboard/client-list'),
@@ -122,6 +123,7 @@ export const PATH_CEO = {
 export const PATH_PROJECT_MANAGER = {
   root: ROOTS_PROJECT_MANAGER,
   app: path(ROOTS_PROJECT_MANAGER, '/dashboard/app'),
+  tracks_budget: path(ROOTS_PROJECT_MANAGER, '/dashboard/tracks-budget'),
   incoming_funding_requests: path(ROOTS_PROJECT_MANAGER, '/dashboard/incoming-funding-requests'),
   requests_in_process: path(ROOTS_PROJECT_MANAGER, '/dashboard/requests-in-process'),
   previous_funding_requests: path(ROOTS_PROJECT_MANAGER, '/dashboard/previous-funding-requests'),

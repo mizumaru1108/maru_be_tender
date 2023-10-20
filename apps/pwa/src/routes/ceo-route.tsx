@@ -5,7 +5,9 @@ import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
 import ProjectOwnerDetailsMainPage from 'sections/project-details/project-owner-details/ProjectOwnerDetailsMainPage';
-import { FEATURE_MENU_CLIENT_FILES } from 'config';
+import { FEATURE_MENU_CLIENT_FILES, FEATURE_NESTED_TRACK_BUDGET } from 'config';
+import TracksBudget from 'pages/admin/TracksBudget';
+import ViewNewSectionTracks from 'sections/admin/track-budget/section-track/ViewNewSectionTracks';
 
 const MainCeoPage = Loadable(lazy(() => import('pages/ceo/MainCeoPage')));
 const CeoMessagePage = Loadable(lazy(() => import('pages/ceo/CeoMessagePage')));
@@ -92,6 +94,16 @@ export const ceoRoute = {
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
+          path: 'tracks-budget',
+          children: [
+            { path: '', element: <TracksBudget /> },
+            {
+              path: ':id/details',
+              element: FEATURE_NESTED_TRACK_BUDGET && <ViewNewSectionTracks />,
             },
           ],
         },

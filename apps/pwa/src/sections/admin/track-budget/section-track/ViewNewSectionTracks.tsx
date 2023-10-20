@@ -1,5 +1,5 @@
 // react
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 // @mui
 import {
@@ -183,7 +183,7 @@ export default function ViewNewSectionTracks() {
                       item?.child_track_section &&
                       item?.child_track_section?.length > 0 &&
                       item?.child_track_section.map((item) => (
-                        <>
+                        <React.Fragment key={item.id}>
                           <Grid key={item?.id} item md={16} xs={16}>
                             <Grid container columns={20} justifyContent={'flex-end'}>
                               <Grid
@@ -236,7 +236,7 @@ export default function ViewNewSectionTracks() {
                             item?.child_track_section &&
                             item?.child_track_section?.length > 0 &&
                             item?.child_track_section.map((item) => (
-                              <>
+                              <React.Fragment key={item.id}>
                                 <Grid key={item?.id} item md={16} xs={16}>
                                   <Grid container columns={20} justifyContent={'flex-end'}>
                                     <Grid
@@ -295,7 +295,7 @@ export default function ViewNewSectionTracks() {
                                   item?.child_track_section &&
                                   item?.child_track_section?.length > 0 &&
                                   item?.child_track_section.map((item) => (
-                                    <>
+                                    <React.Fragment key={item.id}>
                                       <Grid key={item?.id} item md={16} xs={16}>
                                         <Grid container columns={20} justifyContent={'flex-end'}>
                                           <Grid
@@ -351,11 +351,11 @@ export default function ViewNewSectionTracks() {
                                           </Grid>
                                         </Grid>
                                       </Grid>
-                                    </>
+                                    </React.Fragment>
                                   ))}
-                              </>
+                              </React.Fragment>
                             ))}
-                        </>
+                        </React.Fragment>
                       ))}
                     <Grid item md={16} xs={16}>
                       <Divider>

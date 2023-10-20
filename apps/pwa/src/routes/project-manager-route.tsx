@@ -5,7 +5,9 @@ import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
 import CeoClientListPage from 'pages/ceo/CeoClientListPage';
-import { FEATURE_MENU_CLIENT_FILES } from 'config';
+import { FEATURE_MENU_CLIENT_FILES, FEATURE_NESTED_TRACK_BUDGET } from 'config';
+import TracksBudget from 'pages/admin/TracksBudget';
+import ViewNewSectionTracks from 'sections/admin/track-budget/section-track/ViewNewSectionTracks';
 
 const MainProjectManager = Loadable(lazy(() => import('pages/project-manager/MainPage')));
 const IncomingFundingRequestsProjectManager = Loadable(
@@ -81,6 +83,16 @@ export const projectManagerRoute = {
       children: [
         { element: <Navigate to="/project-manager/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainProjectManager /> },
+        {
+          path: 'tracks-budget',
+          children: [
+            { path: '', element: <TracksBudget /> },
+            {
+              path: ':id/details',
+              element: FEATURE_NESTED_TRACK_BUDGET && <ViewNewSectionTracks />,
+            },
+          ],
+        },
         { path: 'amandment-request/:id', element: <AmandementRequest /> },
         { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {

@@ -45,18 +45,24 @@ export default function TrackBudgetPage() {
   const getTrackDatas = async (track_id?: string) => {
     try {
       setLoadingPage(true);
-      const { status, data } = await axiosInstance.get('/tender/track', {
+
+      const path = !track_id ? '/tender/track' : `/tender/track/${track_id}`;
+
+      const { status, data } = await axiosInstance.get(path, {
         params: {
           is_deleted: '0',
           include_general: '0',
           include_relations: 'track_sections',
-          track_id: track_id || undefined,
         },
         headers: { 'x-hasura-role': activeRole! },
       });
 
       if (status === 200) {
-        setTrackTempValues(data.data);
+        if (track_id) {
+          setTrackTempValues([data.data]);
+        } else {
+          setTrackTempValues(data.data);
+        }
       }
     } catch (err) {
       if (typeof err.message === 'object') {
@@ -123,12 +129,12 @@ export default function TrackBudgetPage() {
     if (!fetching_employee && activeRole !== 'tender_project_manager') {
       getTrackDatas();
     } else {
-      if (data_employee?.track_id) {
-        getTrackDatas(data_employee?.track_id);
+      if (data_employee && data_employee.data.track_id) {
+        getTrackDatas(data_employee.data.track_id);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetching_employee]);
+  }, [fetching_employee, data_employee]);
 
   if (error || error_employee) return <>Opss. somthing went wrong</>;
 

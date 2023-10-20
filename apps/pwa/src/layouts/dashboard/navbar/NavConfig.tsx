@@ -88,6 +88,7 @@ const ICONS = {
   },
   tender_ceo: {
     main: getIcon('main'),
+    tracks_budget: getIcon('tracks-budget'),
     project_management: getIcon('project-management'),
     rejection_list: getIcon('rejection-list'),
     client_list: getIcon('users-and-permissions'),
@@ -375,6 +376,11 @@ const navConfig = {
           icon: ICONS.tender_ceo.main,
         },
         {
+          title: 'tracks_budget',
+          path: PATH_CEO.tracks_budget,
+          icon: ICONS.tender_ceo.tracks_budget,
+        },
+        {
           title: 'project_management',
           path: PATH_CEO.project_management,
           icon: ICONS.tender_ceo.project_management,
@@ -426,6 +432,11 @@ const navConfig = {
           title: 'main',
           path: PATH_PROJECT_MANAGER.app,
           icon: ICONS.tender_project_manager.main,
+        },
+        {
+          title: 'tracks_budget',
+          path: PATH_PROJECT_MANAGER.tracks_budget,
+          icon: ICONS.tender_ceo.tracks_budget,
         },
         {
           title: 'incoming_funding_requests',

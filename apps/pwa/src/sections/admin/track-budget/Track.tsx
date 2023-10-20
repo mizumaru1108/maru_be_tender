@@ -23,7 +23,22 @@ function Track({ id, name, budget }: any) {
   const [openConfirm, setOpenConfirm] = useState<boolean>(false);
 
   const handleShow = () => {
-    navigate(`/admin/dashboard/tracks-budget/${id}/details`);
+    switch (activeRole) {
+      case 'tender_ceo':
+        navigate(`/ceo/dashboard/tracks-budget/${id}/details`);
+        break;
+
+      case 'tender_project_manager':
+        navigate(`/project-manager/dashboard/tracks-budget/${id}/details`);
+        break;
+
+      case 'tender_admin':
+        navigate(`/admin/dashboard/tracks-budget/${id}/details`);
+        break;
+
+      default:
+        break;
+    }
   };
 
   const handleEdit = () => {
@@ -151,7 +166,7 @@ function Track({ id, name, budget }: any) {
         >
           {translate('pages.admin.tracks_budget.btn.review')}
         </Button>
-        {(activeRole === 'tender_admin' || activeRole === 'tender_ceo') && (
+        {activeRole === 'tender_admin' && (
           <Button
             variant="contained"
             sx={{
