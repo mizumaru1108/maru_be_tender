@@ -392,23 +392,23 @@ export default function GeneralSecondForm({
         </Grid>
         <Grid item md={12} xs={12}>
           <RHFTextField
-            data-cy="acc_form_non_consulation_notes"
-            name="notes"
-            multiline
-            minRows={3}
-            label="ملاحظات على المشروع"
-            placeholder="اكتب ملاحظاتك هنا"
-            disabled={edit}
-          />
-        </Grid>
-        <Grid item md={12} xs={12}>
-          <RHFTextField
             data-cy="acc_form_non_consulation_support_outputs"
             name="support_outputs"
             multiline
             minRows={3}
             label="مخرجات الدعم (لصالح)*"
             placeholder="اكتب هنا"
+            disabled={edit}
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <RHFTextField
+            data-cy="acc_form_non_consulation_notes"
+            name="notes"
+            multiline
+            minRows={3}
+            label="ملاحظات على المشروع"
+            placeholder="اكتب ملاحظاتك هنا"
             disabled={edit}
           />
         </Grid>

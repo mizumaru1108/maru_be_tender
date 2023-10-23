@@ -34,6 +34,9 @@ function PartnerManagementPage() {
   // Table Client
   const [resultAllClient, reexecuteAllClient] = useQuery({
     query: getAllClient,
+    variables: {
+      _nin: ['DELETED'],
+    },
   });
 
   const {

@@ -565,21 +565,21 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         <Grid item md={12} xs={12}>
           <BaseField
             disabled={save}
-            data-cy="acc_form_consulation_notes"
-            type="textArea"
-            name="notes"
-            label="ملاحظات على المشروع"
-            placeholder="اكتب ملاحظاتك هنا"
-          />
-        </Grid>
-        <Grid item md={12} xs={12}>
-          <BaseField
-            disabled={save}
             data-cy="acc_form_consulation_support_outputs"
             type="textArea"
             name="support_outputs"
             label="مخرجات الدعم (لصالح)*"
             placeholder="اكتب هنا"
+          />
+        </Grid>
+        <Grid item md={12} xs={12}>
+          <BaseField
+            disabled={save}
+            data-cy="acc_form_consulation_notes"
+            type="textArea"
+            name="notes"
+            label="ملاحظات على المشروع"
+            placeholder="اكتب ملاحظاتك هنا"
           />
         </Grid>
         {isSupevisor ? null : (

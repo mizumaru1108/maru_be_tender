@@ -27,8 +27,8 @@
 // `;
 
 export const getAllClient = `
-query getAllClient {
-  user(where: {roles: {user_type_id: {_eq: CLIENT}}}) {
+query getAllClient($_nin: [user_status_enum!] = ACTIVE_ACCOUNT) {
+  user(where: {roles: {user_type_id: {_eq: CLIENT}}, client_data: {user: {status_id: {_nin: $_nin}}}}) {
     id
     email
     status_id
@@ -41,5 +41,6 @@ query getAllClient {
     }
   }
 }
+
 
 `;

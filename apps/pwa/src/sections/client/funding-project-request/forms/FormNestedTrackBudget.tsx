@@ -20,7 +20,7 @@ const getArrayDifference = (arr1: TrackSection[], arr2: TrackSection[]) => {
   });
 };
 
-function flattenChildTrackSections(arr: TrackSection[], track_id: string): TrackSection[] {
+export function flattenChildTrackSections(arr: TrackSection[], track_id: string): TrackSection[] {
   let result: TrackSection[] = [];
 
   for (const item of arr) {

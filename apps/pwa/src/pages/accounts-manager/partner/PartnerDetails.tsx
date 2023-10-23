@@ -163,6 +163,8 @@ function AccountPartnerDetails() {
         variant: 'error',
       });
       console.log(err);
+    } finally {
+      navigate('/accounts-manager/dashboard/partner/management');
     }
   };
 
@@ -361,6 +363,8 @@ function AccountPartnerDetails() {
                     ((dynamicState === 'WAITING_FOR_ACTIVATION' ||
                       dynamicState === 'REVISED_ACCOUNT') &&
                       translate('account_manager.table.td.label_waiting_activation')) ||
+                    (dynamicState === 'DELETED' &&
+                      translate('account_manager.table.td.label_deleted')) ||
                     (dynamicState !== 'waiting' &&
                       dynamicState !== 'approved' &&
                       translate('account_manager.table.td.label_canceled_account'))}
@@ -897,72 +901,75 @@ function AccountPartnerDetails() {
                   </Grid>
                 </Grid>
               </Grid>
-              <Box
-                sx={{
-                  backgroundColor: 'white',
-                  p: 3,
-                  borderRadius: 1,
-                  position: 'sticky',
-                  width: '100%',
-                  bottom: 24,
-                  border: `1px solid ${theme.palette.grey[400]}`,
-                }}
-              >
-                <Grid container spacing={2} alignItems="center" justifyContent="space-around">
-                  <Grid item>
-                    {dynamicState === 'ACTIVE_ACCOUNT' ? (
+              {dynamicState !== 'DELETED' && (
+                <Box
+                  sx={{
+                    backgroundColor: 'white',
+                    p: 3,
+                    borderRadius: 1,
+                    position: 'sticky',
+                    width: '100%',
+                    bottom: 24,
+                    border: `1px solid ${theme.palette.grey[400]}`,
+                  }}
+                >
+                  <Grid container spacing={2} alignItems="center" justifyContent="space-around">
+                    <Grid item>
+                      {dynamicState === 'ACTIVE_ACCOUNT' ? (
+                        <Button
+                          onClick={() =>
+                            handleChangeStatus(partnerDetails?.id!, 'SUSPENDED_ACCOUNT')
+                          }
+                          variant="contained"
+                          color="warning"
+                          // disabled={isSubmitting}
+                          disabled
+                        >
+                          {translate('account_manager.partner_details.btn_disabled_account')}
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => handleChangeStatus(params.partnerId!, 'ACTIVE_ACCOUNT')}
+                          variant="contained"
+                          color="primary"
+                          disabled={isSubmitting}
+                        >
+                          {translate('account_manager.partner_details.btn_activate_account')}
+                        </Button>
+                      )}
+                    </Grid>
+                    <Grid item>
                       <Button
-                        onClick={() => handleChangeStatus(partnerDetails?.id!, 'SUSPENDED_ACCOUNT')}
                         variant="contained"
-                        color="warning"
-                        // disabled={isSubmitting}
-                        disabled
+                        color="error"
+                        onClick={() => handleChangeStatus(partnerId || '', 'CANCELED_ACCOUNT')}
+                        disabled={isSubmitting || dynamicState === 'CANCELED_ACCOUNT'}
                       >
-                        {translate('account_manager.partner_details.btn_disabled_account')}
+                        {translate('account_manager.partner_details.btn_canceled_account')}
                       </Button>
-                    ) : (
+                    </Grid>
+                    <Grid item>
                       <Button
-                        onClick={() => handleChangeStatus(params.partnerId!, 'ACTIVE_ACCOUNT')}
                         variant="contained"
-                        color="primary"
+                        color="error"
+                        onClick={() => setAction('DELETED')}
                         disabled={isSubmitting}
                       >
-                        {translate('account_manager.partner_details.btn_activate_account')}
+                        {translate('account_manager.partner_details.btn_deleted_account')}
                       </Button>
-                    )}
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => handleChangeStatus(partnerId || '', 'CANCELED_ACCOUNT')}
-                      disabled={isSubmitting || dynamicState === 'CANCELED_ACCOUNT'}
-                    >
-                      {translate('account_manager.partner_details.btn_canceled_account')}
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => setAction('DELETED')}
-                      disabled={isSubmitting}
-                    >
-                      {translate('account_manager.partner_details.btn_deleted_account')}
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      variant="outlined"
-                      color="inherit"
-                      endIcon={<Iconify icon="eva:message-circle-outline" />}
-                      // onClick={() => navigate(PATH_ACCOUNTS_MANAGER.messages)}
-                      onClick={handleMessage}
-                    >
-                      {translate('account_manager.partner_details.send_messages')}
-                    </Button>
-                  </Grid>
-                  {/* <Grid item>
+                    </Grid>
+                    <Grid item>
+                      <Button
+                        variant="outlined"
+                        color="inherit"
+                        endIcon={<Iconify icon="eva:message-circle-outline" />}
+                        // onClick={() => navigate(PATH_ACCOUNTS_MANAGER.messages)}
+                        onClick={handleMessage}
+                      >
+                        {translate('account_manager.partner_details.send_messages')}
+                      </Button>
+                    </Grid>
+                    {/* <Grid item>
                     <Button
                       variant="contained"
                       color="info"
@@ -976,8 +983,9 @@ function AccountPartnerDetails() {
                       {translate('account_manager.partner_details.submit_amendment_request')}
                     </Button>
                   </Grid> */}
-                </Grid>
-              </Box>
+                  </Grid>
+                </Box>
+              )}
               {action === 'DELETED' && (
                 <ConfirmationModals
                   type="DELETED_ACCOUNT"

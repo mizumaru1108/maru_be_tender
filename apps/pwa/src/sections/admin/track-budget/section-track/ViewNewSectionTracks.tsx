@@ -27,6 +27,7 @@ import { dispatch, useSelector } from '../../../../redux/store';
 import { fCurrencyNumber } from '../../../../utils/formatNumber';
 import { TrackSection } from '../../../../@types/commons';
 import { lighten } from '@mui/material/styles';
+import { flattenChildTrackSections } from '../../../client/funding-project-request/forms/FormNestedTrackBudget';
 
 // ------------------------------------------------------------------------------------------
 
@@ -68,6 +69,11 @@ export default function ViewNewSectionTracks() {
     }
   };
 
+  // const handleSectionBudget = async () => {
+  //   const flatArray = flattenChildTrackSections(track?.sections || [], track?.id);
+  //   console.log({ flatArray });
+  // };
+
   // fetching track by id
   useEffect(() => {
     dispatch(getTracksById(activeRole!, track_id || ''));
@@ -95,6 +101,12 @@ export default function ViewNewSectionTracks() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
+
+  // useEffect(() => {
+  //   if (track && !load) {
+  //     handleSectionBudget();
+  //   }
+  // }, [track, load]);
 
   if (load) return <>{translate('pages.common.loading')}</>;
 
@@ -167,6 +179,24 @@ export default function ViewNewSectionTracks() {
                             {item?.name || '-'}
                           </Typography>
                         </Grid>
+                        {/* <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
+                          <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                            {translate(
+                              'content.administrative.statistic.heading.totalReservedBudget'
+                            )}
+                          </Typography>
+                          <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                            {fCurrencyNumber(item?.budget || 0)}
+                          </Typography>
+                        </Grid>
+                        <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
+                          <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                            {translate('content.administrative.statistic.heading.totalSpendBudget')}
+                          </Typography>
+                          <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                            {fCurrencyNumber(item?.budget || 0)}
+                          </Typography>
+                        </Grid> */}
                         <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
                           <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
                             {translate('content.administrative.statistic.heading.totalBudget')}

@@ -9,14 +9,18 @@ import { useSelector } from 'redux/store';
 import * as Yup from 'yup';
 import { SupervisorStep3 } from '../../../../../../@types/supervisor-accepting-form';
 import BaseField from '../../../../../../components/hook-form/BaseField';
+import RHFSelectNoGenerator from '../../../../../../components/hook-form/RHFSelectNoGen';
 import useAuth from '../../../../../../hooks/useAuth';
 import { ThirdFormData } from './form-data';
 
 function ThirdForm({ children, onSubmit }: any) {
   const { activeRole } = useAuth();
+  const { step3 } = useSelector((state) => state.supervisorAcceptingForm);
+  const { beneficiaries_list, loadingProps } = useSelector((state) => state.proposal);
+  // console.log({ beneficiaries_list, load: loadingProps.loadingBeneficiary });
+
   const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
   const [edit, setEdit] = useState<boolean>(isSupevisor ? false : true);
-  const { step3 } = useSelector((state) => state.supervisorAcceptingForm);
   const { translate } = useLocales();
   const validationSchema = Yup.object().shape({
     project_name: Yup.string().required(translate('errors.cre_proposal.project_name.required')),
@@ -71,6 +75,7 @@ function ThirdForm({ children, onSubmit }: any) {
   const onSubmitForm = async (data: SupervisorStep3) => {
     onSubmit(data);
   };
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
@@ -149,7 +154,7 @@ function ThirdForm({ children, onSubmit }: any) {
         </Grid>
 
         <Grid item md={4} xs={4}>
-          <BaseField
+          {/* <BaseField
             type="selectWithoutGenerator"
             name="target_group_type"
             label="نوعهم*"
@@ -188,7 +193,27 @@ function ThirdForm({ children, onSubmit }: any) {
                 عاملين في الجهات الخيرية
               </option>
             </>
-          </BaseField>
+          </BaseField> */}
+          <RHFSelectNoGenerator
+            disabled={edit}
+            name="target_group_type"
+            label="نوعهم*"
+            placeholder="الرجاء اختيار نوعهم"
+          >
+            {beneficiaries_list.length > 0 &&
+              beneficiaries_list
+                .filter((item) => item.is_deleted === false)
+                .map((item, index) => (
+                  <option
+                    data-cy={`target_group_type${index}`}
+                    key={index}
+                    value={item?.name}
+                    style={{ backgroundColor: '#fff' }}
+                  >
+                    {item?.name}
+                  </option>
+                ))}
+          </RHFSelectNoGenerator>
         </Grid>
 
         <Grid item md={4} xs={4}>

@@ -5,7 +5,7 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import { updateProposalByFacilitatedSupervisor } from 'queries/project-supervisor/updateProposalByFacilitatedSupervisor';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import {
   setStepFive,
@@ -18,7 +18,7 @@ import {
 import { useDispatch, useSelector } from 'redux/store';
 import { useMutation } from 'urql';
 import axiosInstance from 'utils/axios';
-import { getProposalCount } from '../../../../../../redux/slices/proposal';
+import { getBeneficiariesList, getProposalCount } from '../../../../../../redux/slices/proposal';
 import ActionBox from './ActionBox';
 import FifthForm from './FifthForm';
 import FirstForm from './FirstForm';
