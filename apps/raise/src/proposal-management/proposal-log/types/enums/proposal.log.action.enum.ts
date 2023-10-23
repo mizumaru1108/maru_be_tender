@@ -60,4 +60,6 @@ export enum ProposalLogActionEnum {
    * Brief: Other admin roles ask to supervisor to send an amandement to client.
    */
   ASK_FOR_AMANDEMENT_REQUEST = 'ask_for_amandement_request',
+
+  ACCEPT = 'accept',
 }

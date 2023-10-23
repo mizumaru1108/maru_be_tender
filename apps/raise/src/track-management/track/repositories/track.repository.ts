@@ -86,6 +86,7 @@ export class TrackRepository {
                   cheques: true,
                 },
               },
+              proposal_logs: true,
             },
           },
         };

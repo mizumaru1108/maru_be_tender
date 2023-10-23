@@ -1,12 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, cheque, payment, track, track_section } from '@prisma/client';
+import {
+  Prisma,
+  cheque,
+  payment,
+  proposal_log,
+  track,
+  track_section,
+} from '@prisma/client';
 import { Builder } from 'builder-pattern';
+import { ChequeEntity } from '../../../proposal-management/payment/entities/cheque.entity';
+import { ProposalPaymentEntity } from '../../../proposal-management/payment/entities/proposal-payment.entity';
+import { PaymentStatusEnum } from '../../../proposal-management/payment/types/enums/payment.status.enum';
+import { ProposalLogEntity } from '../../../proposal-management/proposal-log/entities/proposal-log.entity';
+import { ProposalLogActionEnum } from '../../../proposal-management/proposal-log/types/enums/proposal.log.action.enum';
 import { ProposalEntity } from '../../../proposal-management/proposal/entities/proposal.entity';
+import { TenderAppRoleEnum } from '../../../tender-commons/types';
 import { TrackSectionEntity } from '../../track-section/entities/track.section.entity';
 import { TrackEntity } from '../entities/track.entity';
-import { ProposalPaymentEntity } from '../../../proposal-management/payment/entities/proposal-payment.entity';
-import { ChequeEntity } from '../../../proposal-management/payment/entities/cheque.entity';
-import { PaymentStatusEnum } from '../../../proposal-management/payment/types/enums/payment.status.enum';
 
 export type TrackModel = track & {
   proposal?: {
@@ -17,6 +27,7 @@ export type TrackModel = track & {
     payments: (payment & {
       cheques: cheque[];
     })[];
+    proposal_logs: proposal_log[];
   }[];
   track_section?: (track_section & {
     child_track_section: (track_section & {
@@ -43,9 +54,12 @@ export class TrackMapper {
 
       let sum_spending_budget = 0;
       let sum_reserved_budget = 0;
+      let sum_spending_budget_by_ceo = 0;
       if (proposal.length > 0) {
         for (const p of proposal) {
           let payments: ProposalPaymentEntity[] = [];
+          let logs: ProposalLogEntity[] = [];
+
           if (p.payments.length > 0) {
             for (const payment of p.payments) {
               if (payment.status === PaymentStatusEnum.DONE) {
@@ -88,6 +102,24 @@ export class TrackMapper {
 
           sum_spending_budget += fSupport;
 
+          if (p.proposal_logs.length > 0) {
+            for (const log of p.proposal_logs) {
+              if (
+                log.action === ProposalLogActionEnum.ACCEPT &&
+                log.state === TenderAppRoleEnum.CEO &&
+                log.user_role === TenderAppRoleEnum.CEO
+              ) {
+                sum_spending_budget_by_ceo += fSupport;
+              }
+
+              logs.push(
+                Builder<ProposalLogEntity>(ProposalLogEntity, {
+                  ...log,
+                }).build(),
+              );
+            }
+          }
+
           proposals.push(
             Builder<ProposalEntity>(ProposalEntity, {
               ...p,
@@ -100,6 +132,7 @@ export class TrackMapper {
               execution_time: undefined,
               follow_ups: undefined,
               payments,
+              proposal_logs: logs,
             }).build(),
           );
         }
@@ -171,11 +204,6 @@ export class TrackMapper {
     }
 
     const buildedTrack = trackBuilder.build();
-
-    // if (buildedTrack.total_budget && buildedTrack.total_spending_budget) {
-    //   buildedTrack.total_reserved_budget =
-    //     buildedTrack.total_budget - buildedTrack.total_spending_budget;
-    // }
 
     return buildedTrack;
   }

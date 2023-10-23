@@ -1004,6 +1004,7 @@ export class ProposalService {
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalUpdatePayload.project_manager_id = null;
+      proposalUpdatePayload.support_outputs = null;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.STEP_BACK;
