@@ -1691,8 +1691,6 @@ export class ProposalRepository {
           whereClause = {
             ...whereClause,
             OR: [
-              // { cashier_id: currentUser.id },
-              // { cashier_id: null },
               {
                 payments: {
                   some: {

@@ -17,6 +17,7 @@ import { useNavigate, useParams } from 'react-router';
 import RejectionModal from 'components/modal-dialog/RejectionModal';
 import { FEATURE_PAYEMENTS_NEW, FEATURE_PROPOSAL_COUNTING } from 'config';
 import { TransferReceipt } from '../../../../@types/proposal';
+import { LoadingButton } from '@mui/lab';
 
 function PaymentsTable() {
   const { activeRole } = useAuth();
@@ -28,20 +29,11 @@ function PaymentsTable() {
   const dispatch = useDispatch();
 
   const { proposal } = useSelector((state) => state.proposal);
-  // console.log({ proposal });
+
   const paymentSorting = [...proposal.payments].sort(
     (a, b) => parseInt(a.order) - parseInt(b.order)
   );
-  // const alreadyExist =
-  //   proposal.proposal_logs.findIndex((item) => {
-  //     if (item.action === 'set_by_supervisor' && item.user_role === 'PROJECT_MANAGER') {
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   }) !== -1
-  //     ? true
-  //     : false;
+
   const stepBeforeComplete = paymentSorting.findIndex(
     (item) => item.status === 'issued_by_supervisor' || item.status === 'set_by_supervisor'
   );
@@ -89,6 +81,7 @@ function PaymentsTable() {
 
   const handleApprovalPayment = async (id: string) => {
     try {
+      setIsLoading(true);
       await dispatch(
         updatePaymentBySupervisorAndManagerAndFinance({
           id,
@@ -116,15 +109,6 @@ function PaymentsTable() {
         }
       });
     } catch (error) {
-      // enqueueSnackbar(error.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'right',
-      //   },
-      // });
       const statusCode = (error && error.statusCode) || 0;
       const message = (error && error.message) || null;
       enqueueSnackbar(
@@ -141,12 +125,12 @@ function PaymentsTable() {
           },
         }
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleRejectPayment = async (id: string, note?: string) => {
-    // console.log({ note });
-
     try {
       setIsLoading(true);
       await dispatch(
@@ -293,7 +277,7 @@ function PaymentsTable() {
             {item.status === 'issued_by_supervisor' ? (
               <>
                 <Grid item md={2}>
-                  <Button
+                  <LoadingButton
                     data-cy={`content.administrative.project_details.payment.table.btn.exchange_permit_refuse_${index}`}
                     sx={{
                       backgroundColor: '#FF4842',
@@ -306,6 +290,7 @@ function PaymentsTable() {
                       currentSelectedIndex !== stepBeforeComplete ||
                       isLoading
                     }
+                    loading={isLoading}
                     onClick={() => {
                       setSelectedPaymentId(item.id);
                       setOpenModalReject(true);
@@ -314,10 +299,10 @@ function PaymentsTable() {
                     {translate(
                       'content.administrative.project_details.payment.table.btn.exchange_permit_refuse'
                     )}
-                  </Button>
+                  </LoadingButton>
                 </Grid>
                 <Grid item md={2}>
-                  <Button
+                  <LoadingButton
                     data-cy={`content.administrative.project_details.payment.table.btn.exchange_permit_approve_${index}`}
                     sx={{
                       backgroundColor: '#0E8478',
@@ -329,6 +314,7 @@ function PaymentsTable() {
                       currentSelectedIndex !== stepBeforeComplete ||
                       isLoading
                     }
+                    loading={isLoading}
                     onClick={() => {
                       handleApprovalPayment(item.id);
                     }}
@@ -336,7 +322,7 @@ function PaymentsTable() {
                     {translate(
                       'content.administrative.project_details.payment.table.btn.exchange_permit_approve'
                     )}
-                  </Button>
+                  </LoadingButton>
                 </Grid>
               </>
             ) : currentSelectedIndex === stepBeforeComplete &&

@@ -72,7 +72,7 @@ function ProposalAcceptingForm({ onClose }: ModalProposalType) {
     const { ...restStep1 } = step1;
     const editedBy = location.pathname.split('/')[1];
     setIsSubmitting(true);
-    console.log({ notes });
+    // console.log({ notes });
 
     try {
       let payload: any = {

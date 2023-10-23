@@ -283,6 +283,7 @@ function DataTab({ EditValues, compareValues, EditType, OldData }: DataTabProps)
               component={Link}
               href={EditValues.license_file.url || '#'}
               target="_blank"
+              rel="noopener noreferrer"
               sx={{
                 mt: 1,
                 fontWeight: theme.typography.fontWeightMedium,
@@ -292,10 +293,17 @@ function DataTab({ EditValues, compareValues, EditType, OldData }: DataTabProps)
                 //   (EditValues.license_file.color !== 'transparent' &&
                 //     EditValues.license_file.color) ||
                 //   '#000',
+                color:
+                  compareValues?.hasOwnProperty('license_file') && EditType === 'new-data'
+                    ? 'green'
+                    : compareValues?.hasOwnProperty('license_file') && EditType === 'previous-data'
+                    ? 'red'
+                    : 'black',
               }}
             >
+              اضغط هنا لرؤية ملف الترخيص
               {/* {EditValues.license_file.url || '-'} */}
-              <a
+              {/* <a
                 target="_blank"
                 rel="noopener noreferrer"
                 href={EditValues.license_file.url || '#'}
@@ -310,7 +318,7 @@ function DataTab({ EditValues, compareValues, EditType, OldData }: DataTabProps)
                 }}
               >
                 اضغط هنا لرؤية ملف الترخيص
-              </a>
+              </a> */}
             </Typography>
             {/* <Typography>
               <a target="_blank" rel="noopener noreferrer" href={license_file.url || '#'}>

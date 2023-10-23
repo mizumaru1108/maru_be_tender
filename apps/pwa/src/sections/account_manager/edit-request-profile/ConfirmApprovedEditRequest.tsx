@@ -7,19 +7,26 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router';
 import axiosInstance from '../../../utils/axios';
+import { IEditedValues } from '../../../@types/client_data';
 
 type Props = {
   open: boolean;
   handleClose: () => void;
+  EditValues: {
+    old_data: IEditedValues;
+    new_data: IEditedValues;
+    difference: IEditedValues;
+  };
 };
 
-function ConfirmApprovedEditRequest({ open, handleClose }: Props) {
+function ConfirmApprovedEditRequest({ open, handleClose, EditValues }: Props) {
   const { user, activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useLocales();
   const navigate = useNavigate();
   const params = useParams();
   const [loading, setLoading] = React.useState(false);
+  const [showBankTextAlert, setShowBankTextAlert] = React.useState<boolean>(false);
 
   const handleAccepted = async () => {
     setLoading(true);
@@ -85,6 +92,17 @@ function ConfirmApprovedEditRequest({ open, handleClose }: Props) {
     }
   };
 
+  React.useEffect(() => {
+    const oldBankInfo = EditValues.old_data.bank_information;
+    const newBankInfo = EditValues.new_data.bank_information;
+
+    if (open) {
+      if (newBankInfo?.length !== oldBankInfo?.length) {
+        setShowBankTextAlert(true);
+      }
+    }
+  }, [EditValues, open]);
+
   return (
     <ModalDialog
       maxWidth="md"
@@ -96,6 +114,15 @@ function ConfirmApprovedEditRequest({ open, handleClose }: Props) {
         </Stack>
       }
       showCloseIcon={true}
+      content={
+        <>
+          {showBankTextAlert && (
+            <Typography variant="h6" fontWeight="bold" color="#000000">
+              يرجى التأكد من أن بيانات البنك تم تحديثها بشكل صحيح من قبل العميل
+            </Typography>
+          )}
+        </>
+      }
       actionBtn={
         <Stack direction="row" justifyContent="space-around" gap={4}>
           <Button
