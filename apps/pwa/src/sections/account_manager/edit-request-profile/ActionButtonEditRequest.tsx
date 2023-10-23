@@ -2,14 +2,21 @@ import { Box, Button, Grid, useTheme } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useState } from 'react';
 import ConfirmApprovedEditRequest from './ConfirmApprovedEditRequest';
+import { IEditedValues } from '../../../@types/client_data';
 
 interface Props {
+  open: boolean;
   EditStatus: string;
   setOpen: () => void;
+  EditValues: {
+    old_data: IEditedValues;
+    new_data: IEditedValues;
+    difference: IEditedValues;
+  };
 }
 
-function ActionButtonEditRequest({ EditStatus, setOpen }: Props) {
-  const [openModal, setOpenModal] = useState(false);
+function ActionButtonEditRequest({ open, EditValues, EditStatus, setOpen }: Props) {
+  const [openModal, setOpenModal] = useState(open);
   const { translate } = useLocales();
   const theme = useTheme();
 
@@ -56,7 +63,11 @@ function ActionButtonEditRequest({ EditStatus, setOpen }: Props) {
           >
             {translate('account_manager.button.rejectEdit')}
           </Button>
-          <ConfirmApprovedEditRequest open={openModal} handleClose={() => setOpenModal(false)} />
+          <ConfirmApprovedEditRequest
+            open={openModal}
+            handleClose={() => setOpenModal(false)}
+            EditValues={EditValues}
+          />
         </Grid>
       </Grid>
     </Box>

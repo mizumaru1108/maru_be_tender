@@ -137,7 +137,9 @@ function EditRequestDetails() {
               <EditRequestTabs EditValues={tmpEditValues} />
               {(EditStatus === 'PENDING' || EditStatus === 'REJECTED') && (
                 <ActionButtonEditRequest
+                  open={open}
                   EditStatus={EditStatus}
+                  EditValues={tmpEditValues}
                   setOpen={() => {
                     setOpen(true);
                   }}
