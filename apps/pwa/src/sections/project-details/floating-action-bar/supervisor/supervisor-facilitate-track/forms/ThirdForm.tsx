@@ -17,7 +17,7 @@ function ThirdForm({ children, onSubmit }: any) {
   const { activeRole } = useAuth();
   const { step3 } = useSelector((state) => state.supervisorAcceptingForm);
   const { beneficiaries_list, loadingProps } = useSelector((state) => state.proposal);
-  // console.log({ beneficiaries_list, load: loadingProps.loadingBeneficiary });
+  // console.log({ step3 });
 
   const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
   const [edit, setEdit] = useState<boolean>(isSupevisor ? false : true);

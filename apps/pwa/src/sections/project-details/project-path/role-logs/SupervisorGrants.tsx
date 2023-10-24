@@ -287,43 +287,40 @@ function SupervisorGrants({ stepGransLog }: Props) {
                     </Grid>
                   );
                 }
-                if (key === 'target_group_type') {
-                  const tmpVal: string = value as string;
-                  if (tmpVal) {
-                    return (
-                      <Grid item xs={6} key={key}>
-                        <Typography variant="h6">
-                          {
-                            // key
-                            translate(`review.${key}`)
-                          }
-                        </Typography>
-                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                          <Typography>
-                            {translate(`review.target_group_type_enum.${value}`)}
-                            {/* {target_type_map[tmpVal.toUpperCase() as keyof BeneficiariesMap]
-                              ? translate(`review.target_group_type_enum.${value}`)
-                              : value} */}
-                          </Typography>
-                        </Stack>
-                      </Grid>
-                    );
-                  } else {
-                    return (
-                      <Grid item xs={6} key={key}>
-                        <Typography variant="h6">
-                          {
-                            // key
-                            translate(`review.${key}`)
-                          }
-                        </Typography>
-                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                          <Typography>{'-'}</Typography>
-                        </Stack>
-                      </Grid>
-                    );
-                  }
-                }
+                // if (key === 'target_group_type') {
+                //   const tmpVal: string = value as string;
+                //   if (tmpVal) {
+                //     return (
+                //       <Grid item xs={6} key={key}>
+                //         <Typography variant="h6">
+                //           {
+                //             // key
+                //             translate(`review.${key}`)
+                //           }
+                //         </Typography>
+                //         <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                //           <Typography>
+                //             {translate(`review.target_group_type_enum.${value}`)}
+                //           </Typography>
+                //         </Stack>
+                //       </Grid>
+                //     );
+                //   } else {
+                //     return (
+                //       <Grid item xs={6} key={key}>
+                //         <Typography variant="h6">
+                //           {
+                //             // key
+                //             translate(`review.${key}`)
+                //           }
+                //         </Typography>
+                //         <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                //           <Typography>{'-'}</Typography>
+                //         </Stack>
+                //       </Grid>
+                //     );
+                //   }
+                // }
                 if (key === 'target_group_age') {
                   const tmpVal: string = value as string;
                   if (tmpVal) {

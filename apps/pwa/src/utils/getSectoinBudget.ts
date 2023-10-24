@@ -21,6 +21,9 @@ export const getSectoinBudget = async (props: TGetSectionBudget): Promise<TrackP
   try {
     const response = await axiosInstance.get(`tender/track-sections/${props.id}`, {
       headers: { 'x-hasura-role': props.role },
+      params: {
+        include_relations: 'child_track_section,proposal',
+      },
     });
     value = response.data.data;
   } catch (error) {

@@ -191,7 +191,8 @@ const slice = createSlice({
         (action.payload.target_group_type &&
           target_type_map[
             action.payload.target_group_type.toUpperCase() as keyof BeneficiariesMap
-          ]) ??
+          ]) ||
+        action.payload.target_group_type ||
         '';
       state.step3.target_group_num = action.payload.target_group_num ?? undefined;
       state.step3.reasons_to_accept = action.payload.reasons_to_accept ?? '';

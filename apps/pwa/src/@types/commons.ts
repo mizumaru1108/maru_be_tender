@@ -167,6 +167,8 @@ export interface TrackSection {
   child_track_section?: TrackSection[];
   parent_section_id?: string;
   is_deleted?: boolean;
+  section_spending_budget?: number;
+  section_reserved_budget?: number;
 }
 
 export interface TrackProps {
