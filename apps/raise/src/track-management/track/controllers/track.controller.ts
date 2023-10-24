@@ -174,7 +174,7 @@ export class TrackController {
       return baseResponseHelper(
         data,
         HttpStatus.OK,
-        'Banner Fetched Successfully!',
+        'Track Fetched Successfully!',
       );
     } catch (error) {
       throw this.errorMapper(error);

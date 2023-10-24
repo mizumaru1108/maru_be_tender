@@ -141,6 +141,7 @@ export class TrackMapper {
       trackBuilder.proposals(proposals);
       trackBuilder.total_spending_budget(sum_spending_budget);
       trackBuilder.total_reserved_budget(sum_reserved_budget);
+      trackBuilder.total_spending_budget_by_ceo(sum_spending_budget_by_ceo);
     }
 
     if (track_section) {
