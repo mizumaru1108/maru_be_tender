@@ -29,7 +29,7 @@ export class ProposalFollowUpEntity extends AggregateRoot {
         content: props.content,
         subject: props.subject,
         email: props.user_email,
-        email_sender: 'hello@hcharity.org',
+        email_sender: 'no-reply@hcharity.org',
         phone_number: props.user_phone,
         email_type: props.email_type,
         emailTemplateContext: props.emailTemplateContext,

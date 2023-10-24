@@ -338,7 +338,7 @@ Table user {
   id String [pk]
   employee_name String
   mobile_number String
-  email String [unique, not null]
+  email String [not null]
   updated_at DateTime [default: `now()`]
   created_at DateTime [default: `now()`]
   employee_path String

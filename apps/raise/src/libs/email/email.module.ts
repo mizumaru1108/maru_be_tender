@@ -18,7 +18,7 @@ import { EmailService } from './email.service';
         return {
           transport: transporterUrl,
           defaults: {
-            from: 'hello@hcharity.org',
+            from: 'no-reply@hcharity.org',
           },
           template: {
             dir: join(__dirname, './templates'),

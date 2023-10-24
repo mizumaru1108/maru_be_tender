@@ -621,7 +621,7 @@ export class TenderClientService {
 
     const baseSendEmail: Omit<SendEmailDto, 'to'> = {
       mailType: 'plain',
-      from: 'hello@hcharity.org',
+      from: 'no-reply@hcharity.org',
     };
 
     /* client ------------------------------------------------------------------------------------------------------------------------ */
@@ -688,7 +688,7 @@ export class TenderClientService {
 
     const baseSendEmail: Omit<SendEmailDto, 'to'> = {
       mailType: 'plain',
-      from: 'hello@hcharity.org',
+      from: 'no-reply@hcharity.org',
     };
 
     /* the client on this proposal ------------------------------------------------------------------------------------------------ */

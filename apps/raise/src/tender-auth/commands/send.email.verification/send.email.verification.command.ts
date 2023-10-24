@@ -48,7 +48,7 @@ export class SendEmailVerificationClassCommandHandler
         this.emailService.sendMail({
           mailType: 'template',
           to: email,
-          from: 'hello@hcharity.org',
+          from: 'no-reply@hcharity.org',
           subject: 'قم بتأكيد بريدك الألكتروني', // 'Verify Your Email'
           templateContext: {
             name: `${email}`,

@@ -44,7 +44,7 @@ export class ResetPasswordRequestCommandHandler
       this.emailService.sendMail({
         mailType: 'template',
         to: email,
-        from: 'hello@hcharity.org',
+        from: 'no-reply@hcharity.org',
         subject: 'استعادة كلمة المرور',
         templateContext: {
           name: user.employee_name,
