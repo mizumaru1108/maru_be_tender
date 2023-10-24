@@ -101,6 +101,18 @@ export default function RHFBaseRepeater({
               <React.Fragment key={tmpItem.id}>
                 <ListItem>
                   <Grid container alignItems="center">
+                    <Grid md={12} xs={12} sx={{ mb: 1.5 }} item>
+                      <Divider>
+                        <Chip
+                          label={
+                            <Typography>{`${translate('track_budgets.item')}-${
+                              index + 1
+                            }`}</Typography>
+                          }
+                        />
+                      </Divider>
+                      <Space direction="horizontal" size="small" />
+                    </Grid>
                     <Grid item md={1} xs={12} sx={{ padding: '0 7px' }}>
                       <ExpandMore
                         expand={openItems.includes(item.id)}
@@ -163,18 +175,6 @@ export default function RHFBaseRepeater({
                         expanded={openItems.includes(item.id)}
                         {...{ control, register, watch, setValue }}
                       />
-                    </Grid>
-                    <Grid md={12} xs={12} sx={{ mt: 2 }} item>
-                      <Divider>
-                        <Chip
-                          label={
-                            <Typography>{`${translate('track_budgets.item')}-${
-                              index + 1
-                            }`}</Typography>
-                          }
-                        />
-                      </Divider>
-                      <Space direction="horizontal" size="small" />
                     </Grid>
                   </Grid>
                 </ListItem>

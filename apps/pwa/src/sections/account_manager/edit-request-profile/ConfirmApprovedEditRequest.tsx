@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Button, Stack, Typography } from '@mui/material';
+import { Button, Stack, Typography, useTheme } from '@mui/material';
 import ModalDialog from 'components/modal-dialog';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
@@ -25,6 +25,7 @@ function ConfirmApprovedEditRequest({ open, handleClose, EditValues }: Props) {
   const { translate } = useLocales();
   const navigate = useNavigate();
   const params = useParams();
+  const theme = useTheme();
   const [loading, setLoading] = React.useState(false);
   const [showBankTextAlert, setShowBankTextAlert] = React.useState<boolean>(false);
 
@@ -122,7 +123,7 @@ function ConfirmApprovedEditRequest({ open, handleClose, EditValues }: Props) {
       content={
         <>
           {showBankTextAlert && (
-            <Typography variant="h6" fontWeight="bold" color="#000000">
+            <Typography variant="h6" fontWeight="bold" sx={{ color: theme.palette.error.main }}>
               يرجى التأكد من أن بيانات البنك تم تحديثها بشكل صحيح من قبل العميل
             </Typography>
           )}

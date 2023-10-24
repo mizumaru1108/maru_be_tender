@@ -245,19 +245,7 @@ export default function FormNestedTrackBudget({
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container sx={{ mt: 3 }}>
-        {/* total amount track budget */}
-        <Grid item md={12} xs={12} sx={{ padding: '0 7px' }}>
-          <RHFTextField
-            disabled={isLoading}
-            name="total_budget"
-            type="number"
-            size="medium"
-            label={translate('pages.admin.tracks_budget.form.amount.label')}
-            placeholder={translate('pages.admin.tracks_budget.form.amount.placeholder')}
-          />
-        </Grid>
-
-        <Grid item md={12} xs={12} sx={{ mt: 2 }}>
+        <Grid item md={12} xs={12} sx={{ mb: 2.5 }}>
           <Divider>
             <Chip
               label={
@@ -269,6 +257,18 @@ export default function FormNestedTrackBudget({
               }
             />
           </Divider>
+        </Grid>
+
+        {/* total amount track budget */}
+        <Grid item md={12} xs={12} sx={{ padding: '0 7px' }}>
+          <RHFTextField
+            disabled={isLoading}
+            name="total_budget"
+            type="number"
+            size="medium"
+            label={translate('pages.admin.tracks_budget.form.amount.label')}
+            placeholder={translate('pages.admin.tracks_budget.form.amount.placeholder')}
+          />
         </Grid>
 
         <Space direction="horizontal" size="small" />

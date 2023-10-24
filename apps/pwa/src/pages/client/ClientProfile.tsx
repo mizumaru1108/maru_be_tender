@@ -121,7 +121,7 @@ function ClientProfile() {
       }
     } catch (err) {
       setLoadingEditButton(false);
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -182,15 +182,15 @@ function ClientProfile() {
         if (checkDeletedBank > -1) {
           setRunTour(true);
         } else {
-          console.log('all data complete');
+          // console.log('all data complete');
           setRunTour(false);
         }
       } else {
-        console.log('please complete your profile data');
+        // console.log('please complete your profile data');
         setRunTour(true);
       }
     } else {
-      console.log('please complete your profile data');
+      // console.log('please complete your profile data');
       setRunTour(true);
     }
   }
@@ -214,7 +214,7 @@ function ClientProfile() {
     if (clientProfiles !== undefined && !loadingEditButton) {
       ValidateDataClient(clientProfiles);
     } else {
-      console.log('please complete your profile data');
+      // console.log('please complete your profile data');
       setRunTour(true);
     }
   }, [clientProfiles, loadingEditButton]);

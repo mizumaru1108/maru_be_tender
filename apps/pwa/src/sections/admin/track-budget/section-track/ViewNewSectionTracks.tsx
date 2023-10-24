@@ -56,7 +56,7 @@ export default function ViewNewSectionTracks() {
   const { enqueueSnackbar } = useSnackbar();
   const { currentLang, translate } = useLocales();
   const [allSectionBudget, setAllSectionBudget] = useState<TrackSection[]>([]);
-  console.log({ allSectionBudget });
+  // console.log({ allSectionBudget });
 
   const [openItems, setOpenItems] = useState<string[]>([]);
 
@@ -170,6 +170,18 @@ export default function ViewNewSectionTracks() {
             {track?.sections && track?.sections?.length > 0
               ? track.sections?.map((item: TrackSection, index: number) => (
                   <Grid key={item?.id} container columns={16}>
+                    <Grid item md={16} xs={16}>
+                      <Divider>
+                        <Chip
+                          label={
+                            <Typography
+                              noWrap
+                              sx={{ fontSize: '14px' }}
+                            >{`${item?.name}`}</Typography>
+                          }
+                        />
+                      </Divider>
+                    </Grid>
                     <Grid item md={16} xs={16}>
                       <Grid container columns={20} justifyContent={'flex-end'}>
                         <Grid
@@ -533,18 +545,6 @@ export default function ViewNewSectionTracks() {
                             ))}
                         </React.Fragment>
                       ))}
-                    <Grid item md={16} xs={16}>
-                      <Divider>
-                        <Chip
-                          label={
-                            <Typography
-                              noWrap
-                              sx={{ fontSize: '14px' }}
-                            >{`${item?.name}`}</Typography>
-                          }
-                        />
-                      </Divider>
-                    </Grid>
                   </Grid>
                 ))
               : null}
