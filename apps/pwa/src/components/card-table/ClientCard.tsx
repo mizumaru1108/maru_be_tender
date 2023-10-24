@@ -167,7 +167,7 @@ const ClientCard = ({
               </React.Fragment>
             )}
 
-            <React.Fragment>
+            {/* <React.Fragment>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
                 {translate('project_management_headercell.entity_name')}
               </Typography>
@@ -186,7 +186,7 @@ const ClientCard = ({
               >
                 {entityName || '-'}
               </Typography>
-            </React.Fragment>
+            </React.Fragment> */}
 
             {email && (
               <React.Fragment>

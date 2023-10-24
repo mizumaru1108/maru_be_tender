@@ -183,6 +183,7 @@ export interface TrackProps {
   proposal?: Proposal[];
   total_spending_budget?: number;
   total_reserved_budget?: number;
+  total_spending_budget_by_ceo?: number;
   sections?: TrackSection[];
 }
 

@@ -32,16 +32,15 @@ export default function MessageMenuHeader({ onClickFilter }: Props) {
       >
         {translate('message')}
       </Typography>
-      <Button
+      {/* <Button
         sx={{ color: '#000', backgroundColor: '#fff', width: '82px', p: 1 }}
         variant="outlined"
         color="inherit"
         onClick={onClickFilter}
         startIcon={<Iconify icon={'clarity:filter-line'} color="#000" width={16} height={16} />}
-        // onClick={handleOpenFilter}
       >
         {translate('commons.filter_button_label')}
-      </Button>
+      </Button> */}
     </Stack>
   );
 }
