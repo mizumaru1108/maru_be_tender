@@ -57,7 +57,7 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
             target_group_age: stepGransLog?.new_values?.target_group_age,
             support_type: stepGransLog?.new_values?.support_type,
             support_outputs: stepGransLog?.new_values?.support_outputs,
-            support_goal_id: stepGransLog?.new_values?.support_goal_id,
+            // support_goal_id: stepGransLog?.new_values?.support_goal_id,
             remote_or_insite: stepGransLog?.new_values?.remote_or_insite,
             clasification_field: stepGransLog?.new_values?.clasification_field,
             reasons_to_accept: stepGransLog?.new_values?.reasons_to_accept,
@@ -94,7 +94,7 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
                   key !== 'vat' &&
                   key !== 'vat_percentage' &&
                   key !== 'been_supported_before' &&
-                  key !== 'support_goal_id' &&
+                  // key !== 'support_goal_id' &&
                   key !== 'accreditation_type_id' &&
                   key !== 'chairman_of_board_of_directors'
               )
@@ -106,23 +106,23 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
                 if (key === 'created_at' || key === 'updated_at') {
                   return null; // Exclude these properties from rendering
                 }
-                if (key === 'support_goal_id') {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          {value ? translate(`review.support_goals.${String(value)}`) : '-'}
-                        </Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                }
+                // if (key === 'support_goal_id') {
+                //   return (
+                //     <Grid item xs={6} key={key}>
+                //       <Typography variant="h6">
+                //         {
+                //           // key
+                //           translate(`review.${key}`)
+                //         }
+                //       </Typography>
+                //       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                //         <Typography>
+                //           {value ? translate(`review.support_goals.${String(value)}`) : '-'}
+                //         </Typography>
+                //       </Stack>
+                //     </Grid>
+                //   );
+                // }
                 if (key === 'accreditation_type_id') {
                   return (
                     <Grid item xs={6} key={key}>

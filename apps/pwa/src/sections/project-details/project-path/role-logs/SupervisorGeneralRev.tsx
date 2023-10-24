@@ -199,7 +199,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                 </Stack>
               </Grid>
             </Grid>
-            <Typography variant="h6">{translate(`review.procedure`)}</Typography>
+            {/* <Typography variant="h6">{translate(`review.procedure`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 <Typography>
@@ -210,7 +210,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                     : '-'}
                 </Typography>
               </Stack>
-            </Stack>
+            </Stack> */}
             <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>

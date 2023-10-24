@@ -83,9 +83,9 @@ export default function GeneralFirstForm({
           }),
       }),
       inclu_or_exclu: Yup.boolean(),
-      support_goal_id: Yup.string().required(
-        translate('errors.cre_proposal.support_goal_id.required')
-      ),
+      // support_goal_id: Yup.string().required(
+      //   translate('errors.cre_proposal.support_goal_id.required')
+      // ),
       payment_number: Yup.string()
         .required(translate('errors.cre_proposal.payment_number.required'))
         .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {
@@ -480,7 +480,7 @@ export default function GeneralFirstForm({
             ]}
           />
         </Grid>
-        <Grid item md={6} xs={12}>
+        {/* <Grid item md={6} xs={12}>
           <RHFSelect
             data-cy="acc_form_non_consulation_support_goal_id"
             type="select"
@@ -500,7 +500,7 @@ export default function GeneralFirstForm({
               </MenuItem>
             ))}
           </RHFSelect>
-        </Grid>
+        </Grid> */}
         <Grid item md={6} xs={12}>
           <RHFTextField
             data-cy="acc_form_non_consulation_payment_number"

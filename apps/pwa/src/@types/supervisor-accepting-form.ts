@@ -60,7 +60,7 @@ export interface SupervisorStep1 {
   vat: undefined;
   vat_percentage: number | undefined;
   inclu_or_exclu: boolean | undefined;
-  support_goal_id: string;
+  // support_goal_id: string;
   accreditation_type_id: string;
   payment_number?: number;
   section_id?: string;

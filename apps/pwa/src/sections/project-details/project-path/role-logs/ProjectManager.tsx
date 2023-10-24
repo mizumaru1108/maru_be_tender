@@ -67,8 +67,8 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
             support_type: stepGeneralLog?.new_values?.support_type || proposal.support_type,
             support_outputs:
               stepGeneralLog?.new_values?.support_outputs || proposal.support_outputs,
-            support_goal_id:
-              stepGeneralLog?.new_values?.support_goal_id || proposal.support_goal_id,
+            // support_goal_id:
+            //   stepGeneralLog?.new_values?.support_goal_id || proposal.support_goal_id,
             remote_or_insite:
               stepGeneralLog?.new_values?.remote_or_insite || proposal.remote_or_insite,
             clasification_field:
@@ -204,7 +204,7 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
               </Stack>
             </Grid>
           </Grid>
-          <Typography variant="h6">{translate(`review.procedure`)}</Typography>
+          {/* <Typography variant="h6">{translate(`review.procedure`)}</Typography>
           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Typography>
@@ -213,7 +213,7 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
                   : '-'}
               </Typography>
             </Stack>
-          </Stack>
+          </Stack> */}
           <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
           <Stack direction="column" gap={2} sx={{ pb: 2 }}>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
@@ -256,23 +256,23 @@ function ProjectManager({ stepGeneralLog, isConsultation = false }: Props) {
               if (key === 'created_at' || key === 'updated_at') {
                 return null; // Exclude these properties from rendering
               }
-              if (key === 'support_goal_id') {
-                return (
-                  <Grid item xs={6} key={key}>
-                    <Typography variant="h6">
-                      {
-                        // key
-                        translate(`review.${key}`)
-                      }
-                    </Typography>
-                    <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                      <Typography>
-                        {value ? translate(`review.support_goals.${String(value)}`) : '-'}
-                      </Typography>
-                    </Stack>
-                  </Grid>
-                );
-              }
+              // if (key === 'support_goal_id') {
+              //   return (
+              //     <Grid item xs={6} key={key}>
+              //       <Typography variant="h6">
+              //         {
+              //           // key
+              //           translate(`review.${key}`)
+              //         }
+              //       </Typography>
+              //       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              //         <Typography>
+              //           {value ? translate(`review.support_goals.${String(value)}`) : '-'}
+              //         </Typography>
+              //       </Stack>
+              //     </Grid>
+              //   );
+              // }
               if (key === 'accreditation_type_id') {
                 return (
                   <Grid item xs={6} key={key}>

@@ -78,7 +78,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
             target_group_age: stepGeneralLog?.new_values?.target_group_age,
             support_type: stepGeneralLog?.new_values?.support_type,
             support_outputs: stepGeneralLog?.new_values?.support_outputs,
-            support_goal_id: stepGeneralLog?.new_values?.support_goal_id,
+            // support_goal_id: stepGeneralLog?.new_values?.support_goal_id,
             remote_or_insite: stepGeneralLog?.new_values?.remote_or_insite,
             clasification_field: stepGeneralLog?.new_values?.clasification_field,
             reasons_to_accept: stepGeneralLog?.new_values?.reasons_to_accept,
@@ -270,7 +270,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 </Stack>
               </Grid>
             </Grid>
-            <Typography variant="h6">{translate(`review.procedure`)}</Typography>
+            {/* <Typography variant="h6">{translate(`review.procedure`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 <Typography>
@@ -282,7 +282,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                     : '-'}
                 </Typography>
               </Stack>
-            </Stack>
+            </Stack> */}
             <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
@@ -332,7 +332,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                   key !== 'vat' &&
                   key !== 'vat_percentage' &&
                   key !== 'been_supported_before' &&
-                  key !== 'support_goal_id' &&
+                  // key !== 'support_goal_id' &&
                   key !== 'accreditation_type_id' &&
                   key !== 'chairman_of_board_of_directors'
               )
@@ -344,23 +344,23 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 if (key === 'created_at' || key === 'updated_at') {
                   return null; // Exclude these properties from rendering
                 }
-                if (key === 'support_goal_id') {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          {value ? translate(`review.support_goals.${String(value)}`) : '-'}
-                        </Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                }
+                // if (key === 'support_goal_id') {
+                //   return (
+                //     <Grid item xs={6} key={key}>
+                //       <Typography variant="h6">
+                //         {
+                //           // key
+                //           translate(`review.${key}`)
+                //         }
+                //       </Typography>
+                //       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                //         <Typography>
+                //           {value ? translate(`review.support_goals.${String(value)}`) : '-'}
+                //         </Typography>
+                //       </Stack>
+                //     </Grid>
+                //   );
+                // }
                 if (key === 'accreditation_type_id') {
                   return (
                     <Grid item xs={6} key={key}>

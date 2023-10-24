@@ -91,7 +91,7 @@ function ProposalAcceptingForm({ onClose }: ModalProposalType) {
         clause: null,
         clasification_field: null,
         accreditation_type_id: null,
-        support_goal_id: step1?.support_goal_id,
+        // support_goal_id: step1?.support_goal_id,
         created_proposal_budget: data.created_proposal_budget,
         updated_proposal_budget: data.updated_proposal_budget,
         deleted_proposal_budget: data.deleted_proposal_budget,

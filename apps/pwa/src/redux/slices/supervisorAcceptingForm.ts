@@ -45,7 +45,7 @@ const initialState: SupervisorAcceptingForm = {
     vat: undefined,
     vat_percentage: undefined,
     inclu_or_exclu: undefined,
-    support_goal_id: '',
+    // support_goal_id: '',
     accreditation_type_id: '',
     payment_number: 0,
     section_id: '',
@@ -134,7 +134,7 @@ const slice = createSlice({
       state.step1.vat = action.payload.vat ?? undefined;
       state.step1.vat_percentage = action.payload.vat_percentage ?? undefined;
       state.step1.inclu_or_exclu = action.payload.inclu_or_exclu ?? undefined;
-      state.step1.support_goal_id = action.payload.support_goal_id ?? '';
+      // state.step1.support_goal_id = action.payload.support_goal_id ?? '';
       state.step1.accreditation_type_id = action.payload.accreditation_type_id ?? '';
       state.step1.payment_number = action.payload.number_of_payments_by_supervisor || 0;
       state.step1.section_id = action.payload.section_id || '';

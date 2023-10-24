@@ -63,7 +63,7 @@ function SupervisorGrants({ stepGransLog }: Props) {
               stepGransLog?.new_values?.target_group_age || proposal.target_group_age,
             support_type: stepGransLog?.new_values?.support_type || proposal.support_type,
             support_outputs: stepGransLog?.new_values?.support_outputs || proposal.support_outputs,
-            support_goal_id: stepGransLog?.new_values?.support_goal_id || proposal.support_goal_id,
+            // support_goal_id: stepGransLog?.new_values?.support_goal_id || proposal.support_goal_id,
             remote_or_insite:
               stepGransLog?.new_values?.remote_or_insite || proposal.remote_or_insite,
             clasification_field:
@@ -111,23 +111,23 @@ function SupervisorGrants({ stepGransLog }: Props) {
                 if (key === 'created_at' || key === 'updated_at') {
                   return null; // Exclude these properties from rendering
                 }
-                if (key === 'support_goal_id') {
-                  return (
-                    <Grid item xs={6} key={key}>
-                      <Typography variant="h6">
-                        {
-                          // key
-                          translate(`review.${key}`)
-                        }
-                      </Typography>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          {value ? translate(`review.support_goals.${String(value)}`) : '-'}
-                        </Typography>
-                      </Stack>
-                    </Grid>
-                  );
-                }
+                // if (key === 'support_goal_id') {
+                //   return (
+                //     <Grid item xs={6} key={key}>
+                //       <Typography variant="h6">
+                //         {
+                //           // key
+                //           translate(`review.${key}`)
+                //         }
+                //       </Typography>
+                //       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                //         <Typography>
+                //           {value ? translate(`review.support_goals.${String(value)}`) : '-'}
+                //         </Typography>
+                //       </Stack>
+                //     </Grid>
+                //   );
+                // }
                 if (key === 'accreditation_type_id') {
                   return (
                     <Grid item xs={6} key={key}>
