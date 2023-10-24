@@ -85,7 +85,6 @@ function EditRequestDetails() {
           },
           difference: tmpDiffrence,
         }));
-        // console.log({ rest });
       }
     } catch (err) {
       // handle error fetching

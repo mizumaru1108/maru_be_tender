@@ -96,8 +96,13 @@ function ConfirmApprovedEditRequest({ open, handleClose, EditValues }: Props) {
     const oldBankInfo = EditValues.old_data.bank_information;
     const newBankInfo = EditValues.new_data.bank_information;
 
+    const allOldTransparent = oldBankInfo?.every((item) => item.color === 'transparent');
+    const allNewTransparent = newBankInfo?.every((item) => item.color === 'transparent');
+
     if (open) {
-      if (newBankInfo?.length !== oldBankInfo?.length) {
+      if (!allOldTransparent && !allNewTransparent) {
+        setShowBankTextAlert(true);
+      } else if (newBankInfo?.length !== oldBankInfo?.length) {
         setShowBankTextAlert(true);
       }
     }

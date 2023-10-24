@@ -16,7 +16,6 @@ type DataTabProps = {
 };
 
 function DataTab({ EditValues, compareValues, EditType, OldData }: DataTabProps) {
-  // console.log({ EditValues, compareValues });
   const { translate, currentLang } = useLocales();
   const navigate = useNavigate();
   const theme = useTheme();
