@@ -6,7 +6,6 @@ import { ROOT_LOGGER } from '../../../libs/root-logger';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { TrackEntity } from '../entities/track.entity';
 import { TrackMapper } from '../mapper/track.mapper';
-import { PaymentStatusEnum } from '../../../proposal-management/payment/types/enums/payment.status.enum';
 
 export class TrackCreateProps {
   id?: string;
@@ -25,7 +24,10 @@ export enum TrackIncludeRelationsTypeEnum {
   TRACK_SECTIONS = 'track_sections',
 }
 
-export type TrackIncludeRelationsTypes = 'proposal' | 'track_sections';
+export type TrackIncludeRelationsTypes =
+  | 'proposal'
+  | 'track_sections'
+  | 'count_budget';
 export class TrackFindFirstProps {
   id?: string;
   name?: string;
@@ -78,8 +80,6 @@ export class TrackRepository {
           ...include,
           proposal: {
             select: {
-              id: true,
-              track_id: true,
               fsupport_by_supervisor: true,
               payments: {
                 include: {
@@ -109,6 +109,116 @@ export class TrackRepository {
                           child_track_section: true,
                         },
                       },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        };
+      }
+
+      if (relation === 'count_budget') {
+        include = {
+          proposal: {
+            select: {
+              fsupport_by_supervisor: true,
+              payments: {
+                include: {
+                  cheques: true,
+                },
+              },
+              proposal_logs: {
+                select: {
+                  action: true,
+                  state: true,
+                  user_role: true,
+                },
+              },
+            },
+          },
+          track_section: {
+            where: {
+              parent_section_id: null,
+            },
+            include: {
+              child_track_section: {
+                include: {
+                  child_track_section: {
+                    include: {
+                      child_track_section: {
+                        include: {
+                          child_track_section: true,
+                          proposal: {
+                            select: {
+                              fsupport_by_supervisor: true,
+                              payments: {
+                                include: {
+                                  cheques: true,
+                                },
+                              },
+                              proposal_logs: {
+                                select: {
+                                  action: true,
+                                  state: true,
+                                  user_role: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      proposal: {
+                        select: {
+                          fsupport_by_supervisor: true,
+                          payments: {
+                            include: {
+                              cheques: true,
+                            },
+                          },
+                          proposal_logs: {
+                            select: {
+                              action: true,
+                              state: true,
+                              user_role: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  proposal: {
+                    select: {
+                      fsupport_by_supervisor: true,
+                      payments: {
+                        include: {
+                          cheques: true,
+                        },
+                      },
+                      proposal_logs: {
+                        select: {
+                          action: true,
+                          state: true,
+                          user_role: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              proposal: {
+                select: {
+                  fsupport_by_supervisor: true,
+                  payments: {
+                    include: {
+                      cheques: true,
+                    },
+                  },
+                  proposal_logs: {
+                    select: {
+                      action: true,
+                      state: true,
+                      user_role: true,
                     },
                   },
                 },
@@ -179,7 +289,114 @@ export class TrackRepository {
       const args = this.findFirstFilter(props);
       const rawTrack = await prisma.track.findFirst({
         where: args.where,
-        include: args.include,
+        // include: args.include,
+        include: {
+          proposal: {
+            select: {
+              fsupport_by_supervisor: true,
+              payments: {
+                include: {
+                  cheques: true,
+                },
+              },
+              proposal_logs: {
+                select: {
+                  action: true,
+                  state: true,
+                  user_role: true,
+                },
+              },
+            },
+          },
+          track_section: {
+            where: {
+              parent_section_id: null,
+            },
+            include: {
+              child_track_section: {
+                include: {
+                  child_track_section: {
+                    include: {
+                      child_track_section: {
+                        include: {
+                          child_track_section: true,
+                          proposal: {
+                            select: {
+                              fsupport_by_supervisor: true,
+                              payments: {
+                                include: {
+                                  cheques: true,
+                                },
+                              },
+                              proposal_logs: {
+                                select: {
+                                  action: true,
+                                  state: true,
+                                  user_role: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      proposal: {
+                        select: {
+                          fsupport_by_supervisor: true,
+                          payments: {
+                            include: {
+                              cheques: true,
+                            },
+                          },
+                          proposal_logs: {
+                            select: {
+                              action: true,
+                              state: true,
+                              user_role: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  proposal: {
+                    select: {
+                      fsupport_by_supervisor: true,
+                      payments: {
+                        include: {
+                          cheques: true,
+                        },
+                      },
+                      proposal_logs: {
+                        select: {
+                          action: true,
+                          state: true,
+                          user_role: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              proposal: {
+                select: {
+                  fsupport_by_supervisor: true,
+                  payments: {
+                    include: {
+                      cheques: true,
+                    },
+                  },
+                  proposal_logs: {
+                    select: {
+                      action: true,
+                      state: true,
+                      user_role: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
 
       if (!rawTrack) return null;

@@ -1,0 +1,141 @@
+{
+  "statusCode": 200,
+  "message": "Track Fetched Successfully!",
+  "data": {
+    "with_consultation": false,
+    "created_at": "2023-04-27T04:01:38.987Z",
+    "is_deleted": false,
+    "id": "c4622507-98ef-40ef-9d40-b36255157468",
+    "name": "MOSQUES",
+    "total_spending_budget": 4241202,
+    "total_reserved_budget": 75198,
+    "total_spending_budget_by_ceo": 196583,
+    "sections": [
+      {
+        "id": "9889e892-db5f-4b5d-9816-8b7c67c2d087",
+        "name": "Mizumaru",
+        "budget": 5000000,
+        "parent_section_id": null,
+        "is_leaf": false,
+        "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+        "is_deleted": false,
+        "child_track_section": []
+      },
+      {
+        "id": "b1620a10-dd9c-4d1e-9375-9500e41b38a5",
+        "name": "Test mosque 1",
+        "budget": 2000000,
+        "parent_section_id": null,
+        "is_leaf": false,
+        "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+        "is_deleted": false,
+        "child_track_section": [
+          {
+            "id": "d767bd31-ba50-4296-b608-dd8b3dd5797a",
+            "name": "Test mosque 1-1",
+            "budget": 1000000,
+            "parent_section_id": "b1620a10-dd9c-4d1e-9375-9500e41b38a5",
+            "is_leaf": false,
+            "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+            "is_deleted": false,
+            "child_track_section": [
+              {
+                "id": "d9ea8dec-5362-4ace-8dd4-7d1ce54d4f1d",
+                "name": "Test mosque 2-1",
+                "budget": 500000,
+                "parent_section_id": "d767bd31-ba50-4296-b608-dd8b3dd5797a",
+                "is_leaf": false,
+                "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+                "is_deleted": false,
+                "child_track_section": [
+                  {
+                    "id": "c7a959be-e23e-4853-aeea-622aff13e9b2",
+                    "name": "Test mosque 3-3",
+                    "budget": 100000,
+                    "parent_section_id": "d9ea8dec-5362-4ace-8dd4-7d1ce54d4f1d",
+                    "is_leaf": false,
+                    "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+                    "is_deleted": false,
+                    "child_track_section": []
+                  },
+                  {
+                    "id": "e532e431-969b-439d-8bb7-91267a9a726c",
+                    "name": "Test mosque 3-1",
+                    "budget": 200000,
+                    "parent_section_id": "d9ea8dec-5362-4ace-8dd4-7d1ce54d4f1d",
+                    "is_leaf": false,
+                    "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+                    "is_deleted": false,
+                    "child_track_section": []
+                  },
+                  {
+                    "id": "1a5925c5-45ed-4144-b9b0-b44cdf4e4027",
+                    "name": "Test mosque 3-2",
+                    "budget": 200000,
+                    "parent_section_id": "d9ea8dec-5362-4ace-8dd4-7d1ce54d4f1d",
+                    "is_leaf": false,
+                    "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+                    "is_deleted": false,
+                    "child_track_section": []
+                  }
+                ]
+              },
+              {
+                "id": "c1db11c4-a441-4896-9a0e-26341a1e7d3c",
+                "name": "Test mosque 2-2",
+                "budget": 500000,
+                "parent_section_id": "d767bd31-ba50-4296-b608-dd8b3dd5797a",
+                "is_leaf": false,
+                "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+                "is_deleted": false,
+                "child_track_section": [
+                  {
+                    "id": "6d435506-066e-4874-ac2a-16b66677d33f",
+                    "name": "Test mosque 2-3-2",
+                    "budget": 250000,
+                    "parent_section_id": "c1db11c4-a441-4896-9a0e-26341a1e7d3c",
+                    "is_leaf": false,
+                    "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+                    "is_deleted": false,
+                    "child_track_section": []
+                  },
+                  {
+                    "id": "0b262cd3-84ca-4b43-b04d-df017c279b4b",
+                    "name": "Test mosque 2-3-1",
+                    "budget": 250000,
+                    "parent_section_id": "c1db11c4-a441-4896-9a0e-26341a1e7d3c",
+                    "is_leaf": false,
+                    "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+                    "is_deleted": false,
+                    "child_track_section": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "d1ea8a81-8d6a-4fab-87b7-571ca43318d4",
+            "name": "Test mosque 1-2",
+            "budget": 1000000,
+            "parent_section_id": "b1620a10-dd9c-4d1e-9375-9500e41b38a5",
+            "is_leaf": false,
+            "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+            "is_deleted": false,
+            "child_track_section": []
+          }
+        ]
+      },
+      {
+        "id": "2a04a322-fe8a-41e8-9c23-d3a995c4dfe5",
+        "name": "Tambahan Mosque 1",
+        "budget": 2000000,
+        "parent_section_id": null,
+        "is_leaf": false,
+        "track_id": "c4622507-98ef-40ef-9d40-b36255157468",
+        "is_deleted": false,
+        "child_track_section": []
+      }
+    ],
+    "total_budget": 9000000
+  }
+}
