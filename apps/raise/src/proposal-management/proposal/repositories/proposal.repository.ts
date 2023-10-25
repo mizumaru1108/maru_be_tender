@@ -2310,6 +2310,22 @@ export class ProposalRepository {
           };
         }
 
+        if (supervisor_status === 'waiting_to_be_submitted') {
+          whereClause = {
+            ...whereClause,
+            supervisor_id: currentUser.id,
+            inner_status: { in: [InnerStatusEnum.REQUESTING_CLOSING_FORM] },
+          };
+        }
+      }
+
+      if (
+        [
+          'tender_project_manager',
+          'tender_ceo',
+          'tender_project_supervisor',
+        ].indexOf(currentUser.choosenRole) > -1
+      ) {
         // after client done submit closing report
         if (supervisor_status === 'after_submit') {
           whereClause = {
@@ -2323,14 +2339,6 @@ export class ProposalRepository {
                 action: ProposalAction.SENDING_CLOSING_REPORT,
               },
             },
-          };
-        }
-
-        if (supervisor_status === 'waiting_to_be_submitted') {
-          whereClause = {
-            ...whereClause,
-            supervisor_id: currentUser.id,
-            inner_status: { in: [InnerStatusEnum.REQUESTING_CLOSING_FORM] },
           };
         }
       }
