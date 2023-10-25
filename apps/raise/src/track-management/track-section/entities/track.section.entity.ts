@@ -14,7 +14,7 @@ export class TrackSectionEntity {
   track: TrackEntity;
   proposal: ProposalEntity[];
 
-  section_budget?: number;
-  section_spending_budget?: number;
-  section_reserved_budget?: number;
+  section_budget: number = 0;
+  section_spending_budget: number = 0;
+  section_reserved_budget: number = 0;
 }

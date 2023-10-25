@@ -13,8 +13,8 @@ export class TrackEntity {
   user?: UserEntity[];
 
   // virtual props by query/sum
-  total_budget?: number;
-  total_spending_budget?: number;
-  total_spending_budget_by_ceo?: number;
-  total_reserved_budget?: number;
+  total_budget: number = 0;
+  total_spending_budget: number = 0;
+  total_spending_budget_by_ceo: number = 0;
+  total_reserved_budget: number = 0;
 }

@@ -1,12 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  Prisma,
-  cheque,
-  payment,
-  proposal_log,
-  track,
-  track_section,
-} from '@prisma/client';
+import { Prisma, cheque, payment, track, track_section } from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { ChequeEntity } from '../../../proposal-management/payment/entities/cheque.entity';
 import { ProposalPaymentEntity } from '../../../proposal-management/payment/entities/proposal-payment.entity';
@@ -17,7 +10,6 @@ import { ProposalEntity } from '../../../proposal-management/proposal/entities/p
 import { TenderAppRoleEnum } from '../../../tender-commons/types';
 import { TrackSectionEntity } from '../../track-section/entities/track.section.entity';
 import { TrackEntity } from '../entities/track.entity';
-import { logUtil } from '../../../commons/utils/log-util';
 
 export type TrackModel = track & {
   proposal?: {
@@ -199,16 +191,17 @@ export class TrackMapper {
   async toDomain(type: TrackModel): Promise<TrackEntity> {
     const { proposal, track_section, ...rest } = type;
 
-    const trackBuilder = Builder<TrackEntity>(TrackEntity, {
+    let buildedTrack = Builder<TrackEntity>(TrackEntity, {
       ...rest,
-    });
+    }).build();
 
     if (proposal) {
       const res = this.mapProposal(proposal);
-      // trackBuilder.proposals(res.proposals);
-      trackBuilder.total_spending_budget(res.sum_spending_budget);
-      trackBuilder.total_reserved_budget(res.sum_reserved_budget);
-      trackBuilder.total_spending_budget_by_ceo(res.sum_spending_budget_by_ceo);
+      // buildedTrack.proposals(res.proposals);
+      buildedTrack.total_spending_budget = res.sum_spending_budget;
+      buildedTrack.total_reserved_budget = res.sum_reserved_budget;
+      buildedTrack.total_spending_budget_by_ceo =
+        res.sum_spending_budget_by_ceo;
     }
 
     if (track_section) {
@@ -226,16 +219,18 @@ export class TrackMapper {
               TrackSectionEntity,
               {
                 ...rest,
-                section_reserved_budget: 0,
-                section_spending_budget: 0,
               },
             ).build();
 
             if (s.proposal) {
               const res = this.mapProposal(s.proposal);
               // sSesction.proposal = res.proposals;
-              section.section_reserved_budget = res.sum_reserved_budget || 0;
-              section.section_spending_budget = res.sum_spending_budget || 0;
+              section.section_reserved_budget = res.sum_reserved_budget;
+              section.section_spending_budget = res.sum_spending_budget;
+
+              // sum the parent too
+              buildedTrack.total_reserved_budget += res.sum_reserved_budget;
+              buildedTrack.total_spending_budget += res.sum_spending_budget;
             }
 
             section.child_track_section = [];
@@ -246,7 +241,7 @@ export class TrackMapper {
                 if (sChild.is_deleted === false) {
                   const { proposal, child_track_section, ...rest } = sChild;
 
-                  const sSesction: TrackSectionEntity =
+                  const sSection: TrackSectionEntity =
                     Builder<TrackSectionEntity>(TrackSectionEntity, {
                       ...rest,
                     }).build();
@@ -254,11 +249,21 @@ export class TrackMapper {
                   if (sChild.proposal) {
                     const res = this.mapProposal(sChild.proposal);
                     // sSesction.proposal = res.proposals;
-                    sSesction.section_reserved_budget = res.sum_reserved_budget;
-                    sSesction.section_spending_budget = res.sum_spending_budget;
+                    sSection.section_reserved_budget = res.sum_reserved_budget;
+                    sSection.section_spending_budget = res.sum_spending_budget;
+
+                    // sum the parent too
+                    section.section_reserved_budget += res.sum_reserved_budget;
+                    buildedTrack.total_reserved_budget +=
+                      res.sum_reserved_budget;
+
+                    // sum the parent too
+                    section.section_spending_budget += res.sum_spending_budget;
+                    buildedTrack.total_spending_budget +=
+                      res.sum_spending_budget;
                   }
 
-                  sSesction.child_track_section = [];
+                  sSection.child_track_section = [];
 
                   // if first child has child then loop second child
                   if (
@@ -270,22 +275,38 @@ export class TrackMapper {
                         const { proposal, child_track_section, ...rest } =
                           ssChild;
 
-                        const ssSesction: TrackSectionEntity =
+                        const ssSection: TrackSectionEntity =
                           Builder<TrackSectionEntity>(TrackSectionEntity, {
                             ...rest,
                           }).build();
 
                         if (ssChild.proposal) {
                           const res = this.mapProposal(ssChild.proposal);
-                          ssSesction.proposal = res.proposals;
-                          ssSesction.section_reserved_budget =
+                          // ssSection.proposal = res.proposals;
+                          ssSection.section_reserved_budget =
                             res.sum_reserved_budget;
-                          ssSesction.section_spending_budget =
+                          ssSection.section_spending_budget =
+                            res.sum_spending_budget;
+
+                          // sum the parrent too
+                          sSection.section_reserved_budget +=
+                            res.sum_reserved_budget;
+                          section.section_reserved_budget +=
+                            res.sum_reserved_budget;
+                          buildedTrack.total_reserved_budget +=
+                            res.sum_reserved_budget;
+
+                          // sum the parrent too
+                          sSection.section_spending_budget +=
+                            res.sum_spending_budget;
+                          section.section_spending_budget +=
+                            res.sum_spending_budget;
+                          buildedTrack.total_spending_budget +=
                             res.sum_spending_budget;
                         }
 
                         // if second child has child then loop third child
-                        ssSesction.child_track_section = [];
+                        ssSection.child_track_section = [];
 
                         if (
                           ssChild.child_track_section &&
@@ -296,7 +317,7 @@ export class TrackMapper {
                               const { proposal, child_track_section, ...rest } =
                                 sssChild;
 
-                              const sssSesction: TrackSectionEntity =
+                              const sssSection: TrackSectionEntity =
                                 Builder<TrackSectionEntity>(
                                   TrackSectionEntity,
                                   {
@@ -307,23 +328,43 @@ export class TrackMapper {
                               if (sssChild.proposal) {
                                 const res = this.mapProposal(sssChild.proposal);
                                 // sssSesction.proposal = res.proposals;
-                                sssSesction.section_reserved_budget =
+                                sssSection.section_reserved_budget =
                                   res.sum_reserved_budget;
-                                sssSesction.section_spending_budget =
+                                sssSection.section_spending_budget =
+                                  res.sum_spending_budget;
+
+                                // sum the parrent too
+                                ssSection.section_reserved_budget +=
+                                  res.sum_reserved_budget;
+                                sSection.section_reserved_budget +=
+                                  res.sum_reserved_budget;
+                                section.section_reserved_budget +=
+                                  res.sum_reserved_budget;
+                                buildedTrack.total_reserved_budget +=
+                                  res.sum_reserved_budget;
+
+                                // sum the parrent too
+                                ssSection.section_spending_budget +=
+                                  res.sum_spending_budget;
+                                sSection.section_spending_budget +=
+                                  res.sum_spending_budget;
+                                section.section_spending_budget +=
+                                  res.sum_spending_budget;
+                                buildedTrack.total_spending_budget +=
                                   res.sum_spending_budget;
                               }
 
-                              ssSesction.child_track_section.push(sssSesction);
+                              ssSection.child_track_section.push(sssSection);
                             }
                           }
                         }
 
-                        sSesction.child_track_section.push(ssSesction);
+                        sSection.child_track_section.push(ssSection);
                       }
                     }
                   }
 
-                  section.child_track_section.push(sSesction);
+                  section.child_track_section.push(sSection);
                 }
               }
             }
@@ -377,11 +418,9 @@ export class TrackMapper {
         }
       }
 
-      trackBuilder.sections(tSections);
-      trackBuilder.total_budget(budget);
+      buildedTrack.sections = tSections;
+      buildedTrack.total_budget = budget;
     }
-
-    const buildedTrack = trackBuilder.build();
 
     return buildedTrack;
   }
