@@ -278,6 +278,18 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
             }
             name="execution_time"
             type={'number'}
+            InputProps={{
+              inputProps: { min: 0 },
+              onWheel: (e: any) => {
+                e.target.blur();
+
+                e.stopPropagation();
+
+                setTimeout(() => {
+                  e.target.focus();
+                }, 0);
+              },
+            }}
             label={translate('funding_project_request_form1.applying_duration.label')}
             placeholder={translate('funding_project_request_form1.applying_duration.placeholder')}
           />

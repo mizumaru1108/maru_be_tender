@@ -510,7 +510,18 @@ export default function GeneralFirstForm({
             name="payment_number"
             placeholder="عدد الدفعات"
             label="عدد الدفعات*"
-            InputProps={{ inputProps: { min: 1 } }}
+            InputProps={{
+              inputProps: { min: 0 },
+              onWheel: (e: any) => {
+                e.target.blur();
+
+                e.stopPropagation();
+
+                setTimeout(() => {
+                  e.target.focus();
+                }, 0);
+              },
+            }}
           />
         </Grid>
         <Grid item md={6} xs={12}>
@@ -538,7 +549,18 @@ export default function GeneralFirstForm({
               name="vat_percentage"
               label="النسبة المئوية من الضريبة*"
               placeholder="النسبة المئوية من الضريبة"
-              InputProps={{ inputProps: { min: 1 } }}
+              InputProps={{
+                inputProps: { min: 1 },
+                onWheel: (e: any) => {
+                  e.target.blur();
+
+                  e.stopPropagation();
+
+                  setTimeout(() => {
+                    e.target.focus();
+                  }, 0);
+                },
+              }}
             />
           </Grid>
         )}

@@ -331,6 +331,18 @@ export default function GeneralSecondForm({
                       label={translate('funding_project_request_form4.amount.label')}
                       placeholder={translate('funding_project_request_form4.amount.placeholder')}
                       type="number"
+                      InputProps={{
+                        inputProps: { min: 0 },
+                        onWheel: (e: any) => {
+                          e.target.blur();
+
+                          e.stopPropagation();
+
+                          setTimeout(() => {
+                            e.target.focus();
+                          }, 0);
+                        },
+                      }}
                       error={!!error}
                       helperText={error?.message}
                       sx={{

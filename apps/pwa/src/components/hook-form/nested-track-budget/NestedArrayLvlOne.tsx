@@ -132,6 +132,18 @@ export default function NestedArrayLvlOne({
                         placeholder={translate('funding_project_request_form4.amount.placeholder')}
                         size={'small'}
                         type="number"
+                        InputProps={{
+                          inputProps: { min: 0 },
+                          onWheel: (e: any) => {
+                            e.target.blur();
+
+                            e.stopPropagation();
+
+                            setTimeout(() => {
+                              e.target.focus();
+                            }, 0);
+                          },
+                        }}
                       />
                     </Grid>
                     <Grid item md={1} xs={12} sx={{ padding: '0 7px' }}>

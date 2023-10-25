@@ -216,7 +216,7 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
       if (tmpClientId) {
         fetchAuthorities(tmpClientId);
         setClientFieldId(tmpClientId);
-      } 
+      }
       // else {
       //   alert('tmpClientId not found');
       // }
@@ -388,6 +388,15 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             type="number"
             InputProps={{
               inputProps: { min: 0 },
+              onWheel: (e: any) => {
+                e.target.blur();
+
+                e.stopPropagation();
+
+                setTimeout(() => {
+                  e.target.focus();
+                }, 0);
+              },
             }}
             label={translate('register_form1.number_of_employees.label')}
             placeholder={translate('register_form1.number_of_employees.placeholder')}
@@ -413,6 +422,15 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
             type="number"
             InputProps={{
               inputProps: { min: 0 },
+              onWheel: (e: any) => {
+                e.target.blur();
+
+                e.stopPropagation();
+
+                setTimeout(() => {
+                  e.target.focus();
+                }, 0);
+              },
             }}
             label={translate('register_form1.number_of_beneficiaries.label')}
             placeholder={translate('register_form1.number_of_beneficiaries.placeholder')}

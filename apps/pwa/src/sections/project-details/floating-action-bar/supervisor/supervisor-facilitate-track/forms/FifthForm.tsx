@@ -356,6 +356,18 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
                           backgroundColor: 'transparent',
                         },
                       }}
+                      InputProps={{
+                        inputProps: { min: 1 },
+                        onWheel: (e: any) => {
+                          e.target.blur();
+
+                          e.stopPropagation();
+
+                          setTimeout(() => {
+                            e.target.focus();
+                          }, 0);
+                        },
+                      }}
                       // disabled={!step1.support_type}
                     />
                   )}
