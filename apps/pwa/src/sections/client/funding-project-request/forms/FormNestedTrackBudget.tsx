@@ -265,6 +265,18 @@ export default function FormNestedTrackBudget({
             disabled={isLoading}
             name="total_budget"
             type="number"
+            InputProps={{
+              inputProps: { min: 0 },
+              onWheel: (e: any) => {
+                e.target.blur();
+
+                e.stopPropagation();
+
+                setTimeout(() => {
+                  e.target.focus();
+                }, 0);
+              },
+            }}
             size="medium"
             label={translate('pages.admin.tracks_budget.form.amount.label')}
             placeholder={translate('pages.admin.tracks_budget.form.amount.placeholder')}

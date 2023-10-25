@@ -529,6 +529,19 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
           <RHFTextField
             disabled={isEdit}
             name="num_of_employed_facility"
+            type="number"
+            InputProps={{
+              inputProps: { min: 0 },
+              onWheel: (e: any) => {
+                e.target.blur();
+
+                e.stopPropagation();
+
+                setTimeout(() => {
+                  e.target.focus();
+                }, 0);
+              },
+            }}
             label={translate('register_form1.number_of_employees.label')}
             placeholder={translate('register_form1.number_of_employees.placeholder')}
           />
@@ -537,6 +550,19 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
           <RHFTextField
             disabled={isEdit}
             name="num_of_beneficiaries"
+            type="number"
+            InputProps={{
+              inputProps: { min: 0 },
+              onWheel: (e: any) => {
+                e.target.blur();
+
+                e.stopPropagation();
+
+                setTimeout(() => {
+                  e.target.focus();
+                }, 0);
+              },
+            }}
             label={translate('register_form1.number_of_beneficiaries.label')}
             placeholder={translate('register_form1.number_of_beneficiaries.placeholder')}
           />

@@ -106,6 +106,18 @@ const ProjectInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) 
             }
             name="num_ofproject_binicficiaries"
             type={'number'}
+            InputProps={{
+              inputProps: { min: 0 },
+              onWheel: (e: any) => {
+                e.target.blur();
+
+                e.stopPropagation();
+
+                setTimeout(() => {
+                  e.target.focus();
+                }, 0);
+              },
+            }}
             label={translate('funding_project_request_form2.number_of_project_beneficiaries.label')}
             placeholder={translate(
               'funding_project_request_form2.number_of_project_beneficiaries.placeholder'

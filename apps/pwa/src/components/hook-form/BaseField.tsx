@@ -84,6 +84,18 @@ function BaseField({
           name={name ?? ''}
           label={translate(label)}
           placeholder={translate(placeholder)}
+          InputProps={{
+            inputProps: { min: 1 },
+            onWheel: (e: any) => {
+              e.target.blur();
+
+              e.stopPropagation();
+
+              setTimeout(() => {
+                e.target.focus();
+              }, 0);
+            },
+          }}
           {...other}
         />
       )}

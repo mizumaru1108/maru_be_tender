@@ -153,6 +153,18 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props
               'funding_project_request_form4.amount_required_fsupport.placeholder'
             )}
             type="number"
+            InputProps={{
+              inputProps: { min: 0 },
+              onWheel: (e: any) => {
+                e.target.blur();
+
+                e.stopPropagation();
+
+                setTimeout(() => {
+                  e.target.focus();
+                }, 0);
+              },
+            }}
           />
         </Grid>
         <BaseField
