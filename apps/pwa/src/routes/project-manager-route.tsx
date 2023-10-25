@@ -50,6 +50,10 @@ const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/Prev
 
 const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
 
+const CompleteCloseReports = Loadable(
+  lazy(() => import('pages/project-supervisor/CompleteCloseReports'))
+);
+
 export const projectManagerRoute = {
   path: 'project-manager',
   element: (
@@ -175,6 +179,20 @@ export const projectManagerRoute = {
         {
           path: 'project-report',
           children: [
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+            {
+              path: ':id/:actionType/finished',
+              element: <ProjectReportFinished />,
+            },
+          ],
+        },
+        {
+          path: 'complete-project-report',
+          children: [
+            { path: '', element: <CompleteCloseReports /> },
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,

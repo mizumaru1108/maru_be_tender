@@ -2770,6 +2770,7 @@ const ar = {
     headercell: {
       email_content: 'محتوى البريد الإلكتروني',
       employee_name: 'اسم شريك',
+      created_at: 'تاريخ الاضافة',
     },
   },
   client_files: {

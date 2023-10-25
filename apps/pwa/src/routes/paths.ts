@@ -118,6 +118,7 @@ export const PATH_CEO = {
   messages: path(ROOTS_CEO, '/dashboard/messages'),
   old_proposal: path(ROOTS_CEO, '/dashboard/old-proposal'),
   client_files: path(ROOTS_CEO, '/dashboard/client-files'),
+  complete_close_reports: path(ROOTS_CEO, '/dashboard/complete-project-report'),
 };
 
 export const PATH_PROJECT_MANAGER = {
@@ -135,6 +136,7 @@ export const PATH_PROJECT_MANAGER = {
   client_list: path(ROOTS_PROJECT_MANAGER, '/dashboard/client-list'),
   old_proposal: path(ROOTS_PROJECT_MANAGER, '/dashboard/old-proposal'),
   client_files: path(ROOTS_PROJECT_MANAGER, '/dashboard/client-files'),
+  complete_close_reports: path(ROOTS_PROJECT_MANAGER, '/dashboard/complete-project-report'),
 };
 
 export const PATH_MODERATOR = {

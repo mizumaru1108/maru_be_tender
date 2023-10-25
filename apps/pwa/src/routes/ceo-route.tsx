@@ -39,6 +39,12 @@ const Searching = Loadable(lazy(() => import('pages/searching')));
 
 const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
 
+const CompleteCloseReports = Loadable(
+  lazy(() => import('pages/project-supervisor/CompleteCloseReports'))
+);
+
+const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
+
 export const ceoRoute = {
   path: 'ceo',
   element: (
@@ -169,6 +175,20 @@ export const ceoRoute = {
             {
               path: ':id/:actionType',
               element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
+          path: 'complete-project-report',
+          children: [
+            { path: '', element: <CompleteCloseReports /> },
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+            {
+              path: ':id/:actionType/finished',
+              element: <ProjectReportFinished />,
             },
           ],
         },

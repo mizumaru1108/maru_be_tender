@@ -24,7 +24,7 @@ export default function SendEmail() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmitGeneralForm = async (data: FormSendEmail) => {
-    const url = '/tender/email-records/create/aa';
+    const url = '/tender/email-records/create';
     let formData = new FormData();
 
     const payload = removeEmptyKey({ ...data });

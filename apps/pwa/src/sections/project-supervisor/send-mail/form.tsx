@@ -103,9 +103,21 @@ export default function SendEmailForm(props: Props) {
         translate('email_to_client.errors.attachments.fileExtension'),
         (value) => {
           if (value) {
-            if (value.fileExtension && value.fileExtension !== 'application/pdf') {
+            if (
+              value.fileExtension &&
+              value.fileExtension !== 'application/pdf' &&
+              value.fileExtension !== 'image/jpeg' &&
+              value.fileExtension !== 'image/png' &&
+              value.fileExtension !== 'image/jpg'
+            ) {
               return false;
-            } else if (value.type && value.type !== 'application/pdf') {
+            } else if (
+              value.type &&
+              value.type !== 'application/pdf' &&
+              value.type !== 'image/jpeg' &&
+              value.type !== 'image/png' &&
+              value.type !== 'image/jpg'
+            ) {
               return false;
             } else if (value?.fileExtension === '' || value.type === '') {
               return false;

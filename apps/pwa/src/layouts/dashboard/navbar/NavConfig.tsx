@@ -401,6 +401,17 @@ const navConfig = {
           icon: ICONS.tender_ceo.previous_funding_requests,
         },
         {
+          title: 'pages.common.close_report.text.project_report',
+          icon: ICONS.tender_project_supervisor.payment_adjustment,
+          children: [
+            {
+              title: 'pages.common.close_report.text.complete_project_report',
+              path: PATH_CEO.complete_close_reports,
+              icon: ICONS.tender_project_supervisor.payment_adjustment,
+            },
+          ],
+        },
+        {
           title: 'old_proposal.title',
           path: PATH_CEO.old_proposal,
           icon: ICONS.tender_ceo.old_proposal,
@@ -458,6 +469,18 @@ const navConfig = {
           path: PATH_PROJECT_MANAGER.previous_funding_requests,
           icon: ICONS.tender_project_manager.previous_funding_requests,
         },
+        {
+          title: 'pages.common.close_report.text.project_report',
+          icon: ICONS.tender_project_supervisor.payment_adjustment,
+          children: [
+            {
+              title: 'pages.common.close_report.text.complete_project_report',
+              path: PATH_PROJECT_MANAGER.complete_close_reports,
+              icon: ICONS.tender_project_supervisor.payment_adjustment,
+            },
+          ],
+        },
+
         {
           title: 'old_proposal.title',
           path: PATH_PROJECT_MANAGER.old_proposal,
@@ -537,7 +560,6 @@ const navConfig = {
           path: PATH_PROJECT_SUPERVISOR.payment_adjustment,
           icon: ICONS.tender_project_supervisor.payment_adjustment,
         },
-
         {
           title: 'pages.common.close_report.text.project_report',
           icon: ICONS.tender_project_supervisor.payment_adjustment,

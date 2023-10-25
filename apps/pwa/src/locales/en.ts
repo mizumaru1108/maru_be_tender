@@ -2749,6 +2749,7 @@ const en = {
     headercell: {
       email_content: 'Email Content',
       employee_name: 'Partner Name',
+      created_at: 'Created At',
     },
     errors: {
       attachments: {

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import useAuth from 'hooks/useAuth';
 import { role_url_map } from '../../../@types/commons';
 import { EmailToClienRow } from 'components/table/send-email/types';
+import dayjs from 'dayjs';
 // import { role_url_map } from '../../../../@types/commons';
 
 export default function SendEmailTableRow({ row, selected, onSelectRow }: EmailToClienRow) {
@@ -13,21 +14,29 @@ export default function SendEmailTableRow({ row, selected, onSelectRow }: EmailT
   const navigate = useNavigate();
   return (
     <TableRow hover selected={selected}>
-      <TableCell align="left">
+      <TableCell align="left" sx={{ minWidth: 180 }}>
         <Typography variant="subtitle2" noWrap>
-          {row.employee_name}
+          {row.receiver_name}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography
           variant="subtitle2"
-          noWrap
+          // noWrap
           sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
         >
-          {row.email_content}
+          {row.content}
         </Typography>
       </TableCell>
-      <TableCell align="left">
+      <TableCell align="left" sx={{ minWidth: 130 }}>
+        <Typography
+          variant="subtitle2"
+          // noWrap
+        >
+          {dayjs(row.created_at).format('YYYY-MM-DD')}
+        </Typography>
+      </TableCell>
+      <TableCell align="left" sx={{ minWidth: 130 }}>
         <Button
           onClick={() => {
             // navigate(

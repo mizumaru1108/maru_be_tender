@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import {
   Box,
@@ -24,6 +24,7 @@ import SendEmailTableRow from './SendEmailTableRow';
 import { useNavigate } from 'react-router';
 import Iconify from 'components/Iconify';
 import { role_url_map } from '../../../@types/commons';
+import { useSnackbar } from 'notistack';
 
 const TABLE_HEAD = [
   { id: 'employee_name', label: 'email_to_client.headercell.employee_name' },
@@ -32,21 +33,26 @@ const TABLE_HEAD = [
     label: 'email_to_client.headercell.email_content',
     align: 'left',
   },
+  {
+    id: 'created_at',
+    label: 'email_to_client.headercell.created_at',
+    align: 'left',
+  },
   { id: 'events', label: 'client_list_headercell.events', align: 'left' },
 ];
 
-const sampleData: EmailToClient[] = [
-  {
-    id: '1',
-    employee_name: 'maru ichi',
-    email_content: 'testing content',
-  },
-  {
-    id: '2',
-    employee_name: 'maru ni',
-    email_content: 'testing content',
-  },
-];
+// const sampleData: EmailToClient[] = [
+//   {
+//     id: '1',
+//     employee_name: 'maru ichi',
+//     email_content: 'testing content',
+//   },
+//   {
+//     id: '2',
+//     employee_name: 'maru ni',
+//     email_content: 'testing content',
+//   },
+// ];
 
 export default function SendEmailTable() {
   const { dense, page, rowsPerPage, total, setTotal, onChangePage, onChangeRowsPerPage } =
@@ -55,46 +61,66 @@ export default function SendEmailTable() {
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [tableData, setTableData] = useState<EmailToClient[]>([]);
-
   const [isLoading, setIsLoading] = useState(false);
 
-  const getDataClient = async () => {
+  const fetchingData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`tender-proposal/old/list`, {
+      const tmpPage = page + 1;
+      const url = `/tender/email-records`;
+      const response = await axiosInstance.get(url, {
         headers: { 'x-hasura-role': activeRole! },
+        params: {
+          page: tmpPage,
+          limit: rowsPerPage,
+          include_relations: 'sender,receiver',
+        },
       });
-      if (response.data.statusCode === 200) {
-        const tmpTableData: EmailToClient[] = response.data.data.map((item: EmailToClient) => {
-          const tmpItem = item;
-          return {
-            id: tmpItem.id,
-            employee_name: tmpItem.employee_name,
-            email_content: tmpItem.email_content,
-          };
-        });
-        setTableData(tmpTableData);
-        setTotal(response.data.total as number);
-        setIsLoading(false);
+      if (response && response.data) {
+        if (response.data.total) {
+          setTotal(response.data.total);
+        }
+        if (response.data.data) {
+          // console.log('test data:', response.data.data);
+          setTableData(response.data.data);
+        }
       }
-      return response.data;
-    } catch (error) {
+    } catch (err) {
+      const statusCode = (err && err.statusCode) || 0;
+      const message = (err && err.message) || null;
+      if (message && statusCode !== 0) {
+        enqueueSnackbar(err.message, {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar(translate('pages.common.internal_server_error'), {
+          variant: 'error',
+          preventDuplicate: true,
+          autoHideDuration: 3000,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+        });
+      }
+    } finally {
       setIsLoading(false);
-      return <>...Opss, something went wrong</>;
     }
-  };
-
-  // useEffect(() => {
-  //   getDataClient();
-  // }, [page, rowsPerPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRole, enqueueSnackbar, page, rowsPerPage]);
 
   useEffect(() => {
-    // getDataClient();
-    setTableData(sampleData);
-    setTotal(2);
-  }, [setTotal]);
+    fetchingData();
+  }, [fetchingData]);
 
   return (
     <Box>
@@ -122,19 +148,13 @@ export default function SendEmailTable() {
           marginBottom: 5,
         }}
       >
-        <Typography variant="h3">{translate('email_to_client.page_title')}</Typography>
+        <Typography variant="h4">{translate('email_to_client.page_title')}</Typography>
         <Button
-          sx={{
-            py: '10px',
-            flex: 0.2,
-            backgroundColor: '#0E8478',
-            maxWidth: 175,
-            color: '#fff',
-            ':hover': { backgroundColor: '#13B2A2' },
-          }}
           onClick={() => {
             navigate(`/${role_url_map[activeRole!]}/dashboard/send-email/new`);
           }}
+          size="small"
+          variant="contained"
         >
           {translate('email_to_client.button.add_new')}
         </Button>
@@ -148,17 +168,19 @@ export default function SendEmailTable() {
               <TableBody>
                 {isLoading
                   ? [...Array(rowsPerPage)].map((item, index) => <TableSkeleton key={index} />)
-                  : tableData.map((row) => <SendEmailTableRow key={row.id} row={row} />)}
-                {!isLoading && tableData.length === 0 && (
-                  <EmptyContent
-                    title="لا يوجد بيانات"
-                    sx={{
-                      '& span.MuiBox-root': { height: 160 },
-                    }}
-                  />
-                )}
+                  : tableData.map((row) => (
+                      <SendEmailTableRow key={row.email_record_id} row={row} />
+                    ))}
               </TableBody>
             </Table>
+            {!isLoading && tableData.length === 0 && (
+              <EmptyContent
+                title="لا يوجد بيانات"
+                sx={{
+                  '& span.MuiBox-root': { height: 160 },
+                }}
+              />
+            )}
           </TableContainer>
         </Scrollbar>
 

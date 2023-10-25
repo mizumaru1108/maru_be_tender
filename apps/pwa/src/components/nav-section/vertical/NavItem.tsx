@@ -57,7 +57,11 @@ export default function NavItem({ item, depth, active, open, isCollapse, count, 
         Number(count?.complete_close_report);
       tmpTitle = count?.close_report
         ? `( ${
-            activeRole === 'tender_client' ? count?.close_report : sumCloseReportSpv
+            activeRole === 'tender_client'
+              ? count?.close_report
+              : activeRole === 'tender_project_manager' || activeRole === 'tender_ceo'
+              ? count?.complete_close_report
+              : sumCloseReportSpv
           } ) ${translate(title)}`
         : translate(title);
     } else {

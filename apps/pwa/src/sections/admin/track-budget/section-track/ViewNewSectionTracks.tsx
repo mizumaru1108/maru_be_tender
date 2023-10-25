@@ -74,16 +74,16 @@ export default function ViewNewSectionTracks() {
   };
 
   const handleSectionBudget = async () => {
-    const flatArray = flattenChildTrackSections(track?.sections || [], track?.id).filter(
-      (item) => item.parent_section_id
-    );
+    // const flatArray = flattenChildTrackSections(track?.sections || [], track?.id).filter(
+    //   (item) => item.parent_section_id
+    // );
+    const flatArray = flattenChildTrackSections(track?.sections || [], track?.id);
     for (const item of flatArray) {
       const res = await getSectoinBudget({
         id: item?.id!,
         role: activeRole!,
       });
       if (res) {
-        // setAllSectionBudget([...allSectionBudget, { ...res }]);
         setAllSectionBudget((prevState) => [...prevState, { ...res }]);
       }
     }
@@ -291,7 +291,7 @@ export default function ViewNewSectionTracks() {
                                     'content.administrative.statistic.heading.totalReservedBudget'
                                   )}
                                 </Typography>
-                                <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                                <Typography sx={{ color: lighten('#000', 0.1), fontWeight: 700 }}>
                                   {fCurrencyNumber(
                                     allSectionBudget.find((el) => el.id === item.id)
                                       ?.section_spending_budget || 0
@@ -309,7 +309,7 @@ export default function ViewNewSectionTracks() {
                                     'content.administrative.statistic.heading.totalSpendBudget'
                                   )}
                                 </Typography>
-                                <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                                <Typography sx={{ color: lighten('#000', 0.1), fontWeight: 700 }}>
                                   {/* {fCurrencyNumber(item?.budget || 0)} */}
                                   {fCurrencyNumber(
                                     allSectionBudget.find((el) => el.id === item.id)
@@ -328,7 +328,7 @@ export default function ViewNewSectionTracks() {
                                     'content.administrative.statistic.heading.totalBudget'
                                   )}
                                 </Typography>
-                                <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                                <Typography sx={{ color: lighten('#000', 0.1), fontWeight: 700 }}>
                                   {fCurrencyNumber(item?.budget || 0)}
                                 </Typography>
                               </Grid>
@@ -385,7 +385,9 @@ export default function ViewNewSectionTracks() {
                                           'content.administrative.statistic.heading.totalReservedBudget'
                                         )}
                                       </Typography>
-                                      <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                                      <Typography
+                                        sx={{ color: lighten('#000', 0.2), fontWeight: 700 }}
+                                      >
                                         {fCurrencyNumber(
                                           allSectionBudget.find((el) => el.id === item.id)
                                             ?.section_spending_budget || 0
@@ -405,7 +407,9 @@ export default function ViewNewSectionTracks() {
                                           'content.administrative.statistic.heading.totalSpendBudget'
                                         )}
                                       </Typography>
-                                      <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                                      <Typography
+                                        sx={{ color: lighten('#000', 0.2), fontWeight: 700 }}
+                                      >
                                         {/* {fCurrencyNumber(item?.budget || 0)} */}
                                         {fCurrencyNumber(
                                           allSectionBudget.find((el) => el.id === item.id)
@@ -426,7 +430,9 @@ export default function ViewNewSectionTracks() {
                                           'content.administrative.statistic.heading.totalBudget'
                                         )}
                                       </Typography>
-                                      <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                                      <Typography
+                                        sx={{ color: lighten('#000', 0.2), fontWeight: 700 }}
+                                      >
                                         {fCurrencyNumber(item?.budget || 0)}
                                       </Typography>
                                     </Grid>
@@ -487,7 +493,7 @@ export default function ViewNewSectionTracks() {
                                               )}
                                             </Typography>
                                             <Typography
-                                              sx={{ color: 'text.tertiary', fontWeight: 700 }}
+                                              sx={{ color: lighten('#000', 0.4), fontWeight: 700 }}
                                             >
                                               {fCurrencyNumber(
                                                 allSectionBudget.find((el) => el.id === item.id)
@@ -509,7 +515,7 @@ export default function ViewNewSectionTracks() {
                                               )}
                                             </Typography>
                                             <Typography
-                                              sx={{ color: 'text.tertiary', fontWeight: 700 }}
+                                              sx={{ color: lighten('#000', 0.4), fontWeight: 700 }}
                                             >
                                               {/* {fCurrencyNumber(item?.budget || 0)} */}
                                               {fCurrencyNumber(
@@ -532,7 +538,7 @@ export default function ViewNewSectionTracks() {
                                               )}
                                             </Typography>
                                             <Typography
-                                              sx={{ color: 'text.tertiary', fontWeight: 700 }}
+                                              sx={{ color: lighten('#000', 0.4), fontWeight: 700 }}
                                             >
                                               {fCurrencyNumber(item?.budget || 0)}
                                             </Typography>
