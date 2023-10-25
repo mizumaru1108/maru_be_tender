@@ -40,6 +40,10 @@ const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectRe
 
 const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
 
+const ProposalAmandementRequest = Loadable(
+  lazy(() => import('pages/amandement-request/client/AmandementRequestProposal'))
+);
+
 export const moderatorRoute = {
   path: 'moderator',
   element: (
@@ -73,6 +77,7 @@ export const moderatorRoute = {
       children: [
         { element: <Navigate to="/moderator/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainModeratorPage /> },
+        { path: 'proposal-amandment-request/:proposal_id', element: <ProposalAmandementRequest /> },
         { path: ':submiterId/:detailType', element: <ProjectOwnerDetails /> },
         {
           path: 'current-project',

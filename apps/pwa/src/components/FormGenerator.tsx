@@ -4,7 +4,7 @@ import BaseField from './hook-form/BaseField';
 
 // ----------------------------------------------------------------------
 
-type FieldType =
+export type FieldType =
   | 'select'
   | 'selectWithoutGenerator'
   | 'datePicker'

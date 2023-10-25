@@ -1,4 +1,4 @@
-import { Box, Button, Stack, useTheme } from '@mui/material';
+import { Box, Button, Stack, useTheme, Menu, MenuItem } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import Iconify from 'components/Iconify';
 import useAuth from 'hooks/useAuth';
@@ -18,7 +18,7 @@ import { dispatch, useDispatch, useSelector } from 'redux/store';
 import moment from 'moment';
 import { Conversation } from '../../../../@types/wschat';
 import { getProposalCount, getTrackList } from 'redux/slices/proposal';
-import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { FEATURE_AMANDEMENT_PROPOSAL, FEATURE_PROPOSAL_COUNTING } from 'config';
 
 function ModeratorActionBar() {
   const { user, activeRole } = useAuth();
@@ -37,7 +37,9 @@ function ModeratorActionBar() {
 
   const navigate = useNavigate();
 
-  const [, update] = useMutation(updateProposalByModerator);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const open = Boolean(anchorEl);
 
   const [action, setAction] = useState<'accept' | 'reject' | ''>('');
 
@@ -46,6 +48,14 @@ function ModeratorActionBar() {
 
   const handleOnCloseModal = () => {
     setAction('');
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const handleApproval = async (data: any) => {
@@ -338,7 +348,7 @@ function ModeratorActionBar() {
           border: `1px solid ${theme.palette.grey[400]}`,
         }}
       >
-        <Stack direction={{ sm: 'column', md: 'row' }} justifyContent="space-between">
+        <Stack direction={{ sm: 'column', md: 'row' }} spacing={2} justifyContent="space-between">
           <Stack flexDirection={{ sm: 'column', md: 'row' }}>
             <LoadingButton
               loading={isSubmitting}
@@ -362,31 +372,18 @@ function ModeratorActionBar() {
             >
               {translate('account_manager.reject_project')}
             </LoadingButton>
-            {/* disabled other than accept reject button */}
-            {/* <Button
-              // disabled={true}
-              variant="outlined"
-              color="primary"
-              sx={{ my: { xs: '1.3em', md: '0' }, ':hover': { backgroundColor: '#fff' } }}
-            >
-              {translate('send_message_to_partner')}
-            </Button> */}
             <Button
               variant="outlined"
               color="inherit"
               endIcon={<Iconify icon="eva:message-circle-outline" />}
-              // onClick={() => setAction('SEND_CLIENT_MESSAGE')}
               onClick={handleMessage}
               sx={{ flex: 1 }}
-              // disabled={true}
             >
               {translate('send_message_to_partner')}
             </Button>
           </Stack>
 
-          {/* disabled other than accept reject button */}
           {/* <Button
-            disabled={true}
             variant="contained"
             onClick={() => {}}
             sx={{ backgroundColor: '#0169DE', ':hover': { backgroundColor: '#1482FE' } }}
@@ -394,6 +391,45 @@ function ModeratorActionBar() {
           >
             {translate('submit_amendment_request')}
           </Button> */}
+          <Button
+            id="demo-positioned-button"
+            aria-controls={open ? 'demo-positioned-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            variant="contained"
+            endIcon={<Iconify icon="eva:edit-2-outline" />}
+            onClick={handleClick}
+            sx={{
+              backgroundColor: '#0169DE',
+              ':hover': { backgroundColor: '#1482FE' },
+            }}
+          >
+            {translate('account_manager.partner_details.submit_amendment_request')}
+          </Button>
+          <Menu
+            id="demo-positioned-menu"
+            aria-labelledby="demo-positioned-button"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+          >
+            <MenuItem
+              disabled={FEATURE_AMANDEMENT_PROPOSAL ? false : true}
+              onClick={() => {
+                navigate(`/moderator/dashboard/proposal-amandment-request/${id}`);
+              }}
+            >
+              {translate('account_manager.partner_details.amendment_request_to_client')}
+            </MenuItem>
+          </Menu>
         </Stack>
       </Box>
       {action === 'accept' && (

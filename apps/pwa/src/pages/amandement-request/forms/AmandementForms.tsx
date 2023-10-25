@@ -16,6 +16,8 @@ import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
 import { useSelector } from '../../../redux/store';
 import BankImageComp from '../../../sections/shared/BankImageComp';
 import { LeftField, RightField } from './FormFieldData';
+import BaseField from 'components/hook-form/BaseField';
+import { FieldType } from 'components/FormGenerator';
 
 interface Area {
   regions_id: ComboBoxOption[];
@@ -123,10 +125,7 @@ const AmandementForms = ({
   };
 
   useEffect(() => {
-    // window.scrollTo(0, 0);
     if (!!defaultValues) {
-      // const newValues = JSON.parse(JSON.stringify(defaultValues));
-      // console.log('test newvalue:', newValues?.beneficiary_details?.name);
       reset({
         amount_required_fsupport: String(defaultValues.amount_required_fsupport),
         letter_ofsupport_req: '-',
@@ -135,7 +134,7 @@ const AmandementForms = ({
         project_beneficiaries: defaultValues?.beneficiary_details?.name,
         project_goals: defaultValues.project_goals,
         project_idea: defaultValues.project_idea,
-        project_implement_date: String(defaultValues.project_implement_date),
+        project_implement_date: moment(defaultValues.project_implement_date).format('YYYY-MM-DD'),
         project_location: defaultValues.project_location,
         project_outputs: defaultValues.project_outputs,
         project_risks: defaultValues.project_risks,
@@ -239,7 +238,8 @@ const AmandementForms = ({
                 />
               </Grid>
               <Grid item xs={11} md={11}>
-                <RHFTextField
+                <BaseField
+                  type={item.type as FieldType}
                   name={item.name}
                   disabled={selectedCheckbox.includes(item.name) ? false : true}
                   label={translate(`${item.label}`)}
@@ -265,8 +265,8 @@ const AmandementForms = ({
                 />
               </Grid>
               <Grid item xs={11} md={11}>
-                <RHFTextField
-                  // type="number"
+                <BaseField
+                  type={item.type as FieldType}
                   name={item.name}
                   disabled={selectedCheckbox.includes(item.name) ? false : true}
                   label={translate(`${item.label}`)}
@@ -301,7 +301,6 @@ const AmandementForms = ({
                 />
               ) : (
                 <RHFComboBox
-                  // disabled={selectedCheckbox.includes('regions_id') ? false : true}
                   disabled
                   name="regions"
                   label={translate('portal_report.region_id.label')}

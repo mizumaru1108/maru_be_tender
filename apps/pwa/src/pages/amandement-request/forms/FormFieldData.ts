@@ -6,25 +6,25 @@ export const LeftField = [
     placeholder: 'funding_project_request_form2.number_of_project_beneficiaries.placeholder',
   },
   {
-    type: 'textArea',
+    type: 'textField',
     name: 'project_goals',
     label: 'funding_project_request_form2.project_goals.label',
     placeholder: 'funding_project_request_form2.project_goals.placeholder',
   },
   {
-    type: 'textArea',
+    type: 'textField',
     name: 'project_outputs',
     label: 'funding_project_request_form2.project_outputs.label',
     placeholder: 'funding_project_request_form2.project_outputs.placeholder',
   },
   {
-    type: 'textArea',
+    type: 'textField',
     name: 'project_strengths',
     label: 'funding_project_request_form2.project_strengths.label',
     placeholder: 'funding_project_request_form2.project_strengths.placeholder',
   },
   {
-    type: 'textArea',
+    type: 'textField',
     name: 'project_risks',
     label: 'funding_project_request_form2.project_risk.label',
     placeholder: 'funding_project_request_form2.project_risk.placeholder',
@@ -50,7 +50,7 @@ export const RightField = [
     placeholder: 'funding_project_request_form1.project_applying_place.placeholder',
   },
   {
-    type: 'textField',
+    type: 'datePicker',
     name: 'project_implement_date',
     label: 'funding_project_request_form1.project_applying_date.label',
     placeholder: 'funding_project_request_form1.project_applying_date.placeholder',
