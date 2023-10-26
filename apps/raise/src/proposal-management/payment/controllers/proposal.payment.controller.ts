@@ -14,7 +14,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
+import { Cron } from '@nestjs/schedule';
+import { ApiBearerAuth, ApiOperation, ApiSecurity } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
+import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
+import {
+  PaymentSubmitClosingReportCommand,
+  PaymentSubmitClosingReportCommandResult,
+} from 'src/proposal-management/payment/commands/payment.submit.closing.report.command';
+import { SubmitClosingReportDto } from 'src/proposal-management/payment/dtos/requests/submit.closing.report.dto';
 import { BasePrismaErrorException } from 'src/tender-commons/exceptions/prisma-error/base.prisma.error.exception';
 import { CurrentUser } from '../../../commons/decorators/current-user.decorator';
 import { BaseResponse } from '../../../commons/dtos/base-response';
@@ -29,11 +37,11 @@ import { PayloadErrorException } from '../../../tender-commons/exceptions/payloa
 import { ManualPaginatedResponse } from '../../../tender-commons/helpers/manual-paginated-response.dto';
 import { manualPaginationHelper } from '../../../tender-commons/helpers/manual-pagination-helper';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { PaymentSendBatchReleaseNotifCommand } from '../commands/payment.send.batch.release.notif/payment.send.batch.release.notif.command';
 import { ProposalInsertPaymentCommand } from '../commands/proposal.insert.payments.command.ts/proposal.insert.payments.command';
 import { ProposalPaymentSendCloseReportCommand } from '../commands/proposal.send.close.report.command/proposal.send.close.report.command';
 import { ProposalUpdatePaymentCommand } from '../commands/proposal.update.payments.command.ts/proposal.update.payments.command';
 import {
-  AskClosingReportDto,
   BankDetailsDto,
   BankListCreateDto,
   CreateProposalPaymentDto,
@@ -49,13 +57,6 @@ import { UpdatePaymentResponseDto } from '../dtos/responses';
 import { InvalidAmountOfSupportException } from '../exceptions/invalid.amount.of.support.exception';
 import { InvalidNumberofPaymentsException } from '../exceptions/invalid.number.of.payments.exception';
 import { ProposalPaymentService } from '../services/proposal-payment.service';
-import { ApiBearerAuth, ApiOperation, ApiSecurity } from '@nestjs/swagger';
-import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
-import {
-  PaymentSubmitClosingReportCommand,
-  PaymentSubmitClosingReportCommandResult,
-} from 'src/proposal-management/payment/commands/payment.submit.closing.report.command';
-import { SubmitClosingReportDto } from 'src/proposal-management/payment/dtos/requests/submit.closing.report.dto';
 
 @Controller('tender/proposal/payment')
 export class ProposalPaymentController {
@@ -128,27 +129,6 @@ export class ProposalPaymentController {
     }
   }
 
-  // DEPRECATED
-  @ApiSecurity('x-hasura-role')
-  @ApiBearerAuth()
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_project_supervisor')
-  @Post('insert-payment')
-  async insertPayment(
-    @CurrentUser() currentUser: TenderCurrentUser,
-    @Body() request: CreateProposalPaymentDto,
-  ): Promise<BaseResponse<any>> {
-    const createdPayment = await this.paymentService.insertPayment(
-      currentUser.id,
-      request,
-    );
-    return baseResponseHelper(
-      createdPayment,
-      HttpStatus.CREATED,
-      'Payment created successfully',
-    );
-  }
-
   @ApiSecurity('x-hasura-role')
   @ApiBearerAuth()
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
@@ -162,28 +142,6 @@ export class ProposalPaymentController {
       createdPayment,
       HttpStatus.CREATED,
       'Track Budgets added successfully',
-    );
-  }
-
-  // DEPRECATED
-  @ApiSecurity('x-hasura-role')
-  @ApiBearerAuth()
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_client')
-  @Post('submit-closing-report')
-  async askClosingReport(
-    @CurrentUser() user: TenderCurrentUser,
-    @Body() request: AskClosingReportDto,
-  ): Promise<BaseResponse<any>> {
-    const response = await this.paymentService.submitClosingReport(
-      user,
-      request,
-    );
-
-    return baseResponseHelper(
-      response,
-      HttpStatus.OK,
-      'Asking for changes successfully applied!, please wait untill account manager responded to your request',
     );
   }
 
@@ -224,6 +182,29 @@ export class ProposalPaymentController {
     }
   }
 
+  @Cron('0 0 * * *')
+  async supervisorBatchReleaseNotif() {
+    try {
+      const command = Builder<PaymentSendBatchReleaseNotifCommand>(
+        PaymentSendBatchReleaseNotifCommand,
+        {},
+      ).build();
+
+      await this.commandBus.execute<PaymentSendBatchReleaseNotifCommand>(
+        command,
+      );
+
+      return baseResponseHelper(
+        '',
+        HttpStatus.CREATED,
+        'Batch release notif sended successfully!',
+      );
+    } catch (e) {
+      throw this.paymentControllerErrorMapper(e);
+    }
+  }
+
+  // deprecated
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin', 'tender_ceo')
   @Get('find-track-budgets')
@@ -264,28 +245,6 @@ export class ProposalPaymentController {
       'Asking for changes successfully applied!, please wait untill account manager responded to your request',
     );
   }
-
-  // @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  // @TenderRoles('tender_admin')
-  // @Get('find-section-budget')
-  // async findSectionBudgets(
-  //   @CurrentUser() currentUser: TenderCurrentUser,
-  //   @Query() filter: any, // keep itsimple refactor latter
-  // ): Promise<ManualPaginatedResponse<any>> {
-  //   const response = await this.paymentService.findSectionBudgets(
-  //     currentUser,
-  //     filter,
-  //   );
-
-  //   return manualPaginationHelper(
-  //     response.data,
-  //     response.total,
-  //     filter.page || 1,
-  //     filter.limit || 10,
-  //     HttpStatus.OK,
-  //     'Success',
-  //   );
-  // }
 
   @ApiSecurity('x-hasura-role')
   @ApiBearerAuth()

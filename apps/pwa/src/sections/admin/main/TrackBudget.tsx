@@ -102,9 +102,10 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                         {translate('content.administrative.statistic.heading.totalReservedBudget')}
                       </Typography>
                       <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                        {activeRole === 'tender_ceo'
+                        {/* {activeRole === 'tender_ceo'
                           ? fCurrencyNumber(item.total_spending_budget_by_ceo || 0)
-                          : fCurrencyNumber(item.total_spending_budget || 0)}
+                          : fCurrencyNumber(item.total_spending_budget || 0)} */}
+                        {fCurrencyNumber(item.total_spending_budget || 0)}
                       </Typography>
                     </Grid>
                     <Grid item md={4} xs={12} sx={styleBox}>

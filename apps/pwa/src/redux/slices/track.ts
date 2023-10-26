@@ -78,7 +78,8 @@ export default slice.reducer;
 
 export const getTracks = (role: string) => async () => {
   const params = {
-    include_relations: `track_sections,proposal`,
+    // include_relations: `track_sections,proposal`,
+    include_relations: `count_budget`,
   };
   try {
     dispatch(slice.actions.startLoading);
@@ -98,7 +99,7 @@ export const getTracks = (role: string) => async () => {
 
 export const getTracksById = (role: string, track_id: string) => async () => {
   const params = {
-    include_relations: `track_sections,proposal`,
+    include_relations: `count_budget`,
   };
   dispatch(slice.actions.setLoading(true));
   try {

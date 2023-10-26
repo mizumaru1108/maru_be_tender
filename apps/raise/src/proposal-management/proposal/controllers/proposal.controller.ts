@@ -198,7 +198,7 @@ export class TenderProposalController {
   }
 
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
-  @TenderRoles('tender_project_supervisor')
+  @TenderRoles('tender_project_supervisor', 'tender_moderator')
   @Post('send-amandement-cqrs')
   async sendAmandementCqrs(
     @CurrentUser() currentUser: TenderCurrentUser,

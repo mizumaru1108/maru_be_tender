@@ -167,7 +167,10 @@ export class SendAmandementCommandHandler
           const createdLogs = await this.logRepo.create(
             {
               proposal_id: proposal.id,
-              user_role: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+              user_role:
+                command.currentUser.choosenRole === 'tender_project_supervisor'
+                  ? TenderAppRoleEnum.PROJECT_SUPERVISOR
+                  : TenderAppRoleEnum.MODERATOR,
               reviewer_id: currentUser.id,
               action: ProposalAction.SEND_BACK_FOR_REVISION, //revised
               state: TenderAppRoleEnum.CLIENT,
