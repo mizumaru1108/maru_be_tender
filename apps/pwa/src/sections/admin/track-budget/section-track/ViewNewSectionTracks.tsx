@@ -117,12 +117,12 @@ export default function ViewNewSectionTracks() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
-  useEffect(() => {
-    if (track && !load) {
-      handleSectionBudget();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [track, load]);
+  // useEffect(() => {
+  //   if (track && !load) {
+  //     handleSectionBudget();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [track, load]);
 
   if (load) return <>{translate('pages.common.loading')}</>;
 
@@ -214,10 +214,7 @@ export default function ViewNewSectionTracks() {
                             )}
                           </Typography>
                           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                            {fCurrencyNumber(
-                              allSectionBudget.find((el) => el.id === item.id)
-                                ?.section_spending_budget || 0
-                            )}
+                            {fCurrencyNumber(item?.section_spending_budget || 0)}
                           </Typography>
                         </Grid>
                         <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -225,11 +222,7 @@ export default function ViewNewSectionTracks() {
                             {translate('content.administrative.statistic.heading.totalSpendBudget')}
                           </Typography>
                           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                            {/* {fCurrencyNumber(item?.budget || 0)} */}
-                            {fCurrencyNumber(
-                              allSectionBudget.find((el) => el.id === item.id)
-                                ?.section_reserved_budget || 0
-                            )}
+                            {fCurrencyNumber(item?.section_reserved_budget || 0)}
                           </Typography>
                         </Grid>
                         <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -292,10 +285,7 @@ export default function ViewNewSectionTracks() {
                                   )}
                                 </Typography>
                                 <Typography sx={{ color: lighten('#000', 0.1), fontWeight: 700 }}>
-                                  {fCurrencyNumber(
-                                    allSectionBudget.find((el) => el.id === item.id)
-                                      ?.section_spending_budget || 0
-                                  )}
+                                  {fCurrencyNumber(item?.section_spending_budget || 0)}
                                 </Typography>
                               </Grid>
                               <Grid
@@ -310,11 +300,7 @@ export default function ViewNewSectionTracks() {
                                   )}
                                 </Typography>
                                 <Typography sx={{ color: lighten('#000', 0.1), fontWeight: 700 }}>
-                                  {/* {fCurrencyNumber(item?.budget || 0)} */}
-                                  {fCurrencyNumber(
-                                    allSectionBudget.find((el) => el.id === item.id)
-                                      ?.section_reserved_budget || 0
-                                  )}
+                                  {fCurrencyNumber(item?.section_reserved_budget || 0)}
                                 </Typography>
                               </Grid>
                               <Grid
@@ -388,10 +374,7 @@ export default function ViewNewSectionTracks() {
                                       <Typography
                                         sx={{ color: lighten('#000', 0.2), fontWeight: 700 }}
                                       >
-                                        {fCurrencyNumber(
-                                          allSectionBudget.find((el) => el.id === item.id)
-                                            ?.section_spending_budget || 0
-                                        )}
+                                        {fCurrencyNumber(item?.section_spending_budget || 0)}
                                       </Typography>
                                     </Grid>
                                     <Grid
@@ -410,11 +393,7 @@ export default function ViewNewSectionTracks() {
                                       <Typography
                                         sx={{ color: lighten('#000', 0.2), fontWeight: 700 }}
                                       >
-                                        {/* {fCurrencyNumber(item?.budget || 0)} */}
-                                        {fCurrencyNumber(
-                                          allSectionBudget.find((el) => el.id === item.id)
-                                            ?.section_reserved_budget || 0
-                                        )}
+                                        {fCurrencyNumber(item?.section_reserved_budget || 0)}
                                       </Typography>
                                     </Grid>
                                     <Grid
@@ -495,10 +474,7 @@ export default function ViewNewSectionTracks() {
                                             <Typography
                                               sx={{ color: lighten('#000', 0.4), fontWeight: 700 }}
                                             >
-                                              {fCurrencyNumber(
-                                                allSectionBudget.find((el) => el.id === item.id)
-                                                  ?.section_spending_budget || 0
-                                              )}
+                                              {fCurrencyNumber(item?.section_spending_budget || 0)}
                                             </Typography>
                                           </Grid>
                                           <Grid
@@ -517,11 +493,7 @@ export default function ViewNewSectionTracks() {
                                             <Typography
                                               sx={{ color: lighten('#000', 0.4), fontWeight: 700 }}
                                             >
-                                              {/* {fCurrencyNumber(item?.budget || 0)} */}
-                                              {fCurrencyNumber(
-                                                allSectionBudget.find((el) => el.id === item.id)
-                                                  ?.section_reserved_budget || 0
-                                              )}
+                                              {fCurrencyNumber(item?.section_reserved_budget || 0)}
                                             </Typography>
                                           </Grid>
                                           <Grid
