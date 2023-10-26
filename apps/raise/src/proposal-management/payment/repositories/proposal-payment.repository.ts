@@ -7,7 +7,6 @@ import { nanoid } from 'nanoid';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
 import { logUtil } from '../../../commons/utils/log-util';
-import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
   TenderAppRole,
@@ -28,6 +27,7 @@ import {
 import { ProposalPaymentEntity } from '../entities/proposal-payment.entity';
 import { CloseReportNotifMapper } from '../mappers';
 import { UpdatePaymentNotifMapper } from '../mappers/update-payment-notif.mapper';
+import { PaymentStatusEnum } from '../types/enums/payment.status.enum';
 
 export class CreatePaymentProps {
   id?: string;
@@ -47,11 +47,22 @@ export class UpdatePaymentProps {
   payment_date?: Date;
 }
 
+export class PaymentFindManyProps {
+  payment_date?: Date;
+  paid?: '0' | '1';
+  limit?: number;
+  page?: number;
+  sort_by?: string;
+  sort_direction?: string;
+  include_relations?: PaymentIncludeRelationsTypes[];
+}
+
+export type PaymentIncludeRelationsTypes = 'proposal' | 'cheques';
+
 @Injectable()
 export class ProposalPaymentRepository {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly bunnyService: BunnyService,
     private readonly configService: ConfigService,
     @InjectPinoLogger(ProposalPaymentRepository.name)
     private logger: PinoLogger,
@@ -175,7 +186,6 @@ export class ProposalPaymentRepository {
             order: prop.order,
             proposal_id: prop.proposal_id,
             payment_amount: prop.payment_amount,
-            payment_date: prop.payment_date,
           };
         }),
       });
@@ -267,118 +277,6 @@ export class ProposalPaymentRepository {
         ProposalPaymentRepository.name,
         'updatePaymentStatus error details: ',
         'updating payment status!',
-      );
-      throw theError;
-    }
-  }
-
-  async insertPayment(
-    proposal_id: string,
-    reviewer_id: string,
-    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
-    createManyPaymentPayload: Prisma.paymentCreateManyInput[],
-    lastLog: {
-      created_at: Date;
-    } | null,
-  ) {
-    try {
-      return await this.prismaService.$transaction(
-        async (prisma) => {
-          this.logger.info(
-            `updating proposal ${proposal_id} with payload of \n ${logUtil(
-              proposalUpdatePayload,
-            )}`,
-          );
-
-          const updatedProposal = await prisma.proposal.update({
-            where: { id: proposal_id },
-            data: proposalUpdatePayload,
-          });
-
-          this.logger.info(`Creating Proposal Log`);
-          const logs = await prisma.proposal_log.create({
-            data: {
-              id: nanoid(),
-              proposal_id: proposal_id,
-              action: ProposalAction.INSERT_PAYMENT,
-              reviewer_id,
-              state: TenderAppRoleEnum.PROJECT_SUPERVISOR,
-              user_role: TenderAppRoleEnum.PROJECT_SUPERVISOR,
-              response_time: lastLog
-                ? Math.round(
-                    (new Date().getTime() - lastLog.created_at.getTime()) /
-                      60000,
-                  )
-                : null,
-            },
-            select: {
-              action: true,
-              created_at: true,
-              reviewer: {
-                select: {
-                  id: true,
-                  employee_name: true,
-                  email: true,
-                  mobile_number: true,
-                },
-              },
-              proposal: {
-                select: {
-                  project_name: true,
-                  user: {
-                    select: {
-                      id: true,
-                      employee_name: true,
-                      email: true,
-                      mobile_number: true,
-                    },
-                  },
-                },
-              },
-            },
-          });
-
-          /* disable for a while  (set payment / insert payment)*/
-          // const insertNotif = InsertPaymentNotifMapper(logs);
-          // if (
-          //   insertNotif.createManyWebNotifPayload &&
-          //   insertNotif.createManyWebNotifPayload.length > 0
-          // ) {
-          //   this.logger.log(
-          //     'info',
-          //     `Creating new notification with payload of \n${insertNotif.createManyWebNotifPayload}`,
-          //   );
-          //   prisma.notification.createMany({
-          //     data: insertNotif.createManyWebNotifPayload,
-          //   });
-          // }
-
-          this.logger.info(
-            `creating payments with payload of \n${logUtil(
-              createManyPaymentPayload,
-            )}`,
-          );
-          await this.prismaService.payment.createMany({
-            data: createManyPaymentPayload,
-          });
-
-          // return {
-          //   insertNotif,
-          //   updatedProposal,
-          // };
-          return {
-            proposal: updatedProposal,
-            proposal_log: logs,
-          };
-        },
-        { maxWait: 50000, timeout: 150000 },
-      );
-    } catch (error) {
-      const theError = prismaErrorThrower(
-        error,
-        ProposalPaymentRepository.name,
-        'createManyPayment error details: ',
-        'creating payment!',
       );
       throw theError;
     }
@@ -768,76 +666,6 @@ export class ProposalPaymentRepository {
     }
   }
 
-  async submitClosingReport(
-    proposal_id: string,
-    closingReportPayload: Prisma.proposal_closing_reportUncheckedCreateInput,
-    fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[],
-    uploadedFilePath: string[],
-  ) {
-    try {
-      return await this.prismaService.$transaction(async (prisma) => {
-        this.logger.info(
-          `updating proposal ${proposal_id}, inner and outter to be completed`,
-        );
-        await prisma.proposal.update({
-          where: {
-            id: proposal_id,
-          },
-          data: {
-            inner_status: InnerStatusEnum.PROJECT_COMPLETED,
-            outter_status: OutterStatusEnum.COMPLETED,
-          },
-        });
-
-        this.logger.info(
-          `creating closing report with paylaod of \n${logUtil(
-            closingReportPayload,
-          )}`,
-        );
-        await prisma.proposal_closing_report.create({
-          data: closingReportPayload,
-        });
-
-        this.logger.info(
-          `creating new file manager with paylaod of \n${logUtil(
-            fileManagerCreateManyPayload,
-          )}`,
-        );
-        await prisma.file_manager.createMany({
-          data: fileManagerCreateManyPayload,
-        });
-
-        this.logger.info(`creating new proposal log`);
-        await prisma.proposal_log.create({
-          data: {
-            id: nanoid(),
-            proposal_id,
-            action: ProposalAction.PROJECT_COMPLETED,
-            state: TenderAppRoleEnum.CLIENT,
-            user_role: TenderAppRoleEnum.CLIENT,
-          },
-        });
-      });
-    } catch (err) {
-      if (uploadedFilePath.length > 0) {
-        this.logger.info(
-          `error occured during submitting closing report, deleting all previous uploaded files`,
-        );
-        uploadedFilePath.forEach(async (path) => {
-          await this.bunnyService.deleteMedia(path, true);
-        });
-      }
-
-      const theError = prismaErrorThrower(
-        err,
-        ProposalPaymentRepository.name,
-        'Send Amandement error details: ',
-        'Sending Amandement!',
-      );
-      throw theError;
-    }
-  }
-
   async createManyTrackSection(
     createPayload: Prisma.track_sectionCreateManyInput[],
   ) {
@@ -1206,6 +1034,105 @@ export class ProposalPaymentRepository {
         `Finding Bank Details!`,
       );
       throw theError;
+    }
+  }
+
+  applyInclude(include_relations: PaymentIncludeRelationsTypes[]) {
+    let include: Prisma.paymentInclude = {};
+    // console.log({ include_relations });
+    for (const relation of include_relations) {
+      if (relation === 'proposal') {
+        include = { ...include, proposal: true };
+      }
+      if (relation === 'cheques') {
+        include = { ...include, cheques: true };
+      }
+    }
+    return include;
+  }
+
+  findManyFilters(props: PaymentFindManyProps) {
+    const args: Prisma.paymentFindManyArgs = {};
+    let whereClause: Prisma.paymentWhereInput = {};
+
+    if (props.payment_date) {
+      whereClause = {
+        ...whereClause,
+        payment_date: props.payment_date,
+      };
+    }
+
+    if (props.paid) {
+      if (props.paid === '0') {
+        whereClause = {
+          ...whereClause,
+          // not already done by finance or uploaded by cashier
+          status: {
+            notIn: [
+              PaymentStatusEnum.DONE,
+              PaymentStatusEnum.UPLOADED_BY_CASHIER,
+            ],
+          },
+        };
+      }
+    }
+
+    if (props.include_relations && props.include_relations.length > 0) {
+      args.include = this.applyInclude(props.include_relations);
+    }
+
+    args.where = whereClause;
+    return args;
+  }
+
+  async findMany(props: PaymentFindManyProps, tx?: PrismaService) {
+    let prisma = this.prismaService;
+    if (tx) prisma = tx;
+    try {
+      const { limit = 0, page = 0, sort_by, sort_direction } = props;
+      const offset = (page - 1) * limit;
+      const getSortBy = sort_by ? sort_by : 'created_at';
+      const getSortDirection = sort_direction ? sort_direction : 'desc';
+
+      const options = this.findManyFilters(props);
+      let queryOptions: Prisma.paymentFindManyArgs = {
+        where: options.where,
+
+        orderBy: {
+          [getSortBy]: getSortDirection,
+        },
+
+        include: options.include,
+      };
+
+      if (limit > 0) {
+        queryOptions = {
+          ...queryOptions,
+          skip: offset,
+          take: limit,
+        };
+      }
+
+      const rawResults = await prisma.payment.findMany(queryOptions);
+
+      const entities = rawResults.map((raw) => {
+        return Builder<ProposalPaymentEntity>(ProposalPaymentEntity, {
+          ...raw,
+          payment_amount:
+            raw.payment_amount !== null
+              ? parseFloat(raw.payment_amount.toString())
+              : null,
+          number_of_payments:
+            raw.number_of_payments !== null
+              ? parseFloat(raw.number_of_payments.toString())
+              : null,
+          order: raw.order !== null ? parseFloat(raw.order.toString()) : null,
+        }).build();
+      });
+
+      return entities;
+    } catch (error) {
+      throw error;
     }
   }
 }

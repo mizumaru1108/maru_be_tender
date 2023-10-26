@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -16,32 +15,21 @@ import { validateFileUploadSize } from '../../../commons/utils/validate-file-siz
 import { BunnyService } from '../../../libs/bunny/services/bunny.service';
 import { MsegatSendingMessageError } from '../../../libs/msegat/exceptions/send.message.error.exceptions';
 import { ROOT_LOGGER } from '../../../libs/root-logger';
+import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 import { TenderFilePayload } from '../../../tender-commons/dto/tender-file-payload.dto';
 import { UploadFilesJsonbDto } from '../../../tender-commons/dto/upload-files-jsonb.dto';
-import {
-  TenderAppRole,
-  TenderAppRoleEnum,
-  appRoleMappers,
-} from '../../../tender-commons/types';
-import {
-  InnerStatusEnum,
-  OutterStatusEnum,
-  ProposalAction,
-} from '../../../tender-commons/types/proposal';
+import { TenderAppRole, appRoleMappers } from '../../../tender-commons/types';
+import { ProposalAction } from '../../../tender-commons/types/proposal';
 import { actionValidator } from '../../../tender-commons/utils/action-validator';
 import { generateFileName } from '../../../tender-commons/utils/generate-filename';
-import { isTenderFilePayload } from '../../../tender-commons/utils/is-tender-file-payload';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { ownershipErrorThrow } from '../../../tender-commons/utils/proposal-ownership-error-thrower';
-import { TenderFileManagerService } from '../../../tender-file-manager/services/tender-file-manager.service';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
 import { ProposalLogRepository } from '../../proposal-log/repositories/proposal.log.repository';
 import { ProposalRepository } from '../../proposal/repositories/proposal.repository';
 import {
-  AskClosingReportDto,
   BankDetailsDto,
   BankListCreateDto,
-  CreateProposalPaymentDto,
   CreateTrackBudgetDto,
   DeleteTrackBudgetDto,
   FindBankListFilter,
@@ -50,11 +38,9 @@ import {
   UpdatePaymentDto,
   UpdateTrackBudgetDto,
 } from '../dtos/requests';
-import { CreateChequeMapper, CreateClosingReportMapper } from '../mappers';
-import { CreateManyPaymentMapper } from '../mappers/create-many-payment.mapper';
+import { CreateChequeMapper } from '../mappers';
 import { CreateTrackBudgetMapper } from '../mappers/create-track-section-budget-mapper';
 import { ProposalPaymentRepository } from '../repositories/proposal-payment.repository';
-import { TenderNotificationService } from '../../../notification-management/notification/services/tender-notification.service';
 
 @Injectable()
 export class ProposalPaymentService {
@@ -70,81 +56,10 @@ export class ProposalPaymentService {
     private readonly tenderProposalRepository: ProposalRepository,
     private readonly tenderProposalLogRepository: ProposalLogRepository,
     private readonly paymentRepo: ProposalPaymentRepository,
-    private readonly fileManagerService: TenderFileManagerService,
   ) {
     const environment = this.configService.get('APP_ENV');
     if (!environment) envLoadErrorHelper('APP_ENV');
     this.appEnv = environment;
-  }
-
-  async insertPayment(
-    currentUserId: string,
-    request: CreateProposalPaymentDto,
-  ): Promise<any> {
-    const { payments, proposal_id } = request;
-
-    const proposal = await this.tenderProposalRepository.fetchProposalById(
-      proposal_id,
-    );
-
-    if (!proposal) throw new NotFoundException('Proposal not found');
-
-    if (currentUserId !== proposal.supervisor_id) {
-      throw new ForbiddenException(
-        'You are not the responsible supervisor of this proposal!',
-      );
-    }
-
-    if (!proposal.fsupport_by_supervisor) {
-      throw new BadRequestException('Amount for support is not defined!');
-    }
-
-    if (!proposal.number_of_payments_by_supervisor) {
-      throw new BadRequestException('Proposal number of payments is not set!');
-    }
-
-    // validate the length of the payment
-    if (payments.length !== Number(proposal.number_of_payments_by_supervisor)) {
-      throw new BadRequestException(
-        'Number of payment is not equal to the defined payment on proposal!',
-      );
-    }
-
-    const lastLog =
-      await this.tenderProposalLogRepository.findLastLogCreateAtByProposalId(
-        proposal.id,
-      );
-
-    const mapResult = CreateManyPaymentMapper(request);
-
-    if (Number(proposal.fsupport_by_supervisor) !== mapResult.totalAmount) {
-      throw new BadRequestException(
-        'Amount required for support is not the same as the payload amount!',
-      );
-    }
-
-    const createPaymentPayload: Prisma.paymentCreateManyInput[] =
-      mapResult.payloads;
-
-    const proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput = {
-      inner_status: InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
-      outter_status: OutterStatusEnum.ONGOING,
-      state: TenderAppRoleEnum.PROJECT_MANAGER,
-    };
-
-    // create the payment
-    const insertResult = await this.paymentRepo.insertPayment(
-      proposal_id,
-      currentUserId,
-      proposalUpdatePayload,
-      createPaymentPayload,
-      lastLog,
-    );
-
-    // set payment / insert payment
-    // this.notificationService.sendSmsAndEmail(insertResult.insertNotif);
-
-    return insertResult;
   }
 
   async addTrackBudget(request: CreateTrackBudgetDto) {
@@ -513,116 +428,6 @@ export class ProposalPaymentService {
     }
 
     return await this.paymentRepo.completePayment(currentUser, proposal_id);
-  }
-
-  async submitClosingReport(
-    currentUser: TenderCurrentUser,
-    request: AskClosingReportDto,
-  ) {
-    const mappedRequest = CreateClosingReportMapper(request);
-    const tmpObj: Record<string, any> = {};
-    let uploadedFilePath: string[] = [];
-    try {
-      const fileManagerCreateManyPayload: Prisma.file_managerCreateManyInput[] =
-        [];
-
-      const maxSize: number = 1024 * 1024 * 6; // 6 MB
-      const allowedType: FileMimeTypeEnum[] = [
-        FileMimeTypeEnum.JPG,
-        FileMimeTypeEnum.JPEG,
-        FileMimeTypeEnum.PNG,
-        FileMimeTypeEnum.PDF,
-      ];
-
-      for (let i = 0; i < request.attachments.length; i++) {
-        const attachment = request.attachments[i];
-        if (isTenderFilePayload(attachment)) {
-          const uploadResult = await this.fileManagerService.uploadProposalFile(
-            currentUser.id,
-            request.proposal_id,
-            'uploading closing report attachments',
-            attachment,
-            'closing-form/attachment',
-            allowedType,
-            maxSize,
-            uploadedFilePath,
-          );
-          uploadedFilePath = uploadResult.uploadedFilePath;
-          // tmpObj.attachments = uploadResult.fileObj;
-          if (tmpObj.attachments !== undefined) {
-            tmpObj.attachments.push(uploadResult.fileObj);
-          } else {
-            tmpObj.attachments = [uploadResult.fileObj];
-          }
-
-          const payload: Prisma.file_managerUncheckedCreateInput = {
-            id: uuidv4(),
-            user_id: currentUser.id,
-            name: uploadResult.fileObj.url.split('/').pop() as string,
-            url: uploadResult.fileObj.url,
-            mimetype: uploadResult.fileObj.type,
-            size: uploadResult.fileObj.size,
-            column_name: 'attachments',
-            table_name: 'closing_report_request',
-            proposal_id: request.proposal_id,
-          };
-          fileManagerCreateManyPayload.push(payload);
-        }
-      }
-
-      for (let i = 0; i < request.images.length; i++) {
-        const images = request.images[i];
-        if (isTenderFilePayload(images)) {
-          const uploadResult = await this.fileManagerService.uploadProposalFile(
-            currentUser.id,
-            request.proposal_id,
-            'uploading closing report images',
-            images,
-            'closing-form/images',
-            allowedType,
-            maxSize,
-            uploadedFilePath,
-          );
-          uploadedFilePath = uploadResult.uploadedFilePath;
-          if (tmpObj.images !== undefined) {
-            tmpObj.images.push(uploadResult.fileObj);
-          } else {
-            tmpObj.images = [uploadResult.fileObj];
-          }
-
-          const payload: Prisma.file_managerUncheckedCreateInput = {
-            id: uuidv4(),
-            user_id: currentUser.id,
-            name: uploadResult.fileObj.url.split('/').pop() as string,
-            url: uploadResult.fileObj.url,
-            mimetype: uploadResult.fileObj.type,
-            size: uploadResult.fileObj.size,
-            column_name: 'images',
-            table_name: 'closing_report_request',
-            proposal_id: request.proposal_id,
-          };
-          fileManagerCreateManyPayload.push(payload);
-        }
-      }
-
-      const closingReportRequestPayload: Prisma.proposal_closing_reportUncheckedCreateInput =
-        {
-          ...mappedRequest,
-          attachments: tmpObj.attachments,
-          images: tmpObj.images,
-        };
-
-      const result = await this.paymentRepo.submitClosingReport(
-        request.proposal_id,
-        closingReportRequestPayload,
-        fileManagerCreateManyPayload,
-        uploadedFilePath,
-      );
-
-      return result;
-    } catch (err) {
-      throw err;
-    }
   }
 
   // Banks list
