@@ -97,13 +97,21 @@ function ConfirmApprovedEditRequest({ open, handleClose, EditValues }: Props) {
     const oldBankInfo = EditValues.old_data.bank_information;
     const newBankInfo = EditValues.new_data.bank_information;
 
-    const allOldTransparent = oldBankInfo?.every((item) => item.color === 'transparent');
-    const allNewTransparent = newBankInfo?.every((item) => item.color === 'transparent');
+    const colorOldTransparent = oldBankInfo?.every((item) => item.color);
+    const colorNewTransparent = newBankInfo?.every((item) => item.color);
 
-    if (open) {
-      if (!allOldTransparent && !allNewTransparent) {
-        setShowBankTextAlert(true);
-      } else if (newBankInfo?.length !== oldBankInfo?.length) {
+    if (open && colorOldTransparent && colorNewTransparent) {
+      const hasOldTrasnparent = oldBankInfo?.every(
+        (item) => item.color && item.color === 'transparent'
+      );
+      const hasNewTrasnparent = newBankInfo?.every(
+        (item) => item.color && item.color === 'transparent'
+      );
+
+      if (
+        (!hasOldTrasnparent && !hasNewTrasnparent) ||
+        newBankInfo?.length !== oldBankInfo?.length
+      ) {
         setShowBankTextAlert(true);
       }
     }
