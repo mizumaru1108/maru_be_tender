@@ -2324,6 +2324,7 @@ export class ProposalRepository {
           'tender_project_manager',
           'tender_ceo',
           'tender_project_supervisor',
+          'tender_auditor_report',
         ].indexOf(currentUser.choosenRole) > -1
       ) {
         // after client done submit closing report

@@ -9,7 +9,8 @@ export type TenderFusionAuthRoles =
   | 'tender_finance'
   | 'tender_moderator'
   | 'tender_project_manager'
-  | 'tender_project_supervisor';
+  | 'tender_project_supervisor'
+  | 'tender_auditor_report';
 
 export enum TenderFusionAuthRolesEnum {
   CLUSTER_ADMIN = 'cluster_admin',
@@ -23,6 +24,7 @@ export enum TenderFusionAuthRolesEnum {
   TENDER_MODERATOR = 'tender_moderator',
   TENDER_PROJECT_MANAGER = 'tender_project_manager',
   TENDER_PROJECT_SUPERVISOR = 'tender_project_supervisor',
+  TENDER_AUDITOR_REPORT = 'tender_auditor_report',
 }
 
 export type TenderAppRoles =
@@ -35,7 +37,8 @@ export type TenderAppRoles =
   | 'finance'
   | 'moderator'
   | 'project_manager'
-  | 'project_supervisor';
+  | 'project_supervisor'
+  | 'auditor_report';
 
 export enum TenderAppRolesEnum {
   ACCOUNTS_MANAGER = 'accounts_manager',
@@ -48,6 +51,7 @@ export enum TenderAppRolesEnum {
   MODERATOR = 'moderator',
   PROJECT_MANAGER = 'project_manager',
   PROJECT_SUPERVISOR = 'project_supervisor',
+  AUDITOR_REPORT = 'auditor_report',
 }
 
 export type TenderAppRole =
@@ -60,7 +64,8 @@ export type TenderAppRole =
   | 'FINANCE'
   | 'MODERATOR'
   | 'PROJECT_MANAGER'
-  | 'PROJECT_SUPERVISOR';
+  | 'PROJECT_SUPERVISOR'
+  | 'AUDITOR_REPORT';
 
 export enum TenderAppRoleEnum {
   ACCOUNTS_MANAGER = 'ACCOUNTS_MANAGER',
@@ -73,6 +78,7 @@ export enum TenderAppRoleEnum {
   MODERATOR = 'MODERATOR',
   PROJECT_MANAGER = 'PROJECT_MANAGER',
   PROJECT_SUPERVISOR = 'PROJECT_SUPERVISOR',
+  AUDITOR_REPORT = 'AUDITOR_REPORT',
 }
 
 export const appRolesMappers = {
@@ -87,6 +93,7 @@ export const appRolesMappers = {
   tender_moderator: 'moderator',
   tender_project_manager: 'project-manager',
   tender_project_supervisor: 'project-supervisor',
+  tender_auditor_report: 'auditor-report',
 };
 
 export const appRoleMappers = {
@@ -101,6 +108,7 @@ export const appRoleMappers = {
   tender_moderator: 'MODERATOR',
   tender_project_manager: 'PROJECT_MANAGER',
   tender_project_supervisor: 'PROJECT_SUPERVISOR',
+  tender_auditor_report: 'AUDITOR_REPORT',
 };
 
 export const appRoleToFusionAuthRoles = {
@@ -114,6 +122,7 @@ export const appRoleToFusionAuthRoles = {
   MODERATOR: 'tender_moderator',
   PROJECT_MANAGER: 'tender_project_manager',
   PROJECT_SUPERVISOR: 'tender_project_supervisor',
+  AUDITOR_REPORT: 'tender_auditor_report',
 };
 
 export const appRoleToReadable = {
@@ -127,4 +136,5 @@ export const appRoleToReadable = {
   MODERATOR: 'Moderator',
   PROJECT_MANAGER: 'Project Manager',
   PROJECT_SUPERVISOR: 'Project Supervisor',
+  AUDITOR_REPORT: 'Auditor Report',
 };

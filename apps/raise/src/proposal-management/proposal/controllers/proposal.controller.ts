@@ -521,6 +521,7 @@ export class TenderProposalController {
     'tender_client',
     'tender_ceo',
     'tender_project_manager',
+    'tender_auditor_report',
   )
   @Get('closing-report-list')
   async fetchClosingReportList(
