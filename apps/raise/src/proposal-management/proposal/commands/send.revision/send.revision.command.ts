@@ -5,7 +5,6 @@ import { Builder } from 'builder-pattern';
 import moment from 'moment';
 import { ITenderAppConfig } from 'src/commons/configs/tender-app-config';
 import { FileMimeTypeEnum } from 'src/commons/enums/file-mimetype.enum';
-import { isExistAndValidPhone } from 'src/commons/utils/is-exist-and-valid-phone';
 import { removeUndefinedKeys } from 'src/commons/utils/remove.undefined.value';
 import { BunnyService } from 'src/libs/bunny/services/bunny.service';
 import { EmailService } from 'src/libs/email/email.service';
@@ -35,9 +34,9 @@ import {
   TenderFileManagerRepository,
 } from 'src/tender-file-manager/repositories/tender-file-manager.repository';
 import { v4 as uuidv4 } from 'uuid';
+import { TenderAppRoleEnum } from '../../../../tender-commons/types';
 import { ProposalAskedEditRequestRepository } from '../../../asked-edit-request/repositories/proposal.asked.edit.request.repository';
 import { ProposalLogRepository } from '../../../proposal-log/repositories/proposal.log.repository';
-import { TenderAppRoleEnum } from '../../../../tender-commons/types';
 import { ProposalGovernorateRepository } from '../../../proposal-regions/governorate/repositories/proposal.governorate.repository';
 import { ProposalRegionRepository } from '../../../proposal-regions/region/repositories/proposal.region.repository';
 
@@ -264,7 +263,7 @@ export class SendRevisionCommandHandler
 
       proposalUpdateProps.id = request.proposal_id;
       proposalUpdateProps.outter_status = OutterStatusEnum.ONGOING;
-      proposalUpdateProps.state = 'PROJECT_SUPERVISOR';
+      proposalUpdateProps.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
 
       let proposalAction =
         ProposalAction.SEND_REVISION_FOR_SUPERVISOR_AMANDEMNT;
@@ -275,6 +274,30 @@ export class SendRevisionCommandHandler
             prismaSession instanceof PrismaService
               ? prismaSession
               : this.prismaService;
+
+          // get the last log for response time
+          const lastLog = await this.logRepo.findMany(
+            {
+              proposal_id: proposal.id,
+              page: 1,
+              limit: 1,
+              sort_by: 'created_at',
+              sort_direction: 'desc',
+            },
+            session,
+          );
+
+          // if last log exist and the last log pointed to moderator then it should sent back to moderator instead of supervisor
+          if (
+            lastLog &&
+            lastLog[0].user_role === TenderAppRoleEnum.MODERATOR &&
+            lastLog[0].action === ProposalAction.SEND_BACK_FOR_REVISION &&
+            lastLog[0].state === TenderAppRoleEnum.CLIENT
+          ) {
+            proposalUpdateProps.state = TenderAppRoleEnum.MODERATOR;
+            proposalAction =
+              ProposalAction.SEND_REVISION_FOR_MODERATOR_AMANDEMNT;
+          }
 
           await this.proposalRepo.update(proposalUpdateProps, session);
 
@@ -379,18 +402,6 @@ export class SendRevisionCommandHandler
                 'proposal_governorates',
                 'proposal_regions',
               ],
-            },
-            session,
-          );
-
-          // get the last log for response time
-          const lastLog = await this.logRepo.findMany(
-            {
-              proposal_id: proposal.id,
-              page: 1,
-              limit: 1,
-              sort_by: 'created_at',
-              sort_direction: 'desc',
             },
             session,
           );

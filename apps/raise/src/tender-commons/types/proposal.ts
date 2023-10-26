@@ -130,6 +130,7 @@ export enum ProposalAction {
   DONE = 'done',
   REJECT_CHEQUE = 'reject_cheque',
   SEND_REVISION_FOR_SUPERVISOR_AMANDEMNT = 'send_revision_for_supervisor_amandement',
+  SEND_REVISION_FOR_MODERATOR_AMANDEMNT = 'send_revision_for_moderator_amandement',
   SEND_REVISION_FOR_FINANCE_AMANDEMNT = 'send_revision_for_finance_amandement',
 }
 
