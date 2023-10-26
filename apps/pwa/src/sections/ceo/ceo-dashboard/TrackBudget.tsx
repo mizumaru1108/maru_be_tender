@@ -1,28 +1,19 @@
-import React, { useEffect, useState } from 'react';
 // component
-import { Box, Grid, Typography, useTheme } from '@mui/material';
-import TrackCardBudget from './TrackCardBudget';
+import { Box, Grid, Typography } from '@mui/material';
+import Image from 'components/Image';
 // hooks
 import useLocales from 'hooks/useLocales';
 // urql + query
-import { useQuery } from 'urql';
-import { getTrackBudgetAdmin } from 'queries/project-supervisor/getTrackBudget';
 //
-import { FEATURE_DAILY_STATUS } from 'config';
-import { useSnackbar } from 'notistack';
-import useAuth from 'hooks/useAuth';
-import axiosInstance from 'utils/axios';
-import Image from 'components/Image';
+import React from 'react';
 import { fCurrencyNumber } from 'utils/formatNumber';
+// config
+import { FEATURE_DAILY_STATUS } from 'config';
+import useAuth from 'hooks/useAuth';
+import { getTracksById } from '../../../redux/slices/track';
+import { dispatch, useSelector } from '../../../redux/store';
 
 // ------------------------------------------------------------------------------------------
-
-export interface ITrackList {
-  name: string;
-  total_budget: number;
-  total_spend_budget: number;
-  total_reserved_budget: number;
-}
 
 interface IPropTrackBudgets {
   path?: string;
@@ -33,81 +24,17 @@ interface IPropTrackBudgets {
 
 export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
   const { translate } = useLocales();
-  const theme = useTheme();
-  const [trackList, setTrackList] = useState<ITrackList | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
-
-  // const [{ data, fetching, error }] = useQuery({
-  //   query: getOneTrackBudget,
-  //   variables: {
-  //     track_id: path,
-  //   },
-  // });
-
-  const fetchingSchedule = React.useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const rest = await axiosInstance.get(
-        `/tender/proposal/payment/find-track-budget?id=${track_id as string}`,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-        }
-      );
-      // console.log('rest', rest.data);
-      if (rest) {
-        const tmpValue = rest.data.data.data;
-        setTrackList((item: any) => {
-          const tmpItem = { ...item };
-          return {
-            ...tmpItem,
-            name: tmpValue.name,
-            total_budget: tmpValue.total_budget,
-            total_spend_budget: tmpValue.total_spending_budget,
-            total_reserved_budget: tmpValue.total_reserved_budget,
-          };
-        });
-      }
-    } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
-      const statusCode = (err && err.statusCode) || 0;
-      const message = (err && err.message) || null;
-      enqueueSnackbar(
-        `${
-          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
-        }`,
-        {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        }
-      );
-    } finally {
-      setIsLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, track_id, enqueueSnackbar]);
+  const { track, isLoading } = useSelector((state) => state.tracks);
 
   React.useEffect(() => {
-    fetchingSchedule();
-  }, [fetchingSchedule]);
+    // fetchingSchedule();
+    if (track_id) {
+      dispatch(getTracksById(activeRole!, track_id));
+    }
+  }, [track_id, activeRole]);
 
   if (isLoading) return <>{translate('pages.commo.loading')}</>;
-  // if (error) return <>{error.message}</>;n
 
   return (
     <Grid container spacing={2}>
@@ -122,7 +49,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
         </Grid>
       ) : (
         <React.Fragment>
-          {!isLoading && trackList ? (
+          {!isLoading && track ? (
             <React.Fragment>
               <Grid item md={2} xs={12}>
                 <Box
@@ -153,9 +80,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                       fontWeight: 700,
                     }}
                   >
-                    {trackList
-                      ? fCurrencyNumber(trackList.total_reserved_budget)
-                      : fCurrencyNumber(0)}
+                    {track ? fCurrencyNumber(track.total_spending_budget || 0) : fCurrencyNumber(0)}
                   </Typography>
                 </Box>
               </Grid>
@@ -176,7 +101,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                     {translate('content.administrative.statistic.heading.totalSpendBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {trackList ? fCurrencyNumber(trackList.total_spend_budget) : fCurrencyNumber(0)}
+                    {track ? fCurrencyNumber(track.total_reserved_budget || 0) : fCurrencyNumber(0)}
                   </Typography>
                 </Box>
               </Grid>
@@ -197,9 +122,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                     {translate('content.administrative.statistic.heading.totalBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {trackList.total_budget
-                      ? fCurrencyNumber(trackList.total_budget)
-                      : fCurrencyNumber(0)}
+                    {track.total_budget ? fCurrencyNumber(track.total_budget) : fCurrencyNumber(0)}
                   </Typography>
                 </Box>
               </Grid>

@@ -64,6 +64,7 @@ const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/Prev
 const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
 const EmailToClient = Loadable(lazy(() => import('pages/project-supervisor/TableSendEmail')));
 const SendEmailForm = Loadable(lazy(() => import('pages/project-supervisor/SendEmail')));
+const DetailsEmail = Loadable(lazy(() => import('pages/project-supervisor/DetailsEmail')));
 
 export const projectSupervisorRoute = {
   path: 'project-supervisor',
@@ -241,7 +242,6 @@ export const projectSupervisorRoute = {
         },
         FEATURE_SEND_EMAIL_TO_CLIENT && {
           path: 'send-email',
-          // element: <EmailToClient />,
           children: [
             {
               path: '',
@@ -250,6 +250,10 @@ export const projectSupervisorRoute = {
             {
               path: 'new',
               element: <SendEmailForm />,
+            },
+            {
+              path: 'details/:email_record_id',
+              element: <DetailsEmail />,
             },
           ],
         },

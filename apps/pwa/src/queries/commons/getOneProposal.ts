@@ -206,7 +206,6 @@ query getInvoicePaymentData(
   $supervisor_id: String = "",
   $project_manager_id: String = "",
   $finance_id: String = "",
-  $cashier_id: String = "",
 ){
   client_name: user_by_pk(id: $submitter_user_id) {
     employee_name
@@ -215,12 +214,6 @@ query getInvoicePaymentData(
     employee_name
   }
   project_manager_name: user_by_pk(id: $project_manager_id) {
-    employee_name
-  }
-  finance_name: user_by_pk(id: $finance_id) {
-    employee_name
-  }
-  cashier_name: user_by_pk(id: $cashier_id) {
     employee_name
   }
   ceo_name:proposal_log(where: {proposal_id: {_eq: $proposal_id}, reviewer: {roles: {user_type_id: {_eq: CEO}}}}, distinct_on: reviewer_id) {
@@ -241,6 +234,26 @@ query getInvoicePaymentData(
       transfer_receipt
       deposit_date
     }
+  }
+}
+`;
+
+export const getCashierData = `
+query getInvoicePaymentData(
+  $cashier_id: String = "",
+){
+  cashier_name: user_by_pk(id: $cashier_id) {
+    employee_name
+  }
+}
+`;
+
+export const getFinanceData = `
+query getInvoicePaymentData(
+  $finance_id: String = "",
+){
+  finance_name: user_by_pk(id: $finance_id) {
+    employee_name
   }
 }
 `;

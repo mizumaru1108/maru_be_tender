@@ -141,7 +141,6 @@ export default function BaseContactSupportTable() {
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
     const tmpPage = page + 1;
-    // const url = `/contact-us?inquiry_type=GENERAL,VISITATION&page=${tmpPage}&limit=${rowsPerPage}`;
     const url = `/contact-us?page=${tmpPage}&limit=${rowsPerPage}&include_relations=user`;
     try {
       const response = await axiosInstance.get(`${url}`, {

@@ -39,9 +39,9 @@ export default function SendEmailTableRow({ row, selected, onSelectRow }: EmailT
       <TableCell align="left" sx={{ minWidth: 130 }}>
         <Button
           onClick={() => {
-            // navigate(
-            //   `/${role_url_map[activeRole!]}/dashboard/current-project/${row.id}/show-project`
-            // );
+            navigate(
+              `/${role_url_map[activeRole!]}/dashboard/send-email/details/${row.email_record_id}`
+            );
           }}
           size="small"
           variant="contained"

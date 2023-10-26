@@ -55,15 +55,16 @@ export default function NavItem({ item, depth, active, open, isCollapse, count, 
         Number(count?.close_report) +
         Number(count?.pending_closing_report) +
         Number(count?.complete_close_report);
-      tmpTitle = count?.close_report
-        ? `( ${
-            activeRole === 'tender_client'
-              ? count?.close_report
-              : activeRole === 'tender_project_manager' || activeRole === 'tender_ceo'
-              ? count?.complete_close_report
-              : sumCloseReportSpv
-          } ) ${translate(title)}`
-        : translate(title);
+      tmpTitle =
+        sumCloseReportSpv > 0
+          ? `( ${
+              activeRole === 'tender_client'
+                ? count?.close_report
+                : activeRole === 'tender_project_manager' || activeRole === 'tender_ceo'
+                ? count?.complete_close_report
+                : sumCloseReportSpv
+            } ) ${translate(title)}`
+          : translate(title);
     } else {
       tmpTitle = translate(title);
     }

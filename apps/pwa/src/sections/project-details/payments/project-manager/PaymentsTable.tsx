@@ -251,7 +251,7 @@ function PaymentsTable() {
                 </Typography>
               </Grid>
             ) : null}
-            {(item.status === 'done' ||
+            {/* {(item.status === 'done' ||
               item.status === 'accepted_by_finance' ||
               item.status === 'uploaded_by_cashier') && (
               <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
@@ -273,7 +273,26 @@ function PaymentsTable() {
                   )}
                 </Button>
               </Grid>
-            )}
+            )} */}
+            <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
+              <Button
+                variant="text"
+                color="inherit"
+                sx={{ '&:hover': { textDecorationLine: 'underline' } }}
+                onClick={() => {
+                  localStorage.setItem('receipt_type', 'generate');
+                  navigate(
+                    `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                      proposal.id
+                    }/payments/${item.id}`
+                  );
+                }}
+              >
+                {translate(
+                  'content.administrative.project_details.payment.table.btn.exchange_permit_generate_finance'
+                )}
+              </Button>
+            </Grid>
             {item.status === 'issued_by_supervisor' ? (
               <>
                 <Grid item md={2}>

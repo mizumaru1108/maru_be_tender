@@ -5,7 +5,7 @@ import Image from 'components/Image';
 import useLocales from 'hooks/useLocales';
 //
 import { fCurrencyNumber } from 'utils/formatNumber';
-import { ITrackList } from './TrackBudget';
+import { ITrackList } from '../../admin/main/TrackBudget';
 
 // ------------------------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ export default function TrackCardBudget({ data }: IPropsTrackCard) {
               fontWeight: 700,
             }}
           >
-            {fCurrencyNumber(data.total_reserved_budget)}
+            {fCurrencyNumber(data.total_spending_budget)}
           </Typography>
         </Box>
         <Box
@@ -67,7 +67,7 @@ export default function TrackCardBudget({ data }: IPropsTrackCard) {
             {translate('content.administrative.statistic.heading.totalSpendBudget')}
           </Typography>
           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-            {fCurrencyNumber(data.total_spend_budget)}
+            {fCurrencyNumber(data.total_reserved_budget)}
           </Typography>
         </Box>
         <Box

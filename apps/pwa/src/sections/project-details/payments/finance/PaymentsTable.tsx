@@ -379,30 +379,7 @@ function PaymentsTable() {
                 </>
               ) : null}
 
-              {/* {item.status === 'done' && (
-                <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                  <Button
-                    onClick={() => {
-                      localStorage.setItem('receipt_type', 'receipt');
-                      navigate(
-                        `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
-                          proposal.id
-                        }/payments/${item.id}`
-                      );
-                    }}
-                    sx={{
-                      backgroundColor: 'transparent',
-                      color: '#000',
-                      textDecorationLine: 'underline',
-                    }}
-                  >
-                    {translate(
-                      'content.administrative.project_details.payment.table.btn.review_transfer_receipt'
-                    )}
-                  </Button>
-                </Grid>
-              )} */}
-              {(item.status === 'done' || item.status === 'accepted_by_finance') && (
+              {/* {(item.status === 'done' || item.status === 'accepted_by_finance') && (
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                   <Button
                     variant="text"
@@ -422,28 +399,26 @@ function PaymentsTable() {
                     )}
                   </Button>
                 </Grid>
-              )}
-              {/* {item &&
-                (item.status === 'done' || item.status === 'uploaded_by_cashier') &&
-                item.cheques.length > 0 &&
-                item.cheques.map((item: any, index: number) => (
-                  <Grid item key={index} md={2} sx={{ textAlign: '-webkit-center' }}>
-                    <Button
-                      data-cy={`btn.view_transfer_receipt${index}`}
-                      variant="text"
-                      color="inherit"
-                      sx={{
-                        '&:hover': { textDecorationLine: 'underline' },
-                      }}
-                      href={item?.transfer_receipt?.url ?? '#'}
-                      target="_blank"
-                    >
-                      {translate(
-                        'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
-                      )}
-                    </Button>
-                  </Grid>
-                ))} */}
+              )} */}
+              <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
+                <Button
+                  variant="text"
+                  color="inherit"
+                  sx={{ '&:hover': { textDecorationLine: 'underline' } }}
+                  onClick={() => {
+                    localStorage.setItem('receipt_type', 'generate');
+                    navigate(
+                      `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                        proposal.id
+                      }/payments/${item.id}`
+                    );
+                  }}
+                >
+                  {translate(
+                    'content.administrative.project_details.payment.table.btn.exchange_permit_generate_finance'
+                  )}
+                </Button>
+              </Grid>
               {item &&
                 (item.status === 'done' || item.status === 'uploaded_by_cashier') &&
                 item.cheques.length > 0 && (

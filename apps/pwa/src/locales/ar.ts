@@ -2754,10 +2754,6 @@ const ar = {
   old_proposal: {
     page_title: 'مشاريع المنصة',
     title: 'مشاريع المنصة',
-    new_email: 'بريد إلكتروني جديد',
-    button: {
-      add_new: 'إرسال بريد إلكتروني جديد',
-    },
     headercell: {
       project_name: 'اسم المشروع',
       project_number: 'رقم المشروع',
@@ -2765,24 +2761,17 @@ const ar = {
     },
   },
   email_to_client: {
+    email: 'البريد الإلكتروني',
+    new_email: 'بريد إلكتروني جديد',
+    button: {
+      add_new: 'إرسال بريد إلكتروني جديد',
+    },
     page_title: 'ارسل بريد الكتروني',
     title: 'ارسل بريد الكتروني',
     headercell: {
       email_content: 'محتوى البريد الإلكتروني',
       employee_name: 'اسم شريك',
       created_at: 'تاريخ الاضافة',
-    },
-  },
-  client_files: {
-    title: 'ملفات الشريك',
-    administrative_data: 'البيانات الإدارية',
-    title_read_only: 'ملف مرفق الملف الشخصي (للقراءة فقط)',
-    btn_file_review: 'مراجعة الملف',
-    headercell: {
-      file_name: 'اسم الملف',
-      section_name: 'اسم القسم',
-      download: 'تحميل',
-      view: 'منظر',
     },
     errors: {
       attachments: {
@@ -2835,6 +2824,18 @@ const ar = {
     },
     snack: {
       success_send_email: 'تم إرسال البريد الإلكتروني بنجاح',
+    },
+  },
+  client_files: {
+    title: 'ملفات الشريك',
+    administrative_data: 'البيانات الإدارية',
+    title_read_only: 'ملف مرفق الملف الشخصي (للقراءة فقط)',
+    btn_file_review: 'مراجعة الملف',
+    headercell: {
+      file_name: 'اسم الملف',
+      section_name: 'اسم القسم',
+      download: 'تحميل',
+      view: 'منظر',
     },
   },
   amandement: {

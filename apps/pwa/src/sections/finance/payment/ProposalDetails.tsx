@@ -14,7 +14,12 @@ import { Proposal } from '../../../@types/proposal';
 import { useSelector } from 'redux/store';
 import { getOneNameCashier } from 'queries/Cashier/getOneNameCashier';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
-import { getFinanceName, getGeneratePaymentData } from 'queries/commons/getOneProposal';
+import {
+  getCashierData,
+  getFinanceData,
+  getFinanceName,
+  getGeneratePaymentData,
+} from 'queries/commons/getOneProposal';
 import Space from 'components/space/space';
 
 // -------------------------------------------------------------------------------------------------
@@ -48,10 +53,24 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
       submitter_user_id: proposalData?.submitter_user_id,
       supervisor_id: proposalData?.supervisor_id,
       project_manager_id: proposalData?.project_manager_id,
-      finance_id: proposalData?.finance_id,
-      cashier_id: proposalData?.cashier_id,
       payment_id: params?.paymentId,
     },
+  });
+
+  const [cahiserData] = useQuery({
+    query: getCashierData,
+    variables: {
+      cashier_id: proposalData?.cashier_id,
+    },
+    pause: !proposalData?.cashier_id,
+  });
+
+  const [financeData] = useQuery({
+    query: getFinanceData,
+    variables: {
+      finance_id: proposalData?.finance_id,
+    },
+    pause: !proposalData?.finance_id,
   });
 
   const Employee = React.useMemo(() => {
@@ -63,8 +82,8 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
       finance: '-',
     };
     if (data) {
-      if (data?.cashier_name?.employee_name) {
-        tmpEmployee.cashier = data?.cashier_name?.employee_name;
+      if (cahiserData?.data?.cashier_name?.employee_name) {
+        tmpEmployee.cashier = cahiserData?.data?.cashier_name?.employee_name;
       }
       if (data?.finance_name?.employee_name) {
         tmpEmployee.finance = data?.finance_name?.employee_name;
@@ -75,8 +94,8 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
       if (data?.supervisor_name?.employee_name) {
         tmpEmployee.spv = data?.supervisor_name?.employee_name;
       }
-      if (data?.finance_name?.employee_name) {
-        tmpEmployee.ceo = data?.finance_name?.employee_name;
+      if (financeData?.data?.finance_name?.employee_name) {
+        tmpEmployee.ceo = financeData?.data?.finance_name?.employee_name;
       }
       if (
         data?.ceo_name &&
@@ -88,7 +107,7 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
       }
     }
     return tmpEmployee;
-  }, [data]);
+  }, [data, cahiserData.data, financeData.data]);
 
   const trackName = track_list.find((track) => track.id === proposalData?.track_id)?.name ?? 'test';
   const paymentNumber =
@@ -110,8 +129,8 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
     ? proposalData?.proposal_governorates.map((el) => el.governorate?.name).toString()
     : '-';
 
-  if (fetching) return <>Loading...</>;
-  if (error) return <>Oops Something went wrong!</>;
+  if (fetching || cahiserData.fetching || financeData.fetching) return <>Loading...</>;
+  if (error || cahiserData.error || financeData.error) return <>Oops Something went wrong!</>;
 
   return (
     <React.Fragment>

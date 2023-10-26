@@ -476,11 +476,12 @@ export const getProposal = (id: string, role: string) => async () => {
             role === 'tender_cashier'
           ) {
             try {
-              const url = `/tender/proposal/payment/find-track-budget?id=${
-                response.data.data.track_id as string
-              }`;
+              const url = `/tender/track/${response.data.data.track_id as string}`;
               const res = await axiosInstance.get(url, {
                 headers: { 'x-hasura-role': role },
+                params: {
+                  include_relations: `count_budget`,
+                },
               });
               dispatch(slice.actions.setTrackBudget(res.data.data.data));
             } catch (err) {
@@ -624,29 +625,6 @@ export const getRegionList = () => async () => {
   }
 };
 
-// export const getTrackBudget = (track_id: string, role: string) => async () => {
-//   if (track_id !== 'test') {
-//     try {
-//       dispatch(slice.actions.startLoading);
-//       const url = `/tender/proposal/payment/find-track-budget?id=${track_id as string}`;
-//       try {
-//         const response = await axiosInstance.get(url, {
-//           headers: { 'x-hasura-role': role },
-//         });
-//         if (response.data.statusCode === 200) {
-//           console.log(response.data.data.data, 'test response');
-//           dispatch(slice.actions.setTrackBudget(response.data.data.data));
-//         }
-//       } catch (error) {
-//         console.log(error);
-//       }
-
-//       dispatch(slice.actions.endLoading);
-//     } catch (error) {
-//       dispatch(slice.actions.hasError(error));
-//     }
-//   }
-// };
 export const getProposalCount = (role: string) => async () => {
   if (role !== 'test') {
     dispatch(slice.actions.setLoadingCount(true));
