@@ -49,6 +49,7 @@ import { LoginRequestDto } from 'src/auth/dtos';
  */
 
 export class FusionAuthRegisterProps {
+  user_id?: string;
   employee_name: string;
   password: string;
   mobile_number: string;
@@ -507,7 +508,9 @@ export class FusionAuthService {
 
   async fusionAuthTenderRegisterUser(props: FusionAuthRegisterProps) {
     const baseUrl = this.fusionAuthUrl;
-    const registerUrl = baseUrl + '/api/user/registration';
+    let registerUrl = baseUrl + '/api/user/registration';
+
+    if (props.user_id) registerUrl = registerUrl + '/' + props.user_id;
 
     let role: string[] = ['tender_client'];
 

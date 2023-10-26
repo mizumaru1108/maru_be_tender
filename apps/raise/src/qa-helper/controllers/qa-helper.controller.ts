@@ -22,6 +22,7 @@ import {
   PurgeUserCommand,
   PurgeUserCommandResult,
 } from '../commands/purge.user.command.ts/purge.user.command';
+import { QAAddUserByJsonCommand } from '../commands/qa.add.user.by.json.command/qa.add.user.by.json.command';
 import { QaProposalCreateNewModeratorStateCommand } from '../commands/qa.proposal.create.new.moderator/qa.proposal.create.new.moderator.command';
 import { QaProposalCreateNewSupervisorCommand } from '../commands/qa.proposal.create.new.supervisor/qa.proposal.create.new.supervisor.command';
 import { QaProposalDeleteCommand } from '../commands/qa.proposal.delete/qa.proposal.delete.command';
@@ -102,6 +103,32 @@ export class QaHelperControllers {
         PurgeUserCommandResult
       >(createProposalCommand);
       return baseResponseHelper(data, HttpStatus.OK);
+    } catch (error) {
+      if (error instanceof DataNotFoundException) {
+        throw new BadRequestException(error.message);
+      }
+      if (error instanceof PayloadErrorException) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
+  }
+
+  @ApiOperation({ summary: 'creating user by custom json' })
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Post('add-user-by-json')
+  async addUserByJson() {
+    try {
+      const createProposalCommand = Builder<QAAddUserByJsonCommand>(
+        QAAddUserByJsonCommand,
+        {},
+      ).build();
+
+      await this.commandBus.execute<QAAddUserByJsonCommand>(
+        createProposalCommand,
+      );
+      return baseResponseHelper(HttpStatus.OK);
     } catch (error) {
       if (error instanceof DataNotFoundException) {
         throw new BadRequestException(error.message);
