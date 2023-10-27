@@ -165,7 +165,13 @@ function CardSearching({
                     ? 'reject-project'
                     : cardFooterButtonAction
                 }
-                destination={isInProcess ? 'requests-in-process' : 'current-project'}
+                destination={
+                  isInProcess && activeRole !== 'tender_consultant'
+                    ? 'requests-in-process'
+                    : activeRole === 'tender_consultant'
+                    ? 'incoming-funding-requests'
+                    : 'current-project'
+                }
               />
             </Grid>
           );

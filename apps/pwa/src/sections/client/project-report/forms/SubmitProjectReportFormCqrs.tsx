@@ -299,7 +299,7 @@ export default function SubmitProjectReportFormCqrs({
             {/* <MenuItem value="annual">
               {translate('pages.common.close_report.text.option.annual')}
             </MenuItem> */}
-            <MenuItem value="no-repeats" data-cy="pages.common.close_report.text.option.no_repeats">
+            <MenuItem value="no_repeats" data-cy="pages.common.close_report.text.option.no_repeats">
               {translate('pages.common.close_report.text.option.no_repeats')}
             </MenuItem>
             <MenuItem value="days" data-cy="pages.common.close_report.text.option.daily">

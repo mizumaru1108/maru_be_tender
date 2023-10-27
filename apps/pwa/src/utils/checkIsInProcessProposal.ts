@@ -28,5 +28,13 @@ export const CheckIsInProcessProposal = (
       isInProcess = true;
     }
   }
+  if (activeRole === 'tender_consultant') {
+    if (
+      ['ACCEPTED_AND_NEED_CONSULTANT'].includes(proposal.inner_status) &&
+      ['CONSULTANT'].includes(proposal.state)
+    ) {
+      isInProcess = true;
+    }
+  }
   return isInProcess;
 };

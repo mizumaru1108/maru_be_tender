@@ -150,14 +150,10 @@ const ProjectCard = ({
     const url = location.pathname.split('/');
     if (destination) {
       const tmp = `/${url[1]}/dashboard/${destination}/${title.id}/${cardFooterButtonAction}`;
-      // navigate(
-      //   `/${url[1] + '/' + url[2] + '/' + destination}/${title.id}/${cardFooterButtonAction}`
-      // );
       navigate(tmp);
     } else {
       if (url.includes('searching')) {
         const tmp = `/${url[1]}/dashboard/current-project/${title.id}/${cardFooterButtonAction}`;
-        // console.log('tmp', tmp);
         navigate(tmp);
       } else {
         navigate(`${location.pathname}/${title.id}/${cardFooterButtonAction}`);

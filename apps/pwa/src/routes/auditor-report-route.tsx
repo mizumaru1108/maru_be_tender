@@ -54,6 +54,10 @@ export const auditorReportRoute = {
         { element: <Navigate to="/auditor-report/dashboard/app" replace />, index: true },
         { path: 'app', element: <MainAuditorReport /> },
         {
+          path: 'current-project',
+          children: [{ path: ':id/:actionType', element: <ProjectDetails /> }],
+        },
+        {
           path: 'complete-project-report',
           children: [
             { path: '', element: <CompleteCloseReports /> },

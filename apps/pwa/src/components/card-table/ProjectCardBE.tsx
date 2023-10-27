@@ -233,16 +233,22 @@ const ProjectCardBE = ({
       }
       const x = location.pathname.split('/');
       if (!inquiryStatus) {
+        // console.log('masuk 1');
         if (destination) {
+          // console.log('masuk 2');
           navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
         } else {
+          // console.log('masuk 3');
           navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
         }
       } else {
+        // console.log('masuk 4');
         // navigate(`${location.pathname}/${id}/reject-project`);
         if (destination) {
+          // console.log('masuk 5');
           navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/reject-project`);
         } else {
+          // console.log('masuk 6');
           navigate(`${location.pathname}/${id}/reject-project`);
         }
       }
