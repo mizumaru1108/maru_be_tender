@@ -244,6 +244,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
   const {
     partner_name,
     createdAt,
+    updatedAt,
     account_status,
     events,
     update_status,
@@ -271,6 +272,7 @@ export default function ProductTableRow({ row, selected, onSelectRow, editReques
           </Typography>
         </TableCell>
         <TableCell>{moment(createdAt).format('DD-MM-YYYY')}</TableCell>
+        <TableCell>{moment(updatedAt).format('DD-MM-YYYY')}</TableCell>
         <TableCell align="left">
           <Label
             variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}

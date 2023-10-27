@@ -1,12 +1,11 @@
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Box, Pagination, Grid, Stack, Typography } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
-import { setFiltered } from 'redux/slices/searching';
-import { dispatch, useSelector } from 'redux/store';
+import { useSelector } from 'redux/store';
 import axiosInstance from 'utils/axios';
 import { generateHeader } from '../../utils/generateProposalNumber';
 import CardTableNoData from './CardTableNoData';
@@ -14,6 +13,7 @@ import ClientCard from './ClientCard';
 import LoadingPage from './LoadingPage';
 import ProjectCard from './ProjectCard';
 import { FilteredValues, NewCardTableProps } from './types';
+import EmptyContent from 'components/EmptyContent';
 
 function NewCardTable({
   title,
@@ -91,7 +91,6 @@ function NewCardTable({
       throw error;
     } finally {
       setLoading(false);
-      dispatch(setFiltered(''));
     }
   };
 
@@ -178,47 +177,49 @@ function NewCardTable({
 
       {pagination && (
         <Grid item md={12} xs={12}>
-          <Stack direction="row" justifyContent="space-between">
-            <Box flex={1} />
-            <Stack direction="row" flex={2} gap={1} justifyContent="center">
-              {Array.from(Array(pagesNumber ? pagesNumber : 0).keys()).map((elem, index) => (
-                <Button
-                  key={index}
-                  onClick={() => {
-                    setPage(index + 1);
+          {!loading && data.data.length ? (
+            <Stack direction="row" justifyContent="space-between">
+              <Box flex={1} />
+              <Stack direction="row" flex={2} gap={1} justifyContent="center">
+                <Pagination
+                  count={pagesNumber}
+                  page={page}
+                  onChange={(event: React.ChangeEvent<unknown>, value: number) => {
+                    setPage(value);
                     setParams((prevParams) => ({
                       ...prevParams,
-                      offset: (index + 1 - 1) * prevParams.limit,
+                      offset: (page + 1 - 1) * prevParams.limit,
                     }));
                   }}
+                />
+              </Stack>
+              <Stack direction="row" flex={1}>
+                <Typography sx={{ padding: '13px' }}>عدد المشاريع المعروضة:</Typography>
+                <Select
+                  labelId="simple-select"
+                  id="demo-simple-select"
+                  value={params.limit}
+                  onChange={handleLimitChange}
                   sx={{
-                    color: index === page - 1 ? '#fff' : 'rgba(147, 163, 176, 0.8)',
-                    backgroundColor:
-                      index === page - 1 ? 'background.paper' : 'rgba(147, 163, 176, 0.16)',
-                    height: '50px',
+                    backgroundColor: '#fff !important',
                   }}
                 >
-                  {index + 1}
-                </Button>
-              ))}
+                  <MenuItem value={6}>6</MenuItem>
+                  <MenuItem value={8}>8</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                </Select>
+              </Stack>
             </Stack>
-            <Stack direction="row" flex={1}>
-              <Typography sx={{ padding: '13px' }}>عدد المشاريع المعروضة:</Typography>
-              <Select
-                labelId="simple-select"
-                id="demo-simple-select"
-                value={params.limit}
-                onChange={handleLimitChange}
+          ) : (
+            <Stack direction="row" alignItems="center" justifyContent="center" component="div">
+              <EmptyContent
+                title="لا يوجد بيانات"
                 sx={{
-                  backgroundColor: '#fff !important',
+                  '& span.MuiBox-root': { height: 160 },
                 }}
-              >
-                <MenuItem value={6}>6</MenuItem>
-                <MenuItem value={8}>8</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-              </Select>
+              />
             </Stack>
-          </Stack>
+          )}
         </Grid>
       )}
     </Grid>

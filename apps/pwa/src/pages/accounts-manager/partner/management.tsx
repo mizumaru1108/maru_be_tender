@@ -51,10 +51,11 @@ function PartnerManagementPage() {
         id: v.id,
         partner_name:
           v && v.client_data && v.client_data.entity ? v.client_data.entity : v.employee_name,
-        createdAt:
+        createdAt: v.created_at,
+        updatedAt:
           v && v.client_data && v.client_data && v.client_data.updated_at
             ? v.client_data.updated_at
-            : v.created_at,
+            : v.updated_at,
         account_status: v.status_id,
         events: v.id,
         email: v.email,

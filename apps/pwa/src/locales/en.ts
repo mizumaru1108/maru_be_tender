@@ -1865,6 +1865,7 @@ const en = {
       th: {
         partner_name: 'Partner name',
         createdAt: 'Date of registration',
+        updatedAt: 'Date of updated',
         account_status: 'Account Status',
         request_status: 'Request Status',
         events: 'Events',
@@ -2379,6 +2380,7 @@ const en = {
       rejected_by_project_manager: 'PAYMENT REJECTED BY PROJECT MANAGER',
       send_revision_for_finance_amandement: 'Send Revision for Finance Amandement',
       send_revision_for_supervisor_amandement: 'Send Revision for Supervisor Amandement',
+      send_revision_for_moderator_amandement: 'Send Revision for Moderator Amandement',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'Age 1 to 13',

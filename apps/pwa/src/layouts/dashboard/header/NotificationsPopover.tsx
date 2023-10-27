@@ -46,6 +46,7 @@ import moment from 'moment';
 import { setNotifyCount } from 'redux/slices/notification';
 import { useDispatch, useSelector } from 'redux/store';
 import { FEATURE_NOTIFICATION_SYSTEM } from 'config';
+import { setFiltered } from 'redux/slices/searching';
 
 // ----------------------------------------------------------------------
 // const _notifications = [...Array(3)].map((_, index) => ({
@@ -129,6 +130,7 @@ export default function NotificationsPopover() {
   let currentSubcription: any;
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+    dispatch(setFiltered(''));
     setOpen(event.currentTarget);
   };
 

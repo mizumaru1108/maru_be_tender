@@ -21,7 +21,6 @@ import { getListConversations } from 'queries/messages/getListConversations';
 // redux
 import { setConversation } from 'redux/slices/wschat';
 import { useDispatch } from 'redux/store';
-import { Conversation } from '../../@types/wschat';
 
 // ----------------------------------------------------------------------
 
@@ -135,7 +134,12 @@ export default function DashboardLayout() {
         minHeight: { lg: 1 },
       }}
     >
-      <DashboardHeader isCollapse={isCollapse} onOpenSidebar={() => setOpen(true)} />
+      <DashboardHeader
+        isCollapse={isCollapse}
+        onOpenSidebar={() => {
+          setOpen(true);
+        }}
+      />
 
       <NavbarVertical isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
 

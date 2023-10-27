@@ -189,6 +189,7 @@ export class ProposalPaymentRepository {
             order: prop.order,
             proposal_id: prop.proposal_id,
             payment_amount: prop.payment_amount,
+            payment_date: prop.payment_date,
             notes: prop.notes,
           };
         }),

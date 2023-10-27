@@ -24,8 +24,9 @@ import { FEATURE_PROJECT_SAVE_DRAFT, FEATURE_PROPOSAL_COUNTING } from '../../con
 import { generateHeader } from '../../utils/generateProposalNumber';
 import { useSnackbar } from 'notistack';
 import { getProposalCount } from 'redux/slices/proposal';
-import { useSelector } from 'redux/store';
+import { dispatch, useSelector } from 'redux/store';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
+import { setFiltered } from 'redux/slices/searching';
 
 const cardFooterButtonActionLocal = {
   'show-project': 'show_project',
@@ -190,6 +191,7 @@ const ProjectCardBE = ({
   };
 
   const handleOnClick = async () => {
+    dispatch(setFiltered(''));
     try {
       if (
         ['tender_project_supervisor'].includes(role) &&

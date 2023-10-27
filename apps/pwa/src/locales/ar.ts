@@ -1877,6 +1877,7 @@ const ar = {
       th: {
         partner_name: 'اسم الشريك',
         createdAt: 'تاريخ التسجيل',
+        updatedAt: 'تاريخ التحديث',
         account_status: 'حالة الحساب',
         request_status: 'حالة الطلب',
         events: 'الاحداث',
@@ -2397,6 +2398,7 @@ const ar = {
       rejected_by_project_manager: 'تم رفض المشروع',
       send_revision_for_finance_amandement: 'إرسال مراجعة لتعديل المالية',
       send_revision_for_supervisor_amandement: 'إرسال مراجعة لتعديل المشرف',
+      send_revision_for_moderator_amandement: 'إرسال المراجعة لتعديل المشرف',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'من 1 سنة إلى 13',

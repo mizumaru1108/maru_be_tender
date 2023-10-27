@@ -10,6 +10,7 @@ import { getActive, isExternalLink } from '..';
 import { setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
 import { useDispatch } from 'redux/store';
 import { ProposalCount } from '../../../@types/proposal';
+import { setFiltered } from 'redux/slices/searching';
 
 // ----------------------------------------------------------------------
 
@@ -45,6 +46,7 @@ export default function NavList({
     }
     setOpen(!open);
 
+    dispatch(setFiltered(''));
     dispatch(setActiveConversationId(null));
     dispatch(setMessageGrouped([]));
   };
