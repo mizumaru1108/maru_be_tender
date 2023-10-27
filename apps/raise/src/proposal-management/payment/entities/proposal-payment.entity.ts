@@ -9,6 +9,7 @@ export class ProposalPaymentEntity {
   payment_date: Date | null;
   status: string | null = 'SET_BY_SUPERVISOR';
   number_of_payments: number | null;
+  notes: string | null;
   order: number | null;
   created_at: Date | null = new Date();
   updated_at: Date | null = new Date();

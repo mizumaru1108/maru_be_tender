@@ -36,6 +36,7 @@ export class CreatePaymentProps {
   order?: string;
   payment_amount?: string;
   payment_date?: Date;
+  notes?: string;
 }
 
 export class UpdatePaymentProps {
@@ -45,6 +46,7 @@ export class UpdatePaymentProps {
   order?: string;
   payment_amount?: string;
   payment_date?: Date;
+  notes?: string;
 }
 
 export class PaymentFindManyProps {
@@ -141,6 +143,7 @@ export class ProposalPaymentRepository {
           proposal_id: props.proposal_id,
           payment_amount: props.payment_amount,
           payment_date: props.payment_date,
+          notes: props.notes,
         },
       });
 
@@ -186,6 +189,7 @@ export class ProposalPaymentRepository {
             order: prop.order,
             proposal_id: prop.proposal_id,
             payment_amount: prop.payment_amount,
+            notes: prop.notes,
           };
         }),
       });
@@ -212,6 +216,7 @@ export class ProposalPaymentRepository {
           proposal_id: props.proposal_id,
           payment_amount: props.payment_amount,
           payment_date: props.payment_date,
+          notes: props.notes,
         },
       });
 

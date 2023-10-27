@@ -153,6 +153,7 @@ Table payment {
   status String [default: 'SET_BY_SUPERVISOR']
   number_of_payments Decimal
   order Decimal
+  notes String
   created_at DateTime [default: `now()`]
   updated_at DateTime [default: `now()`]
   cheques cheque [not null]

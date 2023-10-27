@@ -1,10 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Max,
   Min,
@@ -27,6 +28,12 @@ export class ProposalPaymentCreateDto {
   @IsDateString()
   @IsNotEmpty()
   payment_date: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  notes?: string;
 }
 
 export class CreateProposalPaymentDto {
