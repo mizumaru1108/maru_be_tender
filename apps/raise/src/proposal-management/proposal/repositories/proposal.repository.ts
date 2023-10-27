@@ -1309,6 +1309,18 @@ export class ProposalRepository {
             inner_status: InnerStatusEnum.ACCEPTED_AND_NEED_CONSULTANT,
           };
         }
+
+        if (currentUser.choosenRole === 'tender_auditor_report') {
+          whereClause = {
+            ...whereClause,
+            inner_status: InnerStatusEnum.PROJECT_COMPLETED,
+            outter_status: OutterStatusEnum.COMPLETED,
+            // at least has one proposal closing report
+            proposal_closing_report: {
+              every: { id: { not: '' } },
+            },
+          };
+        }
       }
 
       if (employee_name) {
@@ -1642,7 +1654,6 @@ export class ProposalRepository {
             'tender_project_manager',
             'tender_cashier',
             'tender_finance',
-            'tender_consultant',
           ].indexOf(currentUser.choosenRole) > -1
         ) {
           const reviewer = await this.prismaService.user.findUnique({
