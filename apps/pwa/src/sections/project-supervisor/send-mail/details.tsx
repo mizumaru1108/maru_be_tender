@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router';
 import { EmailToClient } from '../../../components/table/send-email/types';
 import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
+import AccordionEmailDetail from './AccordionDetails';
 import { FormSendEmail } from './form';
 
 export default function DetailsEmail() {
@@ -98,15 +99,17 @@ export default function DetailsEmail() {
               maxWidth: '700px',
             }}
           >
-            {detailsEmail?.title ? detailsEmail?.title : translate('email_to_client.email')}
+            {/* {detailsEmail?.title ? detailsEmail?.title : translate('email_to_client.email')} */}
+            {translate('email_to_client.email')}
           </Typography>
         </Stack>
         <Space direction="horizontal" size="medium" />
       </Grid>
-
-      <Grid item md={12}>
-        test
-      </Grid>
+      {detailsEmail && (
+        <Grid item md={12}>
+          <AccordionEmailDetail emailData={detailsEmail} />
+        </Grid>
+      )}
     </Grid>
   );
 }
