@@ -22,6 +22,7 @@ import useLocales from 'hooks/useLocales';
 // redux
 import { useDispatch } from 'redux/store';
 import { setConversation, setMessageGrouped, setActiveConversationId } from 'redux/slices/wschat';
+import { setFiltered } from 'redux/slices/searching';
 
 // ----------------------------------------------------------------------
 
@@ -96,6 +97,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
         onClick={() => {
           localStorage.removeItem('partnerMeetingId');
           localStorage.removeItem('authCodeMeeting');
+          dispatch(setFiltered(''));
           dispatch(setActiveConversationId(null));
           dispatch(setConversation([]));
           dispatch(setMessageGrouped([]));

@@ -22,6 +22,7 @@ import React from 'react';
 import { dispatch, useSelector } from 'redux/store';
 import { getProposalCount, getTrackList } from 'redux/slices/proposal';
 import { FEATURE_PROPOSAL_COUNTING } from 'config';
+import { setFiltered } from 'redux/slices/searching';
 
 /**
  *
@@ -108,6 +109,7 @@ const ProjectCard = ({
   };
 
   const handleOnClick = async () => {
+    dispatch(setFiltered(''));
     if (['tender_project_supervisor'].includes(role) && destination !== 'requests-in-process') {
       await updateAsigning({
         _set: {

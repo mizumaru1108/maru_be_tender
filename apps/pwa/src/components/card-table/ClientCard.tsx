@@ -17,6 +17,8 @@ import { useLocation, useNavigate } from 'react-router';
 import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
 import { useMutation } from 'urql';
 import { ClientCardProps } from './types';
+import { setFiltered } from 'redux/slices/searching';
+import { dispatch } from 'redux/store';
 /**
  *
  * Todo: 1- starting with initializing the urql and having a query for the table.
@@ -242,6 +244,7 @@ const ClientCard = ({
         <Stack>
           <Button
             onClick={() => {
+              dispatch(setFiltered(''));
               navigate(PATH_ACCOUNTS_MANAGER.partnerDetails(id as string));
             }}
             variant="outlined"

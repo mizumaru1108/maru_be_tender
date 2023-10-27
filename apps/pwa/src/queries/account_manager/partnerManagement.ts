@@ -38,6 +38,8 @@ query getAllClient($_nin: [user_status_enum!] = ACTIVE_ACCOUNT) {
     client_data {
       entity
       entity_mobile
+      created_at
+      updated_at
     }
   }
 }

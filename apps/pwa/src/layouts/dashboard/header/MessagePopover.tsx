@@ -42,6 +42,7 @@ import axiosInstance from '../../../utils/axios';
 import { useLocation, useNavigate } from 'react-router';
 import { setActiveConversationId } from '../../../redux/slices/wschat';
 import { Message } from '../../../@types/wschat';
+import { setFiltered } from 'redux/slices/searching';
 
 // ----------------------------------------------------------------------
 
@@ -58,6 +59,7 @@ export default function MessagePopover() {
   const { user, activeRole } = useAuth();
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+    dispatch(setFiltered(''));
     setOpen(event.currentTarget);
   };
 

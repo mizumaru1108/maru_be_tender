@@ -6,6 +6,8 @@ import { stringTruncate } from 'utils/stringTruncate';
 import { role_url_map } from '../../../@types/commons';
 
 import useAuth from '../../../hooks/useAuth';
+import { dispatch } from 'redux/store';
+import { setFiltered } from 'redux/slices/searching';
 
 export default function AccountPopover() {
   const navigate = useNavigate();
@@ -34,6 +36,7 @@ export default function AccountPopover() {
         <Box
           component={Button}
           onClick={() => {
+            dispatch(setFiltered(''));
             navigate(`/${role_url_map[`${role}`]}/my-profile`);
           }}
           sx={{

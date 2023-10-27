@@ -7,6 +7,8 @@ import useAuth from 'hooks/useAuth';
 import { FusionAuthRoles, role_url_map } from '../../../@types/commons';
 import { useNavigate } from 'react-router';
 import useLocales from 'hooks/useLocales';
+import { dispatch } from 'redux/store';
+import { setFiltered } from 'redux/slices/searching';
 
 function SwitchRole() {
   const { translate } = useLocales();
@@ -20,6 +22,7 @@ function SwitchRole() {
     localStorage.setItem('activeRoleIndex', roleIndex);
     changeActiveRole(event.target.value as FusionAuthRoles);
     setRole(event.target.value as FusionAuthRoles);
+    dispatch(setFiltered(''));
     navigate(`/${role_url_map[`${event.target.value as FusionAuthRoles}`]}/dashboard/app`);
   };
 

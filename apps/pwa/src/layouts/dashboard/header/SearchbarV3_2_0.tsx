@@ -383,7 +383,7 @@ export default function Searchbar() {
   return (
     <ClickAwayListener
       onClickAway={() => {
-        dispatch(setFiltered(''));
+        // dispatch(setFiltered(''));
         setShow(false);
       }}
     >
@@ -417,13 +417,13 @@ export default function Searchbar() {
               sx={{ height: 20, mx: '8px', color: '#0E8478' }}
             />
             <Input
-              onBlur={() => {
-                if (show === false) {
-                  setTimeout(() => {
-                    dispatch(setFiltered(''));
-                  }, 500);
-                }
-              }}
+              // onBlur={() => {
+              //   if (show === false) {
+              //     setTimeout(() => {
+              //       dispatch(setFiltered(''));
+              //     }, 500);
+              //   }
+              // }}
               sx={{ width: '100%' }}
               disableUnderline={true}
               value={filtered}
