@@ -464,6 +464,36 @@ export const Taps = {
       },
     ],
   },
+  tender_auditor_report: {
+    'show-details': [
+      {
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
+      },
+      {
+        title: 'project_details.actions.project_timeline',
+        value: 'project-timeline',
+      },
+      {
+        title: 'project_details.actions.project_budget',
+        value: 'project-budget',
+      },
+      {
+        title: 'project_details.actions.follow_ups',
+        value: 'follow-ups',
+      },
+      {
+        title: 'project_details.actions.payments',
+        value: 'payments',
+      },
+    ],
+    'old-proposal': [
+      {
+        title: 'project_details.actions.main',
+        value: 'main',
+      },
+    ],
+  },
 } as TapsProps;
 
 type TapsProps = Record<string, Record<string, Array<Record<string, string>>>>;

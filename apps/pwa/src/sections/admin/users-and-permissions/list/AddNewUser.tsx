@@ -30,6 +30,7 @@ import { useSnackbar } from 'notistack';
 import formatPhone from 'utils/formatPhone';
 import { tracks } from '../../../../@types/proposal';
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
+import { AppRole } from '../../../../@types/commons';
 
 type FormValuesProps = {
   employee_name: string;
@@ -131,8 +132,6 @@ function AddNewUser() {
   } = methods;
 
   const onSubmit = async (data: FormValuesProps) => {
-    // console.log({ data });
-    // console.log('submit: ', data);
     const tmpMobile = formatPhone({ phone: data.mobile_number, prefix: '+966' });
     let payload = {
       ...data,
@@ -140,7 +139,6 @@ function AddNewUser() {
     };
     payload.track_id = (data && data.employee_path) ?? '';
     delete payload.employee_path;
-    // console.log({ payload });
     try {
       setIsLoading(true);
       await axiosInstance.post(

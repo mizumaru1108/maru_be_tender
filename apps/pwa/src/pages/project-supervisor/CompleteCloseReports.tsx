@@ -9,7 +9,7 @@ import useLocales from '../../hooks/useLocales';
 import CardTableByBE from 'components/card-table/CardTableByBE';
 
 function CompleteCloseReports() {
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
   const { translate } = useLocales();
 
   const ContentStyle = styled('div')(({ theme }) => ({

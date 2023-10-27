@@ -503,6 +503,9 @@ const ar = {
     project_supervisor: {
       main: 'الرئيسية | مشرف المشروع',
     },
+    auditor_report: {
+      main: 'الرئيسية | عرض تقارير الاغلاق',
+    },
   },
   content: {
     client: {
@@ -2228,6 +2231,7 @@ const ar = {
   tender_ceo: 'الرئيس التنفيذي',
   tender_cashier: 'أمين الصندوق',
   tender_client: 'المستخدم',
+  tender_auditor_report: 'عرض تقارير الاغلاق',
   tender_consultant: 'المستشار',
   tender_finance: 'المالية',
   tender_moderator: 'مسؤول الفرز',
@@ -2246,6 +2250,7 @@ const ar = {
     ADMIN: 'سوبر ادمن',
     // CLIENT: 'عميل',
     CLIENT: 'شريك',
+    AUDITOR_REPORT: 'عرض تقارير الاغلاق',
   },
   closing_project_by_client: 'إغلاق مشروع',
   review: {

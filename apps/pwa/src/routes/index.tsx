@@ -13,6 +13,7 @@ import { mainRoute } from './main-route';
 import { adminRoute } from './admin-route';
 import { getAuthCode } from './get-auth-code';
 import { landingRoute } from 'routes/landing-route';
+import { auditorReportRoute } from './auditor-report-route';
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +31,7 @@ export default function Router() {
     ceoRoute,
     mainRoute,
     adminRoute,
+    auditorReportRoute,
     getAuthCode,
     landingRoute,
     {

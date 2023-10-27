@@ -41,8 +41,6 @@ function ProjectDetailsMainPage() {
   const handlePreviewPrint = () => {
     const x = location.pathname.split('/');
     const url = `/${x[1] + '/' + x[2] + '/'}current-project/preview/${id}`;
-    // console.log('test masuk sini ', url);
-    // navigate(`/${role_url_map[activeRole!]}/dashboard/client-list/owner/${row.user_id}`);
     navigate(url);
   };
 

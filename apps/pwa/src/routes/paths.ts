@@ -15,6 +15,7 @@ const ROOTS_PROJECT_MANAGER = '/project-manager';
 const ROOTS_PROJECT_SUPERVISOR = '/project-supervisor';
 const ROOTS_ACCOUNTS_MANAGER = '/accounts-manager';
 const ROOTS_MODERATOR = '/moderator';
+const ROOTS_AUDITOR_REPORT = '/auditor-report';
 const ROOTS_ADMIN = '/admin';
 // ----------------------------------------------------------------------
 
@@ -186,6 +187,11 @@ export const PATH_ACCOUNTS_MANAGER = {
     path(ROOTS_ACCOUNTS_MANAGER, `/dashboard/partner/${partnerId}/amendment-request`),
   portalReports: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/portal-reports'),
   messages: path(ROOTS_ACCOUNTS_MANAGER, '/dashboard/messages'),
+};
+
+export const PATH_AUDITOR_REPORT = {
+  root: ROOTS_AUDITOR_REPORT,
+  app: path(ROOTS_AUDITOR_REPORT, '/dashboard/app'),
 };
 
 /************************************************* */

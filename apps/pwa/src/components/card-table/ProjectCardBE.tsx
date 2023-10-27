@@ -46,6 +46,7 @@ const RolesMap = {
   tender_client: '',
   tender_consultant: '',
   tender_moderator: '',
+  tender_auditor_report: '',
 };
 const ProjectCardBE = ({
   id,

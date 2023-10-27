@@ -10,6 +10,7 @@ export type FusionAuthRoles =
   | 'tender_consultant'
   | 'tender_finance'
   | 'tender_moderator'
+  | 'tender_auditor_report'
   | 'tender_project_manager'
   | 'tender_project_supervisor';
 
@@ -22,6 +23,7 @@ export type AppRoles =
   | 'consultant'
   | 'finance'
   | 'moderator'
+  | 'auditor_report'
   | 'project_manager'
   | 'project_supervisor';
 
@@ -34,6 +36,7 @@ export type AppRole =
   | 'CONSULTANT'
   | 'FINANCE'
   | 'MODERATOR'
+  | 'AUDITOR_REPORT'
   | 'PROJECT_MANAGER'
   | 'PROJECT_SUPERVISOR';
 
@@ -47,6 +50,7 @@ export const role_url_map = {
   tender_consultant: 'consultant',
   tender_finance: 'finance',
   tender_moderator: 'moderator',
+  tender_auditor_report: 'auditor-report',
   tender_project_manager: 'project-manager',
   tender_project_supervisor: 'project-supervisor',
 };
@@ -61,6 +65,7 @@ export const submitterRoles = {
   tender_consultant: 'CONSULTANT',
   tender_finance: 'FINANCE',
   tender_moderator: 'MODERATOR',
+  tender_auditor_report: 'AUDITOR_REPORT',
   tender_project_manager: 'PROJECT_MANAGER',
   tender_project_supervisor: 'PROJECT_SUPERVISOR',
 };

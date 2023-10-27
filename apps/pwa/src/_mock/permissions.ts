@@ -8,4 +8,5 @@ export const PERMISSIONS = [
   'MODERATOR',
   'ACCOUNTS_MANAGER',
   'ADMIN',
+  'AUDITOR_REPORT',
 ];

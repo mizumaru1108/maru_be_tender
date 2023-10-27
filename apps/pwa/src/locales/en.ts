@@ -503,6 +503,9 @@ const en = {
     project_supervisor: {
       main: 'Dashboard | Project Supervisor',
     },
+    auditor_report: {
+      main: 'Dashboard | Auditor Report',
+    },
   },
   content: {
     client: {
@@ -2213,6 +2216,7 @@ const en = {
   tender_consultant: 'Consultant',
   tender_finance: 'Finance',
   tender_moderator: 'Moderator',
+  tender_auditor_report: 'Auditor Report',
   tender_project_manager: 'Project Manager',
   tender_project_supervisor: 'Project Supervisor',
   account_permission: 'Account Permissions',
@@ -2227,6 +2231,7 @@ const en = {
     ACCOUNTS_MANAGER: 'Accounts Manager',
     ADMIN: 'Super Admin',
     CLIENT: 'Client',
+    AUDITOR_REPORT: 'Auditor Report',
   },
   closing_project_by_client: 'Closing Project By Client',
   review: {

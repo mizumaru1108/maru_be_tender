@@ -10,6 +10,7 @@ import {
   PATH_ACCOUNTS_MANAGER,
   PATH_MODERATOR,
   PATH_ADMIN,
+  PATH_AUDITOR_REPORT,
 } from '../../../routes/paths';
 import SvgIconStyle from '../../../components/SvgIconStyle';
 import {
@@ -158,6 +159,9 @@ const ICONS = {
     customization_for_dropdown: getIcon('drop-down-white'),
     old_proposal: getIcon('previous-request'),
     contact_us: getIcon('system-messages'),
+  },
+  tender_auditor_report: {
+    main: getIcon('main'),
   },
 };
 
@@ -866,6 +870,18 @@ const navConfig = {
           title: 'messages',
           path: PATH_ADMIN.messages,
           icon: ICONS.tender_admin.messages,
+        },
+      ],
+    },
+  ],
+  tender_auditor_report: [
+    {
+      subheader: '',
+      items: [
+        {
+          title: 'main',
+          path: PATH_AUDITOR_REPORT.app,
+          icon: ICONS.tender_auditor_report.main,
         },
       ],
     },
