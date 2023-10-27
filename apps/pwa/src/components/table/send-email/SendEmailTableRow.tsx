@@ -20,21 +20,17 @@ export default function SendEmailTableRow({ row, selected, onSelectRow }: EmailT
         </Typography>
       </TableCell>
       <TableCell align="left">
-        <Typography
-          variant="subtitle2"
-          // noWrap
-          sx={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
-        >
-          {row.content}
-        </Typography>
+        {row?.content ? (
+          <div
+            dangerouslySetInnerHTML={{ __html: row?.content }}
+            style={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
+          />
+        ) : (
+          '-'
+        )}
       </TableCell>
       <TableCell align="left" sx={{ minWidth: 130 }}>
-        <Typography
-          variant="subtitle2"
-          // noWrap
-        >
-          {dayjs(row.created_at).format('YYYY-MM-DD')}
-        </Typography>
+        <Typography variant="subtitle2">{dayjs(row.created_at).format('YYYY-MM-DD')}</Typography>
       </TableCell>
       <TableCell align="left" sx={{ minWidth: 130 }}>
         <Button

@@ -93,9 +93,14 @@ function AccordionEmailDetail(props: Props) {
               </Typography>
             </Grid>
             <Grid item md={12} xs={12}>
-              <Typography sx={{ color: darken('#93A3B0', 0.3), fontSize: '16px', fontWeight: 500 }}>
-                {props?.emailData?.content || '-'}
-              </Typography>
+              {props?.emailData?.content ? (
+                <div
+                  dangerouslySetInnerHTML={{ __html: props?.emailData?.content }}
+                  style={{ color: darken('#93A3B0', 0.3), fontSize: '16px', fontWeight: 500 }}
+                />
+              ) : (
+                '-'
+              )}
             </Grid>
           </Grid>
         </Stack>
