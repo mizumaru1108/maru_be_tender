@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ProposalPaymentRepository } from '../../repositories/proposal-payment.repository';
 import { TenderNotificationRepository } from '../../../../notification-management/notification/repository/tender-notification.repository';
+import { logUtil } from '../../../../commons/utils/log-util';
 export class PaymentSendBatchReleaseNotifCommand {}
 
 @CommandHandler(PaymentSendBatchReleaseNotifCommand)
@@ -19,6 +20,9 @@ export class PaymentSendBatchReleaseNotifCommandHandler
         paid: '0',
         include_relations: ['proposal'],
       });
+
+      // console.log('notif sent', payments.length);
+      // console.log(logUtil(payments));
 
       if (payments.length > 0) {
         for (const payment of payments) {

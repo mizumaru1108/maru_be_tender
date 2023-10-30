@@ -14,7 +14,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { Cron } from '@nestjs/schedule';
 import { ApiBearerAuth, ApiOperation, ApiSecurity } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { BaseApiOkResponse } from 'src/commons/decorators/base.api.ok.response.decorator';
@@ -57,6 +56,7 @@ import { UpdatePaymentResponseDto } from '../dtos/responses';
 import { InvalidAmountOfSupportException } from '../exceptions/invalid.amount.of.support.exception';
 import { InvalidNumberofPaymentsException } from '../exceptions/invalid.number.of.payments.exception';
 import { ProposalPaymentService } from '../services/proposal-payment.service';
+import { Cron } from '@nestjs/schedule';
 
 @Controller('tender/proposal/payment')
 export class ProposalPaymentController {
@@ -183,6 +183,7 @@ export class ProposalPaymentController {
   }
 
   @Cron('0 0 * * *')
+  // @Post('batch-release-notif')
   async supervisorBatchReleaseNotif() {
     try {
       const command = Builder<PaymentSendBatchReleaseNotifCommand>(

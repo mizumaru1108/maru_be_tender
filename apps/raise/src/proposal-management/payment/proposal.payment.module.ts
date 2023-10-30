@@ -12,6 +12,7 @@ import { ProposalPaymentService } from './services/proposal-payment.service';
 import { PaymentSubmitClosingReportCommandHandler } from 'src/proposal-management/payment/commands/payment.submit.closing.report.command';
 import { ProposalCloseReportModule } from 'src/proposal-management/closing-report/close.report.module';
 import { TrackModule } from '../../track-management/track/track.module';
+import { PaymentSendBatchReleaseNotifCommandHandler } from './commands/payment.send.batch.release.notif/payment.send.batch.release.notif.command';
 
 const importedModule = [
   CqrsModule,
@@ -23,6 +24,7 @@ const importedModule = [
 
 const commands: Provider[] = [
   ProposalInsertPaymentCommandHandler,
+  PaymentSendBatchReleaseNotifCommandHandler,
   ProposalPaymentSendCloseReportCommandHandler,
   ProposalUpdatePaymentCommandHandler,
   PaymentSubmitClosingReportCommandHandler,
