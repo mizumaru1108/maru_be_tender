@@ -55,6 +55,7 @@ export default function RHFTextField({ name, ...other }: Props) {
         render={({ field, fieldState: { error } }) => (
           <TextField
             {...field}
+            lang={'en'}
             InputLabelProps={{ shrink: true }}
             fullWidth
             value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
@@ -96,6 +97,7 @@ export default function RHFTextField({ name, ...other }: Props) {
       render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
+          lang={'en'}
           InputLabelProps={{ shrink: true }}
           fullWidth
           value={typeof field.value === 'number' && field.value === 0 ? '' : field.value}
