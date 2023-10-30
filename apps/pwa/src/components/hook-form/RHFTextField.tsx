@@ -107,10 +107,8 @@ export default function RHFTextField({ name, ...other }: Props) {
           helperText={error?.message}
           onChange={(e) => {
             const newDial = e.target.value.match(/\+?\d+/g)?.[0] ?? '';
-            // const newNumber = e.target.value.match(/\+?\d+/g)?.[0].slice(0, 9) ?? '';
             const newNumber = e.target.value.match(/^5\d{0,8}/)?.[0] ?? '';
             const newPhone = e.target.value.match(/\d{0,9}/)?.[0] ?? '';
-            // const newNumber = e.target.value.match(/\d+/g)?.[1] ?? '';
             const inputValue = e.target.value;
             let cleanedValue = inputValue.replace(/\s+/g, '').replace(/\D/g, '');
             cleanedValue = cleanedValue.slice(0, 22);

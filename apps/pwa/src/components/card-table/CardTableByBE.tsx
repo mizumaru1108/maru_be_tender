@@ -304,62 +304,55 @@ CardTablePropsByBE) {
       </Grid>
       <Grid item md={12} xs={12}>
         <Grid container spacing={2} justifyContent="flex-end">
-          {destination === 'previous-funding-requests' ? (
+          {destination === 'previous-funding-requests' || destination === 'project-report' ? (
             <>
-              {FEATURE_PREVIOUS_PROPOSAL_FILTER ? (
-                <>
-                  <Grid item md={2} xs={6}>
-                    <SearchDateField
-                      fullWidth
-                      disabled={isLoading}
-                      label={translate('sorting.label.range_start_date')}
-                      focused={true}
-                      onReturnDate={(event: string) => {
-                        setPage(1);
-                        if (event && event !== '') {
-                          changeHandleRangeDate(`${event}`, 'start');
-                        } else {
-                          changeHandleRangeDate('', 'start');
-                        }
-                      }}
-                    />
-                  </Grid>
-                  <Grid item md={2} xs={6}>
-                    <SearchDateField
-                      fullWidth
-                      focused={true}
-                      disabled={
-                        sortingRangedDate.startDate === '' ||
-                        sortingRangedDate.startDate === null ||
-                        isLoading
-                      }
-                      label={
-                        sortingRangedDate.startDate === '' || sortingRangedDate.startDate === null
-                          ? null
-                          : translate('sorting.label.range_end_date')
-                      }
-                      value={sortingRangedDate.endDate}
-                      minDate={
-                        sortingRangedDate.startDate
-                          ? dayjs(sortingRangedDate.startDate)
-                              .add(1, 'day')
-                              .toISOString()
-                              .split('T')[0]
-                          : ''
-                      }
-                      onReturnDate={(event: string) => {
-                        setPage(1);
-                        if (event && event !== '') {
-                          // const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
-                          changeHandleRangeDate(`${event}`, 'end');
-                        } else {
-                          changeHandleRangeDate('', 'end');
-                        }
-                      }}
-                    />
-                  </Grid>
-                </>
-              ) : null}
+              <Grid item md={2} xs={6}>
+                <SearchDateField
+                  fullWidth
+                  disabled={isLoading}
+                  label={translate('sorting.label.range_start_date')}
+                  focused={true}
+                  onReturnDate={(event: string) => {
+                    setPage(1);
+                    if (event && event !== '') {
+                      changeHandleRangeDate(`${event}`, 'start');
+                    } else {
+                      changeHandleRangeDate('', 'start');
+                    }
+                  }}
+                />
+              </Grid>
+              <Grid item md={2} xs={6}>
+                <SearchDateField
+                  fullWidth
+                  focused={true}
+                  disabled={
+                    sortingRangedDate.startDate === '' ||
+                    sortingRangedDate.startDate === null ||
+                    isLoading
+                  }
+                  label={
+                    sortingRangedDate.startDate === '' || sortingRangedDate.startDate === null
+                      ? null
+                      : translate('sorting.label.range_end_date')
+                  }
+                  value={sortingRangedDate.endDate}
+                  minDate={
+                    sortingRangedDate.startDate
+                      ? dayjs(sortingRangedDate.startDate).add(1, 'day').toISOString().split('T')[0]
+                      : ''
+                  }
+                  onReturnDate={(event: string) => {
+                    setPage(1);
+                    if (event && event !== '') {
+                      // const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
+                      changeHandleRangeDate(`${event}`, 'end');
+                    } else {
+                      changeHandleRangeDate('', 'end');
+                    }
+                  }}
+                />
+              </Grid>
             </>
           ) : null}
         </Grid>

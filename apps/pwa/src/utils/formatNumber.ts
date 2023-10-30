@@ -31,3 +31,23 @@ export function fCurrencyNumber(value: number) {
 
   return new Intl.NumberFormat('en-US', currencyOptions).format(value) as unknown as number;
 }
+
+export const arabicToAlphabetical = (input: string): string => {
+  const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  const englishNumbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+
+  let result = '';
+
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    const index = arabicNumbers.indexOf(char);
+
+    if (index !== -1) {
+      result += englishNumbers[index];
+    } else {
+      result += char;
+    }
+  }
+
+  return result;
+};

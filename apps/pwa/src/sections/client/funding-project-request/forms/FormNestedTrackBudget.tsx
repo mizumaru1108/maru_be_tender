@@ -10,6 +10,7 @@ import { TrackSection } from '../../../../@types/commons';
 import { Proposal } from '../../../../@types/proposal';
 import Space from '../../../../components/space/space';
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
+import { arabicToAlphabetical } from '../../../../utils/formatNumber';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
 
 const getArrayDifference = (arr1: TrackSection[], arr2: TrackSection[]) => {
@@ -26,7 +27,8 @@ export function flattenChildTrackSections(arr: TrackSection[], track_id: string)
   for (const item of arr) {
     result.push(
       removeEmptyKey({
-        budget: item.budget,
+        budget: Number(arabicToAlphabetical(item?.budget?.toString() || '')),
+        // budget: item?.budget,
         name: item.name,
         id: item.id,
         parent_section_id: item.parent_section_id,
@@ -58,6 +60,7 @@ function checkBudgetSum(data: TrackSection[], initBugdet: number): boolean {
         data.find((track_section) => track_section.id === item.parent_section_id)?.budget || 0;
 
       if (childBudget && childBudget !== parentBudget) {
+        // console.log({ childBudget, parentBudget });
         throw new Error(
           // `Summary Budget exceeded for all budget in the same section with ${item.name}`
           'child_budget_error_message'
@@ -194,6 +197,7 @@ export default function FormNestedTrackBudget({
           .filter((track_section) => !track_section.parent_section_id)
           .reduce((acc, k) => acc + (k.budget || 0), 0)) ||
       0;
+    // console.log({ tmpTotalSummary, data });
     const baseFlatArray = flattenChildTrackSections(
       defaultValuesTrackBudget?.sections || [],
       defaultValuesTrackBudget?.track_id || '-'
@@ -209,6 +213,7 @@ export default function FormNestedTrackBudget({
       ...item,
       is_deleted: true,
     }));
+    // console.log({ baseFlatArray, payloadFlatArray });
     if (tmpTotalSummary > 0 && tmpPayload.total_budget !== tmpTotalSummary) {
       setBudgetError({
         open: true,
