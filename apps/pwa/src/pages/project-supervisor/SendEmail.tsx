@@ -16,7 +16,6 @@ const ContentStyle = styled('div')(({ theme }) => ({
 function SendEmailToClient() {
   const { translate } = useLocales();
   return (
-    // <Page title="Messages">
     <Page title={translate('email_to_client.new_email')}>
       <Container>
         <ContentStyle>{FEATURE_SEND_EMAIL_TO_CLIENT && <SendEmail />}</ContentStyle>
