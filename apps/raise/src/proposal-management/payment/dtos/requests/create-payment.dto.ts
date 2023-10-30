@@ -32,7 +32,6 @@ export class ProposalPaymentCreateDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   notes?: string;
 }
 

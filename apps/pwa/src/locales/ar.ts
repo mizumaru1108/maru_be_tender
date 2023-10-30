@@ -572,6 +572,7 @@ const ar = {
               batch_no: 'الدفعة رقم',
               payment_no: 'مبلغ الدفعة',
               batch_date: 'تاريخ الدفعة',
+              reason_payment: 'مبرر الصرف',
             },
             btn: {
               review_transfer_receipt: 'استعراض ايصال التحويل',

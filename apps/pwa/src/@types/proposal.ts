@@ -234,6 +234,7 @@ export interface Proposal {
     order: string;
     cheques: Cheques[];
     created_at: Date;
+    notes?: string | null;
   }[];
   number_of_payments: number;
   number_of_payments_by_supervisor: number;

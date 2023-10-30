@@ -59,6 +59,7 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
           .integer()
           .min(1, 'يجب أن تكون قيمة المبلغ أكبر من 0'),
         payment_date: Yup.string().required('تاريخ الدفعة مطلوب'),
+        payment_reason: Yup.string(),
       })
     ),
   });
@@ -68,6 +69,7 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
       () => ({
         payment_amount: 0,
         payment_date: '',
+        payment_reason: '',
       })
     ),
   };
@@ -126,6 +128,7 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
           payments: data?.payments.map((item: any, index: any) => ({
             payment_amount: item.payment_amount,
             payment_date: item.payment_date,
+            notes: item.payment_reason,
             proposal_id,
             order: index + 1,
           })),
@@ -262,7 +265,7 @@ function PaymentsSetForm({ refetch, fetching }: Props) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(handleOnSubmit)}>
       <Grid container rowSpacing={4} columnSpacing={2} sx={{ mt: '10px' }}>
-        <Grid container item md={8} rowSpacing={4} columnSpacing={2}>
+        <Grid container item rowSpacing={4} columnSpacing={2}>
           <FormGenerator data={PaymentsData} />
         </Grid>
         <Grid item xs={12}>

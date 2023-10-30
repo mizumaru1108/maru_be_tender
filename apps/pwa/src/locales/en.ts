@@ -571,6 +571,7 @@ const en = {
               batch_no: 'Batch no',
               payment_no: 'Payment no',
               batch_date: 'Batch date',
+              reason_payment: 'Reason of Payment',
             },
             btn: {
               review_transfer_receipt: 'Review the transfer receipt',

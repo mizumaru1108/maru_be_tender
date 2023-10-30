@@ -7,19 +7,27 @@ export const PaymentsData = [
 
     repeaterFields: [
       {
-        type: 'numberField',
-        name: 'payment_amount',
-        label: 'مبلغ الدفعة*',
-        placeholder: 'مبلغ الدعم',
-        md: 5,
-        xs: 12,
-      },
-      {
         type: 'datePicker',
         name: 'payment_date',
         label: 'تاريخ الدفعة*',
         placeholder: 'الرجاء اختيار تاريخ الدفعة',
-        md: 5,
+        md: 4,
+        xs: 12,
+      },
+      {
+        type: 'numberField',
+        name: 'payment_amount',
+        label: 'مبلغ الدفعة*',
+        placeholder: 'مبلغ الدعم',
+        md: 4,
+        xs: 12,
+      },
+      {
+        type: 'textField',
+        name: 'payment_reason',
+        label: ' مبرر الصرف',
+        placeholder: 'يرجى مشاركة السبب الخاص بك',
+        md: 4,
         xs: 12,
       },
     ],

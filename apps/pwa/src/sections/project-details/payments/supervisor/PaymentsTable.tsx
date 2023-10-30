@@ -193,6 +193,19 @@ function PaymentsTable() {
                     </Typography>
                   </Stack>
                 </Grid>
+                <Grid item md={2}>
+                  <Stack direction="column">
+                    <Typography sx={{ color: '#93A3B0' }}>
+                      {translate(
+                        'content.administrative.project_details.payment.table.td.reason_payment'
+                      )}
+                      :
+                    </Typography>
+                    <Typography sx={{ color: '#1E1E1E' }} variant="h6">
+                      {item.notes && item.notes !== '' ? item.notes : '-'}
+                    </Typography>
+                  </Stack>
+                </Grid>
                 {item.status !== 'set_by_supervisor' &&
                 item.status !== 'rejected_by_project_manager' ? (
                   <Grid item md={3}>

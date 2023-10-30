@@ -118,6 +118,7 @@ export class ProposalInsertPaymentCommandHandler
               payment_amount: payload.payment_amount.toFixed(2).toString(),
               payment_date: new Date(payload.payment_date),
               proposal_id: proposal_id,
+              notes: payload.notes,
               status: 'set_by_supervisor',
             };
             totalAmount += payload.payment_amount;
