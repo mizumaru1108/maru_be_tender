@@ -2272,6 +2272,8 @@ export class ProposalRepository {
         sort = 'desc',
         sorting_field,
         supervisor_status,
+        range_start_date,
+        range_end_date,
       } = filter;
 
       const offset = (page - 1) * limit;
@@ -2279,6 +2281,34 @@ export class ProposalRepository {
       let whereClause: Prisma.proposalWhereInput = {
         oid: null,
       };
+
+      if (range_start_date) {
+        whereClause = {
+          ...whereClause,
+          created_at: {
+            gte: range_start_date,
+          },
+        };
+      }
+
+      if (range_end_date) {
+        whereClause = {
+          ...whereClause,
+          created_at: {
+            lte: range_end_date,
+          },
+        };
+      }
+
+      if (range_start_date && range_end_date) {
+        whereClause = {
+          ...whereClause,
+          created_at: {
+            gte: range_start_date,
+            lte: range_end_date,
+          },
+        };
+      }
 
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
       const field =
