@@ -304,7 +304,9 @@ CardTablePropsByBE) {
       </Grid>
       <Grid item md={12} xs={12}>
         <Grid container spacing={2} justifyContent="flex-end">
-          {destination === 'previous-funding-requests' || destination === 'project-report' ? (
+          {destination === 'previous-funding-requests' ||
+          destination === 'project-report' ||
+          destination === 'complete-project-report' ? (
             <>
               <Grid item md={2} xs={6}>
                 <SearchDateField
