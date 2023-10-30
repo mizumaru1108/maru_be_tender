@@ -31,7 +31,7 @@ export class PaymentSendBatchReleaseNotifCommandHandler
             await this.notificationRepo.create({
               user_id: payment.proposal.supervisor_id,
               //content: You have a batch release for a project (project name) on today's date
-              content: `يوجد لديكم إصدار دفعة لمشروع (${payment.proposal.project_name}) في تاريخ اليوم`,
+              content: `يوجد لديكم إصدار دفعة لمشروع (${payment.proposal.project_name}, batch ${payment.order}) في تاريخ اليوم`,
               //subject: batch release reminder
               subject: 'تذكير بإصدار دفعة',
               proposal_id: payment.proposal_id,
