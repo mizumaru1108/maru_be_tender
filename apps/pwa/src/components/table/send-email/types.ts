@@ -10,7 +10,7 @@ export type EmailToClient = {
   content?: string;
   sender_id?: string;
   receiver_id?: null;
-  attachments?: string;
+  attachments?: [{ url: string; size: number | undefined; type: string }];
   user_on_app?: boolean;
   receiver_name?: string;
   receiver_email?: string;

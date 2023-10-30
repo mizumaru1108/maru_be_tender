@@ -55,7 +55,7 @@ function IncomingFundingRequests() {
           /> */}
           <CardTableByBE
             title={translate('incoming_support_requests')}
-            destination="requests-in-process"
+            destination="incoming-funding-requests"
             endPoint="tender-proposal/request-in-process"
             limitShowCard={6}
             cardFooterButtonAction="show-details"

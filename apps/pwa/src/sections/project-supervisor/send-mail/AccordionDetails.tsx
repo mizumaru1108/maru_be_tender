@@ -15,6 +15,8 @@ import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
 import { IEditedValues } from '../../../@types/client_data';
 import { EmailToClient } from '../../../components/table/send-email/types';
 import dayjs from 'dayjs';
+import ButtonDownloadFiles from '../../../components/button/ButtonDownloadFiles';
+import Space from '../../../components/space/space';
 
 // ----------------------------------------------------------------------
 
@@ -102,6 +104,14 @@ function AccordionEmailDetail(props: Props) {
                 '-'
               )}
             </Grid>
+            <Space direction="horizontal" size="small" />
+            {props.emailData?.attachments &&
+              props?.emailData?.attachments?.length > 0 &&
+              props.emailData.attachments?.map((item) => (
+                <Grid item key={item.url} md={4} xs={12}>
+                  <ButtonDownloadFiles files={item} type="attachments" />
+                </Grid>
+              ))}
           </Grid>
         </Stack>
       </AccordionDetails>

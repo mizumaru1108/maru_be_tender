@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid } from '@mui/material';
-import { FormProvider, RHFTextField } from 'components/hook-form';
+import { FormProvider, RHFTextField, RHFUploadMultiFile } from 'components/hook-form';
 import RHFComboBox, { ComboBoxOption } from 'components/hook-form/RHFComboBox';
 import { RHFUploadSingleFileBe } from 'components/hook-form/RHFUploadBe';
 // import { useListState, randomId } from '@mantine/hooks';
@@ -20,7 +20,13 @@ export type FormSendEmail = {
   receiver_email: string;
   title: string;
   content: string;
-  attachments: BaseAttachement;
+  attachments?: {
+    url: string;
+    size: number | undefined;
+    type: string;
+    fileExtension?: string;
+    file?: File;
+  }[];
 };
 
 interface Props {
@@ -35,20 +41,15 @@ export default function SendEmailForm(props: Props) {
   const { translate } = useLocales();
   const { client_list, loadingProps } = useSelector((state) => state.proposal);
 
-  const [valueTextEditor, setValueTextEditor] = useState('');
+  // const [valueTextEditor, setValueTextEditor] = useState('');
   // console.log({ valueTextEditor });
 
   const initialValues: FormSendEmail = useMemo(() => {
     const tmpValues: FormSendEmail = {
-      attachments: {
-        size: undefined,
-        type: '',
-        url: '',
-        fileExtension: '',
-      },
+      attachments: [],
       content: '',
       title: '',
-      user_on_app: '0',
+      user_on_app: '1',
       receiver_email: '',
       receiver_name: {
         label: '',
@@ -89,43 +90,33 @@ export default function SendEmailForm(props: Props) {
         }
       }
     ),
-    attachments: Yup.mixed()
-      .test('size', translate('email_to_client.errors.attachments.fileSize'), (value) => {
-        if (value) {
-          if (value.size > 1024 * 1024 * 200) {
+    attachments: Yup.mixed().test(
+      'fileExtension',
+      translate('email_to_client.errors.attachments.fileExtension'),
+      (value) => {
+        if (value?.length === 0) {
+          return false;
+        } else {
+          const isArr = Array.isArray(value) ? value : undefined;
+          if (isArr) {
+            const checkExt = isArr.every(
+              (item: BaseAttachement) =>
+                item.fileExtension === 'application/pdf' ||
+                item.fileExtension === 'image/jpeg' ||
+                item.fileExtension === 'image/jpg' ||
+                item.fileExtension === 'image/png'
+            );
+            if (checkExt) {
+              return true;
+            } else {
+              return false;
+            }
+          } else {
             return false;
           }
         }
-        return true;
-      })
-      .test(
-        'fileExtension',
-        translate('email_to_client.errors.attachments.fileExtension'),
-        (value) => {
-          if (value) {
-            if (
-              value.fileExtension &&
-              value.fileExtension !== 'application/pdf' &&
-              value.fileExtension !== 'image/jpeg' &&
-              value.fileExtension !== 'image/png' &&
-              value.fileExtension !== 'image/jpg'
-            ) {
-              return false;
-            } else if (
-              value.type &&
-              value.type !== 'application/pdf' &&
-              value.type !== 'image/jpeg' &&
-              value.type !== 'image/png' &&
-              value.type !== 'image/jpg'
-            ) {
-              return false;
-            } else if (value?.fileExtension === '' || value.type === '') {
-              return false;
-            }
-          }
-          return true;
-        }
-      ),
+      }
+    ),
   });
 
   const methods = useForm<FormSendEmail>({
@@ -142,9 +133,11 @@ export default function SendEmailForm(props: Props) {
 
   const watchIsAssociation = watch('user_on_app');
   const watchName = watch('receiver_name');
+  // const watchAttachment = watch('attachments');
+  // console.log({ watchAttachment });
 
   useEffect(() => {
-    if (watchIsAssociation && watchIsAssociation === '0') {
+    if (watchIsAssociation && watchIsAssociation === '1') {
       if ((watchName as ComboBoxOption)?.value !== '' && client_list?.length > 0) {
         const { value } = watchName as ComboBoxOption;
         const tmpEmail = client_list.find((item) => item.id === value)?.email;
@@ -156,7 +149,7 @@ export default function SendEmailForm(props: Props) {
   }, [watchName, setValue, client_list, watchIsAssociation]);
 
   useEffect(() => {
-    if (watchIsAssociation && watchIsAssociation === '0') {
+    if (watchIsAssociation && watchIsAssociation === '1') {
       setValue('receiver_name', {
         label: '',
         value: '',
@@ -171,7 +164,6 @@ export default function SendEmailForm(props: Props) {
     // console.log('data', data.attachments);
     onSubmitForm({
       ...data,
-      attachments: data.attachments,
     });
   };
 
@@ -190,17 +182,17 @@ export default function SendEmailForm(props: Props) {
               options={[
                 {
                   label: translate('email_to_client.fields.is_association.option.yes'),
-                  value: '0',
+                  value: '1',
                 },
                 {
                   label: translate('email_to_client.fields.is_association.option.no'),
-                  value: '1',
+                  value: '0',
                 },
               ]}
             />
           </Grid>
           <Grid item md={6} xs={12}>
-            {watchIsAssociation && watchIsAssociation === '0' ? (
+            {watchIsAssociation && watchIsAssociation === '1' ? (
               <RHFComboBox
                 isMultiple={false}
                 disabled={loadingProps.laodingClient}
@@ -226,7 +218,7 @@ export default function SendEmailForm(props: Props) {
           </Grid>
           <Grid item md={6} xs={12} sx={{ padding: '0 7px' }}>
             <RHFTextField
-              disabled={watchIsAssociation && watchIsAssociation === '0' ? true : false}
+              disabled={watchIsAssociation && watchIsAssociation === '1' ? true : false}
               name={`receiver_email`}
               label={translate('email_to_client.fields.receiver_email.label')}
               placeholder={translate('email_to_client.fields.receiver_email.placeholder')}
@@ -258,10 +250,8 @@ export default function SendEmailForm(props: Props) {
             />
           </Grid>
           <Grid item md={12} xs={12}>
-            <RHFUploadSingleFileBe
-              name="attachments"
-              placeholder={translate('email_to_client.fields.email_attachment.placeholder')}
-            />
+            <BaseField type="uploadMulti" name="attachments" />
+            {/* <RHFUploadMultiFile name={'attachments'} placeholder={''} /> */}
           </Grid>
         </Grid>
         {children}

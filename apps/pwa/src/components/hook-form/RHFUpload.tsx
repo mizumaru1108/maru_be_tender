@@ -202,6 +202,7 @@ export function RHFUploadMultiFile({
             fullName: file.name,
             fileExtension: file.type,
             size: file.size,
+            file: file || undefined,
           };
         } else if (fileType === 'image') {
           const compressFile = compress(file, {
@@ -219,6 +220,7 @@ export function RHFUploadMultiFile({
                 fullName: file.name,
                 fileExtension: file.type,
                 size: file.size,
+                file: file || undefined,
               };
             })
             .catch((err) => {
@@ -234,49 +236,46 @@ export function RHFUploadMultiFile({
             fullName: file.name,
             fileExtension: file.type,
             size: file.size,
+            file: file || undefined,
           };
         }
       })
     );
-    // console.log('newImages=', newImages);
     if (images) {
       setValue(name, [...images, ...newImages]);
     } else {
       setValue(name, [...newImages]);
     }
-    // setValue(name, [...getValues(name), ...newImages]);
-    // console.log('images=', newImages);
   };
   const handleRemoveAll = () => {
     setValue(name, []);
-    // console.debug('images=', []);
   };
   const handleRemove = (file: File | string) => {
     const filteredItems = getValues(name)!.filter((_file: any) => _file !== file);
     setValue(name, filteredItems);
-    // console.debug('images=', filteredItems);
   };
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => {
-        const checkError = !!error && field.value?.length === 0;
+        // console.log({ error });
+        const checkError =
+          (!!error && field.value?.length === 0) || (!!error && error?.message) ? true : false;
 
         return (
           <UploadMultiFile
-            accept={{
-              // 'image/*': [],
-              'image/png': [],
-              'image/jpeg': [],
-              'image/jpg': [],
-              'application/pdf': [],
-            }}
+            // accept={{
+            //   'image/png': [],
+            //   'image/jpeg': [],
+            //   'image/jpg': [],
+            //   'application/pdf': [],
+            // }}
             maxSize={1024 * 1024 * 3}
             files={field.value}
             showPreview
             placeholder={placeholder ?? ''}
-            disabled={disabled || isCompressing}
+            // disabled={disabled || isCompressing}
             error={checkError}
             helperText={
               checkError && (

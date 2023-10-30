@@ -51,6 +51,7 @@ export default function UploadSingleFile({
     multiple: false,
     ...other,
   });
+  // console.log({ isDragActive, isDragReject, getInputProps });
   return (
     <Grid container spacing={file.url === '' ? 0 : 5} sx={{ width: '100%', ...sx }}>
       <Grid item md={file.url === '' ? 12 : 10} xs={file.url === '' ? 12 : 10}>

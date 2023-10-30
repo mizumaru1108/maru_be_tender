@@ -35,7 +35,12 @@ export default function DetailsEmail() {
       });
       console.log({ res });
       if (res.data.data) {
-        setDetailEmails(res.data.data);
+        const attch = JSON.parse(res.data.data.attachments);
+
+        setDetailEmails({
+          ...res.data.data,
+          attachments: attch,
+        });
       }
     } catch (error) {
       const statusCode = (error && error.statusCode) || 0;

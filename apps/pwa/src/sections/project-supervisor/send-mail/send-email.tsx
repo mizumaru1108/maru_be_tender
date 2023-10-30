@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router';
 import SendEmailActionBox from 'sections/project-supervisor/send-mail/action-box';
 import axiosInstance from 'utils/axios';
 import { role_url_map } from '../../../@types/commons';
-import { BaseAttachement } from '../../../@types/proposal';
+import { ComboBoxOption } from '../../../components/hook-form/RHFComboBox';
 import useAuth from '../../../hooks/useAuth';
 import { getClientList } from '../../../redux/slices/proposal';
 import { dispatch } from '../../../redux/store';
@@ -24,17 +24,45 @@ export default function SendEmail() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmitGeneralForm = async (data: FormSendEmail) => {
+    console.log({ data });
     const url = '/tender/email-records/create';
+    const tmpReceiverName =
+      (data?.receiver_name as ComboBoxOption).label || (data?.receiver_name as string);
+    const tmpReceiverId = (data?.receiver_name as ComboBoxOption).label
+      ? (data?.receiver_name as ComboBoxOption).value
+      : '';
     let formData = new FormData();
 
     const payload = removeEmptyKey({ ...data });
     delete payload.attachments;
+    delete payload.receiver_name;
 
     for (const key in payload) {
       formData.append(key, payload[key]);
     }
-    if (data?.attachments?.file && data?.attachments?.file[0]) {
-      formData.append('attachments', data?.attachments?.file[0] as Blob);
+    // if (data?.attachments && data?.attachments?.length > 0) {
+    //   let index = 0;
+    //   for (const item of data?.attachments) {
+    //     const { file, ...rest } = item;
+    //     if (file) {
+    //       formData.append(`attachments[${index}]`, file as Blob);
+    //     }
+    //     index += 1;
+    //   }
+    // }
+    if (data?.attachments && data?.attachments?.length > 0) {
+      const tmpFiles = data?.attachments.map((item) => item.file);
+      if (tmpFiles) {
+        for (const item of tmpFiles) {
+          formData.append(`attachments`, item as Blob);
+        }
+      }
+    }
+    if (tmpReceiverName) {
+      formData.append('receiver_name', tmpReceiverName);
+    }
+    if (data.user_on_app === '1' && tmpReceiverId) {
+      formData.append('receiver_id', tmpReceiverId);
     }
     try {
       setIsLoading(true);

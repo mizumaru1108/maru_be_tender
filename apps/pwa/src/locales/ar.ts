@@ -2784,7 +2784,7 @@ const ar = {
     errors: {
       attachments: {
         fileSize: 'يجب أن يكون حجم الملف أقل من 200 ميغابايت',
-        fileExtension: 'يجب أن يكون الملف من نوع pdf',
+        fileExtension: 'يجب أن يكون امتداد الملف واحدًا مما يلي: pdf، jpeg، jpg، png',
       },
       receiver_name: {
         required: 'اسم المتلقي مطلوب',

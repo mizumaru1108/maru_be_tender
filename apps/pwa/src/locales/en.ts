@@ -2764,7 +2764,7 @@ const en = {
     errors: {
       attachments: {
         fileSize: 'The file size must be less than 200 MB',
-        fileExtension: 'The file extension must be one of the following: pdf',
+        fileExtension: 'The file extension must be one of the following: pdf, jpeg, jpg, png',
       },
       receiver_name: {
         required: 'Receiver name is required',
