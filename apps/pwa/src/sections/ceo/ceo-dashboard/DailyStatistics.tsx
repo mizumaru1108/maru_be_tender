@@ -7,9 +7,11 @@ import moment from 'moment';
 //
 import { FEATURE_DAILY_STATUS } from 'config';
 import React from 'react';
+import { useNavigate } from 'react-router';
 
 function DailyStatistics() {
   const { translate } = useLocales();
+  const navigate = useNavigate();
 
   const { user } = useAuth();
   const [result] = useQuery({
@@ -22,6 +24,10 @@ function DailyStatistics() {
   });
 
   const { data, fetching, error } = result;
+
+  const handleClick = (link: string) => {
+    navigate(link);
+  };
 
   if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
@@ -46,9 +52,25 @@ function DailyStatistics() {
               {Object.keys(data).map((item, i) => {
                 const title = translate(`${item}`);
                 const value = data[`${item}`].aggregate.count;
+                const redirect_link =
+                  ((item === 'acceptableRequest' || item === 'totalRequest') &&
+                    '/ceo/dashboard/previous-funding-requests') ||
+                  (item === 'rejectedRequest' && '/ceo/dashboard/rejection-list') ||
+                  undefined;
 
                 return (
-                  <Grid item md={2} xs={12} key={i}>
+                  <Grid
+                    item
+                    md={2}
+                    xs={12}
+                    key={i}
+                    sx={{ cursor: redirect_link ? 'pointer' : undefined }}
+                    onClick={() => {
+                      if (redirect_link) {
+                        handleClick(redirect_link);
+                      }
+                    }}
+                  >
                     <Box
                       sx={{
                         borderRadius: 1,

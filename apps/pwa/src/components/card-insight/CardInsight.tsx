@@ -6,6 +6,7 @@ import { useTheme } from '@mui/material/styles';
 import { CardInsightProps } from './types';
 // config
 import { FEATURE_DAILY_STATUS } from 'config';
+import { useNavigate } from 'react-router';
 
 // -------------------------------------------------------------------------------
 
@@ -22,6 +23,11 @@ export default function CardInsights({
 }: CardInsightProps) {
   const { translate } = useLocales();
   const theme = useTheme();
+  const navigate = useNavigate();
+
+  const handleClick = (link: string) => {
+    navigate(link);
+  };
 
   return (
     <Box sx={{ pt: 1 }}>
@@ -46,7 +52,18 @@ export default function CardInsights({
         >
           {data?.length &&
             data.map((item, i) => (
-              <Grid item xs={cardItemXsBreakpoints ?? 6} md={cardItemMdBreakpoints ?? 3} key={i}>
+              <Grid
+                item
+                xs={cardItemXsBreakpoints ?? 6}
+                md={cardItemMdBreakpoints ?? 3}
+                key={i}
+                sx={{ cursor: item?.redirect_link ? 'pointer' : undefined }}
+                onClick={() => {
+                  if (item?.redirect_link) {
+                    handleClick(item.redirect_link);
+                  }
+                }}
+              >
                 <Card
                   sx={
                     cardStyle ?? { p: { xs: 2, md: 4 }, bgcolor: theme.palette.background.default }

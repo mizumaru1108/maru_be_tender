@@ -12,9 +12,11 @@ import moment from 'moment';
 // config
 import { FEATURE_DAILY_STATUS } from 'config';
 import { fCurrencyNumber } from 'utils/formatNumber';
+import { useNavigate } from 'react-router';
 
 export default function Statistics() {
   const { translate } = useLocales();
+  const navigate = useNavigate();
 
   const [resQuery] = useQuery({
     query: getSummaryClientProposal,
@@ -25,6 +27,10 @@ export default function Statistics() {
   });
 
   const { data, fetching, error } = resQuery;
+
+  const handleClick = () => {
+    navigate('/client/dashboard/old-proposal');
+  };
 
   if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
@@ -69,6 +75,12 @@ export default function Statistics() {
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
+                        cursor: budgetType ? undefined : 'pointer',
+                      }}
+                      onClick={() => {
+                        if (!budgetType) {
+                          handleClick();
+                        }
                       }}
                     >
                       {budgetType ? (

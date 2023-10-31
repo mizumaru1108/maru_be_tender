@@ -32,6 +32,7 @@ function InProcessCloseReports() {
             limitShowCard={6}
             cardFooterButtonAction="show-project"
             addCustomFilter="&supervisor_status=waiting_to_be_submitted"
+            sorting={['sorting', 'project_name', 'track', 'range_date']}
           />
         </ContentStyle>
       </Container>

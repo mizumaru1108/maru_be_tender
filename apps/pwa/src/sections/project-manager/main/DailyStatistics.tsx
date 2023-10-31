@@ -6,9 +6,11 @@ import useLocales from 'hooks/useLocales';
 //
 import { FEATURE_DAILY_STATUS } from 'config';
 import React from 'react';
+import { useNavigate } from 'react-router';
 
 function DailyStatistics() {
   const { translate } = useLocales();
+  const navigate = useNavigate();
   const base_date = new Date();
   const first_date = base_date.toISOString().slice(0, 10);
   const second_date = new Date(base_date.setDate(base_date.getDate() + 1))
@@ -20,6 +22,11 @@ function DailyStatistics() {
     variables: { user_id: user?.id!, first_date, second_date },
   });
   const { data, fetching, error } = result;
+
+  const handleClick = (link: string) => {
+    navigate(link);
+  };
+
   if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
 
@@ -41,9 +48,24 @@ function DailyStatistics() {
               {Object.keys(data).map((item, i) => {
                 const title = translate(`${item}`);
                 const value = data[`${item}`].aggregate.count;
+                const redirect_link =
+                  (item === 'totalRequest' && '/project-manager/dashboard/old-proposal') ||
+                  (item === 'pendingRequest' && '/project-manager/dashboard/requests-in-process') ||
+                  '/project-manager/dashboard/previous-funding-requests';
 
                 return (
-                  <Grid item md={2} xs={12} key={i}>
+                  <Grid
+                    item
+                    md={2}
+                    xs={12}
+                    key={i}
+                    sx={{ cursor: redirect_link ? 'pointer' : undefined }}
+                    onClick={() => {
+                      if (redirect_link) {
+                        handleClick(redirect_link);
+                      }
+                    }}
+                  >
                     <Box
                       sx={{
                         borderRadius: 1,

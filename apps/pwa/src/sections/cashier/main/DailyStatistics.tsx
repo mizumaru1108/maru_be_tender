@@ -5,9 +5,12 @@ import useLocales from 'hooks/useLocales';
 //
 import { FEATURE_DAILY_STATUS } from 'config';
 import React from 'react';
+import { useNavigate } from 'react-router';
 
 function DailyStatistics() {
   const { translate } = useLocales();
+  const navigate = useNavigate();
+
   const base_date = new Date();
   const first_date = base_date.toISOString().slice(0, 10);
   const second_date = new Date(base_date.setDate(base_date.getDate() + 1))
@@ -18,6 +21,11 @@ function DailyStatistics() {
     variables: { first_date, second_date },
   });
   const { data, fetching, error } = result;
+
+  const handleClick = (link: string) => {
+    navigate(link);
+  };
+
   if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
   return (
@@ -39,6 +47,10 @@ function DailyStatistics() {
                 borderRadius: '8px',
                 backgroundColor: '#fff',
                 p: 2,
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                handleClick('/cashier/dashboard/old-proposal');
               }}
             >
               <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>
@@ -60,6 +72,10 @@ function DailyStatistics() {
                 borderRadius: '8px',
                 backgroundColor: '#fff',
                 p: 2,
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                handleClick('/cashier/dashboard/requests-in-process');
               }}
             >
               <Typography sx={{ color: '#93A3B0', fontSize: '10px', mb: '5px' }}>

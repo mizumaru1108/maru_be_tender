@@ -1,11 +1,9 @@
 import { Container } from '@mui/material';
-import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import CardTableBE from 'components/card-table/CardTableBE';
-import { gettingPreviousRequests } from 'queries/project-supervisor/gettingPreviousRequests';
-import useLocales from '../../hooks/useLocales';
+import Page from 'components/Page';
 import useAuth from 'hooks/useAuth';
 import CardTableByBE from '../../components/card-table/CardTableByBE';
+import useLocales from '../../hooks/useLocales';
 
 function PreviousFundingRequests() {
   const { user } = useAuth();
@@ -19,7 +17,6 @@ function PreviousFundingRequests() {
     gap: 20,
   }));
   return (
-    // <Page title="طلبات الدعم سابقة">
     <Page title={translate('pages.common.previous_funding_requests')}>
       <Container>
         <ContentStyle>
@@ -113,6 +110,7 @@ function PreviousFundingRequests() {
             destination="previous-funding-requests"
             limitShowCard={6}
             cardFooterButtonAction="show-project"
+            sorting={['sorting', 'project_name', 'project_status', 'range_date', 'client_name']}
           />
         </ContentStyle>
       </Container>

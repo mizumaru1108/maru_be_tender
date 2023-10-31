@@ -32,6 +32,7 @@ function CompleteCloseReports() {
             limitShowCard={6}
             cardFooterButtonAction="show-project"
             addCustomFilter="&supervisor_status=after_submit"
+            sorting={['sorting', 'project_name', 'track', 'range_date']}
           />
         </ContentStyle>
       </Container>

@@ -1,10 +1,6 @@
-import * as React from 'react';
-import { Container, Typography, Box, Grid, Stack, Button, Tabs, Tab } from '@mui/material';
-import { ProjectCard } from 'components/card-table';
-import { useNavigate } from 'react-router';
-import useLocales from 'hooks/useLocales';
-import { generateHeader } from '../../../utils/generateProposalNumber';
+import { Grid } from '@mui/material';
 import CardTableByBE from 'components/card-table/CardTableByBE';
+import useLocales from 'hooks/useLocales';
 
 function PreviousFundingInqueries() {
   const { translate } = useLocales();
@@ -20,6 +16,7 @@ function PreviousFundingInqueries() {
           cardFooterButtonAction="show-project"
           showPagination={false}
           navigateLink="/client/dashboard/previous-funding-requests"
+          sorting={['sorting']}
         />
       </Grid>
     </>

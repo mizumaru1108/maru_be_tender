@@ -21,6 +21,7 @@ export default function IncomingCloseReport() {
         showPagination={false}
         navigateLink="/project-supervisor/dashboard/project-report"
         addCustomFilter="&supervisor_status=after_payment"
+        sorting={['sorting', 'project_name', 'track', 'range_date']}
       />
     </Grid>
   );

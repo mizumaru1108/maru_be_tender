@@ -119,6 +119,7 @@ function MainManagerPage() {
       newDataInsight.data.push({
         title: 'account_manager.card.number_of_request',
         value: numberOfRequestData?.user_aggregate?.aggregate?.count,
+        redirect_link: '/accounts-manager/dashboard/new/join-request',
       });
     }
 
@@ -127,6 +128,7 @@ function MainManagerPage() {
       newDataInsight.data.push({
         title: 'account_manager.card.active_partners',
         value: activePartnerData?.user_aggregate?.aggregate?.count,
+        redirect_link: '/accounts-manager/dashboard/partner/management',
       });
     }
 
@@ -135,6 +137,7 @@ function MainManagerPage() {
       newDataInsight.data.push({
         title: 'account_manager.card.rejected_partners',
         value: rejectedPartnerData?.user_aggregate?.aggregate?.count,
+        redirect_link: '/accounts-manager/dashboard/partner/management',
       });
     }
 
@@ -143,6 +146,7 @@ function MainManagerPage() {
       newDataInsight.data.push({
         title: 'account_manager.card.suspended_partners',
         value: suspendedPartnerData?.user_aggregate?.aggregate?.count,
+        redirect_link: '/accounts-manager/dashboard/partner/management',
       });
     }
 

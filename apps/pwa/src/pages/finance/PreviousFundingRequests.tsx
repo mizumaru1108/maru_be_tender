@@ -77,6 +77,7 @@ function PreviousFundingRequests() {
             destination="previous-funding-requests"
             limitShowCard={6}
             cardFooterButtonAction="show-project"
+            sorting={['sorting', 'project_name', 'project_status', 'range_date', 'client_name']}
           />
         </ContentStyle>
       </Container>

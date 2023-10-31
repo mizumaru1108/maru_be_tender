@@ -170,12 +170,20 @@ export type CardTablePropsBE = {
   baseFilters?: any;
 };
 
+type sorting =
+  | 'range_date'
+  | 'track'
+  | 'sorting'
+  | 'project_status'
+  | 'project_name'
+  | 'client_name';
+
 export type CardTablePropsByBE = {
   title: string;
   limitShowCard?: number;
   endPoint?: string;
-  // isIncoming?: boolean;
   typeRequest?: 'incoming' | 'inprocess';
+  sorting?: sorting[];
   cardFooterButtonAction:
     | 'show-project' // Without the action bar at the end of the page.
     | 'show-details' // With the action bar at the end if the page.
@@ -192,14 +200,11 @@ export type CardTablePropsByBE = {
     | 'project-report'
     | 'incoming-amandment-requests'
     | 'complete-project-report';
-
   // example addCustomFilter: '&status=PENDING&include_relations=supervisor,sender,proposal'
   addCustomFilter?: string;
+  // for redirect link, button view all
   navigateLink?: string;
   showPagination?: boolean;
-  // params?:{
-  //   type: 'incoming'
-  // }
 };
 
 interface GenerateFilterReturning {

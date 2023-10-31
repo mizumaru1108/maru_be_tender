@@ -34,6 +34,7 @@ function IncomingCloseReports() {
             limitShowCard={6}
             cardFooterButtonAction="show-project"
             addCustomFilter="&supervisor_status=after_payment"
+            sorting={['sorting', 'project_name', 'track', 'range_date']}
           />
         </ContentStyle>
       </Container>

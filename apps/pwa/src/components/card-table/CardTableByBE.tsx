@@ -30,6 +30,7 @@ function CardTableByBE({
   addCustomFilter,
   navigateLink,
   showPagination = true,
+  sorting = ['sorting'],
 }: // isIncoming = false,
 CardTablePropsByBE) {
   // const { translate } = useLocales();
@@ -201,26 +202,26 @@ CardTablePropsByBE) {
             reFetch={() => {
               setPage(1);
               setSearchName('');
-              // if (reFetch) reFetch();
             }}
             fullWidth
-            // sx={{ width: '250px' }}
           />
         </Grid>
       ) : null}
       <Grid item md={12} xs={12}>
         <Grid container spacing={2} justifyContent="flex-end">
-          <Grid item md={2} xs={6}>
-            <SortingCardTable
-              isLoading={isLoading}
-              onChangeSorting={(event: string) => {
-                setPage(1);
-                setSortingFilter(event);
-              }}
-            />
-          </Grid>
+          {sorting.includes('sorting') && (
+            <Grid item md={2} xs={6}>
+              <SortingCardTable
+                isLoading={isLoading}
+                onChangeSorting={(event: string) => {
+                  setPage(1);
+                  setSortingFilter(event);
+                }}
+              />
+            </Grid>
+          )}
 
-          {destination === 'previous-funding-requests' ? (
+          {/* {destination === 'previous-funding-requests' ? (
             <>
               {activeRole !== 'tender_project_manager' &&
               activeRole !== 'tender_project_supervisor' &&
@@ -245,22 +246,6 @@ CardTablePropsByBE) {
                   }}
                 />
               </Grid>
-              {/* <Grid item md={2} xs={6}>
-                <SearchDateField
-                  fullWidth
-                  disabled={isLoading}
-                  label={translate('sorting.label.start_project_date')}
-                  focused={true}
-                  onReturnDate={(event: string) => {
-                    setPage(1);
-                    if (event && event !== '') {
-                      setStartDate(`&start_date=${event}`);
-                    } else {
-                      setStartDate('');
-                    }
-                  }}
-                />
-              </Grid> */}
               {activeRole !== 'tender_client' ? (
                 <Grid item md={3} xs={6}>
                   <SearchField
@@ -280,7 +265,51 @@ CardTablePropsByBE) {
                 </Grid>
               ) : null}
             </>
-          ) : null}
+          ) : null} */}
+
+          {sorting.includes('track') && (
+            <Grid item md={2} xs={6}>
+              <SortingProjectTrackCardTable
+                isLoading={isLoading}
+                onChangeSorting={(event: string) => {
+                  setPage(1);
+                  setTrackFilter(event);
+                }}
+              />
+            </Grid>
+          )}
+
+          {sorting.includes('project_status') && (
+            <Grid item md={2} xs={6}>
+              <SortingProjectStatusCardTable
+                isLoading={isLoading}
+                onChangeSorting={(event: string) => {
+                  setPage(1);
+                  setStatusFilter(event);
+                }}
+              />
+            </Grid>
+          )}
+
+          {sorting.includes('client_name') && (
+            <Grid item md={3} xs={6}>
+              <SearchField
+                fullWidth
+                data-cy="search_client_name_field"
+                isLoading={isLoading}
+                label={translate('client_list_headercell.client_name')}
+                onReturnSearch={(value) => {
+                  setClientName(`&client_name=${value}`);
+                }}
+                reFetch={() => {
+                  setPage(1);
+                  setClientName('');
+                  // if (reFetch) reFetch();
+                }}
+              />
+            </Grid>
+          )}
+
           {navigateLink ? (
             <Grid item md={1} xs={6}>
               <Button
@@ -302,63 +331,60 @@ CardTablePropsByBE) {
           ) : null}
         </Grid>
       </Grid>
-      <Grid item md={12} xs={12}>
-        <Grid container spacing={2} justifyContent="flex-end">
-          {destination === 'previous-funding-requests' ||
-          destination === 'project-report' ||
-          destination === 'complete-project-report' ? (
-            <>
-              <Grid item md={2} xs={6}>
-                <SearchDateField
-                  fullWidth
-                  disabled={isLoading}
-                  label={translate('sorting.label.range_start_date')}
-                  focused={true}
-                  onReturnDate={(event: string) => {
-                    setPage(1);
-                    if (event && event !== '') {
-                      changeHandleRangeDate(`${event}`, 'start');
-                    } else {
-                      changeHandleRangeDate('', 'start');
-                    }
-                  }}
-                />
-              </Grid>
-              <Grid item md={2} xs={6}>
-                <SearchDateField
-                  fullWidth
-                  focused={true}
-                  disabled={
-                    sortingRangedDate.startDate === '' ||
-                    sortingRangedDate.startDate === null ||
-                    isLoading
+      {sorting.includes('range_date') && (
+        <Grid item md={12} xs={12}>
+          <Grid container spacing={2} justifyContent="flex-end">
+            <Grid item md={2} xs={6}>
+              <SearchDateField
+                fullWidth
+                disabled={isLoading}
+                label={translate('sorting.label.range_start_date')}
+                focused={true}
+                onReturnDate={(event: string) => {
+                  setPage(1);
+                  if (event && event !== '') {
+                    changeHandleRangeDate(`${event}`, 'start');
+                  } else {
+                    changeHandleRangeDate('', 'start');
                   }
-                  label={
-                    sortingRangedDate.startDate === '' || sortingRangedDate.startDate === null
-                      ? null
-                      : translate('sorting.label.range_end_date')
+                }}
+              />
+            </Grid>
+            <Grid item md={2} xs={6}>
+              <SearchDateField
+                fullWidth
+                focused={true}
+                disabled={
+                  sortingRangedDate.startDate === '' ||
+                  sortingRangedDate.startDate === null ||
+                  isLoading
+                }
+                label={
+                  sortingRangedDate.startDate === '' || sortingRangedDate.startDate === null
+                    ? null
+                    : translate('sorting.label.range_end_date')
+                }
+                value={sortingRangedDate.endDate}
+                minDate={
+                  sortingRangedDate.startDate
+                    ? dayjs(sortingRangedDate.startDate).add(1, 'day').toISOString().split('T')[0]
+                    : ''
+                }
+                onReturnDate={(event: string) => {
+                  setPage(1);
+                  if (event && event !== '') {
+                    // const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
+                    changeHandleRangeDate(`${event}`, 'end');
+                  } else {
+                    changeHandleRangeDate('', 'end');
                   }
-                  value={sortingRangedDate.endDate}
-                  minDate={
-                    sortingRangedDate.startDate
-                      ? dayjs(sortingRangedDate.startDate).add(1, 'day').toISOString().split('T')[0]
-                      : ''
-                  }
-                  onReturnDate={(event: string) => {
-                    setPage(1);
-                    if (event && event !== '') {
-                      // const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
-                      changeHandleRangeDate(`${event}`, 'end');
-                    } else {
-                      changeHandleRangeDate('', 'end');
-                    }
-                  }}
-                />
-              </Grid>
-            </>
-          ) : null}
+                }}
+              />
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
+      )}
+
       {isLoading && (
         <Grid item md={12} xs={12}>
           <CardTableLoading />

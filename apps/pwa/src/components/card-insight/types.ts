@@ -6,8 +6,9 @@ export type CardInsightProps = {
   data: {
     title?: string | null;
     value?: number | 0;
+    redirect_link?: string;
   }[];
-  headline?: string | null;  
+  headline?: string | null;
   cardContainerSpacing?: ResponsiveStyleValue<GridSpacing>;
   cardContainerColumns?: ResponsiveStyleValue<number>;
   cardItemXsBreakpoints?: number;

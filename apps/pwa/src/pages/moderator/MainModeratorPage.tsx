@@ -62,6 +62,10 @@ function MainManagerPage() {
                 data={Object.keys(statsData).map((item) => ({
                   title: translate(`${item}`),
                   value: statsData[`${item}`].aggregate.count,
+                  redirect_link:
+                    item === 'incomingNewRequest'
+                      ? '/moderator/dashboard/incoming-support-requests'
+                      : '/moderator/dashboard/previous-funding-requests',
                 }))}
                 cardContainerColumns={15}
                 cardContainerSpacing={1}

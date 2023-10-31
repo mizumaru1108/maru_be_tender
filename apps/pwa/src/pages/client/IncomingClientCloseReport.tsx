@@ -31,6 +31,7 @@ function IncomingCloseReports() {
             endPoint="tender-proposal/closing-report-list"
             limitShowCard={6}
             cardFooterButtonAction="show-details"
+            sorting={['sorting', 'project_name', 'track', 'range_date']}
           />
         </ContentStyle>
       </Container>
