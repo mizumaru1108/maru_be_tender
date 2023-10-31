@@ -1422,7 +1422,9 @@ export class ProposalService {
     }
 
     if (actions === ProposalAction.REJECT) {
-      this.emailService.sendMail(clientEmailNotifPayload);
+      if (reviewerRole !== 'tender_project_supervisor') {
+        this.emailService.sendMail(clientEmailNotifPayload);
+      }
     }
 
     const clientWebNotifPayload: CreateNotificationDto = {
