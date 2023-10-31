@@ -20,8 +20,6 @@ function ExchangePermission() {
   const { translate } = useLocales();
   const { user } = useAuth();
 
-  console.log(user?.id);
-
   return (
     // <Page title="Previous Funding Requests">
     <Page title={translate('pages.common.exchange_permission')}>

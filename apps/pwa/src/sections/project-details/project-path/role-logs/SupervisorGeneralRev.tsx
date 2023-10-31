@@ -235,7 +235,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
               .sort((a: any, b: any) => parseInt(a.order) - parseInt(b.order))
               .map((payment, index) => (
                 <Grid container key={index} sx={{ mb: 4 }}>
-                  <Grid item xs={3}>
+                  <Grid item xs={2}>
                     <Typography variant="subtitle1">
                       {translate('review.Batch') + ' ' + payment.order}
                     </Typography>
@@ -245,11 +245,16 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                       {moment(payment.payment_date).locale(`${currentLang.value}`).format('LLLL')}
                     </Typography>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={2}>
                     <Typography variant="subtitle1">
                       {payment.payment_amount
                         ? `${String(payment.payment_amount) + ' ' + translate('review.sar')}`
                         : '-'}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Typography variant="subtitle1">
+                      {payment.notes && payment.notes !== '' ? payment.notes : '-'}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -266,7 +271,7 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
               .filter((item) => Number(item.order) === batch)
               .map((payment, index) => (
                 <Grid container key={index} sx={{ mb: 4 }}>
-                  <Grid item xs={3}>
+                  <Grid item xs={2}>
                     <Typography variant="subtitle1">
                       {translate('review.Batch') + ' ' + payment.order}
                     </Typography>
@@ -276,11 +281,16 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                       {moment(payment.payment_date).locale(`${currentLang.value}`).format('LLLL')}
                     </Typography>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={2}>
                     <Typography variant="subtitle1">
                       {payment.payment_amount
                         ? `${String(payment.payment_amount) + ' ' + translate('review.sar')}`
                         : '-'}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Typography variant="subtitle1">
+                      {payment.notes && payment.notes !== '' ? payment.notes : '-'}
                     </Typography>
                   </Grid>
                 </Grid>
