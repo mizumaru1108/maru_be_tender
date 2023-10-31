@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsOptional,
   IsString,
@@ -15,6 +15,30 @@ export class FetchClosingReportListFilterRequest extends BaseFilterRequest {
   @IsString()
   @IsNotEmpty()
   project_name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  @Transform(({ value }) => {
+    if (value && typeof value === 'string') {
+      return value.split(',');
+    }
+    return value;
+  })
+  track_id?: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  @Transform(({ value }) => {
+    if (value && typeof value === 'string') {
+      return value.split(',');
+    }
+    return value;
+  })
+  outter_status?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()

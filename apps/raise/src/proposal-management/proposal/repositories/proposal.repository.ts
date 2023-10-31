@@ -2270,6 +2270,9 @@ export class ProposalRepository {
         page = 1,
         limit = 10,
         sort = 'desc',
+        project_name,
+        outter_status,
+        track_id,
         sorting_field,
         supervisor_status,
         range_start_date,
@@ -2281,6 +2284,34 @@ export class ProposalRepository {
       let whereClause: Prisma.proposalWhereInput = {
         oid: null,
       };
+
+      if (project_name) {
+        whereClause = {
+          ...whereClause,
+          project_name: {
+            contains: decodeURIComponent(project_name),
+            mode: 'insensitive',
+          },
+        };
+      }
+
+      if (outter_status) {
+        whereClause = {
+          ...whereClause,
+          outter_status: {
+            in: outter_status,
+          },
+        };
+      }
+
+      if (track_id) {
+        whereClause = {
+          ...whereClause,
+          track_id: {
+            in: track_id,
+          },
+        };
+      }
 
       if (range_start_date) {
         whereClause = {
