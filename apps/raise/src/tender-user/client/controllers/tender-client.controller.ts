@@ -193,6 +193,7 @@ export class TenderClientController {
     'tender_project_supervisor',
     'tender_consultant',
     'tender_accounts_manager',
+    'tender_auditor_report',
   )
   @Get('proposals')
   async findClientProposalById(
