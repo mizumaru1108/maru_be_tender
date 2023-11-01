@@ -152,7 +152,6 @@ export const baseProposalMock = Builder<ProposalEntity>(ProposalEntity, {
   project_manager_id: null,
   project_name: `GENERATED-PROPOSAL ${nanoid(4)}`,
   project_number: 17519,
-  project_numbers1: 17520,
   project_outputs: `GENERATED PROJECT OUTPUT ${nanoid(4)}`,
   project_risks: `GENERATED PROJECT RISKS ${nanoid(4)}`,
   project_strengths: `GENERATED PROJECT STRENGTH ${nanoid(4)}`,

@@ -83,7 +83,7 @@ export class ProposalEntity extends AggregateRoot {
   project_manager_id?: string | null;
   project_name: string;
   project_number?: number | null;
-  project_numbers1?: number | null;
+  // project_numbers1?: number | null;
   project_outputs?: string | null;
   project_risks?: string | null;
   project_strengths?: string | null;

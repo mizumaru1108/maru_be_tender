@@ -238,7 +238,6 @@ Table proposal {
   execution_time Decimal
   oid Int
   project_number Int [increment, unique]
-  project_numbers1 Int [increment, not null]
   beneficiary_id String
   beneficiary_details beneficiaries
   notification notification [not null]
