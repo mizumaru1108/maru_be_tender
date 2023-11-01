@@ -97,6 +97,8 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
         onClick={() => {
           localStorage.removeItem('partnerMeetingId');
           localStorage.removeItem('authCodeMeeting');
+          localStorage.removeItem('valueStartDate');
+          localStorage.removeItem('valueEndDate');
           dispatch(setFiltered(''));
           dispatch(setActiveConversationId(null));
           dispatch(setConversation([]));

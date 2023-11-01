@@ -70,6 +70,7 @@ const ProjectCardBE = ({
   // const daysSinceCreated = Math.ceil(
   //   (new Date().getTime() - created_at.getTime()) / (1000 * 3600 * 24)
   // );
+  // console.log({ user });
 
   const { user: userAuth, activeRole } = useAuth();
   const role = activeRole!;
@@ -190,6 +191,13 @@ const ProjectCardBE = ({
     navigate('/client/dashboard/funding-project-request', { state: { id } });
   };
 
+  const handleNavigateToClientDetails = (id: string) => {
+    const urls = location.pathname.split('/');
+    const path = `/${urls[1]}/${urls[2]}/current-project/owner/${id}`;
+    // console.log({ path });
+    navigate(path);
+  };
+
   const handleOnClick = async () => {
     dispatch(setFiltered(''));
     try {
@@ -233,22 +241,16 @@ const ProjectCardBE = ({
       }
       const x = location.pathname.split('/');
       if (!inquiryStatus) {
-        // console.log('masuk 1');
         if (destination) {
-          // console.log('masuk 2');
           navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
         } else {
-          // console.log('masuk 3');
           navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
         }
       } else {
-        // console.log('masuk 4');
         // navigate(`${location.pathname}/${id}/reject-project`);
         if (destination) {
-          // console.log('masuk 5');
           navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/reject-project`);
         } else {
-          // console.log('masuk 6');
           navigate(`${location.pathname}/${id}/reject-project`);
         }
       }
@@ -370,6 +372,12 @@ const ProjectCardBE = ({
                 overflow: 'hidden',
                 maxWidth: '500px',
                 fontSize: '14px !important',
+                cursor: user?.id && role !== 'tender_client' ? 'pointer' : undefined,
+              }}
+              onClick={() => {
+                if (user?.id && role !== 'tender_client') {
+                  handleNavigateToClientDetails(user?.id);
+                }
               }}
             >
               {(user && user.client_data && user.client_data.entity) ?? user.employee_name}
@@ -548,9 +556,10 @@ const ProjectCardBE = ({
                   gutterBottom
                   sx={{ fontSize: '15px !important' }}
                 >
-                  {updated_at
+                  {/* {updated_at
                     ? moment(updated_at).format('LLLL')
-                    : moment(created_at).format('LLLL')}
+                    : moment(created_at).format('LLLL')} */}
+                  {moment(created_at).format('LLLL')}
                 </Typography>
               </Stack>
               {status !== 'COMPLETED' && (

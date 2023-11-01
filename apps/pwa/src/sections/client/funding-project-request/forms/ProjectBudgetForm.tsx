@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { AmandementFields } from '../../../../@types/proposal';
 import BaseField from '../../../../components/hook-form/BaseField';
+import { arabicToAlphabetical } from '../../../../utils/formatNumber';
 type FormValuesProps = {
   amount_required_fsupport: number;
   detail_project_budgets: {
@@ -79,7 +80,17 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props
     if (sumWithInitial === data.amount_required_fsupport) {
       window.scrollTo(0, 0);
       setBudgetError(false);
-      onSubmit(data);
+      const tmpValue: FormValuesProps = {
+        ...data,
+        amount_required_fsupport: Number(
+          arabicToAlphabetical(data.amount_required_fsupport.toString() || '0')
+        ),
+        detail_project_budgets: data.detail_project_budgets.map((item: any) => ({
+          ...item,
+          amount: Number(arabicToAlphabetical(item.amount.toString() || '0')),
+        })),
+      };
+      onSubmit(tmpValue);
     } else setBudgetError(true);
   };
   // const ProjectBudgetData = [

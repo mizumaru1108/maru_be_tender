@@ -14,6 +14,7 @@ import uuidv4 from 'utils/uuidv4';
 import { getMissingItems } from 'utils/checkDeletedArray';
 import { CloseIcon } from 'theme/overrides/CustomIcons';
 import { ItemBudget } from '../../../../../@types/proposal';
+import { arabicToAlphabetical } from '../../../../../utils/formatNumber';
 
 export default function GeneralSecondForm({
   children,
@@ -144,14 +145,14 @@ export default function GeneralSecondForm({
         .filter((item) => !basedBudget.find((i) => i.id === item.id))
         .map((el) => ({
           ...el,
-          amount: Number(el.amount),
+          amount: Number(arabicToAlphabetical(el?.amount.toString() || '0')),
         }));
 
       data.updated_proposal_budget = itemBudgets
         .filter((item) => basedBudget.find((i) => i.id === item.id))
         .map((el) => ({
           ...el,
-          amount: Number(el.amount),
+          amount: Number(arabicToAlphabetical(el?.amount.toString() || '0')),
         }));
 
       data.deleted_proposal_budget = getMissingItems(
@@ -159,7 +160,7 @@ export default function GeneralSecondForm({
         data.proposal_item_budgets
       ).map((el) => ({
         ...el,
-        amount: Number(el.amount),
+        amount: Number(arabicToAlphabetical(el?.amount.toString() || '0')),
       }));
 
       if (step1 && fSupportBySpv && totalAmount) {

@@ -16,6 +16,7 @@ import { AuthorityInterface, ClientFieldInterface } from '../../../admin/authori
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { CatchError } from 'utils/catchError';
+import { arabicToAlphabetical } from '../../../../utils/formatNumber';
 
 const AuthoityArray = [
   {
@@ -160,6 +161,12 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues }) =>
       authority_id: tmpAuthority ? data.authority : undefined,
       client_field: tmpClientField || data.client_field,
       client_field_id: tmpClientField ? data.client_field : undefined,
+      num_of_employed_facility: Number(
+        arabicToAlphabetical(data?.num_of_employed_facility?.toString() || '')
+      ),
+      num_of_beneficiaries: Number(
+        arabicToAlphabetical(data?.num_of_beneficiaries?.toString() || '')
+      ),
     };
     // reset({ ...data });
     onSubmit(removeEmptyKey(tmpValue));

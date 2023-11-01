@@ -9,6 +9,8 @@ import { ProjectInfoData } from '../Forms-Data';
 import useLocales from 'hooks/useLocales';
 import { AmandementFields } from '../../../../@types/proposal';
 import RHFTextArea from '../../../../components/hook-form/RHFTextArea';
+import { removeEmptyKey } from '../../../../utils/remove-empty-key';
+import { arabicToAlphabetical } from '../../../../utils/formatNumber';
 type FormValuesProps = {
   num_ofproject_binicficiaries: number;
   project_goals: string;
@@ -23,6 +25,7 @@ type Props = {
   defaultValues: any;
   revised?: AmandementFields;
 };
+
 const ProjectInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const { translate } = useLocales();
   const CreatingProposalForm2 = Yup.object().shape({
@@ -93,8 +96,19 @@ const ProjectInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) 
       xs: 12,
     },
   ];
+
+  const onSubmitForm = async (data: FormValuesProps) => {
+    const tmpValue: FormValuesProps = {
+      ...data,
+      num_ofproject_binicficiaries: Number(
+        arabicToAlphabetical(data?.num_ofproject_binicficiaries?.toString() || '0')
+      ),
+    };
+    onSubmit(removeEmptyKey(tmpValue));
+  };
+
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
         {/* <FormGenerator data={ProjectInfoData} /> */}
         <Grid item md={12} xs={12}>
