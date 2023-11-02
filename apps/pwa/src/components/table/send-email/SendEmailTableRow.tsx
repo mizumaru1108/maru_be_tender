@@ -20,14 +20,15 @@ export default function SendEmailTableRow({ row, selected, onSelectRow }: EmailT
         </Typography>
       </TableCell>
       <TableCell align="left">
-        {row?.content ? (
+        {/* {row?.content ? (
           <div
             dangerouslySetInnerHTML={{ __html: row?.content }}
             style={{ direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
           />
         ) : (
           '-'
-        )}
+        )} */}
+        {row?.content ? row?.content.replace(/<\/?[^>]+(>|$)/g, '') : '-'}
       </TableCell>
       <TableCell align="left" sx={{ minWidth: 130 }}>
         <Typography variant="subtitle2">{dayjs(row.created_at).format('YYYY-MM-DD')}</Typography>

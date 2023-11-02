@@ -12,6 +12,7 @@ import ReviewOperationTrack from 'sections/admin/transaction-progression/ReviewO
 import {
   FEATURE_CONTACT_US_BY_CLIENT,
   FEATURE_MENU_ADMIN_ADD_AUTHORITY,
+  FEATURE_MENU_ADMIN_APLICATION_ADMISSION,
   FEATURE_MENU_ADMIN_ENTITY_AREA,
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
   FEATURE_MENU_ADMIN_REGIONS,
@@ -70,6 +71,9 @@ const Searching = Loadable(lazy(() => import('pages/searching')));
 const OldProposal = Loadable(lazy(() => import('pages/admin/OldProposal')));
 const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
 const ContactUs = Loadable(lazy(() => import('pages/admin/ContactUs')));
+const ApplicationAdmission = Loadable(
+  lazy(() => import('pages/admin/ApplicationAndAdmissionSettings'))
+);
 
 export const adminRoute = {
   path: 'admin',
@@ -129,10 +133,7 @@ export const adminRoute = {
           ],
         },
         { path: 'gregorian-year', element: <GregorianYear /> },
-        {
-          path: 'application-and-admission-settings',
-          element: <ApplicationAndAdmissionSettings />,
-        },
+
         { path: 'mobile-settings', element: <MobileSettings /> },
         // { path: 'system-messages', element: <SystemMessages /> },
         {
@@ -213,6 +214,10 @@ export const adminRoute = {
         FEATURE_CONTACT_US_BY_CLIENT && {
           path: 'contact-us',
           element: <ContactUs />,
+        },
+        FEATURE_MENU_ADMIN_APLICATION_ADMISSION && {
+          path: 'application-and-admission-settings',
+          element: <ApplicationAndAdmissionSettings />,
         },
       ],
     },
