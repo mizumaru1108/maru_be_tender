@@ -6,13 +6,15 @@ import useLocales from 'hooks/useLocales';
 //
 import FloatingCloseReport from '../../floating-close-report/index';
 import { useEffect, useState } from 'react';
+import FloatingCashierToFinance from 'sections/project-details/floating-action-bar/cashier';
 
 function CashierPaymentsPage() {
   const { translate } = useLocales();
   const theme = useTheme();
   const { proposal, loadingPayment } = useSelector((state) => state.proposal);
 
-  const [paymentDone, setPayementDone] = useState<boolean>(false);
+  const [paymentDone, setPayemntDone] = useState<boolean>(false);
+  const [initiatePayment, setInitiatePayment] = useState<boolean>(false);
 
   const [valueSpending, setValueSpending] = useState<number>(0);
 
@@ -35,9 +37,21 @@ function CashierPaymentsPage() {
         payment_actual_done === Number(acc_payments) &&
         proposal.inner_status !== 'DONE_BY_CASHIER'
       ) {
-        setPayementDone(true);
+        setPayemntDone(true);
       } else {
-        setPayementDone(false);
+        setPayemntDone(false);
+      }
+
+      const payment_first_initiate =
+        proposal.payments.some((el: { status: string }) => el.status === 'accepted_by_finance') ||
+        proposal.payments.every((el: { status: string }) => el.status === 'accepted_by_finance') ||
+        proposal.payments.some((el: { status: string }) => el.status !== 'uploaded_by_cashier') ||
+        proposal.payments.some((el: { status: string }) => el.status !== 'done');
+
+      if (payment_first_initiate) {
+        setInitiatePayment(true);
+      } else {
+        setInitiatePayment(false);
       }
     }
   }, [proposal, loadingPayment]);
@@ -134,6 +148,7 @@ function CashierPaymentsPage() {
         <PaymentsTable />
 
         {paymentDone ? <FloatingCloseReport /> : null}
+        {initiatePayment ? <FloatingCashierToFinance /> : null}
       </Grid>
     </>
   );

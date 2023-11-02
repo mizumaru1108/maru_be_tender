@@ -96,8 +96,8 @@ export default function FloatingCloseReport() {
         borderRadius: 1,
         position: 'sticky',
         margin: 'auto',
-        minWidth: 350,
-        bottom: 24,
+        width: '100%',
+        bottom: 20,
         border: `1px solid ${theme.palette.grey[400]}`,
       }}
     >

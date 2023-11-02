@@ -2144,6 +2144,12 @@ const en = {
       headline: 'Submit an amendment request to the project supervisor',
       sub_headline:
         'Write the appropriate notes to inform the project supervisor of the matters required of him',
+      dialog: {
+        title: 'Submit an Amandment to the Finance',
+        button: {
+          submit: 'Submit',
+        },
+      },
     },
     tender_consultant: {
       page_name: 'Consultant - Amandment Request',

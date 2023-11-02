@@ -2913,6 +2913,7 @@ export class ProposalRepository {
     createdRecommendedSupportPayload: Prisma.recommended_support_consultantCreateManyInput[],
     updatedRecommendedSupportPayload: Prisma.recommended_support_consultantUncheckedUpdateInput[],
     deletedRecommendedSupportIds: string[],
+    currentUser: TenderCurrentUser,
   ) {
     try {
       return await this.prismaService.$transaction(
@@ -2964,6 +2965,20 @@ export class ProposalRepository {
               },
             },
           });
+
+          // Update payment
+          if (
+            currentUser &&
+            currentUser.choosenRole === 'tender_cashier' &&
+            proposalLogCreateInput.action === ProposalAction.STEP_BACK
+          ) {
+            await prismaTrans.payment.updateMany({
+              where: { proposal_id: proposal.id },
+              data: {
+                status: PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+              },
+            });
+          }
 
           /* Crud item budget -------------------------------------------------------------------------- */
           if (createdItemBudgetPayload && createdItemBudgetPayload.length > 0) {

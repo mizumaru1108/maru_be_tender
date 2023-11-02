@@ -61,6 +61,7 @@ import { SupervisorAccCreatedItemBudgetMapper } from '../mappers/supervisor-acc-
 import { SupervisorGrantTrackAccMapper } from '../mappers/supervisor-grant-track-acc.mapper';
 import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-track-acc.mapper';
 import { UpdateProposalTrackInfoMapper } from '../mappers/update-proposal-track-info.mapper';
+import { ProposalPaymentRepository } from 'src/proposal-management/payment/repositories/proposal-payment.repository';
 
 @Injectable()
 export class ProposalService {
@@ -561,7 +562,26 @@ export class ProposalService {
       deletedItemBudgetIds = [...ceo.deletedItemBudgetIds];
     }
 
-    /* update proposal and create the logs */
+    if (currentUser.choosenRole === 'tender_cashier') {
+      const cashier = await this.cashierChangeState(
+        proposal,
+        proposalUpdatePayload,
+        proposalLogCreateInput,
+        request,
+        createdItemBudgetPayload,
+        updatedItemBudgetPayload,
+        deletedItemBudgetIds,
+        currentUser,
+      );
+
+      proposalUpdatePayload = { ...cashier.proposalUpdatePayload };
+      proposalLogCreateInput = { ...cashier.proposalLogCreateInput };
+      createdItemBudgetPayload = [...cashier.createdItemBudgetPayload];
+      updatedItemBudgetPayload = [...cashier.updatedItemBudgetPayload];
+      deletedItemBudgetIds = [...cashier.deletedItemBudgetIds];
+    }
+
+    // /* update proposal and create the logs */
     const updateProposalResult = await this.proposalRepo.updateProposalState(
       request.proposal_id,
       proposalUpdatePayload,
@@ -573,6 +593,7 @@ export class ProposalService {
       createdRecommendedSupportPayload,
       updatedRecommendedSupportPayload,
       deletedRecommendedSupportIds,
+      currentUser,
     );
 
     const { proposal_logs } = updateProposalResult;
@@ -1036,6 +1057,48 @@ export class ProposalService {
       createdItemBudgetPayload,
       updatedItemBudgetPayload,
       deletedItemBudgetIds,
+    };
+  }
+
+  async cashierChangeState(
+    proposal: FetchProposalByIdResponse['response'],
+    proposalUpdatePayload: Prisma.proposalUncheckedUpdateInput,
+    proposalLogCreateInput: Prisma.proposal_logUncheckedCreateInput,
+    request: ChangeProposalStateDto,
+    createdItemBudgetPayload: Prisma.proposal_item_budgetCreateManyInput[],
+    updatedItemBudgetPayload: Prisma.proposal_item_budgetUncheckedUpdateInput[],
+    deletedItemBudgetIds: string[],
+    currentUser: TenderCurrentUser,
+  ) {
+    /* Cashier only allowed to step back*/
+    if ([ProposalAction.STEP_BACK].indexOf(request.action) < 0) {
+      throw new BadRequestException(
+        `You are not allowed to perform this action ${request.action}`,
+      );
+    }
+
+    if (request.action === ProposalAction.STEP_BACK) {
+      /* proposal */
+      proposalUpdatePayload.inner_status =
+        InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR;
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
+      proposalUpdatePayload.state = TenderAppRoleEnum.FINANCE;
+      proposalUpdatePayload.finance_id = null;
+      proposalUpdatePayload.cashier_id = null;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.STEP_BACK;
+      proposalLogCreateInput.state = TenderAppRoleEnum.FINANCE;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.CASHIER;
+    }
+
+    return {
+      proposalUpdatePayload,
+      proposalLogCreateInput,
+      createdItemBudgetPayload,
+      updatedItemBudgetPayload,
+      deletedItemBudgetIds,
+      currentUser,
     };
   }
 
