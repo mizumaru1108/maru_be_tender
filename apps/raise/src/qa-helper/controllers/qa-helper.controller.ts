@@ -30,6 +30,7 @@ import { PurgeUserDto } from '../dto/requests/purge.user.dto';
 import { QaProposalCreateSupervisorDto } from '../dto/requests/qa-proposal-create-supervisor.dto';
 import { QaProposalCreateDto } from '../dto/requests/qa-proposal-create.dto';
 import { QaProposalDeleteDto } from '../dto/requests/qa-proposal.delete.dto';
+import { QaProposalInjectCommand } from '../commands/qa.proposal.inject.command/qa.proposal.inject.command';
 
 @ApiTags('QAHelper Proposal')
 @Controller('qa-helper/proposal')
@@ -103,6 +104,31 @@ export class QaHelperControllers {
         PurgeUserCommandResult
       >(createProposalCommand);
       return baseResponseHelper(data, HttpStatus.OK);
+    } catch (error) {
+      if (error instanceof DataNotFoundException) {
+        throw new BadRequestException(error.message);
+      }
+      if (error instanceof PayloadErrorException) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
+  }
+
+  @ApiOperation({ summary: 'inject old proposal from json' })
+  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @TenderRoles('tender_admin')
+  @Post('inject-old-from-json')
+  async injectOldFromJson() {
+    try {
+      const createProposalCommand = Builder<QaProposalInjectCommand>(
+        QaProposalInjectCommand,
+      ).build();
+
+      await this.commandBus.execute<QaProposalInjectCommand>(
+        createProposalCommand,
+      );
+      return baseResponseHelper(HttpStatus.OK);
     } catch (error) {
       if (error instanceof DataNotFoundException) {
         throw new BadRequestException(error.message);

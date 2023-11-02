@@ -14,6 +14,7 @@ import { PurgeUserCommandHandler } from './commands/purge.user.command.ts/purge.
 import { QAAddUserByJsonCommandHandler } from './commands/qa.add.user.by.json.command/qa.add.user.by.json.command';
 import { QaHelperUserControllers } from './controllers/qa.helper.user.controller';
 import { QAAddClientDataByJsonCommandHandler } from './commands/qa.add.client.data.command/qa.add.client.data.by.json.command';
+import { QaProposalInjectCommandHandler } from './commands/qa.proposal.inject.command/qa.proposal.inject.command';
 
 const commands: Provider[] = [
   QaProposalCreateNewModeratorStateCommandHandler,
@@ -22,6 +23,7 @@ const commands: Provider[] = [
   PurgeUserCommandHandler,
   QAAddUserByJsonCommandHandler,
   QAAddClientDataByJsonCommandHandler,
+  QaProposalInjectCommandHandler,
 ];
 
 const importedModules = [
