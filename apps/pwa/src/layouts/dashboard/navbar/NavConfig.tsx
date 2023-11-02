@@ -16,6 +16,7 @@ import SvgIconStyle from '../../../components/SvgIconStyle';
 import {
   FEATURE_CONTACT_US_BY_CLIENT,
   FEATURE_MENU_ADMIN_ADD_AUTHORITY,
+  FEATURE_MENU_ADMIN_APLICATION_ADMISSION,
   FEATURE_MENU_ADMIN_ENTITY_AREA,
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
   FEATURE_MENU_ADMIN_REGIONS,
@@ -722,11 +723,11 @@ const navConfig = {
         //   path: PATH_ADMIN.gregorian_year,
         //   icon: ICONS.tender_admin.gregorian_year,
         // },
-        // {
-        //   title: 'application_and_admission_settings',
-        //   path: PATH_ADMIN.application_and_admission_settings,
-        //   icon: ICONS.tender_admin.application_and_admission_settings,
-        // },
+        FEATURE_MENU_ADMIN_APLICATION_ADMISSION && {
+          title: 'application_and_admission_settings',
+          path: PATH_ADMIN.application_and_admission_settings,
+          icon: ICONS.tender_admin.application_and_admission_settings,
+        },
         // {
         //   title: 'mobile_settings',
         //   path: PATH_ADMIN.mobile_settings,

@@ -9,6 +9,7 @@ const en = {
   pages: {
     options_btn: 'More',
     common: {
+      application_and_admission_settings: 'Application and Admission Settings',
       incoming_amandement_requests: 'Incoming Amandement Requests',
       verify_code_expired: 'Your verification link has expired',
       unactivated_account: 'Un Activated Page',
@@ -1666,23 +1667,53 @@ const en = {
     },
   },
   application_and_admission_settings_form: {
-    starting_date: { label: 'تاريخ البداية', placeholder: 'الرجاء اختيار تاريخ البداية' },
-    ending_date: { label: 'تاريخ النهاية', placeholder: 'الرجاء اختيار تاريخ النهاية' },
+    errors: {
+      applying_status: {
+        required: 'Submission is enabled for users is required',
+      },
+      starting_date: {
+        required: 'Start Date is required',
+      },
+      ending_date: {
+        required: 'Expiry Date is required',
+      },
+      number_of_allowing_projects: {
+        required: 'Number of project allowed is required',
+      },
+      hieght_project_budget: {
+        required: 'The upper budget of project is required',
+      },
+      number_of_days_to_meet_business: {
+        required: 'Number of days to meet business is required',
+      },
+      Indicator_of_project_duration_days: {
+        required: 'Indicator of project duration days is required',
+      },
+    },
+    divider: {
+      presentation_status: 'Presentation Status',
+      public_data: 'Public Data',
+    },
+    starting_date: { label: 'Start Date', placeholder: 'Please select start date' },
+    ending_date: { label: 'Expiry Date', placeholder: 'Please select expiry date' },
+    applying_status: {
+      label: 'Submission is enabled for users',
+    },
     number_of_allowing_projects: {
-      label: 'عدد المشاريع المسموح بها',
-      placeholder: 'الرجاء كتابة عدد المشاريع المسموح بها',
+      label: 'Number of project allowed',
+      placeholder: 'Please write the number of project allowed',
     },
     hieght_project_budget: {
-      label: 'الميزانية العليا للمشروع',
-      placeholder: 'الرجاء كتابة الميزانية العليا للمشروع',
+      label: 'The upper budget of project',
+      placeholder: 'Please write the highest budget for the project',
     },
     number_of_days_to_meet_business: {
-      label: 'عدد الأيام لتلبية الأعمال',
-      placeholder: 'الرجاء كتابة عدد الأيام لتلبية الأعمال',
+      label: 'Number of days to meet business',
+      placeholder: 'Please write number of days to meet business',
     },
     Indicator_of_project_duration_days: {
-      label: 'مؤشر أيام جراسة المشروع',
-      placeholder: 'الرجاء كتابة مؤشر أيام جراسة المشروع',
+      label: 'Indicator of project duration days',
+      placeholder: 'Please write indicator of project duration days',
     },
   },
   mobile_settings_form: {
@@ -1726,6 +1757,7 @@ const en = {
   rejection_list: 'Rejection List', // navigation
   client_list: 'Client List', // navigation
   project_management: 'Project Management', // navigation
+  emails: 'Emails',
   project_management_table: {
     headline: 'Project Management',
   },

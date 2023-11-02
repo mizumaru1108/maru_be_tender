@@ -18,7 +18,7 @@ export const ApplicationAndAdmissionSettings = [
     xs: 12,
   },
   {
-    type: 'textField',
+    type: 'numberField',
     name: 'number_of_allowing_projects',
     label: 'application_and_admission_settings_form.number_of_allowing_projects.label',
     placeholder: 'application_and_admission_settings_form.number_of_allowing_projects.placeholder',
@@ -26,7 +26,7 @@ export const ApplicationAndAdmissionSettings = [
     xs: 12,
   },
   {
-    type: 'textField',
+    type: 'numberField',
     name: 'hieght_project_budget',
     label: 'application_and_admission_settings_form.hieght_project_budget.label',
     placeholder: 'application_and_admission_settings_form.hieght_project_budget.placeholder',
@@ -34,7 +34,7 @@ export const ApplicationAndAdmissionSettings = [
     xs: 12,
   },
   {
-    type: 'textField',
+    type: 'numberField',
     name: 'number_of_days_to_meet_business',
     label: 'application_and_admission_settings_form.number_of_days_to_meet_business.label',
     placeholder:
@@ -43,8 +43,8 @@ export const ApplicationAndAdmissionSettings = [
     xs: 12,
   },
   {
-    type: 'textField',
-    name: 'Indicator_of_project_duration_days',
+    type: 'numberField',
+    name: 'indicator_of_project_duration_days',
     label: 'application_and_admission_settings_form.Indicator_of_project_duration_days.label',
     placeholder:
       'application_and_admission_settings_form.Indicator_of_project_duration_days.placeholder',

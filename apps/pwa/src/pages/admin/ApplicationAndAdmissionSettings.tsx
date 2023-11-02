@@ -21,7 +21,7 @@ function ApplicationAndAdmissionSettings() {
         <ContentStyle>
           <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
             <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
-              إعدادات التقديم و القبول
+              {translate('pages.common.application_and_admission_settings')}
             </Typography>
           </Box>
           <Box sx={{ px: '30px' }}>

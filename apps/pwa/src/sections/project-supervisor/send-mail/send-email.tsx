@@ -147,8 +147,7 @@ export default function SendEmail() {
           }}
           isLoading={isLoading}
         >
-          {/* test */}
-          <SendEmailActionBox onReturn={() => console.log('test')} isLoad={false} />
+          <SendEmailActionBox onReturn={() => navigate(-1)} isLoad={false} />
         </SendEmailForm>
         {/* test */}
       </Grid>

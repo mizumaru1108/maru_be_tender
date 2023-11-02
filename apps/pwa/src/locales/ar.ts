@@ -9,6 +9,7 @@ const ar = {
   pages: {
     options_btn: 'أكثر',
     common: {
+      application_and_admission_settings: 'إعدادات التقديم و القبول',
       incoming_amandement_requests: 'طلبات التعديل الواردة',
       verify_code_expired: 'تم انتهاء صلاحية رابط التفعيل',
       unactivated_account: 'صفحة غير مفعلة',
@@ -1670,8 +1671,38 @@ const ar = {
     },
   },
   application_and_admission_settings_form: {
+    errors: {
+      applying_status: {
+        required: 'تم تمكين التقديم للمستخدمين مطلوب',
+      },
+      starting_date: {
+        required: 'تاريخ البدء مطلوب',
+      },
+      ending_date: {
+        required: 'تاريخ انتهاء الصلاحية مطلوب',
+      },
+      number_of_allowing_projects: {
+        required: 'مطلوب عدد المشروع المسموح به',
+      },
+      hieght_project_budget: {
+        required: 'مطلوب الميزانية العليا للمشروع',
+      },
+      number_of_days_to_meet_business: {
+        required: 'مطلوب عدد الأيام لتلبية الأعمال',
+      },
+      Indicator_of_project_duration_days: {
+        required: 'مطلوب مؤشر أيام مدة المشروع',
+      },
+    },
+    divider: {
+      presentation_status: 'حالة التقديم',
+      public_data: 'بيانات العامة',
+    },
     starting_date: { label: 'تاريخ البداية', placeholder: 'الرجاء اختيار تاريخ البداية' },
     ending_date: { label: 'تاريخ النهاية', placeholder: 'الرجاء اختيار تاريخ النهاية' },
+    applying_status: {
+      label: 'التقديم مفعل للمستخدمين',
+    },
     number_of_allowing_projects: {
       label: 'عدد المشاريع المسموح بها',
       placeholder: 'الرجاء كتابة عدد المشاريع المسموح بها',
@@ -1739,6 +1770,7 @@ const ar = {
   client_list: 'قائمة العملاء', // navigation
   // project_management: 'إدارة المشروع', //navigation
   project_management: 'ادارة المشاريع',
+  emails: 'البريد الإلكتروني',
   project_management_table: {
     headline: 'ادارة المشاريع',
   },
@@ -2808,7 +2840,7 @@ const ar = {
     },
     fields: {
       is_association: {
-        label: 'هل الرابطة *',
+        label: 'هل البريد مرسل إلى شريك مسجل في المنصة ؟ *',
         placeholder: 'هل الرابطة',
         option: {
           yes: 'نعم',

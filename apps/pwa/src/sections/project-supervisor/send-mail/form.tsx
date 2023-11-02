@@ -95,7 +95,7 @@ export default function SendEmailForm(props: Props) {
       translate('email_to_client.errors.attachments.fileExtension'),
       (value) => {
         if (value?.length === 0) {
-          return false;
+          return true;
         } else {
           const isArr = Array.isArray(value) ? value : undefined;
           if (isArr) {
