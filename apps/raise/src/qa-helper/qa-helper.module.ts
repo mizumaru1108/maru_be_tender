@@ -12,6 +12,8 @@ import { QaHelperControllers } from './controllers/qa-helper.controller';
 import { TrackModule } from '../track-management/track/track.module';
 import { PurgeUserCommandHandler } from './commands/purge.user.command.ts/purge.user.command';
 import { QAAddUserByJsonCommandHandler } from './commands/qa.add.user.by.json.command/qa.add.user.by.json.command';
+import { QaHelperUserControllers } from './controllers/qa.helper.user.controller';
+import { QAAddClientDataByJsonCommandHandler } from './commands/qa.add.client.data.command/qa.add.client.data.by.json.command';
 
 const commands: Provider[] = [
   QaProposalCreateNewModeratorStateCommandHandler,
@@ -19,6 +21,7 @@ const commands: Provider[] = [
   QaProposalCreateNewSupervisorCommandHandler,
   PurgeUserCommandHandler,
   QAAddUserByJsonCommandHandler,
+  QAAddClientDataByJsonCommandHandler,
 ];
 
 const importedModules = [
@@ -33,7 +36,7 @@ const importedModules = [
 
 @Module({
   imports: [...importedModules],
-  controllers: [QaHelperControllers],
+  controllers: [QaHelperControllers, QaHelperUserControllers],
   providers: [...commands],
 })
 export class QaHelperModule {}
