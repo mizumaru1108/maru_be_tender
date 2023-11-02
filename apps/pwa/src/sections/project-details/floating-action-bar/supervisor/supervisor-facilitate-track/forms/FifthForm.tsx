@@ -13,6 +13,7 @@ import { useSnackbar } from 'notistack';
 import uuidv4 from 'utils/uuidv4';
 import { getMissingItems } from '../../../../../../utils/checkDeletedArray';
 import { CloseIcon } from 'theme/overrides/CustomIcons';
+import { arabicToAlphabetical } from '../../../../../../utils/formatNumber';
 
 function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmited }: any) {
   const { step4, step1 } = useSelector((state) => state.supervisorAcceptingForm);
@@ -126,7 +127,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
         .filter((item) => !basedBudget.find((i) => i.id === item.id))
         .map((el) => ({
           ...el,
-          amount: Number(el.amount),
+          amount: Number(arabicToAlphabetical(el?.amount ? el?.amount.toString() : '0')),
         }));
 
       // console.log(data.created_proposal_budget, 'testa');
@@ -135,7 +136,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
         .filter((item) => basedBudget.find((i) => i.id === item.id))
         .map((el) => ({
           ...el,
-          amount: Number(el.amount),
+          amount: Number(arabicToAlphabetical(el?.amount ? el?.amount.toString() : '0')),
         }));
 
       // data.deleted_proposal_budget = tempDeletedBudget;
@@ -144,7 +145,7 @@ function FifthForm({ children, onSubmit, paymentNumber, isSubmited, setIsSubmite
         data.proposal_item_budgets
       ).map((el) => ({
         ...el,
-        amount: Number(el.amount),
+        amount: Number(arabicToAlphabetical(el?.amount ? el?.amount.toString() : '0')),
       }));
       // console.log('masuk sini', { step1, fSupportBySpv, totalAmount });
       if (step1 && fSupportBySpv && totalAmount) {

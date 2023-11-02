@@ -96,6 +96,7 @@ export type ProjectCardPropsBE = {
   created_at: Date;
   project_idea?: string;
   user: {
+    id: string;
     employee_name: string;
     client_data: {
       entity: string;

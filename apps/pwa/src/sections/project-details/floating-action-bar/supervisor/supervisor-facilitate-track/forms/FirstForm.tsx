@@ -122,11 +122,16 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
   const onSubmitForm = async (data: SupervisorStep1) => {
     setIsSubmited(true);
     const { vat_percentage, ...rest } = data;
-    const tmpValues = {
-      vat_percentage: vat_percentage ? Number(vat_percentage) : undefined,
+    const tmpFSupport = Number(
+      arabicToAlphabetical(data.fsupport_by_supervisor?.toString() || '0')
+    );
+    const tmpValues: SupervisorStep1 = {
       ...rest,
+      vat_percentage: vat_percentage ? Number(vat_percentage) : undefined,
+      payment_number: Number(arabicToAlphabetical(paymentNumber?.toString() || '0')),
+      fsupport_by_supervisor: tmpFSupport,
     };
-    if (Number(data.fsupport_by_supervisor) > remainBudget) {
+    if (tmpFSupport > remainBudget) {
       setBudgetError({
         open: true,
         message: 'notification.error_exceeds_amount',

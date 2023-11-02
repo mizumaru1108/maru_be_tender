@@ -27,7 +27,7 @@ export function flattenChildTrackSections(arr: TrackSection[], track_id: string)
   for (const item of arr) {
     result.push(
       removeEmptyKey({
-        budget: Number(arabicToAlphabetical(item?.budget?.toString() || '')),
+        budget: Number(arabicToAlphabetical(item?.budget?.toString() || '0')),
         // budget: item?.budget,
         name: item.name,
         id: item.id,

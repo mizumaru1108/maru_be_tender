@@ -83,7 +83,13 @@ export default function HeaderTabs() {
   const [valueStartDate, setValueStartDate] = useState<Dayjs | null>(null);
   const [valueEndDate, setValueEndDate] = useState<Dayjs | null>(null);
 
+  const localStartDate = localStorage.getItem('valueStartDate');
+  const localEndDate = localStorage.getItem('valueEndDate');
+
   const handleStartDate = (newValue: Dayjs | null) => {
+    if (newValue) {
+      localStorage.setItem('valueStartDate', newValue.toISOString());
+    }
     setValueStartDate(newValue);
   };
 
@@ -94,6 +100,7 @@ export default function HeaderTabs() {
 
     if (isSameNow) {
       setValueEndDate(nowSubDay);
+      localStorage.setItem('valueEndDate', nowSubDay.toISOString());
 
       enqueueSnackbar(translate('pages.auth.before_date_warning'), {
         variant: 'warning',
@@ -103,6 +110,7 @@ export default function HeaderTabs() {
     } else {
       if (isAfter) {
         setValueEndDate(nowSubDay);
+        localStorage.setItem('valueEndDate', nowSubDay.toISOString());
 
         enqueueSnackbar(translate('pages.auth.before_date_warning'), {
           variant: 'warning',
@@ -110,6 +118,9 @@ export default function HeaderTabs() {
           autoHideDuration: 3000,
         });
       } else {
+        if (newValue) {
+          localStorage.setItem('valueEndDate', newValue.toISOString());
+        }
         setValueEndDate(newValue);
       }
     }
@@ -300,17 +311,24 @@ export default function HeaderTabs() {
 
   useEffect(() => {
     if (!valueStartDate || !valueEndDate) {
-      const initStartDate: Dayjs = dayjs().subtract(1, 'days').startOf('days');
-      const initEndDate: Dayjs = dayjs().subtract(1, 'days').endOf('days');
-
-      setValueStartDate(initStartDate);
-      setValueEndDate(initEndDate);
+      if (localStartDate) {
+        setValueStartDate(dayjs(localStartDate));
+      } else {
+        const initStartDate: Dayjs = dayjs().subtract(1, 'days').startOf('days');
+        setValueStartDate(initStartDate);
+      }
+      if (localEndDate) {
+        setValueEndDate(dayjs(localEndDate));
+      } else {
+        const initEndDate: Dayjs = dayjs().subtract(1, 'days').endOf('days');
+        setValueEndDate(initEndDate);
+      }
     } else {
       handleSubmitDate(valueStartDate, valueEndDate, valueTab);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [valueStartDate, valueEndDate]);
+  }, [valueStartDate, valueEndDate, localStartDate, localEndDate]);
 
   return (
     <>

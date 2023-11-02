@@ -19,6 +19,9 @@ const Searching = Loadable(lazy(() => import('pages/searching')));
 const ProjectDetails = Loadable(lazy(() => import('pages/project-details/ProjectDetails')));
 const MainAuditorReport = Loadable(lazy(() => import('pages/auditor-report/MainPage')));
 const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
+const ProjectOwnerDetails = Loadable(
+  lazy(() => import('pages/project-details/ProjectOwnerDetails'))
+);
 
 export const auditorReportRoute = {
   path: 'auditor-report',
@@ -55,7 +58,10 @@ export const auditorReportRoute = {
         { path: 'app', element: <MainAuditorReport /> },
         {
           path: 'current-project',
-          children: [{ path: ':id/:actionType', element: <ProjectDetails /> }],
+          children: [
+            { path: ':id/:actionType', element: <ProjectDetails /> },
+            { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
+          ],
         },
         {
           path: 'complete-project-report',

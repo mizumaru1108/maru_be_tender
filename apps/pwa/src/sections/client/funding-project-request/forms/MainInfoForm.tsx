@@ -11,6 +11,7 @@ import { AmandementFields } from '../../../../@types/proposal';
 import BaseField from '../../../../components/hook-form/BaseField';
 import RHFSelectNoGenerator from '../../../../components/hook-form/RHFSelectNoGen';
 import { RHFUploadSingleFileBe } from '../../../../components/hook-form/RHFUploadBe';
+import { arabicToAlphabetical } from '../../../../utils/formatNumber';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
 import { REGION } from '../../../../_mock/region';
 
@@ -200,7 +201,11 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
         ?.name || '';
     // console.log({ tmpBeneficiaries });
     tmpValue.project_beneficiaries = tmpBeneficiaries;
-    tmpValue = { ...tmpValue, beneficiary_id: data.beneficiary_id };
+    tmpValue = {
+      ...tmpValue,
+      beneficiary_id: data.beneficiary_id,
+      execution_time: Number(arabicToAlphabetical(data.execution_time.toString() || '0')),
+    };
     onSubmit(removeEmptyKey(tmpValue));
   };
 
