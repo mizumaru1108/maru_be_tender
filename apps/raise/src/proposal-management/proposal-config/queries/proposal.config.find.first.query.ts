@@ -10,17 +10,21 @@ export class ProposalConfigFindFirstQueryResult {
 
 @QueryHandler(ProposalConfigFindFirstQuery)
 export class ProposalConfigFindFirstHandler
-  implements IQueryHandler<ProposalConfigFindFirstQuery>
+  implements
+    IQueryHandler<
+      ProposalConfigFindFirstQuery,
+      ProposalConfigFindFirstQueryResult
+    >
 {
   constructor(private readonly proposalConfigRepo: ProposalConfigRepository) {}
 
-  async execute(
-    query: ProposalConfigFindFirstQuery,
-  ): Promise<ProposalConfigEntity> {
+  async execute(query: ProposalConfigFindFirstQuery) {
     try {
       const data = await this.proposalConfigRepo.findFirst({});
       if (!data) throw new NotFoundException('Config not found!');
-      return data;
+      return {
+        data,
+      };
     } catch (error) {
       throw error;
     }

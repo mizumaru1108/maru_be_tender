@@ -65,24 +65,24 @@ export class ProposalConfigHttpController {
     summary: 'find personalized banner for curtain user',
   })
   @BaseApiOkResponse(ProposalConfigEntity, 'object')
-  @UseGuards(TenderJwtGuard, TenderRolesGuard)
+  @UseGuards(TenderJwtGuard)
   @Get('fetch')
-  async findMyBanners() {
+  async fetchConfig() {
     try {
-      const builder = Builder<ProposalConfigFindFirstQuery>(
+      const query = Builder<ProposalConfigFindFirstQuery>(
         ProposalConfigFindFirstQuery,
         {},
-      );
+      ).build();
 
       const { data } = await this.queryBus.execute<
         ProposalConfigFindFirstQuery,
         ProposalConfigFindFirstQueryResult
-      >(builder.build());
+      >(query);
 
       return baseResponseHelper(
         data,
         HttpStatus.OK,
-        'Authority Created Successfully!',
+        'Authority Fetched Successfully!',
       );
     } catch (error) {
       throw this.errorMapper(error);
