@@ -12,6 +12,7 @@ import searching from './slices/searching';
 import supervisorAcceptingForm from './slices/supervisorAcceptingForm';
 import tracks from './slices/track';
 import wschatReducer from './slices/wschat';
+import applicationAndAdmissionSettings from './slices/applicationAndAdmissionSettings';
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +48,7 @@ const rootReducer = combineReducers({
   clientFields: clientField,
   authorities: authority,
   supervisorAcceptingForm: supervisorAcceptingForm,
+  applicationAndAdmissionSettings: applicationAndAdmissionSettings,
 });
 
 export { rootPersistConfig, rootReducer };

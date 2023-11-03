@@ -238,7 +238,7 @@ export default function NestedArrayLvlTwo({
                         nestIndex={nestIndex}
                         nestedOneIndex={nestedOneIndex}
                         nestedTwoIndex={k}
-                        parentSectionId={tmpWatch[k].id}
+                        parentSectionId={tmpWatch[k]?.id}
                         expanded={openItemsLvlTwo.includes(item.id)}
                         {...{ control, register, watch, setValue }}
                       />

@@ -2864,7 +2864,7 @@ const ar = {
         placeholder: 'اسم المتلقي',
       },
       email_attachment: {
-        label: 'مرفق البريد الالكتروني *',
+        label: 'مرفق البريد الالكتروني',
         placeholder: 'مرفق البريد الالكتروني',
       },
     },

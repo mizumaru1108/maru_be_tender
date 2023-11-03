@@ -192,6 +192,16 @@ export interface TrackProps {
   sections?: TrackSection[];
 }
 
+export type AdmissionProps = {
+  applying_status: boolean;
+  starting_date: string;
+  ending_date: string;
+  number_of_allowing_projects: number;
+  hieght_project_budget: number;
+  number_of_days_to_meet_business: number;
+  indicator_of_project_duration_days: number;
+};
+
 export interface BankReduxProps {
   id: string;
   bank_name: string;
