@@ -161,6 +161,17 @@ Table payment {
   payment_status payment_status
 }
 
+Table proposal_configs {
+  proposal_config_id String [pk]
+  applying_status Boolean [not null, default: false]
+  indicator_of_project_duration_days Int [not null]
+  number_of_days_to_meet_business Int [not null]
+  hieght_project_budget Int [not null]
+  number_of_allowing_projects Int [not null]
+  ending_date DateTime [not null]
+  starting_date DateTime [not null]
+}
+
 Table proposal {
   id String [pk]
   project_name String [not null]

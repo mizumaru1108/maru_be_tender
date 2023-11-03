@@ -11,6 +11,7 @@ import { ProposalModule } from './proposal/proposal.module';
 import { ProposalCloseReportModule } from 'src/proposal-management/closing-report/close.report.module';
 import { ProposalAskedEditRequestModule } from './asked-edit-request/proposal.asked.edit.request.module';
 import { ProposalRegionsModule } from './proposal-regions/proposal.region.management.module';
+import { ProposalConfigModule } from './proposal-config/propsoal.config.module';
 
 const importedModules = [
   CqrsModule,
@@ -24,6 +25,7 @@ const importedModules = [
   ProposalLogModule,
   ProposalCloseReportModule,
   ProposalRegionsModule,
+  ProposalConfigModule,
 ];
 
 @Module({

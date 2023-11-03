@@ -175,7 +175,17 @@ model payment {
   proposal           proposal        @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   payment_status     payment_status? @relation(fields: [status], references: [id], onDelete: Cascade)
 }
-
+model ProposalConfigs {
+    proposal_config_id                      String  @id
+    applying_status                         Boolean @default(false)
+    indicator_of_project_duration_days      Int
+    number_of_days_to_meet_business         Int
+    hieght_project_budget                   Int
+    number_of_allowing_projects             Int
+    ending_date                             DateTime
+    starting_date                           DateTime
+    @@map("proposal_configs")
+}
 model proposal {
   id                                  String                           @id
   project_name                        String                           @db.VarChar
