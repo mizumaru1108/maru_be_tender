@@ -120,7 +120,7 @@ export default function GeneralFirstForm({
 
     const generateBudget = selectSectionProjectPath({
       parent: track.sections!,
-      section_id: sectionId || proposal.section_id,
+      section_id: sectionId,
     });
 
     for (const section of Object.values(generateBudget)) {
@@ -133,7 +133,7 @@ export default function GeneralFirstForm({
     }
 
     return Number(remainSectionBudget);
-  }, [track, sectionId, proposal]);
+  }, [track, sectionId]);
 
   const onSubmitForm = async (data: SupervisorStep1) => {
     setIsSubmited(true);
@@ -244,6 +244,7 @@ export default function GeneralFirstForm({
 
         if (testGenerate.tempLvlOne.length) {
           setValue('section_id_level_one', testGenerate.tempLvlOne[0].id);
+          setValue('section_id', testGenerate.tempLvlOne[0].id);
           setSectionLevelTwo(testGenerate.tempLvlOne[0].child_track_section ?? []);
 
           if (testGenerate.tempLvlOne[0].child_track_section?.length) {
@@ -259,6 +260,7 @@ export default function GeneralFirstForm({
 
         if (testGenerate.tempLvlTwo.length) {
           setValue('section_id_level_two', testGenerate.tempLvlTwo[0].id);
+          setValue('section_id', testGenerate.tempLvlTwo[0].id);
           setSectionLevelThree(testGenerate.tempLvlTwo[0].child_track_section ?? []);
 
           if (testGenerate.tempLvlTwo[0].child_track_section?.length) {
@@ -274,6 +276,7 @@ export default function GeneralFirstForm({
 
         if (testGenerate.tempLvlThree.length) {
           setValue('section_id_level_three', testGenerate.tempLvlThree[0].id);
+          setValue('section_id', testGenerate.tempLvlThree[0].id);
           setSectionLevelFour(testGenerate.tempLvlThree[0].child_track_section ?? []);
 
           if (testGenerate.tempLvlThree[0].child_track_section?.length) {
@@ -282,6 +285,7 @@ export default function GeneralFirstForm({
             );
             if (find) {
               setValue('section_id_level_four', find.id);
+              setValue('section_id', find.id);
             }
           }
         }

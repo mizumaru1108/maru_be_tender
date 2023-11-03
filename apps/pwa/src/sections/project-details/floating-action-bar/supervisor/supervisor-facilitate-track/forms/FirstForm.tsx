@@ -13,7 +13,10 @@ import { SupervisorStep1 } from '../../../../../../@types/supervisor-accepting-f
 import useAuth from 'hooks/useAuth';
 import { removeEmptyKey } from 'utils/remove-empty-key';
 import { TrackSection } from '../../../../../../@types/commons';
-import selectDataById from '../../../../../../utils/generateParentChild';
+import selectDataById, {
+  selectSectionProjectPath,
+} from '../../../../../../utils/generateParentChild';
+import { arabicToAlphabetical } from 'utils/formatNumber';
 
 function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubmited }: any) {
   const { translate } = useLocales();
@@ -118,7 +121,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
 
     const generateBudget = selectSectionProjectPath({
       parent: track.sections!,
-      section_id: sectionId || proposal.section_id,
+      section_id: sectionId,
     });
 
     for (const section of Object.values(generateBudget)) {
@@ -131,7 +134,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
     }
 
     return Number(remainSectionBudget);
-  }, [track, sectionId, proposal]);
+  }, [track, sectionId]);
 
   const onSubmitForm = async (data: SupervisorStep1) => {
     setIsSubmited(true);
@@ -142,7 +145,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
     const tmpValues: SupervisorStep1 = {
       ...rest,
       vat_percentage: vat_percentage ? Number(vat_percentage) : undefined,
-      payment_number: Number(arabicToAlphabetical(paymentNumber?.toString() || '0')),
+      payment_number: Number(arabicToAlphabetical(paymentNum?.toString() || '0')),
       fsupport_by_supervisor: tmpFSupport,
     };
     if (tmpFSupport > remainBudget) {
@@ -241,6 +244,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
 
         if (testGenerate.tempLvlOne.length) {
           setValue('section_id_level_one', testGenerate.tempLvlOne[0].id);
+          setValue('section_id', testGenerate.tempLvlOne[0].id);
           setSectionLevelTwo(testGenerate.tempLvlOne[0].child_track_section ?? []);
 
           if (testGenerate.tempLvlOne[0].child_track_section?.length) {
@@ -256,6 +260,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
 
         if (testGenerate.tempLvlTwo.length) {
           setValue('section_id_level_two', testGenerate.tempLvlTwo[0].id);
+          setValue('section_id', testGenerate.tempLvlTwo[0].id);
           setSectionLevelThree(testGenerate.tempLvlTwo[0].child_track_section ?? []);
 
           if (testGenerate.tempLvlTwo[0].child_track_section?.length) {
@@ -271,6 +276,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
 
         if (testGenerate.tempLvlThree.length) {
           setValue('section_id_level_three', testGenerate.tempLvlThree[0].id);
+          setValue('section_id', testGenerate.tempLvlThree[0].id);
           setSectionLevelFour(testGenerate.tempLvlThree[0].child_track_section ?? []);
 
           if (testGenerate.tempLvlThree[0].child_track_section?.length) {
@@ -279,6 +285,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             );
             if (find) {
               setValue('section_id_level_four', find.id);
+              setValue('section_id', find.id);
             }
           }
         }
