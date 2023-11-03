@@ -1,10 +1,10 @@
 // react
 import React from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 // component
 import { Grid, useTheme, Typography, Card, Divider } from '@mui/material';
 // hooks
-import useAuth from 'hooks/useAuth';
+// import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useQuery } from 'urql';
 import { generateHeader } from 'utils/generateProposalNumber';
@@ -12,12 +12,12 @@ import { fCurrencyNumber } from 'utils/formatNumber';
 //
 import { Proposal } from '../../../@types/proposal';
 import { useSelector } from 'redux/store';
-import { getOneNameCashier } from 'queries/Cashier/getOneNameCashier';
+// import { getOneNameCashier } from 'queries/Cashier/getOneNameCashier';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import {
   getCashierData,
   getFinanceData,
-  getFinanceName,
+  // getFinanceName,
   getGeneratePaymentData,
 } from 'queries/commons/getOneProposal';
 import Space from 'components/space/space';
@@ -33,9 +33,8 @@ interface IPropsData {
 
 export default function ProposalDetails({ proposalData, loading }: IPropsData) {
   const { track_list } = useSelector((state) => state.proposal);
-  const { activeRole, user } = useAuth();
-  const { translate, currentLang } = useLocales();
-  const navigate = useNavigate();
+  const { translate } = useLocales();
+  // const navigate = useNavigate();
   const params = useParams();
   const theme = useTheme();
 

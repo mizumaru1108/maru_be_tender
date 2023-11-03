@@ -60,7 +60,7 @@ const AppointmentsWithPartners = Loadable(
 const BookingAMeeting = Loadable(lazy(() => import('pages/project-supervisor/BookingAMeeting')));
 
 const ClientListPage = Loadable(lazy(() => import('pages/project-supervisor/ClientListPage')));
-const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/PreviewPayment')));
+const PreviewPayment = Loadable(lazy(() => import('sections/cashier/payment/PreviewPayment')));
 const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
 const EmailToClient = Loadable(lazy(() => import('pages/project-supervisor/TableSendEmail')));
 const SendEmailForm = Loadable(lazy(() => import('pages/project-supervisor/SendEmail')));
