@@ -2355,7 +2355,11 @@ export class ProposalRepository {
         step: 'ZERO',
       };
 
-      if (['tender_project_supervisor'].indexOf(currentUser.choosenRole) > -1) {
+      if (
+        ['tender_project_supervisor', 'tender_project_manager'].indexOf(
+          currentUser.choosenRole,
+        ) > -1
+      ) {
         const reviewer = await this.prismaService.user.findUnique({
           where: { id: currentUser.id },
           include: { track: true },
