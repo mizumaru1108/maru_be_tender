@@ -33,18 +33,6 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
     message: '',
   });
 
-  const requestedBudget: number = useMemo(() => {
-    const reqBudget = proposal?.amount_required_fsupport || proposal?.fsupport_by_supervisor || 0;
-    return Number(reqBudget);
-  }, [proposal]);
-
-  const remainBudget: number = useMemo(() => {
-    const remainBudget = track
-      ? (track?.total_budget || 0) - (track?.total_spending_budget || 0)
-      : 0;
-    return Number(remainBudget);
-  }, [track]);
-
   const [save, setSave] = useState<boolean>(isSupevisor ? false : true);
 
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
@@ -114,10 +102,36 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       },
   });
 
-  const { handleSubmit, watch, setValue, resetField, reset } = methods;
+  const { handleSubmit, watch, setValue, setError } = methods;
 
   const support_type = watch('support_type');
   const paymentNum = watch('payment_number');
+  const sectionId = watch('section_id');
+
+  const requestedBudget: number = useMemo(() => {
+    const reqBudget = proposal?.amount_required_fsupport || proposal?.fsupport_by_supervisor || 0;
+    return Number(reqBudget);
+  }, [proposal]);
+
+  const remainBudget: number = useMemo(() => {
+    let remainSectionBudget: number = 0;
+
+    const generateBudget = selectSectionProjectPath({
+      parent: track.sections!,
+      section_id: sectionId || proposal.section_id,
+    });
+
+    for (const section of Object.values(generateBudget)) {
+      if (section !== null && section.id === sectionId) {
+        remainSectionBudget =
+          (section.budget ? section.budget : 0) -
+            (section.section_spending_budget ? section.section_spending_budget : 0) ?? 0;
+        break;
+      }
+    }
+
+    return Number(remainSectionBudget);
+  }, [track, sectionId, proposal]);
 
   const onSubmitForm = async (data: SupervisorStep1) => {
     setIsSubmited(true);
@@ -132,6 +146,14 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       fsupport_by_supervisor: tmpFSupport,
     };
     if (tmpFSupport > remainBudget) {
+      setError(
+        'fsupport_by_supervisor',
+        {
+          type: 'focus',
+          message: `${translate('notification.error_exceeds_amount')} (${remainBudget})`,
+        },
+        { shouldFocus: true }
+      );
       setBudgetError({
         open: true,
         message: 'notification.error_exceeds_amount',
