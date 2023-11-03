@@ -126,11 +126,13 @@ export default function TrackBudgetPage() {
   };
 
   useEffect(() => {
-    if (!fetching_employee && activeRole !== 'tender_project_manager') {
-      getTrackDatas();
-    } else {
-      if (data_employee && data_employee.data.track_id) {
-        getTrackDatas(data_employee.data.track_id);
+    if (!fetching_employee) {
+      if (activeRole !== 'tender_project_manager') {
+        getTrackDatas();
+      } else {
+        if (data_employee && data_employee.data.track_id) {
+          getTrackDatas(data_employee.data.track_id);
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

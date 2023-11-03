@@ -2844,7 +2844,7 @@ const en = {
         placeholder: 'Receiver Name',
       },
       email_attachment: {
-        label: 'Email Attachment *',
+        label: 'Email Attachment',
         placeholder: 'Email Attachment',
       },
     },

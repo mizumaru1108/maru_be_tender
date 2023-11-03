@@ -183,7 +183,7 @@ export default function RHFBaseRepeater({
                       <NestedArrayLvlOne
                         isLoading={isLoading}
                         nestIndex={index}
-                        parentSectionId={tmpWatch[index].id}
+                        parentSectionId={tmpWatch[index]?.id}
                         expanded={openItems.includes(item.id)}
                         {...{ control, register, watch, setValue }}
                       />

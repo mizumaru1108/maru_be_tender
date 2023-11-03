@@ -556,10 +556,10 @@ const ProjectCardBE = ({
                   gutterBottom
                   sx={{ fontSize: '15px !important' }}
                 >
-                  {/* {updated_at
+                  {updated_at
                     ? moment(updated_at).format('LLLL')
-                    : moment(created_at).format('LLLL')} */}
-                  {moment(created_at).format('LLLL')}
+                    : moment(created_at).format('LLLL')}
+                  {/* {moment(created_at).format('LLLL')} */}
                 </Typography>
               </Stack>
               {status !== 'COMPLETED' && (
