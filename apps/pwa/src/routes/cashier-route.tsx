@@ -35,7 +35,7 @@ const PreviousFundingRequestsCashier = Loadable(
 const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
 const OldProposal = Loadable(lazy(() => import('pages/cashier/OldProposal')));
 const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));
-const PreviewPayment = Loadable(lazy(() => import('sections/cashier/payment/PreviewPayment')));
+const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/PreviewPayment')));
 const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
 
 export const cashierRoute = {

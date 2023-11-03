@@ -148,7 +148,7 @@ function CashierPaymentsPage() {
         <PaymentsTable />
 
         {paymentDone ? <FloatingCloseReport /> : null}
-        {initiatePayment ? <FloatingCashierToFinance /> : null}
+        {initiatePayment && !paymentDone ? <FloatingCashierToFinance /> : null}
       </Grid>
     </>
   );
