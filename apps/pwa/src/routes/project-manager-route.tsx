@@ -46,7 +46,7 @@ const CeoRejectionListPage = Loadable(lazy(() => import('pages/project-manager/R
 
 const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
 
-const PreviewPayment = Loadable(lazy(() => import('sections/finance/payment/PreviewPayment')));
+const PreviewPayment = Loadable(lazy(() => import('sections/cashier/payment/PreviewPayment')));
 
 const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
 

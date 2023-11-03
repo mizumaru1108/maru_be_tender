@@ -2,17 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 // component
-import {
-  Grid,
-  Button,
-  styled,
-  Container,
-  Stack,
-  useTheme,
-  Box,
-  Typography,
-  Link,
-} from '@mui/material';
+import { Grid, Button, styled, Container, Stack, useTheme, Box, Typography } from '@mui/material';
 import Page from 'components/Page';
 import Iconify from 'components/Iconify';
 // section
@@ -22,13 +12,8 @@ import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import ReactToPrint from 'react-to-print';
 //
-import { ReactComponent as Logo } from '../../../assets/new_logo.svg';
 import { dispatch, useSelector } from 'redux/store';
 import { getProposal, getTrackList } from 'redux/slices/proposal';
-import CardPaymentReceipt from './CardPaymentReceipt';
-import CardPaymentGenerate from './CardPaymentGenerate';
-import { getGeneratePaymentData } from 'queries/commons/getOneProposal';
-import { useQuery } from 'urql';
 import dayjs from 'dayjs';
 
 // -------------------------------------------------------------------------------------------------
@@ -52,7 +37,6 @@ export default function PreviewPayment() {
   const params = useParams();
   const theme = useTheme();
   const id = params?.id;
-  const receiptType = localStorage.getItem('receipt_type');
 
   const componentRef = useRef<HTMLDivElement>(null);
 
@@ -141,22 +125,6 @@ export default function PreviewPayment() {
                 </Grid>
               </Grid>
             ) : (
-              // <>
-              //   {receiptType === 'receipt' && proposal.cashier_id ? (
-              //     <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
-              //       <CardPaymentReceipt proposalData={proposal} loading={isLoading} />
-              //     </Grid>
-              //   ) : (
-              //     <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
-              //       <CardPaymentGenerate proposalData={proposal} loading={isLoading} />
-              //     </Grid>
-              //   )}
-              //   {receiptType === 'generate' && (
-              //     <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
-              //       <ProposalDetails proposalData={proposal} loading={isLoading} />
-              //     </Grid>
-              //   )}
-              // </>
               <Grid container rowSpacing={2} columnSpacing={3} sx={{ mt: 1 }}>
                 <ProposalDetails proposalData={proposal} loading={isLoading} />
               </Grid>
