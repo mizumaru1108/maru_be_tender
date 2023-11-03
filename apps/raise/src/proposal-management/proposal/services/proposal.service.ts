@@ -1007,15 +1007,14 @@ export class ProposalService {
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.REJECTED_BY_PROJECT_MANAGER;
       proposalUpdatePayload.outter_status = OutterStatusEnum.CANCELED;
-      proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
+      proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
       proposalUpdatePayload.project_manager_id = currentUser.id;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.REJECT;
-      proposalLogCreateInput.state = TenderAppRoleEnum.CEO;
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_MANAGER;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
       proposalLogCreateInput.reject_reason = request.reject_reason;
-      // proposalLogCreateInput.notes = request.notes;
     }
 
     if (request.action === ProposalAction.STEP_BACK) {

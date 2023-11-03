@@ -228,9 +228,9 @@ export class TrackMapper {
               section.section_reserved_budget = res.sum_reserved_budget;
               section.section_spending_budget = res.sum_spending_budget;
 
-              // sum the parent too
-              buildedTrack.total_reserved_budget += res.sum_reserved_budget;
-              buildedTrack.total_spending_budget += res.sum_spending_budget;
+              // // sum the parent too
+              // buildedTrack.total_reserved_budget += res.sum_reserved_budget;
+              // buildedTrack.total_spending_budget += res.sum_spending_budget;
             }
 
             section.child_track_section = [];
@@ -254,13 +254,9 @@ export class TrackMapper {
 
                     // sum the parent too
                     section.section_reserved_budget += res.sum_reserved_budget;
-                    buildedTrack.total_reserved_budget +=
-                      res.sum_reserved_budget;
 
                     // sum the parent too
                     section.section_spending_budget += res.sum_spending_budget;
-                    buildedTrack.total_spending_budget +=
-                      res.sum_spending_budget;
                   }
 
                   sSection.child_track_section = [];
@@ -293,15 +289,11 @@ export class TrackMapper {
                             res.sum_reserved_budget;
                           section.section_reserved_budget +=
                             res.sum_reserved_budget;
-                          buildedTrack.total_reserved_budget +=
-                            res.sum_reserved_budget;
 
                           // sum the parrent too
                           sSection.section_spending_budget +=
                             res.sum_spending_budget;
                           section.section_spending_budget +=
-                            res.sum_spending_budget;
-                          buildedTrack.total_spending_budget +=
                             res.sum_spending_budget;
                         }
 
@@ -340,8 +332,6 @@ export class TrackMapper {
                                   res.sum_reserved_budget;
                                 section.section_reserved_budget +=
                                   res.sum_reserved_budget;
-                                buildedTrack.total_reserved_budget +=
-                                  res.sum_reserved_budget;
 
                                 // sum the parrent too
                                 ssSection.section_spending_budget +=
@@ -349,8 +339,6 @@ export class TrackMapper {
                                 sSection.section_spending_budget +=
                                   res.sum_spending_budget;
                                 section.section_spending_budget +=
-                                  res.sum_spending_budget;
-                                buildedTrack.total_spending_budget +=
                                   res.sum_spending_budget;
                               }
 
