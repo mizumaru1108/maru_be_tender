@@ -107,7 +107,7 @@ export function selectSectionProjectPath({ parent, section_id }: IPropSelectedDa
               } else {
                 levelThree = findLvlThree;
                 levelTwo = childLvlTwo;
-                levelThree = childLvlOne;
+                levelOne = childLvlOne;
               }
             }
           }

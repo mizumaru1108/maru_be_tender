@@ -855,10 +855,10 @@ const FundingProjectRequestForm = () => {
   const BeneficiariesList = async () => {
     await dispatch(getBeneficiariesList(activeRole!, true))
       .then((res) => {
-        console.log(res);
+        console.warn(res);
       })
       .catch((err) => {
-        console.log({ err });
+        console.error({ err });
         const statusCode = (err && err.statusCode) || 0;
         const message = (err && err.message) || null;
         enqueueSnackbar(

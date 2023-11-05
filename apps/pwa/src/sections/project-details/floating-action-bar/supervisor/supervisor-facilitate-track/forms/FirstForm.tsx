@@ -128,7 +128,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       if (section !== null && section.id === sectionId) {
         remainSectionBudget =
           (section.budget ? section.budget : 0) -
-            (section.section_spending_budget ? section.section_spending_budget : 0) ?? 0;
+          (section.section_spending_budget ? section.section_spending_budget : 0);
         break;
       }
     }
@@ -149,14 +149,14 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       fsupport_by_supervisor: tmpFSupport,
     };
     if (tmpFSupport > remainBudget) {
-      setError(
-        'fsupport_by_supervisor',
-        {
-          type: 'focus',
-          message: `${translate('notification.error_exceeds_amount')} (${remainBudget})`,
-        },
-        { shouldFocus: true }
-      );
+      // setError(
+      //   'fsupport_by_supervisor',
+      //   {
+      //     type: 'focus',
+      //     message: `${translate('notification.error_exceeds_amount')} (${remainBudget})`,
+      //   },
+      //   { shouldFocus: true }
+      // );
       setBudgetError({
         open: true,
         message: 'notification.error_exceeds_amount',
@@ -187,6 +187,11 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         setSectionLevelTwo(lvl1DataFound?.child_track_section ?? []);
         setSectionLevelThree([]);
         setSectionLevelFour([]);
+
+        setBudgetError({
+          open: false,
+          message: '',
+        });
         break;
 
       case 'two':
@@ -199,6 +204,11 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
 
         setSectionLevelThree(lvl2DataFound?.child_track_section ?? []);
         setSectionLevelFour([]);
+
+        setBudgetError({
+          open: false,
+          message: '',
+        });
         break;
       case 'three':
         setValue('section_id', e.target.value);
@@ -208,10 +218,20 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         const lvl3DataFound = sectionLevelThree.find((el) => el.id === e.target.value);
 
         setSectionLevelFour(lvl3DataFound?.child_track_section ?? []);
+
+        setBudgetError({
+          open: false,
+          message: '',
+        });
         break;
       case 'four':
         setValue('section_id', e.target.value);
         setValue('section_id_level_four', e.target.value);
+
+        setBudgetError({
+          open: false,
+          message: '',
+        });
         break;
       default:
         break;
