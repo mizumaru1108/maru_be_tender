@@ -6,6 +6,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { TrackSectionCreateDto } from '../dtos/requests/track.sections.create.dto';
 import { TrackSectionEntity } from '../entities/track.section.entity';
 import { TrackSectionMapper } from '../mapper/track.section.mapper';
+import { logUtil } from '../../../commons/utils/log-util';
 
 export type TrackSectionIncludeTypes =
   | 'parent_section'
@@ -97,6 +98,7 @@ export class TrackSectionRepository {
           is_deleted: props.is_deleted,
         },
       });
+      console.log(rawUpdated);
 
       // const updatedEntity = Builder<TrackSectionEntity>(TrackSectionEntity, {
       //   ...rawUpdated,
@@ -334,7 +336,7 @@ export class TrackSectionRepository {
         prisma,
       );
 
-      // console.log(logUtil(existingTrackSection));
+      // console.log(`existing ${logUtil(existingTrackSection)}`);
       // get track id
       const existingTrackIds = existingTrackSection.map((track) => track.id);
 
@@ -347,7 +349,8 @@ export class TrackSectionRepository {
               ...section,
             },
           ).build();
-          this.create(cPayload, prisma);
+          // console.log(`should be created ${logUtil(cPayload)}`);
+          await this.create(cPayload, prisma);
         }
 
         // if it exist
@@ -359,7 +362,8 @@ export class TrackSectionRepository {
             },
           ).build();
 
-          this.update(uPayload, prisma);
+          // console.log(`should be updated ${logUtil(uPayload)}`);
+          await this.update(uPayload, prisma);
         }
       }
     } catch (error) {
