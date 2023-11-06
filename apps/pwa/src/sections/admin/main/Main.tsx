@@ -5,15 +5,22 @@ import { getOneEmployee } from 'queries/admin/getAllTheEmployees';
 import TrackBudget from 'sections/admin/main/TrackBudget';
 import { useQuery } from 'urql';
 import Settings from './Settings';
+import React from 'react';
+import { getTracks } from 'redux/slices/track';
+import { dispatch } from 'redux/store';
 
 function Main() {
   const { translate } = useLocales();
-  const { user } = useAuth();
+  const { user, activeRole } = useAuth();
 
   const [{ data, fetching, error }] = useQuery({
     query: getOneEmployee,
     variables: { id: user?.id },
   });
+
+  React.useEffect(() => {
+    dispatch(getTracks(activeRole!));
+  }, [activeRole]);
 
   if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;

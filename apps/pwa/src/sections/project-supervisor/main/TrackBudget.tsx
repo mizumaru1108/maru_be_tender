@@ -5,7 +5,7 @@ import Image from 'components/Image';
 import useLocales from 'hooks/useLocales';
 // urql + query
 //
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { fCurrencyNumber } from 'utils/formatNumber';
 // config
 import { FEATURE_DAILY_STATUS } from 'config';
@@ -23,6 +23,20 @@ interface IPropTrackBudgets {
 export default function TrackBudget(props: IPropTrackBudgets) {
   const { translate } = useLocales();
   const { isLoading, track } = useSelector((state) => state.tracks);
+
+  const budgets = useMemo(() => {
+    const totalBudget = track.total_budget ?? 0;
+    const reservedBudget = track.total_reserved_budget ?? 0;
+    const spendBudget = track.total_spending_budget ?? 0;
+    const remainBudget = totalBudget - (reservedBudget + spendBudget);
+
+    return {
+      totalBudget,
+      reservedBudget,
+      spendBudget,
+      remainBudget,
+    };
+  }, [track]);
 
   if (isLoading) return <>{translate('pages.common.loading')}</>;
 
@@ -108,7 +122,7 @@ export default function TrackBudget(props: IPropTrackBudgets) {
                     {translate('content.administrative.statistic.heading.totalRemainingBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {fCurrencyNumber(track?.total_budget || 0)}
+                    {fCurrencyNumber(budgets.remainBudget)}
                   </Typography>
                 </Box>
               </Grid>

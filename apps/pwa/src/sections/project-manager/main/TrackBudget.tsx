@@ -5,7 +5,7 @@ import Image from 'components/Image';
 import useLocales from 'hooks/useLocales';
 // urql + query
 //
-import React from 'react';
+import React, { useMemo } from 'react';
 import { fCurrencyNumber } from 'utils/formatNumber';
 // config
 import { FEATURE_DAILY_STATUS } from 'config';
@@ -27,6 +27,20 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
   const { activeRole } = useAuth();
   const { track, isLoading } = useSelector((state) => state.tracks);
 
+  const budgets = useMemo(() => {
+    const totalBudget = track.total_budget ?? 0;
+    const reservedBudget = track.total_reserved_budget ?? 0;
+    const spendBudget = track.total_spending_budget ?? 0;
+    const remainBudget = totalBudget - (reservedBudget + spendBudget);
+
+    return {
+      totalBudget,
+      reservedBudget,
+      spendBudget,
+      remainBudget,
+    };
+  }, [track]);
+
   React.useEffect(() => {
     // fetchingSchedule();
     if (track_id) {
@@ -34,7 +48,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
     }
   }, [track_id, activeRole]);
 
-  if (isLoading) return <>{translate('pages.commo.loading')}</>;
+  if (isLoading) return <>{translate('pages.common.loading')}</>;
 
   return (
     <Grid container spacing={2}>
@@ -102,6 +116,27 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                     {track ? fCurrencyNumber(track.total_reserved_budget || 0) : fCurrencyNumber(0)}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item md={2} xs={12}>
+                <Box
+                  sx={{
+                    borderRadius: 1,
+                    backgroundColor: '#fff',
+                    p: 2,
+                  }}
+                >
+                  <Image
+                    src={`/icons/rial-currency.svg`}
+                    alt="icon_riyals"
+                    sx={{ display: 'inline-flex' }}
+                  />
+                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                    {translate('content.administrative.statistic.heading.totalRemainingBudget')}
+                  </Typography>
+                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                    {fCurrencyNumber(budgets.remainBudget)}
                   </Typography>
                 </Box>
               </Grid>

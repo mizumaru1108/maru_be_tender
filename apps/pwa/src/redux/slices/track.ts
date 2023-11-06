@@ -84,16 +84,27 @@ export const getTracks = (role: string) => async () => {
     include_relations: `count_budget`,
   };
   try {
-    dispatch(slice.actions.startLoading);
+    dispatch(slice.actions.setLoading(true));
 
     const response = await axiosInstance.get(`tender/track?is_deleted=0`, {
       params: { ...params },
       headers: { 'x-hasura-role': role },
     });
     if (response.data.statusCode === 200) {
-      dispatch(slice.actions.setTracks(response.data.data));
+      const tracks = response.data.data;
+
+      const mapping = tracks.map((v: TrackProps) => {
+        const totalBudget = v.total_budget ?? 0;
+        const reservedBudget = v.total_reserved_budget ?? 0;
+        const spendBudget = v.total_spending_budget ?? 0;
+        const remainBudget = totalBudget - (reservedBudget + spendBudget);
+
+        return { ...v, total_remaining_budget: remainBudget };
+      });
+
+      dispatch(slice.actions.setTracks(mapping));
     }
-    dispatch(slice.actions.endLoading);
+    dispatch(slice.actions.setLoading(false));
   } catch (error) {
     dispatch(slice.actions.hasError(error));
   }

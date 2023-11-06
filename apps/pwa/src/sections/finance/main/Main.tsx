@@ -2,13 +2,13 @@ import { Grid } from '@mui/material';
 import Space from 'components/space/space';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import { getOneEmployee } from 'queries/admin/getAllTheEmployees';
+// import { getOneEmployee } from 'queries/admin/getAllTheEmployees';
 import React from 'react';
 import { getTrackList } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
 import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
-import TrackBudget from 'sections/finance/main/TrackBudget';
-import { useQuery } from 'urql';
+import TrackBudget from 'sections/admin/main/TrackBudget';
+// import { useQuery } from 'urql';
 import DailyStatistics from './DailyStatistics';
 import IncomingExchangePermissionRequests from './IncomingExchangePermissionRequests';
 import RequestsInProcess from './RequestsInProcess';
@@ -38,6 +38,9 @@ function Main() {
       </Grid>
       <Grid item md={12}>
         <DailyStatistics />
+      </Grid>
+      <Grid item md={12}>
+        <TrackBudget />
       </Grid>
       <IncomingExchangePermissionRequests />
       <Space direction="horizontal" size="small" />

@@ -8,7 +8,7 @@ import { dispatch, useSelector } from 'redux/store';
 import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
 import DailyStatistics from './DailyStatistics';
 import IncomingConultationRequests from './IncomingConultationRequests';
-import ProposalOnAmandement from './ProposalOnAmandement';
+import TrackBudget from 'sections/admin/main/TrackBudget';
 
 function Main() {
   const { translate } = useLocales();
@@ -26,6 +26,9 @@ function Main() {
       </Grid>
       <Grid item md={12}>
         <DailyStatistics />
+      </Grid>
+      <Grid item md={12}>
+        <TrackBudget />
       </Grid>
       <IncomingConultationRequests />
       <Space direction="horizontal" size="small" />

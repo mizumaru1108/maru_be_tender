@@ -14,7 +14,7 @@ import { getTrackList } from 'redux/slices/proposal';
 import { getTracksById } from 'redux/slices/track';
 import { dispatch, useSelector } from 'redux/store';
 import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
-import TrackBudget from 'sections/project-supervisor/main/TrackBudget';
+import TrackBudget from 'sections/project-manager/main/TrackBudget';
 import { useQuery } from 'urql';
 
 function Main() {

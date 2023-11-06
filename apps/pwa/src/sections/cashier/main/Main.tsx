@@ -9,6 +9,7 @@ import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
 import DailyStatistics from './DailyStatistics';
 import IncomingExchangePermissionRequests from './IncomingExchangePermissionRequests';
 import RequestsInProcess from './RequestsInProcess';
+import TrackBudget from 'sections/admin/main/TrackBudget';
 
 function Main() {
   // const { translate } = useLocales();
@@ -36,6 +37,9 @@ function Main() {
       </Grid>
       <Grid item md={12} xs={12}>
         <DailyStatistics />
+      </Grid>
+      <Grid item md={12}>
+        <TrackBudget />
       </Grid>
       <IncomingExchangePermissionRequests />
       <Space direction="horizontal" size="small" />
