@@ -1667,6 +1667,9 @@ const en = {
     },
   },
   application_and_admission_settings_form: {
+    snackbar: {
+      success: 'Proposal configs updated successfully',
+    },
     errors: {
       applying_status: {
         required: 'Submission is enabled for users is required',
@@ -2634,6 +2637,7 @@ const en = {
   modal: {
     disable_proposal: {
       message: 'Dear User, you can start submitting from next week.',
+      exceed_limit: 'You cannot create cause already on limit from our company',
     },
     headline: {
       track: 'Track',

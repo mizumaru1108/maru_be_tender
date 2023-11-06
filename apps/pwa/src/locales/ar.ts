@@ -1671,6 +1671,9 @@ const ar = {
     },
   },
   application_and_admission_settings_form: {
+    snackbar: {
+      success: 'تم تحديث تكوينات الاقتراح بنجاح',
+    },
     errors: {
       applying_status: {
         required: 'تم تمكين التقديم للمستخدمين مطلوب',
@@ -2654,6 +2657,7 @@ const ar = {
   modal: {
     disable_proposal: {
       message: 'عزيزي المستخدم، يمكنك البدء في التقديم اعتبارًا من الأسبوع المقبل',
+      exceed_limit: 'لا يمكنك إنشاء سبب بالفعل على الحد من شركتنا',
     },
     headline: {
       track: 'مسار',

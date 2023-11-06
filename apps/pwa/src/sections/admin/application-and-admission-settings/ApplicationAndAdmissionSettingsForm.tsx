@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Divider, Grid, Stack, Typography } from '@mui/material';
 import dayjs from 'dayjs';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import * as Yup from 'yup';
@@ -13,9 +14,15 @@ import {
 } from '../../../components/hook-form';
 import useAuth from '../../../hooks/useAuth';
 import useLocales from '../../../hooks/useLocales';
-import { useSelector } from '../../../redux/store';
+import { getApplicationAdmissionSettings } from '../../../redux/slices/applicationAndAdmissionSettings';
+import { dispatch, useSelector } from '../../../redux/store';
 
-export default function ApplicationAndAdmissionSettingsForm() {
+type Props = {
+  onSubmit: (data: AdmissionProps) => void;
+  isLoading: boolean;
+};
+
+export default function ApplicationAndAdmissionSettingsForm(props: Props) {
   const navigate = useNavigate();
   const { translate } = useLocales();
   const { activeRole } = useAuth();
@@ -88,22 +95,27 @@ export default function ApplicationAndAdmissionSettingsForm() {
   const watchStartDate = watch('starting_date');
 
   const onSubmit = async (data: AdmissionProps) => {
-    console.log({ data });
+    props.onSubmit(data);
   };
 
   const onReturn = () => {
     navigate(-1);
   };
 
-  // useEffect(() => {
-  //   dispatch(getApplicationAdmissionSettings(activeRole!));
-  // }, [activeRole]);
+  useEffect(() => {
+    dispatch(getApplicationAdmissionSettings(activeRole!));
+  }, [activeRole]);
 
-  // useEffect(() => {
-  //   if (application_admission_settings && !isFetchingData && !errorFetchingData) {
-  //     reset(application_admission_settings);
-  //   }
-  // }, [application_admission_settings, isFetchingData, errorFetchingData]);
+  useEffect(() => {
+    if (application_admission_settings && !isFetchingData && !errorFetchingData) {
+      const tmpValue: AdmissionProps = {
+        ...application_admission_settings,
+        starting_date: dayjs(application_admission_settings.starting_date).format('YYYY-MM-DD'),
+        ending_date: dayjs(application_admission_settings.ending_date).format('YYYY-MM-DD'),
+      };
+      reset(tmpValue);
+    }
+  }, [application_admission_settings, isFetchingData, errorFetchingData, reset]);
 
   if (isFetchingData) {
     return <>{translate('pages.common.loading')}</>;
@@ -122,6 +134,7 @@ export default function ApplicationAndAdmissionSettingsForm() {
           <Divider sx={{ flex: 2 }} />
         </Stack>
         <RHFSwitch
+          disabled={props.isLoading}
           name="applying_status"
           label={translate('application_and_admission_settings_form.applying_status.label')}
         />
@@ -134,6 +147,7 @@ export default function ApplicationAndAdmissionSettingsForm() {
         <Grid container rowSpacing={5} columnSpacing={7}>
           <Grid item md={6}>
             <RHFDatePicker
+              disabled={props.isLoading}
               name="starting_date"
               label={translate('application_and_admission_settings_form.starting_date.label')}
               data-cy="application_and_admission_settings_form.starting_date"
@@ -144,7 +158,7 @@ export default function ApplicationAndAdmissionSettingsForm() {
           </Grid>
           <Grid item md={6}>
             <RHFDatePicker
-              disabled={watchStartDate === '' || watchStartDate === null}
+              disabled={watchStartDate === '' || watchStartDate === null || props.isLoading}
               name="ending_date"
               label={translate('application_and_admission_settings_form.ending_date.label')}
               data-cy="application_and_admission_settings_form.ending_date"
@@ -160,6 +174,7 @@ export default function ApplicationAndAdmissionSettingsForm() {
           </Grid>
           <Grid item md={6}>
             <RHFTextField
+              disabled={props.isLoading}
               name={'number_of_allowing_projects'}
               label={translate(
                 'application_and_admission_settings_form.number_of_allowing_projects.label'
@@ -172,6 +187,7 @@ export default function ApplicationAndAdmissionSettingsForm() {
           </Grid>
           <Grid item md={6}>
             <RHFTextField
+              disabled={props.isLoading}
               name={'hieght_project_budget'}
               label={translate(
                 'application_and_admission_settings_form.hieght_project_budget.label'
@@ -184,6 +200,7 @@ export default function ApplicationAndAdmissionSettingsForm() {
           </Grid>
           <Grid item md={6}>
             <RHFTextField
+              disabled={props.isLoading}
               name={'number_of_days_to_meet_business'}
               label={translate(
                 'application_and_admission_settings_form.number_of_days_to_meet_business.label'
@@ -196,6 +213,7 @@ export default function ApplicationAndAdmissionSettingsForm() {
           </Grid>
           <Grid item md={6}>
             <RHFTextField
+              disabled={props.isLoading}
               name={'indicator_of_project_duration_days'}
               label={translate(
                 'application_and_admission_settings_form.Indicator_of_project_duration_days.label'
@@ -210,6 +228,7 @@ export default function ApplicationAndAdmissionSettingsForm() {
             <Stack direction="row" justifyContent="center">
               <Stack justifyContent="center" direction="row" gap={3}>
                 <Button
+                  disabled={props.isLoading}
                   sx={{
                     color: 'text.primary',
                     width: { xs: '100%', sm: '200px' },
@@ -221,6 +240,7 @@ export default function ApplicationAndAdmissionSettingsForm() {
                   {translate('button.back')}
                 </Button>
                 <Button
+                  disabled={props.isLoading}
                   type="submit"
                   variant="outlined"
                   sx={{

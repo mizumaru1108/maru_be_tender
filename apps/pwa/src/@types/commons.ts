@@ -193,6 +193,7 @@ export interface TrackProps {
 }
 
 export type AdmissionProps = {
+  proposal_config_id?: string;
   applying_status: boolean;
   starting_date: string;
   ending_date: string;

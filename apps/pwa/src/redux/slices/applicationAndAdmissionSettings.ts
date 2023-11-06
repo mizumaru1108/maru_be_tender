@@ -55,7 +55,7 @@ export const getApplicationAdmissionSettings = (role: string) => async () => {
   try {
     dispatch(slice.actions.setLoading(true));
 
-    const response = await axiosInstance.get(`proposal/aa`, {
+    const response = await axiosInstance.get(`/tender/proposal/configs/fetch`, {
       headers: { 'x-hasura-role': role },
     });
     if (response.data.statusCode === 200) {
