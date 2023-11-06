@@ -72,7 +72,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                     <Typography variant="h5">{formatCapitalizeText(item?.name)}</Typography>
                   </Grid>
                   <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'row' }} gap={2}>
-                    <Grid item md={4} xs={12} sx={styleBox}>
+                    <Grid item md={3} xs={12} sx={styleBox}>
                       <Image
                         src={`/icons/rial-currency.svg`}
                         alt="icon_riyals"
@@ -91,7 +91,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                         {fCurrencyNumber(item.total_reserved_budget || 0)}
                       </Typography>
                     </Grid>
-                    <Grid item md={4} xs={12} sx={styleBox}>
+                    <Grid item md={3} xs={12} sx={styleBox}>
                       <Image
                         src={`/icons/rial-currency.svg`}
                         alt="icon_riyals"
@@ -102,13 +102,23 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                         {translate('content.administrative.statistic.heading.totalReservedBudget')}
                       </Typography>
                       <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                        {/* {activeRole === 'tender_ceo'
-                          ? fCurrencyNumber(item.total_spending_budget_by_ceo || 0)
-                          : fCurrencyNumber(item.total_spending_budget || 0)} */}
-                        {fCurrencyNumber(item.total_spending_budget || 0)}
+                        {fCurrencyNumber(item.total_spending_budget_by_ceo || 0)}
                       </Typography>
                     </Grid>
-                    <Grid item md={4} xs={12} sx={styleBox}>
+                    <Grid item md={3} xs={12} sx={styleBox}>
+                      <Image
+                        src={`/icons/rial-currency.svg`}
+                        alt="icon_riyals"
+                        sx={{ display: 'inline-flex' }}
+                      />
+                      <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                        {translate('content.administrative.statistic.heading.totalRemainingBudget')}
+                      </Typography>
+                      <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                        {fCurrencyNumber(item.total_remaining_budget || 0)}
+                      </Typography>
+                    </Grid>
+                    <Grid item md={3} xs={12} sx={styleBox}>
                       <Image
                         src={`/icons/rial-currency.svg`}
                         alt="icon_riyals"

@@ -555,6 +555,7 @@ const ar = {
           totalReservedBudget: 'إجمالي الميزانية المحجوزة',
           totalSpendBudget: 'إجمالي ميزانية الإنفاق',
           totalAcceptingBudget: 'إجمالي الميزانية المقبولة',
+          totalRemainingBudget: 'الميزانية المتبقية',
         },
       },
       project_details: {
@@ -2657,7 +2658,8 @@ const ar = {
   modal: {
     disable_proposal: {
       message: 'عزيزي المستخدم، يمكنك البدء في التقديم اعتبارًا من الأسبوع المقبل',
-      exceed_limit: 'لا يمكنك إنشاء سبب بالفعل على الحد من شركتنا',
+      exceed_limit: 'لا يمكنك إنشاء سبب بالفعل على الحد من شركتنا.',
+      exceed_day_limit: 'لا يمكنك إنشاء سبب بالفعل في الحد الأقصى لليوم من شركتنا.',
     },
     headline: {
       track: 'مسار',

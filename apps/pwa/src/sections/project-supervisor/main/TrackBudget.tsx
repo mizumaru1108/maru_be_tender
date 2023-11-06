@@ -86,7 +86,29 @@ export default function TrackBudget(props: IPropTrackBudgets) {
                     {translate('content.administrative.statistic.heading.totalReservedBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {fCurrencyNumber(track?.total_spending_budget || 0)}
+                    {fCurrencyNumber(track?.total_spending_budget_by_ceo || 0)}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item md={2} xs={12}>
+                <Box
+                  sx={{
+                    borderRadius: 1,
+                    backgroundColor: '#fff',
+                    p: 2,
+                  }}
+                >
+                  <Image
+                    src={`/icons/rial-currency.svg`}
+                    alt="icon_riyals"
+                    sx={{ display: 'inline-flex' }}
+                  />
+                  <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                    {/* {translate('content.administrative.statistic.heading.totalSpendBudget')} */}
+                    {translate('content.administrative.statistic.heading.totalRemainingBudget')}
+                  </Typography>
+                  <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                    {fCurrencyNumber(track?.total_budget || 0)}
                   </Typography>
                 </Box>
               </Grid>

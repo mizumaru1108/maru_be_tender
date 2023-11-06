@@ -25,6 +25,8 @@ const initialState: TrackState = {
     total_budget: 0,
     total_spending_budget: 0,
     total_reserved_budget: 0,
+    total_spending_budget_by_ceo: 0,
+    total_remaining_budget: 0,
   },
   tracks: [
     {

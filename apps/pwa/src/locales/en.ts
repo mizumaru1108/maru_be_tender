@@ -554,6 +554,7 @@ const en = {
           totalReservedBudget: 'Total reserved budget',
           totalSpendBudget: 'Total spend budget',
           totalAcceptingBudget: 'Total accepting budgets',
+          totalRemainingBudget: 'Total remaining budget',
         },
       },
       project_details: {
@@ -2637,7 +2638,8 @@ const en = {
   modal: {
     disable_proposal: {
       message: 'Dear User, you can start submitting from next week.',
-      exceed_limit: 'You cannot create cause already on limit from our company',
+      exceed_limit: 'You cannot create cause already on limit from our company.',
+      exceed_day_limit: 'You cannot create cause already on day limit from our company.',
     },
     headline: {
       track: 'Track',
