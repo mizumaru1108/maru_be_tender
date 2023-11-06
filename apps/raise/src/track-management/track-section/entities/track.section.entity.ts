@@ -17,4 +17,5 @@ export class TrackSectionEntity {
   section_budget: number = 0;
   section_spending_budget: number = 0;
   section_reserved_budget: number = 0;
+  section_spending_budget_by_ceo: number = 0;
 }

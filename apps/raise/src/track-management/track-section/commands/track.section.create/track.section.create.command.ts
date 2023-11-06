@@ -3,6 +3,7 @@ import { TrackSectionCreateDto } from '../../dtos/requests/track.sections.create
 import { TrackSectionEntity } from '../../entities/track.section.entity';
 import { TrackSectionRepository } from '../../repositories/track.section.repository';
 import { PrismaService } from '../../../../prisma/prisma.service';
+import { async } from 'rxjs';
 export class TrackSectionCreateCommand {
   sections: TrackSectionCreateDto[];
 }
@@ -39,7 +40,22 @@ export class TrackSectionCreateCommandHandler
       //   },
       // );
 
-      await this.trackSectionRepo.arraySave(sections[0].track_id, sections);
+      await this.prismaService.$transaction(
+        async (session) => {
+          const tx =
+            session instanceof PrismaService ? session : this.prismaService;
+
+          await this.trackSectionRepo.arraySave(
+            sections[0].track_id,
+            sections,
+            tx,
+          );
+        },
+        {
+          timeout: 50000,
+        },
+      );
+
       return {
         data: {
           created_sections: sections,

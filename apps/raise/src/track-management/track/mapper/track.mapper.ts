@@ -227,7 +227,8 @@ export class TrackMapper {
               // sSesction.proposal = res.proposals;
               section.section_reserved_budget = res.sum_reserved_budget;
               section.section_spending_budget = res.sum_spending_budget;
-
+              section.section_spending_budget_by_ceo =
+                res.sum_spending_budget_by_ceo;
               // // sum the parent too
               // buildedTrack.total_reserved_budget += res.sum_reserved_budget;
               // buildedTrack.total_spending_budget += res.sum_spending_budget;
@@ -251,12 +252,14 @@ export class TrackMapper {
                     // sSesction.proposal = res.proposals;
                     sSection.section_reserved_budget = res.sum_reserved_budget;
                     sSection.section_spending_budget = res.sum_spending_budget;
+                    sSection.section_spending_budget_by_ceo =
+                      res.sum_spending_budget_by_ceo;
 
                     // sum the parent too
                     section.section_reserved_budget += res.sum_reserved_budget;
-
-                    // sum the parent too
                     section.section_spending_budget += res.sum_spending_budget;
+                    section.section_spending_budget_by_ceo +=
+                      res.sum_spending_budget_by_ceo;
                   }
 
                   sSection.child_track_section = [];
@@ -283,6 +286,8 @@ export class TrackMapper {
                             res.sum_reserved_budget;
                           ssSection.section_spending_budget =
                             res.sum_spending_budget;
+                          ssSection.section_spending_budget_by_ceo =
+                            res.sum_spending_budget_by_ceo;
 
                           // sum the parrent too
                           sSection.section_reserved_budget +=
@@ -295,6 +300,12 @@ export class TrackMapper {
                             res.sum_spending_budget;
                           section.section_spending_budget +=
                             res.sum_spending_budget;
+
+                          // sum the parent too
+                          sSection.section_spending_budget_by_ceo +=
+                            res.sum_spending_budget_by_ceo;
+                          section.section_spending_budget_by_ceo +=
+                            res.sum_spending_budget_by_ceo;
                         }
 
                         // if second child has child then loop third child
@@ -324,6 +335,8 @@ export class TrackMapper {
                                   res.sum_reserved_budget;
                                 sssSection.section_spending_budget =
                                   res.sum_spending_budget;
+                                sssSection.section_spending_budget_by_ceo =
+                                  res.sum_spending_budget_by_ceo;
 
                                 // sum the parrent too
                                 ssSection.section_reserved_budget +=
@@ -340,6 +353,14 @@ export class TrackMapper {
                                   res.sum_spending_budget;
                                 section.section_spending_budget +=
                                   res.sum_spending_budget;
+
+                                // sum the parent too
+                                ssSection.section_spending_budget_by_ceo +=
+                                  res.sum_spending_budget_by_ceo;
+                                sSection.section_spending_budget_by_ceo +=
+                                  res.sum_spending_budget_by_ceo;
+                                section.section_spending_budget_by_ceo +=
+                                  res.sum_spending_budget_by_ceo;
                               }
 
                               ssSection.child_track_section.push(sssSection);
