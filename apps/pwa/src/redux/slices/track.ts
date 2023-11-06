@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { TrackProps, UpdateTrackProps } from '../../@types/commons';
+import { TrackProps, TrackSection, UpdateTrackProps } from '../../@types/commons';
 import axiosInstance from 'utils/axios';
 import { dispatch } from 'redux/store';
 
@@ -112,7 +112,14 @@ export const getTracksById = (role: string, track_id: string) => async () => {
       headers: { 'x-hasura-role': role },
     });
     if (response.data.statusCode === 200) {
-      dispatch(slice.actions.setTrack(response.data.data));
+      const tmpValue: TrackProps = {
+        ...response.data.data,
+        sections: response?.data?.data?.sections.sort(
+          (orderA: TrackSection, orderB: TrackSection) =>
+            (orderB?.budget || 0) - (orderA?.budget || 0)
+        ),
+      };
+      dispatch(slice.actions.setTrack(tmpValue));
     }
   } catch (error) {
     dispatch(slice.actions.hasError(error));

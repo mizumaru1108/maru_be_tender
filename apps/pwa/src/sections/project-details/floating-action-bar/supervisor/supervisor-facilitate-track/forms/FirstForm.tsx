@@ -128,7 +128,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       if (section !== null && section.id === sectionId) {
         remainSectionBudget =
           (section.budget ? section.budget : 0) -
-          (section.section_spending_budget ? section.section_spending_budget : 0);
+          (section.section_spending_budget_by_ceo ? section.section_spending_budget_by_ceo : 0);
         break;
       }
     }

@@ -174,6 +174,7 @@ export interface TrackSection {
   is_deleted?: boolean;
   section_spending_budget?: number;
   section_reserved_budget?: number;
+  section_spending_budget_by_ceo?: number;
 }
 
 export interface TrackProps {
