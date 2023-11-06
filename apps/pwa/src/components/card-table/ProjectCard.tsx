@@ -225,9 +225,10 @@ const ProjectCard = ({
             <Box
               sx={{
                 borderRadius: '10px',
-                backgroundColor: title.inquiryStatus
-                  ? inquiryStatusStyle[title.inquiryStatus].backgroundColor
-                  : '#fff',
+                backgroundColor:
+                  (role === 'tender_client' && title.inquiryStatus === 'pending_canceled'
+                    ? inquiryStatusStyle.ongoing.backgroundColor
+                    : inquiryStatusStyle[title.inquiryStatus].backgroundColor) || '#fff',
                 p: '5px',
               }}
             >
@@ -235,12 +236,21 @@ const ProjectCard = ({
                 variant="h6"
                 gutterBottom
                 sx={{
-                  color: inquiryStatusStyle[title.inquiryStatus].color,
+                  color:
+                    role === 'tender_client' && title.inquiryStatus === 'pending_canceled'
+                      ? inquiryStatusStyle.ongoing.color
+                      : inquiryStatusStyle[title.inquiryStatus].color,
                   fontSize: '15px !important',
                   mb: '0px',
                 }}
               >
-                {translate(`commons.chip_${title.inquiryStatus}`)}
+                {translate(
+                  `commons.chip_${
+                    title.inquiryStatus === 'pending_canceled' && role === 'tender_client'
+                      ? 'ongoing'
+                      : title.inquiryStatus
+                  }`
+                )}
               </Typography>
             </Box>
           )}

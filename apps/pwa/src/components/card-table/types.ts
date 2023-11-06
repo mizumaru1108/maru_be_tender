@@ -7,6 +7,7 @@ export type EnumInquiryStatus =
   | 'canceled'
   | 'completed'
   | 'pending'
+  | 'pending_canceled'
   | 'on_revision'
   | 'ongoing'
   | 'asked_for_amandement';
@@ -118,6 +119,7 @@ export type ProjectCardPropsBE = {
     | 'CANCELED'
     | 'COMPLETED'
     | 'PENDING'
+    | 'PENDING_CANCELED'
     | 'ON_REVISION'
     | 'ASKED_FOR_AMANDEMENT'
     | 'ONGOING';

@@ -314,11 +314,23 @@ const ProjectCardBE = ({
             })} */}
           {destination === 'previous-funding-requests' && status && (
             <Chip
-              label={translate(`${inquiryStatusStyle[status].title}`)}
+              label={translate(
+                `${
+                  role === 'tender_client' && status === 'PENDING_CANCELED'
+                    ? inquiryStatusStyle.ONGOING.title
+                    : inquiryStatusStyle[status].title
+                }`
+              )}
               sx={{
                 fontWeight: 500,
-                backgroundColor: inquiryStatusStyle[status].backgroundColor,
-                color: inquiryStatusStyle[status].color,
+                backgroundColor:
+                  role === 'tender_client' && status === 'PENDING_CANCELED'
+                    ? inquiryStatusStyle.ONGOING.backgroundColor
+                    : inquiryStatusStyle[status].backgroundColor,
+                color:
+                  role === 'tender_client' && status === 'PENDING_CANCELED'
+                    ? inquiryStatusStyle.ONGOING.color
+                    : inquiryStatusStyle[status].color,
                 borderRadius: '10px',
               }}
             />
