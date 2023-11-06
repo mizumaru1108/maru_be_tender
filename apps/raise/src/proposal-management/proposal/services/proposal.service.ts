@@ -639,6 +639,7 @@ export class ProposalService {
         InnerStatusEnum.ACCEPTED_BY_MODERATOR;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalUpdatePayload.support_outputs = null;
       proposalUpdatePayload.track_id = track.id;
 
       /* if track not ALL, only for supervisor in defined track */
@@ -1039,6 +1040,8 @@ export class ProposalService {
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalUpdatePayload.project_manager_id = null;
+      proposalUpdatePayload.support_outputs = null;
+
       // proposalUpdatePayload.supervisor_id = null;
 
       /* log */
