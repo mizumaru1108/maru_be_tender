@@ -88,12 +88,36 @@ export default function GeneralFirstForm({
       section_id_level_one: Yup.string().required(
         translate('errors.cre_proposal.section_level.section_id_level_one.required')
       ),
-      section_id_level_two: Yup.string(),
-      section_id_level_three: Yup.string(),
-      section_id_level_four: Yup.string(),
+      ...(sectionLevelTwo.length
+        ? {
+            section_id_level_two: Yup.string().required(
+              translate('errors.cre_proposal.section_level.section_id_level_two.required')
+            ),
+          }
+        : {
+            section_id_level_two: Yup.string(),
+          }),
+      ...(sectionLevelThree.length
+        ? {
+            section_id_level_three: Yup.string().required(
+              translate('errors.cre_proposal.section_level.section_id_level_three.required')
+            ),
+          }
+        : {
+            section_id_level_three: Yup.string(),
+          }),
+      ...(sectionLevelFour.length
+        ? {
+            section_id_level_four: Yup.string().required(
+              translate('errors.cre_proposal.section_level.section_id_level_four.required')
+            ),
+          }
+        : {
+            section_id_level_four: Yup.string(),
+          }),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isVat]);
+  }, [isVat, sectionLevelTwo, sectionLevelThree, sectionLevelFour]);
 
   const tmpStep1 = useMemo(() => step1, [step1]);
   const methods = useForm<SupervisorStep1>({
@@ -104,7 +128,7 @@ export default function GeneralFirstForm({
       },
   });
 
-  const { handleSubmit, watch, setValue, setError } = methods;
+  const { handleSubmit, watch, setValue, clearErrors } = methods;
 
   const support_type = watch('support_type');
   const paymentNumber = watch('payment_number');
@@ -205,6 +229,7 @@ export default function GeneralFirstForm({
         setSectionLevelThree(lvl2DataFound?.child_track_section ?? []);
         setSectionLevelFour([]);
 
+        clearErrors('section_id_level_two');
         setBudgetError({
           open: false,
           message: '',
@@ -219,6 +244,7 @@ export default function GeneralFirstForm({
 
         setSectionLevelFour(lvl3DataFound?.child_track_section ?? []);
 
+        clearErrors('section_id_level_three');
         setBudgetError({
           open: false,
           message: '',
@@ -228,6 +254,7 @@ export default function GeneralFirstForm({
         setValue('section_id', e.target.value);
         setValue('section_id_level_four', e.target.value);
 
+        clearErrors('section_id_level_four');
         setBudgetError({
           open: false,
           message: '',
