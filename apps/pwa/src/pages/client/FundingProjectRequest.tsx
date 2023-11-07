@@ -67,7 +67,10 @@ const FundingProjectRequest = () => {
         totalProposal > application_admission_settings?.number_of_allowing_projects
       ) {
         setOpenModal(true);
-        setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_limit']);
+        const checkExistMessage = [...errorMessage].includes('modal.disable_proposal.exceed_limit');
+        if (!checkExistMessage) {
+          setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_limit']);
+        }
       }
       if (
         application_admission_settings?.starting_date &&
@@ -78,10 +81,16 @@ const FundingProjectRequest = () => {
         const isBetweenDate = isDateBetween(todayDate, startDate, endingDate);
         if (!isBetweenDate) {
           setOpenModal(true);
-          setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_day_limit']);
+          const checkExistMessage = [...errorMessage].includes(
+            'modal.disable_proposal.exceed_day_limit'
+          );
+          if (!checkExistMessage) {
+            setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_day_limit']);
+          }
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalProposal, application_admission_settings, todayDate]);
 
   if (fetching || isFetchingData) return <>{translate('pages.common.loading')}</>;

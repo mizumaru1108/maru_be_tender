@@ -69,6 +69,7 @@ function ModeratorActionBar() {
         moderator_payload: {
           // project_track: data.path,
           track_id: data.track_id,
+          // supervisor_id: data?.supervisors !== 'all' ? data?.supervisors : null,
           ...(data.supervisors !== 'all' && { supervisor_id: data.supervisors }),
         },
         message: 'تم قبول المشروع من قبل مسوؤل الفرز',
