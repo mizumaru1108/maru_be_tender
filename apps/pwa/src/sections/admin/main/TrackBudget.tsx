@@ -99,7 +99,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                           )}
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                          {fCurrencyNumber(item.total_spending_budget || 0)}
+                          {fCurrencyNumber(item.total_spending_budget_by_ceo || 0)}
                         </Typography>
                       </Grid>
                       <Grid item md={3} xs={12} sx={styleBox}>

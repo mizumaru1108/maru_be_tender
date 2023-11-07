@@ -316,7 +316,8 @@ const ProjectCardBE = ({
             <Chip
               label={translate(
                 `${
-                  role === 'tender_client' && status === 'PENDING_CANCELED'
+                  role === 'tender_client' &&
+                  (status === 'PENDING_CANCELED' || status === 'PENDING')
                     ? inquiryStatusStyle.ONGOING.title
                     : inquiryStatusStyle[status].title
                 }`
@@ -324,11 +325,13 @@ const ProjectCardBE = ({
               sx={{
                 fontWeight: 500,
                 backgroundColor:
-                  role === 'tender_client' && status === 'PENDING_CANCELED'
+                  role === 'tender_client' &&
+                  (status === 'PENDING_CANCELED' || status === 'PENDING')
                     ? inquiryStatusStyle.ONGOING.backgroundColor
                     : inquiryStatusStyle[status].backgroundColor,
                 color:
-                  role === 'tender_client' && status === 'PENDING_CANCELED'
+                  role === 'tender_client' &&
+                  (status === 'PENDING_CANCELED' || status === 'PENDING')
                     ? inquiryStatusStyle.ONGOING.color
                     : inquiryStatusStyle[status].color,
                 borderRadius: '10px',

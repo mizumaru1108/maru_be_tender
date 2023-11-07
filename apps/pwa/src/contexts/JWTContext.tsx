@@ -335,6 +335,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('i18nextLng');
     localStorage.removeItem('activeRoleIndex');
+
     datadogRum.clearUser();
     dispatch({
       type: Types.Logout,

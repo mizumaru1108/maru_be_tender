@@ -24,6 +24,7 @@ const OPTIONS = [
 type SortingCardTableProps = {
   isLoading?: boolean;
   onChangeSorting: (event: string) => void;
+  value?: string;
   sx?: SxProps<Theme>;
 };
 
@@ -54,6 +55,7 @@ export default function SortingProjectStatusCardTable({
         label={translate('sorting.label.outter_status')}
         onChange={handleSortingFilter}
         disabled={isLoading}
+        MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
         {...other}
       >
         <MenuItem value="-">

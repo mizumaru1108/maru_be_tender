@@ -9,12 +9,13 @@ import {
   Theme,
 } from '@mui/material';
 import useLocales from 'hooks/useLocales';
-import React from 'react';
+import React, { useState } from 'react';
 
 type SortingCardTableProps = {
   isLoading?: boolean;
   onChangeSorting: (event: string) => void;
   sx?: SxProps<Theme>;
+  value?: number;
 };
 
 export default function SortingCardTable({
@@ -23,9 +24,11 @@ export default function SortingCardTable({
   ...other
 }: SortingCardTableProps) {
   const { translate } = useLocales();
+  const [value, setValue] = useState<number>((other.value as number) || 0);
 
   const handleSortingFilter = (event: any) => {
     const value = event.target.value as number;
+    setValue(value);
     let tmpFilter = '';
     if (value < 3) {
       tmpFilter = '&sorting_field=project_name';
@@ -45,28 +48,21 @@ export default function SortingCardTable({
         tmpFilter = '&sort=desc';
       }
     }
-    // console.log({ tmpFilter });
     onChangeSorting(tmpFilter);
-    // if (!!tmpFilter) {
-    // }
   };
 
   return (
     <FormControl fullWidth sx={{ minWidth: 120, paddingBottom: 2 }}>
       <InputLabel htmlFor="grouped-select">{translate('sorting.label.sorting')}</InputLabel>
       <Select
-        defaultValue={0}
         id="grouped-select"
         label="Sorting"
         onChange={handleSortingFilter}
         disabled={isLoading}
         {...other}
+        value={value}
       >
-        <MenuItem value={0}>
-          {/* <em>None</em> */}
-          {/* No Sorting */}
-          {translate('sorting.label.no_sorting')}
-        </MenuItem>
+        <MenuItem value={0}>{translate('sorting.label.no_sorting')}</MenuItem>
         <ListSubheader
           sx={{
             backgroundColor: '#fff',

@@ -28,12 +28,14 @@ export default function TrackBudget(props: IPropTrackBudgets) {
     const totalBudget = track.total_budget ?? 0;
     const reservedBudget = track.total_reserved_budget ?? 0;
     const spendBudget = track.total_spending_budget ?? 0;
-    const remainBudget = totalBudget - (reservedBudget + spendBudget);
+    const spendBudgetCeo = track.total_spending_budget_by_ceo ?? 0;
+    const remainBudget = totalBudget - (reservedBudget + spendBudgetCeo);
 
     return {
       totalBudget,
       reservedBudget,
       spendBudget,
+      spendBudgetCeo,
       remainBudget,
     };
   }, [track]);

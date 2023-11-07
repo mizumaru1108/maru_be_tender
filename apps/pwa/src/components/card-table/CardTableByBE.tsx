@@ -6,7 +6,6 @@ import SortingCardTable from 'components/sorting/sorting';
 import SortingProjectStatusCardTable from 'components/sorting/sorting-project-status';
 import SortingProjectTrackCardTable from 'components/sorting/sorting-project-track';
 import SvgIconStyle from 'components/SvgIconStyle';
-import { FEATURE_PREVIOUS_PROPOSAL_FILTER } from 'config';
 import dayjs from 'dayjs';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
@@ -16,6 +15,7 @@ import { getTrackList } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
 import useAuth from '../../hooks/useAuth';
 import axiosInstance from '../../utils/axios';
+import { getSortingValue } from '../../utils/formatNumber';
 import CardTableLoading from './CardTableLoading';
 import ProjectTableBE from './ProjectCardBE';
 import { CardTablePropsByBE } from './types';
@@ -40,12 +40,13 @@ CardTablePropsByBE) {
   const navigate = useNavigate();
 
   // redux
-  const { loadingProps, track_list } = useSelector((state) => state.proposal);
+  const { loadingProps } = useSelector((state) => state.proposal);
   // console.log({ track_list });
   // loading state when fetching
   const [isLoading, setIsLoading] = React.useState(false);
   // cards Data state
   const [cardData, setCardData] = useState([]);
+  const [tmpCardData, setTmpCardData] = useState([]);
   // for pagination
   const [limit, setLimit] = useState(limitShowCard);
   const [page, setPage] = useState(1);
@@ -76,27 +77,22 @@ CardTablePropsByBE) {
         `${url}${sortingFilter}${searchName}${statusFilter}${clientName}${startDate}${trackFilter}${sortingRangedDate.filter}`,
         {
           headers: { 'x-hasura-role': activeRole! },
-          // params: {
-          //   include_relations: 'client_data',
-          // },
         }
       );
       if (rest) {
         const tmpTotalPage = Math.ceil(rest.data.total / limit);
         setTotalPage(tmpTotalPage);
         if (destination === 'incoming-amandment-requests') {
-          setCardData(
-            rest.data.data.map((item: any) => ({
-              ...item.proposal,
-              user: item.proposal.user,
-            }))
-          );
+          const tmpValues = rest.data.data.map((item: any) => ({
+            ...item.proposal,
+            user: item.proposal.user,
+          }));
+          setCardData(tmpValues);
         } else {
-          setCardData(
-            rest.data.data.map((item: any) => ({
-              ...item,
-            }))
-          );
+          const tmpValue = rest.data.data.map((item: any) => ({
+            ...item,
+          }));
+          setCardData(tmpValue);
         }
       }
     } catch (err) {
@@ -140,7 +136,7 @@ CardTablePropsByBE) {
     clientName,
     startDate,
     trackFilter,
-    sortingRangedDate.filter,
+    sortingRangedDate,
   ]);
 
   const handleLimitChange = (event: any) => {
@@ -167,11 +163,44 @@ CardTablePropsByBE) {
         const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
         const filter = `&range_start_date=${sortingRangedDate.startDate}&range_end_date=${tmpNewEndDate}`;
         setSortingRangedDate({ ...sortingRangedDate, endDate: event, filter: filter });
+        localStorage.setItem('filter_date_range', filter);
       }
     }
   };
 
-  // console.log({ sortingRangedDate });
+  React.useEffect(() => {
+    // for date range filter
+    const filter = localStorage.getItem('filter_date_range');
+    const filterArr = localStorage.getItem('filter_date_range')?.split('&');
+    const startDateStorage = (filterArr && filterArr[1]?.split('=')[1]) || '';
+    const endDate = (filterArr && filterArr[2]?.split('=')[1]) || '';
+    if (startDateStorage && endDate && filter) {
+      setSortingRangedDate({ startDate: startDateStorage, endDate: endDate, filter: filter });
+    }
+
+    // for project name filter
+    const projectName = localStorage.getItem('filter_project_name');
+    if (projectName) {
+      setSearchName(projectName);
+    }
+    // for client name filter
+    const clientName = localStorage.getItem('filter_client_name');
+    if (clientName) {
+      setClientName(clientName);
+    }
+
+    // for project status filter
+    const projectStatus = localStorage.getItem('filter_project_status');
+    if (projectStatus) {
+      setStatusFilter(projectStatus);
+    }
+
+    // for project track filter
+    const projectTrack = localStorage.getItem('filter_project_track');
+    if (projectTrack) {
+      setTrackFilter(projectTrack);
+    }
+  }, []);
 
   React.useEffect(() => {
     dispatch(getTrackList(1, activeRole! as string));
@@ -181,7 +210,7 @@ CardTablePropsByBE) {
     fetchingPrevious();
   }, [fetchingPrevious, page, limit]);
 
-  if (loadingProps.laodingTrack) {
+  if (loadingProps.laodingTrack || isLoading) {
     return <CardTableLoading />;
   }
 
@@ -195,13 +224,16 @@ CardTablePropsByBE) {
           <SearchField
             data-cy="search_field"
             isLoading={isLoading}
+            value={searchName ? searchName.split('=')[1] : ''}
             label={translate('sorting.label.project_name')}
             onReturnSearch={(value) => {
               setSearchName(`&project_name=${value}`);
+              localStorage.setItem('filter_project_name', `&project_name=${value}`);
             }}
             reFetch={() => {
               setPage(1);
               setSearchName('');
+              localStorage.removeItem('filter_project_name');
             }}
             fullWidth
           />
@@ -213,6 +245,7 @@ CardTablePropsByBE) {
             <Grid item md={2} xs={6}>
               <SortingCardTable
                 isLoading={isLoading}
+                value={getSortingValue(sortingFilter)}
                 onChangeSorting={(event: string) => {
                   setPage(1);
                   setSortingFilter(event);
@@ -271,9 +304,11 @@ CardTablePropsByBE) {
             <Grid item md={2} xs={6}>
               <SortingProjectTrackCardTable
                 isLoading={isLoading}
+                value={trackFilter ? trackFilter.split('=')[1] : '-'}
                 onChangeSorting={(event: string) => {
                   setPage(1);
                   setTrackFilter(event);
+                  localStorage.setItem('filter_project_track', event);
                 }}
               />
             </Grid>
@@ -283,9 +318,11 @@ CardTablePropsByBE) {
             <Grid item md={2} xs={6}>
               <SortingProjectStatusCardTable
                 isLoading={isLoading}
+                value={statusFilter ? statusFilter.split('=')[1] : '-'}
                 onChangeSorting={(event: string) => {
                   setPage(1);
                   setStatusFilter(event);
+                  localStorage.setItem('filter_project_status', event);
                 }}
               />
             </Grid>
@@ -295,15 +332,18 @@ CardTablePropsByBE) {
             <Grid item md={3} xs={6}>
               <SearchField
                 fullWidth
-                data-cy="search_client_name_field"
                 isLoading={isLoading}
+                value={clientName ? clientName.split('=')[1] : ''}
+                data-cy="search_client_name_field"
                 label={translate('client_list_headercell.client_name')}
                 onReturnSearch={(value) => {
                   setClientName(`&client_name=${value}`);
+                  localStorage.setItem('filter_client_name', `&client_name=${value}`);
                 }}
                 reFetch={() => {
                   setPage(1);
                   setClientName('');
+                  localStorage.removeItem('filter_client_name');
                   // if (reFetch) reFetch();
                 }}
               />
@@ -339,6 +379,7 @@ CardTablePropsByBE) {
                 fullWidth
                 disabled={isLoading}
                 label={translate('sorting.label.range_start_date')}
+                value={sortingRangedDate.startDate}
                 focused={true}
                 onReturnDate={(event: string) => {
                   setPage(1);
@@ -398,7 +439,6 @@ CardTablePropsByBE) {
               {...item}
               inquiryStatus={item.outter_status === 'PENDING_CANCELED' ? 'canceled' : null}
               created_at={new Date(item.created_at)}
-              // cardFooterButtonAction={cardFooterButtonAction}
               cardFooterButtonAction={
                 destination === 'incoming-amandment-requests' &&
                 item.outter_status === 'ASKED_FOR_AMANDEMENT'

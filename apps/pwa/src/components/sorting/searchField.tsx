@@ -16,9 +16,11 @@ export default function SearchField({
   reFetch,
   ...other
 }: Props & TextFieldProps) {
-  const [searchName, setSearchName] = React.useState<string | null>(null);
+  const [searchName, setSearchName] = React.useState<string | null>(
+    (other?.value as string) || null
+  );
   const { translate } = useLocales();
-  const debouncedValue = useDebounce<string>(searchName || '', 500);
+  const debouncedValue = useDebounce<string>(searchName || '', 2000);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setSearchName(event.target.value);

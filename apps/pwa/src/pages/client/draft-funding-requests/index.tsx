@@ -31,7 +31,7 @@ function DraftsFundingRequest() {
         <ContentStyle>
           <ProposalDisableModal
             open={isOpen}
-            message={translate('modal.disable_proposal.message')}
+            message={[translate('modal.disable_proposal.message')]}
           />
           <CardTableBE
             resource={gettingSavedProjects}

@@ -226,7 +226,8 @@ const ProjectCard = ({
               sx={{
                 borderRadius: '10px',
                 backgroundColor:
-                  (role === 'tender_client' && title.inquiryStatus === 'pending_canceled'
+                  (role === 'tender_client' &&
+                  (title.inquiryStatus === 'pending_canceled' || title.inquiryStatus === 'pending')
                     ? inquiryStatusStyle.ongoing.backgroundColor
                     : inquiryStatusStyle[title.inquiryStatus].backgroundColor) || '#fff',
                 p: '5px',
@@ -237,7 +238,9 @@ const ProjectCard = ({
                 gutterBottom
                 sx={{
                   color:
-                    role === 'tender_client' && title.inquiryStatus === 'pending_canceled'
+                    role === 'tender_client' &&
+                    (title.inquiryStatus === 'pending_canceled' ||
+                      title.inquiryStatus === 'pending')
                       ? inquiryStatusStyle.ongoing.color
                       : inquiryStatusStyle[title.inquiryStatus].color,
                   fontSize: '15px !important',
@@ -246,7 +249,9 @@ const ProjectCard = ({
               >
                 {translate(
                   `commons.chip_${
-                    title.inquiryStatus === 'pending_canceled' && role === 'tender_client'
+                    (title.inquiryStatus === 'pending_canceled' ||
+                      title.inquiryStatus === 'pending') &&
+                    role === 'tender_client'
                       ? 'ongoing'
                       : title.inquiryStatus
                   }`

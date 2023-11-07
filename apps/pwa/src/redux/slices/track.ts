@@ -96,8 +96,9 @@ export const getTracks = (role: string) => async () => {
       const mapping = tracks.map((v: TrackProps) => {
         const totalBudget = v.total_budget ?? 0;
         const reservedBudget = v.total_reserved_budget ?? 0;
-        const spendBudget = v.total_spending_budget ?? 0;
-        const remainBudget = totalBudget - (reservedBudget + spendBudget);
+        // const spendBudget = v.total_spending_budget ?? 0;
+        const spendBudgetCeo = v.total_spending_budget_by_ceo ?? 0;
+        const remainBudget = totalBudget - (reservedBudget + spendBudgetCeo);
 
         return { ...v, total_remaining_budget: remainBudget };
       });

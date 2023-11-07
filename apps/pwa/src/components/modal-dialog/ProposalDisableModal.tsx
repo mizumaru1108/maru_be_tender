@@ -9,7 +9,7 @@ type Props = {
   // handleClose: () => void;
   // onSumbit: () => void;
   redirectType?: 'home' | 'back';
-  message: string;
+  message: string[];
 };
 
 function ProposalDisableModal({ open, message, redirectType = 'home' }: Props) {
@@ -30,9 +30,15 @@ function ProposalDisableModal({ open, message, redirectType = 'home' }: Props) {
       maxWidth="md"
       content={
         <Stack sx={{ display: 'flex', textAlign: 'center', alignItems: 'center', py: 7, px: 5 }}>
-          <Typography color="#000000" sx={{ fontSize: '19.39px', fontWeight: 400 }}>
+          {/* <Typography color="#000000" sx={{ fontSize: '19.39px', fontWeight: 400 }}>
             {message}
-          </Typography>
+          </Typography> */}
+          {message.length > 0 &&
+            message.map((item, index) => (
+              <Typography key={index} color="#000000" sx={{ fontSize: '19.39px', fontWeight: 400 }}>
+                {translate(item)}
+              </Typography>
+            ))}
         </Stack>
       }
       showCloseIcon={false}

@@ -1,16 +1,5 @@
-import { StyledProps } from '@material-ui/styles';
-import {
-  FormControl,
-  InputLabel,
-  ListSubheader,
-  MenuItem,
-  Select,
-  SelectProps,
-  SxProps,
-  Theme,
-} from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, SelectProps } from '@mui/material';
 import useLocales from 'hooks/useLocales';
-import React from 'react';
 import { useSelector } from 'redux/store';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 
@@ -27,6 +16,7 @@ const OPTIONS = [
 type SortingCardTableProps = {
   isLoading?: boolean;
   onChangeSorting: (event: string) => void;
+  value?: string;
 };
 
 export default function SortingProjectTrackCardTable({
@@ -58,6 +48,7 @@ export default function SortingProjectTrackCardTable({
         label={translate('sorting.label.project_tracks')}
         onChange={handleSortingFilter}
         disabled={isLoading}
+        MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
         {...other}
       >
         <MenuItem value="-">

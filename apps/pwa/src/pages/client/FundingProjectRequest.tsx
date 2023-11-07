@@ -2,12 +2,18 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Box, Container } from '@mui/system';
 import Page from 'components/Page';
+import dayjs from 'dayjs';
 import useLocales from 'hooks/useLocales';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FundingProjectRequestForm from 'sections/client/funding-project-request';
+import { useQuery } from 'urql';
 import ProposalDisableModal from '../../components/modal-dialog/ProposalDisableModal';
 import { FEATURE_DISABLE_PROPOSAL_DATE } from '../../config';
 import useAuth from '../../hooks/useAuth';
+import { getClientTotalProposal } from '../../queries/client/getClientTotalProposal';
+import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
+import { dispatch, useSelector } from '../../redux/store';
+import { isDateAbove } from '../../utils/checkIsAboveDate';
 import { hasDayExpired } from '../../utils/checkIsExpired';
 
 const FundingProjectRequest = () => {
@@ -15,6 +21,7 @@ const FundingProjectRequest = () => {
   const { activeRole, user } = useAuth();
 
   const [openModal, setOpenModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string[]>([]);
 
   // selector for applicationAndAdmissionSettings
   // const {
@@ -32,6 +39,7 @@ const FundingProjectRequest = () => {
   // const { data, fetching, error } = result;
 
   // const totalProposal: number = data?.proposal_aggregate?.aggregate?.count;
+  // const todayDate = dayjs().format('DD-MM-YYYY');
 
   const isOpen =
     FEATURE_DISABLE_PROPOSAL_DATE && hasDayExpired({ expiredDate: FEATURE_DISABLE_PROPOSAL_DATE })
@@ -53,12 +61,35 @@ const FundingProjectRequest = () => {
   // }, [activeRole]);
 
   // useEffect(() => {
-  //   if (!!totalProposal && application_admission_settings?.number_of_allowing_projects) {
+  //   if (
+  //     !!totalProposal &&
+  //     application_admission_settings?.number_of_allowing_projects &&
+  //     application_admission_settings.applying_status
+  //   ) {
+  //     const isEndingDateBefore = isDateAbove(
+  //       dayjs(application_admission_settings.ending_date).format('DD-MM-YYYY'),
+  //       todayDate,
+  //       'before'
+  //     );
+  //     const isStartingDateAbove = isDateAbove(
+  //       dayjs(application_admission_settings.starting_date).format('DD-MM-YYYY'),
+  //       todayDate,
+  //       'above'
+  //     );
+  //     console.log({
+  //       isEndingDateBefore,
+  //       isStartingDateAbove,
+  //     });
   //     if (totalProposal > application_admission_settings?.number_of_allowing_projects) {
   //       setOpenModal(true);
+  //       setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_limit']);
+  //     }
+  //     if (isEndingDateBefore || isStartingDateAbove) {
+  //      setOpenModal(true);
+  //       setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_day_limit']);
   //     }
   //   }
-  // }, [totalProposal, application_admission_settings.number_of_allowing_projects]);
+  // }, [totalProposal, application_admission_settings]);
 
   // if (fetching || isFetchingData) return <>{translate('pages.common.loading')}</>;
   // if (error || errorFetchingData) return <>{translate('pages.common.error')}</>;
@@ -70,11 +101,7 @@ const FundingProjectRequest = () => {
         <ContentStyle>
           <ProposalDisableModal
             open={isOpen || openModal}
-            message={
-              openModal
-                ? translate('modal.disable_proposal.exceed_limit')
-                : translate('modal.disable_proposal.message')
-            }
+            message={openModal ? errorMessage : [translate('modal.disable_proposal.message')]}
           />
           <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
             <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>

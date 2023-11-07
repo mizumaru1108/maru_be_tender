@@ -31,12 +31,14 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
     const totalBudget = track.total_budget ?? 0;
     const reservedBudget = track.total_reserved_budget ?? 0;
     const spendBudget = track.total_spending_budget ?? 0;
-    const remainBudget = totalBudget - (reservedBudget + spendBudget);
+    const spendBudgetCeo = track.total_spending_budget_by_ceo ?? 0;
+    const remainBudget = totalBudget - (reservedBudget + spendBudgetCeo);
 
     return {
       totalBudget,
       reservedBudget,
       spendBudget,
+      spendBudgetCeo,
       remainBudget,
     };
   }, [track]);
@@ -94,7 +96,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                       fontWeight: 700,
                     }}
                   >
-                    {track ? fCurrencyNumber(track.total_spending_budget || 0) : fCurrencyNumber(0)}
+                    {track ? fCurrencyNumber(track.total_reserved_budget || 0) : fCurrencyNumber(0)}
                   </Typography>
                 </Box>
               </Grid>
@@ -115,7 +117,9 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                     {translate('content.administrative.statistic.heading.totalSpendBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {track ? fCurrencyNumber(track.total_reserved_budget || 0) : fCurrencyNumber(0)}
+                    {track
+                      ? fCurrencyNumber(track.total_spending_budget_by_ceo || 0)
+                      : fCurrencyNumber(0)}
                   </Typography>
                 </Box>
               </Grid>

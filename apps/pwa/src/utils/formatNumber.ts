@@ -51,3 +51,19 @@ export const arabicToAlphabetical = (input: string): string => {
 
   return result;
 };
+
+export const getSortingValue = (input: string): number => {
+  if (input === '&sorting_field=project_name&sort=asc') {
+    return 1;
+  }
+  if (input === '&sorting_field=project_name&sort=desc') {
+    return 2;
+  }
+  if (input === '&sort=asc') {
+    return 3;
+  }
+  if (input === '&sort=desc') {
+    return 4;
+  }
+  return 0;
+};
