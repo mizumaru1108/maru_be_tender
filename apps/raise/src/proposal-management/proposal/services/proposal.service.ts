@@ -647,6 +647,11 @@ export class ProposalService {
         proposalUpdatePayload.supervisor_id =
           request.moderator_payload.supervisor_id;
       }
+      // when there no supervisor_id inside dto, cause it will be affected reqeust in process fetch logic for tender_project_supervisor
+      // it will update proposal.supervisor_id to null
+      else {
+        proposalUpdatePayload.supervisor_id = null;
+      }
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.ACCEPT;
