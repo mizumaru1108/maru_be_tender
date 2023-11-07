@@ -60,12 +60,12 @@ export default function NestedArrayLvlThree({
 
   const handleRemove = (index: number) => {
     remove(index);
-    objectEmpty(
-      watch(
-        `sections.${nestIndex}.child_track_section.${nestedOneIndex}.child_track_section.${nestedTwoIndex}.child_track_section[${index}]`
-      ),
-      index
-    );
+    // objectEmpty(
+    //   watch(
+    //     `sections.${nestIndex}.child_track_section.${nestedOneIndex}.child_track_section.${nestedTwoIndex}.child_track_section[${index}]`
+    //   ),
+    //   index
+    // );
   };
   const tmpWatch = watch(
     `sections.${nestIndex}.child_track_section.${nestedOneIndex}.child_track_section.${nestedTwoIndex}.child_track_section`

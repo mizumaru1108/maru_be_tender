@@ -13,3 +13,15 @@ export function isDateAbove(dateOrigin: any, dateCompare: any, type: 'above' | '
   }
   return originDate === compareDate;
 }
+
+export function isDateBetween(dateToCheck: any, startDate: any, endDate: any) {
+  const [checkDay, checkMonth, checkYear] = dateToCheck.split('-');
+  const [startDay, startMonth, startYear] = startDate.split('-');
+  const [endDay, endMonth, endYear] = endDate.split('-');
+
+  const checkDate = new Date(checkYear, checkMonth - 1, checkDay);
+  const startDateObj = new Date(startYear, startMonth - 1, startDay);
+  const endDateObj = new Date(endYear, endMonth - 1, endDay);
+
+  return checkDate >= startDateObj && checkDate <= endDateObj;
+}

@@ -98,7 +98,7 @@ export const getTracks = (role: string) => async () => {
         const reservedBudget = v.total_reserved_budget ?? 0;
         // const spendBudget = v.total_spending_budget ?? 0;
         const spendBudgetCeo = v.total_spending_budget_by_ceo ?? 0;
-        const remainBudget = totalBudget - (reservedBudget + spendBudgetCeo);
+        const remainBudget = totalBudget - (reservedBudget + (spendBudgetCeo - reservedBudget));
 
         return { ...v, total_remaining_budget: remainBudget };
       });

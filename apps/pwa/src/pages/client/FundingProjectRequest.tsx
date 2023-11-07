@@ -13,7 +13,7 @@ import useAuth from '../../hooks/useAuth';
 import { getClientTotalProposal } from '../../queries/client/getClientTotalProposal';
 import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
 import { dispatch, useSelector } from '../../redux/store';
-import { isDateAbove } from '../../utils/checkIsAboveDate';
+import { isDateAbove, isDateBetween } from '../../utils/checkIsAboveDate';
 import { hasDayExpired } from '../../utils/checkIsExpired';
 
 const FundingProjectRequest = () => {
@@ -24,22 +24,22 @@ const FundingProjectRequest = () => {
   const [errorMessage, setErrorMessage] = useState<string[]>([]);
 
   // selector for applicationAndAdmissionSettings
-  // const {
-  //   application_admission_settings,
-  //   isLoading: isFetchingData,
-  //   error: errorFetchingData,
-  // } = useSelector((state) => state.applicationAndAdmissionSettings);
+  const {
+    application_admission_settings,
+    isLoading: isFetchingData,
+    error: errorFetchingData,
+  } = useSelector((state) => state.applicationAndAdmissionSettings);
 
-  // const [result, reExecute] = useQuery({
-  //   query: getClientTotalProposal,
-  //   variables: { submitter_user_id: user?.id },
-  //   pause: !user?.id,
-  //   // pause: true,
-  // });
-  // const { data, fetching, error } = result;
+  const [result, reExecute] = useQuery({
+    query: getClientTotalProposal,
+    variables: { submitter_user_id: user?.id },
+    pause: !user?.id,
+    // pause: true,
+  });
+  const { data, fetching, error } = result;
 
-  // const totalProposal: number = data?.proposal_aggregate?.aggregate?.count;
-  // const todayDate = dayjs().format('DD-MM-YYYY');
+  const totalProposal: number = data?.proposal_aggregate?.aggregate?.count;
+  const todayDate = dayjs().format('DD-MM-YYYY');
 
   const isOpen =
     FEATURE_DISABLE_PROPOSAL_DATE && hasDayExpired({ expiredDate: FEATURE_DISABLE_PROPOSAL_DATE })
@@ -56,46 +56,38 @@ const FundingProjectRequest = () => {
     flexDirection: 'column',
   }));
 
-  // useEffect(() => {
-  //   dispatch(getApplicationAdmissionSettings(activeRole!));
-  // }, [activeRole]);
+  useEffect(() => {
+    dispatch(getApplicationAdmissionSettings(activeRole!));
+  }, [activeRole]);
 
-  // useEffect(() => {
-  //   if (
-  //     !!totalProposal &&
-  //     application_admission_settings?.number_of_allowing_projects &&
-  //     application_admission_settings.applying_status
-  //   ) {
-  //     const isEndingDateBefore = isDateAbove(
-  //       dayjs(application_admission_settings.ending_date).format('DD-MM-YYYY'),
-  //       todayDate,
-  //       'before'
-  //     );
-  //     const isStartingDateAbove = isDateAbove(
-  //       dayjs(application_admission_settings.starting_date).format('DD-MM-YYYY'),
-  //       todayDate,
-  //       'above'
-  //     );
-  //     console.log({
-  //       isEndingDateBefore,
-  //       isStartingDateAbove,
-  //     });
-  //     if (totalProposal > application_admission_settings?.number_of_allowing_projects) {
-  //       setOpenModal(true);
-  //       setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_limit']);
-  //     }
-  //     if (isEndingDateBefore || isStartingDateAbove) {
-  //      setOpenModal(true);
-  //       setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_day_limit']);
-  //     }
-  //   }
-  // }, [totalProposal, application_admission_settings]);
+  useEffect(() => {
+    if (!!totalProposal && application_admission_settings.applying_status) {
+      if (
+        application_admission_settings?.number_of_allowing_projects &&
+        totalProposal > application_admission_settings?.number_of_allowing_projects
+      ) {
+        setOpenModal(true);
+        setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_limit']);
+      }
+      if (
+        application_admission_settings?.starting_date &&
+        application_admission_settings?.ending_date
+      ) {
+        const startDate = dayjs(application_admission_settings.starting_date).format('DD-MM-YYYY');
+        const endingDate = dayjs(application_admission_settings.ending_date).format('DD-MM-YYYY');
+        const isBetweenDate = isDateBetween(todayDate, startDate, endingDate);
+        if (!isBetweenDate) {
+          setOpenModal(true);
+          setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_day_limit']);
+        }
+      }
+    }
+  }, [totalProposal, application_admission_settings, todayDate]);
 
-  // if (fetching || isFetchingData) return <>{translate('pages.common.loading')}</>;
-  // if (error || errorFetchingData) return <>{translate('pages.common.error')}</>;
+  if (fetching || isFetchingData) return <>{translate('pages.common.loading')}</>;
+  if (error || errorFetchingData) return <>{translate('pages.common.error')}</>;
 
   return (
-    // <Page title="Funding Project Requests">
     <Page title={translate('pages.common.funding_requests')}>
       <Container>
         <ContentStyle>

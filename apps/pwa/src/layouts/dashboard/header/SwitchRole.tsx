@@ -18,6 +18,13 @@ function SwitchRole() {
   const [role, setRole] = React.useState<FusionAuthRoles>(activeRole!);
 
   const handleChange = (event: SelectChangeEvent) => {
+    localStorage.removeItem('filter_date_range');
+    localStorage.removeItem('filter_project_name');
+    localStorage.removeItem('filter_client_name');
+    localStorage.removeItem('filter_project_status');
+    localStorage.removeItem('filter_sorting');
+    localStorage.removeItem('filter_project_track');
+
     const roleIndex = roles?.indexOf(event.target.value as FusionAuthRoles);
     localStorage.setItem('activeRoleIndex', roleIndex);
     changeActiveRole(event.target.value as FusionAuthRoles);

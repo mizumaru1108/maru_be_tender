@@ -76,12 +76,11 @@ export default function RHFBaseRepeater({
 
   const handleRemove = (index: number) => {
     remove(index);
-    objectEmpty(watch(`sections[${index}]`), index);
+    // objectEmpty(watch(`sections[${index}]`), index);
   };
 
-  const tmpWatchlastIndex = watch(`sections[0]`);
   const tmpWatch = watch(`sections`);
-
+  // console.log({ tmpWatch });
   return (
     <>
       <Grid container alignItems="center">

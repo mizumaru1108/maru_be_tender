@@ -32,7 +32,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
     const reservedBudget = track.total_reserved_budget ?? 0;
     const spendBudget = track.total_spending_budget ?? 0;
     const spendBudgetCeo = track.total_spending_budget_by_ceo ?? 0;
-    const remainBudget = totalBudget - (reservedBudget + spendBudgetCeo);
+    const remainBudget = totalBudget - (reservedBudget + (spendBudgetCeo - reservedBudget));
 
     return {
       totalBudget,
@@ -117,9 +117,11 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                     {translate('content.administrative.statistic.heading.totalSpendBudget')}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {track
-                      ? fCurrencyNumber(track.total_spending_budget_by_ceo || 0)
-                      : fCurrencyNumber(0)}
+                    {fCurrencyNumber(
+                      track?.total_spending_budget_by_ceo && track?.total_reserved_budget
+                        ? track?.total_spending_budget_by_ceo - track?.total_reserved_budget
+                        : 0
+                    )}
                   </Typography>
                 </Box>
               </Grid>

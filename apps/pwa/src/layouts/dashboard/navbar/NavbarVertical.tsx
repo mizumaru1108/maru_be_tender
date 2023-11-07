@@ -99,6 +99,14 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
           localStorage.removeItem('authCodeMeeting');
           localStorage.removeItem('valueStartDate');
           localStorage.removeItem('valueEndDate');
+
+          localStorage.removeItem('filter_date_range');
+          localStorage.removeItem('filter_project_name');
+          localStorage.removeItem('filter_client_name');
+          localStorage.removeItem('filter_project_status');
+          localStorage.removeItem('filter_sorting');
+          localStorage.removeItem('filter_project_track');
+
           dispatch(setFiltered(''));
           dispatch(setActiveConversationId(null));
           dispatch(setConversation([]));

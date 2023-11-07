@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { AmandementFields } from '../../../../@types/proposal';
 import BaseField from '../../../../components/hook-form/BaseField';
+import { useSelector } from '../../../../redux/store';
 import { arabicToAlphabetical } from '../../../../utils/formatNumber';
 type FormValuesProps = {
   amount_required_fsupport: number;
@@ -27,7 +28,13 @@ type Props = {
 const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   // console.log({ defaultValues });
   const { translate } = useLocales();
-  const [budgetError, setBudgetError] = useState(false);
+  const { application_admission_settings } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
+  const [error, setError] = useState({
+    open: false,
+    message: '',
+  });
   const isDisabled =
     !!revised && revised.hasOwnProperty('amount_required_fsupport') ? false : !!revised && true;
   useEffect(() => {
@@ -71,7 +78,7 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props
     watch,
   } = methods;
 
-  const handleOnSubmit = (data: FormValuesProps) => {
+  const onFormPassValidation = (data: FormValuesProps) => {
     const initialValue = 0;
     const sumWithInitial = data.detail_project_budgets.reduce(
       (previousValue, currentValue) => previousValue + currentValue.amount,
@@ -79,7 +86,10 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props
     );
     if (sumWithInitial === data.amount_required_fsupport) {
       window.scrollTo(0, 0);
-      setBudgetError(false);
+      setError({
+        open: false,
+        message: '',
+      });
       const tmpValue: FormValuesProps = {
         ...data,
         amount_required_fsupport: Number(
@@ -91,66 +101,38 @@ const ProjectBudgetForm = ({ onSubmit, children, defaultValues, revised }: Props
         })),
       };
       onSubmit(tmpValue);
-    } else setBudgetError(true);
+    } else {
+      setError({
+        open: true,
+        message: translate('budget_error_message'),
+      });
+    }
   };
-  // const ProjectBudgetData = [
-  //   {
-  //     type: 'numberField',
-  //     name: 'amount_required_fsupport',
-  //     label: 'funding_project_request_form4.amount_required_fsupport.label',
-  //     placeholder: 'funding_project_request_form4.amount_required_fsupport.placeholder',
-  //     md: 12,
-  //     xs: 12,
-  //   },
-  //   {
-  //     type: 'repeater',
-  //     name: 'detail_project_budgets',
-  //     repeaterFields: [
-  //       {
-  //         type: 'textField',
-  //         name: 'clause',
-  //         label: 'funding_project_request_form4.item.label',
-  //         placeholder: 'funding_project_request_form4.item.placeholder',
-  //         md: 3,
-  //         xs: 12,
-  //       },
-  //       {
-  //         type: 'textField',
-  //         name: 'explanation',
-  //         label: 'funding_project_request_form4.explanation.label',
-  //         placeholder: 'funding_project_request_form4.explanation.placeholder',
-  //         md: 5,
-  //         xs: 12,
-  //       },
-  //       {
-  //         type: 'numberField',
-  //         name: 'amount',
-  //         label: 'funding_project_request_form4.amount.label',
-  //         placeholder: 'funding_project_request_form4.amount.placeholder',
-  //         md: 3,
-  //         xs: 12,
-  //       },
-  //     ],
-  //     enableAddButton: true,
-  //     enableRemoveButton: true,
-  //   },
-  // ];
+
+  const handleOnSubmit = (data: FormValuesProps) => {
+    if (application_admission_settings.applying_status) {
+      if (data?.amount_required_fsupport <= application_admission_settings.hieght_project_budget) {
+        onFormPassValidation(data);
+      } else {
+        setError({
+          open: true,
+          message: `${translate('modal.disable_proposal.exceed_budgeet_limit')} (${
+            application_admission_settings?.hieght_project_budget || 0
+          })`,
+        });
+      }
+    } else {
+      onFormPassValidation(data);
+    }
+  };
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(handleOnSubmit)}>
       <Grid container rowSpacing={4} columnSpacing={2}>
-        {budgetError && (
+        {error.open && (
           <Grid item md={12}>
-            <Alert severity="error">{translate('budget_error_message')}</Alert>
+            <Alert severity="error">{error.message}</Alert>
           </Grid>
         )}
-        {/* <FormGenerator data={ProjectBudgetData} /> */}
-        {/* <RHFRepeater
-          name={name}
-          repeaterFields={repeaterFields}
-          enableAddButton={enableAddButton}
-          enableRemoveButton={enableRemoveButton}
-          {...other}
-        /> */}
         <Grid item md={12} xs={12}>
           <RHFTextField
             disabled={

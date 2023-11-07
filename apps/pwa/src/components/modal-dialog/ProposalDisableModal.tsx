@@ -6,8 +6,6 @@ import useLocales from '../../hooks/useLocales';
 
 type Props = {
   open: boolean;
-  // handleClose: () => void;
-  // onSumbit: () => void;
   redirectType?: 'home' | 'back';
   message: string[];
 };
@@ -62,7 +60,7 @@ function ProposalDisableModal({ open, message, redirectType = 'home' }: Props) {
       }
       isOpen={open}
       onClose={() => {
-        console.log('disable proposal this week');
+        console.log('proposal disabled');
       }}
       styleContent={{ padding: '1em', backgroundColor: '#fff' }}
     />
