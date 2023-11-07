@@ -3,12 +3,14 @@ import { useSelector } from 'redux/store';
 import PaymentsTable from './PaymentsTable';
 import { fCurrencyNumber } from 'utils/formatNumber';
 import useLocales from 'hooks/useLocales';
+import useAuth from 'hooks/useAuth';
 //
 import FloatingCloseReport from '../../floating-close-report/index';
 import { useEffect, useState } from 'react';
 import FloatingCashierToFinance from 'sections/project-details/floating-action-bar/cashier';
 
 function CashierPaymentsPage() {
+  const { activeRole } = useAuth();
   const { translate } = useLocales();
   const theme = useTheme();
   const { proposal, loadingPayment } = useSelector((state) => state.proposal);
@@ -42,13 +44,13 @@ function CashierPaymentsPage() {
         setPayemntDone(false);
       }
 
-      const payment_first_initiate =
-        proposal.payments.some((el: { status: string }) => el.status === 'accepted_by_finance') ||
-        proposal.payments.every((el: { status: string }) => el.status === 'accepted_by_finance') ||
-        proposal.payments.some((el: { status: string }) => el.status !== 'uploaded_by_cashier') ||
-        proposal.payments.some((el: { status: string }) => el.status !== 'done');
+      const payment_first_initiate = [...proposal.payments]
+        .sort((a, b) => Number(a.order) - Number(b.order))
+        .map((el) => el);
 
-      if (payment_first_initiate) {
+      const payment_batch_one = payment_first_initiate[0].status === 'accepted_by_finance';
+
+      if (payment_batch_one) {
         setInitiatePayment(true);
       } else {
         setInitiatePayment(false);
@@ -147,8 +149,10 @@ function CashierPaymentsPage() {
         </Grid>
         <PaymentsTable />
 
-        {paymentDone ? <FloatingCloseReport /> : null}
-        {initiatePayment && !paymentDone ? <FloatingCashierToFinance /> : null}
+        {paymentDone && activeRole === 'tender_cashier' ? <FloatingCloseReport /> : null}
+        {initiatePayment && !paymentDone && activeRole === 'tender_cashier' ? (
+          <FloatingCashierToFinance />
+        ) : null}
       </Grid>
     </>
   );
