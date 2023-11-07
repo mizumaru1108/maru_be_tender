@@ -67,7 +67,10 @@ function DraftsFundingRequest() {
         totalProposal > application_admission_settings?.number_of_allowing_projects
       ) {
         setOpenModal(true);
-        setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_limit']);
+        const checkExistMessage = [...errorMessage].includes('modal.disable_proposal.exceed_limit');
+        if (!checkExistMessage) {
+          setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_limit']);
+        }
       }
       if (
         application_admission_settings?.starting_date &&
@@ -78,7 +81,12 @@ function DraftsFundingRequest() {
         const isBetweenDate = isDateBetween(todayDate, startDate, endingDate);
         if (!isBetweenDate) {
           setOpenModal(true);
-          setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_day_limit']);
+          const checkExistMessage = [...errorMessage].includes(
+            'modal.disable_proposal.exceed_day_limit'
+          );
+          if (!checkExistMessage) {
+            setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_day_limit']);
+          }
         }
       }
     }
