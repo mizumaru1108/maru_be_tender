@@ -90,6 +90,7 @@ function DraftsFundingRequest() {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalProposal, application_admission_settings, todayDate]);
 
   if (fetching || isFetchingData) return <>{translate('pages.common.loading')}</>;
