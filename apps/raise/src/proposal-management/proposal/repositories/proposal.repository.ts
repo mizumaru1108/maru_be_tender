@@ -1381,7 +1381,11 @@ export class ProposalRepository {
         take: limit,
         skip: offset,
         include: {
-          user: true,
+          user: {
+            include: {
+              client_data: true,
+            },
+          },
           region_detail: true,
           governorate_detail: true,
         },

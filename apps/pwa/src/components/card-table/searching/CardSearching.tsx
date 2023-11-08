@@ -178,7 +178,7 @@ function CardSearching({
                 }}
                 content={{
                   projectName: item.project_name,
-                  organizationName: item.user.employee_name,
+                  organizationName: item.user?.client_data?.entity ?? item.user?.employee_name,
                   sentSection: item.state,
                   employee: item.user.employee_name,
                   createdAtClient: new Date(item.created_at),

@@ -16,7 +16,7 @@ import { ProjectCardPropsBE } from './types';
 import moment from 'moment';
 import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
-import { useMutation } from 'urql';
+import { useMutation, useQuery } from 'urql';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
 import axiosInstance from '../../utils/axios';
 import { LoadingButton } from '@mui/lab';
@@ -276,8 +276,6 @@ const ProjectCardBE = ({
 
     return formattedDate;
   };
-
-  // console.log({user})
 
   return (
     <Card sx={{ backgroundColor: '#fff' }}>

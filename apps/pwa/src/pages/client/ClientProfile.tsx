@@ -34,7 +34,7 @@ const mockData = {
   license_file: 'image.',
 };
 
-interface ClientProfiles {
+export interface ClientProfiles {
   bank_informations: bank_information[];
   client_data: IEditedValues;
   email: string;

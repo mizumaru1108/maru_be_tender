@@ -749,6 +749,8 @@ export class ProposalService {
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.PROJECT_MANAGER;
       proposalUpdatePayload.supervisor_id = currentUser.id;
+      proposalUpdatePayload.support_outputs =
+        request.supervisor_payload.support_outputs ?? proposal?.support_outputs;
 
       /* custom logic if the track is CONCESSIONAL_GRANTS */
       if (proposal?.track?.with_consultation === true) {
@@ -855,6 +857,9 @@ export class ProposalService {
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
       proposalUpdatePayload.state = TenderAppRoleEnum.CEO;
       proposalUpdatePayload.project_manager_id = currentUser.id;
+      proposalUpdatePayload.support_outputs =
+        request?.project_manager_payload?.support_outputs ??
+        proposal?.support_outputs;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.ACCEPT;
@@ -884,7 +889,9 @@ export class ProposalService {
           reasons_to_accept: proposal?.reasons_to_accept,
           remote_or_insite: proposal?.remote_or_insite,
           state: proposal?.state,
-          support_outputs: proposal?.support_outputs,
+          support_outputs:
+            request?.project_manager_payload?.support_outputs ??
+            proposal?.support_outputs,
           support_type: proposal?.support_type,
           target_group_age: proposal?.target_group_age,
           target_group_num: proposal?.target_group_num,
@@ -914,7 +921,9 @@ export class ProposalService {
           number_of_payments_by_supervisor:
             proposal?.number_of_payments_by_supervisor,
           support_goal_id: proposal?.support_goal_id,
-          support_outputs: proposal?.support_outputs,
+          support_outputs:
+            request?.project_manager_payload?.support_outputs ??
+            proposal?.support_outputs,
           support_type: proposal?.support_type,
           vat: proposal?.vat,
           vat_percentage: proposal?.vat_percentage,
@@ -1167,7 +1176,8 @@ export class ProposalService {
           reasons_to_accept: proposal?.reasons_to_accept,
           remote_or_insite: proposal?.remote_or_insite,
           state: proposal?.state,
-          support_outputs: proposal?.support_outputs,
+          support_outputs:
+            request?.ceo_payload?.support_outputs ?? proposal?.support_outputs,
           support_type: proposal?.support_type,
           target_group_age: proposal?.target_group_age,
           target_group_num: proposal?.target_group_num,
@@ -1197,7 +1207,8 @@ export class ProposalService {
           number_of_payments_by_supervisor:
             proposal?.number_of_payments_by_supervisor,
           support_goal_id: proposal?.support_goal_id,
-          support_outputs: proposal?.support_outputs,
+          support_outputs:
+            request?.ceo_payload?.support_outputs ?? proposal?.support_outputs,
           support_type: proposal?.support_type,
           vat: proposal?.vat,
           vat_percentage: proposal?.vat_percentage,
