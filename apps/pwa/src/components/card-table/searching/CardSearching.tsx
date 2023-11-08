@@ -1,20 +1,21 @@
 import { Box, Grid, Pagination, Stack, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { CardSearchingProps, EnumInquiryStatus, FilteredValues } from '../types';
-import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import EmptyContent from 'components/EmptyContent';
+import useAuth from 'hooks/useAuth';
+import useLocales from 'hooks/useLocales';
+import { useSnackbar } from 'notistack';
+import { useEffect, useState } from 'react';
+import { dispatch, useSelector } from 'redux/store';
+import axiosInstance from 'utils/axios';
+import { Proposal } from '../../../@types/proposal';
+import { getApplicationAdmissionSettings } from '../../../redux/slices/applicationAndAdmissionSettings';
+import { CheckIsInProcessProposal } from '../../../utils/checkIsInProcessProposal';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 import CardTableNoData from '../CardTableNoData';
 import LoadingPage from '../LoadingPage';
-import useLocales from 'hooks/useLocales';
-import axiosInstance from 'utils/axios';
-import useAuth from 'hooks/useAuth';
-import { useSelector } from 'redux/store';
 import ProjectCard from '../ProjectCard';
-import { generateHeader } from '../../../utils/generateProposalNumber';
-import { useSnackbar } from 'notistack';
-import { Proposal } from '../../../@types/proposal';
-import { CheckIsInProcessProposal } from '../../../utils/checkIsInProcessProposal';
-import EmptyContent from 'components/EmptyContent';
+import { CardSearchingProps, EnumInquiryStatus, FilteredValues } from '../types';
 
 function CardSearching({
   title,
@@ -25,12 +26,18 @@ function CardSearching({
   const { activeRole } = useAuth();
   const [page, setPage] = useState(1);
   const { translate } = useLocales();
+
+  // Redux
   const {
     sort,
     filtered,
     activeOptionsSearching,
     outter_status: filter_outter_status,
   } = useSelector((state) => state.searching);
+  const { isLoading: isFetchingData, error: errorFetchingData } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
+
   const { enqueueSnackbar } = useSnackbar();
   const [params, setParams] = useState({
     limit: limitShowCard ? limitShowCard : 6,
@@ -122,7 +129,28 @@ function CardSearching({
     // eslint-disable-next-line
   }, [params, page]);
 
-  useEffect(() => {}, [data]);
+  useEffect(() => {
+    dispatch(getApplicationAdmissionSettings(activeRole!));
+  }, [activeRole]);
+
+  if (loading || isFetchingData) {
+    return <LoadingPage />;
+  }
+  if (errorFetchingData)
+    return (
+      <>
+        {' '}
+        <EmptyContent
+          title="لا يوجد بيانات"
+          img="/assets/icons/confirmation_information.svg"
+          description={`${translate('errors.something_wrong')}`}
+          errorMessage={errorFetchingData?.message || undefined}
+          sx={{
+            '& span.MuiBox-root': { height: 160 },
+          }}
+        />
+      </>
+    );
 
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>
@@ -130,7 +158,7 @@ function CardSearching({
         <Typography variant="h4">{title}</Typography>
       </Grid>
 
-      {loading && <LoadingPage />}
+      {/* {loading && <LoadingPage />} */}
       {data && !loading ? (
         data?.data.map((item: Proposal, index: any) => {
           const isInProcess = CheckIsInProcessProposal(item, activeRole!);

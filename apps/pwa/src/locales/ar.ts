@@ -605,6 +605,7 @@ const ar = {
     },
   },
   errors: {
+    something_wrong: 'هناك خطأ ما',
     role: 'اختر أحد هذه الأدوار',
     notes: 'ملاحظة مطلوبة',
     empty_data: 'لاتوجد بيانات',
@@ -1052,6 +1053,7 @@ const ar = {
       descending: 'تنازلي',
       created_at: 'أنشئ في',
       outter_status: 'الحالة',
+      updated_at: 'تم التحديث في',
       no_value: 'الجميع',
       project_tracks: 'مسارات المشروع',
       start_project_date: 'تاريخ بدء المشروع',
@@ -1676,6 +1678,8 @@ const ar = {
       success: 'تم تحديث تكوينات الاقتراح بنجاح',
     },
     errors: {
+      limit_number_of_days_to_meet_business:
+        'يجب أن يكون عدد الأيام اللازمة لتلبية الأعمال أكبر من مؤشر أيام مدة المشروع',
       applying_status: {
         required: 'تم تمكين التقديم للمستخدمين مطلوب',
       },

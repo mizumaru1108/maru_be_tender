@@ -1,12 +1,16 @@
 import { Box, Button, Grid, Stack, TextField, Typography } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import useLocales from 'hooks/useLocales';
 import { useEffect, useState } from 'react';
+import useAuth from '../../hooks/useAuth';
+import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
+import { dispatch, useSelector } from '../../redux/store';
+import EmptyContent from '../EmptyContent';
+import FilterModal from './FilterModal';
+import LoadingPage from './LoadingPage';
 import ProjectCard from './ProjectCard';
 import { CardTableProps } from './types';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FilterModal from './FilterModal';
-import { useQuery } from 'urql';
-import useLocales from 'hooks/useLocales';
 
 function CardTable({
   resource,
@@ -22,6 +26,8 @@ function CardTable({
 }: CardTableProps) {
   // const [result, reexecuteQuery] = useQuery(resource);
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
+
   const [page, setPage] = useState(1);
   // The params that will be used with the query later on
   const [params, setParams] = useState({
@@ -30,10 +36,13 @@ function CardTable({
     order_by: {},
   });
 
+  // Redux
+  const { isLoading: isFetchingData, error: errorFetchingData } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
+
   // For the filter Modal
   const [open, setOpen] = useState(false);
-  // For the ASC|DESC order
-  const [ascOrder, setAscOrder] = useState(false);
 
   // For the Filter Modal
   const handleOpenFilter = () => setOpen(true);
@@ -60,6 +69,29 @@ function CardTable({
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [params, page]);
+
+  useEffect(() => {
+    dispatch(getApplicationAdmissionSettings(activeRole!));
+  }, [activeRole]);
+
+  if (isFetchingData) {
+    return <LoadingPage />;
+  }
+  if (errorFetchingData)
+    return (
+      <>
+        {' '}
+        <EmptyContent
+          title="لا يوجد بيانات"
+          img="/assets/icons/confirmation_information.svg"
+          description={`${translate('errors.something_wrong')}`}
+          errorMessage={errorFetchingData?.message || undefined}
+          sx={{
+            '& span.MuiBox-root': { height: 160 },
+          }}
+        />
+      </>
+    );
 
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>

@@ -24,10 +24,18 @@ interface Props extends BoxProps {
   title?: string;
   img?: string;
   description?: string;
+  errorMessage?: string;
   actionButton?: React.ReactNode;
 }
 
-export default function EmptyContent({ title, description, img, actionButton, ...other }: Props) {
+export default function EmptyContent({
+  title,
+  description,
+  img,
+  actionButton,
+  errorMessage,
+  ...other
+}: Props) {
   const { translate } = useLocales();
   const theme = useTheme();
 
@@ -53,6 +61,11 @@ export default function EmptyContent({ title, description, img, actionButton, ..
       {description && (
         <Typography variant="body1" sx={{ color: 'text.secondary' }}>
           {description}
+        </Typography>
+      )}
+      {errorMessage && (
+        <Typography variant="body1" sx={{ color: 'error.main' }}>
+          {errorMessage}
         </Typography>
       )}
       {actionButton && actionButton}

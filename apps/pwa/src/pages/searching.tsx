@@ -10,6 +10,8 @@ function PreviousSupportRequests() {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
 
+  // redux: selector for applicationAndAdmissionSettings
+
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: '100%',
     minHeight: '100vh',

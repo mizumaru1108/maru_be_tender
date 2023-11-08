@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Alert, Button, Divider, Grid, Stack, Typography } from '@mui/material';
 import dayjs from 'dayjs';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import * as Yup from 'yup';
@@ -26,6 +26,11 @@ export default function ApplicationAndAdmissionSettingsForm(props: Props) {
   const navigate = useNavigate();
   const { translate } = useLocales();
   const { activeRole } = useAuth();
+
+  const [errorState, setErrorState] = useState({
+    open: false,
+    message: '',
+  });
 
   const {
     application_admission_settings,
@@ -95,7 +100,16 @@ export default function ApplicationAndAdmissionSettingsForm(props: Props) {
   const watchStartDate = watch('starting_date');
 
   const onSubmit = async (data: AdmissionProps) => {
-    props.onSubmit(data);
+    if (data.indicator_of_project_duration_days > data.number_of_days_to_meet_business) {
+      setErrorState({
+        open: true,
+        message: translate(
+          'application_and_admission_settings_form.errors.limit_number_of_days_to_meet_business'
+        ),
+      });
+    } else {
+      props.onSubmit(data);
+    }
   };
 
   const onReturn = () => {
@@ -198,19 +212,7 @@ export default function ApplicationAndAdmissionSettingsForm(props: Props) {
               type="number"
             />
           </Grid>
-          <Grid item md={6}>
-            <RHFTextField
-              disabled={props.isLoading}
-              name={'number_of_days_to_meet_business'}
-              label={translate(
-                'application_and_admission_settings_form.number_of_days_to_meet_business.label'
-              )}
-              placeholder={translate(
-                'application_and_admission_settings_form.number_of_days_to_meet_business.placeholder'
-              )}
-              type="number"
-            />
-          </Grid>
+
           <Grid item md={6}>
             <RHFTextField
               disabled={props.isLoading}
@@ -224,6 +226,27 @@ export default function ApplicationAndAdmissionSettingsForm(props: Props) {
               type="number"
             />
           </Grid>
+
+          <Grid item md={6}>
+            <RHFTextField
+              disabled={props.isLoading}
+              name={'number_of_days_to_meet_business'}
+              label={translate(
+                'application_and_admission_settings_form.number_of_days_to_meet_business.label'
+              )}
+              placeholder={translate(
+                'application_and_admission_settings_form.number_of_days_to_meet_business.placeholder'
+              )}
+              type="number"
+            />
+          </Grid>
+
+          {errorState.open && (
+            <Grid item md={12} sx={{ my: 2 }}>
+              <Alert severity="error">{errorState.message}</Alert>
+            </Grid>
+          )}
+
           <Grid item xs={12}>
             <Stack direction="row" justifyContent="center">
               <Stack justifyContent="center" direction="row" gap={3}>

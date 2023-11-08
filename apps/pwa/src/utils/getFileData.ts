@@ -24,3 +24,12 @@ export default function getFileData(file: CustomFile | string, index?: number) {
     lastModifiedDate: file.lastModifiedDate,
   };
 }
+
+export const getValueLocalStorage = (key: string) => {
+  const value =
+    localStorage.getItem(key) &&
+    localStorage.getItem(key) !== 'undefined' &&
+    localStorage.getItem(key) !== 'null' &&
+    localStorage.getItem(key);
+  return value;
+};

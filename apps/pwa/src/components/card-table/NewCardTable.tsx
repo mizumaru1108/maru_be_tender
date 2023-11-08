@@ -1,19 +1,20 @@
-import { Box, Pagination, Grid, Stack, Typography } from '@mui/material';
+import { Box, Grid, Pagination, Stack, Typography } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import EmptyContent from 'components/EmptyContent';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'redux/store';
+import { dispatch, useSelector } from 'redux/store';
 import axiosInstance from 'utils/axios';
+import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
 import { generateHeader } from '../../utils/generateProposalNumber';
 import CardTableNoData from './CardTableNoData';
 import ClientCard from './ClientCard';
 import LoadingPage from './LoadingPage';
 import ProjectCard from './ProjectCard';
 import { FilteredValues, NewCardTableProps } from './types';
-import EmptyContent from 'components/EmptyContent';
 
 function NewCardTable({
   title,
@@ -27,7 +28,13 @@ function NewCardTable({
   const { activeRole } = useAuth();
   const [page, setPage] = useState(1);
   const { translate } = useLocales();
+
+  // Redux
+  const { isLoading: isFetchingData, error: errorFetchingData } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
   const { filtered, activeOptions } = useSelector((state) => state.searching);
+
   const [params, setParams] = useState({
     limit: limitShowCard ? limitShowCard : 6,
   });
@@ -119,7 +126,28 @@ function NewCardTable({
     // eslint-disable-next-line
   }, [params, page]);
 
-  useEffect(() => {}, [data]);
+  useEffect(() => {
+    dispatch(getApplicationAdmissionSettings(activeRole!));
+  }, [activeRole]);
+
+  if (loading || isFetchingData) {
+    return <LoadingPage />;
+  }
+  if (errorFetchingData)
+    return (
+      <>
+        {' '}
+        <EmptyContent
+          title="لا يوجد بيانات"
+          img="/assets/icons/confirmation_information.svg"
+          description={`${translate('errors.something_wrong')}`}
+          errorMessage={errorFetchingData?.message || undefined}
+          sx={{
+            '& span.MuiBox-root': { height: 160 },
+          }}
+        />
+      </>
+    );
 
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>
@@ -127,7 +155,6 @@ function NewCardTable({
         <Typography variant="h4">{title}</Typography>
       </Grid>
 
-      {loading && <LoadingPage />}
       {data && !loading ? (
         data?.data.map((item: any, index: any) => (
           <Grid item key={index} md={6} xs={12}>

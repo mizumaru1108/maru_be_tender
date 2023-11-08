@@ -14,6 +14,7 @@ import LoadingPage from './LoadingPage';
 import ProjectCard from './ProjectCard';
 import { FilteredValues, NewCardTableProps } from './types';
 import EmptyContent from 'components/EmptyContent';
+import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
 
 function ClientProposaCardTable({
   title,
@@ -25,6 +26,11 @@ function ClientProposaCardTable({
 }: NewCardTableProps) {
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
+  // Redux
+  const { isLoading: isFetchingData, error: errorFetchingData } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
+
   const [page, setPage] = useState(1);
   const { translate } = useLocales();
   const { filtered, activeOptions } = useSelector((state) => state.searching);
@@ -109,7 +115,28 @@ function ClientProposaCardTable({
     // eslint-disable-next-line
   }, [params, page]);
 
-  useEffect(() => {}, [data]);
+  useEffect(() => {
+    dispatch(getApplicationAdmissionSettings(activeRole!));
+  }, [activeRole]);
+
+  if (loading || isFetchingData) {
+    return <LoadingPage />;
+  }
+  if (errorFetchingData)
+    return (
+      <>
+        {' '}
+        <EmptyContent
+          title="لا يوجد بيانات"
+          img="/assets/icons/confirmation_information.svg"
+          description={`${translate('errors.something_wrong')}`}
+          errorMessage={errorFetchingData?.message || undefined}
+          sx={{
+            '& span.MuiBox-root': { height: 160 },
+          }}
+        />
+      </>
+    );
 
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>

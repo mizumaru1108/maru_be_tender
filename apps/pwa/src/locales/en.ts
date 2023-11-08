@@ -604,6 +604,7 @@ const en = {
     },
   },
   errors: {
+    something_wrong: 'Opss, something went wrong.',
     role: 'Choose one of these roles',
     notes: 'Note is required',
     empty_data: 'No data found.',
@@ -1044,6 +1045,7 @@ const en = {
       ascending: 'Ascending',
       descending: 'Descending',
       created_at: 'Created at',
+      updated_at: 'Updated at',
       outter_status: 'Outter status',
       no_value: 'All',
       project_tracks: 'Project tracks',
@@ -1672,6 +1674,8 @@ const en = {
       success: 'Proposal configs updated successfully',
     },
     errors: {
+      limit_number_of_days_to_meet_business:
+        'Number of days to meet business must greater than Indicator of project duration days',
       applying_status: {
         required: 'Submission is enabled for users is required',
       },

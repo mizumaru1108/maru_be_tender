@@ -1,24 +1,31 @@
 // @mui
-import { Typography, Grid, Stack, Button } from '@mui/material';
+import { Button, Grid, Stack, Typography } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
 // hooks
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 // query
-import { useQuery } from 'urql';
-import { useNavigate } from 'react-router';
-import { getProposals } from 'queries/commons/getProposal';
-import { generateHeader } from '../../../utils/generateProposalNumber';
-import React from 'react';
-import { useSnackbar } from 'notistack';
-import axiosInstance from 'utils/axios';
 import EmptyContent from 'components/EmptyContent';
+import { useSnackbar } from 'notistack';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import axiosInstance from 'utils/axios';
+import { getApplicationAdmissionSettings } from '../../../redux/slices/applicationAndAdmissionSettings';
+import { dispatch, useSelector } from '../../../redux/store';
+import { generateHeader } from '../../../utils/generateProposalNumber';
+import LoadingPage from './LoadingPage';
 
 // ------------------------------------------------------------------------------------------
 
 export default function IncomingClientCloseReport() {
   const navigate = useNavigate();
   const { translate } = useLocales();
+
+  // Redux
+  const { isLoading: isFetchingData, error: errorFetchingData } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
+
   // using API
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -40,16 +47,6 @@ export default function IncomingClientCloseReport() {
         );
       }
     } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(
@@ -72,12 +69,34 @@ export default function IncomingClientCloseReport() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRole, enqueueSnackbar]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchingIncoming();
     // fetchingPrevious();
   }, [fetchingIncoming]);
 
   // if (fetching) return <>{translate('pages.common.loading')}</>;
+  useEffect(() => {
+    dispatch(getApplicationAdmissionSettings(activeRole!));
+  }, [activeRole]);
+
+  if (isLoading || isFetchingData) {
+    return <LoadingPage />;
+  }
+  if (errorFetchingData)
+    return (
+      <>
+        {' '}
+        <EmptyContent
+          title="لا يوجد بيانات"
+          img="/assets/icons/confirmation_information.svg"
+          description={`${translate('errors.something_wrong')}`}
+          errorMessage={errorFetchingData?.message || undefined}
+          sx={{
+            '& span.MuiBox-root': { height: 160 },
+          }}
+        />
+      </>
+    );
 
   return (
     <Grid item md={12}>

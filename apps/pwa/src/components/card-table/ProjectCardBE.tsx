@@ -81,7 +81,13 @@ const ProjectCardBE = ({
   const [, deleteDrPro] = useMutation(deleteDraftProposal);
   const [loading, setLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { track_list, proposal } = useSelector((state) => state.proposal);
+
+  // redux
+  const { track_list } = useSelector((state) => state.proposal);
+  // selector for applicationAndAdmissionSettings
+  const { application_admission_settings } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
 
   function daysSinceCreated() {
     let getCreatedAt = new Date();
@@ -292,26 +298,6 @@ const ProjectCardBE = ({
               sx={{ fontWeight: 900, backgroundColor: '#1E1E1E29', borderRadius: '10px' }}
             />
           )}
-          {/* {role !== 'tender_moderator' &&
-            proposal_logs &&
-            proposal_logs.length > 0 &&
-            proposal_logs.map((log: any) => {
-              if (log.reviewer) {
-                return (
-                  <Stack>
-                    <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                      {translate('project_management_headercell.employee')}
-                    </Typography>
-                    <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                      {translate('project_management_headercell.sent_by')}{' '}
-                      {log.reviewer.employee_name}
-                    </Typography>
-                  </Stack>
-                );
-              } else {
-                return null;
-              }
-            })} */}
           {destination === 'previous-funding-requests' && status && (
             <Chip
               label={translate(
@@ -414,26 +400,6 @@ const ProjectCardBE = ({
                 </Typography>
               </Stack>
             )}
-          {/* {role !== 'tender_moderator' &&
-            proposal_logs &&
-            proposal_logs.length > 0 &&
-            proposal_logs.map((log: any) => {
-              if (log.reviewer) {
-                return (
-                  <Stack>
-                    <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                      {translate('project_management_headercell.employee')}
-                    </Typography>
-                    <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                      {translate('project_management_headercell.sent_by')}{' '}
-                      {log.reviewer.employee_name}
-                    </Typography>
-                  </Stack>
-                );
-              } else {
-                return null;
-              }
-            })} */}
           {state && (
             <Stack>
               <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
@@ -574,7 +540,6 @@ const ProjectCardBE = ({
                   {updated_at
                     ? moment(updated_at).format('LLLL')
                     : moment(created_at).format('LLLL')}
-                  {/* {moment(created_at).format('LLLL')} */}
                 </Typography>
               </Stack>
               {status !== 'COMPLETED' && (
@@ -587,18 +552,47 @@ const ProjectCardBE = ({
                   sx={{
                     alignSelf: 'end',
                     fontWeight: 500,
+
+                    // Old Handle
+                    // backgroundColor:
+                    //   daysSinceCreated() <
+                    //     application_admission_settings?.indicator_of_project_duration_days || 3
+                    //     ? '#0E84782E'
+                    //     : daysSinceCreated() <
+                    //         application_admission_settings?.number_of_days_to_meet_business || 5
+                    //     ? '#FFC10729'
+                    //     : '#FF484229',
+
+                    // New Handle
                     backgroundColor:
-                      daysSinceCreated() < 3
-                        ? '#0E84782E'
-                        : daysSinceCreated() < 5
+                      daysSinceCreated() >
+                      application_admission_settings?.number_of_days_to_meet_business
+                        ? '#FF484229'
+                        : daysSinceCreated() >
+                          application_admission_settings?.indicator_of_project_duration_days
                         ? '#FFC10729'
-                        : '#FF484229',
+                        : '#0E84782E',
+
+                    // Old Handle
+                    // color:
+                    //   daysSinceCreated() <
+                    //     application_admission_settings?.indicator_of_project_duration_days || 3
+                    //     ? '#0E8478'
+                    //     : daysSinceCreated() <
+                    //         application_admission_settings?.number_of_days_to_meet_business || 5
+                    //     ? '#FFC107'
+                    //     : '#FF4842',
+
+                    // New Handle
                     color:
-                      daysSinceCreated() < 3
-                        ? '#0E8478'
-                        : daysSinceCreated() < 5
+                      daysSinceCreated() >
+                      application_admission_settings?.number_of_days_to_meet_business
+                        ? '#FF4842'
+                        : daysSinceCreated() >
+                          application_admission_settings?.indicator_of_project_duration_days
                         ? '#FFC107'
-                        : '#FF4842',
+                        : '#0E8478',
+
                     borderRadius: '10px',
                   }}
                 />

@@ -2,7 +2,7 @@ import { Box, Button, Grid, MenuItem, Pagination, Select, Stack, Typography } fr
 import EmptyContent from 'components/EmptyContent';
 import SearchDateField from 'components/sorting/date-filter';
 import SearchField from 'components/sorting/searchField';
-import SortingCardTable from 'components/sorting/sorting';
+import SortingCardTable, { onChangeSorting } from 'components/sorting/sorting';
 import SortingProjectStatusCardTable from 'components/sorting/sorting-project-status';
 import SortingProjectTrackCardTable from 'components/sorting/sorting-project-track';
 import SvgIconStyle from 'components/SvgIconStyle';
@@ -14,8 +14,9 @@ import { useNavigate } from 'react-router';
 import { getTrackList } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
 import useAuth from '../../hooks/useAuth';
+import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
 import axiosInstance from '../../utils/axios';
-import { getSortingValue } from '../../utils/formatNumber';
+import { getValueLocalStorage } from '../../utils/getFileData';
 import CardTableLoading from './CardTableLoading';
 import ProjectTableBE from './ProjectCardBE';
 import { CardTablePropsByBE } from './types';
@@ -33,7 +34,6 @@ function CardTableByBE({
   sorting = ['sorting'],
 }: // isIncoming = false,
 CardTablePropsByBE) {
-  // const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
   const { translate } = useLocales();
   const { activeRole } = useAuth();
@@ -41,44 +41,70 @@ CardTablePropsByBE) {
 
   // redux
   const { loadingProps } = useSelector((state) => state.proposal);
-  // console.log({ track_list });
+  // selector for applicationAndAdmissionSettings
+  const { isLoading: isFetchingData, error: errorFetchingData } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
+
   // loading state when fetching
   const [isLoading, setIsLoading] = React.useState(false);
+
   // cards Data state
   const [cardData, setCardData] = useState([]);
-  const [tmpCardData, setTmpCardData] = useState([]);
+
   // for pagination
   const [limit, setLimit] = useState(limitShowCard);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
+
   // for filtering
   const [searchName, setSearchName] = useState('');
   const [clientName, setClientName] = useState('');
-  const [startDate, setStartDate] = useState('');
   const [sortingRangedDate, setSortingRangedDate] = useState({
     startDate: '',
     endDate: '',
-    filter: '',
   });
-  const [sortingFilter, setSortingFilter] = useState('');
+  const [sortingFilter, setSortingFilter] = useState({
+    sorting_field: '',
+    sort: '',
+  });
   const [statusFilter, setStatusFilter] = useState('');
   const [trackFilter, setTrackFilter] = useState('');
-  // const [filterSorting, setFilterSorting] = useState('');
-  const tmpTypeRequest = `&type=${typeRequest}`;
-  const endPointOrigin = `${endPoint}?limit=${limit}&page=${page}${addCustomFilter || ''}${
-    (typeRequest && tmpTypeRequest) || ''
-  }`;
+
+  // need refactor for this const variable
+  const endPointOrigin = `${endPoint}?limit=${limit}&page=${page}${addCustomFilter || ''}`;
+
+  // localstorage variable
+  const filter_sorting_field = getValueLocalStorage('filter_sorting_field') || undefined;
+  const filter_sort = getValueLocalStorage('filter_sort') || undefined;
+  const filter_project_name = getValueLocalStorage('filter_project_name') || undefined;
+  const filter_client_name = getValueLocalStorage('filter_client_name') || undefined;
+  const filter_project_track = getValueLocalStorage('filter_project_track') || undefined;
+  const filter_project_status = getValueLocalStorage('filter_project_status') || undefined;
+  const filter_range_start_date = getValueLocalStorage('filter_range_start_date') || undefined;
+  const filter_range_end_date = getValueLocalStorage('filter_range_end_date') || undefined;
 
   const fetchingPrevious = React.useCallback(async () => {
     setIsLoading(true);
     const url = endPointOrigin;
+    const prevProposalParams = {
+      sorting_field: sortingFilter?.sorting_field || filter_sorting_field || 'updated_at',
+      sort: sortingFilter?.sort || filter_sort || 'desc',
+      project_name: searchName || filter_project_name || undefined,
+      client_name: clientName || filter_client_name || undefined,
+      track_id: trackFilter || filter_project_track || undefined,
+      outter_status: statusFilter || filter_project_status || undefined,
+      range_start_date: sortingRangedDate?.startDate || filter_range_start_date || undefined,
+      range_end_date: sortingRangedDate?.endDate || filter_range_end_date || undefined,
+    };
     try {
-      const rest = await axiosInstance.get(
-        `${url}${sortingFilter}${searchName}${statusFilter}${clientName}${startDate}${trackFilter}${sortingRangedDate.filter}`,
-        {
-          headers: { 'x-hasura-role': activeRole! },
-        }
-      );
+      const rest = await axiosInstance.get(`${url}`, {
+        headers: { 'x-hasura-role': activeRole! },
+        params: {
+          type: typeRequest || undefined,
+          ...(destination === 'previous-funding-requests' && prevProposalParams),
+        },
+      });
       if (rest) {
         const tmpTotalPage = Math.ceil(rest.data.total / limit);
         setTotalPage(tmpTotalPage);
@@ -134,7 +160,6 @@ CardTablePropsByBE) {
     sortingFilter,
     statusFilter,
     clientName,
-    startDate,
     trackFilter,
     sortingRangedDate,
   ]);
@@ -150,69 +175,95 @@ CardTablePropsByBE) {
   const changeHandleRangeDate = (event: string, type: 'start' | 'end') => {
     if (type === 'start') {
       if (event === '') {
-        setSortingRangedDate({ startDate: '', endDate: '', filter: '' });
+        setSortingRangedDate({ startDate: '', endDate: '' });
+        localStorage.removeItem('filter_range_start_date');
         return;
       } else {
         setSortingRangedDate({ ...sortingRangedDate, startDate: event, endDate: '' });
+        localStorage.setItem('filter_range_start_date', event);
       }
     } else {
       if (event === '') {
-        setSortingRangedDate({ ...sortingRangedDate, endDate: '', filter: '' });
+        setSortingRangedDate({ ...sortingRangedDate, endDate: '' });
+        localStorage.removeItem('filter_range_end_date');
         return;
       } else {
         const tmpNewEndDate = dayjs(event).add(1, 'day').format('YYYY-MM-DD');
-        const filter = `&range_start_date=${sortingRangedDate.startDate}&range_end_date=${tmpNewEndDate}`;
-        setSortingRangedDate({ ...sortingRangedDate, endDate: event, filter: filter });
-        localStorage.setItem('filter_date_range', filter);
+        localStorage.setItem('filter_range_end_date', tmpNewEndDate);
+        setSortingRangedDate({ ...sortingRangedDate, endDate: event });
       }
     }
   };
 
-  React.useEffect(() => {
-    // for date range filter
-    const filter = localStorage.getItem('filter_date_range');
-    const filterArr = localStorage.getItem('filter_date_range')?.split('&');
-    const startDateStorage = (filterArr && filterArr[1]?.split('=')[1]) || '';
-    const endDate = (filterArr && filterArr[2]?.split('=')[1]) || '';
-    if (startDateStorage && endDate && filter) {
-      setSortingRangedDate({ startDate: startDateStorage, endDate: endDate, filter: filter });
+  const handleSortingFilter = (event: onChangeSorting) => {
+    setPage(1);
+    setSortingFilter(event);
+    if (event.sorting_field) {
+      localStorage.setItem('filter_sorting_field', event.sorting_field);
+    } else {
+      localStorage.removeItem('filter_sorting_field');
     }
+    if (event.sort) {
+      localStorage.setItem('filter_sort', event.sort);
+    } else {
+      localStorage.removeItem('filter_sort');
+    }
+  };
 
-    // for project name filter
-    const projectName = localStorage.getItem('filter_project_name');
-    if (projectName) {
-      setSearchName(projectName);
+  const handleSortingTrack = (event: string) => {
+    console.log({ event });
+    if (event !== '-') {
+      const trackId = event.split('=')[1];
+      setPage(1);
+      setTrackFilter(trackId);
+      localStorage.setItem('filter_project_track', trackId);
+    } else {
+      setPage(1);
+      setTrackFilter('');
+      localStorage.removeItem('filter_project_track');
     }
-    // for client name filter
-    const clientName = localStorage.getItem('filter_client_name');
-    if (clientName) {
-      setClientName(clientName);
-    }
+  };
 
-    // for project status filter
-    const projectStatus = localStorage.getItem('filter_project_status');
-    if (projectStatus) {
-      setStatusFilter(projectStatus);
+  const handleSortingProjectStatus = (event: string) => {
+    if (event !== '-') {
+      const outterStatus = event.split('=')[1];
+      setPage(1);
+      setStatusFilter(outterStatus);
+      localStorage.setItem('filter_project_status', outterStatus);
+    } else {
+      setPage(1);
+      setStatusFilter('');
+      localStorage.removeItem('filter_project_status');
     }
-
-    // for project track filter
-    const projectTrack = localStorage.getItem('filter_project_track');
-    if (projectTrack) {
-      setTrackFilter(projectTrack);
-    }
-  }, []);
+  };
 
   React.useEffect(() => {
     dispatch(getTrackList(1, activeRole! as string));
+    dispatch(getApplicationAdmissionSettings(activeRole!));
   }, [activeRole]);
 
   React.useEffect(() => {
     fetchingPrevious();
   }, [fetchingPrevious, page, limit]);
 
-  if (loadingProps.laodingTrack || isLoading) {
+  if (loadingProps.laodingTrack || isLoading || isFetchingData) {
     return <CardTableLoading />;
   }
+  if (errorFetchingData)
+    return (
+      <>
+        {' '}
+        <EmptyContent
+          title="لا يوجد بيانات"
+          img="/assets/icons/confirmation_information.svg"
+          description={`${translate('errors.something_wrong')}`}
+          errorMessage={errorFetchingData?.message || undefined}
+          sx={{
+            '& span.MuiBox-root': { height: 160 },
+          }}
+        />
+      </>
+    );
 
   return (
     <Grid container spacing={2} justifyContent="space-between">
@@ -224,11 +275,11 @@ CardTablePropsByBE) {
           <SearchField
             data-cy="search_field"
             isLoading={isLoading}
-            value={searchName ? searchName.split('=')[1] : ''}
+            value={searchName || filter_project_name}
             label={translate('sorting.label.project_name')}
             onReturnSearch={(value) => {
-              setSearchName(`&project_name=${value}`);
-              localStorage.setItem('filter_project_name', `&project_name=${value}`);
+              setSearchName(value);
+              localStorage.setItem('filter_project_name', value);
             }}
             reFetch={() => {
               setPage(1);
@@ -245,71 +296,26 @@ CardTablePropsByBE) {
             <Grid item md={2} xs={6}>
               <SortingCardTable
                 isLoading={isLoading}
-                value={getSortingValue(sortingFilter)}
-                onChangeSorting={(event: string) => {
-                  setPage(1);
-                  setSortingFilter(event);
-                }}
+                value={
+                  (filter_sorting_field &&
+                    filter_sort &&
+                    `${filter_sorting_field}_${filter_sort}`) ||
+                  (sortingFilter?.sorting_field &&
+                    sortingFilter?.sort &&
+                    `${sortingFilter?.sorting_field}_${sortingFilter?.sort}`) ||
+                  'updated_at_desc'
+                }
+                newOnChangeSorting={handleSortingFilter}
               />
             </Grid>
           )}
-
-          {/* {destination === 'previous-funding-requests' ? (
-            <>
-              {activeRole !== 'tender_project_manager' &&
-              activeRole !== 'tender_project_supervisor' &&
-              activeRole !== 'tender_cashier' &&
-              activeRole !== 'tender_finance' ? (
-                <Grid item md={2} xs={6}>
-                  <SortingProjectTrackCardTable
-                    isLoading={isLoading}
-                    onChangeSorting={(event: string) => {
-                      setPage(1);
-                      setTrackFilter(event);
-                    }}
-                  />
-                </Grid>
-              ) : null}
-              <Grid item md={2} xs={6}>
-                <SortingProjectStatusCardTable
-                  isLoading={isLoading}
-                  onChangeSorting={(event: string) => {
-                    setPage(1);
-                    setStatusFilter(event);
-                  }}
-                />
-              </Grid>
-              {activeRole !== 'tender_client' ? (
-                <Grid item md={3} xs={6}>
-                  <SearchField
-                    fullWidth
-                    data-cy="search_client_name_field"
-                    isLoading={isLoading}
-                    label={translate('client_list_headercell.client_name')}
-                    onReturnSearch={(value) => {
-                      setClientName(`&client_name=${value}`);
-                    }}
-                    reFetch={() => {
-                      setPage(1);
-                      setClientName('');
-                      // if (reFetch) reFetch();
-                    }}
-                  />
-                </Grid>
-              ) : null}
-            </>
-          ) : null} */}
 
           {sorting.includes('track') && (
             <Grid item md={2} xs={6}>
               <SortingProjectTrackCardTable
                 isLoading={isLoading}
-                value={trackFilter ? trackFilter.split('=')[1] : '-'}
-                onChangeSorting={(event: string) => {
-                  setPage(1);
-                  setTrackFilter(event);
-                  localStorage.setItem('filter_project_track', event);
-                }}
+                value={trackFilter || filter_project_track || '-'}
+                onChangeSorting={handleSortingTrack}
               />
             </Grid>
           )}
@@ -318,12 +324,8 @@ CardTablePropsByBE) {
             <Grid item md={2} xs={6}>
               <SortingProjectStatusCardTable
                 isLoading={isLoading}
-                value={statusFilter ? statusFilter.split('=')[1] : '-'}
-                onChangeSorting={(event: string) => {
-                  setPage(1);
-                  setStatusFilter(event);
-                  localStorage.setItem('filter_project_status', event);
-                }}
+                value={statusFilter || filter_project_status || '-'}
+                onChangeSorting={handleSortingProjectStatus}
               />
             </Grid>
           )}
@@ -333,18 +335,17 @@ CardTablePropsByBE) {
               <SearchField
                 fullWidth
                 isLoading={isLoading}
-                value={clientName ? clientName.split('=')[1] : ''}
+                value={clientName || filter_client_name}
                 data-cy="search_client_name_field"
                 label={translate('client_list_headercell.client_name')}
                 onReturnSearch={(value) => {
-                  setClientName(`&client_name=${value}`);
-                  localStorage.setItem('filter_client_name', `&client_name=${value}`);
+                  setClientName(value);
+                  localStorage.setItem('filter_client_name', value);
                 }}
                 reFetch={() => {
                   setPage(1);
                   setClientName('');
                   localStorage.removeItem('filter_client_name');
-                  // if (reFetch) reFetch();
                 }}
               />
             </Grid>
@@ -379,7 +380,7 @@ CardTablePropsByBE) {
                 fullWidth
                 disabled={isLoading}
                 label={translate('sorting.label.range_start_date')}
-                value={sortingRangedDate.startDate}
+                value={sortingRangedDate?.startDate || filter_range_start_date}
                 focused={true}
                 onReturnDate={(event: string) => {
                   setPage(1);
@@ -395,17 +396,13 @@ CardTablePropsByBE) {
               <SearchDateField
                 fullWidth
                 focused={true}
-                disabled={
-                  sortingRangedDate.startDate === '' ||
-                  sortingRangedDate.startDate === null ||
-                  isLoading
-                }
+                disabled={(!sortingRangedDate.startDate && !filter_range_end_date) || isLoading}
                 label={
                   sortingRangedDate.startDate === '' || sortingRangedDate.startDate === null
                     ? null
                     : translate('sorting.label.range_end_date')
                 }
-                value={sortingRangedDate.endDate}
+                value={sortingRangedDate.endDate || filter_range_end_date}
                 minDate={
                   sortingRangedDate.startDate
                     ? dayjs(sortingRangedDate.startDate).add(1, 'day').toISOString().split('T')[0]

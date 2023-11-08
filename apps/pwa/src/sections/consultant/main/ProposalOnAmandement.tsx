@@ -1,18 +1,25 @@
-import { Typography, Grid, Stack, Button } from '@mui/material';
+import { Grid, Stack, Typography } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
-import { getProposals } from 'queries/commons/getProposal';
-import { useNavigate } from 'react-router';
-import { useQuery } from 'urql';
+import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import { generateHeader } from '../../../utils/generateProposalNumber';
 import { useSnackbar } from 'notistack';
 import React from 'react';
-import useAuth from 'hooks/useAuth';
 import axiosInstance from 'utils/axios';
+import LoadingPage from '../../../components/card-table/LoadingPage';
+import EmptyContent from '../../../components/EmptyContent';
+import { getApplicationAdmissionSettings } from '../../../redux/slices/applicationAndAdmissionSettings';
+import { dispatch, useSelector } from '../../../redux/store';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 
 function ProposalOnAmandement() {
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
+
+  // Redux
+  const { isLoading: isFetchingData, error: errorFetchingData } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
+
   const [isLoading, setIsLoading] = React.useState(false);
   const { activeRole } = useAuth();
   const [cardData, setCardData] = React.useState([]);
@@ -61,6 +68,29 @@ function ProposalOnAmandement() {
     fetchingIncoming();
     // fetchingPrevious();
   }, [fetchingIncoming]);
+
+  React.useEffect(() => {
+    dispatch(getApplicationAdmissionSettings(activeRole!));
+  }, [activeRole]);
+
+  if (isLoading || isFetchingData) {
+    return <LoadingPage />;
+  }
+  if (errorFetchingData)
+    return (
+      <>
+        {' '}
+        <EmptyContent
+          title="لا يوجد بيانات"
+          img="/assets/icons/confirmation_information.svg"
+          description={`${translate('errors.something_wrong')}`}
+          errorMessage={errorFetchingData?.message || undefined}
+          sx={{
+            '& span.MuiBox-root': { height: 160 },
+          }}
+        />
+      </>
+    );
   return (
     <Grid container spacing={2}>
       <Grid item md={12} xs={12}>

@@ -83,21 +83,34 @@ const ProjectCard = ({
   const { translate, currentLang } = useLocales();
   const [_, updateAsigning] = useMutation(asignProposalToAUser);
   const [action, setAction] = React.useState('');
-  // redux
-  const { loadingProps, track_list } = useSelector((state) => state.proposal);
-  // console.log({ content });
 
+  // Redux
+  const { loadingProps } = useSelector((state) => state.proposal);
+  const { application_admission_settings } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
   // const valueLocale = localStorage.getItem('i18nextLng');
 
-  let daysSinceCreated = 0;
-  if (footer && footer.createdAt) {
-    daysSinceCreated = Math.ceil(
-      (new Date().getTime() - new Date(footer.createdAt).getTime()) / (1000 * 3600 * 24) - 1
+  // let daysSinceCreated = 0;
+  // if (footer && footer.createdAt) {
+  //   daysSinceCreated = Math.ceil(
+  //     (new Date().getTime() - new Date(footer.createdAt).getTime()) / (1000 * 3600 * 24) - 1
+  //   );
+  // } else if (content && content.createdAtClient) {
+  //   daysSinceCreated = Math.ceil(
+  //     (new Date().getTime() - new Date(content.createdAtClient).getTime()) / (1000 * 3600 * 24) - 1
+  //   );
+  // }
+
+  function daysSinceCreated() {
+    let getCreatedAt = new Date();
+    if (footer && footer.createdAt) {
+      getCreatedAt = new Date(footer.createdAt);
+    }
+    const daysSince = Math.ceil(
+      (new Date().getTime() - getCreatedAt.getTime()) / (1000 * 3600 * 24) - 1
     );
-  } else if (content && content.createdAtClient) {
-    daysSinceCreated = Math.ceil(
-      (new Date().getTime() - new Date(content.createdAtClient).getTime()) / (1000 * 3600 * 24) - 1
-    );
+    return daysSince;
   }
 
   const onDeleteDraftClick = () => {
@@ -480,26 +493,49 @@ const ProjectCard = ({
               </Stack>
               {content.projectStatus !== 'COMPLETED' && (
                 <Chip
-                  label={`${daysSinceCreated} ${
-                    daysSinceCreated < 2
+                  label={`${daysSinceCreated()} ${
+                    daysSinceCreated() < 2
                       ? translate('project_management_headercell.day')
                       : translate('project_management_headercell.days')
                   }`}
                   sx={{
                     alignSelf: 'end',
                     fontWeight: 500,
+
+                    // Old Handle
+                    // backgroundColor:
+                    //   daysSinceCreated() < 3
+                    //     ? '#0E84782E'
+                    //     : daysSinceCreated() < 5
+                    //     ? '#FFC10729'
+                    //     : '#FF484229',
+                    // New Handle
                     backgroundColor:
-                      daysSinceCreated < 3
-                        ? '#0E84782E'
-                        : daysSinceCreated < 5
+                      daysSinceCreated() >
+                      application_admission_settings?.number_of_days_to_meet_business
+                        ? '#FF484229'
+                        : daysSinceCreated() >
+                          application_admission_settings?.indicator_of_project_duration_days
                         ? '#FFC10729'
-                        : '#FF484229',
+                        : '#0E84782E',
+
+                    // Old Handle
+                    // color:
+                    //   daysSinceCreated() < 3
+                    //     ? '#0E8478'
+                    //     : daysSinceCreated() < 5
+                    //     ? '#FFC107'
+                    //     : '#FF4842',
+                    // New Handle
                     color:
-                      daysSinceCreated < 3
-                        ? '#0E8478'
-                        : daysSinceCreated < 5
+                      daysSinceCreated() >
+                      application_admission_settings?.number_of_days_to_meet_business
+                        ? '#FF4842'
+                        : daysSinceCreated() >
+                          application_admission_settings?.indicator_of_project_duration_days
                         ? '#FFC107'
-                        : '#FF4842',
+                        : '#0E8478',
+
                     borderRadius: '10px',
                   }}
                 />

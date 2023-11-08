@@ -1,22 +1,28 @@
-import { Typography, Grid, Box, Stack, Button } from '@mui/material';
+import { Box, Grid, Stack, Typography } from '@mui/material';
 import { ProjectCard } from 'components/card-table';
-import { getProposals } from 'queries/commons/getProposal';
-import { useNavigate } from 'react-router';
-import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
-import useAuth from '../../../hooks/useAuth';
-import { generateHeader } from '../../../utils/generateProposalNumber';
-import React from 'react';
-import axiosInstance from '../../../utils/axios';
 import { useSnackbar } from 'notistack';
+import React from 'react';
+import { useNavigate } from 'react-router';
 import EmptyContent from '../../../components/EmptyContent';
-import dayjs from 'dayjs';
 import SortingCardTable from '../../../components/sorting/sorting';
+import useAuth from '../../../hooks/useAuth';
+import { getApplicationAdmissionSettings } from '../../../redux/slices/applicationAndAdmissionSettings';
+import { dispatch, useSelector } from '../../../redux/store';
+import axiosInstance from '../../../utils/axios';
+import { generateHeader } from '../../../utils/generateProposalNumber';
+import LoadingPage from '../../client/dashboard/LoadingPage';
 
 function IncomingAmandementRequest() {
   const navigate = useNavigate();
   const { translate } = useLocales();
   const { user, activeRole } = useAuth();
+
+  // Redux
+  const { isLoading: isFetchingData, error: errorFetchingData } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
+
   const [isLoading, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const [cardData, setCardData] = React.useState([]);
@@ -95,6 +101,30 @@ function IncomingAmandementRequest() {
   // const props = data?.data ?? [];
   // if (!props || props.length === 0) return null;
   // console.log({ cardData });
+
+  React.useEffect(() => {
+    dispatch(getApplicationAdmissionSettings(activeRole!));
+  }, [activeRole]);
+
+  if (isLoading || isFetchingData) {
+    return <LoadingPage />;
+  }
+  if (errorFetchingData)
+    return (
+      <>
+        {' '}
+        <EmptyContent
+          title="لا يوجد بيانات"
+          img="/assets/icons/confirmation_information.svg"
+          description={`${translate('errors.something_wrong')}`}
+          errorMessage={errorFetchingData?.message || undefined}
+          sx={{
+            '& span.MuiBox-root': { height: 160 },
+          }}
+        />
+      </>
+    );
+
   return (
     <Grid item md={12}>
       <Stack direction="row" justifyContent="space-between">

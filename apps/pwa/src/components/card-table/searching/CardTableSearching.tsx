@@ -1,13 +1,17 @@
-import { Box, Button, Grid, Stack, TextField, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import ProjectCard from '../ProjectCard';
-import { CardTableProps, CardTableSearchingProps, SearchingProposal } from '../types';
-import Select from '@mui/material/Select';
+import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import FilterModal from '../FilterModal';
-import FilterModalSearch from './FilterModalSearch';
-import Iconify from '../../Iconify';
+import Select from '@mui/material/Select';
 import useLocales from 'hooks/useLocales';
+import { useEffect, useState } from 'react';
+import useAuth from '../../../hooks/useAuth';
+import { getApplicationAdmissionSettings } from '../../../redux/slices/applicationAndAdmissionSettings';
+import { dispatch, useSelector } from '../../../redux/store';
+import EmptyContent from '../../EmptyContent';
+import Iconify from '../../Iconify';
+import LoadingPage from '../LoadingPage';
+import ProjectCard from '../ProjectCard';
+import { CardTableSearchingProps, SearchingProposal } from '../types';
+import FilterModalSearch from './FilterModalSearch';
 
 //create theme for component box
 const themeBox = {
@@ -39,7 +43,15 @@ function CardTableSearching({
   cardFooterButtonAction,
 }: CardTableSearchingProps) {
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
+
   const [page, setPage] = useState(1);
+
+  // Redux
+  const { isLoading: isFetchingData, error: errorFetchingData } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
+
   const [filter, setFilter] = useState<SearchingProposal>({
     project: '',
     theYear: '',
@@ -84,6 +96,29 @@ function CardTableSearching({
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [params, page]);
+
+  useEffect(() => {
+    dispatch(getApplicationAdmissionSettings(activeRole!));
+  }, [activeRole]);
+
+  if (isFetchingData) {
+    return <LoadingPage />;
+  }
+  if (errorFetchingData)
+    return (
+      <>
+        {' '}
+        <EmptyContent
+          title="لا يوجد بيانات"
+          img="/assets/icons/confirmation_information.svg"
+          description={`${translate('errors.something_wrong')}`}
+          errorMessage={errorFetchingData?.message || undefined}
+          sx={{
+            '& span.MuiBox-root': { height: 160 },
+          }}
+        />
+      </>
+    );
 
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>

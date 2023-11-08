@@ -1,21 +1,27 @@
-import { StyledProps } from '@material-ui/styles';
 import {
   FormControl,
   InputLabel,
   ListSubheader,
   MenuItem,
   Select,
+  SelectChangeEvent,
   SxProps,
   Theme,
 } from '@mui/material';
 import useLocales from 'hooks/useLocales';
-import React, { useState } from 'react';
+import { useState } from 'react';
+
+export type onChangeSorting = {
+  sorting_field: string;
+  sort: string;
+};
 
 type SortingCardTableProps = {
   isLoading?: boolean;
-  onChangeSorting: (event: string) => void;
+  onChangeSorting?: (event: string) => void;
+  newOnChangeSorting?: (event: onChangeSorting) => void;
   sx?: SxProps<Theme>;
-  value?: number;
+  value?: string;
 };
 
 export default function SortingCardTable({
@@ -24,31 +30,37 @@ export default function SortingCardTable({
   ...other
 }: SortingCardTableProps) {
   const { translate } = useLocales();
-  const [value, setValue] = useState<number>((other.value as number) || 0);
+  const [value, setValue] = useState<string>(other?.value || '-');
+  // console.log({ value: other.value });
 
-  const handleSortingFilter = (event: any) => {
-    const value = event.target.value as number;
-    setValue(value);
+  const handleSortingFilter = (event: SelectChangeEvent<string>) => {
+    setValue(event.target.value);
     let tmpFilter = '';
-    if (value < 3) {
-      tmpFilter = '&sorting_field=project_name';
-      if (value === 1) {
-        tmpFilter = '&sorting_field=project_name&sort=asc';
-      } else {
-        if (event.target.value === '') {
-          tmpFilter = '';
-        } else {
-          tmpFilter = '&sorting_field=project_name&sort=desc';
-        }
+    if (event.target.value === '-') {
+      // old onChange version
+      if (onChangeSorting) onChangeSorting(tmpFilter);
+
+      // new onChange version
+      if (other.newOnChangeSorting) {
+        other.newOnChangeSorting({
+          sorting_field: '',
+          sort: '',
+        });
       }
     } else {
-      if (value === 3) {
-        tmpFilter = '&sort=asc';
-      } else {
-        tmpFilter = '&sort=desc';
+      const tmpSortFilters = event.target.value.split('_');
+      tmpFilter = `&sorting_field=${tmpSortFilters[0]}_${tmpSortFilters[1]}&sort=${tmpSortFilters[2]}`;
+      // old onChange version
+      if (onChangeSorting) onChangeSorting(tmpFilter);
+
+      // new onChange version
+      if (other.newOnChangeSorting) {
+        other.newOnChangeSorting({
+          sorting_field: `${tmpSortFilters[0]}_${tmpSortFilters[1]}`,
+          sort: tmpSortFilters[2],
+        });
       }
     }
-    onChangeSorting(tmpFilter);
   };
 
   return (
@@ -62,7 +74,7 @@ export default function SortingCardTable({
         {...other}
         value={value}
       >
-        <MenuItem value={0}>{translate('sorting.label.no_sorting')}</MenuItem>
+        <MenuItem value={'-'}>{translate('sorting.label.no_sorting')}</MenuItem>
         <ListSubheader
           sx={{
             backgroundColor: '#fff',
@@ -71,8 +83,8 @@ export default function SortingCardTable({
           {/* Project Name */}
           {translate('sorting.label.project_name')}
         </ListSubheader>
-        <MenuItem value={1}>{translate('sorting.label.ascending')}</MenuItem>
-        <MenuItem value={2}>{translate('sorting.label.descending')}</MenuItem>
+        <MenuItem value={'project_name_asc'}>{translate('sorting.label.ascending')}</MenuItem>
+        <MenuItem value={'project_name_desc'}>{translate('sorting.label.descending')}</MenuItem>
         <ListSubheader
           sx={{
             backgroundColor: '#fff',
@@ -81,8 +93,19 @@ export default function SortingCardTable({
           {/* Created At */}
           {translate('sorting.label.created_at')}
         </ListSubheader>
-        <MenuItem value={3}>{translate('sorting.label.ascending')}</MenuItem>
-        <MenuItem value={4}>{translate('sorting.label.descending')}</MenuItem>
+        <MenuItem value={'created_at_asc'}>{translate('sorting.label.ascending')}</MenuItem>
+        <MenuItem value={'created_at_desc'}>{translate('sorting.label.descending')}</MenuItem>
+
+        <ListSubheader
+          sx={{
+            backgroundColor: '#fff',
+          }}
+        >
+          {/* Updated At */}
+          {translate('sorting.label.updated_at')}
+        </ListSubheader>
+        <MenuItem value={'updated_at_asc'}>{translate('sorting.label.ascending')}</MenuItem>
+        <MenuItem value={'updated_at_desc'}>{translate('sorting.label.descending')}</MenuItem>
       </Select>
     </FormControl>
   );
