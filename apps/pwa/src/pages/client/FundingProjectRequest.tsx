@@ -8,7 +8,10 @@ import { useEffect, useState } from 'react';
 import FundingProjectRequestForm from 'sections/client/funding-project-request';
 import { useQuery } from 'urql';
 import ProposalDisableModal from '../../components/modal-dialog/ProposalDisableModal';
-import { FEATURE_DISABLE_PROPOSAL_DATE } from '../../config';
+import {
+  FEATURE_DISABLE_PROPOSAL_DATE,
+  FEATURE_MENU_ADMIN_APLICATION_ADMISSION,
+} from '../../config';
 import useAuth from '../../hooks/useAuth';
 import { getClientTotalProposal } from '../../queries/client/getClientTotalProposal';
 import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
@@ -94,7 +97,8 @@ const FundingProjectRequest = () => {
   }, [totalProposal, application_admission_settings, todayDate]);
 
   if (fetching || isFetchingData) return <>{translate('pages.common.loading')}</>;
-  if (error || errorFetchingData) return <>{translate('pages.common.error')}</>;
+  if (error || (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION))
+    return <>{translate('pages.common.error')}</>;
 
   return (
     <Page title={translate('pages.common.funding_requests')}>

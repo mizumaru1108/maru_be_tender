@@ -3,6 +3,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import useLocales from 'hooks/useLocales';
 import { useEffect, useState } from 'react';
+import { FEATURE_MENU_ADMIN_APLICATION_ADMISSION } from '../../config';
 import useAuth from '../../hooks/useAuth';
 import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
 import { dispatch, useSelector } from '../../redux/store';
@@ -77,7 +78,7 @@ function CardTable({
   if (isFetchingData) {
     return <LoadingPage />;
   }
-  if (errorFetchingData)
+  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
     return (
       <>
         {' '}

@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { dispatch, useSelector } from 'redux/store';
 import axiosInstance from 'utils/axios';
 import { Proposal } from '../../../@types/proposal';
+import { FEATURE_MENU_ADMIN_APLICATION_ADMISSION } from '../../../config';
 import { getApplicationAdmissionSettings } from '../../../redux/slices/applicationAndAdmissionSettings';
 import { CheckIsInProcessProposal } from '../../../utils/checkIsInProcessProposal';
 import { generateHeader } from '../../../utils/generateProposalNumber';
@@ -136,7 +137,7 @@ function CardSearching({
   if (loading || isFetchingData) {
     return <LoadingPage />;
   }
-  if (errorFetchingData)
+  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
     return (
       <>
         {' '}

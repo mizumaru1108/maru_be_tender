@@ -6,7 +6,10 @@ import CardTableBE from 'components/card-table/CardTableBE';
 import useLocales from '../../../hooks/useLocales';
 import { hasDayExpired } from '../../../utils/checkIsExpired';
 import ProposalDisableModal from '../../../components/modal-dialog/ProposalDisableModal';
-import { FEATURE_DISABLE_PROPOSAL_DATE } from '../../../config';
+import {
+  FEATURE_DISABLE_PROPOSAL_DATE,
+  FEATURE_MENU_ADMIN_APLICATION_ADMISSION,
+} from '../../../config';
 import useAuth from '../../../hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { dispatch, useSelector } from '../../../redux/store';
@@ -94,7 +97,8 @@ function DraftsFundingRequest() {
   }, [totalProposal, application_admission_settings, todayDate]);
 
   if (fetching || isFetchingData) return <>{translate('pages.common.loading')}</>;
-  if (error || errorFetchingData) return <>{translate('pages.common.error')}</>;
+  if (error || (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION))
+    return <>{translate('pages.common.error')}</>;
   return (
     // <Page title="Draft Funding Requests">
     <Page title={translate('pages.client.draft_funding_requests')}>

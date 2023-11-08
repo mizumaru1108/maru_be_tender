@@ -7,6 +7,7 @@ import React from 'react';
 import axiosInstance from 'utils/axios';
 import LoadingPage from '../../../components/card-table/LoadingPage';
 import EmptyContent from '../../../components/EmptyContent';
+import { FEATURE_MENU_ADMIN_APLICATION_ADMISSION } from '../../../config';
 import { getApplicationAdmissionSettings } from '../../../redux/slices/applicationAndAdmissionSettings';
 import { dispatch, useSelector } from '../../../redux/store';
 import { generateHeader } from '../../../utils/generateProposalNumber';
@@ -76,7 +77,7 @@ function ProposalOnAmandement() {
   if (isLoading || isFetchingData) {
     return <LoadingPage />;
   }
-  if (errorFetchingData)
+  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
     return (
       <>
         {' '}

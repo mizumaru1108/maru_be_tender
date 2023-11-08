@@ -8,6 +8,7 @@ import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 import { dispatch, useSelector } from 'redux/store';
 import axiosInstance from 'utils/axios';
+import { FEATURE_MENU_ADMIN_APLICATION_ADMISSION } from '../../config';
 import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
 import { generateHeader } from '../../utils/generateProposalNumber';
 import CardTableNoData from './CardTableNoData';
@@ -133,7 +134,7 @@ function NewCardTable({
   if (loading || isFetchingData) {
     return <LoadingPage />;
   }
-  if (errorFetchingData)
+  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
     return (
       <>
         {' '}

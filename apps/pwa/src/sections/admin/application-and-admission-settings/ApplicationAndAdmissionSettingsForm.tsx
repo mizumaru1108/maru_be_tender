@@ -12,6 +12,7 @@ import {
   RHFSwitch,
   RHFTextField,
 } from '../../../components/hook-form';
+import { FEATURE_MENU_ADMIN_APLICATION_ADMISSION } from '../../../config';
 import useAuth from '../../../hooks/useAuth';
 import useLocales from '../../../hooks/useLocales';
 import { getApplicationAdmissionSettings } from '../../../redux/slices/applicationAndAdmissionSettings';
@@ -134,7 +135,7 @@ export default function ApplicationAndAdmissionSettingsForm(props: Props) {
   if (isFetchingData) {
     return <>{translate('pages.common.loading')}</>;
   }
-  if (errorFetchingData) {
+  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION) {
     return <>{translate('pages.common.error')}</>;
   }
 

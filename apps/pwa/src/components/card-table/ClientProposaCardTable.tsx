@@ -15,6 +15,7 @@ import ProjectCard from './ProjectCard';
 import { FilteredValues, NewCardTableProps } from './types';
 import EmptyContent from 'components/EmptyContent';
 import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
+import { FEATURE_MENU_ADMIN_APLICATION_ADMISSION } from '../../config';
 
 function ClientProposaCardTable({
   title,
@@ -122,7 +123,7 @@ function ClientProposaCardTable({
   if (loading || isFetchingData) {
     return <LoadingPage />;
   }
-  if (errorFetchingData)
+  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
     return (
       <>
         {' '}

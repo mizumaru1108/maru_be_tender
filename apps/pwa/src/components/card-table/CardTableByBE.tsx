@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getTrackList } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
+import { FEATURE_MENU_ADMIN_APLICATION_ADMISSION } from '../../config';
 import useAuth from '../../hooks/useAuth';
 import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
 import axiosInstance from '../../utils/axios';
@@ -249,7 +250,7 @@ CardTablePropsByBE) {
   if (loadingProps.laodingTrack || isLoading || isFetchingData) {
     return <CardTableLoading />;
   }
-  if (errorFetchingData)
+  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
     return (
       <>
         {' '}

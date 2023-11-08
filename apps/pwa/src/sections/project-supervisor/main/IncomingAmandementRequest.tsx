@@ -6,6 +6,7 @@ import React from 'react';
 import { useNavigate } from 'react-router';
 import EmptyContent from '../../../components/EmptyContent';
 import SortingCardTable from '../../../components/sorting/sorting';
+import { FEATURE_MENU_ADMIN_APLICATION_ADMISSION } from '../../../config';
 import useAuth from '../../../hooks/useAuth';
 import { getApplicationAdmissionSettings } from '../../../redux/slices/applicationAndAdmissionSettings';
 import { dispatch, useSelector } from '../../../redux/store';
@@ -109,7 +110,7 @@ function IncomingAmandementRequest() {
   if (isLoading || isFetchingData) {
     return <LoadingPage />;
   }
-  if (errorFetchingData)
+  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
     return (
       <>
         {' '}
