@@ -50,18 +50,15 @@ import {
   PreviousProposalFilterRequest,
   RequestInProcessFilterRequest,
 } from '../dtos/requests';
-import { AskAmandementRequestDto } from '../dtos/requests/ask-amandement-request.dto';
 import { CeoChangeStatePayload } from '../dtos/requests/ceo-change-state.dto';
 import { FetchAmandementFilterRequest } from '../dtos/requests/fetch-amandement-filter-request.dto';
 import { FetchProposalFilterRequest } from '../dtos/requests/fetch-proposal-filter-request.dto';
 import { ProjectManagerChangeStatePayload } from '../dtos/requests/project-manager-change-state-payload.dto';
 import { FetchProposalByIdResponse } from '../dtos/responses/fetch-proposal-by-id.response.dto';
-import { CreateProposalAskedEditRequestMapper } from '../mappers/create-proposal-asked-edit-request.mapper';
 import { SupervisorAccCreatedItemBudgetMapper } from '../mappers/supervisor-acc-created-item-budget-mapper';
 import { SupervisorGrantTrackAccMapper } from '../mappers/supervisor-grant-track-acc.mapper';
 import { SupervisorRegularTrackAccMapper } from '../mappers/supervisor-regular-track-acc.mapper';
 import { UpdateProposalTrackInfoMapper } from '../mappers/update-proposal-track-info.mapper';
-import { ProposalPaymentRepository } from 'src/proposal-management/payment/repositories/proposal-payment.repository';
 
 @Injectable()
 export class ProposalService {

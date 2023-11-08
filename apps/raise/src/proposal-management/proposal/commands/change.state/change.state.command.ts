@@ -10,9 +10,9 @@ import {
   OutterStatusEnum,
   ProposalAction,
 } from '../../../../tender-commons/types/proposal';
+import { TenderCurrentUser } from '../../../../tender-user/user/interfaces/current-user.interface';
 import { InvalidTrackIdException } from '../../../../track-management/track/exceptions/invalid-track-id.excception';
 import { TrackRepository } from '../../../../track-management/track/repositories/track.repository';
-import { TenderCurrentUser } from '../../../../tender-user/user/interfaces/current-user.interface';
 import {
   CreateItemBugetProps,
   ProposalItemBudgetRepository,
@@ -50,6 +50,12 @@ export class ChangeStateCommandHandler
     private readonly itemBudgetRepo: ProposalItemBudgetRepository,
   ) {}
 
+  validateAction(action: ProposalAction, allowed: ProposalAction[]) {
+    if ([...allowed].indexOf(action) < 0) {
+      throw new ForbiddenChangeStateActionException(`${action}`);
+    }
+  }
+
   async applyChanges(
     proposalUpdateProps: ProposalUpdateProps,
     proposalLogCreateProps: CreateProposalLogProps,
@@ -75,12 +81,10 @@ export class ChangeStateCommandHandler
     session?: PrismaService,
   ) {
     try {
-      if (
-        [ProposalAction.ACCEPT, ProposalAction.REJECT].indexOf(request.action) <
-        0
-      ) {
-        throw new ForbiddenChangeStateActionException(`${request.action}`);
-      }
+      this.validateAction(request.action, [
+        ProposalAction.ACCEPT,
+        ProposalAction.REJECT,
+      ]);
 
       const proposalUpdateProps: ProposalUpdateProps = {
         id: request.proposal_id,
@@ -161,15 +165,12 @@ export class ChangeStateCommandHandler
     session?: PrismaService,
   ) {
     /* supervisor only allowed to acc and reject and step back */
-    if (
-      [
-        ProposalAction.ACCEPT,
-        ProposalAction.REJECT,
-        ProposalAction.STEP_BACK,
-      ].indexOf(request.action) < 0
-    ) {
-      throw new ForbiddenChangeStateActionException(`${request.action}`);
-    }
+    this.validateAction(request.action, [
+      ProposalAction.ACCEPT,
+      ProposalAction.REJECT,
+      ProposalAction.STEP_BACK,
+      ProposalAction.HOLD,
+    ]);
 
     const proposalUpdateProps = Builder<ProposalUpdateProps>(
       ProposalUpdateProps,
@@ -308,29 +309,42 @@ export class ChangeStateCommandHandler
     // /* reject (same for grants and not grants) DONE */
     if (request.action === ProposalAction.REJECT) {
       /* proposal */
-      proposalUpdateProps.inner_status = 'REJECTED_BY_SUPERVISOR';
-      proposalUpdateProps.outter_status = 'CANCELED';
-      proposalUpdateProps.state = 'PROJECT_SUPERVISOR';
+      proposalUpdateProps.inner_status = InnerStatusEnum.REJECTED_BY_SUPERVISOR;
+      proposalUpdateProps.outter_status = OutterStatusEnum.CANCELED;
+      proposalUpdateProps.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalUpdateProps.supervisor_id = currentUser.id;
 
       /* log */
       proposalLogCreateProps.action = ProposalAction.REJECT;
-      proposalLogCreateProps.state = 'PROJECT_SUPERVISOR';
-      proposalLogCreateProps.user_role = 'PROJECT_SUPERVISOR';
+      proposalLogCreateProps.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalLogCreateProps.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalLogCreateProps.reject_reason = request.reject_reason;
     }
 
     // /* step back (same for grants and not grants) DONE */
     if (request.action === ProposalAction.STEP_BACK) {
       /* proposal */
-      proposalUpdateProps.inner_status = 'CREATED_BY_CLIENT';
-      proposalUpdateProps.outter_status = 'ONGOING';
-      proposalUpdateProps.state = 'MODERATOR';
+      proposalUpdateProps.inner_status = InnerStatusEnum.CREATED_BY_CLIENT;
+      proposalUpdateProps.outter_status = OutterStatusEnum.ONGOING;
+      proposalUpdateProps.state = TenderAppRoleEnum.MODERATOR;
 
       /* log */
       proposalLogCreateProps.action = ProposalAction.STEP_BACK;
-      proposalLogCreateProps.state = 'PROJECT_SUPERVISOR';
-      proposalLogCreateProps.user_role = 'PROJECT_SUPERVISOR';
+      proposalLogCreateProps.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalLogCreateProps.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+    }
+
+    if (request.action === ProposalAction.HOLD) {
+      /* proposal */
+      proposalUpdateProps.outter_status = OutterStatusEnum.PENDING_CANCELED;
+      proposalUpdateProps.inner_status = InnerStatusEnum.REJECTED_BY_SUPERVISOR;
+      proposalUpdateProps.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+
+      /* log */
+      proposalLogCreateProps.action = ProposalAction.REJECT;
+      proposalLogCreateProps.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalLogCreateProps.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalLogCreateProps.reject_reason = request.reject_reason;
     }
 
     // apply updates to proposal
@@ -373,20 +387,33 @@ export class ChangeStateCommandHandler
           session,
         );
 
-        switch (currentUser.choosenRole) {
-          case 'tender_moderator':
-            return await this.handleModeratorAction(request, session);
-          case 'tender_project_supervisor':
-            return await this.handleSupervisorAction(
-              currentUser,
-              request,
-              proposal,
-              session,
-            );
-          // case 'tender_project_manager':
-          //   return await this.handlePmAction(currentUser, request, session);
-          default:
-            return null;
+        // switch (currentUser.choosenRole) {
+        //   case 'tender_moderator':
+        //     return await this.handleModeratorAction(request, session);
+        //   case 'tender_project_supervisor':
+        //     return await this.handleSupervisorAction(
+        //       currentUser,
+        //       request,
+        //       proposal,
+        //       session,
+        //     );
+        //   // case 'tender_project_manager':
+        //   //   return await this.handlePmAction(currentUser, request, session);
+        //   default:
+        //     return null;
+        // }
+
+        if (currentUser.choosenRole === 'tender_moderator') {
+          await this.handleModeratorAction(request, session);
+        }
+
+        if (currentUser.choosenRole === 'tender_project_supervisor') {
+          await this.handleSupervisorAction(
+            currentUser,
+            request,
+            proposal,
+            session,
+          );
         }
       });
     } catch (error) {
