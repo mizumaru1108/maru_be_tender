@@ -245,7 +245,9 @@ function ClientProposalLog() {
                 {translate('project_owner_details.card_title')}
               </Typography>
               <Typography sx={{ color: '#0E8478', fontSize: '12px', mb: '5px', fontWeight: 700 }}>
-                {(proposal.user && proposal.user.employee_name) ?? '-No Data-'}
+                {(proposal?.user?.client_data?.entity
+                  ? proposal?.user?.client_data?.entity
+                  : proposal.user.employee_name) ?? '-No Data-'}
               </Typography>
               <Typography
                 sx={{
