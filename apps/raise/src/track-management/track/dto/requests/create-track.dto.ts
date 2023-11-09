@@ -13,4 +13,10 @@ export class CreateTrackDto {
   @IsBoolean()
   @Type(() => Boolean)
   with_consultation: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsBoolean()
+  @Type(() => Boolean)
+  is_grant: boolean;
 }

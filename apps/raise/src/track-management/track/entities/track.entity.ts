@@ -6,6 +6,7 @@ export class TrackEntity {
   id: string;
   name?: string | null;
   with_consultation?: boolean | null = false;
+  is_grant?: boolean | null = false;
   created_at?: Date | null = new Date();
   is_deleted?: boolean | null = false;
   proposals?: ProposalEntity[];

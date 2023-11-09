@@ -5,6 +5,7 @@ import { TrackRepository } from '../../repositories/track.repository';
 export class TrackCreateCommandCommand {
   name: string;
   with_consultation: boolean;
+  is_grant: boolean;
 }
 
 export class TrackCreateCommandCommandResult {

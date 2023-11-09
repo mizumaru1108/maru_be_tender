@@ -5,6 +5,7 @@ export class TrackUpdateCommand {
   id: string;
   name?: string;
   with_consultation?: boolean;
+  is_grant?: boolean;
   is_deleted?: boolean;
 }
 

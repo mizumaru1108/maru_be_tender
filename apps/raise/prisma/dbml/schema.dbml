@@ -613,6 +613,7 @@ Table track {
   id String [pk]
   name String [unique]
   with_consultation Boolean [default: false]
+  is_grant Boolean [default: false]
   created_at DateTime [default: `now()`]
   is_deleted Boolean [default: false]
   proposal proposal [not null]
