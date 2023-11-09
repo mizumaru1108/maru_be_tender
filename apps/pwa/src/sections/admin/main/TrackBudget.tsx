@@ -74,7 +74,9 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                           sx={{ display: 'inline-flex' }}
                         />
                         <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                          {/* {translate('content.administrative.statistic.heading.totalReservedBudget')} */}
+                          {/* {translate(
+                            'content.administrative.statistic.heading.totalReservedBudget'
+                          )} */}
                           {translate('content.administrative.statistic.heading.totalSpendBudget')}
                         </Typography>
                         <Typography

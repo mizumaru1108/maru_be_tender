@@ -1,4 +1,5 @@
 // components
+import { BeneficiariesMap, target_type_map } from '../@types/supervisor-accepting-form';
 import { CustomFile } from '../components/upload/type';
 
 // ----------------------------------------------------------------------
@@ -32,4 +33,11 @@ export const getValueLocalStorage = (key: string) => {
     localStorage.getItem(key) !== 'null' &&
     localStorage.getItem(key);
   return value;
+};
+
+export const getOldTargetGroupType = (value: string): string => {
+  const tmpTargetGrpType = target_type_map[value.toUpperCase() as keyof BeneficiariesMap]
+    ? `review.target_group_type_enum.${value}`
+    : value;
+  return tmpTargetGrpType;
 };

@@ -262,12 +262,12 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
                 {translate('pages.finance.payment_generate.heading.support_outputs')}
                 &nbsp;:&nbsp;
                 <Typography variant="body2" component="span">
-                  {paymentIsDone ? paymentAmount !== -1 && fCurrencyNumber(paymentAmount) : '-'}
+                  {proposalData?.support_outputs || '-'}
                 </Typography>
               </Typography>
             </Grid>
 
-            <Grid item xs={12} sx={{ color: theme.palette.primary.contrastText }}>
+            {/* <Grid item xs={12} sx={{ color: theme.palette.primary.contrastText }}>
               <Typography variant="body1" sx={{ fontWeight: 700 }}>
                 {translate('pages.finance.payment_generate.heading.project_deliverables')}
                 &nbsp;:&nbsp;
@@ -275,7 +275,7 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
                   {proposalData?.project_outputs ?? '-'}
                 </Typography>
               </Typography>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Card>
       </Grid>

@@ -59,7 +59,7 @@ export default function NonClientProfile() {
 
               <Typography variant="h6" sx={{ color: '#1E1E1E' }}>
                 {/* {role_url_map[`${role}`].toUpperCase() ?? 'N/A'} - N/A */}
-                {role_url_map[`${role}`].toUpperCase() ?? 'N/A'}
+                {translate(`${role}`)}
               </Typography>
             </Stack>
             <Button

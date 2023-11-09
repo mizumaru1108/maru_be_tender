@@ -6,6 +6,7 @@ import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
 import { FEATURE_MENU_CLIENT_FILES } from 'config';
 
+const MainClientPage = Loadable(lazy(() => import('pages/client/MainClientPage')));
 const FundingProjectRequest = Loadable(lazy(() => import('pages/client/FundingProjectRequest')));
 const IncomingCloseReports = Loadable(lazy(() => import('pages/client/IncomingClientCloseReport')));
 const ProjectReportFinished = Loadable(lazy(() => import('pages/client/ProjectReportFinished')));
@@ -23,7 +24,6 @@ const ProjectOwnerDetails = Loadable(
 );
 const Messages = Loadable(lazy(() => import('pages/client/Messages')));
 const ContactSupport = Loadable(lazy(() => import('pages/client/ContactSupport')));
-const MainClientPage = Loadable(lazy(() => import('pages/client/MainClientPage')));
 const ClientProfile = Loadable(lazy(() => import('pages/client/ClientProfile')));
 const ClientProfileEdit = Loadable(lazy(() => import('pages/client/ClientProfileEdit')));
 const ClientUserEdit = Loadable(lazy(() => import('pages/client/ClientUserEdit')));

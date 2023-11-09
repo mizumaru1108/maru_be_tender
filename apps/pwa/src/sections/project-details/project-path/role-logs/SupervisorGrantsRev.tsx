@@ -5,6 +5,7 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'redux/store';
 import { PropsalLogGrants } from '../../../../@types/proposal';
 import { selectSectionProjectPath } from 'utils/generateParentChild';
+import { getOldTargetGroupType } from '../../../../utils/getFileData';
 
 interface Props {
   stepGransLog: PropsalLogGrants;
@@ -282,40 +283,38 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
                     </Grid>
                   );
                 }
-                // if (key === 'target_group_type') {
-                //   const tmpVal: string = value as string;
-                //   if (tmpVal) {
-                //     return (
-                //       <Grid item xs={6} key={key}>
-                //         <Typography variant="h6">
-                //           {
-                //             // key
-                //             translate(`review.${key}`)
-                //           }
-                //         </Typography>
-                //         <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                //           <Typography>
-                //             {translate(`review.target_group_type_enum.${value}`)}
-                //           </Typography>
-                //         </Stack>
-                //       </Grid>
-                //     );
-                //   } else {
-                //     return (
-                //       <Grid item xs={6} key={key}>
-                //         <Typography variant="h6">
-                //           {
-                //             // key
-                //             translate(`review.${key}`)
-                //           }
-                //         </Typography>
-                //         <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                //           <Typography>{'-'}</Typography>
-                //         </Stack>
-                //       </Grid>
-                //     );
-                //   }
-                // }
+                if (key === 'target_group_type') {
+                  const tmpVal: string = value as string;
+                  if (tmpVal) {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
+                        </Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>{translate(getOldTargetGroupType(tmpVal))}</Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  } else {
+                    return (
+                      <Grid item xs={6} key={key}>
+                        <Typography variant="h6">
+                          {
+                            // key
+                            translate(`review.${key}`)
+                          }
+                        </Typography>
+                        <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                          <Typography>{'-'}</Typography>
+                        </Stack>
+                      </Grid>
+                    );
+                  }
+                }
                 if (key === 'target_group_age') {
                   const tmpVal: string = value as string;
                   if (tmpVal) {
