@@ -11,11 +11,13 @@ export class TrackCreateProps {
   id?: string;
   name: string;
   with_consultation: boolean;
+  is_grant: boolean;
 }
 export class TrackUpdateProps {
   id: string;
   name?: string;
   with_consultation?: boolean;
+  is_grant?: boolean;
   is_deleted?: boolean;
 }
 
@@ -311,6 +313,7 @@ export class TrackRepository {
           id: props.id || uuidv4(),
           name: props.name,
           with_consultation: props.with_consultation,
+          is_grant: props.is_grant,
         },
       });
 
@@ -330,6 +333,7 @@ export class TrackRepository {
         data: {
           name: props.name,
           with_consultation: props.with_consultation,
+          is_grant: props.is_grant,
           is_deleted: props.is_deleted,
         },
       });
