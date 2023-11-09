@@ -17,7 +17,7 @@ import Page from 'components/Page';
 import Iconify from 'components/Iconify';
 // section
 import ProposalDetailsFinance from './ProposalDetailsFinance';
-import ProposalDetailsCashier from './ProposalDetailsCashier';
+// import ProposalDetailsCashier from './ProposalDetailsCashier';
 // hooks
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';

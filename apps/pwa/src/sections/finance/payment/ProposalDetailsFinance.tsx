@@ -11,7 +11,7 @@ import { generateHeader } from 'utils/generateProposalNumber';
 import { fCurrencyNumber } from 'utils/formatNumber';
 //
 import { Proposal } from '../../../@types/proposal';
-import { useSelector } from 'redux/store';
+import { dispatch, useSelector } from 'redux/store';
 // import { getOneNameCashier } from 'queries/Cashier/getOneNameCashier';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import {
@@ -21,6 +21,10 @@ import {
   getGeneratePaymentData,
 } from 'queries/commons/getOneProposal';
 import Space from 'components/space/space';
+import { TrackSection } from '../../../@types/commons';
+import { selectSectionProjectPath } from 'utils/generateParentChild';
+import { getTracksById } from 'redux/slices/track';
+import useAuth from 'hooks/useAuth';
 
 // -------------------------------------------------------------------------------------------------
 
@@ -32,11 +36,18 @@ interface IPropsData {
 // -------------------------------------------------------------------------------------------------
 
 export default function ProposalDetails({ proposalData, loading }: IPropsData) {
-  const { track_list } = useSelector((state) => state.proposal);
+  const { activeRole } = useAuth();
+  const { track_list, proposal } = useSelector((state) => state.proposal);
+  const { track, isLoading: loadingTracks } = useSelector((state) => state.tracks);
   const { translate } = useLocales();
   // const navigate = useNavigate();
   const params = useParams();
   const theme = useTheme();
+
+  const [valueLevelOne, setValueLevelOne] = React.useState<TrackSection | null>(null);
+  const [valueLevelTwo, setValueLevelTwo] = React.useState<TrackSection | null>(null);
+  const [valueLevelThree, setValueLevelThree] = React.useState<TrackSection | null>(null);
+  const [valueLevelFour, setValueLevelFour] = React.useState<TrackSection | null>(null);
 
   // const [{ data, fetching, error }] = useQuery({
   //   query: getFinanceName,
@@ -127,6 +138,26 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
   const governorates = proposalData?.proposal_governorates?.length
     ? proposalData?.proposal_governorates.map((el) => el.governorate?.name).toString()
     : '-';
+
+  React.useEffect(() => {
+    if (proposal?.track_id && proposal?.track_id !== 'test') {
+      dispatch(getTracksById(activeRole!, proposal?.track_id || ''));
+    }
+  }, [proposal, activeRole]);
+
+  React.useEffect(() => {
+    if (!loadingTracks && track.sections && track.sections.length) {
+      const generate = selectSectionProjectPath({
+        parent: track.sections,
+        section_id: proposal.section_id,
+      });
+
+      setValueLevelOne(generate.levelOne);
+      setValueLevelTwo(generate.levelTwo);
+      setValueLevelThree(generate.levelThree);
+      setValueLevelFour(generate.levelFour);
+    }
+  }, [track, loadingTracks, proposal]);
 
   if (fetching || cahiserData.fetching || financeData.fetching) return <>Loading...</>;
   if (error || cahiserData.error || financeData.error) return <>Oops Something went wrong!</>;
@@ -240,14 +271,23 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
               <Typography variant="body1" sx={{ fontWeight: 700 }}>
                 {translate('pages.finance.payment_generate.heading.project_deliverables')}
                 &nbsp;:&nbsp;
-                <Typography variant="body2">{proposalData?.project_outputs ?? '-'}</Typography>
+                <Typography variant="body2" component="span">
+                  {proposalData?.project_outputs ?? '-'}
+                </Typography>
               </Typography>
             </Grid>
           </Grid>
         </Card>
       </Grid>
       <Grid item xs={6}>
-        <Card sx={{ p: 2.5, backgroundColor: theme.palette.primary.main, borderRadius: 0 }}>
+        <Card
+          sx={{
+            p: 2.5,
+            backgroundColor: theme.palette.primary.main,
+            borderRadius: 0,
+            mb: theme.spacing(3),
+          }}
+        >
           <Grid container spacing={2}>
             <Grid item xs={12} sx={{ color: theme.palette.primary.contrastText }}>
               <Typography variant="body1" sx={{ fontWeight: 700 }}>
@@ -284,6 +324,42 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
                   {proposalData?.does_an_agreement
                     ? translate('pages.finance.payment_generate.heading.yes')
                     : translate('pages.finance.payment_generate.heading.no')}
+                </Typography>
+              </Typography>
+            </Grid>
+          </Grid>
+        </Card>
+        <Card sx={{ p: 2.5, backgroundColor: theme.palette.primary.main, borderRadius: 0 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sx={{ color: theme.palette.primary.contrastText }}>
+              <Typography variant="body1" sx={{ fontWeight: 700 }}>
+                {translate(`review.section_level_one`)}&nbsp;:&nbsp;
+                <Typography variant="body2" component="span">
+                  {valueLevelOne ? valueLevelOne.name : '-'}
+                </Typography>
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sx={{ color: theme.palette.primary.contrastText }}>
+              <Typography variant="body1" sx={{ fontWeight: 700 }}>
+                {translate(`review.section_level_two`)}&nbsp;:&nbsp;
+                <Typography variant="body2" component="span">
+                  {valueLevelTwo ? valueLevelTwo.name : '-'}
+                </Typography>
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sx={{ color: theme.palette.primary.contrastText }}>
+              <Typography variant="body1" sx={{ fontWeight: 700 }}>
+                {translate(`review.section_level_three`)}&nbsp;:&nbsp;
+                <Typography variant="body2" component="span">
+                  {valueLevelThree ? valueLevelThree.name : '-'}
+                </Typography>
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sx={{ color: theme.palette.primary.contrastText }}>
+              <Typography variant="body1" sx={{ fontWeight: 700 }}>
+                {translate(`review.section_level_four`)}&nbsp;:&nbsp;
+                <Typography variant="body2" component="span">
+                  {valueLevelFour ? valueLevelFour.name : '-'}
                 </Typography>
               </Typography>
             </Grid>

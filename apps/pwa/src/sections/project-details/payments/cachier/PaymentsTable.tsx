@@ -90,19 +90,21 @@ function PaymentsTable() {
                   </Typography>
                 </Stack>
               </Grid>
-              <Grid item md={2}>
-                <Stack direction="column">
-                  <Typography sx={{ color: '#93A3B0' }}>
-                    {translate(
-                      'content.administrative.project_details.payment.table.td.reason_payment'
-                    )}
-                    :
-                  </Typography>
-                  <Typography sx={{ color: '#1E1E1E' }} variant="h6">
-                    {item.notes && item.notes !== '' ? item.notes : '-'}
-                  </Typography>
-                </Stack>
-              </Grid>
+              {activeRole !== 'tender_client' ? (
+                <Grid item md={2}>
+                  <Stack direction="column">
+                    <Typography sx={{ color: '#93A3B0' }}>
+                      {translate(
+                        'content.administrative.project_details.payment.table.td.reason_payment'
+                      )}
+                      :
+                    </Typography>
+                    <Typography sx={{ color: '#1E1E1E' }} variant="h6">
+                      {item.notes && item.notes !== '' ? item.notes : '-'}
+                    </Typography>
+                  </Stack>
+                </Grid>
+              ) : null}
               {item.status !== 'set_by_supervisor' && (
                 <Grid item md={2}>
                   <Typography
@@ -116,25 +118,27 @@ function PaymentsTable() {
                   </Typography>
                 </Grid>
               )}
-              <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
-                <Button
-                  variant="text"
-                  color="inherit"
-                  sx={{ '&:hover': { textDecorationLine: 'underline' } }}
-                  onClick={() => {
-                    localStorage.setItem('receipt_type', 'generate');
-                    navigate(
-                      `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
-                        proposal.id
-                      }/payments/${item.id}`
-                    );
-                  }}
-                >
-                  {translate(
-                    'content.administrative.project_details.payment.table.btn.exchange_permit_generate_finance'
-                  )}
-                </Button>
-              </Grid>
+              {activeRole !== 'tender_client' ? (
+                <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
+                  <Button
+                    variant="text"
+                    color="inherit"
+                    sx={{ '&:hover': { textDecorationLine: 'underline' } }}
+                    onClick={() => {
+                      localStorage.setItem('receipt_type', 'generate');
+                      navigate(
+                        `/${role_url_map[`${activeRole!}`]}/dashboard/generate/${
+                          proposal.id
+                        }/payments/${item.id}`
+                      );
+                    }}
+                  >
+                    {translate(
+                      'content.administrative.project_details.payment.table.btn.exchange_permit_generate_finance'
+                    )}
+                  </Button>
+                </Grid>
+              ) : null}
               {(item.status === 'done' ||
                 item.status === 'uploaded_by_cashier' ||
                 item.status === 'accepted_by_finance') &&
