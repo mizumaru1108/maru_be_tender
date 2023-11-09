@@ -10,7 +10,8 @@ export type TenderFusionAuthRoles =
   | 'tender_moderator'
   | 'tender_project_manager'
   | 'tender_project_supervisor'
-  | 'tender_auditor_report';
+  | 'tender_auditor_report'
+  | 'tender_portal_report';
 
 export enum TenderFusionAuthRolesEnum {
   CLUSTER_ADMIN = 'cluster_admin',
@@ -25,6 +26,7 @@ export enum TenderFusionAuthRolesEnum {
   TENDER_PROJECT_MANAGER = 'tender_project_manager',
   TENDER_PROJECT_SUPERVISOR = 'tender_project_supervisor',
   TENDER_AUDITOR_REPORT = 'tender_auditor_report',
+  TENDER_PORTAL_REPORT = 'tender_portal_report',
 }
 
 export type TenderAppRoles =
@@ -52,6 +54,7 @@ export enum TenderAppRolesEnum {
   PROJECT_MANAGER = 'project_manager',
   PROJECT_SUPERVISOR = 'project_supervisor',
   AUDITOR_REPORT = 'auditor_report',
+  PORTAL_REPORT = 'portal_report',
 }
 
 export type TenderAppRole =
@@ -65,7 +68,8 @@ export type TenderAppRole =
   | 'MODERATOR'
   | 'PROJECT_MANAGER'
   | 'PROJECT_SUPERVISOR'
-  | 'AUDITOR_REPORT';
+  | 'AUDITOR_REPORT'
+  | 'PORTAL_REPORT';
 
 export enum TenderAppRoleEnum {
   ACCOUNTS_MANAGER = 'ACCOUNTS_MANAGER',
@@ -79,6 +83,7 @@ export enum TenderAppRoleEnum {
   PROJECT_MANAGER = 'PROJECT_MANAGER',
   PROJECT_SUPERVISOR = 'PROJECT_SUPERVISOR',
   AUDITOR_REPORT = 'AUDITOR_REPORT',
+  PORTAL_REPORT = 'PORTAL_REPORT',
 }
 
 export const appRolesMappers = {
@@ -94,6 +99,7 @@ export const appRolesMappers = {
   tender_project_manager: 'project-manager',
   tender_project_supervisor: 'project-supervisor',
   tender_auditor_report: 'auditor-report',
+  tender_portal_report: 'portal-report',
 };
 
 export const appRoleMappers = {
@@ -109,6 +115,7 @@ export const appRoleMappers = {
   tender_project_manager: 'PROJECT_MANAGER',
   tender_project_supervisor: 'PROJECT_SUPERVISOR',
   tender_auditor_report: 'AUDITOR_REPORT',
+  tender_portal_report: 'PORTAL_REPORT',
 };
 
 export const appRoleToFusionAuthRoles = {
@@ -123,6 +130,7 @@ export const appRoleToFusionAuthRoles = {
   PROJECT_MANAGER: 'tender_project_manager',
   PROJECT_SUPERVISOR: 'tender_project_supervisor',
   AUDITOR_REPORT: 'tender_auditor_report',
+  PORTAL_REPORT: 'tender_portal_report',
 };
 
 export const appRoleToReadable = {
@@ -137,4 +145,5 @@ export const appRoleToReadable = {
   PROJECT_MANAGER: 'Project Manager',
   PROJECT_SUPERVISOR: 'Project Supervisor',
   AUDITOR_REPORT: 'Auditor Report',
+  PORTAL_REPORT: 'Portal Report',
 };

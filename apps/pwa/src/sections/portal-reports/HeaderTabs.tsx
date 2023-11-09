@@ -3,7 +3,7 @@ import { useTheme } from '@mui/material/styles';
 import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LoadingButton } from '@mui/lab';
 import {
   Tabs,
@@ -342,7 +342,7 @@ export default function HeaderTabs() {
           <Grid container spacing={2} direction="row" alignItems="center" justifyContent="flex-end">
             <Grid item>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DesktopDatePicker
+                <DatePicker
                   label={translate('section_portal_reports.form.date_picker.label.start_date')}
                   inputFormat="MM/DD/YYYY"
                   value={valueStartDate}
@@ -363,7 +363,7 @@ export default function HeaderTabs() {
             </Grid>
             <Grid item>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DesktopDatePicker
+                <DatePicker
                   label={translate('section_portal_reports.form.date_picker.label.end_date')}
                   inputFormat="MM/DD/YYYY"
                   value={valueEndDate}

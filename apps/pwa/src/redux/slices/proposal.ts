@@ -461,7 +461,8 @@ export const getProposal = (id: string, role: string) => async () => {
       role === 'tender_cashier' ||
       role === 'tender_consultant' ||
       role === 'tender_accounts_manager' ||
-      role === 'tender_auditor_report'
+      role === 'tender_auditor_report' ||
+      role === 'tender_portal_report'
     ) {
       try {
         const url = `tender-proposal/fetch-by-id?id=${id}`;
@@ -476,7 +477,8 @@ export const getProposal = (id: string, role: string) => async () => {
             role === 'tender_project_supervisor' ||
             role === 'tender_finance' ||
             role === 'tender_cashier' ||
-            role === 'tender_auditor_report'
+            role === 'tender_auditor_report' ||
+            role === 'tender_portal_report'
           ) {
             try {
               const url = `/tender/track/${response.data.data.track_id as string}`;

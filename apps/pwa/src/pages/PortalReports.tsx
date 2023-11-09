@@ -17,7 +17,6 @@ function PortalReports() {
   }));
 
   return (
-    // <Page title="Portal Reports Page">
     <Page title={translate('pages.common.portal_reports')}>
       <Container>
         <ContentStyle>

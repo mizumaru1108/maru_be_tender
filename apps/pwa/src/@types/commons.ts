@@ -11,6 +11,7 @@ export type FusionAuthRoles =
   | 'tender_finance'
   | 'tender_moderator'
   | 'tender_auditor_report'
+  | 'tender_portal_report'
   | 'tender_project_manager'
   | 'tender_project_supervisor';
 
@@ -24,6 +25,7 @@ export type AppRoles =
   | 'finance'
   | 'moderator'
   | 'auditor_report'
+  | 'PORTAL_REPORT'
   | 'project_manager'
   | 'project_supervisor';
 
@@ -51,6 +53,7 @@ export const role_url_map = {
   tender_finance: 'finance',
   tender_moderator: 'moderator',
   tender_auditor_report: 'auditor-report',
+  tender_portal_report: 'portal-report',
   tender_project_manager: 'project-manager',
   tender_project_supervisor: 'project-supervisor',
 };
@@ -66,6 +69,7 @@ export const submitterRoles = {
   tender_finance: 'FINANCE',
   tender_moderator: 'MODERATOR',
   tender_auditor_report: 'AUDITOR_REPORT',
+  tender_portal_report: 'PORTAL_REPORT',
   tender_project_manager: 'PROJECT_MANAGER',
   tender_project_supervisor: 'PROJECT_SUPERVISOR',
 };

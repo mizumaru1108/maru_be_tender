@@ -11,6 +11,7 @@ import {
   PATH_MODERATOR,
   PATH_ADMIN,
   PATH_AUDITOR_REPORT,
+  PATH_PORTAL_REPORT,
 } from '../../../routes/paths';
 import SvgIconStyle from '../../../components/SvgIconStyle';
 import {
@@ -163,6 +164,9 @@ const ICONS = {
   },
   tender_auditor_report: {
     main: getIcon('main'),
+  },
+  tender_portal_report: {
+    main: getIcon('portal-reports'),
   },
 };
 
@@ -883,6 +887,18 @@ const navConfig = {
           title: 'main',
           path: PATH_AUDITOR_REPORT.app,
           icon: ICONS.tender_auditor_report.main,
+        },
+      ],
+    },
+  ],
+  tender_portal_report: [
+    {
+      subheader: '',
+      items: [
+        {
+          title: 'main',
+          path: PATH_PORTAL_REPORT.app,
+          icon: ICONS.tender_portal_report.main,
         },
       ],
     },

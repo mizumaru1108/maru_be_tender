@@ -39,6 +39,8 @@ function Payments() {
         {activeRole === 'tender_finance' && <FinancePaymentsPage />}
         {activeRole === 'tender_cashier' && <CachierPaymentsTable />}
         {activeRole === 'tender_client' && <CachierPaymentsTable />}
+        {activeRole === 'tender_auditor_report' && <CachierPaymentsTable />}
+        {activeRole === 'tender_portal_report' && <CachierPaymentsTable />}
       </div>
     );
   }

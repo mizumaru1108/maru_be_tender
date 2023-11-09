@@ -60,6 +60,7 @@ export class TenderStatisticsController {
     'tender_moderator',
     'tender_project_manager',
     'tender_project_supervisor',
+    'tender_portal_report',
   ) // only internal users
   @Get('partners-section')
   async getPartnersReport(@Query() query: BaseStatisticFilter) {
@@ -83,6 +84,7 @@ export class TenderStatisticsController {
     'tender_moderator',
     'tender_project_manager',
     'tender_project_supervisor',
+    'tender_portal_report',
   ) // only internal users
   @Get('benificiaries-report')
   async getProjectBeneficiariesReport(@Query() query: BaseStatisticFilter) {
@@ -106,6 +108,7 @@ export class TenderStatisticsController {
     'tender_moderator',
     'tender_project_manager',
     'tender_project_supervisor',
+    'tender_portal_report',
   ) // only internal users
   @Get('average-track-transaction-time')
   async averageTransaction(@Query() query: BaseStatisticFilter) {
@@ -125,6 +128,7 @@ export class TenderStatisticsController {
     'tender_moderator',
     'tender_project_manager',
     'tender_project_supervisor',
+    'tender_portal_report',
   ) // only internal users
   @Get('average-employee-transaction-time')
   async avarageEmployeeTransaction(
@@ -154,6 +158,7 @@ export class TenderStatisticsController {
     'tender_moderator',
     'tender_project_manager',
     'tender_project_supervisor',
+    'tender_portal_report',
   ) // only internal users
   @Get('budget-info')
   async getBudgetInfo(@Query() query: BaseStatisticFilter) {

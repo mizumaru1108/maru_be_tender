@@ -2265,6 +2265,7 @@ const en = {
   tender_finance: 'Finance',
   tender_moderator: 'Moderator',
   tender_auditor_report: 'Auditor Report',
+  tender_portal_report: 'Portal Report',
   tender_project_manager: 'Project Manager',
   tender_project_supervisor: 'Project Supervisor',
   account_permission: 'Account Permissions',
@@ -2280,6 +2281,7 @@ const en = {
     ADMIN: 'Super Admin',
     CLIENT: 'Client',
     AUDITOR_REPORT: 'Auditor Report',
+    PORTAL_REPORT: 'Portal Report',
   },
   closing_project_by_client: 'Closing Project By Client',
   review: {

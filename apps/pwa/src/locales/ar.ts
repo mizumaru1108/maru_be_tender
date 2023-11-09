@@ -2280,6 +2280,7 @@ const ar = {
   tender_cashier: 'أمين الصندوق',
   tender_client: 'المستخدم',
   tender_auditor_report: 'عرض تقارير الاغلاق',
+  tender_portal_report: 'عرض مشاريع المنصة',
   tender_consultant: 'المستشار',
   tender_finance: 'المالية',
   tender_moderator: 'مسؤول الفرز',
@@ -2299,6 +2300,7 @@ const ar = {
     // CLIENT: 'عميل',
     CLIENT: 'شريك',
     AUDITOR_REPORT: 'عرض تقارير الاغلاق',
+    PORTAL_REPORT: 'عرض مشاريع المنصة',
   },
   closing_project_by_client: 'إغلاق مشروع',
   review: {

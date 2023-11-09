@@ -14,6 +14,7 @@ import { adminRoute } from './admin-route';
 import { getAuthCode } from './get-auth-code';
 import { landingRoute } from 'routes/landing-route';
 import { auditorReportRoute } from './auditor-report-route';
+import { portalReportRoute } from './portal-report-route';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +33,7 @@ export default function Router() {
     mainRoute,
     adminRoute,
     auditorReportRoute,
+    portalReportRoute,
     getAuthCode,
     landingRoute,
     {
