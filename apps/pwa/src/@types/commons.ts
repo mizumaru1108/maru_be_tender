@@ -160,6 +160,7 @@ export interface UpdateTrackProps {
   id: string;
   name: string;
   with_consultation: boolean;
+  is_grant: boolean;
   is_deleted: boolean;
 }
 
@@ -181,6 +182,7 @@ export interface TrackProps {
   id: string;
   name: string;
   with_consultation: boolean;
+  is_grant: boolean;
   created_at: string;
   updated_at: string;
   is_deleted: boolean;

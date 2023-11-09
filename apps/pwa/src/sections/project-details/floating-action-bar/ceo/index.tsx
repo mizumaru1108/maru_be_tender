@@ -591,8 +591,7 @@ function FloatingActionBar() {
         />
       )} */}
       {action === 'ACCEPT' &&
-        track_list.find((item: any) => item.id === proposal.track_id)?.with_consultation ===
-          false && (
+        track_list.find((item: any) => item.id === proposal.track_id)?.is_grant === false && (
           // <NotesModal
           //   title="قبول المشروع"
           //   onClose={handleCloseModal}
@@ -615,8 +614,9 @@ function FloatingActionBar() {
         <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />
       )} */}
       {action === 'ACCEPT' &&
-        track_list.find((item: any) => item.id === proposal.track_id)?.with_consultation ===
-          true && <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />}
+        track_list.find((item: any) => item.id === proposal.track_id)?.is_grant === true && (
+          <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />
+        )}
     </>
   );
 }

@@ -16,7 +16,7 @@ import useAuth from '../../hooks/useAuth';
 import { getClientTotalProposal } from '../../queries/client/getClientTotalProposal';
 import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
 import { dispatch, useSelector } from '../../redux/store';
-import { isDateAbove, isDateBetween } from '../../utils/checkIsAboveDate';
+import { isDateBetween } from '../../utils/checkIsAboveDate';
 import { hasDayExpired } from '../../utils/checkIsExpired';
 
 const FundingProjectRequest = () => {
@@ -25,6 +25,10 @@ const FundingProjectRequest = () => {
 
   const [openModal, setOpenModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string[]>([]);
+  const [date, setDate] = useState({
+    startDate: '',
+    endDate: '',
+  });
 
   // selector for applicationAndAdmissionSettings
   const {
@@ -35,9 +39,8 @@ const FundingProjectRequest = () => {
 
   const [result, reExecute] = useQuery({
     query: getClientTotalProposal,
-    variables: { submitter_user_id: user?.id },
-    pause: !user?.id,
-    // pause: true,
+    variables: { submitter_user_id: user?.id, _lte: date.endDate, _gte: date.startDate },
+    pause: date.startDate === '' && date.endDate === '',
   });
   const { data, fetching, error } = result;
 
@@ -64,10 +67,25 @@ const FundingProjectRequest = () => {
   }, [activeRole]);
 
   useEffect(() => {
+    if (!isFetchingData) {
+      const startDate = dayjs(application_admission_settings.starting_date).format(
+        'YYYY-MM-DD HH:mm:ssZ'
+      );
+      const endDate = dayjs(application_admission_settings.ending_date).format(
+        'YYYY-MM-DD HH:mm:ssZ'
+      );
+      setDate({
+        startDate,
+        endDate,
+      });
+    }
+  }, [application_admission_settings, isFetchingData]);
+
+  useEffect(() => {
     if (!!totalProposal && application_admission_settings.applying_status) {
       if (
         application_admission_settings?.number_of_allowing_projects &&
-        totalProposal > application_admission_settings?.number_of_allowing_projects
+        totalProposal >= application_admission_settings?.number_of_allowing_projects
       ) {
         setOpenModal(true);
         const checkExistMessage = [...errorMessage].includes('modal.disable_proposal.exceed_limit');
@@ -113,7 +131,9 @@ const FundingProjectRequest = () => {
               {translate('create_a_new_support_request')}
             </Typography>
           </Box>
-          {isOpen || openModal ? null : <FundingProjectRequestForm />}
+          {(isOpen || openModal) && !isFetchingData && !fetching ? null : (
+            <FundingProjectRequestForm />
+          )}
         </ContentStyle>
       </Container>
     </Page>

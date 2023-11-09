@@ -55,6 +55,7 @@ function FloatingActionBar() {
           id
           name
           with_consultation
+          is_grant
         }
       }
     }
@@ -83,8 +84,8 @@ function FloatingActionBar() {
 
   const open = Boolean(anchorEl);
 
-  const checkConsultation =
-    data && data.user && data.user.track && data.user.track.with_consultation;
+  const checkGrant =
+    data && data.user && data.user.track && data.user.track.is_grant ? true : false;
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -628,29 +629,29 @@ function FloatingActionBar() {
               </MenuItem>
             </Menu>
           </Grid>
-          <Grid item md={checkConsultation ? 10 : 8} xs={12}>
+          <Grid item md={checkGrant ? 10 : 8} xs={12}>
             <Stack direction="row" spacing={2} justifyContent="flex-start">
-              {checkConsultation ? (
-                <Button
-                  variant="outlined"
-                  color="inherit"
-                  endIcon={<Iconify icon="eva:message-circle-outline" />}
-                  onClick={() => setAction('ACCEPT_CONSULTANT')}
-                  sx={{ display: 'inline-flex' }}
-                >
-                  عرض المشروع على المستشارين
-                </Button>
-              ) : null}
-              {/* <LoadingButton
+              <Button
                 variant="outlined"
                 color="inherit"
                 endIcon={<Iconify icon="eva:message-circle-outline" />}
-                onClick={handleMessage}
-                sx={{ flex: 1 }}
-                loading={isSubmitting}
+                onClick={() => setAction('ACCEPT_CONSULTANT')}
+                sx={{ display: 'inline-flex' }}
               >
-                {translate('partner_details.send_messages')}
-              </LoadingButton> */}
+                عرض المشروع على المستشارين
+              </Button>
+              {checkGrant ? (
+                <LoadingButton
+                  variant="outlined"
+                  color="inherit"
+                  endIcon={<Iconify icon="eva:message-circle-outline" />}
+                  onClick={handleMessage}
+                  sx={{ flex: 1 }}
+                  loading={isSubmitting}
+                >
+                  {translate('partner_details.send_messages')}
+                </LoadingButton>
+              ) : null}
               <LoadingButton
                 sx={{ flex: 1, '&:hover': { backgroundColor: '#FF170F' } }}
                 variant="contained"
@@ -722,7 +723,7 @@ function FloatingActionBar() {
         />
       )} */}
 
-      {action === 'ACCEPT' && !checkConsultation && (
+      {action === 'ACCEPT' && !checkGrant && (
         // <NotesModal
         //   title="قبول المشروع"
         //   onClose={handleCloseModal}
@@ -741,7 +742,7 @@ function FloatingActionBar() {
           loading={isSubmitting}
         />
       )}
-      {action === 'ACCEPT' && checkConsultation && (
+      {action === 'ACCEPT' && checkGrant && (
         <FacilitateSupervisorAcceptingForm onClose={handleCloseModal} />
       )}
 

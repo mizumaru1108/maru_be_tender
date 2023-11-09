@@ -25,6 +25,10 @@ function DraftsFundingRequest() {
 
   const [openModal, setOpenModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string[]>([]);
+  const [date, setDate] = useState({
+    startDate: '',
+    endDate: '',
+  });
 
   // selector for applicationAndAdmissionSettings
   const {
@@ -35,10 +39,10 @@ function DraftsFundingRequest() {
 
   const [result, reExecute] = useQuery({
     query: getClientTotalProposal,
-    variables: { submitter_user_id: user?.id },
-    pause: !user?.id,
-    // pause: true,
+    variables: { submitter_user_id: user?.id, _lte: date.endDate, _gte: date.startDate },
+    pause: date.startDate === '' && date.endDate === '',
   });
+
   const { data, fetching, error } = result;
 
   const totalProposal: number = data?.proposal_aggregate?.aggregate?.count;
@@ -62,6 +66,21 @@ function DraftsFundingRequest() {
   useEffect(() => {
     dispatch(getApplicationAdmissionSettings(activeRole!));
   }, [activeRole]);
+
+  useEffect(() => {
+    if (!isFetchingData) {
+      const startDate = dayjs(application_admission_settings.starting_date).format(
+        'YYYY-MM-DD HH:mm:ssZ'
+      );
+      const endDate = dayjs(application_admission_settings.ending_date).format(
+        'YYYY-MM-DD HH:mm:ssZ'
+      );
+      setDate({
+        startDate,
+        endDate,
+      });
+    }
+  }, [application_admission_settings, isFetchingData]);
 
   useEffect(() => {
     if (!!totalProposal && application_admission_settings.applying_status) {

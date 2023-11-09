@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { TextField, Grid, Typography, Button, Stack } from '@mui/material';
+import { TextField, Grid, Typography, Button, Stack, Select, MenuItem } from '@mui/material';
 import { FormProvider, RHFTextField } from 'components/hook-form';
 import useAuth from 'hooks/useAuth';
 import Iconify from 'components/Iconify';
@@ -16,28 +16,20 @@ import { dispatch } from 'redux/store';
 import { getTracks, updateTrack } from 'redux/slices/track';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 
-// interface ActionProps {
-//   backgroundColor: string;
-//   hoverColor: string;
-//   actionLabel: string;
-//   actionType?: string;
-// }
 interface Props {
   trackId?: string;
   trackName?: string;
   withConsultation?: boolean;
+  isGrants?: boolean;
   isEdit?: boolean;
   isDelete?: boolean;
-  // title: string;
-  // onSubmit: (data: any) => void;
   onClose: () => void;
-  // action: ActionProps;
-  // loading?: boolean;
 }
 
 interface FormInput {
   track_name: string;
   consultant: string;
+  is_grant: string;
 }
 
 const AddNewTrack = ({
@@ -46,6 +38,7 @@ const AddNewTrack = ({
   trackId,
   trackName,
   withConsultation,
+  isGrants = false,
   onClose,
 }: Props) => {
   const navigate = useNavigate();
@@ -68,6 +61,7 @@ const AddNewTrack = ({
         : withConsultation === true
         ? 'with_consultant'
         : 'without_consultant',
+    is_grant: isGrants ? 'grants' : 'non_grants',
   };
 
   const methods = useForm<FormInput>({
@@ -80,7 +74,7 @@ const AddNewTrack = ({
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmitForm = async (data: any) => {
+  const onSubmitForm = async (data: FormInput) => {
     // onSubmit(data);
     // navigate('/admin/dashboard/transaction-progression/add');
     let consultantValue: boolean = true;
@@ -99,8 +93,8 @@ const AddNewTrack = ({
         const payload = {
           name: TEMP_TRACKNAME,
           with_consultation: consultantValue,
+          is_grant: data?.is_grant === 'grants' ? true : false,
         };
-        // console.log({ payload });
 
         await axiosInstance
           .post(`tender/track/create`, payload, {
@@ -147,6 +141,7 @@ const AddNewTrack = ({
               id: trackId,
               name: TEMP_TRACKNAME,
               with_consultation: consultantValue,
+              is_grant: data?.is_grant === 'grants' ? true : false,
               is_deleted: isDelete,
             },
             activeRole!
@@ -155,9 +150,9 @@ const AddNewTrack = ({
         await dispatch(getTracks(activeRole!));
       } catch (error) {
         console.log({ error });
+      } finally {
+        onClose();
       }
-
-      onClose();
     }
   };
 
@@ -192,12 +187,6 @@ const AddNewTrack = ({
             : translate('modal.headline.track')}
         </Typography>
         <Grid item md={12} xs={12} sx={{ mb: 6 }}>
-          {/* <TextField
-            placeholder="Please type the track name"
-            label="Track name"
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-          /> */}
           <RHFTextField
             name="track_name"
             label={translate('modal.label.track_name')}
@@ -223,7 +212,26 @@ const AddNewTrack = ({
               {translate('modal.value.select.no_consultant')}
             </option>
           </RHFSelectNoGenerator>
+
+          <RHFSelectNoGenerator
+            name={`is_grant`}
+            size="medium"
+            label={translate('modal.label.grants')}
+            InputLabelProps={{ shrink: true }}
+            sx={{ mt: 3 }}
+            disabled={!isEdit}
+          >
+            <option value="grants" style={{ backgroundColor: '#fff' }}>
+              {/* With Consultant */}
+              {translate('modal.value.select.grants')}
+            </option>
+            <option value="non_grants" style={{ backgroundColor: '#fff' }}>
+              {/* No Consultant */}
+              {translate('modal.value.select.non_grants')}
+            </option>
+          </RHFSelectNoGenerator>
         </Grid>
+
         <Stack justifyContent="center" direction="row" gap={2}>
           {isEdit && !isDelete && (
             <LoadingButton

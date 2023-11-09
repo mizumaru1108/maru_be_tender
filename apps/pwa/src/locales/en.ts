@@ -2655,6 +2655,7 @@ const en = {
     label: {
       track_name: 'Track Name',
       consultant: 'Consultant *',
+      grants: 'Grants *',
     },
     placeholder: {
       choose_one: 'Choose One',
@@ -2664,6 +2665,8 @@ const en = {
       select: {
         with_consultant: 'With Consultant',
         no_consultant: 'No Consultant',
+        grants: 'Grants',
+        non_grants: 'Non Grants',
       },
     },
     confirm_amandement: 'Do amendment request',

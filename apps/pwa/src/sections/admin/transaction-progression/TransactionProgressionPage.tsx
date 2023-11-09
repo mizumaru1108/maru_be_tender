@@ -37,20 +37,7 @@ const TransactionProgressionPage = () => {
         styleContent={{ padding: '1em', backgroundColor: '#fff' }}
         isOpen={open}
         maxWidth="md"
-        // title="اضافة ميزانية جديدة"
-        content={
-          <AddNewTrack
-            // loading={loading}
-            onClose={handleOnClose}
-            isEdit={true}
-            // onSubmit={handleSubmit}
-            // action={{
-            //   actionLabel: 'إرجاع',
-            //   backgroundColor: '#0169DE',
-            //   hoverColor: '#1482FE',
-            // }}
-          />
-        }
+        content={<AddNewTrack onClose={handleOnClose} isEdit={true} />}
         onClose={handleOnClose}
       />
       <Grid sx={{ display: 'flex', justifyContent: 'space-between', mt: 6, mb: 3 }}>
@@ -107,9 +94,10 @@ const TransactionProgressionPage = () => {
             <Grid item md={4} sm={6} xs={12} key={index}>
               <Card sx={{ py: 3, background: '#fff' }}>
                 <ContentTrackCard
-                  id={track.id}
-                  name={track.name}
-                  withConsultation={track.with_consultation}
+                  id={track?.id}
+                  name={track?.name}
+                  withConsultation={track?.with_consultation}
+                  isGrants={track?.is_grant ? true : false}
                 />
               </Card>
             </Grid>

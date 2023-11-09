@@ -14,6 +14,7 @@ export const getSectoinBudget = async (props: TGetSectionBudget): Promise<TrackP
     is_deleted: false,
     name: 'test',
     with_consultation: false,
+    is_grant: false,
     total_budget: 0,
     total_spending_budget: 0,
     total_reserved_budget: 0,

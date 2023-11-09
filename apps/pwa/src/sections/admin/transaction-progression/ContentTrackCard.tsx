@@ -5,7 +5,14 @@ import React from 'react';
 import useLocales from '../../../hooks/useLocales';
 import AddNewTrack from './AddNewTrack';
 
-function ContentTrackCard({ id, name, withConsultation }: any) {
+type Props = {
+  id: string;
+  name: string;
+  withConsultation: boolean;
+  isGrants: boolean;
+};
+
+function ContentTrackCard({ id, name, withConsultation, isGrants }: Props) {
   const [open, setOpen] = React.useState<boolean>(false);
   const [isEdit, setIsEdit] = React.useState<boolean>(false);
   const [isDelete, setIsDelete] = React.useState<boolean>(false);
@@ -44,22 +51,15 @@ function ContentTrackCard({ id, name, withConsultation }: any) {
         styleContent={{ padding: '1em', backgroundColor: '#fff' }}
         isOpen={open}
         maxWidth="md"
-        // title="اضافة ميزانية جديدة"
         content={
           <AddNewTrack
             trackId={id}
             trackName={name}
             withConsultation={withConsultation}
+            isGrants={isGrants}
             isEdit={isEdit}
             isDelete={isDelete}
-            // loading={loading}
             onClose={handleOnClose}
-            // onSubmit={handleSubmit}
-            // action={{
-            //   actionLabel: 'إرجاع',
-            //   backgroundColor: '#0169DE',
-            //   hoverColor: '#1482FE',
-            // }}
           />
         }
         onClose={handleOnClose}

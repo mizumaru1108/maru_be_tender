@@ -22,6 +22,7 @@ const initialState: TrackState = {
     is_deleted: false,
     name: 'test',
     with_consultation: false,
+    is_grant: false,
     total_budget: 0,
     total_spending_budget: 0,
     total_reserved_budget: 0,
@@ -36,6 +37,7 @@ const initialState: TrackState = {
       created_at: '01-01-2023',
       updated_at: '01-01-2023',
       is_deleted: false,
+      is_grant: false,
     },
   ],
 };

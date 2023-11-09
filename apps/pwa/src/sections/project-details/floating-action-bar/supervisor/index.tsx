@@ -22,6 +22,7 @@ function SupervisorFloatingActionBar() {
           id
           name
           with_consultation
+          is_grant
         }
       }
     }
@@ -44,7 +45,7 @@ function SupervisorFloatingActionBar() {
 
   return (
     <>
-      {employeePath && employeePath.with_consultation ? (
+      {employeePath && employeePath.is_grant ? (
         <FloatinActionBarFaciltateTrack />
       ) : (
         <FloatingActionBarGeneralTracks />

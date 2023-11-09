@@ -150,6 +150,7 @@ const initialState: ProposalItme = {
       name: 'test',
       with_consultation: false,
       created_at: new Date('10-10-2022'),
+      is_grant: false,
     },
     proposal_logs: [
       {

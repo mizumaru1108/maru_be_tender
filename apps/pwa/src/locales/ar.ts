@@ -2675,6 +2675,7 @@ const ar = {
     label: {
       track_name: 'اسم المسار',
       consultant: 'مستشار *',
+      grants: 'منح *',
     },
     placeholder: {
       choose_one: 'اختر واحداً',
@@ -2684,6 +2685,8 @@ const ar = {
       select: {
         with_consultant: 'إضافة مستشار  ',
         no_consultant: 'بدون مستشار',
+        grants: 'منح',
+        non_grants: 'غير المنح',
       },
     },
     confirm_amandement: 'طلب تعديل',

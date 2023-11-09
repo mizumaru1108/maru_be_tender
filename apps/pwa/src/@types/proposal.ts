@@ -72,6 +72,7 @@ export interface tracks {
   id: string;
   name: string;
   with_consultation: boolean;
+  is_grant: boolean;
   is_deleted: boolean;
 }
 
@@ -154,6 +155,7 @@ export interface Proposal {
     id: string;
     name: string;
     with_consultation: boolean;
+    is_grant: boolean;
     created_at: Date;
   };
   proposal_logs: Log[];
