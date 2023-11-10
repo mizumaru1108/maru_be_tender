@@ -753,7 +753,8 @@ export class ProposalService {
         request.supervisor_payload.support_outputs ?? proposal?.support_outputs;
 
       /* custom logic if the track is CONCESSIONAL_GRANTS */
-      if (proposal?.track?.with_consultation === true) {
+      // changed to handle from with_consultation to is_grant
+      if (proposal?.track?.is_grant === true) {
         proposalUpdatePayload = SupervisorGrantTrackAccMapper(
           proposalUpdatePayload,
           request.supervisor_payload,
@@ -867,7 +868,8 @@ export class ProposalService {
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_MANAGER;
 
       // with consul
-      if (proposal?.track?.with_consultation === true) {
+      // changed to handle from with_consultation to is_grant
+      if (proposal?.track?.is_grant === true) {
         const savedChangesGrant = {
           accreditation_type_id: proposal?.accreditation_type_id,
           added_value: proposal?.added_value,
@@ -909,7 +911,8 @@ export class ProposalService {
       }
 
       // non consul
-      if (proposal?.track?.with_consultation === false) {
+      // changed to handle from with_consultation to is_grant
+      if (proposal?.track?.is_grant === false) {
         const savedChangesNonGrant = {
           clasification_field: proposal?.clasification_field,
           clause: proposal?.clause,
@@ -974,7 +977,8 @@ export class ProposalService {
       updatedItemBudgetPayload = [...result.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...result.deletedItemBudgetIds];
 
-      if (proposal?.track?.with_consultation === true) {
+      // changed to handle from with_consultation to is_grant
+      if (proposal?.track?.is_grant === true) {
         proposalUpdatePayload.inner_status =
           InnerStatusEnum.ACCEPTED_BY_PROJECT_MANAGER;
         proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
@@ -1154,7 +1158,8 @@ export class ProposalService {
 
       // for saving history of changed when action is update
       // with consul
-      if (proposal?.track?.with_consultation === true) {
+      // changed to handle from with_consultation to is_grant
+      if (proposal?.track?.is_grant === true) {
         const savedChangesGrant = {
           accreditation_type_id: proposal?.accreditation_type_id,
           added_value: proposal?.added_value,
@@ -1195,7 +1200,8 @@ export class ProposalService {
       }
 
       // non consul
-      if (proposal?.track?.with_consultation === false) {
+      // changed to handle from with_consultation to is_grant
+      if (proposal?.track?.is_grant === false) {
         const savedChangesNonGrant = {
           clasification_field: proposal?.clasification_field,
           clause: proposal?.clause,
@@ -1261,7 +1267,8 @@ export class ProposalService {
       updatedItemBudgetPayload = [...result.updatedItemBudgetPayload];
       deletedItemBudgetIds = [...result.deletedItemBudgetIds];
 
-      if (proposal?.track?.with_consultation === true) {
+      // changed to handle from with_consultation to is_grant
+      if (proposal?.track?.is_grant === true) {
         /* proposal */
         proposalUpdatePayload.inner_status =
           InnerStatusEnum.ACCEPTED_BY_CEO_FOR_PAYMENT_SPESIFICATION;

@@ -184,10 +184,10 @@ export class ProjectManagerChangeStatePayload {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @IsIn(['remote', 'insite', 'both'], {
-    message: 'Activity must be remote, insite or both',
+  @IsIn(['remote', 'insite', 'both', 'others'], {
+    message: 'Activity must be remote, insite, both or others',
   })
-  remote_or_insite?: 'remote' | 'insite' | 'both';
+  remote_or_insite?: 'remote' | 'insite' | 'both' | 'others';
 
   @ApiPropertyOptional()
   @IsOptional()

@@ -73,7 +73,8 @@ export class UserUpdateStatusCommandHandler
 
             if (haveProposal.length > 0) {
               throw new RequestErrorException(
-                'Cant suspend user, user still have ongoing proposal!',
+                // 'Cant suspend user, user still have ongoing proposal!',
+                'خطأ في الطلب! مزيد من التفاصيل: لا يمكن تعليق المستخدم، لا يزال لدى المستخدم اقتراح مستمر',
               );
             }
 
@@ -85,7 +86,8 @@ export class UserUpdateStatusCommandHandler
 
             if (haveProposal.length > 0) {
               throw new RequestErrorException(
-                'Cant suspend user, user still have ongoing proposal!',
+                // 'Cant suspend user, user still have ongoing proposal!',
+                'خطأ في الطلب! مزيد من التفاصيل: لا يمكن تعليق المستخدم، لا يزال لدى المستخدم اقتراح مستمر',
               );
             }
           }
