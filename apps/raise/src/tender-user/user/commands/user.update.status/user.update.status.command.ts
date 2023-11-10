@@ -66,18 +66,28 @@ export class UserUpdateStatusCommandHandler
             );
           }
 
-          const haveProposal = await this.userRepo.findUserOnGoingProposal(
-            user_id,
-          );
-
-          if (haveProposal.length > 0) {
-            throw new RequestErrorException(
-              'Cant suspend user, user still have ongoing proposal!',
-            );
-          }
-
           if (request.status === UserStatusEnum.DELETED) {
+            const haveProposal = await this.proposalRepo.findMany({
+              step: ['ZERO'],
+            });
+
+            if (haveProposal.length > 0) {
+              throw new RequestErrorException(
+                'Cant suspend user, user still have ongoing proposal!',
+              );
+            }
+
             deletedUserIds.push(user_id);
+          } else {
+            const haveProposal = await this.userRepo.findUserOnGoingProposal(
+              user_id,
+            );
+
+            if (haveProposal.length > 0) {
+              throw new RequestErrorException(
+                'Cant suspend user, user still have ongoing proposal!',
+              );
+            }
           }
         }
       }
@@ -114,7 +124,7 @@ export class UserUpdateStatusCommandHandler
             if (request.status === UserStatusEnum.DELETED) {
               const draftProposals = await this.proposalRepo.findMany(
                 {
-                  step: ['ZERO'],
+                  stepNotIn: ['ZERO'], // bukan zero berarti draft
                   submitter_user_id: user_id,
                 },
                 tx,

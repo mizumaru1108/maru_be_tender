@@ -50,6 +50,7 @@ export interface ProposalFindManyProps {
   limit?: number;
   page?: number;
   step?: Array<'FIRST' | 'SECOND' | 'THIRD' | 'FOURTH' | 'FIFTH' | 'ZERO'>;
+  stepNotIn?: Array<'FIRST' | 'SECOND' | 'THIRD' | 'FOURTH' | 'FIFTH' | 'ZERO'>;
   sort_by?: string;
   sort_direction?: string;
   include_relations?: ProposalIncludeRelationsTypes[];

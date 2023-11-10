@@ -533,6 +533,7 @@ export class ProposalRepository {
       start_date,
       end_date,
       step,
+      stepNotIn,
     } = props;
     // console.log({ props });
     let args: Prisma.proposalFindManyArgs = {};
@@ -552,6 +553,15 @@ export class ProposalRepository {
         ...whereClause,
         step: {
           in: step,
+        },
+      };
+    }
+
+    if (stepNotIn) {
+      whereClause = {
+        ...whereClause,
+        step: {
+          notIn: stepNotIn,
         },
       };
     }
