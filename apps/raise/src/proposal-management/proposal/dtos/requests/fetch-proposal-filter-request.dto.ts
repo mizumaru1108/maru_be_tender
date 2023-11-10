@@ -38,13 +38,14 @@ export class FetchProposalFilterRequest extends BaseFilterRequest {
   outter_status?: OutterStatusEnum[];
 
   @ApiPropertyOptional()
+  @IsString()
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(999999999999999999)
+  // @Type(() => Number)
+  // @IsInt()
+  // @Min(1)
+  // @Max(999999999999999999)
   @IsNotEmpty()
-  project_number?: number;
+  project_number?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

@@ -1374,9 +1374,9 @@ export class ProposalRepository {
       }
 
       // commented for a while untill merge data between staging ad prod done
-      if (project_number) {
+      if (project_number && !isNaN(+project_number)) {
         orClauses.push({
-          project_number,
+          project_number: +project_number,
         });
       }
 

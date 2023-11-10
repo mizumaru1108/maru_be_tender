@@ -64,7 +64,7 @@ function CardSearching({
           sort: sort || undefined,
           project_name: activeOptionsSearching.project_name && filtered ? filtered : undefined,
           employee_name: activeOptionsSearching.employee_name && filtered ? filtered : undefined,
-          // project_number: activeOptionsSearching.project_number && filtered ? filtered : undefined,
+          project_number: activeOptionsSearching.project_number && filtered ? filtered : undefined,
           outter_status:
             activeOptionsSearching.outter_status && filter_outter_status
               ? filter_outter_status
@@ -81,11 +81,9 @@ function CardSearching({
           setData(res.data);
         }
         setLoading(false);
-        // return res.data;
       }
     } catch (error) {
       setLoading(false);
-      // throw error;
       const statusCode = (error && error.statusCode) || 0;
       const message = (error && error.message) || null;
       enqueueSnackbar(
