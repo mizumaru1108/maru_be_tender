@@ -102,8 +102,9 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                           {fCurrencyNumber(
-                            item?.total_spending_budget_by_ceo && item?.total_reserved_budget
-                              ? item?.total_spending_budget_by_ceo - item?.total_reserved_budget
+                            item?.total_spending_budget_by_ceo
+                              ? item?.total_spending_budget_by_ceo -
+                                  (item?.total_reserved_budget || 0)
                               : 0
                           )}
                         </Typography>

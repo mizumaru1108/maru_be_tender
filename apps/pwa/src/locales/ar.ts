@@ -2697,6 +2697,7 @@ const ar = {
     remote: 'عن بعد',
     insite: 'حضوري',
     both: 'عن بعد وحضوري',
+    others: 'أخرى',
   },
 
   // Finance pages

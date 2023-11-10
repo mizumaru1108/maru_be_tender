@@ -297,6 +297,7 @@ function ThirdForm({ children, onSubmit }: any) {
               { label: 'حضوري', value: 'insite' },
               { label: 'اونلاين', value: 'remote' },
               { label: 'كلاهما', value: 'both' },
+              { label: 'أخرى', value: 'others' },
             ]}
           />
         </Grid>

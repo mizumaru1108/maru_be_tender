@@ -2677,6 +2677,7 @@ const en = {
     remote: 'Online',
     insite: 'My Attendance',
     both: 'Both',
+    others: 'Others',
   },
   // Finance pages
   finance_pages: {
