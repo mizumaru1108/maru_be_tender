@@ -85,7 +85,7 @@ function SupervisorRevision() {
               عن بُعد أو حضوري؟
             </Typography>
             <Typography>
-              {proposal.remote_or_insite
+              {proposal?.remote_or_insite
                 ? translate(`remote_or_insite.${proposal.remote_or_insite}`)
                 : '-No data-'}
             </Typography>

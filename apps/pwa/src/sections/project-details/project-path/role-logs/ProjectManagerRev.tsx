@@ -492,11 +492,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                       </Typography>
                       <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                         <Typography>
-                          {value && value === 'both'
-                            ? translate('remote_or_insite.both')
-                            : value === 'online'
-                            ? translate('remote_or_insite.remote')
-                            : translate('remote_or_insite.insite')}
+                          {value ? translate(`remote_or_insite.${value}`) : '-No data-'}
                         </Typography>
                       </Stack>
                     </Grid>
