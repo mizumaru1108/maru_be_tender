@@ -24,7 +24,11 @@ import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import { ExpandMore } from '../../../../components/hook-form/nested-track-budget/RHFBaseRepeater';
 import { getTracksById } from '../../../../redux/slices/track';
 import { dispatch, useSelector } from '../../../../redux/store';
-import { fCurrencyNumber } from '../../../../utils/formatNumber';
+import {
+  fCurrencyNumber,
+  getChildRemainBudget,
+  getChildSpendingBudget,
+} from '../../../../utils/formatNumber';
 import { TrackSection } from '../../../../@types/commons';
 import { lighten } from '@mui/material/styles';
 import { flattenChildTrackSections } from '../../../client/funding-project-request/forms/FormNestedTrackBudget';
@@ -202,9 +206,17 @@ export default function ViewNewSectionTracks() {
                             </ExpandMore>
                           )}
                         </Grid>
-                        <Grid item md={13} xs={18} sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Grid item md={11} xs={20} sx={{ display: 'flex', alignItems: 'center' }}>
                           <Typography noWrap sx={{ fontSize: '18px', fontWeight: 600 }}>
                             {item?.name || '-'}
+                          </Typography>
+                        </Grid>
+                        <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
+                          <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                            {translate('content.administrative.statistic.heading.totalSpendBudget')}
+                          </Typography>
+                          <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
+                            {fCurrencyNumber(getChildSpendingBudget({ ...item }))}
                           </Typography>
                         </Grid>
                         <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -214,15 +226,17 @@ export default function ViewNewSectionTracks() {
                             )}
                           </Typography>
                           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                            {fCurrencyNumber(item?.section_spending_budget || 0)}
+                            {fCurrencyNumber(item?.section_reserved_budget || 0)}
                           </Typography>
                         </Grid>
                         <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
                           <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                            {translate('content.administrative.statistic.heading.totalSpendBudget')}
+                            {translate(
+                              'content.administrative.statistic.heading.totalRemainingBudget'
+                            )}
                           </Typography>
                           <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                            {fCurrencyNumber(item?.section_reserved_budget || 0)}
+                            {fCurrencyNumber(getChildRemainBudget({ ...item }))}
                           </Typography>
                         </Grid>
                         <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -265,7 +279,7 @@ export default function ViewNewSectionTracks() {
                               </Grid>
                               <Grid
                                 item
-                                md={12}
+                                md={10}
                                 xs={18}
                                 sx={{ display: 'flex', alignItems: 'center' }}
                               >
@@ -281,11 +295,11 @@ export default function ViewNewSectionTracks() {
                               >
                                 <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
                                   {translate(
-                                    'content.administrative.statistic.heading.totalReservedBudget'
+                                    'content.administrative.statistic.heading.totalSpendBudget'
                                   )}
                                 </Typography>
                                 <Typography sx={{ color: lighten('#000', 0.1), fontWeight: 700 }}>
-                                  {fCurrencyNumber(item?.section_spending_budget || 0)}
+                                  {fCurrencyNumber(getChildSpendingBudget({ ...item }))}
                                 </Typography>
                               </Grid>
                               <Grid
@@ -296,11 +310,26 @@ export default function ViewNewSectionTracks() {
                               >
                                 <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
                                   {translate(
-                                    'content.administrative.statistic.heading.totalSpendBudget'
+                                    'content.administrative.statistic.heading.totalReservedBudget'
                                   )}
                                 </Typography>
                                 <Typography sx={{ color: lighten('#000', 0.1), fontWeight: 700 }}>
                                   {fCurrencyNumber(item?.section_reserved_budget || 0)}
+                                </Typography>
+                              </Grid>
+                              <Grid
+                                item
+                                md={2}
+                                xs={20}
+                                sx={{ display: 'flex', flexDirection: 'column' }}
+                              >
+                                <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                                  {translate(
+                                    'content.administrative.statistic.heading.totalRemainingBudget'
+                                  )}
+                                </Typography>
+                                <Typography sx={{ color: lighten('#000', 0.1), fontWeight: 700 }}>
+                                  {fCurrencyNumber(getChildRemainBudget({ ...item }))}
                                 </Typography>
                               </Grid>
                               <Grid
@@ -350,31 +379,12 @@ export default function ViewNewSectionTracks() {
                                     </Grid>
                                     <Grid
                                       item
-                                      md={11}
+                                      md={9}
                                       xs={18}
                                       sx={{ display: 'flex', alignItems: 'center' }}
                                     >
                                       <Typography noWrap sx={{ fontSize: '18px', fontWeight: 500 }}>
                                         {item?.name || '-'}
-                                      </Typography>
-                                    </Grid>
-                                    <Grid
-                                      item
-                                      md={2}
-                                      xs={20}
-                                      sx={{ display: 'flex', flexDirection: 'column' }}
-                                    >
-                                      <Typography
-                                        sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
-                                      >
-                                        {translate(
-                                          'content.administrative.statistic.heading.totalReservedBudget'
-                                        )}
-                                      </Typography>
-                                      <Typography
-                                        sx={{ color: lighten('#000', 0.2), fontWeight: 700 }}
-                                      >
-                                        {fCurrencyNumber(item?.section_spending_budget || 0)}
                                       </Typography>
                                     </Grid>
                                     <Grid
@@ -393,7 +403,45 @@ export default function ViewNewSectionTracks() {
                                       <Typography
                                         sx={{ color: lighten('#000', 0.2), fontWeight: 700 }}
                                       >
+                                        {fCurrencyNumber(getChildSpendingBudget({ ...item }))}
+                                      </Typography>
+                                    </Grid>
+                                    <Grid
+                                      item
+                                      md={2}
+                                      xs={20}
+                                      sx={{ display: 'flex', flexDirection: 'column' }}
+                                    >
+                                      <Typography
+                                        sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
+                                      >
+                                        {translate(
+                                          'content.administrative.statistic.heading.totalReservedBudget'
+                                        )}
+                                      </Typography>
+                                      <Typography
+                                        sx={{ color: lighten('#000', 0.2), fontWeight: 700 }}
+                                      >
                                         {fCurrencyNumber(item?.section_reserved_budget || 0)}
+                                      </Typography>
+                                    </Grid>
+                                    <Grid
+                                      item
+                                      md={2}
+                                      xs={20}
+                                      sx={{ display: 'flex', flexDirection: 'column' }}
+                                    >
+                                      <Typography
+                                        sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
+                                      >
+                                        {translate(
+                                          'content.administrative.statistic.heading.totalRemainingBudget'
+                                        )}
+                                      </Typography>
+                                      <Typography
+                                        sx={{ color: lighten('#000', 0.2), fontWeight: 700 }}
+                                      >
+                                        {fCurrencyNumber(getChildRemainBudget({ ...item }))}
                                       </Typography>
                                     </Grid>
                                     <Grid
@@ -447,7 +495,7 @@ export default function ViewNewSectionTracks() {
                                           </Grid>
                                           <Grid
                                             item
-                                            md={10}
+                                            md={8}
                                             xs={18}
                                             sx={{ display: 'flex', alignItems: 'center' }}
                                           >
@@ -468,13 +516,15 @@ export default function ViewNewSectionTracks() {
                                               sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
                                             >
                                               {translate(
-                                                'content.administrative.statistic.heading.totalReservedBudget'
+                                                'content.administrative.statistic.heading.totalSpendBudget'
                                               )}
                                             </Typography>
                                             <Typography
                                               sx={{ color: lighten('#000', 0.4), fontWeight: 700 }}
                                             >
-                                              {fCurrencyNumber(item?.section_spending_budget || 0)}
+                                              {fCurrencyNumber(
+                                                item?.section_spending_budget_by_ceo || 0
+                                              )}
                                             </Typography>
                                           </Grid>
                                           <Grid
@@ -487,13 +537,32 @@ export default function ViewNewSectionTracks() {
                                               sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
                                             >
                                               {translate(
-                                                'content.administrative.statistic.heading.totalSpendBudget'
+                                                'content.administrative.statistic.heading.totalReservedBudget'
                                               )}
                                             </Typography>
                                             <Typography
                                               sx={{ color: lighten('#000', 0.4), fontWeight: 700 }}
                                             >
                                               {fCurrencyNumber(item?.section_reserved_budget || 0)}
+                                            </Typography>
+                                          </Grid>
+                                          <Grid
+                                            item
+                                            md={2}
+                                            xs={20}
+                                            sx={{ display: 'flex', flexDirection: 'column' }}
+                                          >
+                                            <Typography
+                                              sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
+                                            >
+                                              {translate(
+                                                'content.administrative.statistic.heading.totalRemainingBudget'
+                                              )}
+                                            </Typography>
+                                            <Typography
+                                              sx={{ color: lighten('#000', 0.4), fontWeight: 700 }}
+                                            >
+                                              {fCurrencyNumber(getChildRemainBudget({ ...item }))}
                                             </Typography>
                                           </Grid>
                                           <Grid

@@ -6,7 +6,7 @@ import useLocales from 'hooks/useLocales';
 // urql + query
 //
 import React, { useEffect, useMemo } from 'react';
-import { fCurrencyNumber } from 'utils/formatNumber';
+import { fCurrencyNumber, getTrackSpendingBudget } from 'utils/formatNumber';
 // config
 import { FEATURE_DAILY_STATUS } from 'config';
 import { useSelector } from 'redux/store';
@@ -102,11 +102,7 @@ export default function TrackBudget(props: IPropTrackBudgets) {
                     {/* {translate('content.administrative.statistic.heading.totalReservedBudget')} */}
                   </Typography>
                   <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                    {fCurrencyNumber(
-                      track?.total_spending_budget_by_ceo && track?.total_reserved_budget
-                        ? track?.total_spending_budget_by_ceo - track?.total_reserved_budget
-                        : 0
-                    )}
+                    {fCurrencyNumber(getTrackSpendingBudget({ ...track }))}
                   </Typography>
                 </Box>
               </Grid>

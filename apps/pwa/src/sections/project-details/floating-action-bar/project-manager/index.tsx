@@ -87,6 +87,9 @@ function FloatingActionBar() {
   const checkGrant =
     data && data.user && data.user.track && data.user.track.is_grant ? true : false;
 
+  const checkConsultant =
+    data && data.user && data.user.track && data.user.track.with_consultation ? true : false;
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -631,15 +634,17 @@ function FloatingActionBar() {
           </Grid>
           <Grid item md={checkGrant ? 10 : 8} xs={12}>
             <Stack direction="row" spacing={2} justifyContent="flex-start">
-              <Button
-                variant="outlined"
-                color="inherit"
-                endIcon={<Iconify icon="eva:message-circle-outline" />}
-                onClick={() => setAction('ACCEPT_CONSULTANT')}
-                sx={{ display: 'inline-flex' }}
-              >
-                عرض المشروع على المستشارين
-              </Button>
+              {checkConsultant ? (
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  endIcon={<Iconify icon="eva:message-circle-outline" />}
+                  onClick={() => setAction('ACCEPT_CONSULTANT')}
+                  sx={{ display: 'inline-flex' }}
+                >
+                  عرض المشروع على المستشارين
+                </Button>
+              ) : null}
               {checkGrant ? (
                 <LoadingButton
                   variant="outlined"

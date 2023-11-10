@@ -10,7 +10,7 @@ import useAuth from 'hooks/useAuth';
 import { getTracks } from 'redux/slices/track';
 import { dispatch, useSelector } from 'redux/store';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
-import { fCurrencyNumber } from 'utils/formatNumber';
+import { fCurrencyNumber, getTrackRemainBudget, getTrackSpendingBudget } from 'utils/formatNumber';
 import { TrackProps } from '../../../@types/commons';
 
 // ------------------------------------------------------------------------------------------
@@ -74,10 +74,10 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                           sx={{ display: 'inline-flex' }}
                         />
                         <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                          {/* {translate(
+                          {translate(
                             'content.administrative.statistic.heading.totalReservedBudget'
-                          )} */}
-                          {translate('content.administrative.statistic.heading.totalSpendBudget')}
+                          )}
+                          {/* {translate('content.administrative.statistic.heading.totalSpendBudget')} */}
                         </Typography>
                         <Typography
                           sx={{
@@ -95,18 +95,13 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                           sx={{ display: 'inline-flex' }}
                         />
                         <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
-                          {/* {translate('content.administrative.statistic.heading.totalSpendBudget')} */}
-                          {translate(
+                          {translate('content.administrative.statistic.heading.totalSpendBudget')}
+                          {/* {translate(
                             'content.administrative.statistic.heading.totalReservedBudget'
-                          )}
+                          )} */}
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                          {fCurrencyNumber(
-                            item?.total_spending_budget_by_ceo
-                              ? item?.total_spending_budget_by_ceo -
-                                  (item?.total_reserved_budget || 0)
-                              : 0
-                          )}
+                          {fCurrencyNumber(getTrackSpendingBudget({ ...item }))}
                         </Typography>
                       </Grid>
                       <Grid item md={3} xs={12} sx={styleBox}>
@@ -121,7 +116,7 @@ export default function TrackBudget({ path, track_id }: IPropTrackBudgets) {
                           )}
                         </Typography>
                         <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                          {fCurrencyNumber(item.total_remaining_budget ?? 0)}
+                          {fCurrencyNumber(getTrackRemainBudget({ ...item }))}
                         </Typography>
                       </Grid>
                       <Grid item md={3} xs={12} sx={styleBox}>

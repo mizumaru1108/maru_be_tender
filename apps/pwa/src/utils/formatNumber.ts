@@ -1,4 +1,5 @@
 import numeral from 'numeral';
+import { TrackProps, TrackSection } from '../@types/commons';
 
 // ----------------------------------------------------------------------
 
@@ -67,3 +68,29 @@ export const getSortingValue = (input: string): number => {
   }
   return 0;
 };
+
+export function getChildRemainBudget(props: TrackSection) {
+  const totalBudget = props?.budget || 0;
+  const reservedBudget = props?.section_reserved_budget || 0;
+  const spendingBudget = props?.section_spending_budget_by_ceo || 0;
+  return totalBudget - (reservedBudget + (spendingBudget - reservedBudget));
+}
+
+export function getChildSpendingBudget(props: TrackSection) {
+  const reservedBudget = props?.section_reserved_budget || 0;
+  const spendingBudget = props?.section_spending_budget_by_ceo || 0;
+  return spendingBudget - reservedBudget;
+}
+
+export function getTrackRemainBudget(props: TrackProps) {
+  const totalBudget = props?.total_budget || 0;
+  const reservedBudget = props?.total_reserved_budget || 0;
+  const spendingBudget = props?.total_spending_budget_by_ceo || 0;
+  return totalBudget - (reservedBudget + (spendingBudget - reservedBudget));
+}
+
+export function getTrackSpendingBudget(props: TrackProps) {
+  const reservedBudget = props?.total_reserved_budget || 0;
+  const spendingBudget = props?.total_spending_budget_by_ceo || 0;
+  return spendingBudget - reservedBudget;
+}

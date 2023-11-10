@@ -19,7 +19,7 @@ query activePartners {
 
 export const rejectedPartners = `
 query rejectedPartners {
-  user_aggregate(where: {roles: {user_type_id: {_eq: CLIENT}}, _and: {status_id: {_in: [DELETED, CANCELED_ACCOUNT]}}}) {
+  user_aggregate(where: {roles: {user_type_id: {_eq: CLIENT}}, _and: {status_id: {_in: [ CANCELED_ACCOUNT]}}}) {
     aggregate {
       count(columns: created_at)
     }

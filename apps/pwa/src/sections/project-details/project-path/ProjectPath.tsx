@@ -51,7 +51,7 @@ function ProjectPath() {
   const [stepGeneralLog, setGeneralLog] = React.useState<PropsalLog | null>(null);
   const [isPayments, setIsPayments] = React.useState(false);
 
-  const isConsultation = (proposal && proposal.track && proposal.track.with_consultation) ?? false;
+  const isConsultation = (proposal && proposal.track && proposal.track.is_grant) ?? false;
 
   // const [stepTrack, setStepTrack] = React.useState('');
   const { id: proposal_id } = useParams();
