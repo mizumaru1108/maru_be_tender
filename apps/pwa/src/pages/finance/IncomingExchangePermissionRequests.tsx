@@ -58,7 +58,6 @@ function IncomingExchangePermissionRequests() {
             destination="incoming-exchange-permission-requests"
             limitShowCard={6}
             cardFooterButtonAction="completing-exchange-permission"
-            // addCustomFilter={'&vat=true'}
           />
         </ContentStyle>
       </Container>

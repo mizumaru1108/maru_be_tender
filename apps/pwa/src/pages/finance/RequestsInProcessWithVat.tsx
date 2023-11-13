@@ -60,7 +60,9 @@ function RequestsInProcess() {
             endPoint="tender-proposal/request-in-process"
             limitShowCard={6}
             cardFooterButtonAction="show-details"
-            addCustomFilter="&vat=true"
+            addCustomFilter={{
+              vat: true,
+            }}
           />
         </ContentStyle>
       </Container>

@@ -17,6 +17,7 @@ import { FEATURE_MENU_ADMIN_APLICATION_ADMISSION } from '../../config';
 import useAuth from '../../hooks/useAuth';
 import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
 import axiosInstance from '../../utils/axios';
+import { CheckIsInProcessProposal } from '../../utils/checkIsInProcessProposal';
 import { getValueLocalStorage } from '../../utils/getFileData';
 import CardTableLoading from './CardTableLoading';
 import ProjectTableBE from './ProjectCardBE';
@@ -33,6 +34,7 @@ function CardTableByBE({
   navigateLink,
   showPagination = true,
   sorting = ['sorting'],
+  onSearch = false,
 }: // isIncoming = false,
 CardTablePropsByBE) {
   const { enqueueSnackbar } = useSnackbar();
@@ -72,9 +74,6 @@ CardTablePropsByBE) {
   const [statusFilter, setStatusFilter] = useState('');
   const [trackFilter, setTrackFilter] = useState('');
 
-  // need refactor for this const variable
-  const endPointOrigin = `${endPoint}?limit=${limit}&page=${page}${addCustomFilter || ''}`;
-
   // localstorage variable
   const filter_sorting_field = getValueLocalStorage('filter_sorting_field') || undefined;
   const filter_sort = getValueLocalStorage('filter_sort') || undefined;
@@ -87,7 +86,7 @@ CardTablePropsByBE) {
 
   const fetchingPrevious = React.useCallback(async () => {
     setIsLoading(true);
-    const url = endPointOrigin;
+    const url = endPoint;
     const prevProposalParams = {
       sorting_field: sortingFilter?.sorting_field || filter_sorting_field || 'updated_at',
       sort: sortingFilter?.sort || filter_sort || 'desc',
@@ -103,6 +102,9 @@ CardTablePropsByBE) {
         headers: { 'x-hasura-role': activeRole! },
         params: {
           type: typeRequest || undefined,
+          page,
+          limit,
+          ...(addCustomFilter ? addCustomFilter : undefined),
           ...(destination === 'previous-funding-requests' && prevProposalParams),
         },
       });
@@ -431,22 +433,55 @@ CardTablePropsByBE) {
       )}
       {!isLoading &&
         cardData.length > 0 &&
-        cardData.map((item: any, index: any) => (
-          <Grid item key={index} md={6} xs={12}>
-            <ProjectTableBE
-              {...item}
-              inquiryStatus={item.outter_status === 'PENDING_CANCELED' ? 'canceled' : null}
-              created_at={new Date(item.created_at)}
-              cardFooterButtonAction={
-                destination === 'incoming-amandment-requests' &&
-                item.outter_status === 'ASKED_FOR_AMANDEMENT'
-                  ? 'show-details'
-                  : cardFooterButtonAction
-              }
-              destination={destination}
-            />
-          </Grid>
-        ))}
+        cardData.map((item: any, index: any) => {
+          const isInProcess = CheckIsInProcessProposal(item, activeRole!);
+          return (
+            <Grid item key={index} md={6} xs={12}>
+              <ProjectTableBE
+                {...item}
+                updated_at={
+                  (item?.proposal_logs &&
+                    item?.proposal_logs[item?.proposal_logs?.length - 1]?.updated_at !==
+                      new Date('10-10-2022') &&
+                    item?.proposal_logs[item?.proposal_logs?.length - 1]?.updated_at) ||
+                  item.updated_at
+                }
+                inquiryStatus={item.outter_status === 'PENDING_CANCELED' ? 'canceled' : null}
+                created_at={new Date(item.created_at)}
+                // old version of cardFooterButtonAction
+                // cardFooterButtonAction={
+                //   destination === 'incoming-amandment-requests' &&
+                //   item.outter_status === 'ASKED_FOR_AMANDEMENT'
+                //     ? 'show-details'
+                //     : cardFooterButtonAction
+                // }
+                // new version of cardFooterButtonAction
+                cardFooterButtonAction={
+                  onSearch
+                    ? destination === 'incoming-amandment-requests' &&
+                      item.outter_status === 'ASKED_FOR_AMANDEMENT'
+                      ? 'show-details'
+                      : cardFooterButtonAction
+                    : onSearch && isInProcess
+                    ? (item.outter_status !== 'PENDING_CANCELED' && 'show-details') ||
+                      (item.outter_status === 'PENDING_CANCELED' && 'reject-project')
+                    : cardFooterButtonAction
+                }
+                // old version of destination
+                // destination={destination}
+                // new version of destination
+                destination={
+                  !onSearch
+                    ? destination
+                    : isInProcess
+                    ? (activeRole !== 'tender_consultant' && 'requests-in-process') ||
+                      (activeRole === 'tender_consultant' && 'incoming-funding-requests')
+                    : 'current-project'
+                }
+              />
+            </Grid>
+          );
+        })}
 
       {!isLoading && cardData.length === 0 && (
         <Grid item md={12} xs={12}>

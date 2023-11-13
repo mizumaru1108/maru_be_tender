@@ -20,8 +20,10 @@ export default function IncomingCloseReport() {
         cardFooterButtonAction="show-project"
         showPagination={false}
         navigateLink="/project-supervisor/dashboard/project-report"
-        addCustomFilter="&supervisor_status=after_payment"
         sorting={['sorting', 'project_name', 'track', 'range_date']}
+        addCustomFilter={{
+          supervisor_status: 'after_payment',
+        }}
       />
     </Grid>
   );

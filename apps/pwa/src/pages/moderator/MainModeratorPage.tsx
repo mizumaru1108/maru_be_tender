@@ -8,7 +8,7 @@ import { moderatorStatistics } from '../../queries/Moderator/stactic';
 //
 import CardTableByBE from 'components/card-table/CardTableByBE';
 import moment from 'moment';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { getTrackList } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
 import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
@@ -28,12 +28,20 @@ function MainManagerPage() {
 
   const [stats] = useQuery({
     query: moderatorStatistics,
-    variables: {
-      start_date: moment().startOf('day').toISOString(),
-      end_date: moment().endOf('day').toISOString(),
-    },
   });
   const { data: statsData, fetching, error } = stats;
+  // console.log({ statsData });
+
+  const count = useMemo(() => {
+    let totalProject = 0;
+    if (statsData && !fetching) {
+      totalProject =
+        (statsData?.acceptableRequest?.aggregate?.count || 0) +
+        (statsData?.incomingNewRequest?.aggregate?.count || 0) +
+        (statsData?.rejectedRequest?.aggregate?.count || 0);
+    }
+    return totalProject;
+  }, [statsData, fetching]);
 
   // using API
   const { activeRole } = useAuth();
@@ -61,7 +69,7 @@ function MainManagerPage() {
                 headline={translate('account_manager.heading.daily_stats')}
                 data={Object.keys(statsData).map((item) => ({
                   title: translate(`${item}`),
-                  value: statsData[`${item}`].aggregate.count,
+                  value: item !== 'totalRequest' ? statsData[`${item}`].aggregate.count : count,
                   redirect_link:
                     item === 'incomingNewRequest'
                       ? '/moderator/dashboard/incoming-support-requests'

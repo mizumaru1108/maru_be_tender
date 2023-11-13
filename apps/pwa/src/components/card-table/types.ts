@@ -181,7 +181,7 @@ type sorting =
   | 'project_name'
   | 'client_name';
 
-export type CardTablePropsByBE = {
+export type CardTablePropsByBE<T = Record<string, any>> = {
   title: string;
   limitShowCard?: number;
   endPoint?: string;
@@ -204,10 +204,12 @@ export type CardTablePropsByBE = {
     | 'incoming-amandment-requests'
     | 'complete-project-report';
   // example addCustomFilter: '&status=PENDING&include_relations=supervisor,sender,proposal'
-  addCustomFilter?: string;
+  // addCustomFilter?: string;
+  addCustomFilter?: T;
   // for redirect link, button view all
   navigateLink?: string;
   showPagination?: boolean;
+  onSearch?: boolean;
 };
 
 interface GenerateFilterReturning {

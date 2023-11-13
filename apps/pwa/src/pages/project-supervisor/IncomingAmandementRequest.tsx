@@ -66,7 +66,10 @@ function IncomingAmandementRequest() {
             destination="incoming-amandment-requests"
             limitShowCard={6}
             cardFooterButtonAction="show-project"
-            addCustomFilter={'&status=PENDING'}
+            addCustomFilter={{
+              status: 'PENDING',
+              include_relations: 'proposal_logs',
+            }}
           />
         </ContentStyle>
       </Container>
