@@ -1391,6 +1391,12 @@ export class ProposalRepository {
         take: limit,
         skip: offset,
         include: {
+          // add propsal log relation for get many
+          proposal_logs: {
+            orderBy: {
+              created_at: 'asc',
+            },
+          },
           user: {
             include: {
               client_data: true,
@@ -1832,6 +1838,12 @@ export class ProposalRepository {
         where: whereClause,
         skip: offset,
         include: {
+          // add propsal log relation for get many
+          proposal_logs: {
+            orderBy: {
+              created_at: 'asc',
+            },
+          },
           user: {
             include: {
               client_data: true,
@@ -2103,6 +2115,12 @@ export class ProposalRepository {
         where: whereClause,
         skip: offset,
         include: {
+          // add propsal log relation for get many
+          proposal_logs: {
+            orderBy: {
+              created_at: 'asc',
+            },
+          },
           user: {
             include: {
               client_data: true,
@@ -2446,6 +2464,12 @@ export class ProposalRepository {
         where: whereClause,
         skip: offset,
         include: {
+          // add propsal log relation for get many
+          proposal_logs: {
+            orderBy: {
+              created_at: 'asc',
+            },
+          },
           user: {
             include: {
               client_data: true,
@@ -2674,6 +2698,12 @@ export class ProposalRepository {
         where: whereClause,
         skip: offset,
         include: {
+          // add propsal log relation for get many
+          proposal_logs: {
+            orderBy: {
+              created_at: 'asc',
+            },
+          },
           user: {
             include: {
               client_data: true,
