@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Grid, Typography } from '@mui/material';
 import useAuth from 'hooks/useAuth';
 import { getDailySupervisorStatistics } from 'queries/project-supervisor/getDailyStatistics';
@@ -9,29 +9,48 @@ import moment from 'moment';
 // config
 import { FEATURE_DAILY_STATUS } from 'config';
 import { useNavigate } from 'react-router';
+import { getOneEmployee } from '../../../queries/admin/getAllTheEmployees';
 
 function DailyStatistics() {
   const { translate } = useLocales();
   const navigate = useNavigate();
 
   const { user } = useAuth();
+  const [resultEmployee] = useQuery({
+    query: getOneEmployee,
+    variables: { id: user?.id },
+  });
+  const { data: employeeData, fetching: fetchingEmployee, error: errorEmployee } = resultEmployee;
+  // console.log({});
+  const track_id = employeeData?.data?.track_id || undefined;
+
   const [result] = useQuery({
     query: getDailySupervisorStatistics,
     variables: {
       user_id: user?.id!,
-      first_date: moment().startOf('day').toISOString(),
-      second_date: moment().endOf('day').toISOString(),
+      track_id: track_id,
     },
+    pause: !track_id || !user?.id,
   });
-
   const { data, fetching, error } = result;
+
+  const count = useMemo(() => {
+    let totalProject = 0;
+    if (data && !fetching) {
+      totalProject =
+        (data?.acceptableRequest?.aggregate?.count || 0) +
+        (data?.incomingNewRequest?.aggregate?.count || 0) +
+        (data?.rejectedRequest?.aggregate?.count || 0);
+    }
+    return totalProject;
+  }, [data, fetching]);
 
   const handleClick = (link: string) => {
     navigate(link);
   };
 
-  if (fetching) return <>{translate('pages.common.loading')}</>;
-  if (error) return <>{error.message}</>;
+  if (fetching || fetchingEmployee) return <>{translate('pages.common.loading')}</>;
+  if (error || errorEmployee) return <>{error?.message || errorEmployee?.message}</>;
 
   return (
     <Grid container spacing={2}>
@@ -79,9 +98,9 @@ function DailyStatistics() {
                       <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                         {title}
                       </Typography>
-                      <Typography
-                        sx={{ color: 'text.tertiary', fontWeight: 700 }}
-                      >{`${value} ${translate('projects')}`}</Typography>
+                      <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>{`${
+                        item !== 'totalRequest' ? value : count
+                      } ${translate('projects')}`}</Typography>
                     </Box>
                   </Grid>
                 );
