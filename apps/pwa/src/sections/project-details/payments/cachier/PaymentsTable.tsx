@@ -28,13 +28,11 @@ function PaymentsTable() {
   };
 
   React.useEffect(() => {
-    // const
     const neWvalue: any = proposal.payments;
     const arr = [...neWvalue]
       .sort((a: any, b: any) => parseInt(a.order) - parseInt(b.order))
       .map((item: any) => item);
     setSortingData(arr);
-    // console.log('test', arr);
 
     for (var i = 0; i < arr.length; i++) {
       if (arr[i].status === 'accepted_by_finance') {
@@ -141,35 +139,34 @@ function PaymentsTable() {
               ) : null}
               {(item.status === 'done' ||
                 item.status === 'uploaded_by_cashier' ||
-                item.status === 'accepted_by_finance') &&
-                activeRole !== 'tender_client' && (
-                  <>
-                    {item && item.status === 'done' && item.cheques.length > 0 && (
-                      <Grid item key={index} md={2} sx={{ textAlign: '-webkit-center' }}>
-                        <Button
-                          data-cy="btn.view_transfer_receipt"
-                          variant="text"
-                          color="inherit"
-                          sx={{
-                            '&:hover': { textDecorationLine: 'underline' },
-                          }}
-                          href={
-                            (
-                              item.cheques[item.cheques.length - 1]
-                                ?.transfer_receipt as TransferReceipt
-                            )?.url ?? '#'
-                          }
-                          target="_blank"
-                        >
-                          {translate(
-                            'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
-                          )}
-                        </Button>
-                      </Grid>
-                    )}
-                  </>
-                )}
-              {item.status === 'done' ? (
+                item.status === 'accepted_by_finance') && (
+                <>
+                  {item && item.status === 'done' && item.cheques.length > 0 && (
+                    <Grid item key={index} md={2} sx={{ textAlign: '-webkit-center' }}>
+                      <Button
+                        data-cy="btn.view_transfer_receipt"
+                        variant="text"
+                        color="inherit"
+                        sx={{
+                          '&:hover': { textDecorationLine: 'underline' },
+                        }}
+                        href={
+                          (
+                            item.cheques[item.cheques.length - 1]
+                              ?.transfer_receipt as TransferReceipt
+                          )?.url ?? '#'
+                        }
+                        target="_blank"
+                      >
+                        {translate(
+                          'content.administrative.project_details.payment.table.btn.view_transfer_receipt'
+                        )}
+                      </Button>
+                    </Grid>
+                  )}
+                </>
+              )}
+              {item.status === 'done' && activeRole !== 'tender_client' ? (
                 <Grid item md={2} sx={{ textAlign: '-webkit-center' }}>
                   {item.cheques.length ? (
                     <Button

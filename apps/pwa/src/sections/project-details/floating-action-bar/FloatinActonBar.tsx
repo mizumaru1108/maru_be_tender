@@ -17,7 +17,6 @@ import FinanceFloatingActionBar from 'sections/project-details/floating-action-b
 import { useQuery } from 'urql';
 import { FEATURE_AMANDEMENT_FROM_FINANCE } from '../../../config';
 import PaymentAmandementFloatingActionBar from './supervisor/SendPaymentAmandement';
-
 //
 
 function FloatinActonBar() {
@@ -125,11 +124,8 @@ function FloatinActonBar() {
           {FEATURE_AMANDEMENT_FROM_FINANCE &&
             activeTap &&
             ['project-path', 'payments'].includes(activeTap) &&
-            ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR', 'DONE_BY_CASHIER'].includes(
-              proposal.inner_status
-            ) &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
-            proposal.outter_status !== 'ON_REVISION' &&
+            ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR'].includes(proposal.inner_status) &&
+            ['ASKED_FOR_AMANDEMENT_PAYMENT', 'ON_REVISION'].includes(proposal.outter_status) &&
             ['tender_finance'].includes(role) && <FinanceFloatingActionBar />}
           {FEATURE_AMANDEMENT_FROM_FINANCE &&
             activeTap &&
