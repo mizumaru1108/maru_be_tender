@@ -240,6 +240,7 @@ const ProjectCardBE = ({
         await updateAsigning({
           _set: {
             [`${RolesMap[role]!}`]: userAuth?.id,
+            incoming: false,
           },
           where: {
             id: {
