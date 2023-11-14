@@ -1768,7 +1768,7 @@ export class ProposalRepository {
           // };
           whereClause = {
             ...whereClause,
-            incoming: true,
+            // incoming: true,
             outter_status: {
               equals: OutterStatusEnum.ONGOING,
             },
@@ -2678,7 +2678,7 @@ export class ProposalRepository {
         whereClause = {
           ...whereClause,
           OR: [{ finance_id: currentUser.id }, { finance_id: null }],
-          incoming: false,
+          incoming: true,
           // finance_id: null,
           outter_status: {
             // notIn: [OutterStatusEnum.ASKED_FOR_AMANDEMENT_PAYMENT],
