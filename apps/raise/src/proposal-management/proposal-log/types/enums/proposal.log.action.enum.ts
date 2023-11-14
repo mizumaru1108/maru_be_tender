@@ -6,6 +6,8 @@ export enum ProposalLogActionEnum {
    */
   ISSUED_BY_SUPERVISOR = 'issued_by_supervisor',
 
+  STEP_BACK = 'step_back',
+
   /**
    * Role: Cashier
    * Brief: the batch of payment on proposal that already accepted_by_finance has been paid to the client,

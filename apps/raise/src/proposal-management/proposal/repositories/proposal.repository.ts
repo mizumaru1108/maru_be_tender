@@ -39,6 +39,8 @@ import {
   ProposalIncludeRelationsTypes,
   ProposalUpdateProps,
 } from '../types';
+import { TenderAppointmentRepository } from '../../../tender-appointment/appointment/repositories/tender-appointment.repository';
+import { ProposalLogActionEnum } from '../../proposal-log/types/enums/proposal.log.action.enum';
 
 @Injectable()
 export class ProposalRepository {
@@ -2634,6 +2636,9 @@ export class ProposalRepository {
           ...whereClause,
           OR: [{ finance_id: currentUser.id }, { finance_id: null }],
           // finance_id: null,
+          outter_status: {
+            notIn: [OutterStatusEnum.ASKED_FOR_AMANDEMENT_PAYMENT],
+          },
           payments: {
             some: {
               status: { in: [PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER] },
@@ -2641,12 +2646,29 @@ export class ProposalRepository {
           },
           proposal_logs: {
             some: {
-              user_role: {
-                in: [
-                  TenderAppRoleEnum.CASHIER,
-                  TenderAppRoleEnum.PROJECT_MANAGER,
-                ],
-              },
+              OR: [
+                {
+                  // user role cashier, action between upload by cashier and step back
+                  AND: {
+                    user_role: TenderAppRoleEnum.CASHIER,
+                    action: {
+                      in: [
+                        ProposalLogActionEnum.UPLOADED_BY_CASHIER,
+                        ProposalLogActionEnum.STEP_BACK,
+                      ],
+                    },
+                  },
+                },
+                {
+                  // action pm acc by project manager/ user role project manager,
+                  AND: {
+                    user_role: TenderAppRoleEnum.PROJECT_MANAGER,
+                    action: {
+                      in: [ProposalLogActionEnum.ACCEPTED_BY_PROJECT_MANAGER],
+                    },
+                  },
+                },
+              ],
             },
           },
         };
