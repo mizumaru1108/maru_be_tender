@@ -1754,8 +1754,24 @@ export class ProposalRepository {
         }
 
         if (currentUser.choosenRole === 'tender_finance') {
+          // whereClause = {
+          //   ...whereClause,
+          //   payments: {
+          //     some: {
+          //       status: {
+          //         in: [
+          //           PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+          //           PaymentStatusEnum.UPLOADED_BY_CASHIER,
+          //         ],
+          //       },
+          //     },
+          //   },
+          // };
           whereClause = {
             ...whereClause,
+            outter_status: {
+              equals: OutterStatusEnum.ONGOING,
+            },
             payments: {
               some: {
                 status: {
@@ -1764,6 +1780,33 @@ export class ProposalRepository {
                     PaymentStatusEnum.UPLOADED_BY_CASHIER,
                   ],
                 },
+              },
+            },
+            proposal_logs: {
+              some: {
+                OR: [
+                  {
+                    // user role cashier, action between upload by cashier and step back
+                    AND: {
+                      user_role: TenderAppRoleEnum.CASHIER,
+                      action: {
+                        in: [
+                          ProposalLogActionEnum.UPLOADED_BY_CASHIER,
+                          ProposalLogActionEnum.STEP_BACK,
+                        ],
+                      },
+                    },
+                  },
+                  {
+                    // action pm acc by project manager/ user role project manager,
+                    AND: {
+                      user_role: TenderAppRoleEnum.PROJECT_MANAGER,
+                      action: {
+                        in: [ProposalLogActionEnum.ACCEPTED_BY_PROJECT_MANAGER],
+                      },
+                    },
+                  },
+                ],
               },
             },
           };
@@ -2637,11 +2680,17 @@ export class ProposalRepository {
           OR: [{ finance_id: currentUser.id }, { finance_id: null }],
           // finance_id: null,
           outter_status: {
-            notIn: [OutterStatusEnum.ASKED_FOR_AMANDEMENT_PAYMENT],
+            // notIn: [OutterStatusEnum.ASKED_FOR_AMANDEMENT_PAYMENT],
+            equals: OutterStatusEnum.ONGOING,
           },
           payments: {
             some: {
-              status: { in: [PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER] },
+              status: {
+                in: [
+                  PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER,
+                  PaymentStatusEnum.UPLOADED_BY_CASHIER,
+                ],
+              },
             },
           },
           proposal_logs: {
