@@ -1672,8 +1672,8 @@ export class ProposalRepository {
           [
             'tender_project_supervisor',
             'tender_project_manager',
-            'tender_cashier',
-            'tender_finance',
+            // 'tender_cashier',
+            // 'tender_finance',
           ].indexOf(currentUser.choosenRole) > -1
         ) {
           const reviewer = await this.prismaService.user.findUnique({
