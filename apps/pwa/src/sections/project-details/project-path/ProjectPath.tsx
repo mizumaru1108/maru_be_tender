@@ -105,7 +105,11 @@ function ProjectPath() {
     const insertPayment = proposal.proposal_logs
       .filter((item: Log) => item.action === 'insert_payment')
       .map((item: Log) => item);
-    if (insertPayment && insertPayment.length > 0) {
+    if (
+      insertPayment &&
+      insertPayment.length > 0 &&
+      !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status)
+    ) {
       setIsPayments(true);
     }
     const tmpLogs = [...proposal.proposal_logs]

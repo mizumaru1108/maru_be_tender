@@ -55,7 +55,7 @@ function RequestsInProcess() {
             cardFooterButtonAction="completing-exchange-permission"
           /> */}
           <CardTableByBE
-            title={translate('incoming_support_requests')}
+            title={translate('requests_in_process')}
             destination="requests-in-process"
             endPoint="tender-proposal/request-in-process"
             limitShowCard={6}

@@ -248,6 +248,7 @@ const ProjectCardBE = ({
           },
         });
       }
+
       const x = location.pathname.split('/');
       if (!inquiryStatus) {
         if (destination) {

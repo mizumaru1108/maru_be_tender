@@ -48,7 +48,7 @@ function PreviousSupportRequests() {
               destination="current-project"
               endPoint="tender-proposal/list"
               limitShowCard={6}
-              cardFooterButtonAction="show-details"
+              cardFooterButtonAction="show-project"
               showPagination={true}
               sorting={['sorting']}
               onSearch={true}

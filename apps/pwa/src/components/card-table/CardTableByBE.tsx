@@ -434,6 +434,7 @@ CardTablePropsByBE) {
         cardData.length > 0 &&
         cardData.map((item: any, index: any) => {
           const isInProcess = CheckIsInProcessProposal(item, activeRole!);
+          // console.log({ isInProcess });
           return (
             <Grid item key={index} md={6} xs={12}>
               <ProjectTableBE

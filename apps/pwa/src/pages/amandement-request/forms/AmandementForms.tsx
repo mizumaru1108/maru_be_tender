@@ -565,6 +565,7 @@ const AmandementForms = ({
           )}
         </Grid>
         {/* {defaultValues?.timelines && defaultValues?.timelines.length > 0 ? <>test</> : <>test</>} */}
+        <Space direction="horizontal" size="small" />
         {FEATURE_AMANDEMENT_FROM_FINANCE && isPaymentamandement ? (
           <Grid item xs={12} md={12} sx={{ display: 'flex', justifyContent: 'center' }}>
             <Grid item xs={1} md={1}>
