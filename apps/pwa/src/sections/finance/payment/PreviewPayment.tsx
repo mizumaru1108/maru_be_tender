@@ -53,6 +53,7 @@ export default function PreviewPayment() {
   const id = params?.id;
 
   const receiptType = localStorage.getItem('receipt_type');
+  // console.log({ receiptType });
 
   const componentRef = useRef<HTMLDivElement>(null);
 

@@ -280,9 +280,12 @@ function ProjectPath() {
                                     alignSelf: 'center',
                                   }}
                                 >
-                                  {proposal.outter_status !== 'ASKED_FOR_AMANDEMENT'
-                                    ? translate(`permissions.${proposal.state}`)
-                                    : translate(`permissions.PROJECT_SUPERVISOR`)}
+                                  {[
+                                    'ASKED_FOR_AMANDEMENT',
+                                    'ASKED_FOR_AMANDEMENT_PAYMENT',
+                                  ].includes(proposal.outter_status)
+                                    ? translate(`permissions.PROJECT_SUPERVISOR`)
+                                    : translate(`permissions.${proposal.state}`)}
                                 </Typography>
                               </Stack>
                             )}

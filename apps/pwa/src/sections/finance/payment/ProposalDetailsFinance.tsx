@@ -166,7 +166,9 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
     <React.Fragment>
       <Grid item xs={12}>
         <Typography variant="h4" gutterBottom sx={{ mt: 1, color: theme.palette.primary.main }}>
-          {translate('pages.finance.payment_generate.heading.name_of_entity')}
+          {`${translate('pages.finance.payment_generate.heading.name_of_entity')} : ${
+            proposalData?.user?.client_data?.entity || '-'
+          } `}
         </Typography>
       </Grid>
       <Grid item xs={6}>
@@ -222,7 +224,11 @@ export default function ProposalDetails({ proposalData, loading }: IPropsData) {
                 {translate('pages.finance.payment_generate.heading.project_total_support_amount')}
                 &nbsp;:&nbsp;
                 <Typography variant="body2" component="span">
-                  {fCurrencyNumber(proposalData?.amount_required_fsupport ?? 0)}
+                  {fCurrencyNumber(
+                    proposalData?.fsupport_by_supervisor ||
+                      proposalData?.amount_required_fsupport ||
+                      0
+                  )}
                 </Typography>
               </Typography>
             </Grid>

@@ -62,7 +62,7 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
         tmpEmployee.finance = data?.finance_name?.employee_name;
       }
       if (data?.project_manager_name?.employee_name) {
-        tmpEmployee.pm = data?.project_manager_name?.employee_name;
+        tmpEmployee.pm = `${data?.project_manager_name?.employee_name}`;
       }
       if (data?.supervisor_name?.employee_name) {
         tmpEmployee.spv = data?.supervisor_name?.employee_name;
@@ -103,7 +103,9 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
       <>
         <Grid item xs={12}>
           <Typography variant="h4" gutterBottom sx={{ color: theme.palette.primary.main }}>
-            {translate('pages.finance.payment_generate.heading.invoice_to')}
+            {`${translate('pages.finance.payment_generate.heading.invoice_to')} : ${
+              proposalData?.user?.client_data?.entity || '-'
+            }`}
           </Typography>
         </Grid>
 
@@ -220,7 +222,7 @@ function RenderingComponent({ proposalData }: { proposalData: Proposal }) {
                 <Grid container justifyContent={'center'} sx={{ textAlign: 'center', mt: 10 }}>
                   <Grid item xs={12} md={8}>
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                      {`${Employee.spv} (${translate('project_card.project_manager')})`}
+                      {`${Employee.pm} (${translate('project_card.project_manager')})`}
                     </Typography>
                     <Divider color="#000" variant="fullWidth" sx={{ margin: '8px 0 8px 0' }} />
                   </Grid>

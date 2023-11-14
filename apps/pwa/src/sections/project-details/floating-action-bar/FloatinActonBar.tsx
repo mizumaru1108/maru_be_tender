@@ -125,9 +125,7 @@ function FloatinActonBar() {
             activeTap &&
             ['project-path', 'payments'].includes(activeTap) &&
             ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR'].includes(proposal.inner_status) &&
-            ['ASKED_FOR_AMANDEMENT_PAYMENT', 'ON_REVISION', 'ONGOING'].includes(
-              proposal.outter_status
-            ) &&
+            ['ONGOING'].includes(proposal.outter_status) &&
             ['tender_finance'].includes(role) && <FinanceFloatingActionBar />}
           {FEATURE_AMANDEMENT_FROM_FINANCE &&
             activeTap &&
