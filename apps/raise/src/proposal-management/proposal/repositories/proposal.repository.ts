@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Prisma, proposal_item_budget } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { PaymentStatusEnum } from 'src/proposal-management/payment/types/enums/payment.status.enum';
@@ -17,6 +17,7 @@ import {
 } from '../../../tender-commons/types/proposal';
 import { prismaErrorThrower } from '../../../tender-commons/utils/prisma-error-thrower';
 import { TenderCurrentUser } from '../../../tender-user/user/interfaces/current-user.interface';
+import { ProposalLogActionEnum } from '../../proposal-log/types/enums/proposal.log.action.enum';
 import { ProposalSelectEnum } from '../dtos/queries/proposal.report.list.query.dto';
 import {
   FetchClosingReportListFilterRequest,
@@ -39,8 +40,6 @@ import {
   ProposalIncludeRelationsTypes,
   ProposalUpdateProps,
 } from '../types';
-import { TenderAppointmentRepository } from '../../../tender-appointment/appointment/repositories/tender-appointment.repository';
-import { ProposalLogActionEnum } from '../../proposal-log/types/enums/proposal.log.action.enum';
 
 @Injectable()
 export class ProposalRepository {
@@ -1769,6 +1768,7 @@ export class ProposalRepository {
           // };
           whereClause = {
             ...whereClause,
+            incoming: true,
             outter_status: {
               equals: OutterStatusEnum.ONGOING,
             },
@@ -2678,6 +2678,7 @@ export class ProposalRepository {
         whereClause = {
           ...whereClause,
           OR: [{ finance_id: currentUser.id }, { finance_id: null }],
+          incoming: false,
           // finance_id: null,
           outter_status: {
             // notIn: [OutterStatusEnum.ASKED_FOR_AMANDEMENT_PAYMENT],

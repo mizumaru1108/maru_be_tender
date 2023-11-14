@@ -263,6 +263,7 @@ model proposal {
   execution_time                      Decimal?                         @db.Decimal
   oid                                 Int?
   project_number                      Int?                             @unique @default(autoincrement())
+  incoming                            Boolean                          @default(false)
 //   project_numbers1                    Int                              @default(autoincrement())
   beneficiary_id                      String?
   beneficiary_details                 beneficiaries?                   @relation(fields: [beneficiary_id], references: [id])

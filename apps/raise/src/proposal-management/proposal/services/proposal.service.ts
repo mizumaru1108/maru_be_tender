@@ -1102,6 +1102,7 @@ export class ProposalService {
       // proposalUpdatePayload.state = TenderAppRoleEnum.FINANCE;
       // proposalUpdatePayload.finance_id = null;
       proposalUpdatePayload.cashier_id = null;
+      proposalUpdatePayload.incoming = true;
 
       /* log */
       proposalLogCreateInput.action = ProposalAction.STEP_BACK;

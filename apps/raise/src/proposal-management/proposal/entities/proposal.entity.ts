@@ -117,6 +117,7 @@ export class ProposalEntity extends AggregateRoot {
   vat?: boolean | null;
   vat_percentage?: number | null;
   whole_budget?: number | null;
+  incoming: boolean;
   user?: UserEntity;
   supervisor?: UserEntity;
   proposal_closing_report?: ProposalCloseReportEntity[];
