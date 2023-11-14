@@ -214,7 +214,6 @@ CardTablePropsByBE) {
   };
 
   const handleSortingTrack = (event: string) => {
-    console.log({ event });
     if (event !== '-') {
       const trackId = event.split('=')[1];
       setPage(1);

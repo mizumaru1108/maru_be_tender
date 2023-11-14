@@ -5,30 +5,49 @@ import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
 //
 import { FEATURE_DAILY_STATUS } from 'config';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router';
+import { getOneEmployee } from '../../../queries/admin/getAllTheEmployees';
 
 function DailyStatistics() {
   const { translate } = useLocales();
   const navigate = useNavigate();
-  const base_date = new Date();
-  const first_date = base_date.toISOString().slice(0, 10);
-  const second_date = new Date(base_date.setDate(base_date.getDate() + 1))
-    .toISOString()
-    .slice(0, 10);
   const { user } = useAuth();
+
+  const [resultEmployee] = useQuery({
+    query: getOneEmployee,
+    variables: { id: user?.id },
+  });
+  const { data: employeeData, fetching: fetchingEmployee, error: errorEmployee } = resultEmployee;
+  const track_id = employeeData?.data?.track_id || undefined;
+
   const [result] = useQuery({
     query: getDailyProjectManagerStatistics,
-    variables: { user_id: user?.id!, first_date, second_date },
+    variables: {
+      user_id: user?.id!,
+      track_id: track_id,
+    },
+    pause: !track_id || !user?.id,
   });
   const { data, fetching, error } = result;
+
+  const count = useMemo(() => {
+    let totalProject = 0;
+    if (data && !fetching) {
+      totalProject =
+        (data?.acceptableRequest?.aggregate?.count || 0) +
+        (data?.incomingNewRequest?.aggregate?.count || 0) +
+        (data?.rejectedRequest?.aggregate?.count || 0);
+    }
+    return totalProject;
+  }, [data, fetching]);
 
   const handleClick = (link: string) => {
     navigate(link);
   };
 
-  if (fetching) return <>{translate('pages.common.loading')}</>;
-  if (error) return <>{error.message}</>;
+  if (fetching || fetchingEmployee) return <>{translate('pages.common.loading')}</>;
+  if (error || errorEmployee) return <>{error?.message || errorEmployee?.message}</>;
 
   return (
     <Grid container spacing={2}>
@@ -77,7 +96,7 @@ function DailyStatistics() {
                         {title}
                       </Typography>
                       <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                        {`${value} ${translate('projects')}`}
+                        {`${item !== 'totalRequest' ? value : count} ${translate('projects')}`}
                       </Typography>
                     </Box>
                   </Grid>

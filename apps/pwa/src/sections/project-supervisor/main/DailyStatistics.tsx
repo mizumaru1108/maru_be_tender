@@ -21,7 +21,6 @@ function DailyStatistics() {
     variables: { id: user?.id },
   });
   const { data: employeeData, fetching: fetchingEmployee, error: errorEmployee } = resultEmployee;
-  // console.log({});
   const track_id = employeeData?.data?.track_id || undefined;
 
   const [result] = useQuery({
@@ -29,6 +28,7 @@ function DailyStatistics() {
     variables: {
       user_id: user?.id!,
       track_id: track_id,
+      _in_outter_status: ['CANCELED', 'PENDING_CANCELED'],
     },
     pause: !track_id || !user?.id,
   });

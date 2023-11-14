@@ -200,8 +200,10 @@ const ProjectCardBE = ({
 
   const handleNavigateToClientDetails = (id: string) => {
     const urls = location.pathname.split('/');
-    const path = `/${urls[1]}/${urls[2]}/current-project/owner/${id}`;
-    // console.log({ path });
+    // old version
+    // const path = `/${urls[1]}/${urls[2]}/current-project/owner/${id}`;
+    // new version
+    const path = `/${urls[1]}/dashboard/current-project/owner/${id}`;
     navigate(path);
   };
 
@@ -249,14 +251,20 @@ const ProjectCardBE = ({
       const x = location.pathname.split('/');
       if (!inquiryStatus) {
         if (destination) {
-          navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
+          // old version
+          // navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
+          // old version
+          navigate(`/${x[1] + '/dashboard/' + destination}/${id}/${cardFooterButtonAction}`);
         } else {
           navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
         }
       } else {
         // navigate(`${location.pathname}/${id}/reject-project`);
         if (destination) {
-          navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/reject-project`);
+          // old version
+          // navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/reject-project`);
+          // new version
+          navigate(`/${x[1] + '/dashboard/' + destination}/${id}/reject-project`);
         } else {
           navigate(`${location.pathname}/${id}/reject-project`);
         }
