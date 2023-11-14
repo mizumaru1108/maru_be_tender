@@ -2632,11 +2632,21 @@ export class ProposalRepository {
       if (currentUser.choosenRole === 'tender_finance') {
         whereClause = {
           ...whereClause,
-          // OR: [{ finance_id: currentUser.id }, { finance_id: null }],
-          finance_id: null,
+          OR: [{ finance_id: currentUser.id }, { finance_id: null }],
+          // finance_id: null,
           payments: {
             some: {
               status: { in: [PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER] },
+            },
+          },
+          proposal_logs: {
+            some: {
+              user_role: {
+                in: [
+                  TenderAppRoleEnum.CASHIER,
+                  TenderAppRoleEnum.PROJECT_MANAGER,
+                ],
+              },
             },
           },
         };
@@ -2677,9 +2687,10 @@ export class ProposalRepository {
       }
 
       if (type === 'incoming') {
-        if (currentUser.choosenRole === 'tender_finance') {
-          whereClause = { ...whereClause, finance_id: null };
-        }
+        // Mizumaru
+        // if (currentUser.choosenRole === 'tender_finance') {
+        //   whereClause = { ...whereClause, finance_id: null };
+        // }
 
         if (currentUser.choosenRole === 'tender_cashier') {
           whereClause = { ...whereClause, cashier_id: null };

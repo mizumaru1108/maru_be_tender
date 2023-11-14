@@ -1099,8 +1099,8 @@ export class ProposalService {
       proposalUpdatePayload.inner_status =
         InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR;
       proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
-      proposalUpdatePayload.state = TenderAppRoleEnum.FINANCE;
-      proposalUpdatePayload.finance_id = null;
+      // proposalUpdatePayload.state = TenderAppRoleEnum.FINANCE;
+      // proposalUpdatePayload.finance_id = null;
       proposalUpdatePayload.cashier_id = null;
 
       /* log */
