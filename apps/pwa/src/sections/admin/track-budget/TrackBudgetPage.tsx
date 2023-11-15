@@ -53,6 +53,7 @@ export default function TrackBudgetPage() {
           is_deleted: '0',
           include_general: '0',
           include_relations: 'track_sections',
+          limit: 999,
         },
         headers: { 'x-hasura-role': activeRole! },
       });

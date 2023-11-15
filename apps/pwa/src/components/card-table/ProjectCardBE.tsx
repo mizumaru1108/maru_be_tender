@@ -51,6 +51,14 @@ const RolesMap = {
   tender_auditor_report: '',
   tender_portal_report: '',
 };
+
+const RolesAssignEmployeeMap = {
+  tender_finance: 'finance_id',
+  tender_cashier: 'cashier_id',
+  tender_project_manager: 'project_manager_id',
+  tender_project_supervisor: 'supervisor_id',
+};
+
 const ProjectCardBE = ({
   id,
   inquiryStatus,
@@ -66,8 +74,10 @@ const ProjectCardBE = ({
   outter_status: status,
   cardFooterButtonAction,
   track_id,
+  support_outputs,
   destination, // it refers to the url that I came from and the url that I have to go to
   mutate,
+  ...other
 }: ProjectCardPropsBE) => {
   const { user: userAuth, activeRole } = useAuth();
   const role = activeRole!;
@@ -204,47 +214,48 @@ const ProjectCardBE = ({
     navigate(path);
   };
 
+  const handleUpdateAsigning = async () => {
+    console.log('masuk sini 2');
+    try {
+      await updateAsigning({
+        _set: {
+          support_outputs: ['tender_project_supervisor'].includes(role) ? '-' : support_outputs,
+          [`${RolesMap[role]!}`]: userAuth?.id,
+          incoming: false,
+        },
+        where: {
+          id: {
+            _eq: id,
+          },
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      getProposalCount(role!);
+    }
+  };
+
   const handleOnClick = async () => {
     dispatch(setFiltered(''));
     try {
-      if (
-        ['tender_project_supervisor'].includes(role) &&
-        destination !== 'requests-in-process' &&
-        destination !== 'previous-funding-requests'
-      ) {
-        await updateAsigning({
-          _set: {
-            support_outputs: '-',
-            [`${RolesMap[role]!}`]: userAuth?.id,
-          },
-          where: {
-            id: {
-              _eq: id,
-            },
-          },
-        });
-      }
       if (
         [
           'tender_finance',
           'tender_cashier',
           'tender_project_manager',
-          // 'tender_project_supervisor',
+          'tender_project_supervisor',
         ].includes(role) &&
-        destination !== 'requests-in-process' &&
-        destination !== 'previous-funding-requests'
+        !['requests-in-process', 'previous-funding-requests'].includes(destination!)
       ) {
-        await updateAsigning({
-          _set: {
-            [`${RolesMap[role]!}`]: userAuth?.id,
-            incoming: false,
-          },
-          where: {
-            id: {
-              _eq: id,
-            },
-          },
-        });
+        if (
+          (!other.project_manager_id && ['tender_project_manager'].includes(role)) ||
+          (!other.finance_id && ['tender_finance'].includes(role)) ||
+          (!other.cashier_id && ['tender_cashier'].includes(role)) ||
+          (!other.supervisor_id && ['tender_project_supervisor'].includes(role))
+        ) {
+          handleUpdateAsigning();
+        }
       }
 
       const x = location.pathname.split('/');
@@ -277,8 +288,6 @@ const ProjectCardBE = ({
       }
     } catch (error) {
       console.error({ error });
-    } finally {
-      getProposalCount(role!);
     }
   };
 

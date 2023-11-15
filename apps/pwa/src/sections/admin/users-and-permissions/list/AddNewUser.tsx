@@ -31,6 +31,8 @@ import formatPhone from 'utils/formatPhone';
 import { tracks } from '../../../../@types/proposal';
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
 import { AppRole } from '../../../../@types/commons';
+import { dispatch, useSelector } from '../../../../redux/store';
+import { getTracks } from '../../../../redux/slices/track';
 
 type FormValuesProps = {
   employee_name: string;
@@ -58,6 +60,9 @@ function AddNewUser() {
   const navigate = useNavigate();
   const params = useParams();
 
+  // redux
+  const { isLoading: loadingTrack, tracks } = useSelector((state) => state.tracks);
+
   const [result] = useQuery({
     query: getOneEmployee,
     variables: { id: params.userId },
@@ -68,7 +73,7 @@ function AddNewUser() {
 
   const { enqueueSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [tracksData, setTracksData] = React.useState<tracks[]>([]);
+  // const [tracksData, setTracksData] = React.useState<tracks[]>([]);
 
   const [openSnackBar, setOpenSnackBar] = React.useState<SnackBar>({
     open: false,
@@ -202,70 +207,14 @@ function AddNewUser() {
     setOpenSnackBar({ open: false, message: '', severity: 'success' });
   };
 
-  const fetchingTracks = React.useCallback(async () => {
-    const params = {
-      is_deleted: 0,
-    };
-    setIsLoading(true);
-    try {
-      const rest = await axiosInstance.get(`/tender/track?`, {
-        headers: { 'x-hasura-role': activeRole! },
-        params: {
-          ...params,
-        },
-      });
-      // console.log(rest.data.data);
-      if (rest) {
-        setTracksData(
-          rest.data.data.map((item: tracks) => ({
-            id: item.id ?? '-',
-            name: item.name ?? 'No Record',
-            with_consultant: item.with_consultation ?? 'No Record',
-            is_deleted: item.is_deleted ?? 'No Record',
-          }))
-        );
-      }
-      // console.log('rest', rest.data.data);
-    } catch (err) {
-      // console.log('err', err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
-      const statusCode = (err && err.statusCode) || 0;
-      const message = (err && err.message) || null;
-      enqueueSnackbar(
-        `${
-          statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
-        }`,
-        {
-          variant: 'error',
-          preventDuplicate: true,
-          autoHideDuration: 3000,
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-        }
-      );
-    } finally {
-      setIsLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRole, enqueueSnackbar]);
-
   React.useEffect(() => {
-    fetchingTracks();
-  }, [fetchingTracks]);
+    // fetchingTracks();
+    dispatch(getTracks(activeRole!));
+  }, [activeRole]);
 
   React.useEffect(() => {
     if (params.userId) {
-      if (!fetching && !error && data && tracksData) {
+      if (!fetching && !error && data && tracks) {
         // console.log({ data });
         // console.log('test : ', tracksData.find((item) => item.id === data.data.track_id)?.id);
         const userRole: string[] =
@@ -282,14 +231,14 @@ function AddNewUser() {
           password: '',
           employee_name: data.data.employee_name,
           // employee_path: data.data.employee_path ?? 'GENERAL',
-          employee_path: tracksData.find((item) => item.id === data.data.track_id)?.id ?? '',
+          employee_path: tracks.find((item) => item.id === data.data.track_id)?.id ?? '',
           mobile_number: tmpMobileNumber,
           user_roles: [...userRole],
         });
       }
     }
-  }, [params, fetching, error, data, reset, tracksData]);
-  if (isLoading) return <>Loading...</>;
+  }, [params, fetching, error, data, reset, tracks]);
+  if (loadingTrack) return <>Loading...</>;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -409,8 +358,13 @@ function AddNewUser() {
                 placeholder="الرجاء اختيار اسم الجهة"
                 disabled={isLoading}
                 size="small"
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: { style: { maxHeight: 500 } },
+                  },
+                }}
               >
-                {tracksData
+                {tracks
                   .filter((item: tracks) => item.is_deleted === false)
                   .map((item: tracks, index: any) => (
                     <MenuItem key={index} value={item?.id}>

@@ -14,6 +14,7 @@ import axiosInstance from 'utils/axios';
 import useAuth from 'hooks/useAuth';
 import NewCardTable from 'components/card-table/NewCardTable';
 import ClientProposaCardTable from 'components/card-table/ClientProposaCardTable';
+import CardTableByBE from '../../../components/card-table/CardTableByBE';
 
 function ProjectOwnerDetailsMainPage() {
   const { currentLang, translate } = useLocales();
@@ -95,23 +96,23 @@ function ProjectOwnerDetailsMainPage() {
       </Stack>
       <SummaryClientInfo dataClient={userInfo} />
       <Divider sx={{ marginTop: '30px' }} />
-      {/* <CardTableBE
-        resource={getOwnerProposals}
+      <CardTableByBE
         title={translate('project_owner_details.table_title') + userInfo.entity}
+        destination="current-project"
+        endPoint="tender/client/proposals"
+        limitShowCard={6}
         cardFooterButtonAction="show-project"
-        destination={destination as any}
-        dateFilter={false}
-        baseFilters={{
-          submitter_user_id: { submitter_user_id: { _eq: submiterId } },
-          // outter_status: { outter_status: { _neq: 'ONGOING' } },
+        showPagination={true}
+        addCustomFilter={{
+          user_id: submiterId,
         }}
-      /> */}
-      <ClientProposaCardTable
+      />
+      {/* <ClientProposaCardTable
         title={translate('project_owner_details.table_title') + userInfo.entity}
         cardFooterButtonAction="show-project"
         url={DATA_URL}
         headersProps={HEADERS}
-      />
+      /> */}
       {/* <ActionTap /> */}
       {/* <FloatinActonBar /> */}
     </Box>

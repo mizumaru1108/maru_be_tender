@@ -31,9 +31,9 @@ query MyQuery($user_id: String = "", $track_id: String = "") {
     }
   }
 
-  incomingNewRequest: proposal_aggregate(where: {step: {_eq: ZERO}, oid: {_is_null: true}, inner_status: {_in: [ACCEPTED_BY_SUPERVISOR, REJECTED_BY_SUPERVISOR]}, track_id: {_eq: $track_id}, outter_status: {_in: [PENDING_CANCELED, ONGOING]}, project_manager_id: {_in: [$user_id]}}) {
+  incomingNewRequest: proposal_aggregate(where: {step: {_eq: ZERO}, oid: {_is_null: true}, inner_status: {_in: [ACCEPTED_BY_SUPERVISOR, REJECTED_BY_SUPERVISOR]}, track_id: {_eq: $track_id}, outter_status: {_in: [PENDING_CANCELED, ONGOING]}, _or:[{project_manager_id: {_eq: $user_id}},{project_manager_id: {_is_null:true}}]}) {
     aggregate {
-    count
+      count
     }
   }
 

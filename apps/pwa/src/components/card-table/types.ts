@@ -115,6 +115,11 @@ export type ProjectCardPropsBE = {
   state?: string;
   payments?: any;
   track_id?: string;
+  support_outputs?: string;
+  supervisor_id?: string;
+  project_manager_id?: string;
+  finance_id?: string;
+  cashier_id?: string;
   outter_status?:
     | 'CANCELED'
     | 'COMPLETED'
