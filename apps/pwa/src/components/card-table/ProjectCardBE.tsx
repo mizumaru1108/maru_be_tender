@@ -2,13 +2,14 @@ import React from 'react';
 import {
   Typography,
   Stack,
-  Button,
+  Box,
   Card,
   CardActions,
   CardContent,
   Divider,
   Grid,
   Chip,
+  useTheme,
 } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate } from 'react-router';
@@ -68,15 +69,11 @@ const ProjectCardBE = ({
   destination, // it refers to the url that I came from and the url that I have to go to
   mutate,
 }: ProjectCardPropsBE) => {
-  // const daysSinceCreated = Math.ceil(
-  //   (new Date().getTime() - created_at.getTime()) / (1000 * 3600 * 24)
-  // );
-  // console.log({ cardFooterButtonAction, destination });
-
   const { user: userAuth, activeRole } = useAuth();
   const role = activeRole!;
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
   const { translate } = useLocales();
   const [, updateAsigning] = useMutation(asignProposalToAUser);
   const [, deleteDrPro] = useMutation(deleteDraftProposal);
@@ -279,7 +276,7 @@ const ProjectCardBE = ({
         }
       }
     } catch (error) {
-      console.log({ error });
+      console.error({ error });
     } finally {
       getProposalCount(role!);
     }
@@ -296,8 +293,26 @@ const ProjectCardBE = ({
   };
 
   return (
-    <Card sx={{ backgroundColor: '#fff' }}>
-      <CardContent>
+    <Card
+      sx={{
+        backgroundColor: theme.palette.common.white,
+        '&:hover': { backgroundColor: theme.palette.grey[100], cursor: 'pointer' },
+      }}
+    >
+      <CardContent
+        onClick={(e: any) => {
+          if (cardFooterButtonAction === 'draft') {
+            return;
+          } else {
+            const elementId = e.target.id;
+            if (elementId === 'userData' && user?.id && role !== 'tender_client') {
+              handleNavigateToClientDetails(user?.id);
+            } else {
+              handleOnClick();
+            }
+          }
+        }}
+      >
         {/* The Title Section  */}
         <Stack direction="row" justifyContent="space-between" gap={5}>
           <Typography
@@ -356,7 +371,7 @@ const ProjectCardBE = ({
           {project_name}
         </Typography>
         {project_idea && cardFooterButtonAction === 'draft' && (
-          <>
+          <Stack direction="column">
             <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
               {translate('project_idea')}
             </Typography>
@@ -372,14 +387,15 @@ const ProjectCardBE = ({
             >
               {project_idea}
             </Typography>
-          </>
+          </Stack>
         )}
         {user && (
-          <React.Fragment>
+          <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: 'max-content' }}>
             <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
               {translate('project_management_headercell.clients_name')}
             </Typography>
             <Typography
+              id="userData"
               variant="h6"
               gutterBottom
               sx={{
@@ -390,16 +406,14 @@ const ProjectCardBE = ({
                 maxWidth: '500px',
                 fontSize: '14px !important',
                 cursor: user?.id && role !== 'tender_client' ? 'pointer' : undefined,
-              }}
-              onClick={() => {
-                if (user?.id && role !== 'tender_client') {
-                  handleNavigateToClientDetails(user?.id);
-                }
+                '&:hover': {
+                  textDecoration: user?.id && role !== 'tender_client' ? 'underline' : undefined,
+                },
               }}
             >
               {(user && user.client_data && user.client_data.entity) ?? user.employee_name}
             </Typography>
-          </React.Fragment>
+          </Box>
         )}
         <Stack direction="row" gap={6}>
           {role !== 'tender_moderator' &&
@@ -513,9 +527,23 @@ const ProjectCardBE = ({
       </CardContent>
 
       {/* The Footer Section  */}
-      <CardActions sx={{ justifyContent: 'space-between', px: '30px' }}>
+      <CardActions
+        sx={{ justifyContent: 'space-between', px: theme.spacing(3), pb: theme.spacing(3) }}
+        onClick={(e: any) => {
+          if (cardFooterButtonAction === 'draft') {
+            return;
+          } else {
+            const elementId = e.target.id;
+            if (elementId === 'userData' && user?.id && role !== 'tender_client') {
+              handleNavigateToClientDetails(user?.id);
+            } else {
+              handleOnClick();
+            }
+          }
+        }}
+      >
         <Grid container spacing={2}>
-          {payments && (
+          {payments && payments.length ? (
             <Grid container item md={12} columnSpacing={1}>
               {payments.map((payment: any, index: any) => (
                 <Grid item key={index}>
@@ -533,8 +561,8 @@ const ProjectCardBE = ({
                 </Grid>
               ))}
             </Grid>
-          )}
-          <Grid item md={12} xs={12} sx={{ marginBottom: '-10px' }}>
+          ) : null}
+          <Grid item xs={12}>
             <Typography
               variant="h6"
               color="#93A3B0"
@@ -543,21 +571,16 @@ const ProjectCardBE = ({
             >
               {translate('project_management_headercell.date_created')}
             </Typography>
-          </Grid>
-          <Grid item md={6} xs={6}>
-            <Stack direction="row" justifyContent="space-between">
-              <Stack direction="column">
-                <Typography
-                  variant="h6"
-                  color="#1E1E1E"
-                  gutterBottom
-                  sx={{ fontSize: '15px !important' }}
-                >
-                  {updated_at
-                    ? moment(updated_at).format('LLLL')
-                    : moment(created_at).format('LLLL')}
-                </Typography>
-              </Stack>
+            <Stack
+              component="div"
+              direction="row"
+              spacing={2}
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography variant="h6" color="#1E1E1E" sx={{ fontSize: '15px !important' }}>
+                {updated_at ? moment(updated_at).format('LLLL') : moment(created_at).format('LLLL')}
+              </Typography>
               {status !== 'COMPLETED' && (
                 <Chip
                   label={`${daysSinceCreated()} ${
@@ -614,53 +637,48 @@ const ProjectCardBE = ({
                 />
               )}
             </Stack>
-          </Grid>
-          <Grid item md={6} xs={6}>
-            <Stack direction="row" justifyContent="end" gap={2}>
-              {cardFooterButtonAction === 'draft' ? (
-                <Stack direction="row" gap={2}>
-                  <LoadingButton
-                    variant="outlined"
-                    loading={loading}
-                    disabled={!FEATURE_PROJECT_SAVE_DRAFT}
-                    onClick={onDeleteDraftClick}
-                    startIcon={<img alt="" src="/icons/trash-icon.svg" />}
-                    sx={{
-                      color: 'Red',
-                      borderColor: 'Red',
-                    }}
-                  >
-                    حذف المسودة
-                  </LoadingButton>
-                  <LoadingButton
-                    loading={loading}
-                    onClick={onContinuingDraftClick}
-                    disabled={!FEATURE_PROJECT_SAVE_DRAFT}
-                    startIcon={<img alt="" src="/icons/edit-pencile-icon.svg" />}
-                    sx={{ backgroundColor: 'text.tertiary', color: '#fff' }}
-                  >
-                    إكمال الطلب
-                  </LoadingButton>
-                </Stack>
-              ) : (
-                <Button
-                  variant="outlined"
-                  sx={{
-                    background: cardFooterButtonAction === 'show-project' ? '#fff' : '#0E8478',
-                    color: cardFooterButtonAction === 'show-project' ? '#1E1E1E' : '#fff',
-                    borderColor: cardFooterButtonAction === 'show-project' ? '#000' : undefined,
-                  }}
-                  onClick={handleOnClick}
+            {cardFooterButtonAction === 'draft' ? (
+              <Stack direction="row" alignItems="center" sx={{ mt: theme.spacing(2) }} gap={2}>
+                <LoadingButton
+                  loading={loading}
+                  onClick={onContinuingDraftClick}
+                  disabled={!FEATURE_PROJECT_SAVE_DRAFT}
+                  startIcon={<img alt="" src="/icons/edit-pencile-icon.svg" />}
+                  sx={{ backgroundColor: 'text.tertiary', color: '#fff' }}
                 >
-                  {destination === 'requests-in-process'
-                    ? translate('continue_studying_the_project')
-                    : role === 'tender_client'
-                    ? translate('show_clients_project_detail')
-                    : translate(cardFooterButtonActionLocal[`${cardFooterButtonAction}`])}
-                </Button>
-              )}
-            </Stack>
+                  إكمال الطلب
+                </LoadingButton>
+                <LoadingButton
+                  variant="outlined"
+                  loading={loading}
+                  disabled={!FEATURE_PROJECT_SAVE_DRAFT}
+                  onClick={onDeleteDraftClick}
+                  startIcon={<img alt="" src="/icons/trash-icon.svg" />}
+                  sx={{
+                    color: 'Red',
+                    borderColor: 'Red',
+                  }}
+                >
+                  حذف المسودة
+                </LoadingButton>
+              </Stack>
+            ) : null}
           </Grid>
+          {/* <Button
+            variant="outlined"
+            sx={{
+              background: cardFooterButtonAction === 'show-project' ? '#fff' : '#0E8478',
+              color: cardFooterButtonAction === 'show-project' ? '#1E1E1E' : '#fff',
+              borderColor: cardFooterButtonAction === 'show-project' ? '#000' : undefined,
+            }}
+            onClick={handleOnClick}
+          >
+            {destination === 'requests-in-process'
+              ? translate('continue_studying_the_project')
+              : role === 'tender_client'
+              ? translate('show_clients_project_detail')
+              : translate(cardFooterButtonActionLocal[`${cardFooterButtonAction}`])}
+          </Button> */}
         </Grid>
       </CardActions>
     </Card>
