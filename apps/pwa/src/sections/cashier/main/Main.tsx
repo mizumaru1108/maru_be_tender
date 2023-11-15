@@ -3,7 +3,7 @@ import Space from 'components/space/space';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import React from 'react';
-import { getTrackList } from 'redux/slices/proposal';
+import { getProposalCount, getTrackList } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
 import EmployeeCarousel from 'sections/employee/carousel/EmployeeCarousel';
 import DailyStatistics from './DailyStatistics';
@@ -27,6 +27,7 @@ function Main() {
   const { loadingCount } = useSelector((state) => state.proposal);
   React.useEffect(() => {
     dispatch(getTrackList(1, activeRole! as string));
+    dispatch(getProposalCount(activeRole!));
   }, [activeRole]);
 
   if (loadingCount) return <>{translate('pages.common.loading')}</>;

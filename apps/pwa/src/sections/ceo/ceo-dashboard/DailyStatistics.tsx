@@ -6,7 +6,7 @@ import { useQuery } from 'urql';
 import moment from 'moment';
 //
 import { FEATURE_DAILY_STATUS } from 'config';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 
 function DailyStatistics() {
@@ -16,14 +16,20 @@ function DailyStatistics() {
   const { user } = useAuth();
   const [result] = useQuery({
     query: getDailyStatisticCeo,
-    variables: {
-      user_id: user?.id!,
-      first_date: moment().startOf('day').toISOString(),
-      second_date: moment().endOf('day').toISOString(),
-    },
   });
 
   const { data, fetching, error } = result;
+
+  const count = useMemo(() => {
+    let totalProject = 0;
+    if (data && !fetching) {
+      totalProject =
+        (data?.acceptableRequest?.aggregate?.count || 0) +
+        (data?.incomingNewRequest?.aggregate?.count || 0) +
+        (data?.rejectedRequest?.aggregate?.count || 0);
+    }
+    return totalProject;
+  }, [data, fetching]);
 
   const handleClick = (link: string) => {
     navigate(link);
@@ -82,7 +88,7 @@ function DailyStatistics() {
                         {title}
                       </Typography>
                       <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                        {`${value} ${translate('projects')}`}
+                        {`${item !== 'totalRequest' ? value : count} ${translate('projects')}`}
                       </Typography>
                     </Box>
                   </Grid>

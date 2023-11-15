@@ -38,3 +38,14 @@ export function convertMinutestoHours(baseMinutes: number) {
   };
   // return hours + 'h ' + minutes + 'm ' + remainingSeconds + 's';
 }
+
+export const getNewestDate = (date1: string, date2: string): string => {
+  const date1Obj = new Date(date1);
+  const date2Obj = new Date(date2);
+
+  if (isNaN(date1Obj.getTime()) || isNaN(date2Obj.getTime())) {
+    throw new Error('Invalid date format');
+  }
+
+  return date1Obj > date2Obj ? date1 : date2;
+};

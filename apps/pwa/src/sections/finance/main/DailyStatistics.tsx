@@ -5,23 +5,43 @@ import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
 //
 import { FEATURE_DAILY_STATUS } from 'config';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 
 function DailyStatistics() {
   const { translate } = useLocales();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const base_date = new Date();
-  const first_date = base_date.toISOString().slice(0, 10);
-  const second_date = new Date(base_date.setDate(base_date.getDate() + 1))
-    .toISOString()
-    .slice(0, 10);
+  // const base_date = new Date();
+  // const first_date = base_date.toISOString().slice(0, 10);
+  // const second_date = new Date(base_date.setDate(base_date.getDate() + 1))
+  //   .toISOString()
+  //   .slice(0, 10);
+
   const [result] = useQuery({
     query: getDailyFinanceStatistics,
-    variables: { first_date, second_date },
+    variables: {
+      user_id: user?.id,
+    },
   });
   const { data, fetching, error } = result;
+
+  const counts = useMemo(() => {
+    let totalProject = 0;
+    if (data && !fetching) {
+      totalProject =
+        (data?.acceptableRequest?.aggregate?.count || 0) +
+        (data?.incomingNewRequest?.aggregate?.count || 0) +
+        (data?.rejectedRequest?.aggregate?.count || 0);
+    }
+    return {
+      totalProject,
+      acceptableRequest: data?.acceptableRequest?.aggregate?.count || 0,
+      incomingNewRequest: data?.incomingNewRequest?.aggregate?.count || 0,
+      rejectedRequest: data?.rejectedRequest?.aggregate?.count || 0,
+    };
+  }, [data, fetching]);
 
   const handleClick = (link: string) => {
     navigate(link);
@@ -57,7 +77,7 @@ function DailyStatistics() {
               </Typography>
               <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                 <Typography component="span" sx={{ fontWeight: 700 }}>
-                  {data.incoming_requests.aggregate.count} &nbsp;
+                  {counts?.acceptableRequest} &nbsp;
                 </Typography>
                 <Typography component="span" sx={{ fontWeight: 700 }}>
                   {translate('finance_pages.heading.projects')}
@@ -80,7 +100,7 @@ function DailyStatistics() {
               </Typography>
               <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                 <Typography component="span" sx={{ fontWeight: 700 }}>
-                  {data.incoming_requests.aggregate.count} &nbsp;
+                  {counts?.incomingNewRequest} &nbsp;
                 </Typography>
                 <Typography component="span" sx={{ fontWeight: 700 }}>
                   {translate('finance_pages.heading.projects')}

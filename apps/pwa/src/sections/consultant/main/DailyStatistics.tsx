@@ -5,22 +5,29 @@ import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
 //
 import { FEATURE_DAILY_STATUS } from 'config';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 function DailyStatistics() {
   const { translate } = useLocales();
   const base_date = new Date();
-  const first_date = base_date.toISOString().slice(0, 10);
-  const second_date = new Date(base_date.setDate(base_date.getDate() + 1))
-    .toISOString()
-    .slice(0, 10);
   const { user } = useAuth();
   const [result] = useQuery({
     //needs some edits
     query: getDailyConsultantStatistics,
-    variables: { user_id: user?.id!, first_date, second_date },
   });
   const { data, fetching, error } = result;
+
+  const count = useMemo(() => {
+    let totalProject = 0;
+    if (data && !fetching) {
+      totalProject =
+        (data?.acceptableRequest?.aggregate?.count || 0) +
+        (data?.incomingNewRequest?.aggregate?.count || 0) +
+        (data?.rejectedRequest?.aggregate?.count || 0);
+    }
+    return totalProject;
+  }, [data, fetching]);
+
   if (fetching) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
   return (
@@ -55,7 +62,7 @@ function DailyStatistics() {
                         {title}
                       </Typography>
                       <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
-                        {`${value} ${translate('projects')}`}
+                        {`${item !== 'totalRequest' ? value : count} ${translate('projects')}`}
                       </Typography>
                     </Box>
                   </Grid>

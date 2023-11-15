@@ -4,30 +4,60 @@ import { useQuery } from 'urql';
 import useLocales from 'hooks/useLocales';
 //
 import { FEATURE_DAILY_STATUS } from 'config';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router';
+import useAuth from 'hooks/useAuth';
+import { PaymentStatus } from '../../../@types/proposal';
+import { useSelector } from '../../../redux/store';
+
+type Payment = {
+  status: PaymentStatus;
+};
+
+type Node = {
+  payments: Payment[];
+};
+
+type Data = {
+  aggregate: {
+    count: number;
+  };
+  nodes: Node[];
+};
 
 function DailyStatistics() {
   const { translate } = useLocales();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { loadingCount, proposalCount } = useSelector((state) => state.proposal);
 
   const base_date = new Date();
-  const first_date = base_date.toISOString().slice(0, 10);
-  const second_date = new Date(base_date.setDate(base_date.getDate() + 1))
-    .toISOString()
-    .slice(0, 10);
   const [result] = useQuery({
     query: getDailyCashierStatistics,
-    variables: { first_date, second_date },
+    variables: {
+      user_id: user?.id,
+    },
   });
   const { data, fetching, error } = result;
+
+  const counts = useMemo(() => {
+    let incoming = 0;
+    if (proposalCount?.payment_adjustment && proposalCount?.inprocess) {
+      incoming = proposalCount?.payment_adjustment + proposalCount?.inprocess;
+    }
+    return {
+      acceptableRequest: data?.acceptableRequest?.aggregate?.count || 0,
+      incomingRequest: incoming,
+    };
+  }, [data, proposalCount]);
 
   const handleClick = (link: string) => {
     navigate(link);
   };
 
-  if (fetching) return <>{translate('pages.common.loading')}</>;
+  if (fetching || loadingCount) return <>{translate('pages.common.loading')}</>;
   if (error) return <>{error.message}</>;
+
   return (
     <Grid container spacing={2}>
       <Grid item md={12}>
@@ -58,7 +88,7 @@ function DailyStatistics() {
               </Typography>
               <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                 <Typography component="span" sx={{ fontWeight: 700 }}>
-                  {data.incoming_requests.aggregate.count} &nbsp;
+                  {counts.acceptableRequest} &nbsp;
                 </Typography>
                 <Typography component="span" sx={{ fontWeight: 700 }}>
                   {translate('finance_pages.heading.projects')}
@@ -83,7 +113,7 @@ function DailyStatistics() {
               </Typography>
               <Typography sx={{ color: 'text.tertiary', fontWeight: 700 }}>
                 <Typography component="span" sx={{ fontWeight: 700 }}>
-                  {data.incoming_requests.aggregate.count} &nbsp;
+                  {counts.incomingRequest} &nbsp;
                 </Typography>
                 <Typography component="span" sx={{ fontWeight: 700 }}>
                   {translate('finance_pages.heading.projects')}

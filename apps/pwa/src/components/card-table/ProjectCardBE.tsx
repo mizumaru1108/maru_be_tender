@@ -71,7 +71,7 @@ const ProjectCardBE = ({
   // const daysSinceCreated = Math.ceil(
   //   (new Date().getTime() - created_at.getTime()) / (1000 * 3600 * 24)
   // );
-  // console.log({ user });
+  // console.log({ cardFooterButtonAction, destination });
 
   const { user: userAuth, activeRole } = useAuth();
   const role = activeRole!;
@@ -256,7 +256,14 @@ const ProjectCardBE = ({
           // old version
           // navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
           // old version
-          navigate(`/${x[1] + '/dashboard/' + destination}/${id}/${cardFooterButtonAction}`);
+          if (['tender_ceo'].includes(activeRole!)) {
+            const url = `/${
+              x[1] + '/dashboard/project-management'
+            }/${id}/${cardFooterButtonAction}`;
+            navigate(url);
+          } else {
+            navigate(`/${x[1] + '/dashboard/' + destination}/${id}/${cardFooterButtonAction}`);
+          }
         } else {
           navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
         }

@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getTrackList } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
+import { getNewestDate } from 'utils/formatTime';
 import { FEATURE_MENU_ADMIN_APLICATION_ADMISSION } from '../../config';
 import useAuth from '../../hooks/useAuth';
 import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
@@ -440,11 +441,18 @@ CardTablePropsByBE) {
               <ProjectTableBE
                 {...item}
                 updated_at={
-                  (item?.proposal_logs &&
-                    item?.proposal_logs[item?.proposal_logs?.length - 1]?.updated_at !==
-                      new Date('10-10-2022') &&
-                    item?.proposal_logs[item?.proposal_logs?.length - 1]?.updated_at) ||
-                  item.updated_at
+                  // old version
+                  // (item?.proposal_logs &&
+                  //   item?.proposal_logs[item?.proposal_logs?.length - 1]?.updated_at !==
+                  //     new Date('10-10-2022') &&
+                  //   item?.proposal_logs[item?.proposal_logs?.length - 1]?.updated_at) ||
+                  // item.updated_at
+                  // new version
+                  getNewestDate(
+                    item?.proposal_logs[item?.proposal_logs?.length - 1]?.updated_at ||
+                      new Date('10-10-2022').toISOString(),
+                    item?.updated_at
+                  )
                 }
                 inquiryStatus={item.outter_status === 'PENDING_CANCELED' ? 'canceled' : null}
                 created_at={new Date(item.created_at)}
@@ -457,7 +465,7 @@ CardTablePropsByBE) {
                 // }
                 // new version of cardFooterButtonAction
                 cardFooterButtonAction={
-                  onSearch
+                  !onSearch
                     ? destination === 'incoming-amandment-requests' &&
                       item.outter_status === 'ASKED_FOR_AMANDEMENT'
                       ? 'show-details'
