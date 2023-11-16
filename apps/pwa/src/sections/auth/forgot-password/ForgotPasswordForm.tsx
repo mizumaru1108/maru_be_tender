@@ -1,18 +1,22 @@
-import * as Yup from 'yup';
 import { useNavigate, useParams } from 'react-router-dom';
+import * as Yup from 'yup';
 // form
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // @mui
-import { Stack } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { Alert, Stack } from '@mui/material';
 // components
-import { FormProvider, RHFTextField } from '../../../components/hook-form';
 import useLocales from 'hooks/useLocales';
+import { FormProvider, RHFTextField } from '../../../components/hook-form';
 //
 import axios from 'axios';
-import { TMRA_RAISE_URL } from 'config';
+import { FEATURE_NEW_PASSWORD_VALIDATION, TMRA_RAISE_URL } from 'config';
 import { useSnackbar } from 'notistack';
+import { useState } from 'react';
+import PasswordValidation, {
+  ValidationType,
+} from '../../../components/password-validation/password-validation';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +31,16 @@ export default function ForgotPasswordForm() {
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
 
+  const [validation, setValidation] = useState<ValidationType>({
+    uppper_case: false,
+    special_char: false,
+    number: false,
+  });
+  const [error, setError] = useState({
+    open: false,
+    message: '',
+  });
+
   const ResetPasswordSchema = Yup.object().shape({
     new_password: Yup.string().required(translate('errors.reset_password.password.new_required')),
   });
@@ -40,14 +54,25 @@ export default function ForgotPasswordForm() {
     handleSubmit,
     formState: { isSubmitting },
     reset,
-    setError,
+    watch,
   } = methods;
 
+  const newPassword = watch('new_password');
+
   const handleOnSubmit = async (formData: FormValuesProps) => {
+    const check = Object.values(validation).every((val) => val);
     const payload = {
       changePasswordId: params.id,
       newPassword: formData.new_password,
     };
+
+    if (!check && FEATURE_NEW_PASSWORD_VALIDATION) {
+      setError({
+        open: true,
+        message: translate('notification.error.password.validation.failed'),
+      });
+      return null;
+    }
 
     try {
       const { status } = await axios.post(
@@ -73,11 +98,6 @@ export default function ForgotPasswordForm() {
           });
         });
       } else {
-        // enqueueSnackbar(translate('errors.reset_password.something_wrong'), {
-        //   variant: 'error',
-        //   preventDuplicate: true,
-        //   autoHideDuration: 3000,
-        // });
         const statusCode =
           (err && err?.response?.data?.status) ||
           (err && err?.response?.data?.response?.statusCode) ||
@@ -106,11 +126,17 @@ export default function ForgotPasswordForm() {
           },
         });
       }
-
-      // setError('new_password', { type: 'focus' }, { shouldFocus: true });
-
+    } finally {
       reset({ new_password: '' });
     }
+  };
+
+  const handlePasswordValidation = (value: ValidationType) => {
+    setValidation({
+      uppper_case: value.uppper_case,
+      special_char: value.special_char,
+      number: value.number,
+    });
   };
 
   return (
@@ -122,6 +148,21 @@ export default function ForgotPasswordForm() {
           placeholder={translate('placeholder_reset_password')}
           size="small"
         />
+        {FEATURE_NEW_PASSWORD_VALIDATION && (
+          <Stack sx={{ mt: 2 }}>
+            <PasswordValidation
+              password={newPassword || ''}
+              type={['uppper_case', 'special_char', 'number']}
+              onReturn={handlePasswordValidation}
+            />
+          </Stack>
+        )}
+
+        {error.open && (
+          <Stack sx={{ my: 2 }}>
+            <Alert severity="error">{error.message}</Alert>
+          </Stack>
+        )}
 
         <LoadingButton
           fullWidth

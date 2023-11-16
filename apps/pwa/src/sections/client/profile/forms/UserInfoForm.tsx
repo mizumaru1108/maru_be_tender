@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Grid } from '@mui/material';
+import { Alert, Button, Grid, Stack } from '@mui/material';
 import { FormProvider, RHFTextField } from 'components/hook-form';
 import useLocales from 'hooks/useLocales';
 import { useEffect, useMemo, useState } from 'react';
@@ -7,6 +7,10 @@ import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { UserInfoFormProps } from '../../../../@types/register';
 import RHFPassword from '../../../../components/hook-form/RHFPassword';
+import PasswordValidation, {
+  ValidationType,
+} from '../../../../components/password-validation/password-validation';
+import { FEATURE_NEW_PASSWORD_VALIDATION } from '../../../../config';
 import useAuth from '../../../../hooks/useAuth';
 
 type FormProps = {
@@ -19,6 +23,17 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   const [changePassword, setChangePassword] = useState(false);
   const { translate } = useLocales();
   const { activeRole } = useAuth();
+  const [validation, setValidation] = useState<ValidationType>({
+    uppper_case: false,
+    special_char: false,
+    number: false,
+    match: false,
+  });
+  const [error, setError] = useState({
+    open: false,
+    message: '',
+  });
+
   const ClientInformationChangeSchema = Yup.object().shape({
     email: Yup.string()
       .required(translate('errors.register.email.required'))
@@ -150,23 +165,51 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
     handleSubmit,
     formState: { isSubmitting },
     reset,
-    getValues,
+    watch,
   } = methods;
+
+  const newPassword = watch('new_password');
+  const confirmPassword = watch('confirm_password');
 
   const onSubmitForm = async (data: UserInfoFormProps) => {
     let newPayload = { ...data };
-    // let newEntityMobile = getValues('mobile_number');
-
-    // newEntityMobile.substring(0, 4) !== '+966'
-    //   ? (newEntityMobile = '+966'.concat(`${getValues('mobile_number')}`))
-    //   : (newEntityMobile = getValues('mobile_number'));
-    // newPayload = { ...newPayload, mobile_number: newEntityMobile };
 
     const filteredObj = Object.fromEntries(
       Object.entries(newPayload).filter(([key, value]) => value)
     );
     delete filteredObj.confirm_password;
-    onSubmit(filteredObj);
+
+    // check password validationResult
+    const check = Object.values(validation).every((val) => val);
+
+    if (changePassword) {
+      if (FEATURE_NEW_PASSWORD_VALIDATION) {
+        if (check) {
+          setError({
+            open: false,
+            message: '',
+          });
+          onSubmit(filteredObj);
+        } else {
+          setError({
+            open: true,
+            message: translate('notification.error.password.validation.failed'),
+          });
+        }
+      } else {
+        onSubmit(filteredObj);
+      }
+    } else {
+      setError({
+        open: false,
+        message: '',
+      });
+      onSubmit(filteredObj);
+    }
+  };
+
+  const handlePasswordValidation = (value: ValidationType) => {
+    setValidation(value);
   };
 
   useEffect(() => {
@@ -180,7 +223,6 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
       reset(defaultValues);
     }
   }, [defaultValues, reset, activeRole]);
-  // console.log({ region });
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
@@ -192,6 +234,26 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
             placeholder={translate('register_form2.email.placeholder')}
           />
         </Grid>
+
+        {activeRole !== 'tender_client' && (
+          <>
+            <Grid item md={6} xs={12}>
+              <RHFTextField
+                name="employee_name"
+                label={translate('register_form2.employee_name.label')}
+                placeholder={translate('register_form2.employee_name.placeholder')}
+              />
+            </Grid>
+            <Grid item md={6} xs={12}>
+              <RHFTextField
+                name="mobile_number"
+                label={translate('register_form2.mobile_number.label')}
+                // placeholder={translate('register_form2.mobile_number.placeholder')}
+                placeholder="xxx xxx xxx"
+              />
+            </Grid>
+          </>
+        )}
         <Grid item md={8} xs={12}>
           <RHFPassword
             name="current_password"
@@ -223,6 +285,16 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
                 label={translate('register_form2.new_password.title')}
                 placeholder={translate('register_form2.new_password.placeholder')}
               />
+              {FEATURE_NEW_PASSWORD_VALIDATION && (
+                <Stack sx={{ mt: 2 }}>
+                  <PasswordValidation
+                    password={newPassword || ''}
+                    confirmPassword={confirmPassword || ''}
+                    type={['uppper_case', 'special_char', 'number', 'match']}
+                    onReturn={handlePasswordValidation}
+                  />
+                </Stack>
+              )}
             </Grid>
             <Grid item md={6} xs={12}>
               <RHFPassword
@@ -233,40 +305,12 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
             </Grid>
           </>
         )}
-        {activeRole !== 'tender_client' && (
-          <>
-            <Grid item md={6} xs={12}>
-              <RHFTextField
-                name="employee_name"
-                label={translate('register_form2.employee_name.label')}
-                placeholder={translate('register_form2.employee_name.placeholder')}
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <RHFTextField
-                name="mobile_number"
-                label={translate('register_form2.mobile_number.label')}
-                // placeholder={translate('register_form2.mobile_number.placeholder')}
-                placeholder="xxx xxx xxx"
-              />
-            </Grid>
-          </>
+
+        {error.open && (
+          <Grid item md={12} sx={{ my: 2 }}>
+            <Alert severity="error">{error.message}</Alert>
+          </Grid>
         )}
-        {/* <Grid item md={6} xs={12}>
-          <RHFTextField
-            name="employee_name"
-            label={translate('register_form2.employee_name.label')}
-            placeholder={translate('register_form2.employee_name.placeholder')}
-          />
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <RHFTextField
-            name="mobile_number"
-            label={translate('register_form2.mobile_number.label')}
-            // placeholder={translate('register_form2.mobile_number.placeholder')}
-            placeholder="xxx xxx xxx"
-          />
-        </Grid> */}
 
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
           {children}

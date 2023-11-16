@@ -604,6 +604,7 @@ const en = {
     },
   },
   errors: {
+    no_project_path: 'There is no path for this project ( old db project )',
     something_wrong: 'Opss, something went wrong.',
     role: 'Choose one of these roles',
     notes: 'Note is required',
@@ -2619,6 +2620,17 @@ const en = {
       text: 'You have new message',
       image: 'You have new message with image',
       file: 'You have new message with file',
+    },
+    error: {
+      password: {
+        validation: {
+          uppper_case: 'Contain at least one uppercase letter',
+          special_char: 'Contain at least one special character',
+          number: 'Contain at least one number',
+          match: 'Password does not match',
+          failed: 'There an issue in password validation',
+        },
+      },
     },
   },
   button: {

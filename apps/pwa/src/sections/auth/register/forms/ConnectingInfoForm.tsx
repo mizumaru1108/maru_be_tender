@@ -1,10 +1,15 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { Button, Grid, MenuItem } from '@mui/material';
+import { Alert, Button, Grid, MenuItem, Stack } from '@mui/material';
 import axios from 'axios';
 import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import RHFPassword from 'components/hook-form/RHFPassword';
-import { FEATURE_MENU_ADMIN_ENTITY_AREA, FEATURE_MENU_ADMIN_REGIONS, TMRA_RAISE_URL } from 'config';
+import {
+  FEATURE_MENU_ADMIN_ENTITY_AREA,
+  FEATURE_MENU_ADMIN_REGIONS,
+  FEATURE_NEW_PASSWORD_VALIDATION,
+  TMRA_RAISE_URL,
+} from 'config';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import React, { useMemo } from 'react';
@@ -16,6 +21,9 @@ import * as Yup from 'yup';
 import { REGION } from '_mock/region';
 import { RegionNames } from '../../../../@types/region';
 import { ConnectingValuesProps } from '../../../../@types/register';
+import PasswordValidation, {
+  ValidationType,
+} from '../../../../components/password-validation/password-validation';
 
 type FormProps = {
   children?: React.ReactNode;
@@ -39,6 +47,18 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
     region?: IRegions;
     governorate?: IGovernorate;
   } | null>(null);
+  // password validation
+  const [validation, setValidation] = React.useState<ValidationType>({
+    uppper_case: false,
+    special_char: false,
+    number: false,
+    match: false,
+  });
+  const [error, setError] = React.useState({
+    open: false,
+    message: '',
+  });
+
   // const [regionId, setRegionId] = React.useState<string>('');
 
   const fetchRegions = React.useCallback(async () => {
@@ -129,6 +149,8 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
     getValues,
   } = methods;
 
+  const newPassword = watch('password');
+
   const onSubmitForm = async (data: ConnectingValuesProps) => {
     let newTmpNumbers: string[] = [];
 
@@ -158,6 +180,15 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
     };
     // console.log('payload', removeEmptyKey(payload));
     // reset({ ...payload });
+    const check = Object.values(validation).every((val) => val);
+    if (!check && FEATURE_NEW_PASSWORD_VALIDATION) {
+      setError({
+        open: true,
+        message: translate('notification.error.password.validation.failed'),
+      });
+      return null;
+    }
+
     onSubmit(payload);
   };
 
@@ -190,6 +221,14 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
     }
   };
   // console.log({ area });
+
+  const handlePasswordValidation = (value: ValidationType) => {
+    setValidation({
+      uppper_case: value.uppper_case,
+      special_char: value.special_char,
+      number: value.number,
+    });
+  };
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -453,6 +492,22 @@ const ConnectingInfoForm = ({ children, onSubmit, defaultValues, usedNumbers }: 
             placeholder={translate('register_form2.password.placeholder')}
           />
         </Grid>
+        {FEATURE_NEW_PASSWORD_VALIDATION && (
+          <Grid item md={12} xs={12}>
+            <Stack sx={{ mt: 2 }}>
+              <PasswordValidation
+                password={newPassword || ''}
+                type={['uppper_case', 'special_char', 'number']}
+                onReturn={handlePasswordValidation}
+              />
+            </Stack>
+          </Grid>
+        )}
+        {error.open && (
+          <Grid item md={12} sx={{ my: 2 }}>
+            <Alert severity="error">{error.message}</Alert>
+          </Grid>
+        )}
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
           {children}
         </Grid>

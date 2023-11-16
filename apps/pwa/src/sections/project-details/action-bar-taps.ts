@@ -448,6 +448,10 @@ export const Taps = {
         title: 'project_details.actions.main',
         value: 'main',
       },
+      {
+        title: 'project_details.actions.project_path',
+        value: 'project-path',
+      },
     ],
   },
   tender_accounts_manager: {

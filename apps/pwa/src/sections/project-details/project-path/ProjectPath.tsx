@@ -37,7 +37,7 @@ function ProjectPath() {
   const { activeRole } = useAuth();
   const { proposal, isLoading } = useSelector((state) => state.proposal);
   const [logs, setLogs] = React.useState<Log[]>();
-  // console.log({ proposal });
+
   // console.log('proposal.log', proposal.proposal_logs);
   // console.log('proposal.log', proposal.track.with_consultation);
 
@@ -52,6 +52,9 @@ function ProjectPath() {
   const [isPayments, setIsPayments] = React.useState(false);
 
   const isConsultation = (proposal && proposal.track && proposal.track.is_grant) ?? false;
+  const isCashier =
+    proposal?.payments?.every((item) => item.status === 'done') &&
+    proposal.inner_status === 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR';
 
   // const [stepTrack, setStepTrack] = React.useState('');
   const { id: proposal_id } = useParams();
@@ -188,6 +191,11 @@ function ProjectPath() {
       <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>
         <Stack direction="column" gap={2} justifyContent="start" sx={{ paddingBottom: '10px' }}>
           <Typography variant="h6">مسار المشروع</Typography>
+          {(!logs || logs.length === 0) && (
+            <Typography variant="body1">
+              {translate('There is no path for this project ( old db project )')}
+            </Typography>
+          )}
           <Box sx={{ width: '100%', padding: '10px', maxHeight: '180vh', overflowY: 'scroll' }}>
             <Stepper activeStep={logs && logs.length} orientation="vertical">
               {logs &&
@@ -286,6 +294,21 @@ function ProjectPath() {
                                   ].includes(proposal.outter_status)
                                     ? translate(`permissions.PROJECT_SUPERVISOR`)
                                     : translate(`permissions.${proposal.state}`)}
+                                </Typography>
+                              </Stack>
+                            )}
+                            {isCashier && (
+                              <Stack direction="row" gap={2} sx={{ mt: 1 }}>
+                                <CircleIcon sx={{ color: '#0E8478', alignSelf: 'center' }} />
+                                <Typography
+                                  sx={{
+                                    fontSize: logs && activeStep === '-1' ? '17px' : '12px',
+                                    fontWeight: logs && activeStep === '-1' ? 800 : 400,
+                                    color: '#000',
+                                    alignSelf: 'center',
+                                  }}
+                                >
+                                  {translate(`permissions.CASHIER`)}
                                 </Typography>
                               </Stack>
                             )}

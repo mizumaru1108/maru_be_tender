@@ -357,5 +357,11 @@ export const FEATURE_MENU_ADMIN_APLICATION_ADMISSION: boolean =
     ? true
     : false;
 
+export const FEATURE_NEW_PASSWORD_VALIDATION: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_NEW_PASSWORD_VALIDATION &&
+  process.env.REACT_APP_CONFIG_FEATURE_NEW_PASSWORD_VALIDATION === 'true'
+    ? true
+    : false;
+
 export const FEATURE_DISABLE_PROPOSAL_DATE =
   process.env.REACT_APP_CONFIG_FEATURE_DISABLE_PROPOSAL_DATE;

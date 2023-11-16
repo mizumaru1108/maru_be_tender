@@ -181,21 +181,6 @@ function NonClientProfileEditForm() {
           <ActionsBoxUserEdit loading={loading} />
         </UserInfoForm>
       </Box>
-      {/* <Toast
-        variant="outlined"
-        toastType={errorState.value ? 'error' : 'success'}
-        message={
-          errorState.value
-            ? errorState.message
-            : 'تم بنجاح تغيير معلومات المستخدم ، وإعادة التوجيه لتسجيل الدخول ...'
-        }
-        autoHideDuration={10000}
-        isOpen={open}
-        position="bottom-right"
-        onClose={() => {
-          setOpen(false);
-        }}
-      /> */}
     </Box>
   );
 }

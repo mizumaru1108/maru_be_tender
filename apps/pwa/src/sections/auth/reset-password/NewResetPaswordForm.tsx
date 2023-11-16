@@ -11,8 +11,12 @@ import { FormProvider, RHFTextField } from '../../../components/hook-form';
 import useLocales from 'hooks/useLocales';
 //
 import axios from 'axios';
-import { TMRA_RAISE_URL } from 'config';
+import { FEATURE_NEW_PASSWORD_VALIDATION, TMRA_RAISE_URL } from 'config';
 import { useSnackbar } from 'notistack';
+import { useState } from 'react';
+import PasswordValidation, {
+  ValidationType,
+} from '../../../components/password-validation/password-validation';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +32,16 @@ export default function ResetPasswordForm() {
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
 
+  const [validation, setValidation] = useState<ValidationType>({
+    uppper_case: false,
+    special_char: false,
+    number: false,
+  });
+  const [error, setError] = useState({
+    open: false,
+    message: '',
+  });
+
   const ResetPasswordSchema = Yup.object().shape({
     old_password: Yup.string().required(translate('errors.reset_password.password.old_required')),
     new_password: Yup.string().required(translate('errors.reset_password.password.new_required')),
@@ -42,7 +56,9 @@ export default function ResetPasswordForm() {
     handleSubmit,
     formState: { isSubmitting },
     reset,
+    watch,
   } = methods;
+  const newPassword = watch('new_password');
 
   const handleOnSubmit = async (formData: FormValuesProps) => {
     const payload = {
@@ -50,6 +66,15 @@ export default function ResetPasswordForm() {
       oldPassword: formData.old_password,
       newPassword: formData.new_password,
     };
+
+    const check = Object.values(validation).every((val) => val);
+    if (!check && FEATURE_NEW_PASSWORD_VALIDATION) {
+      setError({
+        open: true,
+        message: translate('notification.error.password.validation.failed'),
+      });
+      return null;
+    }
 
     try {
       const { status } = await axios.post(
@@ -103,12 +128,20 @@ export default function ResetPasswordForm() {
           },
         });
       }
-
+    } finally {
       reset({
         new_password: '',
         old_password: '',
       });
     }
+  };
+
+  const handlePasswordValidation = (value: ValidationType) => {
+    setValidation({
+      uppper_case: value.uppper_case,
+      special_char: value.special_char,
+      number: value.number,
+    });
   };
 
   return (
@@ -126,6 +159,15 @@ export default function ResetPasswordForm() {
           placeholder={translate('placeholder_reset_password')}
           size="small"
         />
+        {FEATURE_NEW_PASSWORD_VALIDATION && (
+          <Stack sx={{ mt: 2 }}>
+            <PasswordValidation
+              password={newPassword || ''}
+              type={['uppper_case', 'special_char', 'number']}
+              onReturn={handlePasswordValidation}
+            />
+          </Stack>
+        )}
 
         <LoadingButton
           fullWidth
