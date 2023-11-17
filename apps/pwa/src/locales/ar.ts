@@ -3154,11 +3154,26 @@ const ar = {
   },
   track_budgets: {
     item: 'غرض',
+    fields: {
+      supervisor_id: {
+        label: 'المشرفين',
+        placeholder: 'حدد المشرفين',
+      },
+    },
     nested_field: {
       section_one: 'القسم الاول',
       section_two: 'القسم الثاني',
       section_three: 'القسم الثالث',
       section_four: 'القسم الرابع',
+    },
+    errors: {
+      budgets: {
+        min: 'يجب أن تكون الميزانية أكبر من 0',
+      },
+      supervisor_id: {
+        min: 'اختر مشرفًا واحدًا على الأقل',
+        required: 'مطلوب مشرفين',
+      },
     },
   },
 };

@@ -3135,6 +3135,12 @@ const en = {
   },
   track_budgets: {
     item: 'Item',
+    fields: {
+      supervisor_id: {
+        label: 'Supervisors',
+        placeholder: 'Select Supervisor',
+      },
+    },
     nested_field: {
       section_one: 'Section One',
       section_two: 'Section Two',
@@ -3144,6 +3150,10 @@ const en = {
     errors: {
       budgets: {
         min: 'The budget must be greater than 0',
+      },
+      supervisor_id: {
+        min: 'Select at least one supervisors',
+        required: 'Supervisors is required',
       },
     },
   },

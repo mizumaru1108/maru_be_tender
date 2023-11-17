@@ -11,20 +11,8 @@ import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
 import React, { useRef } from 'react';
 import Slider from 'react-slick';
-import { useSelector } from 'redux/store';
 import axiosInstance from 'utils/axios';
 import { hasActive, isActiveToday } from 'utils/checkIsExpired';
-
-const data = [
-  {
-    firstField: 'رسالة ترحيبية',
-    secondField: 'شكراً لاستخدامكم منصة مانح',
-  },
-  {
-    firstField: 'رسالة ترحيبية',
-    secondField: 'شكراً لاستخدامكم منصة مانح',
-  },
-];
 
 const LINES_TO_SHOW = 1;
 
@@ -44,22 +32,12 @@ function ClientCarousel() {
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
-  const { track_list } = useSelector((state) => state.proposal);
   const carouselRef = useRef<Slider | null>(null);
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [carouselData, setCarouselData] = React.useState<AdvertisingTapeList[]>([]);
   const [details, setDetails] = React.useState<AdvertisingTapeList | null>(null);
-  // console.log({ carouselData });
-  // const currentTime = dayjs(new Date()).format('hh:mm A');
-  // const lastTime = dayjs(new Date()).subtract(1, 'hour').format('hh:mm A');
-  // const currentTime = dayjs('2023-08-04T06:15:58.593Z').format('hh:mm A'); // Get the current time using Day.js
-  // const lastTime = dayjs().subtract(1, 'hour').format('hh:mm A');
-  // console.log({ currentTime, lastTime });
-
-  // const isFastForward = currentTime.isAfter(lastTime);
-  // console.log('test fastforward: ', isFastForward);
 
   const settings = {
     speed: 5000,
@@ -96,23 +74,16 @@ function ClientCarousel() {
       setDetails(data);
     }
   };
-  // console.log({ open });
 
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
-    // const currentTime = dayjs().valueOf();
     const expired_at_lte = dayjs(new Date()).valueOf();
-    // const expired_at_lte = dayjs(new Date(expired_at_gte).setHours(23, 59, 59, 999)).valueOf();
-    // const url = `/banners/mine?current_time=${currentTime}`;
     const url = `/banners/mine?expired_at_lte=${expired_at_lte}`;
     try {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
       });
-      // console.log({ response });
       if (response) {
-        // console.log('test response', response?.data?.data);
-        // setCarouselData(response?.data?.data);
         setCarouselData(
           response?.data?.data.filter(
             (item: AdvertisingTapeList) =>

@@ -180,6 +180,7 @@ export interface TrackSection {
   section_spending_budget?: number;
   section_reserved_budget?: number;
   section_spending_budget_by_ceo?: number;
+  supervisor_id?: any[];
 }
 
 export interface TrackProps {

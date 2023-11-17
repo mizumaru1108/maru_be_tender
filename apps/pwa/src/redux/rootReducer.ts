@@ -13,6 +13,7 @@ import supervisorAcceptingForm from './slices/supervisorAcceptingForm';
 import tracks from './slices/track';
 import wschatReducer from './slices/wschat';
 import applicationAndAdmissionSettings from './slices/applicationAndAdmissionSettings';
+import user from './slices/user';
 
 // ----------------------------------------------------------------------
 
@@ -49,6 +50,7 @@ const rootReducer = combineReducers({
   authorities: authority,
   supervisorAcceptingForm: supervisorAcceptingForm,
   applicationAndAdmissionSettings: applicationAndAdmissionSettings,
+  user: user,
 });
 
 export { rootPersistConfig, rootReducer };

@@ -137,6 +137,7 @@ type IProps = {
   dataOption: ComboBoxOption[];
   limitTags?: number;
   isMultiple?: boolean;
+  size?: 'small' | 'medium';
 };
 
 type Props = IProps;
@@ -152,6 +153,7 @@ export default function RHFComboBox({
   isMultiple = true,
   dataOption,
   limitTags = 2,
+  size = 'medium',
   ...other
 }: Props) {
   const { control, setValue, getValues, watch } = useFormContext();
@@ -265,6 +267,7 @@ export default function RHFComboBox({
                 </Typography>
               }
               label={label}
+              size={size}
               placeholder={placeholder}
               disabled={disabled}
               sx={{

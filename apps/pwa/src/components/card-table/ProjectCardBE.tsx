@@ -17,24 +17,17 @@ import { ProjectCardPropsBE } from './types';
 import moment from 'moment';
 import useAuth from 'hooks/useAuth';
 import { asignProposalToAUser } from 'queries/commons/asignProposalToAUser';
-import { useMutation, useQuery } from 'urql';
+import { useMutation } from 'urql';
 import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
 import axiosInstance from '../../utils/axios';
 import { LoadingButton } from '@mui/lab';
-import { FEATURE_PROJECT_SAVE_DRAFT, FEATURE_PROPOSAL_COUNTING } from '../../config';
+import { FEATURE_PROJECT_SAVE_DRAFT } from '../../config';
 import { generateHeader } from '../../utils/generateProposalNumber';
 import { useSnackbar } from 'notistack';
 import { getProposalCount } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import { setFiltered } from 'redux/slices/searching';
-
-const cardFooterButtonActionLocal = {
-  'show-project': 'show_project',
-  'show-details': 'show_details',
-  'completing-exchange-permission': 'completing_exchange_permission',
-  draft: 'draft',
-};
 
 const RolesMap = {
   tender_finance: 'finance_id',
@@ -50,13 +43,6 @@ const RolesMap = {
   tender_moderator: '',
   tender_auditor_report: '',
   tender_portal_report: '',
-};
-
-const RolesAssignEmployeeMap = {
-  tender_finance: 'finance_id',
-  tender_cashier: 'cashier_id',
-  tender_project_manager: 'project_manager_id',
-  tender_project_supervisor: 'supervisor_id',
 };
 
 const ProjectCardBE = ({
@@ -142,7 +128,6 @@ const ProjectCardBE = ({
   };
 
   const onDeleteDraftClick = async () => {
-    // await deleteDrPro({ id });
     setLoading(true);
     try {
       const rest = await axiosInstance.post(
@@ -154,7 +139,6 @@ const ProjectCardBE = ({
           headers: { 'x-hasura-role': activeRole! },
         }
       );
-      // console.log({ rest });
       if (rest) {
         enqueueSnackbar('Draft has been deleted', {
           variant: 'success',
@@ -166,13 +150,6 @@ const ProjectCardBE = ({
         alert('Something went wrong');
       }
     } catch (err) {
-      // enqueueSnackbar(`Something went wrong ${err.message}`, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      // });
-      // console.log(err);
-      // handle error fetching
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       if (message && statusCode !== 0) {
@@ -207,15 +184,11 @@ const ProjectCardBE = ({
 
   const handleNavigateToClientDetails = (id: string) => {
     const urls = location.pathname.split('/');
-    // old version
-    // const path = `/${urls[1]}/${urls[2]}/current-project/owner/${id}`;
-    // new version
     const path = `/${urls[1]}/dashboard/current-project/owner/${id}`;
     navigate(path);
   };
 
   const handleUpdateAsigning = async () => {
-    console.log('masuk sini 2');
     try {
       await updateAsigning({
         _set: {
@@ -230,7 +203,7 @@ const ProjectCardBE = ({
         },
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     } finally {
       getProposalCount(role!);
     }
@@ -261,9 +234,6 @@ const ProjectCardBE = ({
       const x = location.pathname.split('/');
       if (!inquiryStatus) {
         if (destination) {
-          // old version
-          // navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/${cardFooterButtonAction}`);
-          // old version
           if (['tender_ceo'].includes(activeRole!)) {
             const url = `/${
               x[1] + '/dashboard/project-management'
@@ -276,11 +246,7 @@ const ProjectCardBE = ({
           navigate(`${location.pathname}/${id}/${cardFooterButtonAction}`);
         }
       } else {
-        // navigate(`${location.pathname}/${id}/reject-project`);
         if (destination) {
-          // old version
-          // navigate(`/${x[1] + '/' + x[2] + '/' + destination}/${id}/reject-project`);
-          // new version
           navigate(`/${x[1] + '/dashboard/' + destination}/${id}/reject-project`);
         } else {
           navigate(`${location.pathname}/${id}/reject-project`);
@@ -322,20 +288,25 @@ const ProjectCardBE = ({
           }
         }}
       >
-        {/* The Title Section  */}
-        <Stack direction="row" justifyContent="space-between" gap={5}>
-          <Typography
-            variant="h6"
-            color="text.tertiary"
-            gutterBottom
-            sx={{ fontSize: '15px !important' }}
-          >
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          justifyContent={{ xs: 'start', md: 'space-between' }}
+          gap={{ xs: 1.5, sm: 2, md: 3, lg: 5 }}
+          sx={{ mb: { xs: 3, md: 1 } }}
+        >
+          <Typography variant="h6" color="text.tertiary" sx={{ fontSize: '15px !important' }}>
             {(project_number && generateHeader(project_number)) ?? id}
           </Typography>
           {cardFooterButtonAction === 'draft' && (
             <Chip
               label={'مسودة'}
-              sx={{ fontWeight: 900, backgroundColor: '#1E1E1E29', borderRadius: '10px' }}
+              sx={{
+                fontWeight: 900,
+                backgroundColor: '#1E1E1E29',
+                borderRadius: '10px',
+                display: 'flex',
+                maxWidth: 'max-content',
+              }}
             />
           )}
           {destination === 'previous-funding-requests' && status && (
@@ -361,6 +332,8 @@ const ProjectCardBE = ({
                     ? inquiryStatusStyle.ONGOING.color
                     : inquiryStatusStyle[status].color,
                 borderRadius: '10px',
+                display: 'flex',
+                maxWidth: 'max-content',
               }}
             />
           )}
@@ -408,7 +381,7 @@ const ProjectCardBE = ({
               variant="h6"
               gutterBottom
               sx={{
-                mb: 1.5,
+                mb: 2,
                 wordWrap: 'unset',
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
@@ -424,12 +397,13 @@ const ProjectCardBE = ({
             </Typography>
           </Box>
         )}
-        <Stack direction="row" gap={6}>
-          {role !== 'tender_moderator' &&
+        <Box component="div" sx={{ width: '100%' }}>
+          <Grid container alignItems="start" spacing={{ xs: 2, md: 4 }}>
+            {role !== 'tender_moderator' &&
             proposal_logs &&
             proposal_logs.length > 0 &&
-            proposal_logs[proposal_logs.length - 1].reviewer && (
-              <Stack>
+            proposal_logs[proposal_logs.length - 1].reviewer ? (
+              <Grid item xs={6} sm={4} md={3}>
                 <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
                   {translate('project_management_headercell.employee')}
                 </Typography>
@@ -437,105 +411,100 @@ const ProjectCardBE = ({
                   {translate('project_management_headercell.sent_by')}{' '}
                   {proposal_logs[proposal_logs.length - 1].reviewer.employee_name}
                 </Typography>
-              </Stack>
+              </Grid>
+            ) : null}
+            {state ? (
+              <Grid item xs={6} sm={4} md={3}>
+                <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                  {translate('project_management_headercell.sent_section')}
+                </Typography>
+                <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                  {translate(`project_card.${state.toLowerCase()}`)}
+                </Typography>
+              </Grid>
+            ) : null}
+            {track_id && (
+              <Grid item xs={6} sm={4} md={3}>
+                <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                  {translate('modal.headline.track')}
+                </Typography>
+                <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                  {track_list.length > 0 && track_list.find((track: any) => track.id === track_id)
+                    ? formatCapitalizeText(
+                        track_list.find((track: any) => track.id === track_id)?.name || '-'
+                      )
+                    : '-'}
+                </Typography>
+              </Grid>
             )}
-          {state && (
-            <Stack>
-              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                {translate('project_management_headercell.sent_section')}
-              </Typography>
-              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                {translate(`project_card.${state.toLowerCase()}`)}
-              </Typography>
-            </Stack>
-          )}
-          {track_id && (
-            <Stack>
-              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                {translate('modal.headline.track')}
-              </Typography>
-              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                {/* {translate(`project_card.${state.toLowerCase()}`)} */}
-                {track_list.length > 0 && track_list.find((track: any) => track.id === track_id)
-                  ? formatCapitalizeText(
-                      track_list.find((track: any) => track.id === track_id)?.name || '-'
-                    )
-                  : '-'}
-              </Typography>
-            </Stack>
-          )}
-          {created_at && cardFooterButtonAction !== 'draft' && (
-            <Stack>
-              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                {translate('project_management_headercell.start_date')}
-              </Typography>
-              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                {formattedDateTime(created_at)}
-                {/* {`${new Date(created_at)}`} */}
-              </Typography>
-            </Stack>
-          )}
+            {created_at && cardFooterButtonAction !== 'draft' && (
+              <Grid item xs={6} sm={4} md={3}>
+                <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                  {translate('project_management_headercell.start_date')}
+                </Typography>
+                <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                  {formattedDateTime(created_at)}
+                </Typography>
+              </Grid>
+            )}
 
-          {/* Action for employee */}
-          {role !== 'tender_client' && (
-            <Stack>
-              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                {translate('appointments_headercell.action')}
-              </Typography>
-              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                {/* {translate(`project_card.${content.sentSection.toLowerCase()}`)} */}
-                {(destination === 'requests-in-process' ||
-                  destination === 'incoming-funding-requests') &&
-                role !== 'tender_finance' &&
-                role !== 'tender_cashier'
-                  ? translate('need_review')
-                  : destination === 'payment-adjustment' ||
-                    destination === 'incoming-exchange-permission-requests' ||
-                    destination === 'exchange-permission' ||
-                    (destination === 'incoming-funding-requests' && role === 'tender_finance') ||
-                    (destination === 'requests-in-process' && role === 'tender_finance')
-                  ? translate('set_payment')
-                  : (destination === 'incoming-funding-requests' && role === 'tender_cashier') ||
-                    (destination === 'requests-in-process' && role === 'tender_cashier')
-                  ? translate('set_payment_cashier')
-                  : destination === 'project-report'
-                  ? translate('close_report')
-                  : destination === 'previous-funding-requests' && status === 'ONGOING'
-                  ? translate('action_ongoing')
-                  : destination === 'previous-funding-requests' && status === 'COMPLETED'
-                  ? translate('action_completed')
-                  : destination === 'previous-funding-requests' && status === 'CANCELED'
-                  ? translate('account_manager.table.td.label_rejected')
-                  : translate('need_review')}
-              </Typography>
-            </Stack>
-          )}
-          {role === 'tender_client' && (
-            <Stack>
-              <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
-                {translate('appointments_headercell.action')}
-              </Typography>
-              <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
-                {/* {translate(`project_card.${content.sentSection.toLowerCase()}`)} */}
-                {destination === 'current-project'
-                  ? translate('action_ongoing')
-                  : destination === 'project-report'
-                  ? translate('close_report')
-                  : destination === 'previous-funding-requests' && status === 'ONGOING'
-                  ? translate('action_ongoing')
-                  : destination === 'previous-funding-requests' && status === 'COMPLETED'
-                  ? translate('action_completed')
-                  : destination === 'previous-funding-requests' && status === 'CANCELED'
-                  ? translate('account_manager.table.td.label_rejected')
-                  : translate('need_review')}
-              </Typography>
-            </Stack>
-          )}
-        </Stack>
+            {role !== 'tender_client' && (
+              <Grid item xs={6} sm={4} md={3}>
+                <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                  {translate('appointments_headercell.action')}
+                </Typography>
+                <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                  {(destination === 'requests-in-process' ||
+                    destination === 'incoming-funding-requests') &&
+                  role !== 'tender_finance' &&
+                  role !== 'tender_cashier'
+                    ? translate('need_review')
+                    : destination === 'payment-adjustment' ||
+                      destination === 'incoming-exchange-permission-requests' ||
+                      destination === 'exchange-permission' ||
+                      (destination === 'incoming-funding-requests' && role === 'tender_finance') ||
+                      (destination === 'requests-in-process' && role === 'tender_finance')
+                    ? translate('set_payment')
+                    : (destination === 'incoming-funding-requests' && role === 'tender_cashier') ||
+                      (destination === 'requests-in-process' && role === 'tender_cashier')
+                    ? translate('set_payment_cashier')
+                    : destination === 'project-report'
+                    ? translate('close_report')
+                    : destination === 'previous-funding-requests' && status === 'ONGOING'
+                    ? translate('action_ongoing')
+                    : destination === 'previous-funding-requests' && status === 'COMPLETED'
+                    ? translate('action_completed')
+                    : destination === 'previous-funding-requests' && status === 'CANCELED'
+                    ? translate('account_manager.table.td.label_rejected')
+                    : translate('need_review')}
+                </Typography>
+              </Grid>
+            )}
+            {role === 'tender_client' && (
+              <Grid item xs={6} sm={4} md={3}>
+                <Typography variant="h6" color="#93A3B0" sx={{ fontSize: '10px !important' }}>
+                  {translate('appointments_headercell.action')}
+                </Typography>
+                <Typography variant="h6" gutterBottom sx={{ fontSize: '12px !important' }}>
+                  {destination === 'current-project'
+                    ? translate('action_ongoing')
+                    : destination === 'project-report'
+                    ? translate('close_report')
+                    : destination === 'previous-funding-requests' && status === 'ONGOING'
+                    ? translate('action_ongoing')
+                    : destination === 'previous-funding-requests' && status === 'COMPLETED'
+                    ? translate('action_completed')
+                    : destination === 'previous-funding-requests' && status === 'CANCELED'
+                    ? translate('account_manager.table.td.label_rejected')
+                    : translate('need_review')}
+                </Typography>
+              </Grid>
+            )}
+          </Grid>
+        </Box>
         <Divider sx={{ marginTop: '30px' }} />
       </CardContent>
 
-      {/* The Footer Section  */}
       <CardActions
         sx={{ justifyContent: 'space-between', px: theme.spacing(3), pb: theme.spacing(3) }}
         onClick={(e: any) => {
@@ -600,18 +569,6 @@ const ProjectCardBE = ({
                   sx={{
                     alignSelf: 'end',
                     fontWeight: 500,
-
-                    // Old Handle
-                    // backgroundColor:
-                    //   daysSinceCreated() <
-                    //     application_admission_settings?.indicator_of_project_duration_days || 3
-                    //     ? '#0E84782E'
-                    //     : daysSinceCreated() <
-                    //         application_admission_settings?.number_of_days_to_meet_business || 5
-                    //     ? '#FFC10729'
-                    //     : '#FF484229',
-
-                    // New Handle
                     backgroundColor:
                       daysSinceCreated() >
                       application_admission_settings?.number_of_days_to_meet_business
@@ -620,18 +577,6 @@ const ProjectCardBE = ({
                           application_admission_settings?.indicator_of_project_duration_days
                         ? '#FFC10729'
                         : '#0E84782E',
-
-                    // Old Handle
-                    // color:
-                    //   daysSinceCreated() <
-                    //     application_admission_settings?.indicator_of_project_duration_days || 3
-                    //     ? '#0E8478'
-                    //     : daysSinceCreated() <
-                    //         application_admission_settings?.number_of_days_to_meet_business || 5
-                    //     ? '#FFC107'
-                    //     : '#FF4842',
-
-                    // New Handle
                     color:
                       daysSinceCreated() >
                       application_admission_settings?.number_of_days_to_meet_business
