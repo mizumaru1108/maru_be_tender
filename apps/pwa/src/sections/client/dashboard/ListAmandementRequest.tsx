@@ -1,5 +1,4 @@
 import {
-  Container,
   Typography,
   Button,
   Grid,
@@ -8,15 +7,14 @@ import {
   CardActions,
   CardContent,
   Divider,
+  Box,
 } from '@mui/material';
 import EmptyContent from 'components/EmptyContent';
 import useLocales from 'hooks/useLocales';
 import moment from 'moment';
 import { useSnackbar } from 'notistack';
-import { deleteDraftProposal } from 'queries/client/deleteDraftProposal';
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { useMutation } from 'urql';
 import { AmandementProposalList } from '../../../@types/proposal';
 import useAuth from '../../../hooks/useAuth';
 import axiosInstance from '../../../utils/axios';
@@ -66,7 +64,7 @@ function ListAmandementRequest() {
 
   return (
     <>
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction="row" justifyContent="space-between" sx={{ mb: 1 }}>
         <Typography variant="h4">
           {translate('content.client.main_page.amandement_projects')}
         </Typography>
@@ -80,19 +78,18 @@ function ListAmandementRequest() {
             },
           }}
           onClick={() => {
-            // navigate('/client/dashboard/draft-funding-requests');
+            navigate('/client/dashboard/draft-funding-requests');
           }}
         >
           {translate('view_all')}
         </Button>
       </Stack>
-      <Grid container sx={{ pt: 2 }} spacing={5}>
+      <Grid container sx={{ pt: 2 }} spacing={2}>
         {tmpValues && tmpValues?.length > 0 ? (
           tmpValues.map((item, index) => (
-            <Grid item md={6} xs={12} key={index}>
+            <Grid item sm={6} xs={12} key={index}>
               <Card sx={{ backgroundColor: '#fff' }}>
                 <CardContent>
-                  {/* The Title Section  */}
                   <Stack direction="row" justifyContent="space-between">
                     <Typography
                       variant="h6"
@@ -100,7 +97,6 @@ function ListAmandementRequest() {
                       gutterBottom
                       sx={{ fontSize: '15px !important' }}
                     >
-                      {/* {item.proposal.id} */}
                       {item && item.proposal && item.proposal.project_number
                         ? generateHeader(item.proposal.project_number)
                         : '-'}
@@ -153,59 +149,53 @@ function ListAmandementRequest() {
                   <Divider sx={{ marginTop: '30px' }} />
                 </CardContent>
 
-                {/* The Footer Section  */}
-                <CardActions sx={{ justifyContent: 'space-between', px: 3, pb: 3 }}>
-                  <Grid container spacing={2}>
-                    <Grid item md={12}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Stack direction="column">
-                          <Typography
-                            variant="h6"
-                            color="#93A3B0"
-                            gutterBottom
-                            sx={{ fontSize: '10px !important' }}
-                          >
-                            {translate('project_management_headercell.date_created')}
-                          </Typography>
-                          <Typography
-                            variant="h6"
-                            color="#1E1E1E"
-                            gutterBottom
-                            sx={{ fontSize: '15px !important' }}
-                          >
-                            {item.created_at
-                              ? moment(item.created_at)
-                                  .locale(`${currentLang.value}`)
-                                  .format('LLLL')
-                              : // ? `${footer.createdAt.getDay()}.${footer.createdAt.getMonth()}.${footer.createdAt.getFullYear()} في ${footer.createdAt.getHours()}:${footer.createdAt.getMinutes()}`
-                                '5 ساعات'}
-                          </Typography>
-                        </Stack>
-                        <Button
-                          variant="outlined"
-                          sx={{
-                            background: '#0E8478',
-                            color: '#fff',
-                          }}
-                          // onClick={handleOnClick}
-                          onClick={() => {
-                            // navigate(
-                            //   `/client/dashboard/amandement_projects/${
-                            //     item.proposal.id ?? 'vqSwfnk3UQ2DYYOMySC2_'
-                            //   }`
-                            // );
-                            navigate(
-                              `/client/dashboard/previous-funding-requests/${
-                                item.proposal.id ?? 'vqSwfnk3UQ2DYYOMySC2_'
-                              }/show-project`
-                            );
-                          }}
-                        >
-                          {translate('revision_the_project')}
-                        </Button>
-                      </Stack>
-                    </Grid>
-                  </Grid>
+                <CardActions sx={{ px: 3, pb: 3 }}>
+                  <Stack
+                    direction={{ xs: 'column', md: 'row' }}
+                    component="div"
+                    spacing={2}
+                    alignItems={{ xs: 'start', md: 'center' }}
+                    justifyContent={{ xs: 'start', md: 'space-between' }}
+                    sx={{ width: '100%' }}
+                  >
+                    <Box>
+                      <Typography
+                        variant="h6"
+                        color="#93A3B0"
+                        gutterBottom
+                        sx={{ fontSize: '10px !important' }}
+                      >
+                        {translate('project_management_headercell.date_created')}
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        color="#1E1E1E"
+                        gutterBottom
+                        sx={{ fontSize: '15px !important' }}
+                      >
+                        {item.created_at
+                          ? moment(item.created_at).locale(`${currentLang.value}`).format('LLLL')
+                          : // ? `${footer.createdAt.getDay()}.${footer.createdAt.getMonth()}.${footer.createdAt.getFullYear()} في ${footer.createdAt.getHours()}:${footer.createdAt.getMinutes()}`
+                            '5 ساعات'}
+                      </Typography>
+                    </Box>
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        background: '#0E8478',
+                        color: '#fff',
+                      }}
+                      onClick={() => {
+                        navigate(
+                          `/client/dashboard/previous-funding-requests/${
+                            item.proposal.id ?? 'vqSwfnk3UQ2DYYOMySC2_'
+                          }/show-project`
+                        );
+                      }}
+                    >
+                      {translate('revision_the_project')}
+                    </Button>
+                  </Stack>
                 </CardActions>
               </Card>
             </Grid>

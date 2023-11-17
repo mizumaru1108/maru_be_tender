@@ -254,43 +254,63 @@ CardTablePropsByBE) {
   }
   if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
     return (
-      <>
-        {' '}
-        <EmptyContent
-          title="لا يوجد بيانات"
-          img="/assets/icons/confirmation_information.svg"
-          description={`${translate('errors.something_wrong')}`}
-          errorMessage={errorFetchingData?.message || undefined}
-          sx={{
-            '& span.MuiBox-root': { height: 160 },
-          }}
-        />
-      </>
+      <EmptyContent
+        title="لا يوجد بيانات"
+        img="/assets/icons/confirmation_information.svg"
+        description={`${translate('errors.something_wrong')}`}
+        errorMessage={errorFetchingData?.message || undefined}
+        sx={{
+          '& span.MuiBox-root': { height: 160 },
+        }}
+      />
     );
 
   return (
-    <Grid container spacing={2} justifyContent="space-between">
-      <Grid item md={8} xs={12}>
-        <Typography variant="h4">{title}</Typography>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Stack component="div" direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="h4">{title}</Typography>
+          {!navigateLink ? null : (
+            <Button
+              sx={{
+                backgroundColor: 'transparent',
+                color: '#93A3B0',
+                textDecoration: 'underline',
+                ':hover': {
+                  backgroundColor: 'transparent',
+                },
+              }}
+              onClick={() => {
+                navigate(navigateLink);
+              }}
+            >
+              {translate('view_all')}
+            </Button>
+          )}
+        </Stack>
       </Grid>
       {destination === 'previous-funding-requests' ? (
-        <Grid item md={3} xs={12}>
-          <SearchField
-            data-cy="search_field"
-            isLoading={isLoading}
-            value={searchName || filter_project_name}
-            label={translate('sorting.label.project_name')}
-            onReturnSearch={(value) => {
-              setSearchName(value);
-              localStorage.setItem('filter_project_name', value);
-            }}
-            reFetch={() => {
-              setPage(1);
-              setSearchName('');
-              localStorage.removeItem('filter_project_name');
-            }}
-            fullWidth
-          />
+        <Grid item md={12} xs={12}>
+          <Grid container spacing={2} justifyContent="flex-end">
+            <Grid item md={3} xs={12}>
+              <SearchField
+                data-cy="search_field"
+                isLoading={isLoading}
+                value={searchName || filter_project_name}
+                label={translate('sorting.label.project_name')}
+                onReturnSearch={(value) => {
+                  setSearchName(value);
+                  localStorage.setItem('filter_project_name', value);
+                }}
+                reFetch={() => {
+                  setPage(1);
+                  setSearchName('');
+                  localStorage.removeItem('filter_project_name');
+                }}
+                fullWidth
+              />
+            </Grid>
+          </Grid>
         </Grid>
       ) : null}
       <Grid item md={12} xs={12}>
@@ -353,26 +373,6 @@ CardTablePropsByBE) {
               />
             </Grid>
           )}
-
-          {navigateLink ? (
-            <Grid item md={1} xs={6}>
-              <Button
-                sx={{
-                  backgroundColor: 'transparent',
-                  color: '#93A3B0',
-                  textDecoration: 'underline',
-                  ':hover': {
-                    backgroundColor: 'transparent',
-                  },
-                }}
-                onClick={() => {
-                  navigate(navigateLink);
-                }}
-              >
-                {translate('view_all')}
-              </Button>
-            </Grid>
-          ) : null}
         </Grid>
       </Grid>
       {sorting.includes('range_date') && (
@@ -435,35 +435,17 @@ CardTablePropsByBE) {
         cardData.length > 0 &&
         cardData.map((item: any, index: any) => {
           const isInProcess = CheckIsInProcessProposal(item, activeRole!);
-          // console.log({ isInProcess });
           return (
-            <Grid item key={index} md={6} xs={12}>
+            <Grid item key={index} sm={6} xs={12}>
               <ProjectTableBE
                 {...item}
-                updated_at={
-                  // old version
-                  // (item?.proposal_logs &&
-                  //   item?.proposal_logs[item?.proposal_logs?.length - 1]?.updated_at !==
-                  //     new Date('10-10-2022') &&
-                  //   item?.proposal_logs[item?.proposal_logs?.length - 1]?.updated_at) ||
-                  // item.updated_at
-                  // new version
-                  getNewestDate(
-                    item?.proposal_logs[item?.proposal_logs?.length - 1]?.updated_at ||
-                      new Date('10-10-2022').toISOString(),
-                    item?.updated_at
-                  )
-                }
+                updated_at={getNewestDate(
+                  item?.proposal_logs[item?.proposal_logs?.length - 1]?.updated_at ||
+                    new Date('10-10-2022').toISOString(),
+                  item?.updated_at
+                )}
                 inquiryStatus={item.outter_status === 'PENDING_CANCELED' ? 'canceled' : null}
                 created_at={new Date(item.created_at)}
-                // old version of cardFooterButtonAction
-                // cardFooterButtonAction={
-                //   destination === 'incoming-amandment-requests' &&
-                //   item.outter_status === 'ASKED_FOR_AMANDEMENT'
-                //     ? 'show-details'
-                //     : cardFooterButtonAction
-                // }
-                // new version of cardFooterButtonAction
                 cardFooterButtonAction={
                   !onSearch
                     ? destination === 'incoming-amandment-requests' &&
@@ -475,9 +457,6 @@ CardTablePropsByBE) {
                       (item.outter_status === 'PENDING_CANCELED' && 'reject-project')
                     : cardFooterButtonAction
                 }
-                // old version of destination
-                // destination={destination}
-                // new version of destination
                 destination={
                   !onSearch
                     ? destination
@@ -492,7 +471,7 @@ CardTablePropsByBE) {
         })}
 
       {!isLoading && cardData.length === 0 && (
-        <Grid item md={12} xs={12}>
+        <Grid item xs={12}>
           {activeRole !== 'tender_client' ? (
             <EmptyContent
               title="لا يوجد بيانات"
@@ -501,39 +480,37 @@ CardTablePropsByBE) {
               }}
             />
           ) : destination === 'current-project' ? (
-            <>
-              <Grid
-                container
-                spacing={0}
-                direction="column"
-                alignItems="center"
-                justifyContent="center"
-                p="20px"
-              >
-                <Box sx={{ width: '100%' }}>
-                  <Stack justifyItems="center">
-                    <Box sx={{ textAlign: 'center' }}>
-                      <SvgIconStyle src={`/icons/empty-project.svg`} />
-                    </Box>
-                    <Typography sx={{ textAlign: 'center' }}>
-                      {translate('content.client.main_page.no_current_projects')}
-                    </Typography>
-                    <Button
-                      sx={{
-                        textAlign: 'center',
-                        margin: '0 auto',
-                        textDecorationLine: 'underline',
-                      }}
-                      onClick={() => {
-                        navigate('/client/dashboard/funding-project-request');
-                      }}
-                    >
-                      {translate('content.client.main_page.apply_new_support_request')}
-                    </Button>
-                  </Stack>
-                </Box>
-              </Grid>
-            </>
+            <Grid
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justifyContent="center"
+              p="20px"
+            >
+              <Box sx={{ width: '100%' }}>
+                <Stack justifyItems="center">
+                  <Box sx={{ textAlign: 'center' }}>
+                    <SvgIconStyle src={`/icons/empty-project.svg`} />
+                  </Box>
+                  <Typography sx={{ textAlign: 'center' }}>
+                    {translate('content.client.main_page.no_current_projects')}
+                  </Typography>
+                  <Button
+                    sx={{
+                      textAlign: 'center',
+                      margin: '0 auto',
+                      textDecorationLine: 'underline',
+                    }}
+                    onClick={() => {
+                      navigate('/client/dashboard/funding-project-request');
+                    }}
+                  >
+                    {translate('content.client.main_page.apply_new_support_request')}
+                  </Button>
+                </Stack>
+              </Box>
+            </Grid>
           ) : (
             <EmptyContent
               title="لا يوجد بيانات"

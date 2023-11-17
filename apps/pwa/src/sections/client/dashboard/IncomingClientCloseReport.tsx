@@ -85,24 +85,21 @@ export default function IncomingClientCloseReport() {
   }
   if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
     return (
-      <>
-        {' '}
-        <EmptyContent
-          title="لا يوجد بيانات"
-          img="/assets/icons/confirmation_information.svg"
-          description={`${translate('errors.something_wrong')}`}
-          errorMessage={errorFetchingData?.message || undefined}
-          sx={{
-            '& span.MuiBox-root': { height: 160 },
-          }}
-        />
-      </>
+      <EmptyContent
+        title="لا يوجد بيانات"
+        img="/assets/icons/confirmation_information.svg"
+        description={`${translate('errors.something_wrong')}`}
+        errorMessage={errorFetchingData?.message || undefined}
+        sx={{
+          '& span.MuiBox-root': { height: 160 },
+        }}
+      />
     );
 
   return (
     <Grid item md={12}>
-      <Stack direction="row" justifyContent="space-between">
-        <Typography variant="h4" sx={{ mb: '20px' }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="h4">
           {translate('pages.common.close_report.text.project_report')}
         </Typography>
         <Button
@@ -115,7 +112,7 @@ export default function IncomingClientCloseReport() {
             },
           }}
           onClick={() => {
-            navigate('/dashboard/project-report');
+            navigate('/client/dashboard/project-report');
           }}
         >
           {translate('view_all')}

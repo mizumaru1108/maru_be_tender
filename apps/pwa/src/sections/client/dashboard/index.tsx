@@ -47,9 +47,6 @@ function DashboardPage() {
               <DraftProject draft_projects={data.draft_projects} mutate={mutate} />
             </Grid>
           ) : null}
-          {/* {data.amandement_proposal.length ? (
-           
-          ) : null} */}
           <Grid item md={12} xs={12}>
             <ListAmandementRequest />
           </Grid>

@@ -35,7 +35,7 @@ function DraftProject({ draft_projects, mutate }: any) {
 
   return (
     <>
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction="row" justifyContent="space-between" sx={{ mb: 3 }}>
         <Typography variant="h4">{translate('content.client.main_page.draft_projects')}</Typography>
         <Button
           sx={{
@@ -53,13 +53,13 @@ function DraftProject({ draft_projects, mutate }: any) {
           {translate('view_all')}
         </Button>
       </Stack>
-      <Grid container sx={{ pt: 2 }} spacing={5}>
+      <Grid container spacing={2}>
         {draft_projects.map(
           (
             item: { id: string; project_name: string; project_idea: string; created_at: string },
             index: any
           ) => (
-            <Grid item md={6} xs={12} key={index}>
+            <Grid item xs={12} sm={6} key={index}>
               <Card sx={{ backgroundColor: '#fff' }}>
                 <CardContent>
                   <Typography
@@ -79,45 +79,53 @@ function DraftProject({ draft_projects, mutate }: any) {
                   <Divider />
                 </CardContent>
 
-                <CardActions sx={{ justifyContent: 'space-between', px: '30px' }}>
-                  <Stack direction="column" justifyContent={'space-between'}>
-                    <Typography
-                      variant="h6"
-                      color="#93A3B0"
-                      gutterBottom
-                      sx={{ fontSize: '10px !important' }}
-                    >
-                      {translate('content.client.main_page.created_at')}
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      color="#1E1E1E"
-                      gutterBottom
-                      sx={{ fontSize: '15px !important' }}
-                    >
-                      {`${new Date().getDate() - new Date(item.created_at).getDate()} ${translate(
-                        'content.client.main_page.day'
-                      )}`}
-                    </Typography>
-                  </Stack>
-                  <Stack direction="row" gap={2}>
-                    <Button
-                      variant="outlined"
-                      sx={{ borderColor: 'red', color: 'red' }}
-                      onClick={() => {
-                        delelteDraft(item.id);
-                      }}
-                    >
-                      {translate('content.client.main_page.delete_draft')}
-                    </Button>
-                    <Button
-                      sx={{ background: '#0E8478', color: '#fff' }}
-                      onClick={() => {
-                        completeDraftProposal(item.id);
-                      }}
-                    >
-                      {translate('content.client.main_page.complete_the_project')}
-                    </Button>
+                <CardActions sx={{ justifyContent: 'space-between', px: '30px', pb: '30px' }}>
+                  <Stack
+                    direction={{ xs: 'column', md: 'row' }}
+                    justifyContent={{ xs: 'flex-start', md: 'space-between' }}
+                    component="div"
+                    spacing={2}
+                    sx={{ width: '100%' }}
+                  >
+                    <Stack direction="column" component="div" justifyContent={'space-between'}>
+                      <Typography
+                        variant="h6"
+                        color="#93A3B0"
+                        gutterBottom
+                        sx={{ fontSize: '10px !important' }}
+                      >
+                        {translate('content.client.main_page.created_at')}
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        color="#1E1E1E"
+                        gutterBottom
+                        sx={{ fontSize: '15px !important' }}
+                      >
+                        {`${new Date().getDate() - new Date(item.created_at).getDate()} ${translate(
+                          'content.client.main_page.day'
+                        )}`}
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" component="div" gap={2}>
+                      <Button
+                        variant="outlined"
+                        sx={{ borderColor: 'red', color: 'red' }}
+                        onClick={() => {
+                          delelteDraft(item.id);
+                        }}
+                      >
+                        {translate('content.client.main_page.delete_draft')}
+                      </Button>
+                      <Button
+                        sx={{ background: '#0E8478', color: '#fff' }}
+                        onClick={() => {
+                          completeDraftProposal(item.id);
+                        }}
+                      >
+                        {translate('content.client.main_page.complete_the_project')}
+                      </Button>
+                    </Stack>
                   </Stack>
                 </CardActions>
               </Card>

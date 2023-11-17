@@ -7,8 +7,6 @@ import useLocales from 'hooks/useLocales';
 // gql
 import { getSummaryClientProposal } from 'queries/client/getProposalStatistic';
 import { useQuery } from 'urql';
-// plugin
-import moment from 'moment';
 // config
 import { FEATURE_DAILY_STATUS } from 'config';
 import { fCurrencyNumber } from 'utils/formatNumber';
@@ -37,13 +35,13 @@ export default function Statistics() {
 
   return (
     <Grid container spacing={2}>
-      <Grid item md={12}>
+      <Grid item xs={12}>
         <Typography variant="h4">
           {translate('content.administrative.statistic.heading.proposalStatistic')}
         </Typography>
       </Grid>
       {!FEATURE_DAILY_STATUS ? (
-        <Grid item md={12}>
+        <Grid item xs={12}>
           <Typography variant="inherit" sx={{ fontStyle: 'italic' }}>
             {translate('commons.maintenance_feature_flag')} ...
           </Typography>
@@ -65,7 +63,7 @@ export default function Statistics() {
                 }
 
                 return (
-                  <Grid item md={2} xs={12} key={i}>
+                  <Grid item xs={12} sm={3} md={3} lg={2} key={i}>
                     <Box
                       sx={{
                         borderRadius: '8px',
