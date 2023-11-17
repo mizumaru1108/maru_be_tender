@@ -2616,6 +2616,7 @@ const en = {
     proof_of_funds: 'Proof of Funds',
     error_exceeds_amount: 'Total project budgets exceeds the support amount provided',
     error_not_same_amount: 'Total project budgets does not match the support amount requested',
+    set_default: 'Set Default',
     message: {
       text: 'You have new message',
       image: 'You have new message with image',

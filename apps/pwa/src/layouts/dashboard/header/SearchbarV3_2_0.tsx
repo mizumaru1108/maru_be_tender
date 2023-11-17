@@ -36,6 +36,8 @@ import {
   setActiveOptionsSearching,
 } from 'redux/slices/searching';
 import axiosInstance from 'utils/axios';
+import useResponsive from 'hooks/useResponsive';
+import SearchbarModal from './SearchbarModal';
 // ----------------------------------------------------------------------
 const APPBAR_MOBILE = 64;
 const APPBAR_DESKTOP = 92;
@@ -70,9 +72,11 @@ export default function Searchbar() {
   const { activeRole } = useAuth();
   const role = activeRole!;
 
+  const isMobile = useResponsive('down', 'md');
+
   const dispatch = useDispatch();
   const { sort, filtered } = useSelector((state) => state.searching);
-  // console.log({ filtered });
+
   const [show, setShow] = React.useState(false);
   const [advancedOptions, setAdvancedOptions] = React.useState(false);
   const [arrowStatus, setArrowStatus] = React.useState(false);
@@ -381,326 +385,283 @@ export default function Searchbar() {
   }, [status]);
 
   return (
-    <ClickAwayListener
-      onClickAway={() => {
-        // dispatch(setFiltered(''));
-        setShow(false);
-      }}
-    >
-      <SearchbarStyle>
-        <Box
-          sx={{
-            mr: 1,
-            fontWeight: 400,
-            border: '1px solid rgba(145, 158, 171, 0.32)',
-            borderRadius: show ? '15px' : '50px',
-            color: '#919EAB',
-            background: '#fff',
-            fontSize: '14px',
-            padding: '3px 12px',
-            transition: '0.3s',
-            width: '350px',
+    <>
+      {isMobile ? (
+        <SearchbarModal />
+      ) : (
+        <ClickAwayListener
+          onClickAway={() => {
+            // dispatch(setFiltered(''));
+            setShow(false);
           }}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-            }}
-          >
-            <Iconify icon={'eva:search-fill'} sx={{ color: '#0E8478', width: 25, height: 25 }} />
-            <Divider
-              orientation="vertical"
-              variant="middle"
-              flexItem
-              sx={{ height: 20, mx: '8px', color: '#0E8478' }}
-            />
-            <Input
-              // onBlur={() => {
-              //   if (show === false) {
-              //     setTimeout(() => {
-              //       dispatch(setFiltered(''));
-              //     }, 500);
-              //   }
-              // }}
-              sx={{ width: '100%' }}
-              disableUnderline={true}
-              value={filtered}
-              onChange={(e) => {
-                dispatch(setFiltered(e.target.value));
-                // setText(e.target.value);
-              }}
-              placeholder={translate('search_component.placeholder')}
-              onKeyUp={handleKeyUp}
-            />
-            {handleArrow('input', show)}
-          </Box>
-          {show ? (
+          <SearchbarStyle>
             <Box
               sx={{
-                transition: show ? '0.3s' : '0.3s',
+                mr: 1,
+                fontWeight: 400,
+                border: '1px solid rgba(145, 158, 171, 0.32)',
+                borderRadius: show ? '15px' : '50px',
+                color: '#919EAB',
+                background: '#fff',
+                fontSize: '14px',
+                padding: '3px 12px',
+                transition: '0.3s',
+                width: '350px',
               }}
             >
-              <Divider orientation="horizontal" flexItem />
-              <Stack direction="column" sx={{ px: 2 }}>
-                <Stack direction="row" justifyContent="space-between">
-                  <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>
-                    {translate('search_component.project_type')}
-                  </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                }}
+              >
+                <Iconify
+                  icon={'eva:search-fill'}
+                  sx={{ color: '#0E8478', width: 25, height: 25 }}
+                />
+                <Divider
+                  orientation="vertical"
+                  variant="middle"
+                  flexItem
+                  sx={{ height: 20, mx: '8px', color: '#0E8478' }}
+                />
+                <Input
+                  // onBlur={() => {
+                  //   if (show === false) {
+                  //     setTimeout(() => {
+                  //       dispatch(setFiltered(''));
+                  //     }, 500);
+                  //   }
+                  // }}
+                  sx={{ width: '100%' }}
+                  disableUnderline={true}
+                  value={filtered}
+                  onChange={(e) => {
+                    dispatch(setFiltered(e.target.value));
+                    // setText(e.target.value);
+                  }}
+                  placeholder={translate('search_component.placeholder')}
+                  onKeyUp={handleKeyUp}
+                />
+                {handleArrow('input', show)}
+              </Box>
+              {show ? (
+                <Box
+                  sx={{
+                    transition: show ? '0.3s' : '0.3s',
+                  }}
+                >
+                  <Divider orientation="horizontal" flexItem />
+                  <Stack direction="column" sx={{ px: 2 }}>
+                    <Stack direction="row" justifyContent="space-between">
+                      <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>
+                        {translate('search_component.project_type')}
+                      </Typography>
+                      <Link
+                        component="button"
+                        variant="body2"
+                        onClick={handleClearAll}
+                        sx={{
+                          mt: 1,
+                          px: 2,
+                          color: 'red',
+                          fontWeight: 600,
+                          textDecoration: 'none',
+                        }}
+                      >
+                        {translate('notification.clear_all')}
+                      </Link>
+                    </Stack>
+                    {role === 'tender_accounts_manager' ? (
+                      <FormControl
+                        required
+                        error={errorAccManager}
+                        component="fieldset"
+                        variant="standard"
+                      >
+                        <FormGroup>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={client_name}
+                                onChange={onChangeAccManager}
+                                name="client_name"
+                              />
+                            }
+                            label={translate('search_component.by_client_name')}
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={entity_mobile}
+                                onChange={onChangeAccManager}
+                                name="entity_mobile"
+                              />
+                            }
+                            label={translate('search_component.by_entity_mobile')}
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={license_number}
+                                onChange={onChangeAccManager}
+                                name="license_number"
+                              />
+                            }
+                            label={translate('search_component.by_license_number')}
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={email}
+                                onChange={onChangeAccManager}
+                                name="email"
+                              />
+                            }
+                            label={translate('search_component.by_email')}
+                          />
+                        </FormGroup>
+                        {/* <FormHelperText>You can display an error</FormHelperText> */}
+                      </FormControl>
+                    ) : (
+                      <FormControl required error={error} component="fieldset" variant="standard">
+                        <FormGroup>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={stateSearchProposal.project_name}
+                                onChange={onChangeSearchProposal}
+                                name="project"
+                              />
+                            }
+                            label={translate('search_component.by_project_name')}
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={stateSearchProposal.employee_name}
+                                onChange={onChangeSearchProposal}
+                                name="client"
+                              />
+                            }
+                            label={translate('search_component.by_client_name')}
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={stateSearchProposal.project_number}
+                                onChange={onChangeSearchProposal}
+                                name="number"
+                              />
+                            }
+                            label={translate('search_component.by_project_number')}
+                          />
+                          {stateSearchProposal.outter_status && (
+                            <Box>
+                              <Stack direction="row" alignItems="center">
+                                <FormControlLabel
+                                  control={
+                                    <Checkbox
+                                      checked={status}
+                                      onChange={handleChange}
+                                      name="status"
+                                    />
+                                  }
+                                  label={translate('search_component.by_project_status')}
+                                />
+
+                                {handleArrow('project_status', arrowStatus)}
+                              </Stack>
+                              {arrowStatus && (
+                                <Stack direction="column" sx={{ px: 2 }}>
+                                  {optionsProjectStatus.map((item, index) => (
+                                    <FormControlLabel
+                                      key={index}
+                                      control={
+                                        <Checkbox
+                                          checked={item.checked}
+                                          onChange={handleChangeProjectStatus}
+                                          name={item.name}
+                                        />
+                                      }
+                                      label={item.label}
+                                    />
+                                  ))}
+                                </Stack>
+                              )}
+                            </Box>
+                          )}
+                          {/* <Box display="flex" alignItems="center">
+                          <FormControlLabel
+                            control={
+                              <Checkbox checked={track} onChange={handleChange} name="track" />
+                            }
+                            label={translate('search_component.by_track_name')}
+                          />
+                          {handleArrow('track', arrowTrack)}
+                        </Box> */}
+                        </FormGroup>
+                        {/* <FormHelperText>You can display an error</FormHelperText> */}
+                      </FormControl>
+                    )}
+                    <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>
+                      {translate('search_component.type_order')}
+                    </Typography>
+                    <RadioGroup
+                      aria-labelledby="type"
+                      name="type"
+                      value={sortBy}
+                      onChange={handleRadioChange}
+                    >
+                      <FormControlLabel
+                        value="asc"
+                        control={<Radio />}
+                        label={translate('search_component.ascending')}
+                      />
+                      <FormControlLabel
+                        value="desc"
+                        control={<Radio />}
+                        label={translate('search_component.descending')}
+                      />
+                    </RadioGroup>
+                  </Stack>
                   <Link
                     component="button"
                     variant="body2"
-                    onClick={handleClearAll}
+                    onClick={handleClickOptions}
                     sx={{
                       mt: 1,
                       px: 2,
-                      color: 'red',
+                      color: '#0E8478',
                       fontWeight: 600,
-                      textDecoration: 'none',
+                      textDecoration: 'underline',
                     }}
                   >
-                    {translate('notification.clear_all')}
+                    {stateSearchProposal.outter_status
+                      ? translate('search_component.default_options')
+                      : translate('search_component.advanced_options')}
                   </Link>
-                </Stack>
-                {role === 'tender_accounts_manager' ? (
-                  <FormControl
-                    required
-                    error={errorAccManager}
-                    component="fieldset"
-                    variant="standard"
-                  >
-                    <FormGroup>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={client_name}
-                            onChange={onChangeAccManager}
-                            name="client_name"
-                          />
-                        }
-                        label={translate('search_component.by_client_name')}
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={entity_mobile}
-                            onChange={onChangeAccManager}
-                            name="entity_mobile"
-                          />
-                        }
-                        label={translate('search_component.by_entity_mobile')}
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={license_number}
-                            onChange={onChangeAccManager}
-                            name="license_number"
-                          />
-                        }
-                        label={translate('search_component.by_license_number')}
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox checked={email} onChange={onChangeAccManager} name="email" />
-                        }
-                        label={translate('search_component.by_email')}
-                      />
-                    </FormGroup>
-                    {/* <FormHelperText>You can display an error</FormHelperText> */}
-                  </FormControl>
-                ) : (
-                  <FormControl required error={error} component="fieldset" variant="standard">
-                    <FormGroup>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={stateSearchProposal.project_name}
-                            onChange={onChangeSearchProposal}
-                            name="project"
-                          />
-                        }
-                        label={translate('search_component.by_project_name')}
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={stateSearchProposal.employee_name}
-                            onChange={onChangeSearchProposal}
-                            name="client"
-                          />
-                        }
-                        label={translate('search_component.by_client_name')}
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={stateSearchProposal.project_number}
-                            onChange={onChangeSearchProposal}
-                            name="number"
-                          />
-                        }
-                        label={translate('search_component.by_project_number')}
-                      />
-                      {stateSearchProposal.outter_status && (
-                        <Box>
-                          <Stack direction="row" alignItems="center">
-                            <FormControlLabel
-                              control={
-                                <Checkbox checked={status} onChange={handleChange} name="status" />
-                              }
-                              label={translate('search_component.by_project_status')}
-                            />
-
-                            {handleArrow('project_status', arrowStatus)}
-                          </Stack>
-                          {arrowStatus && (
-                            <Stack direction="column" sx={{ px: 2 }}>
-                              {optionsProjectStatus.map((item, index) => (
-                                <FormControlLabel
-                                  key={index}
-                                  control={
-                                    <Checkbox
-                                      checked={item.checked}
-                                      onChange={handleChangeProjectStatus}
-                                      name={item.name}
-                                    />
-                                  }
-                                  label={item.label}
-                                />
-                              ))}
-                            </Stack>
-                          )}
-                        </Box>
-                      )}
-                      {/* <Box display="flex" alignItems="center">
-                        <FormControlLabel
-                          control={
-                            <Checkbox checked={track} onChange={handleChange} name="track" />
-                          }
-                          label={translate('search_component.by_track_name')}
-                        />
-                        {handleArrow('track', arrowTrack)}
-                      </Box> */}
-                    </FormGroup>
-                    {/* <FormHelperText>You can display an error</FormHelperText> */}
-                  </FormControl>
-                )}
-                <Typography sx={{ mt: 1, color: '#0E8478', fontWeight: 600 }}>
-                  {translate('search_component.type_order')}
-                </Typography>
-                <RadioGroup
-                  aria-labelledby="type"
-                  name="type"
-                  value={sortBy}
-                  onChange={handleRadioChange}
-                >
-                  <FormControlLabel
-                    value="asc"
-                    control={<Radio />}
-                    label={translate('search_component.ascending')}
-                  />
-                  <FormControlLabel
-                    value="desc"
-                    control={<Radio />}
-                    label={translate('search_component.descending')}
-                  />
-                </RadioGroup>
-              </Stack>
-              <Link
-                component="button"
-                variant="body2"
-                onClick={handleClickOptions}
-                sx={{
-                  mt: 1,
-                  px: 2,
-                  color: '#0E8478',
-                  fontWeight: 600,
-                  textDecoration: 'underline',
-                }}
-              >
-                {stateSearchProposal.outter_status
-                  ? translate('search_component.default_options')
-                  : translate('search_component.advanced_options')}
-              </Link>
-              <Stack direction="row" justifyContent="flex-end">
-                <Button
-                  sx={{ m: 2 }}
-                  variant="contained"
-                  onClick={
-                    role === 'tender_accounts_manager'
-                      ? () => handleSearchAccManager()
-                      : () => handleSearch()
-                  }
-                >
-                  {translate('search_component.search')}
-                </Button>
-              </Stack>
+                  <Stack direction="row" justifyContent="flex-end">
+                    <Button
+                      sx={{ m: 2 }}
+                      variant="contained"
+                      onClick={
+                        role === 'tender_accounts_manager'
+                          ? () => handleSearchAccManager()
+                          : () => handleSearch()
+                      }
+                    >
+                      {translate('search_component.search')}
+                    </Button>
+                  </Stack>
+                </Box>
+              ) : null}
             </Box>
-          ) : null}
-        </Box>
-        {/* <Input
-        autoFocus
-        fullWidth
-        disableUnderline
-        placeholder="ex. Client Name"
-        startAdornment={
-          <InputAdornment position="start">
-            <Iconify
-              icon={'eva:search-fill'}
-              sx={{ color: 'text.disabled', width: 20, height: 20 }}
-            />
-          </InputAdornment>
-        }
-        endAdornment={
-          <Select sx={{ border: 'none', height: 20 }}>
-            <MenuItem>test</MenuItem>
-          </Select>
-        }
-        sx={{
-          mr: 1,
-          fontWeight: 400,
-          border: '1px solid rgba(145, 158, 171, 0.32)',
-          borderRadius: '50px',
-          color: '#919EAB',
-          fontSize: '14px',
-          padding: '8px 12px',
-        }}
-      /> */}
-      </SearchbarStyle>
-    </ClickAwayListener>
-    // <ClickAwayListener onClickAway={handleClose}>
-    //   <div>
-    //     {!isOpen && (
-    //       <IconButtonAnimate onClick={handleOpen}>
-    //         <Iconify icon={'eva:search-fill'} width={20} height={20} />
-    //       </IconButtonAnimate>
-    //     )}
-
-    //     <Slide direction="down" in={isOpen} mountOnEnter unmountOnExit>
-    //       <SearchbarStyle>
-    //         <Input
-    //           autoFocus
-    //           fullWidth
-    //           disableUnderline
-    //           placeholder="Search…"
-    //           startAdornment={
-    //             <InputAdornment position="start">
-    //               <Iconify
-    //                 icon={'eva:search-fill'}
-    //                 sx={{ color: 'text.disabled', width: 20, height: 20 }}
-    //               />
-    //             </InputAdornment>
-    //           }
-    //           sx={{ mr: 1, fontWeight: 'fontWeightBold' }}
-    //         />
-    //         <Button variant="contained" onClick={handleClose}>
-    //           Search
-    //         </Button>
-    //       </SearchbarStyle>
-    //     </Slide>
-    //   </div>
-    // </ClickAwayListener>
+          </SearchbarStyle>
+        </ClickAwayListener>
+      )}
+    </>
   );
 }

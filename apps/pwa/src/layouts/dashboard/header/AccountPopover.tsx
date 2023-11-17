@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import useResponsive from 'hooks/useResponsive';
 import { useNavigate } from 'react-router';
@@ -47,11 +47,10 @@ export default function AccountPopover() {
       {isMobile ? (
         <Box
           sx={{
-            borderRadius: '50%',
+            borderRadius: '100%',
             backgroundColor: 'background.paper',
-            padding: '8px',
           }}
-          component={Button}
+          component={IconButton}
           onClick={() => {
             navigate(`/${role_url_map[`${role}`]}/my-profile`);
           }}
