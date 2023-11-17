@@ -26,7 +26,7 @@ import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/
 import {
   TrackSectionSaveCommand,
   TrackSectionSaveCommandResult,
-} from '../commands/track.section.create/track.section.create.command';
+} from '../commands/track.section.save/track.section.save.command';
 import { TrackSectionEntity } from '../entities/track.section.entity';
 import {
   TrackSectionFindByIdQuery,

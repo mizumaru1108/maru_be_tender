@@ -283,7 +283,7 @@ export class SectionSupervisorRepository {
         // loop supervisor id from existingSupervisorIds and delete if it doesnt exist in given payload
         for (const existingSupervisorId of existingSupervisorIds) {
           if (!section.supervisor_user_id.includes(existingSupervisorId)) {
-            this.deleteBySectionAndSupervisorId(
+            await this.deleteBySectionAndSupervisorId(
               section.section_id,
               existingSupervisorId,
               prisma,

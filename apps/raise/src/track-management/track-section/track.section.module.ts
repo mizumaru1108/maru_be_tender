@@ -2,7 +2,7 @@ import { Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TrackSectionHttpController } from './controllers/track.section.controller';
 import { TrackSectionRepository } from './repositories/track.section.repository';
-import { TrackSectionSaveCommandHandler } from './commands/track.section.create/track.section.create.command';
+import { TrackSectionSaveCommandHandler } from './commands/track.section.save/track.section.save.command';
 import { TrackSectionMapper } from './mapper/track.section.mapper';
 import { TrackSectionFindByIdQueryHandler } from './queries/track.section.find.by.id.query';
 import { SectionSupervisorModule } from '../section-supervisor/section.supervisor.module';
