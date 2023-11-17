@@ -1,4 +1,5 @@
 import { ProposalEntity } from '../../../proposal-management/proposal/entities/proposal.entity';
+import { SectionSupervisorEntity } from '../../section-supervisor/entities/section.supervisor.entity';
 import { TrackEntity } from '../../track/entities/track.entity';
 
 export class TrackSectionEntity {
@@ -13,6 +14,7 @@ export class TrackSectionEntity {
   child_track_section: TrackSectionEntity[];
   track: TrackEntity;
   proposal: ProposalEntity[];
+  section_supervisor: SectionSupervisorEntity[];
 
   section_budget: number = 0;
   section_spending_budget: number = 0;

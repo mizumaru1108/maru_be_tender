@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, cheque, payment, track, track_section } from '@prisma/client';
+import {
+  Prisma,
+  cheque,
+  payment,
+  track,
+  track_section,
+  SectionSupervisor,
+} from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { ChequeEntity } from '../../../proposal-management/payment/entities/cheque.entity';
 import { ProposalPaymentEntity } from '../../../proposal-management/payment/entities/proposal-payment.entity';
@@ -10,6 +17,7 @@ import { ProposalEntity } from '../../../proposal-management/proposal/entities/p
 import { TenderAppRoleEnum } from '../../../tender-commons/types';
 import { TrackSectionEntity } from '../../track-section/entities/track.section.entity';
 import { TrackEntity } from '../entities/track.entity';
+import { SectionSupervisorEntity } from '../../section-supervisor/entities/section.supervisor.entity';
 
 export type TrackModel = track & {
   proposal?: {
@@ -39,6 +47,7 @@ export type TrackModel = track & {
               user_role: string | null;
             }[];
           }[];
+          section_supervisor?: SectionSupervisor[];
         })[];
         proposal?: {
           fsupport_by_supervisor: Prisma.Decimal | null;
@@ -51,6 +60,7 @@ export type TrackModel = track & {
             user_role: string | null;
           }[];
         }[];
+        section_supervisor?: SectionSupervisor[];
       })[];
       proposal?: {
         fsupport_by_supervisor: Prisma.Decimal | null;
@@ -63,6 +73,7 @@ export type TrackModel = track & {
           user_role: string | null;
         }[];
       }[];
+      section_supervisor?: SectionSupervisor[];
     })[];
     proposal?: {
       fsupport_by_supervisor: Prisma.Decimal | null;
@@ -75,6 +86,7 @@ export type TrackModel = track & {
         user_role: string | null;
       }[];
     }[];
+    section_supervisor?: SectionSupervisor[];
   })[];
 };
 
@@ -188,6 +200,19 @@ export class TrackMapper {
     };
   };
 
+  mapSupervisor = (
+    section_supervisor?: SectionSupervisor[],
+  ): SectionSupervisorEntity[] => {
+    if (section_supervisor && section_supervisor.length > 0) {
+      return section_supervisor.map((supervisor) => {
+        return Builder<SectionSupervisorEntity>(SectionSupervisorEntity, {
+          ...supervisor,
+        }).build();
+      });
+    }
+    return [];
+  };
+
   async toDomain(type: TrackModel): Promise<TrackEntity> {
     const { proposal, track_section, ...rest } = type;
 
@@ -214,24 +239,26 @@ export class TrackMapper {
           if (s.is_deleted === false) {
             budget += s.budget;
 
-            const { proposal, child_track_section, ...rest } = s;
+            const {
+              proposal,
+              child_track_section,
+              section_supervisor,
+              ...rest
+            } = s;
             const section: TrackSectionEntity = Builder<TrackSectionEntity>(
               TrackSectionEntity,
               {
                 ...rest,
+                section_supervisor: this.mapSupervisor(section_supervisor),
               },
             ).build();
 
             if (s.proposal) {
               const res = this.mapProposal(s.proposal);
-              // sSesction.proposal = res.proposals;
               section.section_reserved_budget = res.sum_reserved_budget;
               section.section_spending_budget = res.sum_spending_budget;
               section.section_spending_budget_by_ceo =
                 res.sum_spending_budget_by_ceo;
-              // // sum the parent too
-              // buildedTrack.total_reserved_budget += res.sum_reserved_budget;
-              // buildedTrack.total_spending_budget += res.sum_spending_budget;
             }
 
             section.child_track_section = [];
@@ -240,11 +267,18 @@ export class TrackMapper {
             if (s.child_track_section && s.child_track_section.length > 0) {
               for (const sChild of s.child_track_section) {
                 if (sChild.is_deleted === false) {
-                  const { proposal, child_track_section, ...rest } = sChild;
+                  const {
+                    proposal,
+                    child_track_section,
+                    section_supervisor,
+                    ...rest
+                  } = sChild;
 
                   const sSection: TrackSectionEntity =
                     Builder<TrackSectionEntity>(TrackSectionEntity, {
                       ...rest,
+                      section_supervisor:
+                        this.mapSupervisor(section_supervisor),
                     }).build();
 
                   if (sChild.proposal) {
@@ -271,12 +305,18 @@ export class TrackMapper {
                   ) {
                     for (const ssChild of sChild.child_track_section) {
                       if (ssChild.is_deleted === false) {
-                        const { proposal, child_track_section, ...rest } =
-                          ssChild;
+                        const {
+                          proposal,
+                          child_track_section,
+                          section_supervisor,
+                          ...rest
+                        } = ssChild;
 
                         const ssSection: TrackSectionEntity =
                           Builder<TrackSectionEntity>(TrackSectionEntity, {
                             ...rest,
+                            section_supervisor:
+                              this.mapSupervisor(section_supervisor),
                           }).build();
 
                         if (ssChild.proposal) {
@@ -317,14 +357,20 @@ export class TrackMapper {
                         ) {
                           for (const sssChild of ssChild.child_track_section) {
                             if (sssChild.is_deleted === false) {
-                              const { proposal, child_track_section, ...rest } =
-                                sssChild;
+                              const {
+                                proposal,
+                                child_track_section,
+                                section_supervisor,
+                                ...rest
+                              } = sssChild;
 
                               const sssSection: TrackSectionEntity =
                                 Builder<TrackSectionEntity>(
                                   TrackSectionEntity,
                                   {
                                     ...rest,
+                                    section_supervisor:
+                                      this.mapSupervisor(section_supervisor),
                                   },
                                 ).build();
 

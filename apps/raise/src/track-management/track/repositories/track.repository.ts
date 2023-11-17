@@ -168,6 +168,11 @@ export class TrackRepository {
                               },
                             },
                           },
+                          section_supervisor: {
+                            include: {
+                              supervisor: true,
+                            },
+                          },
                         },
                       },
                       proposal: {
@@ -185,6 +190,11 @@ export class TrackRepository {
                               user_role: true,
                             },
                           },
+                        },
+                      },
+                      section_supervisor: {
+                        include: {
+                          supervisor: true,
                         },
                       },
                     },
@@ -206,6 +216,11 @@ export class TrackRepository {
                       },
                     },
                   },
+                  section_supervisor: {
+                    include: {
+                      supervisor: true,
+                    },
+                  },
                 },
               },
               proposal: {
@@ -223,6 +238,11 @@ export class TrackRepository {
                       user_role: true,
                     },
                   },
+                },
+              },
+              section_supervisor: {
+                include: {
+                  supervisor: true,
                 },
               },
             },
