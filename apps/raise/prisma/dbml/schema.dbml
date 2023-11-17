@@ -395,6 +395,7 @@ Table user {
   user_status_log_userTouser_status_log_account_manager_id user_status_log [not null]
   user_status_log_userTouser_status_log_user_id user_status_log [not null]
   submitted_contact_us contact_us [not null]
+  section_supervisor section_supervisors [not null]
 }
 
 Table user_type {
@@ -635,6 +636,15 @@ Table track_section {
   child_track_section track_section [not null]
   track track [not null]
   proposal proposal [not null]
+  section_supervisor section_supervisors [not null]
+}
+
+Table section_supervisors {
+  section_supervisor_id String [pk]
+  section_id String [not null]
+  track_section track_section [not null]
+  supervisor_user_id String [not null]
+  supervisor user [not null]
 }
 
 Table user_status {
@@ -1728,6 +1738,10 @@ Ref: recommended_support_consultant.proposal_id > proposal.id [delete: Cascade]
 Ref: track_section.parent_section_id - track_section.id [delete: Restrict]
 
 Ref: track_section.track_id > track.id [delete: Cascade]
+
+Ref: section_supervisors.section_id > track_section.id
+
+Ref: section_supervisors.supervisor_user_id > user.id
 
 Ref: user_role.user_id > user.id [delete: Restrict]
 

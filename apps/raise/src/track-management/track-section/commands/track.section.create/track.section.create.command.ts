@@ -1,32 +1,37 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { TrackSectionCreateDto } from '../../dtos/requests/track.sections.create.dto';
+import { TrackSectionSaveDto } from '../../dtos/requests/track.sections.save.dto';
 import { TrackSectionEntity } from '../../entities/track.section.entity';
 import { TrackSectionRepository } from '../../repositories/track.section.repository';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { async } from 'rxjs';
-export class TrackSectionCreateCommand {
-  sections: TrackSectionCreateDto[];
+import {
+  SectionSupervisorRepository,
+  SectionSupervisorSaveProps,
+} from '../../../section-supervisor/repositories/section.supervisor.repository';
+export class TrackSectionSaveCommand {
+  sections: TrackSectionSaveDto[];
 }
 
-export class TrackSectionCreateCommandResult {
+export class TrackSectionSaveCommandResult {
   data: {
-    created_sections: TrackSectionCreateDto[];
+    created_sections: TrackSectionSaveDto[];
   };
 }
 
-@CommandHandler(TrackSectionCreateCommand)
-export class TrackSectionCreateCommandHandler
+@CommandHandler(TrackSectionSaveCommand)
+export class TrackSectionSaveCommandHandler
   implements
-    ICommandHandler<TrackSectionCreateCommand, TrackSectionCreateCommandResult>
+    ICommandHandler<TrackSectionSaveCommand, TrackSectionSaveCommandResult>
 {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly trackSectionRepo: TrackSectionRepository,
+    private readonly sectionSupervisorRepo: SectionSupervisorRepository,
   ) {}
 
   async execute(
-    command: TrackSectionCreateCommand,
-  ): Promise<TrackSectionCreateCommandResult> {
+    command: TrackSectionSaveCommand,
+  ): Promise<TrackSectionSaveCommandResult> {
     const { sections } = command;
     try {
       // await this.prismaService.$transaction(
@@ -40,6 +45,17 @@ export class TrackSectionCreateCommandHandler
       //   },
       // );
 
+      let sectionSupervisorPayload: SectionSupervisorSaveProps[] = [];
+
+      for (const section of sections) {
+        if (section.supervisor_id) {
+          sectionSupervisorPayload.push({
+            section_id: section.id,
+            supervisor_user_id: section.supervisor_id,
+          });
+        }
+      }
+
       await this.prismaService.$transaction(
         async (session) => {
           const tx =
@@ -50,6 +66,13 @@ export class TrackSectionCreateCommandHandler
             sections,
             tx,
           );
+
+          if (sectionSupervisorPayload.length > 0) {
+            await this.sectionSupervisorRepo.arraySave(
+              sectionSupervisorPayload,
+              tx,
+            );
+          }
         },
         {
           timeout: 50000,

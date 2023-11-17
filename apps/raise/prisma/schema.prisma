@@ -411,6 +411,7 @@ model user {
   user_status_log_userTouser_status_log_account_manager_id                    user_status_log[]             @relation("userTouser_status_log_account_manager_id")
   user_status_log_userTouser_status_log_user_id                               user_status_log[]             @relation("userTouser_status_log_user_id")
   submitted_contact_us                                                        ContactUs[]
+  section_supervisor                                                           SectionSupervisor[]
 }
 
 model user_type {
@@ -653,6 +654,16 @@ model track_section {
   child_track_section track_section[] @relation("track_sectionTotrack_section")
   track               track           @relation(fields: [track_id], references: [id], onDelete: Cascade)
   proposal            proposal[]
+  section_supervisor  SectionSupervisor[]
+}
+
+model SectionSupervisor {
+    section_supervisor_id          String   @id
+    section_id                     String   
+    track_section                  track_section @relation(fields: [section_id], references: [id])
+    supervisor_user_id             String
+    supervisor                     user           @relation(fields: [supervisor_user_id], references: [id])
+    @@map("section_supervisors")
 }
 
 model user_status {

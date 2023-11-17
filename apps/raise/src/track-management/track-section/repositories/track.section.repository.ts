@@ -3,10 +3,9 @@ import { Prisma } from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { TrackSectionCreateDto } from '../dtos/requests/track.sections.create.dto';
+import { TrackSectionSaveDto } from '../dtos/requests/track.sections.save.dto';
 import { TrackSectionEntity } from '../entities/track.section.entity';
 import { TrackSectionMapper } from '../mapper/track.section.mapper';
-import { logUtil } from '../../../commons/utils/log-util';
 
 export type TrackSectionIncludeTypes =
   | 'parent_section'
@@ -69,9 +68,6 @@ export class TrackSectionRepository {
         },
       });
 
-      // const createdEntity = Builder<TrackSectionEntity>(TrackSectionEntity, {
-      //   ...rawCreated,
-      // }).build();
       const createdEntity = this.trackSectionMapper.toDomain(rawCreated);
       return createdEntity;
     } catch (error) {
@@ -98,11 +94,7 @@ export class TrackSectionRepository {
           is_deleted: props.is_deleted,
         },
       });
-      console.log(rawUpdated);
-
-      // const updatedEntity = Builder<TrackSectionEntity>(TrackSectionEntity, {
-      //   ...rawUpdated,
-      // }).build();
+      // console.log(rawUpdated);
 
       const updatedEntity = this.trackSectionMapper.toDomain(rawUpdated);
 
@@ -208,9 +200,6 @@ export class TrackSectionRepository {
       });
 
       if (!rawRes) return null;
-      // const foundedEntity = Builder<TrackSectionEntity>(TrackSectionEntity, {
-      //   ...rawRes,
-      // }).build();
       const foundedEntity = this.trackSectionMapper.toDomain(rawRes);
 
       return foundedEntity;
@@ -249,11 +238,6 @@ export class TrackSectionRepository {
       }
 
       const rawResult = await prisma.track_section.findMany(queryOptions);
-      // const entities = rawResult.map((rawResult) => {
-      //   return Builder<TrackSectionEntity>(TrackSectionEntity, {
-      //     ...rawResult,
-      //   }).build();
-      // });
       const entities = this.trackSectionMapper.toDomainList(rawResult);
 
       return entities;
@@ -321,7 +305,7 @@ export class TrackSectionRepository {
 
   async arraySave(
     track_id: string,
-    sectionPayloads: TrackSectionCreateDto[],
+    sectionPayloads: TrackSectionSaveDto[],
     session?: PrismaService,
   ): Promise<void> {
     let prisma = this.prismaService;
@@ -337,7 +321,6 @@ export class TrackSectionRepository {
       );
 
       // console.log(`existing ${logUtil(existingTrackSection)}`);
-      // get track id
       const existingTrackIds = existingTrackSection.map((track) => track.id);
 
       for (const section of sectionPayloads) {

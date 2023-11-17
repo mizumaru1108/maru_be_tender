@@ -12,7 +12,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class TrackSectionCreateDto {
+export class TrackSectionSaveDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -44,13 +44,20 @@ export class TrackSectionCreateDto {
   @IsOptional()
   @IsBoolean()
   is_deleted?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  supervisor_id?: string[];
 }
 
-export class TrackSectionsCreateDto {
+export class TrackSectionsSaveDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => TrackSectionCreateDto)
-  sections: TrackSectionCreateDto[];
+  @Type(() => TrackSectionSaveDto)
+  sections: TrackSectionSaveDto[];
 }

@@ -24,19 +24,19 @@ import { DataNotFoundException } from 'src/tender-commons/exceptions/data-not-fo
 import { PayloadErrorException } from 'src/tender-commons/exceptions/payload-error.exception';
 import { PrismaInvalidForeignKeyException } from 'src/tender-commons/exceptions/prisma-error/prisma.invalid.foreign.key.exception';
 import {
-  TrackSectionCreateCommand,
-  TrackSectionCreateCommandResult,
+  TrackSectionSaveCommand,
+  TrackSectionSaveCommandResult,
 } from '../commands/track.section.create/track.section.create.command';
-import {
-  TrackSectionCreateDto,
-  TrackSectionsCreateDto,
-} from '../dtos/requests/track.sections.create.dto';
 import { TrackSectionEntity } from '../entities/track.section.entity';
 import {
   TrackSectionFindByIdQuery,
   TrackSectionFindByIdQueryResult,
 } from '../queries/track.section.find.by.id.query';
 import { TrackSectionFindByIdQueryDto } from '../dtos/queries/track.section.find.by.id.query.dto';
+import {
+  TrackSectionSaveDto,
+  TrackSectionsSaveDto,
+} from '../dtos/requests/track.sections.save.dto';
 
 @ApiTags('TrackModule/TrackSection')
 @Controller('tender/track-sections')
@@ -70,22 +70,22 @@ export class TrackSectionHttpController {
   @ApiOperation({
     summary: 'Creating track section (admin only)',
   })
-  @BaseApiOkResponse(TrackSectionCreateDto, 'array')
+  @BaseApiOkResponse(TrackSectionSaveDto, 'array')
   @UseGuards(TenderJwtGuard, TenderRolesGuard)
   @TenderRoles('tender_admin')
   @Post('save')
   async save(
-    @Body() dto: TrackSectionsCreateDto,
-  ): Promise<BaseResponse<TrackSectionCreateDto[]>> {
+    @Body() dto: TrackSectionsSaveDto,
+  ): Promise<BaseResponse<TrackSectionSaveDto[]>> {
     try {
-      const command = Builder<TrackSectionCreateCommand>(
-        TrackSectionCreateCommand,
+      const command = Builder<TrackSectionSaveCommand>(
+        TrackSectionSaveCommand,
         { sections: dto.sections },
       ).build();
 
       const { data } = await this.commandBus.execute<
-        TrackSectionCreateCommand,
-        TrackSectionCreateCommandResult
+        TrackSectionSaveCommand,
+        TrackSectionSaveCommandResult
       >(command);
 
       return baseResponseHelper(
