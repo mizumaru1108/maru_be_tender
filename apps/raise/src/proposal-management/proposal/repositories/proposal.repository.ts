@@ -1398,6 +1398,11 @@ export class ProposalRepository {
               created_at: 'asc',
             },
           },
+          payments: {
+            orderBy: {
+              created_at: 'asc',
+            },
+          },
           user: {
             include: {
               client_data: true,
