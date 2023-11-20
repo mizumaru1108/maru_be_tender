@@ -2643,6 +2643,7 @@ const ar = {
       file: 'لديك رسالة جديدة مع الملف',
     },
     error: {
+      not_responsible_spv: 'أنت لست مسؤولاً عن قسم ميزانية المسار هذا:',
       password: {
         validation: {
           uppper_case: 'تحتوي على حرف كبير واحد على الأقل',

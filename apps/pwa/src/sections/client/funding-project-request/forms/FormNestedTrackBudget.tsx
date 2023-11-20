@@ -11,8 +11,7 @@ import { Proposal } from '../../../../@types/proposal';
 import { ComboBoxOption } from '../../../../components/hook-form/RHFComboBox';
 import Space from '../../../../components/space/space';
 import useAuth from '../../../../hooks/useAuth';
-import { getManySupervisor } from '../../../../redux/slices/user';
-import { dispatch, useSelector } from '../../../../redux/store';
+import { useSelector } from '../../../../redux/store';
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
 import { arabicToAlphabetical } from '../../../../utils/formatNumber';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
@@ -118,14 +117,14 @@ export default function FormNestedTrackBudget({
 
   // console.log({ supervisors });
 
-  const defaultValues: FormTrackBudget = {
-    track_id: defaultValuesTrackBudget?.id || '#',
-    name: defaultValuesTrackBudget?.name
-      ? formatCapitalizeText(defaultValuesTrackBudget?.name)
-      : '-',
-    total_budget: 0,
-    sections: [],
-  };
+  // const defaultValues: FormTrackBudget = {
+  //   track_id: defaultValuesTrackBudget?.id || '#',
+  //   name: defaultValuesTrackBudget?.name
+  //     ? formatCapitalizeText(defaultValuesTrackBudget?.name)
+  //     : '-',
+  //   total_budget: 0,
+  //   sections: [],
+  // };
 
   const tmpDefaultValues = useMemo(() => {
     const trackId = defaultValuesTrackBudget?.id || '#';
@@ -138,7 +137,7 @@ export default function FormNestedTrackBudget({
         ...item,
         supervisor_options:
           item?.section_supervisor?.map((item) => ({
-            value: item?.section_supervisor_id || '',
+            value: item?.supervisor_user_id || '',
             label: item?.supervisor?.employee_name || '',
           })) || [],
 
@@ -148,7 +147,7 @@ export default function FormNestedTrackBudget({
             ...firstChild,
             supervisor_options:
               firstChild?.section_supervisor?.map((firstSpv) => ({
-                value: firstSpv?.section_supervisor_id || '',
+                value: firstSpv?.supervisor_user_id || '',
                 label: firstSpv?.supervisor?.employee_name || '',
               })) || [],
 
@@ -157,7 +156,7 @@ export default function FormNestedTrackBudget({
               ...secondChild,
               supervisor_options:
                 secondChild?.section_supervisor?.map((secondPSpv) => ({
-                  value: secondPSpv?.section_supervisor_id || '',
+                  value: secondPSpv?.supervisor_user_id || '',
                   label: secondPSpv?.supervisor?.employee_name || '',
                 })) || [],
               // thrid child
@@ -166,7 +165,7 @@ export default function FormNestedTrackBudget({
                   ...thirdChild,
                   supervisor_options:
                     thirdChild?.section_supervisor?.map((thirdSpv) => ({
-                      value: thirdSpv?.section_supervisor_id || '',
+                      value: thirdSpv?.supervisor_user_id || '',
                       label: thirdSpv?.supervisor?.employee_name || '',
                     })) || [],
                   // fourth child
@@ -175,7 +174,7 @@ export default function FormNestedTrackBudget({
                       ...fourthChild,
                       supervisor_options:
                         fourthChild?.section_supervisor?.map((fourthSpv) => ({
-                          value: fourthSpv?.section_supervisor_id || '',
+                          value: fourthSpv?.supervisor_user_id || '',
                           label: fourthSpv?.supervisor?.employee_name || '',
                         })) || [],
                       // fourth child
@@ -286,7 +285,7 @@ export default function FormNestedTrackBudget({
     defaultValues: tmpDefaultValues,
     // defaultValues,
   });
-  const { control, register, handleSubmit, getValues, setValue, watch, setError, reset } = methods;
+  const { control, register, handleSubmit, getValues, setValue, watch, reset } = methods;
 
   const onSubmit = (data: FormTrackBudget) => {
     const tmpPayload = data;

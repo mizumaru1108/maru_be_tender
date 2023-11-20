@@ -35,7 +35,7 @@ function FloatinActonBar() {
     },
   });
 
-  const { data, fetching, error: errorGetProposal } = result;
+  const { data } = result;
 
   return (
     <>
@@ -112,7 +112,7 @@ function FloatinActonBar() {
               <React.Fragment>
                 {activeTap &&
                   ['follow-ups'].includes(activeTap) &&
-                  (actionType === 'show-details' || actionType === 'show-project') &&
+                  ['show-details', 'show-project'].includes(actionType!) &&
                   pathName &&
                   pathName[3] === 'previous-funding-requests' &&
                   proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
@@ -126,7 +126,8 @@ function FloatinActonBar() {
             ['project-path', 'payments'].includes(activeTap) &&
             ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR'].includes(proposal.inner_status) &&
             ['ONGOING'].includes(proposal.outter_status) &&
-            ['tender_finance'].includes(role) && <FinanceFloatingActionBar />}
+            ['tender_finance'].includes(role) &&
+            ['show-details'].includes(actionType!) && <FinanceFloatingActionBar />}
           {FEATURE_AMANDEMENT_FROM_FINANCE &&
             activeTap &&
             ['project-path'].includes(activeTap) &&

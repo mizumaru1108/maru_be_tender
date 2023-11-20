@@ -2623,6 +2623,7 @@ const en = {
       file: 'You have new message with file',
     },
     error: {
+      not_responsible_spv: 'You are not responsible for this track budget section:',
       password: {
         validation: {
           uppper_case: 'Contain at least one uppercase letter',

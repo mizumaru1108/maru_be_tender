@@ -211,16 +211,16 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
                 </Typography>
               </Stack>
             </Stack> */}
-            <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>{stepGeneralLog.notes ?? '-'}</Typography>
-              </Stack>
-            </Stack>
             <Typography variant="h6">{translate(`review.support_output`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 <Typography>{stepGeneralLog?.new_values?.support_outputs ?? '-'}</Typography>
+              </Stack>
+            </Stack>
+            <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
+            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <Typography>{stepGeneralLog.notes ?? '-'}</Typography>
               </Stack>
             </Stack>
           </React.Fragment>

@@ -219,9 +219,9 @@ export default function ViewNewSectionTracks() {
                           </Typography>
                           <Typography sx={{ color: 'text.primary', fontWeight: 550 }}>
                             {item?.section_supervisor && item?.section_supervisor?.length > 0
-                              ? item.section_supervisor?.map(
-                                  (item) => item?.supervisor?.employee_name
-                                )
+                              ? item.section_supervisor
+                                  ?.map((item) => item?.supervisor?.employee_name)
+                                  .join(', ')
                               : '-'}
                           </Typography>
                         </Grid>
@@ -340,9 +340,9 @@ export default function ViewNewSectionTracks() {
                                 </Typography>
                                 <Typography sx={{ color: 'text.primary', fontWeight: 550 }}>
                                   {item?.section_supervisor && item?.section_supervisor?.length > 0
-                                    ? item.section_supervisor?.map(
-                                        (item) => item?.supervisor?.employee_name
-                                      )
+                                    ? item.section_supervisor
+                                        ?.map((item) => item?.supervisor?.employee_name)
+                                        .join(', ')
                                     : '-'}
                                 </Typography>
                               </Grid>
@@ -480,9 +480,9 @@ export default function ViewNewSectionTracks() {
                                       <Typography sx={{ color: 'text.primary', fontWeight: 550 }}>
                                         {item?.section_supervisor &&
                                         item?.section_supervisor?.length > 0
-                                          ? item.section_supervisor?.map(
-                                              (item) => item?.supervisor?.employee_name
-                                            )
+                                          ? item.section_supervisor
+                                              ?.map((item) => item?.supervisor?.employee_name)
+                                              .join(', ')
                                           : '-'}
                                       </Typography>
                                     </Grid>
@@ -641,9 +641,9 @@ export default function ViewNewSectionTracks() {
                                             >
                                               {item?.section_supervisor &&
                                               item?.section_supervisor?.length > 0
-                                                ? item.section_supervisor?.map(
-                                                    (item) => item?.supervisor?.employee_name
-                                                  )
+                                                ? item.section_supervisor
+                                                    ?.map((item) => item?.supervisor?.employee_name)
+                                                    .join(', ')
                                                 : '-'}
                                             </Typography>
                                           </Grid>

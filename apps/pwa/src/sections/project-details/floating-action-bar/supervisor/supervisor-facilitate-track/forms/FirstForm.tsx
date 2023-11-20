@@ -17,11 +17,12 @@ import selectDataById, {
   selectSectionProjectPath,
 } from '../../../../../../utils/generateParentChild';
 import { arabicToAlphabetical } from 'utils/formatNumber';
+import { ComboBoxOption } from '../../../../../../components/hook-form/RHFComboBox';
 
 function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubmited }: any) {
   const { translate } = useLocales();
   const { activeRole } = useAuth();
-  const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
+  const isSupevisor = activeRole === 'tender_project_supervisor';
   const { proposal } = useSelector((state) => state.proposal);
   const { track } = useSelector((state) => state.tracks);
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
@@ -31,19 +32,20 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
   const [sectionLevelThree, setSectionLevelThree] = useState<TrackSection[]>([]);
   const [sectionLevelFour, setSectionLevelFour] = useState<TrackSection[]>([]);
 
+  const [responsibleSpv, setResponsibleSpv] = useState<ComboBoxOption[]>([]);
+
   const [budgetError, setBudgetError] = useState({
     open: false,
     message: '',
   });
 
-  const [save, setSave] = useState<boolean>(isSupevisor ? false : true);
+  const [save, setSave] = useState<boolean>(!isSupevisor);
 
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
 
-  const isStepBack =
+  const isStepBack = !!(
     proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
-      ? true
-      : false;
+  );
 
   const validationSchema = React.useMemo(() => {
     const tmpIsVat = isVat;
@@ -173,24 +175,22 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       fsupport_by_supervisor: tmpFSupport,
     };
     if (tmpFSupport > remainBudget) {
-      // setError(
-      //   'fsupport_by_supervisor',
-      //   {
-      //     type: 'focus',
-      //     message: `${translate('notification.error_exceeds_amount')} (${remainBudget})`,
-      //   },
-      //   { shouldFocus: true }
-      // );
       setBudgetError({
         open: true,
-        message: 'notification.error_exceeds_amount',
+        message: `${translate('notification.error_exceeds_amount')} (${remainBudget})`,
       });
     } else {
-      setBudgetError({
-        open: false,
-        message: '',
-      });
-      onSubmit(removeEmptyKey(tmpValues));
+      const checkSpvId = [...responsibleSpv.map((item) => item.value)].includes(user?.id);
+      if (checkSpvId) {
+        onSubmit(removeEmptyKey(tmpValues));
+      } else {
+        setBudgetError({
+          open: true,
+          message: `${translate('notification.error.not_responsible_spv')} : ${
+            responsibleSpv.length > 0 ? responsibleSpv.map((item) => item.label).join(', ') : '-'
+          }`,
+        });
+      }
     }
   };
 
@@ -207,7 +207,16 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         setValue('section_id_level_four', '');
 
         const lvl1DataFound = sectionLevelOne.find((el) => el.id === e.target.value);
+        const firstSpvId =
+          (lvl1DataFound &&
+            lvl1DataFound?.section_supervisor &&
+            lvl1DataFound?.section_supervisor.map((item) => ({
+              label: item.supervisor.employee_name || '',
+              value: item.supervisor_user_id,
+            }))) ||
+          [];
 
+        setResponsibleSpv(firstSpvId || []);
         setSectionLevelTwo(lvl1DataFound?.child_track_section ?? []);
         setSectionLevelThree([]);
         setSectionLevelFour([]);
@@ -225,7 +234,16 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         setValue('section_id_level_four', '');
 
         const lvl2DataFound = sectionLevelTwo.find((el) => el.id === e.target.value);
+        const secondSpvId =
+          (lvl2DataFound &&
+            lvl2DataFound?.section_supervisor &&
+            lvl2DataFound?.section_supervisor.map((item) => ({
+              label: item.supervisor.employee_name || '',
+              value: item.supervisor_user_id,
+            }))) ||
+          [];
 
+        setResponsibleSpv(secondSpvId || []);
         setSectionLevelThree(lvl2DataFound?.child_track_section ?? []);
         setSectionLevelFour([]);
 
@@ -241,7 +259,16 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         setValue('section_id_level_four', '');
 
         const lvl3DataFound = sectionLevelThree.find((el) => el.id === e.target.value);
+        const thirdSpvId =
+          (lvl3DataFound &&
+            lvl3DataFound?.section_supervisor &&
+            lvl3DataFound?.section_supervisor.map((item) => ({
+              label: item.supervisor.employee_name || '',
+              value: item.supervisor_user_id,
+            }))) ||
+          [];
 
+        setResponsibleSpv(thirdSpvId || []);
         setSectionLevelFour(lvl3DataFound?.child_track_section ?? []);
 
         clearErrors('section_id_level_three');
@@ -253,6 +280,18 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       case 'four':
         setValue('section_id', e.target.value);
         setValue('section_id_level_four', e.target.value);
+
+        const lvl4DataFound = sectionLevelFour.find((el) => el.id === e.target.value);
+        const fourthSpvId =
+          (lvl4DataFound &&
+            lvl4DataFound?.section_supervisor &&
+            lvl4DataFound?.section_supervisor.map((item) => ({
+              label: item.supervisor.employee_name || '',
+              value: item.supervisor_user_id,
+            }))) ||
+          [];
+
+        setResponsibleSpv(fourthSpvId || []);
 
         clearErrors('section_id_level_four');
         setBudgetError({
@@ -383,9 +422,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
                   <MenuItem
                     data-cy={`acc_form_non_consulation_section_id_${v.id}`}
                     value={v.id}
-                    selected={
-                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
-                    }
+                    selected={proposal.section_id ? proposal.section_id === v.id : false}
                     key={i}
                   >
                     {v.name}
@@ -417,9 +454,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
                   <MenuItem
                     data-cy={`acc_form_non_consulation_section_id_${v.id}`}
                     value={v.id}
-                    selected={
-                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
-                    }
+                    selected={proposal.section_id ? proposal.section_id === v.id : false}
                     key={i}
                   >
                     {v.name}
@@ -452,9 +487,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
                   <MenuItem
                     data-cy={`acc_form_non_consulation_section_id_${v.id}`}
                     value={v.id}
-                    selected={
-                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
-                    }
+                    selected={proposal.section_id ? proposal.section_id === v.id : false}
                     key={i}
                   >
                     {v.name}
@@ -485,9 +518,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
                   <MenuItem
                     data-cy={`acc_form_non_consulation_section_id_${v.id}`}
                     value={v.id}
-                    selected={
-                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
-                    }
+                    selected={proposal.section_id ? proposal.section_id === v.id : false}
                     key={i}
                   >
                     {v.name}
@@ -592,11 +623,9 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
             placeholder="مبلغ الدعم"
             disabled={
               save ||
-              (support_type === 'false' || !support_type || support_type === undefined
+              (support_type === 'false' || !support_type || false
                 ? false
-                : requestedBudget > remainBudget
-                ? false
-                : true)
+                : requestedBudget <= remainBudget)
             }
           />
         </Grid>
@@ -685,7 +714,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         )}
         {budgetError.open && (
           <Grid item md={12} sx={{ my: 2 }}>
-            <Alert severity="error">{`${translate(budgetError.message)} (${remainBudget})`}</Alert>
+            <Alert severity="error">{budgetError.message}</Alert>
           </Grid>
         )}
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>

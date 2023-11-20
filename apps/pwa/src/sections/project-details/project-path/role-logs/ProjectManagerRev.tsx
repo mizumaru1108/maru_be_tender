@@ -1,10 +1,8 @@
 import { Grid, Stack, Typography } from '@mui/material';
-import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import moment from 'moment';
 import React from 'react';
 import { useSelector } from 'redux/store';
-import { Log } from '../../../../@types/proposal';
 import { FEATURE_PROJECT_PATH_NEW } from '../../../../config';
 import { selectSectionProjectPath } from 'utils/generateParentChild';
 import { TrackSection } from '../../../../@types/commons';
@@ -98,7 +96,7 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
 
   return (
     <React.Fragment>
-      {isConsultation === false &&
+      {!isConsultation &&
         stepGeneralLog.action !== 'accepted_by_project_manager' &&
         stepGeneralLog.action !== 'set_by_supervisor' &&
         stepGeneralLog.action !== 'rejected_by_project_manager' && (
@@ -284,16 +282,16 @@ function ProjectManagerRev({ stepGeneralLog, isConsultation = false }: Props) {
                 </Typography>
               </Stack>
             </Stack> */}
-            <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
-            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                <Typography>{stepGeneralLog?.notes ?? '-'}</Typography>
-              </Stack>
-            </Stack>
             <Typography variant="h6">{translate(`review.support_output`)}</Typography>
             <Stack direction="column" gap={2} sx={{ pb: 2 }}>
               <Stack direction="column" gap={2} sx={{ pb: 2 }}>
                 <Typography>{stepGeneralLog?.new_values?.support_outputs ?? '-'}</Typography>
+              </Stack>
+            </Stack>
+            <Typography variant="h6">{translate(`review.note_on_project`)}</Typography>
+            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <Typography>{stepGeneralLog?.notes ?? '-'}</Typography>
               </Stack>
             </Stack>
           </React.Fragment>

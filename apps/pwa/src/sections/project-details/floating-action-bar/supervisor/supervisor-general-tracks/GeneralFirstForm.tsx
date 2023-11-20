@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Alert, Grid, MenuItem, Button } from '@mui/material';
+import { Alert, Button, Grid, MenuItem } from '@mui/material';
 import { FormProvider, RHFRadioGroup, RHFSelect, RHFTextField } from 'components/hook-form';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -11,10 +11,10 @@ import useLocales from 'hooks/useLocales';
 import { SupervisorStep1 } from '../../../../../@types/supervisor-accepting-form';
 import { removeEmptyKey } from 'utils/remove-empty-key';
 import BaseField from 'components/hook-form/BaseField';
-import { _supportGoalsArr } from '_mock/_supportGoalsArr';
 import { TrackSection } from '../../../../../@types/commons';
 import selectDataById, { selectSectionProjectPath } from 'utils/generateParentChild';
 import { arabicToAlphabetical } from '../../../../../utils/formatNumber';
+import { ComboBoxOption } from '../../../../../components/hook-form/RHFComboBox';
 
 export default function GeneralFirstForm({
   children,
@@ -24,16 +24,18 @@ export default function GeneralFirstForm({
   setIsSubmited,
 }: any) {
   const { translate } = useLocales();
-  const { activeRole } = useAuth();
-  const isSupevisor = activeRole === 'tender_project_supervisor' ? true : false;
+  const { activeRole, user } = useAuth();
+  const isSupevisor = activeRole === 'tender_project_supervisor';
   const { proposal } = useSelector((state) => state.proposal);
   const { track } = useSelector((state) => state.tracks);
-  const { step1, step4 } = useSelector((state) => state.supervisorAcceptingForm);
+  const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
 
   const [sectionLevelOne, setSectionLevelOne] = useState<TrackSection[] | []>([]);
   const [sectionLevelTwo, setSectionLevelTwo] = useState<TrackSection[]>([]);
   const [sectionLevelThree, setSectionLevelThree] = useState<TrackSection[]>([]);
   const [sectionLevelFour, setSectionLevelFour] = useState<TrackSection[]>([]);
+
+  const [responsibleSpv, setResponsibleSpv] = useState<ComboBoxOption[]>([]);
 
   const [budgetError, setBudgetError] = useState({
     open: false,
@@ -42,12 +44,11 @@ export default function GeneralFirstForm({
 
   const [isVat, setIsVat] = useState<boolean>(step1.vat ?? false);
 
-  const [save, setSave] = useState<boolean>(isSupevisor ? false : true);
+  const [save, setSave] = useState<boolean>(!isSupevisor);
 
-  const isStepBack =
+  const isStepBack = !!(
     proposal.proposal_logs && proposal.proposal_logs.some((item) => item.action === 'step_back')
-      ? true
-      : false;
+  );
 
   const validationSchema = useMemo(() => {
     const tmpIsVat = isVat;
@@ -79,8 +80,8 @@ export default function GeneralFirstForm({
       payment_number: Yup.string()
         .required(translate('errors.cre_proposal.payment_number.required'))
         .test('len', `${translate('errors.cre_proposal.payment_number.greater_than')} 1`, (val) => {
-          const number_of_payment = Number(val) > 0;
-          return number_of_payment;
+          const check = Number(val) > 0;
+          return check;
         }),
       section_id: Yup.string().required(
         translate('errors.cre_proposal.section_level.section_id_level_one.required')
@@ -173,24 +174,27 @@ export default function GeneralFirstForm({
     };
 
     if (tmpFSupport > remainBudget) {
-      // setError(
-      //   'fsupport_by_supervisor',
-      //   {
-      //     type: 'focus',
-      //     message: `${translate('notification.error_exceeds_amount')} (${remainBudget})`,
-      //   },
-      //   { shouldFocus: true }
-      // );
       setBudgetError({
         open: true,
-        message: 'notification.error_exceeds_amount',
+        message: `${translate('notification.error_exceeds_amount')} (${remainBudget})`,
       });
     } else {
       setBudgetError({
         open: false,
         message: '',
       });
-      onSubmit(removeEmptyKey(tmpValues));
+      const checkSpvId = [...responsibleSpv.map((item) => item.value)].includes(user?.id);
+      if (checkSpvId) {
+        onSubmit(removeEmptyKey(tmpValues));
+      } else {
+        setBudgetError({
+          open: true,
+          message: `${translate('notification.error.not_responsible_spv')} : ${
+            responsibleSpv.length > 0 ? responsibleSpv.map((item) => item.label).join(', ') : '-'
+          }`,
+        });
+      }
+      // console.log({ spvId: [...responsibleSpv.map((item) => item.value)] });
     }
   };
 
@@ -207,7 +211,16 @@ export default function GeneralFirstForm({
         setValue('section_id_level_four', '');
 
         const lvl1DataFound = sectionLevelOne.find((el) => el.id === e.target.value);
+        const firstSpvId =
+          (lvl1DataFound &&
+            lvl1DataFound?.section_supervisor &&
+            lvl1DataFound?.section_supervisor.map((item) => ({
+              label: item.supervisor.employee_name || '',
+              value: item.supervisor_user_id,
+            }))) ||
+          [];
 
+        setResponsibleSpv(firstSpvId || []);
         setSectionLevelTwo(lvl1DataFound?.child_track_section ?? []);
         setSectionLevelThree([]);
         setSectionLevelFour([]);
@@ -225,7 +238,16 @@ export default function GeneralFirstForm({
         setValue('section_id_level_four', '');
 
         const lvl2DataFound = sectionLevelTwo.find((el) => el.id === e.target.value);
+        const secondSpvId =
+          (lvl2DataFound &&
+            lvl2DataFound?.section_supervisor &&
+            lvl2DataFound?.section_supervisor.map((item) => ({
+              label: item.supervisor.employee_name || '',
+              value: item.supervisor_user_id,
+            }))) ||
+          [];
 
+        setResponsibleSpv(secondSpvId || []);
         setSectionLevelThree(lvl2DataFound?.child_track_section ?? []);
         setSectionLevelFour([]);
 
@@ -241,7 +263,16 @@ export default function GeneralFirstForm({
         setValue('section_id_level_four', '');
 
         const lvl3DataFound = sectionLevelThree.find((el) => el.id === e.target.value);
+        const thirdSpvId =
+          (lvl3DataFound &&
+            lvl3DataFound?.section_supervisor &&
+            lvl3DataFound?.section_supervisor.map((item) => ({
+              label: item.supervisor.employee_name || '',
+              value: item.supervisor_user_id,
+            }))) ||
+          [];
 
+        setResponsibleSpv(thirdSpvId || []);
         setSectionLevelFour(lvl3DataFound?.child_track_section ?? []);
 
         clearErrors('section_id_level_three');
@@ -253,6 +284,18 @@ export default function GeneralFirstForm({
       case 'four':
         setValue('section_id', e.target.value);
         setValue('section_id_level_four', e.target.value);
+
+        const lvl4DataFound = sectionLevelFour.find((el) => el.id === e.target.value);
+        const fourthSpvId =
+          (lvl4DataFound &&
+            lvl4DataFound?.section_supervisor &&
+            lvl4DataFound?.section_supervisor.map((item) => ({
+              label: item.supervisor.employee_name || '',
+              value: item.supervisor_user_id,
+            }))) ||
+          [];
+
+        setResponsibleSpv(fourthSpvId || []);
 
         clearErrors('section_id_level_four');
         setBudgetError({
@@ -372,9 +415,7 @@ export default function GeneralFirstForm({
                   <MenuItem
                     data-cy={`acc_form_non_consulation_section_id_${v.id}`}
                     value={v.id}
-                    selected={
-                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
-                    }
+                    selected={proposal.section_id ? proposal.section_id === v.id : false}
                     key={i}
                   >
                     {v.name}
@@ -406,9 +447,7 @@ export default function GeneralFirstForm({
                   <MenuItem
                     data-cy={`acc_form_non_consulation_section_id_${v.id}`}
                     value={v.id}
-                    selected={
-                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
-                    }
+                    selected={proposal.section_id ? proposal.section_id === v.id : false}
                     key={i}
                   >
                     {v.name}
@@ -441,9 +480,7 @@ export default function GeneralFirstForm({
                   <MenuItem
                     data-cy={`acc_form_non_consulation_section_id_${v.id}`}
                     value={v.id}
-                    selected={
-                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
-                    }
+                    selected={proposal.section_id ? proposal.section_id === v.id : false}
                     key={i}
                   >
                     {v.name}
@@ -474,9 +511,7 @@ export default function GeneralFirstForm({
                   <MenuItem
                     data-cy={`acc_form_non_consulation_section_id_${v.id}`}
                     value={v.id}
-                    selected={
-                      proposal.section_id ? (proposal.section_id === v.id ? true : false) : false
-                    }
+                    selected={proposal.section_id ? proposal.section_id === v.id : false}
                     key={i}
                   >
                     {v.name}
@@ -610,12 +645,7 @@ export default function GeneralFirstForm({
             name="fsupport_by_supervisor"
             label="مبلغ الدعم*"
             placeholder="مبلغ الدعم"
-            disabled={
-              save ||
-              (support_type === 'false' || !support_type || support_type === undefined
-                ? false
-                : true)
-            }
+            disabled={save || !(support_type === 'false' || !support_type || false)}
           />
         </Grid>
         {isVat && (
@@ -678,7 +708,7 @@ export default function GeneralFirstForm({
         )}
         {budgetError.open && (
           <Grid item md={12} sx={{ my: 2 }}>
-            <Alert severity="error">{`${translate(budgetError.message)} (${remainBudget})`}</Alert>
+            <Alert severity="error">{budgetError.message}</Alert>
           </Grid>
         )}
         <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
