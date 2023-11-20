@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import {
   Button,
@@ -21,6 +21,10 @@ import uuidv4 from '../../../utils/uuidv4';
 import RHFTextField from '../RHFTextField';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { dispatch, useSelector } from '../../../redux/store';
+import RHFComboBox, { ComboBoxOption } from '../RHFComboBox';
+import { getManySupervisor } from '../../../redux/slices/user';
+import useAuth from '../../../hooks/useAuth';
 
 export interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -44,9 +48,14 @@ export default function RHFBaseRepeater({
   getValues,
   watch,
   isLoading,
+  supervisors,
 }: any) {
   const theme = useTheme();
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
+
+  // redux
+  const { employee, isLoading: spvLoading } = useSelector((state) => state.user);
 
   const { fields, append, remove, prepend } = useFieldArray({
     control,
@@ -80,7 +89,6 @@ export default function RHFBaseRepeater({
   };
 
   const tmpWatch = watch(`sections`);
-  // console.log({ tmpWatch });
   return (
     <>
       <Grid container alignItems="center">
@@ -124,7 +132,7 @@ export default function RHFBaseRepeater({
                         <ExpandMoreIcon fontSize="large" />
                       </ExpandMore>
                     </Grid>
-                    <Grid md={5} xs={12} sx={{ padding: '0 7px' }} item>
+                    <Grid md={4} xs={12} sx={{ padding: '0 7px' }} item>
                       <RHFTextField
                         disabled={isLoading}
                         name={`sections.${index}.name`}
@@ -133,7 +141,7 @@ export default function RHFBaseRepeater({
                         size={'small'}
                       />
                     </Grid>
-                    <Grid md={5} xs={12} sx={{ padding: '0 7px' }} item>
+                    <Grid md={3} xs={12} sx={{ padding: '0 7px' }} item>
                       <RHFTextField
                         disabled={isLoading}
                         name={`sections.${index}.budget`}
@@ -153,6 +161,17 @@ export default function RHFBaseRepeater({
                             }, 0);
                           },
                         }}
+                      />
+                    </Grid>
+                    <Grid md={3} xs={12} sx={{ padding: '0 7px' }} item>
+                      <RHFComboBox
+                        isMultiple={true}
+                        size={'small'}
+                        disabled={isLoading}
+                        name={`sections.${index}.supervisor_options`}
+                        label={translate('track_budgets.fields.supervisor_id.label')}
+                        placeholder={translate('track_budgets.fields.supervisor_id.placeholder')}
+                        dataOption={supervisors}
                       />
                     </Grid>
                     <Grid item md={1} xs={12} sx={{ padding: '0 7px' }}>
@@ -184,6 +203,7 @@ export default function RHFBaseRepeater({
                         nestIndex={index}
                         parentSectionId={tmpWatch[index]?.id}
                         expanded={openItems.includes(item.id)}
+                        supervisors={supervisors}
                         {...{ control, register, watch, setValue }}
                       />
                     </Grid>

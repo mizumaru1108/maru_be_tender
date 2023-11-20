@@ -3,12 +3,16 @@ import { Alert, Button, Chip, Divider, Grid, Typography } from '@mui/material';
 import { FormProvider, RHFTextField } from 'components/hook-form';
 import RHFBaseRepeater from 'components/hook-form/nested-track-budget/RHFBaseRepeater';
 import useLocales from 'hooks/useLocales';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { TrackSection } from '../../../../@types/commons';
 import { Proposal } from '../../../../@types/proposal';
+import { ComboBoxOption } from '../../../../components/hook-form/RHFComboBox';
 import Space from '../../../../components/space/space';
+import useAuth from '../../../../hooks/useAuth';
+import { getManySupervisor } from '../../../../redux/slices/user';
+import { dispatch, useSelector } from '../../../../redux/store';
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
 import { arabicToAlphabetical } from '../../../../utils/formatNumber';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
@@ -29,10 +33,11 @@ export function flattenChildTrackSections(arr: TrackSection[], track_id: string)
       removeEmptyKey({
         budget: Number(arabicToAlphabetical(item?.budget?.toString() || '0')),
         // budget: item?.budget,
-        name: item.name,
-        id: item.id,
-        parent_section_id: item.parent_section_id,
+        name: item?.name,
+        id: item?.id,
+        parent_section_id: item?.parent_section_id,
         track_id: track_id,
+        supervisor_id: item?.supervisor_options?.map((supervisor) => supervisor.value) || [],
       })
     );
 
@@ -90,20 +95,28 @@ export interface FormTrackBudget {
 
 interface Props {
   defaultValuesTrackBudget?: FormTrackBudget;
+  supervisors?: ComboBoxOption[];
   isLoading: boolean;
   onSubmitForm: (data: TrackSection[]) => void;
 }
 
 export default function FormNestedTrackBudget({
   defaultValuesTrackBudget,
+  supervisors,
   isLoading,
   onSubmitForm,
 }: Props) {
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
+
   const [budgetError, setBudgetError] = useState({
     open: false,
     message: '',
   });
+
+  const { isLoading: spvLoading } = useSelector((state) => state.user);
+
+  // console.log({ supervisors });
 
   const defaultValues: FormTrackBudget = {
     track_id: defaultValuesTrackBudget?.id || '#',
@@ -113,6 +126,74 @@ export default function FormNestedTrackBudget({
     total_budget: 0,
     sections: [],
   };
+
+  const tmpDefaultValues = useMemo(() => {
+    const trackId = defaultValuesTrackBudget?.id || '#';
+    const name = defaultValuesTrackBudget?.name
+      ? formatCapitalizeText(defaultValuesTrackBudget?.name)
+      : '-';
+    const totalBudget = defaultValuesTrackBudget?.total_budget || 0;
+    const sections =
+      defaultValuesTrackBudget?.sections?.map((item) => ({
+        ...item,
+        supervisor_options:
+          item?.section_supervisor?.map((item) => ({
+            value: item?.section_supervisor_id || '',
+            label: item?.supervisor?.employee_name || '',
+          })) || [],
+
+        // first child
+        child_track_section:
+          item?.child_track_section?.map((firstChild) => ({
+            ...firstChild,
+            supervisor_options:
+              firstChild?.section_supervisor?.map((firstSpv) => ({
+                value: firstSpv?.section_supervisor_id || '',
+                label: firstSpv?.supervisor?.employee_name || '',
+              })) || [],
+
+            // second child
+            child_track_section: firstChild?.child_track_section?.map((secondChild) => ({
+              ...secondChild,
+              supervisor_options:
+                secondChild?.section_supervisor?.map((secondPSpv) => ({
+                  value: secondPSpv?.section_supervisor_id || '',
+                  label: secondPSpv?.supervisor?.employee_name || '',
+                })) || [],
+              // thrid child
+              child_track_section:
+                secondChild?.child_track_section?.map((thirdChild) => ({
+                  ...thirdChild,
+                  supervisor_options:
+                    thirdChild?.section_supervisor?.map((thirdSpv) => ({
+                      value: thirdSpv?.section_supervisor_id || '',
+                      label: thirdSpv?.supervisor?.employee_name || '',
+                    })) || [],
+                  // fourth child
+                  child_track_section:
+                    thirdChild?.child_track_section?.map((fourthChild) => ({
+                      ...fourthChild,
+                      supervisor_options:
+                        fourthChild?.section_supervisor?.map((fourthSpv) => ({
+                          value: fourthSpv?.section_supervisor_id || '',
+                          label: fourthSpv?.supervisor?.employee_name || '',
+                        })) || [],
+                      // fourth child
+                    })) || [],
+                  // end thrid child
+                })) || [],
+              // end second child
+            })),
+          })) || [],
+        // end first child
+      })) || [];
+    return {
+      track_id: trackId,
+      name: name,
+      total_budget: totalBudget,
+      sections: sections,
+    };
+  }, [defaultValuesTrackBudget]);
 
   const SubmitFormSchema = useMemo(() => {
     const tmpSchema = Yup.object().shape({
@@ -131,6 +212,10 @@ export default function FormNestedTrackBudget({
             .integer()
             .min(1, translate(translate('track_budgets.errors.budgets.min')))
             .required(translate('errors.cre_proposal.detail_project_budgets.amount.required')),
+          supervisor_options: Yup.array()
+            .nullable()
+            .min(1, translate(translate('track_budgets.errors.supervisor_id.min')))
+            .required(translate(translate('track_budgets.errors.supervisor_id.required'))),
           child_track_section: Yup.array().of(
             Yup.object().shape({
               name: Yup.string().required(
@@ -141,6 +226,10 @@ export default function FormNestedTrackBudget({
                 .integer()
                 .min(1, translate(translate('track_budgets.errors.budgets.min')))
                 .required(translate('errors.cre_proposal.detail_project_budgets.amount.required')),
+              supervisor_options: Yup.array()
+                .nullable()
+                .min(1, translate(translate('track_budgets.errors.supervisor_id.min')))
+                .required(translate(translate('track_budgets.errors.supervisor_id.required'))),
               child_track_section: Yup.array().of(
                 Yup.object().shape({
                   name: Yup.string().required(
@@ -155,6 +244,10 @@ export default function FormNestedTrackBudget({
                     .required(
                       translate('errors.cre_proposal.detail_project_budgets.amount.required')
                     ),
+                  supervisor_options: Yup.array()
+                    .nullable()
+                    .min(1, translate(translate('track_budgets.errors.supervisor_id.min')))
+                    .required(translate(translate('track_budgets.errors.supervisor_id.required'))),
                   child_track_section: Yup.array().of(
                     Yup.object().shape({
                       name: Yup.string().required(
@@ -168,6 +261,12 @@ export default function FormNestedTrackBudget({
                         .min(1, translate(translate('track_budgets.errors.budgets.min')))
                         .required(
                           translate('errors.cre_proposal.detail_project_budgets.amount.required')
+                        ),
+                      supervisor_options: Yup.array()
+                        .nullable()
+                        .min(1, translate(translate('track_budgets.errors.supervisor_id.min')))
+                        .required(
+                          translate(translate('track_budgets.errors.supervisor_id.required'))
                         ),
                     })
                   ),
@@ -184,10 +283,10 @@ export default function FormNestedTrackBudget({
 
   const methods = useForm<FormTrackBudget>({
     resolver: yupResolver(SubmitFormSchema),
-    defaultValues: !!defaultValuesTrackBudget ? defaultValuesTrackBudget : defaultValues,
+    defaultValues: tmpDefaultValues,
     // defaultValues,
   });
-  const { control, register, handleSubmit, getValues, setValue, watch, setError } = methods;
+  const { control, register, handleSubmit, getValues, setValue, watch, setError, reset } = methods;
 
   const onSubmit = (data: FormTrackBudget) => {
     const tmpPayload = data;
@@ -247,6 +346,14 @@ export default function FormNestedTrackBudget({
     }
   };
 
+  useEffect(() => {
+    if (!spvLoading) {
+      reset(tmpDefaultValues);
+    }
+  }, [spvLoading, tmpDefaultValues, reset]);
+
+  if (spvLoading) return <>{translate('pages.common.loading')}</>;
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container sx={{ mt: 3 }}>
@@ -293,7 +400,14 @@ export default function FormNestedTrackBudget({
         <Grid item md={12}>
           <RHFBaseRepeater
             isLoading={isLoading}
-            {...{ control, register, defaultValues, getValues, setValue, watch }}
+            {...{
+              control,
+              register,
+              getValues,
+              setValue,
+              watch,
+              supervisors,
+            }}
           />
         </Grid>
 

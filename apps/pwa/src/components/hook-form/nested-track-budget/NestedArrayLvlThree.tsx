@@ -14,6 +14,7 @@ import {
 import useLocales from 'hooks/useLocales';
 import { useFieldArray } from 'react-hook-form';
 import uuidv4 from '../../../utils/uuidv4';
+import RHFComboBox from '../RHFComboBox';
 import RHFTextField from '../RHFTextField';
 
 export default function NestedArrayLvlThree({
@@ -27,6 +28,7 @@ export default function NestedArrayLvlThree({
   setValue,
   isLoading,
   expanded,
+  supervisors,
 }: any) {
   const theme = useTheme();
   const { translate } = useLocales();
@@ -122,7 +124,7 @@ export default function NestedArrayLvlThree({
                     container
                     sx={{ display: 'flex', justifyContent: 'flex-end', margin: '0 0 10px 0' }}
                   >
-                    <Grid item md={6} xs={12} sx={{ padding: '0 7px' }}>
+                    <Grid item md={3} xs={12} sx={{ padding: '0 7px' }}>
                       <RHFTextField
                         disabled={isLoading}
                         name={`sections.${nestIndex}.child_track_section.${nestedOneIndex}.child_track_section.${nestedTwoIndex}.child_track_section.${k}.name`}
@@ -131,7 +133,7 @@ export default function NestedArrayLvlThree({
                         size={'small'}
                       />
                     </Grid>
-                    <Grid item md={4} xs={12} sx={{ padding: '0 7px' }}>
+                    <Grid item md={3} xs={12} sx={{ padding: '0 7px' }}>
                       <RHFTextField
                         disabled={isLoading}
                         name={`sections.${nestIndex}.child_track_section.${nestedOneIndex}.child_track_section.${nestedTwoIndex}.child_track_section.${k}.budget`}
@@ -151,6 +153,17 @@ export default function NestedArrayLvlThree({
                             }, 0);
                           },
                         }}
+                      />
+                    </Grid>
+                    <Grid md={3} xs={12} sx={{ padding: '0 7px' }} item>
+                      <RHFComboBox
+                        isMultiple={true}
+                        size={'small'}
+                        disabled={isLoading}
+                        name={`sections.${nestIndex}.child_track_section.${nestedOneIndex}.child_track_section.${nestedTwoIndex}.child_track_section.${k}.supervisor_options`}
+                        label={translate('track_budgets.fields.supervisor_id.label')}
+                        placeholder={translate('track_budgets.fields.supervisor_id.placeholder')}
+                        dataOption={supervisors}
                       />
                     </Grid>
                     <Grid item md={1} xs={12} sx={{ padding: '0 7px' }}>

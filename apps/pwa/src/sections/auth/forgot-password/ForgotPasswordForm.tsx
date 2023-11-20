@@ -17,6 +17,7 @@ import { useState } from 'react';
 import PasswordValidation, {
   ValidationType,
 } from '../../../components/password-validation/password-validation';
+import RHFPassword from '../../../components/hook-form/RHFPassword';
 
 // ----------------------------------------------------------------------
 
@@ -142,11 +143,10 @@ export default function ForgotPasswordForm() {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(handleOnSubmit)}>
       <Stack spacing={3} sx={{ mb: 1 }}>
-        <RHFTextField
+        <RHFPassword
           name="new_password"
           label={translate('new_password_label')}
           placeholder={translate('placeholder_reset_password')}
-          size="small"
         />
         {FEATURE_NEW_PASSWORD_VALIDATION && (
           <Stack sx={{ mt: 2 }}>

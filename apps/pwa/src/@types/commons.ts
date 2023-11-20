@@ -1,4 +1,6 @@
 import { Proposal } from './proposal';
+import { UserEntity } from '../redux/slices/user';
+import { ComboBoxOption } from '../components/hook-form/RHFComboBox';
 
 export type FusionAuthRoles =
   | 'cluster_admin'
@@ -180,7 +182,14 @@ export interface TrackSection {
   section_spending_budget?: number;
   section_reserved_budget?: number;
   section_spending_budget_by_ceo?: number;
-  supervisor_id?: any[];
+  supervisor_id?: string[];
+  supervisor_options?: ComboBoxOption[];
+  section_supervisor?: {
+    section_id: string;
+    section_supervisor_id: string;
+    supervisor_user_id: string;
+    supervisor: UserEntity;
+  }[];
 }
 
 export interface TrackProps {

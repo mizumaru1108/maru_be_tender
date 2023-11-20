@@ -21,7 +21,6 @@ import useAuth from 'hooks/useAuth';
 import axiosInstance from 'utils/axios';
 import { LoadingButton } from '@mui/lab';
 import { PERMISSIONS } from '_mock/permissions';
-import { translateRect } from '@fullcalendar/common';
 import useLocales from 'hooks/useLocales';
 import { getOneEmployee } from '../../../../queries/admin/getAllTheEmployees';
 import { useQuery } from 'urql';
@@ -30,9 +29,12 @@ import { useSnackbar } from 'notistack';
 import formatPhone from 'utils/formatPhone';
 import { tracks } from '../../../../@types/proposal';
 import { formatCapitalizeText } from '../../../../utils/formatCapitalizeText';
-import { AppRole } from '../../../../@types/commons';
 import { dispatch, useSelector } from '../../../../redux/store';
 import { getTracks } from '../../../../redux/slices/track';
+import PasswordValidation, {
+  ValidationType,
+} from '../../../../components/password-validation/password-validation';
+import { FEATURE_NEW_PASSWORD_VALIDATION } from '../../../../config';
 
 type FormValuesProps = {
   employee_name: string;
@@ -73,7 +75,15 @@ function AddNewUser() {
 
   const { enqueueSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  // const [tracksData, setTracksData] = React.useState<tracks[]>([]);
+  const [validation, setValidation] = React.useState<ValidationType>({
+    uppper_case: false,
+    special_char: false,
+    number: false,
+  });
+  const [errorState, setError] = React.useState({
+    open: false,
+    message: '',
+  });
 
   const [openSnackBar, setOpenSnackBar] = React.useState<SnackBar>({
     open: false,
@@ -134,9 +144,13 @@ function AddNewUser() {
     handleSubmit,
     reset,
     formState: { isSubmitting },
+    watch,
   } = methods;
 
+  const newPassword = watch('password');
+
   const onSubmit = async (data: FormValuesProps) => {
+    const check = Object.values(validation).every((val) => val);
     const tmpMobile = formatPhone({ phone: data.mobile_number, prefix: '+966' });
     let payload = {
       ...data,
@@ -144,6 +158,15 @@ function AddNewUser() {
     };
     payload.track_id = (data && data.employee_path) ?? '';
     delete payload.employee_path;
+
+    if (!check && FEATURE_NEW_PASSWORD_VALIDATION) {
+      setError({
+        open: true,
+        message: translate('notification.error.password.validation.failed'),
+      });
+      return null;
+    }
+
     try {
       setIsLoading(true);
       await axiosInstance.post(
@@ -207,6 +230,14 @@ function AddNewUser() {
     setOpenSnackBar({ open: false, message: '', severity: 'success' });
   };
 
+  const handlePasswordValidation = (value: ValidationType) => {
+    setValidation({
+      uppper_case: value.uppper_case,
+      special_char: value.special_char,
+      number: value.number,
+    });
+  };
+
   React.useEffect(() => {
     // fetchingTracks();
     dispatch(getTracks(activeRole!));
@@ -224,7 +255,7 @@ function AddNewUser() {
             ? data.data.mobile_number.replace('+62', '')
             : data.data.mobile_number.replace('+966', '');
         // console.log({ tmpMobileNumber });
-        const tmpActiveUser = data?.data?.status_id === 'ACTIVE_ACCOUNT' ? true : false;
+        const tmpActiveUser = data?.data?.status_id === 'ACTIVE_ACCOUNT';
         reset({
           activate_user: tmpActiveUser,
           email: data.data.email,
@@ -306,7 +337,7 @@ function AddNewUser() {
                 placeholder="الرجاء كتابة البريد الإلكتروني"
               />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item md={12} xs={12}>
               <BaseField
                 type="password"
                 name="password"
@@ -317,6 +348,18 @@ function AddNewUser() {
                 }
               />
             </Grid>
+            {FEATURE_NEW_PASSWORD_VALIDATION && (
+              <Grid item md={12} xs={12}>
+                <Stack>
+                  <PasswordValidation
+                    password={newPassword || ''}
+                    type={['uppper_case', 'special_char', 'number']}
+                    onReturn={handlePasswordValidation}
+                  />
+                </Stack>
+              </Grid>
+            )}
+
             <Grid item md={6} xs={12}>
               <BaseField
                 type="textField"
@@ -365,7 +408,7 @@ function AddNewUser() {
                 }}
               >
                 {tracks
-                  .filter((item: tracks) => item.is_deleted === false)
+                  .filter((item: tracks) => !item.is_deleted)
                   .map((item: tracks, index: any) => (
                     <MenuItem key={index} value={item?.id}>
                       {formatCapitalizeText(item.name)}
@@ -393,6 +436,11 @@ function AddNewUser() {
                 }))}
               />
             </Grid>
+            {errorState.open && (
+              <Grid item md={12} sx={{ my: 2 }}>
+                <Alert severity="error">{errorState.message}</Alert>
+              </Grid>
+            )}
             <Grid item md={12} xs={12}>
               <Stack direction="row" justifyContent="center">
                 <Box

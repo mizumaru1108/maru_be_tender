@@ -15,6 +15,7 @@ import { TrackSection } from '../../../../@types/commons';
 import { getTracksById } from '../../../../redux/slices/track';
 import { dispatch, useSelector } from '../../../../redux/store';
 import FormNestedTrackBudget from '../../../client/funding-project-request/forms/FormNestedTrackBudget';
+import { getManySupervisor } from '../../../../redux/slices/user';
 
 // ------------------------------------------------------------------------------------------
 
@@ -44,6 +45,7 @@ export default function NewSectionTracks() {
 
   const [submitting, setSubmitting] = useState(false);
   const { track, isLoading: load, error } = useSelector((state) => state.tracks);
+  const { employee, isLoading: spvLoading } = useSelector((state) => state.user);
 
   const handleSubmitForm = async (data: TrackSection[]) => {
     try {
@@ -99,6 +101,7 @@ export default function NewSectionTracks() {
   // fetching track by id
   useEffect(() => {
     dispatch(getTracksById(activeRole!, track_id || ''));
+    dispatch(getManySupervisor(activeRole!, track_id));
   }, [activeRole, track_id]);
 
   // handle error
@@ -124,7 +127,9 @@ export default function NewSectionTracks() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
-  if (load) return <>{translate('pages.common.loading')}</>;
+  // console.log({ spvLoading });
+
+  if (load || spvLoading) return <>{translate('pages.common.loading')}</>;
 
   return (
     <Container>
@@ -157,10 +162,20 @@ export default function NewSectionTracks() {
           </Grid>
           <Grid item md={12} xs={12}>
             <FormNestedTrackBudget
-              defaultValuesTrackBudget={{
-                ...track,
-                track_id: track.id,
-              }}
+              defaultValuesTrackBudget={
+                track && {
+                  ...track,
+                  track_id: track.id,
+                }
+              }
+              supervisors={
+                (employee?.tender_project_supervisor.length > 0 &&
+                  employee?.tender_project_supervisor?.map((item) => ({
+                    value: item.id || '',
+                    label: item.employee_name || '-',
+                  }))) ||
+                []
+              }
               isLoading={submitting}
               onSubmitForm={handleSubmitForm}
             />

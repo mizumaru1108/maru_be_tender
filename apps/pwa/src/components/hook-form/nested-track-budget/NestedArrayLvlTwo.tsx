@@ -19,6 +19,7 @@ import uuidv4 from '../../../utils/uuidv4';
 import RHFTextField from '../RHFTextField';
 import { ExpandMore } from './RHFBaseRepeater';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import RHFComboBox from '../RHFComboBox';
 
 export default function NestedArrayLvlTwo({
   nestIndex,
@@ -30,6 +31,7 @@ export default function NestedArrayLvlTwo({
   setValue,
   isLoading,
   expanded,
+  supervisors,
 }: any) {
   const theme = useTheme();
   const { translate } = useLocales();
@@ -152,7 +154,7 @@ export default function NestedArrayLvlTwo({
                         </ExpandMore>
                       </Stack>
                     </Grid>
-                    <Grid item md={5.5} xs={12} sx={{ padding: '0 7px' }}>
+                    <Grid item md={4} xs={12} sx={{ padding: '0 7px' }}>
                       <RHFTextField
                         disabled={isLoading}
                         name={`sections.${nestIndex}.child_track_section.${nestedOneIndex}.child_track_section.${k}.name`}
@@ -161,7 +163,7 @@ export default function NestedArrayLvlTwo({
                         size={'small'}
                       />
                     </Grid>
-                    <Grid item md={4} xs={12} sx={{ padding: '0 7px' }}>
+                    <Grid item md={3} xs={12} sx={{ padding: '0 7px' }}>
                       <RHFTextField
                         disabled={isLoading}
                         name={`sections.${nestIndex}.child_track_section.${nestedOneIndex}.child_track_section.${k}.budget`}
@@ -181,6 +183,17 @@ export default function NestedArrayLvlTwo({
                             }, 0);
                           },
                         }}
+                      />
+                    </Grid>
+                    <Grid md={3} xs={12} sx={{ padding: '0 7px' }} item>
+                      <RHFComboBox
+                        isMultiple={true}
+                        size={'small'}
+                        disabled={isLoading}
+                        name={`sections.${nestIndex}.child_track_section.${nestedOneIndex}.child_track_section.${k}.supervisor_options`}
+                        label={translate('track_budgets.fields.supervisor_id.label')}
+                        placeholder={translate('track_budgets.fields.supervisor_id.placeholder')}
+                        dataOption={supervisors}
                       />
                     </Grid>
                     <Grid item md={1} xs={12} sx={{ padding: '0 7px' }}>
@@ -240,6 +253,7 @@ export default function NestedArrayLvlTwo({
                         nestedTwoIndex={k}
                         parentSectionId={tmpWatch[k]?.id}
                         expanded={openItemsLvlTwo.includes(item.id)}
+                        supervisors={supervisors}
                         {...{ control, register, watch, setValue }}
                       />
                     </Grid>
