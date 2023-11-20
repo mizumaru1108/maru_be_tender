@@ -192,9 +192,7 @@ function ProjectPath() {
         <Stack direction="column" gap={2} justifyContent="start" sx={{ paddingBottom: '10px' }}>
           <Typography variant="h6">مسار المشروع</Typography>
           {(!logs || logs.length === 0) && (
-            <Typography variant="body1">
-              {translate('There is no path for this project ( old db project )')}
-            </Typography>
+            <Typography variant="body1">{translate('errors.no_project_path')}</Typography>
           )}
           <Box sx={{ width: '100%', padding: '10px', maxHeight: '180vh', overflowY: 'scroll' }}>
             <Stepper activeStep={logs && logs.length} orientation="vertical">
