@@ -227,7 +227,7 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitForm)}>
       <Grid container rowSpacing={4} columnSpacing={7}>
-        <Grid item md={12} xs={12}>
+        <Grid item xs={12}>
           <RHFTextField
             name="email"
             label={translate('register_form2.email.label')}
@@ -237,44 +237,28 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
 
         {activeRole !== 'tender_client' && (
           <>
-            <Grid item md={6} xs={12}>
+            <Grid item xs={12} md={6}>
               <RHFTextField
                 name="employee_name"
                 label={translate('register_form2.employee_name.label')}
                 placeholder={translate('register_form2.employee_name.placeholder')}
               />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item xs={12} md={6}>
               <RHFTextField
                 name="mobile_number"
                 label={translate('register_form2.mobile_number.label')}
-                // placeholder={translate('register_form2.mobile_number.placeholder')}
                 placeholder="xxx xxx xxx"
               />
             </Grid>
           </>
         )}
-        <Grid item md={8} xs={12}>
+        <Grid item xs={12} md={12}>
           <RHFPassword
             name="current_password"
             label={translate('register_form2.password.label')}
             placeholder={translate('register_form2.password.placeholder')}
           />
-        </Grid>
-        <Grid item md={4} xs={12} display="flex" alignItems="center">
-          <Button
-            size="large"
-            onClick={() => setChangePassword(!changePassword)}
-            variant={changePassword ? 'outlined' : 'contained'}
-            sx={{
-              backgroundColor: changePassword ? '#fff' : 'background.paper',
-              color: changePassword ? 'background.paper' : '#fff',
-              width: { xs: '100%', sm: '200px' },
-              hieght: { xs: '100%', sm: '50px' },
-            }}
-          >
-            {changePassword ? 'عدم تغيير كلمة المرور' : 'غير كلمة السر'}
-          </Button>
         </Grid>
 
         {changePassword && (
@@ -312,8 +296,27 @@ const UserInfoForm = ({ children, onSubmit, defaultValues }: FormProps) => {
           </Grid>
         )}
 
-        <Grid item md={12} xs={12} sx={{ mb: '70px' }}>
-          {children}
+        <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={6} md={3}>
+              <Button
+                size="large"
+                onClick={() => setChangePassword(!changePassword)}
+                variant={changePassword ? 'outlined' : 'contained'}
+                sx={{
+                  backgroundColor: changePassword ? '#fff' : 'background.paper',
+                  color: changePassword ? 'background.paper' : '#fff',
+                  width: { xs: '100%', sm: '200px' },
+                  height: { xs: '100%', sm: '50px' },
+                }}
+              >
+                {changePassword ? 'عدم تغيير كلمة المرور' : 'غير كلمة السر'}
+              </Button>
+            </Grid>
+            <Grid item xs={6} md={3}>
+              {children}
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </FormProvider>

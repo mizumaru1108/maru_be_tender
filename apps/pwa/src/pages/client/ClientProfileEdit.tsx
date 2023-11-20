@@ -16,7 +16,6 @@ function ClientProfileEdit() {
   }));
 
   return (
-    // <Page title="Profile Editing">
     <Page title={translate('pages.client.profile_editing')}>
       <Container>
         <ContentStyle>

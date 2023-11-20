@@ -92,7 +92,7 @@ function ClientProfile() {
   // console.log({ data });
 
   const navigate = useNavigate();
-  const isMobile = useResponsive('down', 'sm');
+  const isMobile = useResponsive('down', 'md');
   const ContentStyle = styled('div')(({ theme }) => ({
     display: 'flex',
     justifyContent: 'start',
@@ -228,14 +228,14 @@ function ClientProfile() {
     <Page title={translate('pages.common.my_profile')}>
       <Container>
         <ContentStyle>
-          <Stack direction="row" justifyContent="space-between">
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="space-between">
             <Stack direction="column" sx={{ mb: '5px' }}>
               <Typography variant="h5">{clientProfiles?.client_data?.entity}</Typography>
               <Typography variant="h6" sx={{ color: '#1E1E1E' }}>
                 {clientProfiles?.client_data?.authority ?? '- No Data -'}
               </Typography>
             </Stack>
-            <Stack direction="row" spacing={2}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2 }}>
               <Button
                 startIcon={
                   <div>
@@ -268,7 +268,8 @@ function ClientProfile() {
                   px: '15px',
                   py: '0px',
                   height: '45px',
-                  fontSize: isMobile ? '10px' : '15px',
+                  fontSize: isMobile ? '13px' : '15px',
+                  gap: '8px',
                 }}
                 onClick={() => navigate('/client/my-profile/edit-user')}
                 disabled={!FEATURE_EDIT_CLIENT_INFORMATION}
@@ -324,7 +325,8 @@ function ClientProfile() {
                   px: '15px',
                   py: '0px',
                   height: '45px',
-                  fontSize: isMobile ? '10px' : '15px',
+                  fontSize: isMobile ? '13px' : '15px',
+                  gap: '10px',
                 }}
                 onClick={() => navigate('/client/my-profile/edit')}
                 disabled={disabelEdit.association_edit > 0 || !FEATURE_EDIT_CLIENT_INFORMATION}
@@ -336,12 +338,12 @@ function ClientProfile() {
           </Stack>
           <Divider />
           <Grid container rowSpacing={3} columnSpacing={3}>
-            <Grid item md={7}>
+            <Grid item xs={12} md={7}>
               <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px' }}>
                 المعلومات الرئيسية
               </Typography>
-              <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
-                <Stack direction="column">
+              <Grid container spacing={{ xs: 1.5, sm: 3 }}>
+                <Grid item xs={6} sm={4}>
                   <Typography sx={{ fontSize: '12px' }}>عدد المستفيدين من خدمات الجهة:</Typography>
                   <Typography sx={{ mb: '15px' }}>
                     {clientProfiles?.client_data?.num_of_beneficiaries ?? '- No Data -'}
@@ -350,25 +352,24 @@ function ClientProfile() {
                   <Typography>
                     {clientProfiles?.client_data?.headquarters ?? '- No Data -'}
                   </Typography>
-                </Stack>
+                </Grid>
 
-                <Stack direction="column">
+                <Grid item xs={6} sm={4}>
                   <Typography sx={{ fontSize: '12px' }}>عدد موظفين بدوام كلي للمنشأة:</Typography>
                   <Typography sx={{ mb: '15px' }}>
                     {clientProfiles?.client_data?.num_of_employed_facility ?? '- No Data -'}
                   </Typography>
-                  {/* <Typography>{mockData.number_of_beni ?? '- No Data -'}</Typography> */}
                   <Typography sx={{ fontSize: '12px' }}>تاريخ التأسيس:</Typography>
                   <Typography>
                     {clientProfiles?.client_data?.date_of_esthablistmen ?? '- No Data -'}
                   </Typography>
-                </Stack>
-              </Stack>
-              <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px' }}>
+                </Grid>
+              </Grid>
+              <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px', mt: '15px' }}>
                 معلومات الاتصال
               </Typography>
-              <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
-                <Stack direction="column">
+              <Grid container spacing={{ xs: 1.5, sm: 3 }}>
+                <Grid item xs={6} sm={4}>
                   <Typography sx={{ fontSize: '12px' }}>المنطقة:</Typography>
                   <Typography sx={{ mb: '15px' }}>
                     {clientProfiles?.client_data?.region ?? '- No Data -'}
@@ -377,11 +378,9 @@ function ClientProfile() {
                   <Typography sx={{ mb: '15px' }}>
                     {clientProfiles?.client_data?.website ?? '- No Data -'}
                   </Typography>
-                  {/* <Typography sx={{ fontSize: '12px' }}>القرية (الهجرة):</Typography>
-                  <Typography sx={{ mb: '15px' }}>القرية (الهجرة)</Typography> */}
-                </Stack>
+                </Grid>
 
-                <Stack direction="column" alignItems="start">
+                <Grid item xs={6} sm={4}>
                   <Typography sx={{ fontSize: '12px' }}>المحافظة:</Typography>
                   <Typography sx={{ mb: '15px' }}>
                     {clientProfiles?.client_data?.governorate ?? '- No Data -'}
@@ -396,9 +395,9 @@ function ClientProfile() {
                   >
                     {clientProfiles?.client_data?.entity_mobile ?? '- No Data -'}
                   </Typography>
-                </Stack>
+                </Grid>
 
-                <Stack direction="column" alignItems="start">
+                <Grid item xs={12} sm={4}>
                   <Typography sx={{ fontSize: '12px' }}>المركز (الإدارة):</Typography>
                   <Typography sx={{ mb: '15px' }}>
                     {clientProfiles?.client_data?.center_administration ?? '- No Data -'}
@@ -413,14 +412,13 @@ function ClientProfile() {
                   >
                     {clientProfiles?.client_data?.phone ?? '- No Data -'}
                   </Typography>
-                </Stack>
-              </Stack>
+                </Grid>
+              </Grid>
               <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px' }}>
-                {/* بيانات الإدارية */}
                 المعلومات الإدارية
               </Typography>
-              <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
-                <Stack direction="column" alignItems="start">
+              <Grid container spacing={{ xs: 1.5, sm: 3 }}>
+                <Grid item xs={6} sm={4}>
                   <Typography sx={{ fontSize: '12px' }}>جوال المدير التنفيذي:</Typography>
                   <Typography
                     sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
@@ -443,9 +441,9 @@ function ClientProfile() {
                   <Typography sx={{ mb: '15px' }}>
                     {clientProfiles?.client_data?.data_entry_mail ?? '- No Data -'}
                   </Typography>
-                </Stack>
+                </Grid>
 
-                <Stack direction="column">
+                <Grid item xs={6} sm={4}>
                   <Typography sx={{ fontSize: '12px' }}>اسم المدير التنفيذي:</Typography>
                   <Typography sx={{ mb: '15px' }}>
                     {clientProfiles?.client_data?.ceo_name ?? '- No Data -'}
@@ -458,18 +456,18 @@ function ClientProfile() {
                   <Typography sx={{ mb: '15px' }}>
                     {clientProfiles?.client_data?.data_entry_name ?? '- No Data -'}
                   </Typography>
-                </Stack>
-              </Stack>
+                </Grid>
+              </Grid>
 
               <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px' }}>
                 المعلومات البنكية
               </Typography>
-              <Grid container spacing={5}>
+              <Grid container spacing={{ xs: 2, sm: 3 }}>
                 {clientProfiles &&
                 clientProfiles?.bank_informations &&
                 clientProfiles?.bank_informations.length > 0 ? (
                   clientProfiles?.bank_informations.map((item: any, index: any) => (
-                    <Grid item key={index} md={6} xs={12}>
+                    <Grid item key={index} xs={12} sm={4} md={6}>
                       <BankImageComp
                         enableButton={true}
                         imageUrl={item.card_image.url ?? '#'}
@@ -489,24 +487,26 @@ function ClientProfile() {
                 )}
               </Grid>
             </Grid>
-            <Grid item md={5}>
+            <Grid item xs={12} md={5}>
               <Box
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
                   p: 1,
                   m: 1,
+                  gap: 2,
                 }}
               >
                 <Box
                   sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    p: 1,
-                    m: 1,
+                    py: 1.5,
+                    px: 2.5,
                     bgcolor: '#fff',
                     borderRadius: 2,
                     justifyContent: 'center',
+                    gap: 1,
                   }}
                 >
                   <Typography sx={{ textAlign: 'center' }}>المشاريع المنجزة</Typography>
@@ -519,7 +519,8 @@ function ClientProfile() {
                   sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    p: 1,
+                    py: 1.5,
+                    px: 2.5,
                     m: 1,
                     bgcolor: '#fff',
                     borderRadius: 2,
@@ -569,43 +570,29 @@ function ClientProfile() {
                     </Typography>
                   </Stack>
                 </Box>
-                {/* Record 0fDec file */}
-                <Stack direction="column" component="div" sx={{ mt: 4 }}>
+                <Stack direction="column" component="div" sx={{ mt: 2 }}>
                   <Typography variant="body1" component="p" sx={{ color: '#93A3B0', mb: 2 }}>
                     {translate('account_manager.partner_details.board_ofdec_file')}:
                   </Typography>
-                  {/* <Grid container spacing={2}>
-                    {newBoardOfDec && newBoardOfDec.length > 0 ? (
-                      newBoardOfDec.map((item, index) => (
-                        <Grid item xs={6} md={6} key={index}>
-                          <ButtonDownloadFiles files={item} />
-                        </Grid>
-                      ))
-                    ) : (
-                      <Grid item xs={6} md={6}>
-                        {'-'}
-                      </Grid>
-                    )}
-                  </Grid> */}
                   <Grid container spacing={2}>
                     {clientProfiles?.client_data?.board_ofdec_file &&
                       typeof clientProfiles?.client_data?.board_ofdec_file !== 'string' &&
                       clientProfiles?.client_data?.board_ofdec_file.length > 0 &&
                       clientProfiles?.client_data?.board_ofdec_file.map((item: any, index: any) => (
-                        <Grid item xs={6} md={6} key={index}>
+                        <Grid item xs={12} sm={4} md={6} key={index}>
                           <ButtonDownloadFiles files={item} />
                         </Grid>
                       ))}
                     {clientProfiles?.client_data?.board_ofdec_file &&
                       typeof clientProfiles?.client_data?.board_ofdec_file === 'string' && (
-                        <Grid item xs={6} md={6}>
+                        <Grid item xs={12} sm={4} md={6}>
                           <ButtonDownloadFiles
                             files={clientProfiles?.client_data?.board_ofdec_file}
                           />
                         </Grid>
                       )}
                     {!clientProfiles?.client_data?.board_ofdec_file && (
-                      <Grid item xs={6} md={6}>
+                      <Grid item xs={12}>
                         {'- No Data -'}
                       </Grid>
                     )}

@@ -16,7 +16,6 @@ function ClientUserEdit() {
   }));
 
   return (
-    // <Page title="User Info Editing">
     <Page title={translate('pages.client.user_info_editing')}>
       <Container>
         <ContentStyle>

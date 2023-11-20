@@ -15,7 +15,6 @@ function ProjectDetails() {
     gap: 20,
   }));
   return (
-    // <Page title="Project Details">
     <Page title={translate('pages.project_details.details')}>
       <Container>
         <ContentStyle>

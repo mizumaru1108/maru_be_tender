@@ -10,6 +10,7 @@ const ActionsBox = ({ isEdit }: Props) => (
     <Button
       type="submit"
       variant={isEdit ? 'outlined' : 'contained'}
+      size="large"
       sx={{
         backgroundColor: isEdit ? '#fff' : 'background.paper',
         color: isEdit ? 'background.paper' : '#fff',
@@ -17,7 +18,6 @@ const ActionsBox = ({ isEdit }: Props) => (
         hieght: { xs: '100%', sm: '50px' },
       }}
     >
-      {/* حفظ */}
       {isEdit ? 'إلغاء' : 'حفظ'}
     </Button>
   </Stack>

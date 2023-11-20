@@ -1,21 +1,11 @@
 import { BankImage } from '../../assets';
-import { Stack, Paper, Typography, Button, Link } from '@mui/material';
+import { Box, Stack, Paper, Typography } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import ButtonDownloadFiles from '../../components/button/ButtonDownloadFiles';
 
 /**
  * It is not completed yet, it needs some edits
  */
-const styles = {
-  paperContainer: {
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center',
-    backgroundSize: 'inherit',
-    width: '100%',
-    height: '180px',
-    padding: '10px',
-  },
-};
 type Props = {
   enableButton?: boolean;
   bankName?: string;
@@ -51,7 +41,7 @@ const BankImageComp = ({
       direction="column"
       gap={1}
       sx={{
-        height: isPrint ? '180px' : '270px',
+        // height: isPrint ? '180px' : '270px',
         border: 0.5,
         borderRadius: 1,
         borderColor: `${borderColor}`,
@@ -77,49 +67,7 @@ const BankImageComp = ({
           <Typography sx={{ fontSize: '15px' }}>{accountNumber}</Typography>
         </Stack>
       </Paper>
-      {!isPrint && enableButton && imageUrl && (
-        // <Button
-        //   component={Link}
-        //   href={imageUrl}
-        //   target="_blank"
-        //   rel="noopener noreferrer"
-        //   download="صورة بطاقة الحساب البنكي"
-        //   sx={{
-        //     flex: 1,
-        //     '&:hover': { backgroundColor: '#00000014' },
-        //     backgroundColor: '#93A3B014',
-        //   }}
-        // >
-        //   <Stack
-        //     spacing={2}
-        //     alignItems="center"
-        //     justifyContent="space-between"
-        //     direction={{ xs: 'column', md: 'row' }}
-        //     sx={{
-        //       textAlign: { xs: 'center', md: 'left' },
-        //       padding: '8px',
-        //       borderRadius: '10px',
-        //     }}
-        //     flex={1}
-        //   >
-        //     <Stack direction="row" gap={2}>
-        //       <Stack direction="column" justifyContent="center">
-        //         <img src={`/assets/icons/png-icon.svg`} alt="" />
-        //       </Stack>
-        //       <Stack direction="column">
-        //         <Typography gutterBottom sx={{ fontSize: '13px' }}>
-        //           {translate('copy_of_the_bank_account_card')}
-        //         </Typography>
-        //         <Typography gutterBottom sx={{ fontSize: '13px' }}>
-        //           {`${size !== undefined ? size.toFixed(1) : 145}KB`}
-        //         </Typography>
-        //       </Stack>
-        //     </Stack>
-        //     <img src={`/assets/icons/download-icon.svg`} alt="" style={{ width: 25, height: 25 }} />
-        //   </Stack>
-        // </Button>
-        <ButtonDownloadFiles files={cardImage} />
-      )}
+      {!isPrint && enableButton && imageUrl && <ButtonDownloadFiles files={cardImage} />}
     </Stack>
   );
 };

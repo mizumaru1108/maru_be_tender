@@ -1,14 +1,10 @@
-import * as Yup from 'yup';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Badge, Button, Grid, Stack, Typography } from '@mui/material';
 import BankImageComp from 'sections/shared/BankImageComp';
 import AddBankModal from './AddBankModal';
 import { BankingValuesProps } from '../../../../@types/register';
-import { dataAccount } from '../../../../pages/moderator/mock-data';
 import { nanoid } from 'nanoid';
-import { LIST_OF_BANK } from 'sections/auth/register/RegisterFormData';
 import { useSelector } from '../../../../redux/store';
-import { AuthorityInterface } from '../../../admin/bank-name/list/types';
 import { SubmitBankForm } from 'sections/client/profile/ClientProfileEditForm';
 import useLocales from 'hooks/useLocales';
 
@@ -39,14 +35,9 @@ const BankingInfoForm = ({
   const [checkUpdateBanks, setCheckUpdateBanks] = useState(updateBank);
   const [tmpBank, setTmpBank] = useState<any>(initialValue);
   const [tmpUpdatedBank, setTmpUpdatedBank] = useState<any>();
-  const [isUpdated, setIsUpdated] = useState(false);
   const { banks } = useSelector((state) => state.banks);
 
-  const onEdit = () => {
-    console.log('edit');
-  };
   const removeTmpBank = (id: string, index: number) => {
-    // console.log('length id: ', id.length);
     if (id.length > 4) {
       setDeletedBank((prev: any) => {
         const newDeletedBank = tmpBank.filter((item: any) => item && item.id === id);
@@ -66,7 +57,6 @@ const BankingInfoForm = ({
     setTmpUpdatedBank(null);
     let newData = { ...data };
     newData = { ...newData, id: nanoid(4) };
-    // console.log({ newData });
     const updatedBankAccount = tmpBank.map((account: any) => {
       if (account.id === data.id) {
         return { ...account, ...data };
@@ -80,19 +70,16 @@ const BankingInfoForm = ({
     }
   };
   const onUpdatedBank = (id: string, bankIndex: number) => {
-    // console.log({ id, bankIndex });
     if (!id) {
       const newUpdatedBank = tmpBank.filter(
         (item: any, index: number) => item && !item.id && index === bankIndex
       );
-      // console.log({ newUpdatedBank });
       setTmpUpdatedBank(() => {
         const tmp = { ...newUpdatedBank[0] };
         return tmp;
       });
     } else if (!!id) {
       const newUpdatedBank = tmpBank.filter((item: any) => item && item.id === id);
-      // console.log({ newUpdatedBank });
       setTmpUpdatedBank(() => {
         const tmp = { ...newUpdatedBank[0] };
         return tmp;
@@ -109,18 +96,15 @@ const BankingInfoForm = ({
     if (isEdit) {
       setTmpBank(initialValue);
       onSubmit(initialValue);
-      // console.log({ initialValue });
     }
     if (!isEdit) {
       let newData = {};
-      // const updated_banks = tmpBank.filter((item: any) => item && item.id && item.id.length > 4);
       const updated_banks = tmpBank.filter(
         (item: any, index: number) =>
           item && item.id && item.id.length > 4 && item !== initialValue[index]
       );
       const created_banks = tmpBank.filter((item: any) => item && item.id && item.id.length <= 4);
       newData = { ...newData, updated_banks, created_banks, deleted_banks };
-      // console.log({ tmpBank, deletedBank, updatedBank, createdBank });
       onSubmit(newData);
     }
   };
@@ -143,9 +127,7 @@ const BankingInfoForm = ({
     }
     return tmpIsCardImage;
   }, [tmpBank]);
-  // console.log({ isCardImage, tmpBank });
-  // console.log('test', tmpBank, initialValue);
-  // console.log('test', tmpBank.findIndex((bank: any) => bank.bank_list.is_deleted) > -1);
+
   return (
     <Grid container rowSpacing={4} columnSpacing={7}>
       {tmpBank &&
@@ -167,9 +149,6 @@ const BankingInfoForm = ({
               <Stack direction="row" justifyContent="space-around" gap={5} sx={{ mt: '10px' }}>
                 <Badge variant={checkBank ? 'dot' : undefined} color="error">
                   <Button
-                    // disabled={
-                    //   isEdit || (checkUpdateBanks && item.bank_list.is_deleted) ? false : true
-                    // }
                     disabled={!(checkUpdateBanks && checkBank) && isEdit}
                     sx={{
                       backgroundColor: '#0169DE',
@@ -206,11 +185,6 @@ const BankingInfoForm = ({
                   </Button>
                 </Badge>
                 <Button
-                  // disabled={
-                  //   isEdit || tmpBank.length <= 1 || (checkUpdateBanks && checkBank)
-                  //     ? false
-                  //     : true
-                  // }
                   disabled={(!(checkUpdateBanks && checkBank) && isEdit) || tmpBank.length <= 1}
                   sx={{
                     backgroundColor: '#FF170F',
@@ -271,15 +245,14 @@ const BankingInfoForm = ({
             handleClose={handleClose}
             onSubmit={onSubmitForm}
             initialValues={tmpUpdatedBank}
-            // listOfBank={LIST_OF_BANK}
             listOfBank={banks.map((bank: any) => bank.id)}
           />
         </Stack>
       </Grid>
       <Stack justifyContent="center" direction="column" gap={2}>
         <Button
-          // type="submit"
           onClick={onSubmitForm5}
+          size="large"
           disabled={
             tmpBank.findIndex((bank: any) => bank && bank.bank_list && bank.bank_list.is_deleted) >
               -1 ||
@@ -295,7 +268,6 @@ const BankingInfoForm = ({
             hieght: { xs: '100%', sm: '50px' },
           }}
         >
-          {/* حفظ */}
           {isEdit ? 'إلغاء' : 'حفظ'}
         </Button>
         {!tmpBank ||
@@ -306,9 +278,6 @@ const BankingInfoForm = ({
             </Typography>
           ))}
       </Stack>
-      {/* <Grid item xs={12} sx={{ mt: '10px' }} alignItems="center">
-        {children}
-      </Grid> */}
     </Grid>
   );
 };

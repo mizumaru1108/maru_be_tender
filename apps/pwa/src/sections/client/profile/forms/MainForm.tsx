@@ -1,16 +1,14 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Grid, MenuItem } from '@mui/material';
+import { Button, Grid, MenuItem } from '@mui/material';
 import axios from 'axios';
 import { FormProvider, RHFSelect, RHFTextField } from 'components/hook-form';
 import RHFDatePicker from 'components/hook-form/RHFDatePicker';
 import useLocales from 'hooks/useLocales';
 import { useSnackbar } from 'notistack';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { REGIONS } from 'sections/auth/register/RegisterFormData';
 import * as Yup from 'yup';
 import { MainValuesProps } from '../../../../@types/register';
-import RHFSelectNoGenerator from '../../../../components/hook-form/RHFSelectNoGen';
 import { FEATURE_MENU_ADMIN_ADD_AUTHORITY, TMRA_RAISE_URL } from '../../../../config';
 import { ClientFieldInterface, AuthorityInterface } from '../../../admin/authority/list/types';
 import ReplayIcon from '@mui/icons-material/Replay';
@@ -40,14 +38,12 @@ const OptionHeadquarters = [
 type FormProps = {
   children?: React.ReactNode;
   onSubmit: (data: any) => void;
-  // defaultValues: MainValuesProps;
   defaultValues: any;
   isEdit?: boolean;
 };
 type ClientFieldName = 'main' | 'sub';
 
 const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEdit }) => {
-  // console.log({ defaultValues });
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
   const [authorities, setAuthorities] = React.useState<AuthorityInterface[] | []>([]);
@@ -93,7 +89,6 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
       setIsFetchingAuthorities(true);
       try {
         const url = `${TMRA_RAISE_URL}/authority-management/authorities?client_field_id=${client_field}&limit=0`;
-        // console.log({ url });
         const response = await axios.get(url);
         if (response) {
           const mappedRes = response.data.data
@@ -104,7 +99,6 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
           setAuthorities(mappedRes);
         }
       } catch (error) {
-        // console.error(error.message);
         setAuthorities([]);
         const statusCode = (error && error.statusCode) || 0;
         const message = (error && error.message) || null;
@@ -150,7 +144,6 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
         setClientFields(mappedRes);
       }
     } catch (error) {
-      // console.error(error.message);
       setAuthorities([]);
       const statusCode = (error && error.statusCode) || 0;
       const message = (error && error.message) || null;
@@ -203,7 +196,6 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
       ) || undefined;
 
     if (tmpClientId) {
-      // console.log('sub', { tmpClientId, checkClientId, client_field_id });
       fetchAuthorities(tmpClientId.client_field_id);
       setClientFieldId(tmpClientId.client_field_id);
       setClientFieldName(tmpClientId.name as ClientFieldName);
@@ -238,30 +230,10 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
       client_field: tmpClientField || data.client_field,
       client_field_id: tmpClientField ? data.client_field : undefined,
     };
-    // reset({ ...data });
+
     onSubmit(removeEmptyKey(tmpValue));
-    // console.log('test ting', removeEmptyKey(tmpValue));
   };
 
-  const handleScrollPagination = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
-    // console.log('test:', e.target);
-    const selectElement = e.target as HTMLDivElement;
-    const isAtBottom =
-      selectElement.scrollTop + selectElement.clientHeight === selectElement.scrollHeight;
-
-    // Check if the scroll position is at the top
-    const isAtTop = selectElement.scrollTop === 0;
-    if (isAtBottom) {
-      // Do something when scrolling to the bottom
-      console.log('Scrolled to the bottom');
-    }
-
-    if (isAtTop) {
-      // Do something when scrolling to the top
-      console.log('Scrolled to the top');
-    }
-  };
-  // console.log({ defaultValues });
   React.useEffect(() => {
     window.scrollTo(0, 0);
     reset(defaultValues);
@@ -307,21 +279,17 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
         if (!isHeadquarters) {
           setValue('headquarters', '');
         }
-        // console.log({ isHeadquarters });
       }
-      //  else {
-      //   alert('tmpClientId not found');
-      // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues, clientFields]);
-  // console.log('test defaultValues: ', defaultValues);
+
   React.useEffect(() => {
     if (FEATURE_MENU_ADMIN_ADD_AUTHORITY) {
       fetchClientFields();
     }
   }, [fetchClientFields]);
-  // console.log({ clientFieldName });
+
   const client_field = watch('client_field');
   if (isFetchingClientFields) {
     return <>{translate('pages.common.loading')}</>;
@@ -338,17 +306,6 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
           />
         </Grid>
         <Grid item md={12} xs={12}>
-          {/* <RHFSelectNoGenerator disabled={isEdit} name="client_field" label={'مجال الجهة'}>
-            <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
-              {translate('register_form1.entity_area.placeholder')}
-            </option>
-            <option value="main" style={{ backgroundColor: '#fff' }}>
-              {translate('register_form1.entity_area.options.sub_entity_area')}
-            </option>
-            <option value="sub" style={{ backgroundColor: '#fff' }}>
-              {translate('register_form1.entity_area.options.main_entity_area')}
-            </option>
-          </RHFSelectNoGenerator> */}
           <RHFSelect
             disabled={isFetchingClientFields || isFetchingAuthoritites || isEdit}
             name="client_field"
@@ -376,56 +333,6 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
                 ))}
           </RHFSelect>
         </Grid>
-        {/* {client_field !== '' && (
-          <>
-            {client_field === 'main' && (
-              <Grid item md={12} xs={12}>
-                <RHFSelectNoGenerator
-                  disabled={isEdit}
-                  name="authority"
-                  label={translate('register_form1.authority.label')}
-                >
-                  <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
-                    {translate('register_form1.authority.placeholder')}
-                  </option>
-                  <option value="0" style={{ backgroundColor: '#fff' }}>
-                    أخرى
-                  </option>
-                  <option value="1" style={{ backgroundColor: '#fff' }}>
-                    المؤسسة العامة للتدريب التقني والمهني
-                  </option>
-                  <option value="2" style={{ backgroundColor: '#fff' }}>
-                    هيئة الأوقاف
-                  </option>
-                  <option value="3" style={{ backgroundColor: '#fff' }}>
-                    وزارة التجارة والاستثمار
-                  </option>
-                  <option value="4" style={{ backgroundColor: '#fff' }}>
-                    وزارة التعليم
-                  </option>
-                  <option value="5" style={{ backgroundColor: '#fff' }}>
-                    وزارة الشؤون الإسلامية
-                  </option>
-                  <option value="6" style={{ backgroundColor: '#fff' }}>
-                    وزارة العدل
-                  </option>
-                  <option value="7" style={{ backgroundColor: '#fff' }}>
-                    وزارة الموارد البشرية والتنميةالاجتماعية
-                  </option>
-                </RHFSelectNoGenerator>
-              </Grid>
-            )}
-            {client_field === 'sub' && (
-              <Grid item md={12} xs={12}>
-                <RHFTextField
-                  disabled={isEdit}
-                  name="authority"
-                  label={translate('register_form1.authority.label')}
-                />
-              </Grid>
-            )}
-          </>
-        )} */}
         {client_field !== '' && clientFieldName === 'main' && clientFieldId && (
           <Grid item md={12} xs={12}>
             <RHFSelect
@@ -439,7 +346,6 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
               }}
               SelectProps={{
                 MenuProps: {
-                  // PaperProps: { style: { maxHeight: 300 }, onScroll: handleScrollPagination },
                   PaperProps: { style: { maxHeight: 300 } },
                 },
               }}
@@ -496,22 +402,6 @@ const MainForm: React.FC<FormProps> = ({ children, onSubmit, defaultValues, isEd
           />
         </Grid>
         <Grid item md={6} xs={12}>
-          {/* <RHFSelectNoGenerator
-            disabled={isEdit}
-            name="headquarters"
-            label={translate('register_form1.headquarters.label')}
-          >
-            <>
-              <option value="" disabled selected style={{ backgroundColor: '#fff' }}>
-                {translate('register_form1.headquarters.placeholder')}
-              </option>
-              {REGIONS.map((item, index) => (
-                <option key={index} value={item} style={{ backgroundColor: '#fff' }}>
-                  {item}
-                </option>
-              ))}
-            </>
-          </RHFSelectNoGenerator> */}
           <RHFSelect
             name="headquarters"
             disabled={isEdit}

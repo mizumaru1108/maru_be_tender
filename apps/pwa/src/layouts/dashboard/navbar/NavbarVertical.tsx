@@ -86,13 +86,16 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
       <NavSectionVertical navConfig={navConfig[`${role}`]} isCollapse={isCollapse} />
 
       <Box sx={{ flexGrow: 1 }} />
-      <Box
-        component={Button}
+      <Button
+        color="error"
+        variant="outlined"
         sx={{
           mx: '15px',
-          mb: '10px',
+          mb: '15px',
+          mt: { xs: '10px', sm: 0 },
           backgroundColor: '#FF484229! important',
-          display: 'inline-block',
+          justifyContent: 'flex-start',
+          gap: '8px',
         }}
         onClick={() => {
           localStorage.removeItem('partnerMeetingId');
@@ -118,12 +121,10 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
           // navigate(0);
           navigate('/auth/login');
         }}
+        startIcon={<img src="/assets/icons/dashboard-navbar/log-out-icon.svg" alt="" />}
       >
-        <Stack direction="row" gap={2}>
-          <img src="/assets/icons/dashboard-navbar/log-out-icon.svg" alt="" />
-          <Typography color="#FF4842">{translate('sign_out')}</Typography>
-        </Stack>
-      </Box>
+        <Typography>{translate('sign_out')}</Typography>
+      </Button>
     </Scrollbar>
   );
 

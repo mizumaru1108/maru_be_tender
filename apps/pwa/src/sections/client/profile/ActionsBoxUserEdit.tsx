@@ -6,21 +6,19 @@ interface Props {
 }
 
 const ActionsBoxUserEdit = ({ loading }: Props) => (
-  <Stack justifyContent="center" direction="row" gap={2}>
-    <LoadingButton
-      type="submit"
-      loading={loading}
-      variant={'contained'}
-      sx={{
-        backgroundColor: 'background.paper',
-        color: '#fff',
-        width: { xs: '100%', sm: '200px' },
-        hieght: { xs: '100%', sm: '50px' },
-      }}
-    >
-      تحديث
-    </LoadingButton>
-  </Stack>
+  <LoadingButton
+    type="submit"
+    loading={loading}
+    variant={'contained'}
+    sx={{
+      backgroundColor: 'background.paper',
+      color: '#fff',
+      width: { xs: '100%', sm: '200px' },
+      height: { xs: '100%', sm: '50px' },
+    }}
+  >
+    تحديث
+  </LoadingButton>
 );
 
 export default ActionsBoxUserEdit;
