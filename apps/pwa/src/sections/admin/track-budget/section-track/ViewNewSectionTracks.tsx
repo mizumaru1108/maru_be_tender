@@ -31,8 +31,8 @@ import {
 } from '../../../../utils/formatNumber';
 import { TrackSection } from '../../../../@types/commons';
 import { lighten } from '@mui/material/styles';
-import { flattenChildTrackSections } from '../../../client/funding-project-request/forms/FormNestedTrackBudget';
-import { getSectoinBudget } from '../../../../utils/getSectoinBudget';
+// import { flattenChildTrackSections } from '../../../client/funding-project-request/forms/FormNestedTrackBudget';
+// import { getSectoinBudget } from '../../../../utils/getSectoinBudget';
 
 // ------------------------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ export interface SectionInterface {
   budget?: number;
 }
 
-const ContentStyle = styled('div')(({ theme }) => ({
+const ContentStyle = styled('div')(() => ({
   maxWidth: '100%',
   minHeight: '100vh',
   display: 'flex',
@@ -59,7 +59,7 @@ export default function ViewNewSectionTracks() {
   const { id: track_id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
   const { currentLang, translate } = useLocales();
-  const [allSectionBudget, setAllSectionBudget] = useState<TrackSection[]>([]);
+  // const [allSectionBudget, setAllSectionBudget] = useState<TrackSection[]>([]);
   // console.log({ allSectionBudget });
 
   const [openItems, setOpenItems] = useState<string[]>([]);
@@ -77,21 +77,18 @@ export default function ViewNewSectionTracks() {
     }
   };
 
-  const handleSectionBudget = async () => {
-    // const flatArray = flattenChildTrackSections(track?.sections || [], track?.id).filter(
-    //   (item) => item.parent_section_id
-    // );
-    const flatArray = flattenChildTrackSections(track?.sections || [], track?.id);
-    for (const item of flatArray) {
-      const res = await getSectoinBudget({
-        id: item?.id!,
-        role: activeRole!,
-      });
-      if (res) {
-        setAllSectionBudget((prevState) => [...prevState, { ...res }]);
-      }
-    }
-  };
+  // const handleSectionBudget = async () => {
+  //   const flatArray = flattenChildTrackSections(track?.sections || [], track?.id);
+  //   for (const item of flatArray) {
+  //     const res = await getSectoinBudget({
+  //       id: item?.id!,
+  //       role: activeRole!,
+  //     });
+  //     // if (res) {
+  //     //   setAllSectionBudget((prevState) => [...prevState, { ...res }]);
+  //     // }
+  //   }
+  // };
 
   // fetching track by id
   useEffect(() => {
@@ -172,7 +169,7 @@ export default function ViewNewSectionTracks() {
           </Grid>
           <Grid item md={12} xs={12}>
             {track?.sections && track?.sections?.length > 0
-              ? track.sections?.map((item: TrackSection, index: number) => (
+              ? track.sections?.map((item: TrackSection) => (
                   <Grid key={item?.id} container columns={16}>
                     <Grid item md={16} xs={16}>
                       <Divider>
@@ -206,12 +203,34 @@ export default function ViewNewSectionTracks() {
                             </ExpandMore>
                           )}
                         </Grid>
-                        <Grid item md={11} xs={20} sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Grid item md={7} xs={20} sx={{ display: 'flex', alignItems: 'center' }}>
                           <Typography noWrap sx={{ fontSize: '18px', fontWeight: 600 }}>
                             {item?.name || '-'}
                           </Typography>
                         </Grid>
-                        <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Grid
+                          item
+                          md={3}
+                          xs={20}
+                          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                        >
+                          <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                            {translate('supervisor_name')}
+                          </Typography>
+                          <Typography sx={{ color: 'text.primary', fontWeight: 550 }}>
+                            {item?.section_supervisor && item?.section_supervisor?.length > 0
+                              ? item.section_supervisor?.map(
+                                  (item) => item?.supervisor?.employee_name
+                                )
+                              : '-'}
+                          </Typography>
+                        </Grid>
+                        <Grid
+                          item
+                          md={2}
+                          xs={20}
+                          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                        >
                           <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
                             {translate('content.administrative.statistic.heading.totalSpendBudget')}
                           </Typography>
@@ -219,7 +238,12 @@ export default function ViewNewSectionTracks() {
                             {fCurrencyNumber(getChildSpendingBudget({ ...item }))}
                           </Typography>
                         </Grid>
-                        <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Grid
+                          item
+                          md={2}
+                          xs={20}
+                          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                        >
                           <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
                             {translate(
                               'content.administrative.statistic.heading.totalReservedBudget'
@@ -229,7 +253,16 @@ export default function ViewNewSectionTracks() {
                             {fCurrencyNumber(item?.section_reserved_budget || 0)}
                           </Typography>
                         </Grid>
-                        <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Grid
+                          item
+                          md={3}
+                          xs={20}
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                          }}
+                        >
                           <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
                             {translate(
                               'content.administrative.statistic.heading.totalRemainingBudget'
@@ -239,7 +272,12 @@ export default function ViewNewSectionTracks() {
                             {fCurrencyNumber(getChildRemainBudget({ ...item }))}
                           </Typography>
                         </Grid>
-                        <Grid item md={2} xs={20} sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Grid
+                          item
+                          md={2}
+                          xs={20}
+                          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                        >
                           <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
                             {translate('content.administrative.statistic.heading.totalBudget')}
                           </Typography>
@@ -279,7 +317,7 @@ export default function ViewNewSectionTracks() {
                               </Grid>
                               <Grid
                                 item
-                                md={10}
+                                md={6}
                                 xs={18}
                                 sx={{ display: 'flex', alignItems: 'center' }}
                               >
@@ -289,9 +327,34 @@ export default function ViewNewSectionTracks() {
                               </Grid>
                               <Grid
                                 item
+                                md={3}
+                                xs={20}
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                }}
+                              >
+                                <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
+                                  {translate('supervisor_name')}
+                                </Typography>
+                                <Typography sx={{ color: 'text.primary', fontWeight: 550 }}>
+                                  {item?.section_supervisor && item?.section_supervisor?.length > 0
+                                    ? item.section_supervisor?.map(
+                                        (item) => item?.supervisor?.employee_name
+                                      )
+                                    : '-'}
+                                </Typography>
+                              </Grid>
+                              <Grid
+                                item
                                 md={2}
                                 xs={20}
-                                sx={{ display: 'flex', flexDirection: 'column' }}
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                }}
                               >
                                 <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
                                   {translate(
@@ -306,7 +369,11 @@ export default function ViewNewSectionTracks() {
                                 item
                                 md={2}
                                 xs={20}
-                                sx={{ display: 'flex', flexDirection: 'column' }}
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                }}
                               >
                                 <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
                                   {translate(
@@ -319,9 +386,13 @@ export default function ViewNewSectionTracks() {
                               </Grid>
                               <Grid
                                 item
-                                md={2}
+                                md={3}
                                 xs={20}
-                                sx={{ display: 'flex', flexDirection: 'column' }}
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                }}
                               >
                                 <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
                                   {translate(
@@ -336,7 +407,11 @@ export default function ViewNewSectionTracks() {
                                 item
                                 md={2}
                                 xs={20}
-                                sx={{ display: 'flex', flexDirection: 'column' }}
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                }}
                               >
                                 <Typography sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}>
                                   {translate(
@@ -379,7 +454,7 @@ export default function ViewNewSectionTracks() {
                                     </Grid>
                                     <Grid
                                       item
-                                      md={9}
+                                      md={5}
                                       xs={18}
                                       sx={{ display: 'flex', alignItems: 'center' }}
                                     >
@@ -389,9 +464,37 @@ export default function ViewNewSectionTracks() {
                                     </Grid>
                                     <Grid
                                       item
+                                      md={3}
+                                      xs={20}
+                                      sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                      }}
+                                    >
+                                      <Typography
+                                        sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
+                                      >
+                                        {translate('supervisor_name')}
+                                      </Typography>
+                                      <Typography sx={{ color: 'text.primary', fontWeight: 550 }}>
+                                        {item?.section_supervisor &&
+                                        item?.section_supervisor?.length > 0
+                                          ? item.section_supervisor?.map(
+                                              (item) => item?.supervisor?.employee_name
+                                            )
+                                          : '-'}
+                                      </Typography>
+                                    </Grid>
+                                    <Grid
+                                      item
                                       md={2}
                                       xs={20}
-                                      sx={{ display: 'flex', flexDirection: 'column' }}
+                                      sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                      }}
                                     >
                                       <Typography
                                         sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
@@ -410,7 +513,11 @@ export default function ViewNewSectionTracks() {
                                       item
                                       md={2}
                                       xs={20}
-                                      sx={{ display: 'flex', flexDirection: 'column' }}
+                                      sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                      }}
                                     >
                                       <Typography
                                         sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
@@ -427,9 +534,13 @@ export default function ViewNewSectionTracks() {
                                     </Grid>
                                     <Grid
                                       item
-                                      md={2}
+                                      md={3}
                                       xs={20}
-                                      sx={{ display: 'flex', flexDirection: 'column' }}
+                                      sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                      }}
                                     >
                                       <Typography
                                         sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
@@ -448,7 +559,11 @@ export default function ViewNewSectionTracks() {
                                       item
                                       md={2}
                                       xs={20}
-                                      sx={{ display: 'flex', flexDirection: 'column' }}
+                                      sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                      }}
                                     >
                                       <Typography
                                         sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
@@ -495,7 +610,7 @@ export default function ViewNewSectionTracks() {
                                           </Grid>
                                           <Grid
                                             item
-                                            md={8}
+                                            md={4}
                                             xs={18}
                                             sx={{ display: 'flex', alignItems: 'center' }}
                                           >
@@ -508,9 +623,39 @@ export default function ViewNewSectionTracks() {
                                           </Grid>
                                           <Grid
                                             item
+                                            md={3}
+                                            xs={20}
+                                            sx={{
+                                              display: 'flex',
+                                              flexDirection: 'column',
+                                              alignItems: 'center',
+                                            }}
+                                          >
+                                            <Typography
+                                              sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
+                                            >
+                                              {translate('supervisor_name')}
+                                            </Typography>
+                                            <Typography
+                                              sx={{ color: 'text.primary', fontWeight: 550 }}
+                                            >
+                                              {item?.section_supervisor &&
+                                              item?.section_supervisor?.length > 0
+                                                ? item.section_supervisor?.map(
+                                                    (item) => item?.supervisor?.employee_name
+                                                  )
+                                                : '-'}
+                                            </Typography>
+                                          </Grid>
+                                          <Grid
+                                            item
                                             md={2}
                                             xs={20}
-                                            sx={{ display: 'flex', flexDirection: 'column' }}
+                                            sx={{
+                                              display: 'flex',
+                                              flexDirection: 'column',
+                                              alignItems: 'center',
+                                            }}
                                           >
                                             <Typography
                                               sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
@@ -531,7 +676,11 @@ export default function ViewNewSectionTracks() {
                                             item
                                             md={2}
                                             xs={20}
-                                            sx={{ display: 'flex', flexDirection: 'column' }}
+                                            sx={{
+                                              display: 'flex',
+                                              flexDirection: 'column',
+                                              alignItems: 'center',
+                                            }}
                                           >
                                             <Typography
                                               sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
@@ -548,9 +697,13 @@ export default function ViewNewSectionTracks() {
                                           </Grid>
                                           <Grid
                                             item
-                                            md={2}
+                                            md={3}
                                             xs={20}
-                                            sx={{ display: 'flex', flexDirection: 'column' }}
+                                            sx={{
+                                              display: 'flex',
+                                              flexDirection: 'column',
+                                              alignItems: 'center',
+                                            }}
                                           >
                                             <Typography
                                               sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
@@ -569,7 +722,11 @@ export default function ViewNewSectionTracks() {
                                             item
                                             md={2}
                                             xs={20}
-                                            sx={{ display: 'flex', flexDirection: 'column' }}
+                                            sx={{
+                                              display: 'flex',
+                                              flexDirection: 'column',
+                                              alignItems: 'center',
+                                            }}
                                           >
                                             <Typography
                                               sx={{ color: '#93A3B0', fontSize: '12px', my: '5px' }}
