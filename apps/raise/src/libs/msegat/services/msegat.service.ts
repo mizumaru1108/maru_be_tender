@@ -1,4 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
 import { SendSmsDto } from '../dtos/requests';
@@ -7,6 +11,8 @@ import { MsegatSendingMessageError } from '../exceptions/send.message.error.exce
 import { ROOT_LOGGER } from '../../root-logger';
 import { VerifyOtpDto } from 'src/libs/msegat/dtos/requests/verify.otp.dto';
 import { SendOtpDto } from 'src/libs/msegat/dtos/requests/send.otp.dto';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { IMsegatConfig } from '../../../commons/configs/msegat-config';
 
 /**
  * Nest Msegat Module
@@ -36,7 +42,10 @@ export class MsegatService {
     'log.logger': MsegatService.name,
   });
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private readonly prismaService: PrismaService,
+  ) {}
 
   /**
    * Send sms
@@ -46,11 +55,34 @@ export class MsegatService {
     const { numbers, msg } = request;
     this.logger.log('info', `Sending sms to ${numbers}`);
 
+    const msegatConfig = this.configService.get<IMsegatConfig>('mseGatConfig');
+    let msegatUsername = msegatConfig?.username;
+    let msegatApiKey = msegatConfig?.apiKey;
+    let msegatUserSender = msegatConfig?.userSender;
+
+    const configFromDb = await this.prismaService.smsGateway.findMany();
+    if (configFromDb.length > 0) {
+      const activeSettings = configFromDb.find(
+        (config) => config.is_active === true,
+      );
+      if (activeSettings) {
+        msegatUsername = activeSettings.username;
+        msegatApiKey = activeSettings.api_key;
+        msegatUserSender = activeSettings.user_sender;
+      }
+    }
+
+    if (!msegatUsername || !msegatApiKey || !msegatUserSender) {
+      throw new UnprocessableEntityException(
+        'Msegat username, api key and user sender must be provided.',
+      );
+    }
+
     const payload: MsegatSendSmsDto = {
-      userName: this.configService.get('mseGatConfig.username') as string,
+      userName: msegatUsername,
       numbers,
-      userSender: this.configService.get('mseGatConfig.userSender') as string,
-      apiKey: this.configService.get('mseGatConfig.apiKey') as string,
+      userSender: msegatUserSender,
+      apiKey: msegatApiKey,
       msg,
     };
 
@@ -137,11 +169,34 @@ export class MsegatService {
     const { numbers, msg } = request;
     this.logger.log('info', `Sending sms to ${numbers}`);
 
+    const msegatConfig = this.configService.get<IMsegatConfig>('mseGatConfig');
+    let msegatUsername = msegatConfig?.username;
+    let msegatApiKey = msegatConfig?.apiKey;
+    let msegatUserSender = msegatConfig?.userSender;
+
+    const configFromDb = await this.prismaService.smsGateway.findMany();
+    if (configFromDb.length > 0) {
+      const activeSettings = configFromDb.find(
+        (config) => config.is_active === true,
+      );
+      if (activeSettings) {
+        msegatUsername = activeSettings.username;
+        msegatApiKey = activeSettings.api_key;
+        msegatUserSender = activeSettings.user_sender;
+      }
+    }
+
+    if (!msegatUsername || !msegatApiKey || !msegatUserSender) {
+      throw new UnprocessableEntityException(
+        'Msegat username, api key and user sender must be provided.',
+      );
+    }
+
     const payload: MsegatSendSmsDto = {
-      userName: this.configService.get('mseGatConfig.username') as string,
+      userName: msegatUsername,
       numbers,
-      userSender: this.configService.get('mseGatConfig.userSender') as string,
-      apiKey: this.configService.get('mseGatConfig.apiKey') as string,
+      userSender: msegatUserSender,
+      apiKey: msegatApiKey,
       msg,
     };
 

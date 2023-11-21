@@ -6,7 +6,7 @@ import { baseJoiRequiredString } from '../utils/joi-required-string';
  * Msegat Config (.env loader)
  * @author RDanang(iyoy)
  */
-interface IMsegatConfig {
+export interface IMsegatConfig {
   apiKey: string;
   userSender: string;
   username: string;

@@ -23,6 +23,9 @@ export class SmsConfigUpdateProps {
 }
 
 export class SmsConfigFindManyProps {
+  exclude_id?: string[];
+  is_active?: boolean;
+  is_deleted?: boolean;
   limit?: number;
   page?: number;
   sort_by?: string;
@@ -113,6 +116,19 @@ export class SmsConfigRepository {
   async findManyFilter(props: SmsConfigFindManyProps) {
     let args: Prisma.SmsGatewayFindManyArgs = {};
     let whereClause: Prisma.SmsGatewayWhereInput = {};
+
+    if (props.exclude_id) {
+      whereClause = {
+        ...whereClause,
+        id: {
+          notIn: props.exclude_id,
+        },
+      };
+    }
+
+    if (props.is_active) {
+      whereClause.is_active = props.is_active;
+    }
 
     args.where = whereClause;
     return args;

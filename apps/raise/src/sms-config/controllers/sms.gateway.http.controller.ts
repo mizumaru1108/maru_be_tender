@@ -8,6 +8,7 @@ import {
   HttpStatus,
   InternalServerErrorException,
   NotFoundException,
+  Param,
   Patch,
   Post,
   Query,
@@ -54,6 +55,10 @@ import {
   SmsConfigFindManyQuery,
   SmsConfigFindManyQueryResult,
 } from '../queries/sms.config.find.many.query/sms.config.find.many.query';
+import {
+  SmsConfigFindByIdQuery,
+  SmsConfigFindByIdQueryResult,
+} from '../queries/sms.config.find.by.id.query/sms.config.find.by.id.query';
 
 @ApiTags('SmsConfigModule')
 @Controller('sms-config')
@@ -64,24 +69,27 @@ export class SmsConfigHttpController {
   ) {}
 
   errorMapper(e: any) {
-    if (e instanceof DataNotFoundException) {
-      return new NotFoundException(e.message);
+    if (e instanceof DataNotFoundException || e instanceof NotFoundException) {
+      throw new NotFoundException(e.message);
     }
     if (
       e instanceof PayloadErrorException ||
       e instanceof InvalidTrackIdException
     ) {
-      return new BadRequestException(e.message);
+      throw new BadRequestException(e.message);
     }
     if (e instanceof ForbiddenPermissionException) {
-      return new ForbiddenException(e.message);
+      throw new ForbiddenException(e.message);
     }
-    if (e instanceof RequestErrorException) {
-      return new UnprocessableEntityException(e.message);
+    if (
+      e instanceof RequestErrorException ||
+      e instanceof UnprocessableEntityException
+    ) {
+      throw new UnprocessableEntityException(e.message);
     }
 
     if (e instanceof BasePrismaErrorException) {
-      return new HttpException(
+      throw new HttpException(
         {
           statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
           message: e.message,
@@ -91,7 +99,7 @@ export class SmsConfigHttpController {
       );
     }
 
-    return new InternalServerErrorException(error);
+    throw new InternalServerErrorException(error);
   }
 
   @ApiOperation({
@@ -146,6 +154,32 @@ export class SmsConfigHttpController {
         query.limit || 10,
         HttpStatus.OK,
         'Sms Config List Fetched Successfully!',
+      );
+    } catch (error) {
+      throw this.errorMapper(error);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Find config for sms gateway by id (admin only)',
+  })
+  @BaseApiOkResponse(AuthoritiesEntity, 'object')
+  @Get(':id')
+  async findById(@Param('id') id: string) {
+    try {
+      const builder = Builder<SmsConfigFindByIdQuery>(SmsConfigFindByIdQuery, {
+        id,
+      });
+
+      const { data } = await this.queryBus.execute<
+        SmsConfigFindByIdQuery,
+        SmsConfigFindByIdQueryResult
+      >(builder.build());
+
+      return baseResponseHelper(
+        data,
+        HttpStatus.OK,
+        'Sms Config Fetched Successfully!',
       );
     } catch (error) {
       throw this.errorMapper(error);

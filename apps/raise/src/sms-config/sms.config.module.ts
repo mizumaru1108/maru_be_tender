@@ -6,6 +6,7 @@ import { SmsConfigHttpController } from './controllers/sms.gateway.http.controll
 import { SmsConfigRepository } from './repositories/sms.config.repository';
 import { SmsConfigFindManyQueryHandler } from './queries/sms.config.find.many.query/sms.config.find.many.query';
 import { SmsConfigDeleteCommandHandler } from './commands/sms.config.delete.command/sms.config.delete.command';
+import { SmsConfigFindByIdQueryHandler } from './queries/sms.config.find.by.id.query/sms.config.find.by.id.query';
 
 const importedModule = [CqrsModule];
 const controllers = [SmsConfigHttpController];
@@ -15,7 +16,10 @@ const commands: Provider[] = [
   SmsConfigUpdateCommandHandler,
   SmsConfigDeleteCommandHandler,
 ];
-const queries: Provider[] = [SmsConfigFindManyQueryHandler];
+const queries: Provider[] = [
+  SmsConfigFindManyQueryHandler,
+  SmsConfigFindByIdQueryHandler,
+];
 const exportedProviders: Provider[] = [];
 @Module({
   imports: [...importedModule],
