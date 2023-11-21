@@ -14,6 +14,7 @@ import tracks from './slices/track';
 import wschatReducer from './slices/wschat';
 import applicationAndAdmissionSettings from './slices/applicationAndAdmissionSettings';
 import user from './slices/user';
+import mobileSettings from './slices/mobile-settings';
 
 // ----------------------------------------------------------------------
 
@@ -51,6 +52,7 @@ const rootReducer = combineReducers({
   supervisorAcceptingForm: supervisorAcceptingForm,
   applicationAndAdmissionSettings: applicationAndAdmissionSettings,
   user: user,
+  mobileSetting: mobileSettings,
 });
 
 export { rootPersistConfig, rootReducer };

@@ -2654,6 +2654,7 @@ const en = {
     study_again: 'Study Again',
     board_ofdec_file: 'Board ofdec file',
     attachment: 'Project attachment',
+    edit: 'Edit',
   },
   modal: {
     disable_proposal: {
@@ -3155,6 +3156,39 @@ const en = {
       supervisor_id: {
         min: 'Select at least one supervisors',
         required: 'Supervisors is required',
+      },
+    },
+  },
+  _mobile_settings: {
+    button: {
+      add: 'Add New Mobile Setting',
+    },
+    api_key: {
+      label: 'API Keys',
+      placeholder: 'API Keys',
+      error: {
+        required: 'Field is required',
+      },
+    },
+    user_sender: {
+      label: 'User Sender',
+      placeholder: 'User Sender',
+      error: {
+        required: 'Field is required',
+      },
+    },
+    username: {
+      label: 'Username',
+      placeholder: 'Username',
+      error: {
+        required: 'Field is required',
+      },
+    },
+    is_active: {
+      label: 'Is Active',
+      placeholder: 'Is Active',
+      error: {
+        required: 'Field is required',
       },
     },
   },

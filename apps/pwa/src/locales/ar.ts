@@ -2674,6 +2674,7 @@ const ar = {
     study_again: 'إرجاع المعاملة للدراسة',
     board_ofdec_file: 'خطاب طلب الدعم',
     attachment: 'مرفقات',
+    edit: 'يحرر',
   },
   modal: {
     disable_proposal: {
@@ -3174,6 +3175,39 @@ const ar = {
       supervisor_id: {
         min: 'اختر مشرفًا واحدًا على الأقل',
         required: 'مطلوب مشرفين',
+      },
+    },
+  },
+  _mobile_settings: {
+    button: {
+      add: 'إضافة إعداد المحمول الجديد',
+    },
+    api_key: {
+      label: 'مفاتيح واجهة برمجة التطبيقات',
+      placeholder: 'مفاتيح واجهة برمجة التطبيقات',
+      error: {
+        required: 'الحقل مطلوب',
+      },
+    },
+    user_sender: {
+      label: 'المرسل المستخدم',
+      placeholder: 'المرسل المستخدم',
+      error: {
+        required: 'الحقل مطلوب',
+      },
+    },
+    username: {
+      label: 'اسم المستخدم',
+      placeholder: 'اسم المستخدم',
+      error: {
+        required: 'الحقل مطلوب',
+      },
+    },
+    is_active: {
+      label: 'نشط',
+      placeholder: 'نشط',
+      error: {
+        required: 'الحقل مطلوب',
       },
     },
   },

@@ -15,6 +15,7 @@ import {
   FEATURE_MENU_ADMIN_APLICATION_ADMISSION,
   FEATURE_MENU_ADMIN_ENTITY_AREA,
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
+  FEATURE_MENU_ADMIN_MOBILE_SETTINGS,
   FEATURE_MENU_ADMIN_REGIONS,
   FEATURE_MENU_CLIENT_FILES,
   FEATURE_NESTED_TRACK_BUDGET,
@@ -28,7 +29,8 @@ const GregorianYear = Loadable(lazy(() => import('pages/admin/GregorianYear')));
 const ApplicationAndAdmissionSettings = Loadable(
   lazy(() => import('pages/admin/ApplicationAndAdmissionSettings'))
 );
-const MobileSettings = Loadable(lazy(() => import('pages/admin/MobileSettings')));
+const MobileSettings = Loadable(lazy(() => import('pages/admin/MobileSetttings')));
+const MobileSettingsForm = Loadable(lazy(() => import('pages/admin/MobileSetttings/form')));
 const SystemMessages = Loadable(lazy(() => import('pages/admin/SystemMessages')));
 const SystemMessagesInternalForm = Loadable(
   lazy(() => import('pages/admin/SystemMessages/InternalForm'))
@@ -133,8 +135,23 @@ export const adminRoute = {
           ],
         },
         { path: 'gregorian-year', element: <GregorianYear /> },
-
-        { path: 'mobile-settings', element: <MobileSettings /> },
+        FEATURE_MENU_ADMIN_MOBILE_SETTINGS && {
+          path: 'mobile-settings',
+          children: [
+            {
+              path: '',
+              element: <MobileSettings />,
+            },
+            {
+              path: ':id',
+              element: <MobileSettingsForm />,
+            },
+            {
+              path: 'add',
+              element: <MobileSettingsForm />,
+            },
+          ],
+        },
         // { path: 'system-messages', element: <SystemMessages /> },
         {
           path: 'system-messages',

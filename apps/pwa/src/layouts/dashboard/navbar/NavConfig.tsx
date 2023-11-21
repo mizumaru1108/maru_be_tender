@@ -20,6 +20,7 @@ import {
   FEATURE_MENU_ADMIN_APLICATION_ADMISSION,
   FEATURE_MENU_ADMIN_ENTITY_AREA,
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
+  FEATURE_MENU_ADMIN_MOBILE_SETTINGS,
   FEATURE_MENU_ADMIN_REGIONS,
   FEATURE_MENU_CLIENT_FILES,
   FEATURE_SEND_EMAIL_TO_CLIENT,
@@ -732,11 +733,11 @@ const navConfig = {
           path: PATH_ADMIN.application_and_admission_settings,
           icon: ICONS.tender_admin.application_and_admission_settings,
         },
-        // {
-        //   title: 'mobile_settings',
-        //   path: PATH_ADMIN.mobile_settings,
-        //   icon: ICONS.tender_admin.mobile_settings,
-        // },
+        FEATURE_MENU_ADMIN_MOBILE_SETTINGS && {
+          title: 'mobile_settings',
+          path: PATH_ADMIN.mobile_settings,
+          icon: ICONS.tender_admin.mobile_settings,
+        },
         {
           title: 'system_messages_menu',
           path: PATH_ADMIN.system_messages,

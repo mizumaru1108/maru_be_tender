@@ -363,5 +363,11 @@ export const FEATURE_NEW_PASSWORD_VALIDATION: boolean =
     ? true
     : false;
 
+export const FEATURE_MENU_ADMIN_MOBILE_SETTINGS: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_MOBILE_SETTINGS &&
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_MOBILE_SETTINGS === 'true'
+    ? true
+    : false;
+
 export const FEATURE_DISABLE_PROPOSAL_DATE =
   process.env.REACT_APP_CONFIG_FEATURE_DISABLE_PROPOSAL_DATE;
