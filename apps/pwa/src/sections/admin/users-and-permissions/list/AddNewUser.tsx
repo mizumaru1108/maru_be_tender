@@ -182,7 +182,7 @@ function AddNewUser() {
     } catch (error) {
       let message: string | undefined = undefined;
       if ((error?.statusCode && error?.statusCode === 409) || error?.error === 'conflict') {
-        message = translate('snackbar.admin.duplicate_mobile_number');
+        message = error?.message || translate('snackbar.admin.conflict');
       }
       setIsLoading(false);
       setOpenSnackBar({ open: true, message: message || error?.message, severity: 'error' });

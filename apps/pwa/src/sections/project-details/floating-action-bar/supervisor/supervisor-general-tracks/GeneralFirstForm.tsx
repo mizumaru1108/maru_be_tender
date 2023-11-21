@@ -190,7 +190,9 @@ export default function GeneralFirstForm({
         setBudgetError({
           open: true,
           message: `${translate('notification.error.not_responsible_spv')} : ${
-            responsibleSpv.length > 0 ? responsibleSpv.map((item) => item.label).join(', ') : '-'
+            responsibleSpv.length > 0
+              ? responsibleSpv.map((item) => item.label).join(', ')
+              : translate('notification.error.no_supervisor')
           }`,
         });
       }

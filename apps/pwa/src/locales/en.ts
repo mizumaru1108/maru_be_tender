@@ -2624,6 +2624,7 @@ const en = {
     },
     error: {
       not_responsible_spv: 'You are not responsible for this track budget section:',
+      no_supervisor: 'No supervisor',
       password: {
         validation: {
           uppper_case: 'Contain at least one uppercase letter',
@@ -2936,6 +2937,7 @@ const en = {
     },
     admin: {
       duplicate_mobile_number: 'Mobile number already exist',
+      conlfict: 'Error: Conflict information',
     },
     auth: {
       reset_password: {

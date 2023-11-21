@@ -2644,6 +2644,7 @@ const ar = {
     },
     error: {
       not_responsible_spv: 'أنت لست مسؤولاً عن قسم ميزانية المسار هذا:',
+      no_supervisor: 'لا مشرف',
       password: {
         validation: {
           uppper_case: 'تحتوي على حرف كبير واحد على الأقل',
@@ -2956,6 +2957,7 @@ const ar = {
     },
     admin: {
       duplicate_mobile_number: 'الهاتف موجود بالفعل في التطبيق لدينا',
+      conlfict: 'خطأ: معلومات متعارضة',
     },
     auth: {
       reset_password: {
