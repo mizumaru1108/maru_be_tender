@@ -12,7 +12,7 @@ const InfoUpdateRequestPage = Loadable(
 const PartnerManagementPage = Loadable(
   lazy(() => import('pages/accounts-manager/partner/management'))
 );
-const PortalReportsPage = Loadable(lazy(() => import('pages/PortalReports')));
+// const PortalReportsPage = Loadable(lazy(() => import('pages/PortalReports')));
 const MessagesManagerPage = Loadable(lazy(() => import('pages/accounts-manager/Messages')));
 const PartnerDetailsPage = Loadable(
   lazy(() => import('pages/accounts-manager/partner/PartnerDetails'))
@@ -81,7 +81,7 @@ export const accoutsManagerRoute = {
             { path: ':partnerId/amendment-request', element: <PartnerSendAmandementPage /> },
           ],
         },
-        { path: 'portal-reports', element: <PortalReportsPage /> },
+        // { path: 'portal-reports', element: <PortalReportsPage /> },
         { path: 'messages', element: <MessagesManagerPage /> },
       ],
     },

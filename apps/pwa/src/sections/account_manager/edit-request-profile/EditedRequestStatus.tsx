@@ -1,31 +1,35 @@
 import { Box, Button, Stack, Typography, useTheme } from '@mui/material';
-import { useSelector } from 'redux/store';
 import useLocales from 'hooks/useLocales';
 import { useNavigate } from 'react-router';
 import Iconify from '../../../components/Iconify';
 import Label from '../../../components/Label';
 
 type EditedRequestStatusProps = {
-  // entity_name: string;
   EditStatus: string;
 };
 
 function EditedRequestStatus({ EditStatus }: EditedRequestStatusProps) {
-  const { proposal } = useSelector((state) => state.proposal);
   const { currentLang, translate } = useLocales();
   const navigate = useNavigate();
   const theme = useTheme();
 
   return (
     <Stack
-      spacing={4}
-      direction="row"
-      alignItems="center"
-      justifyContent="space-between"
+      spacing={{ xs: 2, md: 4 }}
+      direction={{ xs: 'column', sm: 'row' }}
+      alignItems={{ xs: 'flex-start', sm: 'center' }}
+      justifyContent={{ xs: 'flex-start', sm: 'space-between' }}
       component="div"
       sx={{ width: '100%' }}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: { xs: 'flex-start', sm: 'center' },
+          gap: { xs: 2, md: 4 },
+        }}
+      >
         <Button
           color="inherit"
           variant="contained"

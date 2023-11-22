@@ -13,7 +13,6 @@ import { NAVBAR } from '../../../config';
 // components
 import Scrollbar from '../../../components/Scrollbar';
 import { NavSectionVertical } from '../../../components/nav-section';
-// import { ReactComponent as Logo } from '../../../assets/logo.svg';
 import { ReactComponent as Logo } from '../../../assets/new_logo.svg';
 //
 import navConfig from './NavConfig';
@@ -49,7 +48,6 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isDesktop = useResponsive('up', 'lg');
-  // const { onChangeLang } = useLocales();
 
   // redux
   const dispatch = useDispatch();
@@ -92,10 +90,11 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
         sx={{
           mx: '15px',
           mb: '15px',
-          mt: { xs: '10px', sm: 0 },
+          mt: 1.2,
           backgroundColor: '#FF484229! important',
           justifyContent: 'flex-start',
           gap: '8px',
+          width: `calc(100% - ${NAVBAR.DASHBOARD_WIDTH / 8}px)`,
         }}
         onClick={() => {
           localStorage.removeItem('partnerMeetingId');
@@ -118,7 +117,6 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
           dispatch(setMessageGrouped([]));
           onChangeLang('ar');
           logout();
-          // navigate(0);
           navigate('/auth/login');
         }}
         startIcon={<img src="/assets/icons/dashboard-navbar/log-out-icon.svg" alt="" />}

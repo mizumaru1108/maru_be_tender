@@ -19,21 +19,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { bank_information } from '../../@types/commons';
 import { IEditedValues } from '../../@types/client_data';
 
-const mockData = {
-  project_name: 'اسم الشريك - جمعية الدعوة والإرشاد وتوعية الجاليات',
-  minister_type: 'وزارة التجارة - تجاري',
-  number_of_beni: '100',
-  number_of_employees: '113',
-  headquarters: 'Damascus',
-  establishment_date: '10 / 11 / 2020',
-  number_of_done_projects: '13',
-  authority: 'وزارة الداخلية',
-  license_number: '1023-0316-4648-8721',
-  license_expiry_date: '10 / 08 / 2022',
-  license_issue_date: '10 / 08 / 2022',
-  license_file: 'image.',
-};
-
 export interface ClientProfiles {
   bank_informations: bank_information[];
   client_data: IEditedValues;

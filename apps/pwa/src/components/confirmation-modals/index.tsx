@@ -66,7 +66,6 @@ export default function ConfirmationModals({
     <ModalDialog
       maxWidth="md"
       isOpen={true}
-      // title={<Stack>{null}</Stack>}
       content={
         <Grid container spacing={2} justifyContent="center" alignItems="center">
           {type !== 'RESET_PASSWORD_LINK' && type !== 'DELETED_ACCOUNT' && (
@@ -89,7 +88,12 @@ export default function ConfirmationModals({
                 <Image src={imgCover!} alt="logo" sx={{ maxWidth: 205, mx: 'auto', py: 4 }} />
               </Grid>
               <Grid item>
-                <Stack component="div" spacing={3} direction="row" sx={{ pb: 8 }}>
+                <Stack
+                  component="div"
+                  spacing={3}
+                  direction={{ xs: 'column', md: 'row' }}
+                  sx={{ pb: 8 }}
+                >
                   <LoadingButton
                     variant="contained"
                     size="medium"
@@ -128,20 +132,19 @@ export default function ConfirmationModals({
                   <Box
                     sx={{
                       display: 'flex',
-                      justifyContent: 'space-between',
+                      flexDirection: { xs: 'column', sm: 'row' },
+                      justifyContent: { xs: 'normal', sm: 'space-between' },
                       alignItems: 'center',
                       backgroundColor: '#93A3B029',
-                      // opacity: 0.16,
                       borderRadius: 4,
                       width: '80%',
-                      // height: 45,
-                      // p: 1,
+                      p: 3,
                     }}
                   >
                     <Typography
                       variant="body1"
                       textAlign={'left'}
-                      sx={{ p: 3, width: '80%', overflow: 'hidden' }}
+                      sx={{ width: '80%', overflow: 'hidden' }}
                     >
                       {resetPasswordLink ? resetPasswordLink : '-'}
                     </Typography>
@@ -153,6 +156,7 @@ export default function ConfirmationModals({
                         m: 1,
                         boxShadow: 'none',
                         borderRadius: 4,
+                        width: { xs: '100%', sm: 'auto' },
                       }}
                     >
                       <Typography variant="button" textAlign={'center'}>
@@ -179,7 +183,12 @@ export default function ConfirmationModals({
                 <Image src={imgCover!} alt="logo" sx={{ maxWidth: 205, mx: 'auto', py: 4 }} />
               </Grid>
               <Grid item>
-                <Stack component="div" spacing={3} direction="row" sx={{ pb: 8 }}>
+                <Stack
+                  component="div"
+                  spacing={3}
+                  direction={{ xs: 'column', md: 'row' }}
+                  sx={{ pb: 8 }}
+                >
                   <LoadingButton
                     variant="contained"
                     size="medium"

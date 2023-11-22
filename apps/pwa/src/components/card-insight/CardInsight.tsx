@@ -16,6 +16,7 @@ export default function CardInsights({
   cardContainerSpacing,
   cardContainerColumns,
   cardItemXsBreakpoints,
+  cardItemSmBreakpoints,
   cardItemMdBreakpoints,
   cardStyle,
   icon,
@@ -47,7 +48,6 @@ export default function CardInsights({
           container
           spacing={cardContainerSpacing ?? { xs: 2, md: 4 }}
           direction="row"
-          alignItems="center"
           columns={cardContainerColumns ?? 12}
         >
           {data?.length &&
@@ -55,6 +55,7 @@ export default function CardInsights({
               <Grid
                 item
                 xs={cardItemXsBreakpoints ?? 6}
+                sm={cardItemSmBreakpoints ?? 6}
                 md={cardItemMdBreakpoints ?? 3}
                 key={i}
                 sx={{ cursor: item?.redirect_link ? 'pointer' : undefined }}

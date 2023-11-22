@@ -69,6 +69,7 @@ export class UserUpdateStatusCommandHandler
           if (request.status === UserStatusEnum.DELETED) {
             const haveProposal = await this.proposalRepo.findMany({
               step: ['ZERO'],
+              submitter_user_id: user_id,
             });
 
             if (haveProposal.length > 0) {

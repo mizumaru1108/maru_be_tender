@@ -16,7 +16,6 @@ import {
 } from 'queries/account_manager/statistic';
 import {
   tableNewRequest,
-  tableInfoUpdateRequest,
   getEditRequestProfileList,
 } from 'queries/account_manager/clientNewRequest';
 //
@@ -89,10 +88,6 @@ function MainManagerPage() {
     query: tableNewRequest,
   });
 
-  // const [resultInfoUpdateQuery, reexecuteInfoUpdateRequest] = useQuery({
-  //   query: tableInfoUpdateRequest,
-  // });
-
   const [resultInfoUpdateQuery, reexecuteInfoUpdateRequest] = useQuery({
     query: getEditRequestProfileList,
   });
@@ -155,10 +150,8 @@ function MainManagerPage() {
     }
 
     if (resultNewRequest && resultNewRequest?.user && resultNewRequest?.user.length > 0) {
-      // console.log({ resultNewRequest });
       const resultDataNR = resultNewRequest?.user.map((v: any) => ({
         id: v.id,
-        // partner_name: (v.client_data.entity && v.client_data.entity) ?? '-No Data-',
         partner_name:
           v && v.client_data && v.client_data.entity ? v.client_data.entity : '-No Data-',
         createdAt: v.client_data.created_at,
@@ -169,24 +162,7 @@ function MainManagerPage() {
 
       setNewJoinRequestData(resultDataNR);
     }
-    // console.log({ resultNewRequest });
 
-    // if (resultInfoUpdate) {
-    //   const resultDataInfoUpdate = resultInfoUpdate?.user?.map((vcl: any) => {
-    //     const vcd = vcl.client_data;
-
-    //     return {
-    //       id: vcd.id,
-    //       partner_name: vcd.client_data.entity,
-    //       createdAt: vcd.client_data.created_at,
-    //       account_status: 'REVISED_ACCOUNT',
-    //       events: vcd.id,
-    //       update_status: true,
-    //     };
-    //   });
-
-    //   setInfoUpdateRequest(resultDataInfoUpdate);
-    // }
     if (resultInfoUpdate) {
       const newEditRequestList = resultInfoUpdate?.edit_requests
         .filter((item: any) => item.status_id !== 'APPROVED')
@@ -205,8 +181,6 @@ function MainManagerPage() {
             status_id: vcd.status_id,
           };
         });
-      // console.log({ resultInfoUpdate });
-      // console.log({ newEditRequestList });
       setInfoUpdateRequest(newEditRequestList);
     }
   }, [
@@ -219,7 +193,6 @@ function MainManagerPage() {
   ]);
 
   return (
-    // <Page title="Account Manager Dashboard">
     <Page title={translate('pages.account_manager.main')}>
       <Container>
         <ContentStyle>
@@ -238,6 +211,9 @@ function MainManagerPage() {
           {cardInsightData && (
             <CardInsight
               headline="account_manager.heading.daily_stats"
+              cardItemXsBreakpoints={12}
+              cardItemSmBreakpoints={6}
+              cardItemMdBreakpoints={3}
               data={cardInsightData.data}
             />
           )}

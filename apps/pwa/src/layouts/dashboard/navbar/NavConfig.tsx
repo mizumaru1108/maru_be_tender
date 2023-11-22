@@ -257,11 +257,11 @@ const navConfig = {
             path: PATH_CONSULTANT.client_files,
             icon: ICONS.tender_moderator.old_proposal,
           } as any),
-        {
-          title: 'portal_reports',
-          path: PATH_CONSULTANT.portal_reports,
-          icon: ICONS.tender_consultant.portal_reports,
-        },
+        // {
+        //   title: 'portal_reports',
+        //   path: PATH_CONSULTANT.portal_reports,
+        //   icon: ICONS.tender_consultant.portal_reports,
+        // },
         {
           title: 'messages',
           path: PATH_CONSULTANT.messages,
@@ -315,11 +315,11 @@ const navConfig = {
             path: PATH_FINANCE.client_files,
             icon: ICONS.tender_moderator.old_proposal,
           } as any),
-        {
-          title: 'portal_reports',
-          path: PATH_FINANCE.portal_reports,
-          icon: ICONS.tender_finance.portal_reports,
-        },
+        // {
+        //   title: 'portal_reports',
+        //   path: PATH_FINANCE.portal_reports,
+        //   icon: ICONS.tender_finance.portal_reports,
+        // },
         {
           title: 'messages',
           path: PATH_FINANCE.messages,
@@ -363,11 +363,11 @@ const navConfig = {
             path: PATH_CASHIER.client_files,
             icon: ICONS.tender_moderator.old_proposal,
           } as any),
-        {
-          title: 'portal_reports',
-          path: PATH_CASHIER.portal_reports,
-          icon: ICONS.tender_cashier.portal_reports,
-        },
+        // {
+        //   title: 'portal_reports',
+        //   path: PATH_CASHIER.portal_reports,
+        //   icon: ICONS.tender_cashier.portal_reports,
+        // },
         {
           title: 'messages',
           path: PATH_CASHIER.messages,
@@ -432,11 +432,11 @@ const navConfig = {
             path: PATH_CEO.client_files,
             icon: ICONS.tender_moderator.old_proposal,
           } as any),
-        {
-          title: 'portal_reports',
-          path: PATH_CEO.portal_reports,
-          icon: ICONS.tender_ceo.portal_reports,
-        },
+        // {
+        //   title: 'portal_reports',
+        //   path: PATH_CEO.portal_reports,
+        //   icon: ICONS.tender_ceo.portal_reports,
+        // },
         {
           title: 'messages',
           path: PATH_CEO.messages,
@@ -512,11 +512,11 @@ const navConfig = {
           path: PATH_PROJECT_MANAGER.rejection_list,
           icon: ICONS.tender_ceo.rejection_list,
         },
-        {
-          title: 'portal_reports',
-          path: PATH_PROJECT_MANAGER.portal_reports,
-          icon: ICONS.tender_project_manager.portal_reports,
-        },
+        // {
+        //   title: 'portal_reports',
+        //   path: PATH_PROJECT_MANAGER.portal_reports,
+        //   icon: ICONS.tender_project_manager.portal_reports,
+        // },
         {
           title: 'messages',
           path: PATH_PROJECT_MANAGER.messages,
@@ -597,11 +597,11 @@ const navConfig = {
           path: PATH_PROJECT_SUPERVISOR.client_list,
           icon: ICONS.tender_ceo.client_list,
         },
-        {
-          title: 'portal_reports',
-          path: PATH_PROJECT_SUPERVISOR.portal_reports,
-          icon: ICONS.tender_project_supervisor.portal_reports,
-        },
+        // {
+        //   title: 'portal_reports',
+        //   path: PATH_PROJECT_SUPERVISOR.portal_reports,
+        //   icon: ICONS.tender_project_supervisor.portal_reports,
+        // },
         {
           title: 'messages',
           path: PATH_PROJECT_SUPERVISOR.messages,
@@ -645,11 +645,11 @@ const navConfig = {
           path: PATH_ACCOUNTS_MANAGER.partnerManagement,
           icon: ICONS.tender_accounts_manager.partnerManagement,
         },
-        {
-          title: 'portal_reports',
-          path: PATH_ACCOUNTS_MANAGER.portalReports,
-          icon: ICONS.tender_accounts_manager.portal_reports,
-        },
+        // {
+        //   title: 'portal_reports',
+        //   path: PATH_ACCOUNTS_MANAGER.portalReports,
+        //   icon: ICONS.tender_accounts_manager.portal_reports,
+        // },
         {
           title: 'messages',
           path: PATH_ACCOUNTS_MANAGER.messages,
@@ -689,11 +689,11 @@ const navConfig = {
             path: PATH_MODERATOR.client_files,
             icon: ICONS.tender_moderator.old_proposal,
           } as any),
-        {
-          title: 'portal_reports',
-          path: PATH_MODERATOR.portal_reports,
-          icon: ICONS.tender_moderator.portal_reports,
-        },
+        // {
+        //   title: 'portal_reports',
+        //   path: PATH_MODERATOR.portal_reports,
+        //   icon: ICONS.tender_moderator.portal_reports,
+        // },
         {
           title: 'messages',
           path: PATH_MODERATOR.messages,

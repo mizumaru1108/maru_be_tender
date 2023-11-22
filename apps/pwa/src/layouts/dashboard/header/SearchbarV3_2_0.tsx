@@ -45,18 +45,15 @@ const APPBAR_DESKTOP = 92;
 const SearchbarStyle = styled('div')(({ theme }) => ({
   ...cssStyles(theme).bgBlur(),
   top: 25,
-  // left: 0,
   zIndex: 99,
   width: '100%',
   display: 'inline-block',
   flexWrap: 'wrap',
   background: 'transparent',
-  // position: 'absolute',
   position: 'relative',
   alignItems: 'center',
   height: APPBAR_MOBILE,
   padding: theme.spacing(0, 3),
-  // boxShadow: theme.customShadows.z8,
   [theme.breakpoints.up('md')]: {
     height: APPBAR_DESKTOP,
     padding: theme.spacing(0, 5),

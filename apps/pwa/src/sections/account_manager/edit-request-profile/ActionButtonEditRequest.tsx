@@ -22,7 +22,6 @@ function ActionButtonEditRequest({ open, EditValues, EditStatus, setOpen }: Prop
 
   const handleRejected = () => {
     setOpen();
-    // alert('Accept Edit Request');
   };
 
   const handleAccepted = async () => {
@@ -36,12 +35,12 @@ function ActionButtonEditRequest({ open, EditValues, EditStatus, setOpen }: Prop
         p: 3,
         borderRadius: 1,
         position: 'sticky',
-        width: '40%',
+        width: '100%',
         bottom: 24,
         border: `1px solid ${theme.palette.grey[400]}`,
       }}
     >
-      <Grid container spacing={2} justifyContent="space-around">
+      <Grid container spacing={2} justifyContent={{ xs: 'space-around', md: 'center' }}>
         <Grid item>
           <Button
             onClick={() => handleAccepted()}

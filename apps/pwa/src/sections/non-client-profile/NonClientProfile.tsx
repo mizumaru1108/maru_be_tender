@@ -53,12 +53,15 @@ export default function NonClientProfile() {
     <Page title={translate('user_profile.label.page_title')}>
       <Container>
         <ContentStyle>
-          <Stack direction="row" justifyContent="space-between">
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            justifyContent={{ xs: 'normal', sm: 'space-between' }}
+            spacing={2}
+          >
             <Stack direction="column" sx={{ mb: '5px' }}>
               {user?.fullName && <Typography variant="h5">{user?.fullName}</Typography>}
 
               <Typography variant="h6" sx={{ color: '#1E1E1E' }}>
-                {/* {role_url_map[`${role}`].toUpperCase() ?? 'N/A'} - N/A */}
                 {translate(`${role}`)}
               </Typography>
             </Stack>
@@ -94,7 +97,7 @@ export default function NonClientProfile() {
                 px: '15px',
                 py: '0px',
                 height: '45px',
-                fontSize: isMobile ? '10px' : '15px',
+                fontSize: '15px',
               }}
               disabled={!FEATURE_EDIT_CLIENT_INFORMATION}
               onClick={() => {
@@ -107,8 +110,8 @@ export default function NonClientProfile() {
             </Button>
           </Stack>
           <Divider />
-          <Grid container rowSpacing={3} columnSpacing={3}>
-            <Grid item xs={7}>
+          <Grid container spacing={{ xs: 1, md: 2 }}>
+            <Grid item xs={12}>
               <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px' }}>
                 {translate('user_profile.label.main_information')}
               </Typography>
@@ -124,11 +127,11 @@ export default function NonClientProfile() {
               </Stack>
             </Grid>
 
-            <Grid item xs={7}>
+            <Grid item xs={12}>
               <Typography variant="h6" sx={{ color: '#1E1E1E', mb: '15px' }}>
                 {translate('user_profile.label.contact_information')}
               </Typography>
-              <Stack direction="row" gap={3} justifyContent="space-between" sx={{ mb: '15px' }}>
+              <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ mb: '15px' }}>
                 <Stack direction="column">
                   <Typography sx={{ fontSize: '12px' }}>
                     {translate('user_profile.fields.email')}
@@ -143,14 +146,9 @@ export default function NonClientProfile() {
                   <Typography
                     sx={{ mb: '15px', direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr' }}
                   >
-                    {/* {data?.profile?.mobile_number || 'N/A'} */}
                     {formatPhone({ phone: data?.profile?.mobile_number, prefix: '+966' }) || 'N/A'}
                   </Typography>
                 </Stack>
-                {/* <Stack direction="column">
-                  <Typography sx={{ fontSize: '12px' }}>كلمة السر</Typography>
-                  <Typography sx={{ mb: '15px' }}>***********</Typography>
-                </Stack> */}
               </Stack>
             </Grid>
           </Grid>

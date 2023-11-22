@@ -39,12 +39,12 @@ import ConfirmationModals from '../../../components/confirmation-modals';
 
 // -------------------------------------------------------------------------------
 
-type UserStatus =
-  | 'WAITING_FOR_ACTIVATION'
-  | 'SUSPENDED_ACCOUNT'
-  | 'CANCELED_ACCOUNT'
-  | 'ACTIVE_ACCOUNT'
-  | 'REVISED_ACCOUNT';
+// type UserStatus =
+//   | 'WAITING_FOR_ACTIVATION'
+//   | 'SUSPENDED_ACCOUNT'
+//   | 'CANCELED_ACCOUNT'
+//   | 'ACTIVE_ACCOUNT'
+//   | 'REVISED_ACCOUNT';
 
 type Action = 'ACTIVE_ACCOUNT' | 'SUSPENDED_ACCOUNT' | 'CANCELED_ACCOUNT' | 'DELETED';
 
@@ -75,7 +75,7 @@ function AccountPartnerDetails() {
   // Language
   const { currentLang, translate } = useLocales();
 
-  const [resultDetailsClient, reexecuteDetailsClient] = useQuery({
+  const [resultDetailsClient] = useQuery({
     query: detailsClientData,
     variables: {
       id: partnerId as string,
@@ -91,38 +91,11 @@ function AccountPartnerDetails() {
   const [action, setAction] = useState<Action | null>(null);
 
   // Activate | Suspended Client
-  /* old gql */
-  // const [activateResult, activateClient] = useMutation(changeClientStatus);
-  // const [suspendedResult, suspendedClient] = useMutation(changeClientStatus);
-  // const [deleteResult, deleteClient] = useMutation(deleteClientData);
   const [isSubmitting, setIsSubimitting] = useState(false);
 
   //Messages
   const dispatch = useDispatch();
   const { conversations } = useSelector((state: any) => state.wschat);
-
-  /* old GQL */
-  // const handleActivateAccount = async (id: string) => {
-  //   setIsSubimitting(true);
-
-  //   const resActivate = await activateClient({
-  //     id: params.partnerId,
-  //     _set: {
-  //       status_id: 'ACTIVE_ACCOUNT',
-  //     },
-  //   });
-
-  //   if (resActivate) {
-  //     setDynamicState('ACTIVE_ACCOUNT');
-  //     setIsSubimitting(false);
-  //     enqueueSnackbar(
-  //       `${translate('account_manager.partner_details.notification.activate_account')}`,
-  //       {
-  //         variant: 'success',
-  //       }
-  //     );
-  //   }
-  // };
 
   const handleChangeStatus = async (id: string, status: Action) => {
     setIsSubimitting(true);
@@ -131,7 +104,6 @@ function AccountPartnerDetails() {
         '/tender-user/update-status',
         {
           status: status,
-          // user_id: status !== 'DELETED' ? [id] : id,
           user_id: [id],
           selectLang: currentLang.value,
         } as ChangeStatusRequest,
@@ -168,55 +140,10 @@ function AccountPartnerDetails() {
     }
   };
 
-  // const handeSuspendedAccount = async (id: string) => {
-  //   setIsSubimitting(true);
-
-  //   const resSuspended = await suspendedClient({
-  //     id: params.partnerId,
-  //     _set: {
-  //       status_id: 'SUSPENDED_ACCOUNT',
-  //     },
-  //   });
-
-  //   if (resSuspended) {
-  //     setDynamicState('SUSPENDED_ACCOUNT');
-  //     setIsSubimitting(false);
-  //     enqueueSnackbar(
-  //       `${translate('account_manager.partner_details.notification.disabled_account')}`,
-  //       {
-  //         variant: 'success',
-  //       }
-  //     );
-  //   }
-  // };
-
-  // const handleDeleteAccount = async (email: string) => {
-  //   setIsSubimitting(true);
-
-  //   const resDeleted = await deleteClient({
-  //     id: params.partnerId,
-  //     _set: {
-  //       status_id: 'CANCELED_ACCOUNT',
-  //     },
-  //   });
-
-  //   if (resDeleted) {
-  //     setDynamicState('CANCELED_ACCOUNT');
-  //     setIsSubimitting(false);
-  //     enqueueSnackbar(
-  //       `${translate('account_manager.partner_details.notification.deleted_account')}`,
-  //       {
-  //         variant: 'success',
-  //       }
-  //     );
-  //   }
-  // };
-  // console.log({ activeRole });
   const handleMessage = () => {
     const x = location.pathname.split('/');
     const urlToMessage = `/${x[1]}/${x[2]}/messages`;
     const activeRoleIndex: number = Number(localStorage.getItem('activeRoleIndex')) ?? 0;
-    // console.log({ selectedRole });
 
     const valueToConversation: Conversation = {
       id: uuidv4(),
@@ -229,7 +156,6 @@ function AccountPartnerDetails() {
           content_type_id: 'TEXT',
           receiver_id: params.partnerId,
           owner_id: user?.id,
-          // receiver_role_as: partnerDetails.client_data.user.roles[activeRoleIndex].role.id,
           receiver_role_as: `tender_${partnerDetails.client_data.user.roles[
             activeRoleIndex
           ].role.id.toLowerCase()}`,
@@ -292,7 +218,6 @@ function AccountPartnerDetails() {
   const handleOpenProjectOwnerDetails = () => {
     const submiterId = partnerId;
     const urls = location.pathname.split('/');
-    const url = location.pathname.split('/').slice(0, 3).join('/');
     navigate(`/${urls[1]}/dashboard/current-project/owner/${submiterId}`);
   };
 
@@ -302,10 +227,9 @@ function AccountPartnerDetails() {
       setDynamicState(data?.user_by_pk?.status_id);
     }
   }, [data]);
-  // console.log({ partnerDetails });
+
   if (!data) return <>Loading...</>;
   return (
-    // <Page title="Partner Details">
     <Page title={translate('pages.account_manager.partner_details')}>
       <Container>
         <ContentStyle>
@@ -313,19 +237,26 @@ function AccountPartnerDetails() {
           {partnerDetails && (
             <>
               <Stack
-                spacing={4}
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
+                spacing={{ xs: 2, md: 4 }}
+                direction={{ xs: 'column', sm: 'row' }}
+                alignItems={{ xs: 'flex-start', sm: 'center' }}
+                justifyContent={{ xs: 'flex-start', sm: 'space-between' }}
                 component="div"
                 sx={{ width: '100%' }}
               >
-                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    alignItems: { xs: 'flex-start', sm: 'center' },
+                    gap: { xs: 2, md: 4 },
+                  }}
+                >
                   <Button
                     color="inherit"
                     variant="contained"
                     onClick={() => navigate(-1)}
-                    sx={{ padding: 1, minWidth: 25, minHeight: 25, mr: 3 }}
+                    sx={{ padding: 1, minWidth: 25, minHeight: 25 }}
                   >
                     <Iconify
                       icon={
@@ -373,7 +304,6 @@ function AccountPartnerDetails() {
               <Divider />
               <Grid container spacing={6}>
                 <Grid item xs={12} md={6}>
-                  {/* Main Information */}
                   <Stack spacing={2} direction="column" component="div">
                     <Typography variant="h6">
                       {translate('account_manager.partner_details.main_information')}
@@ -546,13 +476,13 @@ function AccountPartnerDetails() {
                       partnerDetails?.client_data.board_ofdec_file.length > 0 ? (
                         partnerDetails?.client_data.board_ofdec_file.map(
                           (item: any, index: number) => (
-                            <Grid item xs={6} md={6} key={index}>
+                            <Grid item xs={12} md={6} key={index}>
                               <ButtonDownloadFiles files={item} />
                             </Grid>
                           )
                         )
                       ) : (
-                        <Grid item xs={6} md={6}>
+                        <Grid item xs={12} md={6}>
                           {partnerDetails &&
                           partnerDetails?.client_data &&
                           partnerDetails?.client_data.board_ofdec_file ? (
@@ -568,7 +498,6 @@ function AccountPartnerDetails() {
                   </Stack>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  {/* Administrative Data */}
                   <Typography
                     variant="subtitle1"
                     sx={{ mb: 2, fontWeight: theme.typography.fontWeightBold }}
@@ -820,7 +749,6 @@ function AccountPartnerDetails() {
                       </Box>
                     </Grid>
                     <Grid item xs={12} md={6} alignItems="start">
-                      {/* <Box> */}
                       <Stack direction="column" alignItems="start">
                         <Typography variant="body2" component="p" sx={{ color: '#93A3B0' }}>
                           {translate('account_manager.partner_details.phone')}:
@@ -840,7 +768,6 @@ function AccountPartnerDetails() {
                             '- No Data -'}
                         </Typography>
                       </Stack>
-                      {/* </Box> */}
                     </Grid>
                     <Grid item xs={12} md={12} alignItems="start">
                       {/* <Box> */}
@@ -865,7 +792,6 @@ function AccountPartnerDetails() {
                           </Typography>
                         </Stack>
                       </Box>
-                      {/* </Box> */}
                     </Grid>
                   </Grid>
 
@@ -880,7 +806,7 @@ function AccountPartnerDetails() {
                     {partnerDetails?.bank_informations &&
                     partnerDetails?.bank_informations.length ? (
                       partnerDetails?.bank_informations.map((v: any, i: any) => (
-                        <Grid item xs={12} md={6} key={i}>
+                        <Grid item xs={12} sm={6} key={i}>
                           <BankImageComp
                             enableButton={true}
                             bankName={`${v.bank_name}`}
@@ -913,7 +839,12 @@ function AccountPartnerDetails() {
                     border: `1px solid ${theme.palette.grey[400]}`,
                   }}
                 >
-                  <Grid container spacing={2} alignItems="center" justifyContent="space-around">
+                  <Grid
+                    container
+                    spacing={2}
+                    alignItems="center"
+                    justifyContent={{ xs: 'normal', sm: 'center', md: 'space-around' }}
+                  >
                     <Grid item>
                       {dynamicState === 'ACTIVE_ACCOUNT' ? (
                         <Button
@@ -922,7 +853,6 @@ function AccountPartnerDetails() {
                           }
                           variant="contained"
                           color="warning"
-                          // disabled={isSubmitting}
                           disabled
                         >
                           {translate('account_manager.partner_details.btn_disabled_account')}
@@ -963,26 +893,11 @@ function AccountPartnerDetails() {
                         variant="outlined"
                         color="inherit"
                         endIcon={<Iconify icon="eva:message-circle-outline" />}
-                        // onClick={() => navigate(PATH_ACCOUNTS_MANAGER.messages)}
                         onClick={handleMessage}
                       >
                         {translate('account_manager.partner_details.send_messages')}
                       </Button>
                     </Grid>
-                    {/* <Grid item>
-                    <Button
-                      variant="contained"
-                      color="info"
-                      endIcon={<Iconify icon="eva:edit-2-outline" />}
-                      onClick={() =>
-                        navigate(
-                          PATH_ACCOUNTS_MANAGER.partnerSendAmandement(params.partnerId as string)
-                        )
-                      }
-                    >
-                      {translate('account_manager.partner_details.submit_amendment_request')}
-                    </Button>
-                  </Grid> */}
                   </Grid>
                 </Box>
               )}

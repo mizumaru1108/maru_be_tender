@@ -1,5 +1,4 @@
-import { Box, IconButton, Stack, Typography } from '@mui/material';
-import Toast from 'components/toast';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
 import { gettingUseInfoForEditEmployee } from 'queries/client/gettingUserDataForEdit';
@@ -18,13 +17,14 @@ import ActionsBoxUserEdit from '../client/profile/ActionsBoxUserEdit';
 import UserInfoForm from '../client/profile/forms/UserInfoForm';
 import { useSnackbar } from 'notistack';
 import formatPhone from '../../utils/formatPhone';
+import Iconify from 'components/Iconify';
 
 function NonClientProfileEditForm() {
   const { user, activeRole, logout } = useAuth();
   const id = user?.id;
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const [result] = useQuery({ query: gettingUseInfoForEditEmployee, variables: { id } });
   const { data } = result;
   const initialValue = {
@@ -58,7 +58,6 @@ function NonClientProfileEditForm() {
           email,
           mobile_number,
           employee_name,
-          // current_password: password,
         },
       }));
     }
@@ -68,7 +67,6 @@ function NonClientProfileEditForm() {
     setLoading(true);
     window.scrollTo(0, 0);
     const tmpMobilePhone = formatPhone({ phone: data.mobile_number, prefix: '+966' });
-    // console.log(data);
     const tmpValues = {
       ...data,
       mobile_number: tmpMobilePhone,
@@ -109,15 +107,6 @@ function NonClientProfileEditForm() {
     } catch (err) {
       setLoading(false);
       setOpen(true);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
       const statusCode = (err && err.statusCode) || 0;
       const message = (err && err.message) || null;
       enqueueSnackbar(
@@ -138,44 +127,33 @@ function NonClientProfileEditForm() {
         value: true,
         message: err.message,
       });
-      // console.log({ err });
     }
   };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Stack direction="row">
-        <IconButton
-          onClick={() => {
-            navigate(-1);
-          }}
+        <Button
+          color="inherit"
+          variant="contained"
+          onClick={() => navigate(-1)}
+          sx={{ padding: 2, minWidth: 35, minHeight: 25, mr: 3 }}
         >
-          <svg
-            width="42"
-            height="41"
-            viewBox="0 0 42 41"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect
-              width="40.6799"
-              height="41.53"
-              rx="2"
-              transform="matrix(-1.19249e-08 -1 -1 1.19249e-08 41.5312 40.6798)"
-              fill="#93A3B0"
-              fillOpacity="0.24"
-            />
-            <path
-              d="M16.0068 12.341C16.0057 12.5165 16.0394 12.6904 16.1057 12.8529C16.1721 13.0153 16.2698 13.1631 16.3934 13.2877L22.5134 19.3944C22.6384 19.5183 22.7376 19.6658 22.8053 19.8283C22.873 19.9907 22.9078 20.165 22.9078 20.341C22.9078 20.517 22.873 20.6913 22.8053 20.8538C22.7376 21.0163 22.6384 21.1637 22.5134 21.2877L16.3934 27.3944C16.1423 27.6454 16.0013 27.986 16.0013 28.341C16.0013 28.6961 16.1423 29.0366 16.3934 29.2877C16.6445 29.5388 16.985 29.6798 17.3401 29.6798C17.5159 29.6798 17.69 29.6452 17.8524 29.5779C18.0148 29.5106 18.1624 29.412 18.2868 29.2877L24.3934 23.1677C25.1235 22.4078 25.5312 21.3948 25.5312 20.341C25.5312 19.2872 25.1235 18.2743 24.3934 17.5144L18.2868 11.3944C18.1628 11.2694 18.0153 11.1702 17.8529 11.1025C17.6904 11.0348 17.5161 11 17.3401 11C17.1641 11 16.9898 11.0348 16.8273 11.1025C16.6648 11.1702 16.5174 11.2694 16.3934 11.3944C16.2698 11.5189 16.1721 11.6667 16.1057 11.8291C16.0394 11.9916 16.0057 12.1655 16.0068 12.341Z"
-              fill="#1E1E1E"
-            />
-          </svg>
-        </IconButton>
+          <Iconify
+            icon={
+              currentLang.value === 'en'
+                ? 'eva:arrow-ios-back-outline'
+                : 'eva:arrow-ios-forward-outline'
+            }
+            width={25}
+            height={25}
+          />
+        </Button>
       </Stack>
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h4">تحرير معلومات المستخدم</Typography>
       </Stack>
-      <Box sx={{ px: '100px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <Typography variant="h5">المعلومات الرئيسية</Typography>
         <UserInfoForm onSubmit={onSubmit1} defaultValues={profileState.form1}>
           <ActionsBoxUserEdit loading={loading} />
