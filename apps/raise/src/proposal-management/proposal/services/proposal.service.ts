@@ -696,6 +696,7 @@ export class ProposalService {
         ProposalAction.REJECT,
         ProposalAction.STEP_BACK,
         ProposalAction.HOLD,
+        ProposalAction.REJECT_AMANDEMET_PAYMENT,
       ].indexOf(request.action) < 0
     ) {
       throw new BadRequestException(
@@ -816,6 +817,16 @@ export class ProposalService {
       proposalLogCreateInput.reject_reason = request.reject_reason;
     }
 
+    if (request.action === ProposalAction.REJECT_AMANDEMET_PAYMENT) {
+      /* proposal */
+      proposalUpdatePayload.outter_status = OutterStatusEnum.ONGOING;
+
+      /* log */
+      proposalLogCreateInput.action = ProposalAction.REJECT_AMANDEMET_PAYMENT;
+      proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
+      // proposalLogCreateInput.reject_reason = request.reject_reason;
+    }
     return {
       proposalUpdatePayload,
       proposalLogCreateInput,
