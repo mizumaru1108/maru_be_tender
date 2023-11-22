@@ -214,6 +214,12 @@ const ar = {
           succes_send: 'تم إنشاء تقرير الإغلاق بنجاح',
         },
       },
+      error_page: {
+        not_found: 'Page Not Found',
+        not_found_detail:
+          'نعتذر، لكننا لا نستطيع إيجاد هذه الصفحة.الرجاء الرجوع إلى الصفحة الرئيسية',
+        permission_denied: 'Permission Denied',
+      },
     },
     amandement_request: {
       client: 'طلب تعديل',
@@ -2676,6 +2682,7 @@ const ar = {
     board_ofdec_file: 'خطاب طلب الدعم',
     attachment: 'مرفقات',
     edit: 'يحرر',
+    back_to_homepage: 'الرجوع إلى الصفحة الرئيسية',
   },
   modal: {
     disable_proposal: {

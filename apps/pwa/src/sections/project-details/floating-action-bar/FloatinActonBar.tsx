@@ -46,14 +46,16 @@ function FloatinActonBar() {
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
             ['tender_moderator'].includes(role) &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && <ModeratorActionBar />}
+            !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) && (
+              <ModeratorActionBar />
+            )}
           {/* Supervisor is done */}
           {activeTap &&
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
             role === 'tender_project_supervisor' &&
             proposal.inner_status !== 'DONE_BY_CASHIER' &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && (
+            !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) && (
               <SupervisorFloatingActionBar />
             )}
           {/* Projectmanager is done */}
@@ -61,7 +63,7 @@ function FloatinActonBar() {
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
             role === 'tender_project_manager' &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && (
+            !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) && (
               <ProjectManagerFloatingActionBar />
             )}
           {/* CEO is done */}
@@ -69,13 +71,15 @@ function FloatinActonBar() {
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
             ['tender_ceo'].includes(role) &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && <CeoFloatingActionBar />}
+            !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) && (
+              <CeoFloatingActionBar />
+            )}
           {/* Consultant is done */}
           {activeTap &&
             ['project-path', 'supervisor-revision'].includes(activeTap) &&
             actionType === 'show-details' &&
             ['tender_consultant'].includes(role) &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && (
+            !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) && (
               <ConsultantFloatingActionBar />
             )}
 
@@ -83,7 +87,7 @@ function FloatinActonBar() {
           {activeTap &&
             actionType === 'reject-project' &&
             ['tender_ceo', 'tender_project_manager'].includes(role) &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && (
+            !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) && (
               <RejectProjectsActionBar />
             )}
 
@@ -93,14 +97,16 @@ function FloatinActonBar() {
             pathName &&
             pathName[3] === 'project-report' &&
             proposal.inner_status === 'DONE_BY_CASHIER' &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' && <FloatingCloseReportSPV />}
+            !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) && (
+              <FloatingCloseReportSPV />
+            )}
 
           {activeTap &&
             ['follow-ups'].includes(activeTap) &&
             (actionType === 'show-details' || actionType === 'show-project') &&
             pathName &&
             (pathName[3] === 'project-report' || pathName[3] === 'current-project') &&
-            proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
+            !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) &&
             // (role === 'tender_project_supervisor' || role === 'tender_client') &&
             ['PROJECT_COMPLETED', 'REQUESTING_CLOSING_FORM'].includes(proposal.inner_status) && (
               <FloatingClientSubmit />
@@ -115,7 +121,7 @@ function FloatinActonBar() {
                   ['show-details', 'show-project'].includes(actionType!) &&
                   pathName &&
                   pathName[3] === 'previous-funding-requests' &&
-                  proposal.outter_status !== 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
+                  !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) &&
                   // (role === 'tender_project_supervisor' || role === 'tender_client') &&
                   ['PROJECT_COMPLETED'].includes(proposal.inner_status) && <FloatingClientSubmit />}
               </React.Fragment>
@@ -134,11 +140,8 @@ function FloatinActonBar() {
             ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR', 'DONE_BY_CASHIER'].includes(
               proposal.inner_status
             ) &&
-            proposal.outter_status === 'ASKED_FOR_AMANDEMENT_PAYMENT' &&
+            ['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) &&
             ['tender_project_supervisor'].includes(role) && <PaymentAmandementFloatingActionBar />}
-          {/* {activeTap &&
-            ['project-path', 'payments'].includes(activeTap) &&
-            ['tender_finance'].includes(role) && <FinanceFloatingActionBar />} */}
         </React.Fragment>
       )}
     </>

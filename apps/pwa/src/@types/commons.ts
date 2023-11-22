@@ -170,6 +170,13 @@ export interface UpdateTrackProps {
   is_deleted: boolean;
 }
 
+export type SectionSupervisor = {
+  section_id: string;
+  section_supervisor_id: string;
+  supervisor_user_id: string;
+  supervisor: UserEntity;
+};
+
 export interface TrackSection {
   id?: string;
   track_id?: string;
@@ -184,12 +191,7 @@ export interface TrackSection {
   section_spending_budget_by_ceo?: number;
   supervisor_id?: string[];
   supervisor_options?: ComboBoxOption[];
-  section_supervisor?: {
-    section_id: string;
-    section_supervisor_id: string;
-    supervisor_user_id: string;
-    supervisor: UserEntity;
-  }[];
+  section_supervisor?: SectionSupervisor[];
 }
 
 export interface TrackProps {

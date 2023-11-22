@@ -214,6 +214,12 @@ const en = {
           succes_send: 'Closing report has been succesfully create!',
         },
       },
+      error_page: {
+        not_found: 'Page Not Found',
+        not_found_detail:
+          "We're sorry, the page you requested cannot be found. Please go back to thehomepage",
+        permission_denied: 'Permission Denied',
+      },
     },
     account_manager: {
       update_request: 'Information Update Request',
@@ -2656,6 +2662,7 @@ const en = {
     board_ofdec_file: 'Board ofdec file',
     attachment: 'Project attachment',
     edit: 'Edit',
+    back_to_homepage: 'Back to Homepage',
   },
   modal: {
     disable_proposal: {

@@ -1,19 +1,14 @@
-import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Box, Button, Grid, Modal, Stack, Typography } from '@mui/material';
+import FormGenerator from 'components/FormGenerator';
+import { FormProvider } from 'components/hook-form';
+import { FileProp } from 'components/upload';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { FormProvider } from 'components/hook-form';
-import { Grid, Stack, Modal, Box, Button, Typography } from '@mui/material';
-import FormGenerator from 'components/FormGenerator';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { AddBankData } from '../../funding-project-request/Forms-Data';
-import { ReactComponent as MovingBack } from '../../../../assets/move-back-icon.svg';
-import { FileProp } from 'components/upload';
-import { useMutation } from 'urql';
-import { addNewBankInformation } from 'queries/client/addNewBankInformation';
-import useAuth from 'hooks/useAuth';
-import { nanoid } from 'nanoid';
+import * as Yup from 'yup';
 import useLocales from '../../../../hooks/useLocales';
 import { useSelector } from '../../../../redux/store';
+import { AddBankData } from '../../funding-project-request/Forms-Data';
 const style = {
   position: 'absolute' as 'absolute',
   top: '50%',
@@ -142,8 +137,8 @@ export default function AddBankModal({
       fileExtension: '',
       fullName: '',
     });
-    if (initialValues && initialValues.id) {
-      newData = { ...newData, id: initialValues.id, bank_list: { is_deleted: false } };
+    if (initialValues && initialValues?.id) {
+      newData = { ...newData, id: initialValues?.id, bank_list: { is_deleted: false } };
       onSubmit(newData);
     } else {
       onSubmit(newData);
@@ -154,12 +149,12 @@ export default function AddBankModal({
     if (!!initialValues) {
       let newValues = { ...initialValues };
       const checkedBankNameById = listOfBank.find((bank: any) => {
-        const isCheck = bank === initialValues.bank_id;
+        const isCheck = bank === initialValues?.bank_id;
         return isCheck;
       });
       if (!checkedBankNameById) {
         const checkBankNameByName = banks.filter((bank: any) => {
-          const isCheck = bank.bank_name === initialValues.bank_name;
+          const isCheck = bank.bank_name === initialValues?.bank_name;
           return isCheck;
         });
         if (checkBankNameByName.length > 0) {
@@ -170,12 +165,23 @@ export default function AddBankModal({
       } else {
         newValues = { ...newValues, bank_name: checkedBankNameById };
       }
-      const newBankAccNumber = initialValues.bank_account_number
-        .split('SA')[1]
-        .replace(/(.{4})/g, '$1 ');
-      // console.log('initialValues', initialValues);
+      //
+      let newBankAccNumber = '';
+      const subStringAccNumber = initialValues?.bank_account_number.substring(0, 2);
+      if (subStringAccNumber === 'SA') {
+        newBankAccNumber = initialValues?.bank_account_number
+          ?.split('SA')[1]
+          .replace(/(.{4})/g, '$1 ');
+      } else if (subStringAccNumber === 'sa') {
+        newBankAccNumber = initialValues?.bank_account_number
+          ?.split('sa')[1]
+          .replace(/(.{4})/g, '$1 ');
+      } else {
+        newBankAccNumber = initialValues?.bank_account_number.slice(2).replace(/(.{4})/g, '$1 ');
+      }
+
       setValue('bank_account_number', newBankAccNumber);
-      setValue('bank_account_name', initialValues.bank_account_name);
+      setValue('bank_account_name', initialValues?.bank_account_name);
       setValue('bank_name', newValues.bank_name);
       if (initialValues?.card_image) {
         if (
@@ -184,12 +190,12 @@ export default function AddBankModal({
           initialValues?.card_image?.type
         ) {
           setValue('card_image', {
-            url: initialValues.card_image.url,
-            size: initialValues.card_image.size,
-            type: initialValues.card_image.type,
-            base64Data: initialValues.card_image.base64Data,
-            fileExtension: initialValues.card_image.fileExtension,
-            fullName: initialValues.card_image.fullName,
+            url: initialValues?.card_image.url,
+            size: initialValues?.card_image.size,
+            type: initialValues?.card_image.type,
+            base64Data: initialValues?.card_image.base64Data,
+            fileExtension: initialValues?.card_image.fileExtension,
+            fullName: initialValues?.card_image.fullName,
           });
         }
       }
