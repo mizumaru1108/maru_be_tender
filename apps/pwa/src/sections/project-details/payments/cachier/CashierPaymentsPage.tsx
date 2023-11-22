@@ -143,7 +143,7 @@ function CashierPaymentsPage() {
         </Grid>
 
         <Grid item md={12}>
-          <Typography variant="h4">
+          <Typography variant="h4" sx={{ mb: 1 }}>
             {translate('content.administrative.project_details.payment.heading.split_payments')}
           </Typography>
         </Grid>

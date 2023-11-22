@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Box, Button, Grid, Stack, Typography, Pagination } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { CardTablePropsBE } from './types';
 import Select from '@mui/material/Select';
@@ -56,13 +56,13 @@ function CardTableBE({
   const handleCloseFilter = () => setOpen(false);
 
   // It is used for the number of the pages that are rendered
-  const pagesNumber = Math.ceil(data?.proposal_aggregate?.aggregate?.count / params.limit);
+  const pagesNumber = Math.ceil((data?.proposal_aggregate?.aggregate?.count ?? 0) / params.limit);
 
   // The data showed in a single page
-  const dataSinglePage = data?.data.slice(
-    (page - 1) * params.limit,
-    (page - 1) * params.limit + params.limit
-  );
+  // const dataSinglePage = data?.data.slice(
+  //   (page - 1) * params.limit,
+  //   (page - 1) * params.limit + params.limit
+  // );
 
   // For the number of projects that are showed in a single page
   const handleLimitChange = (event: any) => {
@@ -173,48 +173,44 @@ function CardTableBE({
       )}
 
       {pagination && (
-        <Grid item md={12} xs={12}>
-          <Stack direction="row" justifyContent="space-between">
-            <Box flex={1} />
-            <Stack direction="row" flex={2} gap={1} justifyContent="center">
-              {Array.from(Array(pagesNumber ? pagesNumber : 0).keys()).map((elem, index) => (
-                <Button
-                  key={index}
-                  onClick={() => {
-                    setPage(index + 1);
-                    setParams((prevParams) => ({
-                      ...prevParams,
-                      offset: (index + 1 - 1) * prevParams.limit,
-                    }));
-                    mutate({ requestPolicy: 'network-only' });
-                  }}
+        <Grid item xs={12}>
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            spacing={2}
+            alignItems="center"
+            justifyContent={{ xs: 'center', md: 'space-between' }}
+          >
+            {!fetching && data && data.data.length ? (
+              <Pagination
+                count={pagesNumber}
+                page={page}
+                onChange={(event: React.ChangeEvent<unknown>, value: number) => {
+                  setPage(value);
+                  setParams((prevParams) => ({
+                    ...prevParams,
+                    offset: (page + 1 - 1) * prevParams.limit,
+                  }));
+                }}
+              />
+            ) : null}
+            {!fetching && data && data.data.length ? (
+              <Stack direction="row">
+                <Typography sx={{ padding: '13px' }}>عدد المشاريع المعروضة:</Typography>
+                <Select
+                  labelId="simple-select"
+                  id="demo-simple-select"
+                  value={params.limit}
+                  onChange={handleLimitChange}
                   sx={{
-                    color: index === page - 1 ? '#fff' : 'rgba(147, 163, 176, 0.8)',
-                    backgroundColor:
-                      index === page - 1 ? 'background.paper' : 'rgba(147, 163, 176, 0.16)',
-                    height: '50px',
+                    backgroundColor: '#fff !important',
                   }}
                 >
-                  {index + 1}
-                </Button>
-              ))}
-            </Stack>
-            <Stack direction="row" flex={1}>
-              <Typography sx={{ padding: '13px' }}>عدد المشاريع المعروضة:</Typography>
-              <Select
-                labelId="simple-select"
-                id="demo-simple-select"
-                value={params.limit}
-                onChange={handleLimitChange}
-                sx={{
-                  backgroundColor: '#fff !important',
-                }}
-              >
-                <MenuItem value={6}>6</MenuItem>
-                <MenuItem value={8}>8</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-              </Select>
-            </Stack>
+                  <MenuItem value={6}>6</MenuItem>
+                  <MenuItem value={8}>8</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                </Select>
+              </Stack>
+            ) : null}
           </Stack>
         </Grid>
       )}

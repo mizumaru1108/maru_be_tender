@@ -23,10 +23,6 @@ function Payments() {
   )
     return <SupervisorPaymentsPage />;
 
-  // if (['DONE_BY_CASHIER'].includes(proposal.inner_status)) {
-  //   return <div>{activeRole === 'tender_project_supervisor' && <CachierPaymentsTable />}</div>;
-  // }
-
   if (
     ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR', 'DONE_BY_CASHIER'].includes(
       proposal.inner_status

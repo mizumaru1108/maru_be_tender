@@ -35,7 +35,6 @@ const steps = [
   'funding_project_request_project_timeline.step',
   'funding_project_request_form5.step',
 ];
-const STEP = ['FIRST', 'SECOND', 'THIRD', 'FOURTH', 'FIFTH'];
 
 const FundingProjectRequestForm = () => {
   const location = useLocation();
@@ -56,9 +55,6 @@ const FundingProjectRequestForm = () => {
     pause: id === undefined,
   });
   const { fetching, data, error } = result;
-
-  const [, updateDraft] = useMutation(updateDraftProposal);
-  const [, createProposal] = useMutation(CreateProposel);
 
   const defaultValues = {
     form1: {
@@ -143,8 +139,6 @@ const FundingProjectRequestForm = () => {
 
   // on submit for the first step
   const onSubmitform1 = (data: any) => {
-    // console.log('data form 1', data);
-    // setIsLoading(false);
     const newData = { ...data };
     const newExTime = Number(data.execution_time);
     newData.execution_time = newExTime * 60;
@@ -195,7 +189,6 @@ const FundingProjectRequestForm = () => {
       }));
     }
   };
-  // console.log('test requestState form 3 ', requestState.form3);
 
   // on submit for the fourth step
   const onSubmitform4 = (data: any) => {
@@ -208,7 +201,7 @@ const FundingProjectRequestForm = () => {
         data: data.detail_project_budgets,
       },
     };
-    // console.log(data);
+
     if (isDraft) {
       onSavingDraft(newValue);
     } else {
@@ -224,7 +217,7 @@ const FundingProjectRequestForm = () => {
   const onSubmitform5 = (data: any) => {
     let newValue = { project_timeline: data.project_timeline };
     const test = { ...newValue };
-    // console.log('test', test.project_timeline);
+
     if (isDraft) {
       onSavingDraft(test);
     } else {
@@ -235,11 +228,9 @@ const FundingProjectRequestForm = () => {
       }));
     }
   };
-  // console.log({ requestState });
+
   // on submit for creating a new project
   const onSubmit = async (data: any) => {
-    // console.log({ data });
-
     const createdProposel = {
       ...(step >= 1 && { ...requestState.form1 }),
       ...(step >= 2 && { ...requestState.form2 }),
@@ -629,16 +620,6 @@ const FundingProjectRequestForm = () => {
             alert('Something went wrong');
           }
         } catch (err) {
-          // console.log(err);
-          // enqueueSnackbar(err.message, {
-          //   variant: 'error',
-          //   preventDuplicate: true,
-          //   autoHideDuration: 3000,
-          //   anchorOrigin: {
-          //     vertical: 'bottom',
-          //     horizontal: 'center',
-          //   },
-          // });
           const statusCode = (err && err.statusCode) || 0;
           const message = (err && err.message) || null;
           enqueueSnackbar(
@@ -776,18 +757,11 @@ const FundingProjectRequestForm = () => {
     ) {
       try {
         setIsLoading(true);
-        const res = await axiosInstance.patch(
-          // witoutformData
-          // '/tender-proposal/save-draft',
-          // { ...saveLastDraft },
-          '/tender-proposal/interceptor-save-draft',
-          formData,
-          {
-            headers: { 'x-hasura-role': activeRole! },
-            maxBodyLength: Infinity,
-            maxContentLength: Infinity,
-          }
-        );
+        const res = await axiosInstance.patch('/tender-proposal/interceptor-save-draft', formData, {
+          headers: { 'x-hasura-role': activeRole! },
+          maxBodyLength: Infinity,
+          maxContentLength: Infinity,
+        });
         if (res) {
           const spreadUrl = location.pathname.split('/');
           enqueueSnackbar(translate('proposal_created'), {
@@ -800,25 +774,8 @@ const FundingProjectRequestForm = () => {
             },
           });
           navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
-
-          // setToast({
-          //   open: true,
-          //   message: translate('proposal_created'),
-          // });
-          // setTimeout(() => {
-          //   navigate(`/${spreadUrl[1]}/${spreadUrl[2]}/draft-funding-requests`);
-          // }, 1000);
         }
       } catch (err) {
-        // enqueueSnackbar(err.message, {
-        //   variant: 'error',
-        //   preventDuplicate: true,
-        //   autoHideDuration: 3000,
-        //   anchorOrigin: {
-        //     vertical: 'bottom',
-        //     horizontal: 'center',
-        //   },
-        // });
         const statusCode = (err && err.statusCode) || 0;
         const message = (err && err.message) || null;
         enqueueSnackbar(
@@ -1067,12 +1024,27 @@ const FundingProjectRequestForm = () => {
           display: isMobile ? 'none' : 'table-row-group',
         }}
       >
-        <Stepper activeStep={step} connector={null}>
+        <Stepper
+          activeStep={step}
+          connector={null}
+          sx={{ alignItems: { sm: 'flex-start', lg: 'center' } }}
+        >
           {steps.map((label, index) => (
             <Step key={index}>
-              <StepLabel>
+              <StepLabel
+                sx={{
+                  flexDirection: { sm: 'column', lg: 'row' },
+                  gap: 0.5,
+                }}
+              >
                 <Typography
-                  sx={{ fontFamily: 'Cairo', fontStyle: 'Bold', fill: 'Solid', fontSize: '16px' }}
+                  sx={{
+                    fontFamily: 'Cairo',
+                    fontStyle: 'Bold',
+                    fill: 'Solid',
+                    fontSize: '16px',
+                    textAlign: { sm: 'center', lg: 'left' },
+                  }}
                 >
                   {translate(label)}
                 </Typography>

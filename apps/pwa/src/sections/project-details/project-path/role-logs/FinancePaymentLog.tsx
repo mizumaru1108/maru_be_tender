@@ -16,9 +16,6 @@ function FinancePaymentLog({ stepGeneralLog }: Props) {
   if (stepGeneralLog && stepGeneralLog.message) {
     batch = Number(stepGeneralLog.message.split('_')[1]);
   }
-  // console.log('stepGeneralLog', stepGeneralLog);
-  // console.log('payments batch', batch);
-  // console.log('proposal.payments', proposal.payments);
 
   return (
     <React.Fragment>
@@ -30,7 +27,7 @@ function FinancePaymentLog({ stepGeneralLog }: Props) {
           proposal.payments
             .filter((item) => Number(item.order) === batch)
             .map((payment, index) => (
-              <Grid container key={index} sx={{ mb: 4 }}>
+              <Grid container key={index} sx={{ mb: 4 }} spacing={1}>
                 <Grid item xs={2}>
                   <Typography variant="subtitle1">
                     {translate('review.Batch') + ' ' + payment.order}

@@ -11,7 +11,7 @@ import Iconify from 'components/Iconify';
 
 export default function FloatingCashierToFinance() {
   const theme = useTheme();
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -21,9 +21,11 @@ export default function FloatingCashierToFinance() {
         p: 2,
         borderRadius: 1,
         position: 'sticky',
-        margin: 'auto',
         width: '100%',
         bottom: 20,
+        ...(currentLang && currentLang.value === 'en'
+          ? { ml: '20px !important' }
+          : { mr: '20px !important' }),
         border: `1px solid ${theme.palette.grey[400]}`,
       }}
     >

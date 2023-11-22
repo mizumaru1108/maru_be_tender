@@ -67,71 +67,70 @@ function DraftsFundingRequest() {
     dispatch(getApplicationAdmissionSettings(activeRole!));
   }, [activeRole]);
 
-  useEffect(() => {
-    if (!isFetchingData) {
-      const startDate = dayjs(application_admission_settings.starting_date).format(
-        'YYYY-MM-DD HH:mm:ssZ'
-      );
-      const endDate = dayjs(application_admission_settings.ending_date).format(
-        'YYYY-MM-DD HH:mm:ssZ'
-      );
-      setDate({
-        startDate,
-        endDate,
-      });
-    }
-  }, [application_admission_settings, isFetchingData]);
+  // useEffect(() => {
+  //   if (!isFetchingData) {
+  //     const startDate = dayjs(application_admission_settings.starting_date).format(
+  //       'YYYY-MM-DD HH:mm:ssZ'
+  //     );
+  //     const endDate = dayjs(application_admission_settings.ending_date).format(
+  //       'YYYY-MM-DD HH:mm:ssZ'
+  //     );
+  //     setDate({
+  //       startDate,
+  //       endDate,
+  //     });
+  //   }
+  // }, [application_admission_settings, isFetchingData]);
 
-  useEffect(() => {
-    if (!!totalProposal && application_admission_settings.applying_status) {
-      if (
-        application_admission_settings?.number_of_allowing_projects &&
-        totalProposal > application_admission_settings?.number_of_allowing_projects
-      ) {
-        setOpenModal(true);
-        const checkExistMessage = [...errorMessage].includes('modal.disable_proposal.exceed_limit');
-        if (!checkExistMessage) {
-          setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_limit']);
-        }
-      }
-      if (
-        application_admission_settings?.starting_date &&
-        application_admission_settings?.ending_date
-      ) {
-        const startDate = dayjs(application_admission_settings.starting_date).format('DD-MM-YYYY');
-        const endingDate = dayjs(application_admission_settings.ending_date).format('DD-MM-YYYY');
-        const isBetweenDate = isDateBetween(todayDate, startDate, endingDate);
-        if (!isBetweenDate) {
-          setOpenModal(true);
-          const checkExistMessage = [...errorMessage].includes(
-            'modal.disable_proposal.exceed_day_limit'
-          );
-          if (!checkExistMessage) {
-            setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_day_limit']);
-          }
-        }
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalProposal, application_admission_settings, todayDate]);
+  // useEffect(() => {
+  //   if (!!totalProposal && application_admission_settings.applying_status) {
+  //     if (
+  //       application_admission_settings?.number_of_allowing_projects &&
+  //       totalProposal > application_admission_settings?.number_of_allowing_projects
+  //     ) {
+  //       setOpenModal(true);
+  //       const checkExistMessage = [...errorMessage].includes('modal.disable_proposal.exceed_limit');
+  //       if (!checkExistMessage) {
+  //         setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_limit']);
+  //       }
+  //     }
+  //     if (
+  //       application_admission_settings?.starting_date &&
+  //       application_admission_settings?.ending_date
+  //     ) {
+  //       const startDate = dayjs(application_admission_settings.starting_date).format('DD-MM-YYYY');
+  //       const endingDate = dayjs(application_admission_settings.ending_date).format('DD-MM-YYYY');
+  //       const isBetweenDate = isDateBetween(todayDate, startDate, endingDate);
+  //       if (!isBetweenDate) {
+  //         setOpenModal(true);
+  //         const checkExistMessage = [...errorMessage].includes(
+  //           'modal.disable_proposal.exceed_day_limit'
+  //         );
+  //         if (!checkExistMessage) {
+  //           setErrorMessage((prev) => [...prev, 'modal.disable_proposal.exceed_day_limit']);
+  //         }
+  //       }
+  //     }
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [totalProposal, application_admission_settings, todayDate]);
 
   if (fetching || isFetchingData) return <>{translate('pages.common.loading')}</>;
   if (error || (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION))
     return <>{translate('pages.common.error')}</>;
   return (
-    // <Page title="Draft Funding Requests">
     <Page title={translate('pages.client.draft_funding_requests')}>
       <Container>
         <ContentStyle>
-          <ProposalDisableModal
+          {/* <ProposalDisableModal
             open={isOpen || openModal}
             message={openModal ? errorMessage : [translate('modal.disable_proposal.message')]}
-          />
+          /> */}
           <CardTableBE
             resource={gettingSavedProjects}
             title="طلبات دعم مسودة"
             alphabeticalOrder={true}
-            cardFooterButtonAction="draft" // The most important param
+            cardFooterButtonAction="draft"
             baseFilters={{
               step: {
                 step: {

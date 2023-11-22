@@ -19,18 +19,21 @@ function ProposalDisableModal({ open, message, redirectType = 'home' }: Props) {
     } else {
       navigate(-1);
     }
-    // onSumbit();
-    // handleClose();
   };
 
   return (
     <ModalDialog
       maxWidth="md"
       content={
-        <Stack sx={{ display: 'flex', textAlign: 'center', alignItems: 'center', py: 7, px: 5 }}>
-          {/* <Typography color="#000000" sx={{ fontSize: '19.39px', fontWeight: 400 }}>
-            {message}
-          </Typography> */}
+        <Stack
+          sx={{
+            display: 'flex',
+            textAlign: 'center',
+            alignItems: 'center',
+            py: { xs: 2, md: 7 },
+            px: { xs: 2, md: 5 },
+          }}
+        >
           {message.length > 0 &&
             message.map((item, index) => (
               <Typography key={index} color="#000000" sx={{ fontSize: '19.39px', fontWeight: 400 }}>
@@ -45,6 +48,8 @@ function ProposalDisableModal({ open, message, redirectType = 'home' }: Props) {
           <LoadingButton
             data-cy="button.back"
             onClick={handleRedirect}
+            fullWidth
+            size="large"
             sx={{
               color: '#fff',
               width: { xs: '100%', sm: '200px' },
@@ -53,14 +58,13 @@ function ProposalDisableModal({ open, message, redirectType = 'home' }: Props) {
               ':hover': { backgroundColor: '#13B2A2' },
             }}
           >
-            {/* اضافة */}
             {translate('button.back')}
           </LoadingButton>
         </Stack>
       }
       isOpen={open}
       onClose={() => {
-        console.log('proposal disabled');
+        console.error('Propoal Disabled');
       }}
       styleContent={{ padding: '1em', backgroundColor: '#fff' }}
     />

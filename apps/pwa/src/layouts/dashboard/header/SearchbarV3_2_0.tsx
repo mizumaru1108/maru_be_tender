@@ -72,15 +72,13 @@ export default function Searchbar() {
   const { activeRole } = useAuth();
   const role = activeRole!;
 
-  const isMobile = useResponsive('down', 'md');
+  const isMobile = useResponsive('down', 'lg');
 
   const dispatch = useDispatch();
   const { sort, filtered } = useSelector((state) => state.searching);
 
   const [show, setShow] = React.useState(false);
-  const [advancedOptions, setAdvancedOptions] = React.useState(false);
   const [arrowStatus, setArrowStatus] = React.useState(false);
-  const [arrowTrack, setArrowTrack] = React.useState(false);
 
   const [stateStatus, setStateStatus] = React.useState({
     pending: true,

@@ -69,8 +69,13 @@ function ProjectDetailsMainPage() {
   if (error) return <>{error}</>;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        spacing={2}
+      >
         <Button
           color="inherit"
           variant="contained"
@@ -93,7 +98,12 @@ function ProjectDetailsMainPage() {
         <ProjectStatus />
       </Stack>
       <Stack direction="column" justifyContent="space-between">
-        <Stack direction="row" justifyContent="space-between">
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          justifyContent={{ xs: 'normal', sm: 'space-between' }}
+          spacing={2}
+        >
           <Typography
             variant="h4"
             sx={{
@@ -106,7 +116,7 @@ function ProjectDetailsMainPage() {
             {translate('pages.common.print_preview')}
           </Button>
         </Stack>
-        <Typography sx={{ color: '#93A3B0', fontSize: '14px', mb: '5px' }}>
+        <Typography sx={{ color: '#93A3B0', fontSize: '14px', mt: 2, mb: '5px' }}>
           {` ${translate('pages.project_details.created_by')} ${
             proposal.user.employee_name
           } - ${moment(proposal.created_at).locale(`${currentLang.value}`).format('L')}`}

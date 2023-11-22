@@ -116,16 +116,14 @@ function ProjectBudget() {
             mt: '20px',
             backgroundColor: '#fff',
             display: 'flex',
-            justifyContent: 'start',
-            direction: 'row',
+            justifyContent: 'flex-end',
+            flexDirection: 'row',
             gap: 3,
             padding: '10px',
             borderRadius: '10px',
           }}
         >
-          <Box flex={2} />
-          <Box flex={2} />
-          <Typography variant="h6" flex={2.8}>
+          <Typography variant="h6">
             {`المبلغ الإجمالي : ${fCurrencyNumber(summaryAmount)}`}
           </Typography>
         </Box>
@@ -193,16 +191,14 @@ function ProjectBudget() {
                 mt: '20px',
                 backgroundColor: '#fff',
                 display: 'flex',
-                justifyContent: 'start',
+                justifyContent: 'flex-end',
                 direction: 'row',
                 gap: 3,
                 padding: '10px',
                 borderRadius: '10px',
               }}
             >
-              <Box flex={2} />
-              <Box flex={2} />
-              <Typography variant="h6" flex={2.8}>
+              <Typography variant="h6">
                 {`المبلغ الإجمالي : ${fCurrencyNumber(summaryAcceptAmount)}`}
               </Typography>
             </Box>

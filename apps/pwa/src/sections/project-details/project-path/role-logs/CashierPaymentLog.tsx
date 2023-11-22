@@ -28,7 +28,7 @@ function CashierPaymentLog({ stepGeneralLog }: Props) {
           proposal.payments
             .filter((item) => Number(item.order) === batch)
             .map((payment, index) => (
-              <Grid container key={index} sx={{ mb: 4 }}>
+              <Grid container key={index} sx={{ mb: 4 }} spacing={1}>
                 <Grid item xs={2}>
                   <Typography variant="subtitle1">
                     {translate('review.Batch') + ' ' + payment.order}

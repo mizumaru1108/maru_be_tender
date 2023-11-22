@@ -1,7 +1,7 @@
 // import { useState } from 'react';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Input, InputAdornment } from '@mui/material';
+import { Input } from '@mui/material';
 // utils
 import cssStyles from '../../utils/cssStyles';
 import React, { ChangeEvent } from 'react';
@@ -33,14 +33,11 @@ export default function SearchbarTable({ onSearch }: IProps) {
   const handleKeyupMsg = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       onSearch(value);
-      // initilizeGroupingMessage('TEXT');
     }
   };
 
   const handleClick = () => {
     onSearch(value);
-    // if (value) {
-    // }
   };
 
   return (

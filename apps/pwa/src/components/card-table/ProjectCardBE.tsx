@@ -28,6 +28,7 @@ import { getProposalCount } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
 import { setFiltered } from 'redux/slices/searching';
+import Iconify from 'components/Iconify';
 
 const RolesMap = {
   tender_finance: 'finance_id',
@@ -592,12 +593,17 @@ const ProjectCardBE = ({
               )}
             </Stack>
             {cardFooterButtonAction === 'draft' ? (
-              <Stack direction="row" alignItems="center" sx={{ mt: theme.spacing(2) }} gap={2}>
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                alignItems={{ xs: 'flex-start', sm: 'center' }}
+                sx={{ mt: theme.spacing(2) }}
+                gap={2}
+              >
                 <LoadingButton
                   loading={loading}
                   onClick={onContinuingDraftClick}
                   disabled={!FEATURE_PROJECT_SAVE_DRAFT}
-                  startIcon={<img alt="" src="/icons/edit-pencile-icon.svg" />}
+                  startIcon={<Iconify icon={'eva:edit-2-outline'} width={20} height={20} />}
                   sx={{ backgroundColor: 'text.tertiary', color: '#fff' }}
                 >
                   إكمال الطلب
@@ -607,7 +613,7 @@ const ProjectCardBE = ({
                   loading={loading}
                   disabled={!FEATURE_PROJECT_SAVE_DRAFT}
                   onClick={onDeleteDraftClick}
-                  startIcon={<img alt="" src="/icons/trash-icon.svg" />}
+                  startIcon={<Iconify icon={'eva:trash-2-outline'} width={20} height={20} />}
                   sx={{
                     color: 'Red',
                     borderColor: 'Red',

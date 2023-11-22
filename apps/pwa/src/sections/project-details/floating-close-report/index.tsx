@@ -18,7 +18,7 @@ import { getProposalCount } from 'redux/slices/proposal';
 export default function FloatingCloseReport() {
   const theme = useTheme();
   const { activeRole } = useAuth();
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -61,11 +61,6 @@ export default function FloatingCloseReport() {
           });
         });
       } else {
-        // enqueueSnackbar(err.message, {
-        //   variant: 'error',
-        //   preventDuplicate: true,
-        //   autoHideDuration: 3000,
-        // });
         const statusCode = (err && err.statusCode) || 0;
         const message = (err && err.message) || null;
         enqueueSnackbar(
@@ -95,7 +90,9 @@ export default function FloatingCloseReport() {
         p: 2,
         borderRadius: 1,
         position: 'sticky',
-        margin: 'auto',
+        ...(currentLang && currentLang.value === 'en'
+          ? { ml: '20px !important' }
+          : { mr: '20px !important' }),
         width: '100%',
         bottom: 20,
         border: `1px solid ${theme.palette.grey[400]}`,

@@ -22,45 +22,18 @@ function MainPage() {
   const { activeRole } = useAuth();
   const { proposal, isLoading } = useSelector((state) => state.proposal);
   const { id } = useParams();
-  // const { enqueueSnackbar } = useSnackbar();
   const location = useLocation();
   const navigate = useNavigate();
   const [tmpValues, setTmpValues] = React.useState<ITmpValues | null>(null);
-  // console.log({ proposal });
   const tmpGovernorates = Array.isArray(proposal?.proposal_governorates)
     ? proposal?.proposal_governorates
     : [];
-
-  // const {
-  //   project_location,
-  //   project_implement_date,
-  //   user: { client_data, bank_informations, email, mobile_number },
-  //   num_ofproject_binicficiaries,
-  //   project_beneficiaries,
-  //   execution_time,
-  //   project_idea,
-  //   project_goals,
-  //   project_outputs,
-  //   project_strengths,
-  //   project_risks,
-  //   amount_required_fsupport,
-  //   letter_ofsupport_req,
-  //   project_attachments,
-  //   bank_information,
-  //   support_type,
-  //   proposal_item_budgets_aggregate,
-  //   outter_status,
-  //   submitter_user_id,
-  //   pm_email,
-  //   pm_mobile,
-  // } = proposal;
 
   const fetchingData = React.useCallback(async () => {
     try {
       const rest = await axiosInstance.get(`/tender-proposal/amandement?id=${id as string}`, {
         headers: { 'x-hasura-role': activeRole! },
       });
-      // console.log('rest', rest);
       if (rest) {
         setTmpValues({
           data: rest.data.data.proposal,
@@ -69,31 +42,6 @@ function MainPage() {
       }
     } catch (err) {
       console.debug("currnetly, this proposal doesn't have any amandemen", err);
-      // enqueueSnackbar(err.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      //   anchorOrigin: {
-      //     vertical: 'bottom',
-      //     horizontal: 'center',
-      //   },
-      // });
-      // const statusCode = (err && err.statusCode) || 0;
-      // const message = (err && err.message) || null;
-      // enqueueSnackbar(
-      //   `${
-      //     statusCode < 500 && message ? message : translate('pages.common.internal_server_error')
-      //   }`,
-      //   {
-      //     variant: 'error',
-      //     preventDuplicate: true,
-      //     autoHideDuration: 3000,
-      //     anchorOrigin: {
-      //       vertical: 'bottom',
-      //       horizontal: 'center',
-      //     },
-      //   }
-      // );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRole, id]);
@@ -109,15 +57,13 @@ function MainPage() {
     const url = location.pathname.split('/').slice(0, 3).join('/');
     navigate(`/${urls[1]}/dashboard/current-project/owner/${submiterId}`);
   };
-  // console.log('tmpValues', tmpValues);
-  // console.log({ client_data });
 
   if (isLoading) return <>Loading</>;
 
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
-      <Stack direction="row" gap={6}>
-        <Stack direction="column">
+      <Grid container spacing={2}>
+        <Grid item xs={6} md={3}>
           <Typography
             sx={{
               color:
@@ -134,6 +80,8 @@ function MainPage() {
             {(proposal.num_ofproject_binicficiaries && proposal.num_ofproject_binicficiaries) ??
               '-No Data-'}
           </Typography>
+        </Grid>
+        <Grid item xs={6} md={3}>
           <Typography
             sx={{
               color: '#93A3B0',
@@ -151,8 +99,8 @@ function MainPage() {
                 )}`
               : proposal.execution_time && proposal.execution_time) ?? '-No Data-'}
           </Typography>
-        </Stack>
-        <Stack direction="column">
+        </Grid>
+        <Grid item xs={6} md={3}>
           <Typography
             sx={{
               color: tmpValues?.revised?.project_location !== undefined ? 'green' : '#93A3B0',
@@ -165,6 +113,8 @@ function MainPage() {
           <Typography sx={{ mb: '20px' }}>
             {(proposal.project_location && proposal.project_location) ?? '-No Data-'}
           </Typography>
+        </Grid>
+        <Grid item xs={6} md={3}>
           <Typography
             sx={{
               color: tmpValues?.revised?.project_beneficiaries !== undefined ? 'green' : '#93A3B0',
@@ -175,15 +125,10 @@ function MainPage() {
             {translate('target_group_type')}
           </Typography>
           <Typography>
-            {/* {(proposal.project_beneficiaries &&
-              translate(
-                `section_portal_reports.heading.gender.${proposal.project_beneficiaries.toLowerCase()}`
-              )) ??
-              '- No Data -'} */}
             {proposal.beneficiary_details?.name || proposal.project_beneficiaries}
           </Typography>
-        </Stack>
-        <Stack direction="column">
+        </Grid>
+        <Grid item xs={6} md={3}>
           <Typography
             sx={{
               color: tmpValues?.revised?.project_implement_date !== undefined ? 'green' : '#93A3B0',
@@ -198,6 +143,8 @@ function MainPage() {
               new Date(proposal.project_implement_date).toISOString().substring(0, 10)) ??
               '-No Data-'}
           </Typography>
+        </Grid>
+        <Grid item xs={6} md={3}>
           <Typography
             sx={{
               color:
@@ -208,102 +155,112 @@ function MainPage() {
           >
             {translate('support_type')}
           </Typography>
-          <Typography>
-            {/* {support_type ? translate('full_support') : translate('partial_support')}&nbsp;
-            <Typography component="span">{translate('with')}&nbsp;</Typography> */}
-            {/* <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              {fCurrencyNumber(proposal_item_budgets_aggregate.aggregate.sum.amount)}&nbsp;
-            </Typography> */}
-            <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              {(proposal.amount_required_fsupport &&
-                fCurrencyNumber(proposal.amount_required_fsupport)) ??
-                '-No Data-'}
-              &nbsp;
-            </Typography>
-            {/* <Typography component="span">{translate('amount')}&nbsp;</Typography> */}
+          <Typography component="span" sx={{ fontWeight: 'bold' }}>
+            {(proposal.amount_required_fsupport &&
+              fCurrencyNumber(proposal.amount_required_fsupport)) ??
+              '-No Data-'}
+            &nbsp;
           </Typography>
-        </Stack>
-      </Stack>
+        </Grid>
+      </Grid>
       <Divider />
       <Grid container columnSpacing={7}>
         <Grid item md={8} xs={12}>
-          <Stack direction="column">
-            <Typography
-              sx={{
-                color: tmpValues?.revised?.project_idea !== undefined ? 'green' : '#93A3B0',
-                fontSize: '12px',
-              }}
-            >
-              {translate('project_idea')}
-            </Typography>
-            <Typography sx={{ mb: '10px' }}>
-              {(proposal.project_idea && proposal.project_idea) ?? '-No Data'}
-            </Typography>
-            <Typography
-              sx={{
-                color: tmpValues?.revised?.project_goals !== undefined ? 'green' : '#93A3B0',
-                fontSize: '12px',
-              }}
-            >
-              {translate('project_goals')}
-            </Typography>
-            <Typography sx={{ mb: '10px' }}>
-              {(proposal.project_goals && proposal.project_goals) ?? '-No Data-'}
-            </Typography>
-            <Typography
-              sx={{
-                color: tmpValues?.revised?.project_outputs !== undefined ? 'green' : '#93A3B0',
-                fontSize: '12px',
-              }}
-            >
-              {translate('project_outputs')}
-            </Typography>
-            <Typography sx={{ mb: '10px' }}>
-              {(proposal.project_outputs && proposal.project_outputs) ?? '-No Data-'}
-            </Typography>
-            <Typography
-              sx={{
-                color: tmpValues?.revised?.project_strengths !== undefined ? 'green' : '#93A3B0',
-                fontSize: '12px',
-              }}
-            >
-              {translate('project_strengths')}
-            </Typography>
-            <Typography sx={{ mb: '10px' }}>
-              {(proposal.project_strengths && proposal.project_strengths) ?? '-No Data-'}
-            </Typography>
-            <Typography
-              sx={{
-                color: tmpValues?.revised?.project_risks !== undefined ? 'green' : '#93A3B0',
-                fontSize: '12px',
-              }}
-            >
-              {translate('project_risks')}
-            </Typography>
-            <Typography sx={{ mb: '10px' }}>
-              {(proposal.project_risks && proposal.project_risks) ?? '-No Data-'}
-            </Typography>
-          </Stack>
-          <Stack direction="row" justifyContent="space-between" gap={3}>
-            {(proposal.letter_ofsupport_req && (
-              <ButtonDownloadFiles
-                type="board_ofdec_file"
-                files={proposal.letter_ofsupport_req}
-                border={tmpValues?.revised.letter_ofsupport_req !== undefined ? 'green' : undefined}
-              />
-            )) ??
-              null}
-            {(proposal.project_attachments && (
-              <ButtonDownloadFiles
-                type="attachments"
-                files={proposal.project_attachments}
-                border={tmpValues?.revised.project_attachments !== undefined ? 'green' : undefined}
-              />
-            )) ??
-              null}
-          </Stack>
+          <Grid container spacing={2}>
+            <Grid item xs={6} md={3}>
+              <Typography
+                sx={{
+                  color: tmpValues?.revised?.project_idea !== undefined ? 'green' : '#93A3B0',
+                  fontSize: '12px',
+                }}
+              >
+                {translate('project_idea')}
+              </Typography>
+              <Typography sx={{ mb: '10px' }}>
+                {(proposal.project_idea && proposal.project_idea) ?? '-No Data'}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} md={3}>
+              <Typography
+                sx={{
+                  color: tmpValues?.revised?.project_goals !== undefined ? 'green' : '#93A3B0',
+                  fontSize: '12px',
+                }}
+              >
+                {translate('project_goals')}
+              </Typography>
+              <Typography sx={{ mb: '10px' }}>
+                {(proposal.project_goals && proposal.project_goals) ?? '-No Data-'}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} md={3}>
+              <Typography
+                sx={{
+                  color: tmpValues?.revised?.project_outputs !== undefined ? 'green' : '#93A3B0',
+                  fontSize: '12px',
+                }}
+              >
+                {translate('project_outputs')}
+              </Typography>
+              <Typography sx={{ mb: '10px' }}>
+                {(proposal.project_outputs && proposal.project_outputs) ?? '-No Data-'}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} md={3}>
+              <Typography
+                sx={{
+                  color: tmpValues?.revised?.project_strengths !== undefined ? 'green' : '#93A3B0',
+                  fontSize: '12px',
+                }}
+              >
+                {translate('project_strengths')}
+              </Typography>
+              <Typography sx={{ mb: '10px' }}>
+                {(proposal.project_strengths && proposal.project_strengths) ?? '-No Data-'}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} md={3}>
+              <Typography
+                sx={{
+                  color: tmpValues?.revised?.project_risks !== undefined ? 'green' : '#93A3B0',
+                  fontSize: '12px',
+                }}
+              >
+                {translate('project_risks')}
+              </Typography>
+              <Typography sx={{ mb: '10px' }}>
+                {(proposal.project_risks && proposal.project_risks) ?? '-No Data-'}
+              </Typography>
+            </Grid>
+          </Grid>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              {(proposal.letter_ofsupport_req && (
+                <ButtonDownloadFiles
+                  type="board_ofdec_file"
+                  files={proposal.letter_ofsupport_req}
+                  border={
+                    tmpValues?.revised.letter_ofsupport_req !== undefined ? 'green' : undefined
+                  }
+                />
+              )) ??
+                null}
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              {(proposal.project_attachments && (
+                <ButtonDownloadFiles
+                  type="attachments"
+                  files={proposal.project_attachments}
+                  border={
+                    tmpValues?.revised.project_attachments !== undefined ? 'green' : undefined
+                  }
+                />
+              )) ??
+                null}
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid item md={4} xs={12}>
+        <Grid item xs={12} md={4} sx={{ mt: { xs: 3, md: 0 } }}>
           <Stack direction="column">
             <Stack direction="column">
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
@@ -377,8 +334,6 @@ function MainPage() {
                 border: `1px solid ${
                   tmpValues?.revised?.amount_required_fsupport !== undefined ? 'green' : '#fff'
                 }`,
-                // borderColor:
-                //   tmpValues?.revised?.amount_required_fsupport !== undefined ? 'green' : '#fff',
                 py: '30px',
                 pl: '10px',
                 mb: '15px',
@@ -419,12 +374,7 @@ function MainPage() {
                   type={proposal.bank_information?.card_image.type}
                   borderColor={proposal.bank_information?.card_image.border_color ?? 'transparent'}
                 />
-              )) ?? (
-                <Typography sx={{ mb: '15px' }}>
-                  {/* {(client_data && client_data.governorate && client_data.governorate) ?? '-No Data-'} */}
-                  -No Bank Information-
-                </Typography>
-              )}
+              )) ?? <Typography sx={{ mb: '15px' }}>-No Bank Information-</Typography>}
             </Stack>
           </Stack>
         </Grid>

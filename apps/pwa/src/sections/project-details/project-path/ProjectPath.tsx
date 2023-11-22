@@ -12,7 +12,7 @@ import { Log, PropsalLog, PropsalLogGrants } from '../../../@types/proposal';
 import { useSelector } from '../../../redux/store';
 import SupervisorGeneral from './role-logs/SupervisorGeneral';
 import SupervisorGrants from './role-logs/SupervisorGrants';
-// import { getProposal, getTrackBudget } from '../../../redux/slices/proposal';
+import useResponsive from 'hooks/useResponsive';
 import { getTracks } from 'queries/commons/getTracks';
 import {
   FEATURE_AMANDEMENT_FROM_FINANCE,
@@ -35,18 +35,11 @@ import RevisionLog from './role-logs/RevisionLog';
 function ProjectPath() {
   const { translate, currentLang } = useLocales();
   const { activeRole } = useAuth();
+  const isMobile = useResponsive('down', 'md');
   const { proposal, isLoading } = useSelector((state) => state.proposal);
   const [logs, setLogs] = React.useState<Log[]>();
 
-  // console.log('proposal.log', proposal.proposal_logs);
-  // console.log('proposal.log', proposal.track.with_consultation);
-
   const [activeStep, setActiveStep] = React.useState<string>('-1');
-  // console.log({ activeStep });
-  // const [stepOn, setStepOn] = React.useState(1);
-  // const [stepUserRole, setStepUserRole] = React.useState('');
-  // const [stepActionType, setStepActionType] = React.useState('');
-  // const [stepProposal, setStepProposal] = React.useState<PropsalLog | null>(null);
   const [stepGransLog, setGransLog] = React.useState<PropsalLogGrants | null>(null);
   const [stepGeneralLog, setGeneralLog] = React.useState<PropsalLog | null>(null);
   const [isPayments, setIsPayments] = React.useState(false);
@@ -56,28 +49,21 @@ function ProjectPath() {
     proposal?.payments?.every((item) => item.status === 'done') &&
     proposal.inner_status === 'ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR';
 
-  // const [stepTrack, setStepTrack] = React.useState('');
   const { id: proposal_id } = useParams();
   const [result] = useQuery({
     query: getProposalLog,
     variables: { proposal_id },
   });
-  // const [logGrants] = useQuery({
-  //   query: getProposalLogGrants,
-  //   variables: { proposal_id },
-  // });
+
   const [tracks] = useQuery({
     query: getTracks,
     variables: {},
   });
 
   const { data: followUps, fetching, error } = result;
-  // const { data: logGrantsData, fetching: fetchingGrants, error: errorGrants } = logGrants;
   const { data: listTracks, fetching: fetchingTracks, error: errorTracks } = tracks;
   const handleStep = (step: string, item: Log | undefined) => () => {
-    // console.log({ item, step });
     window.scrollTo(115, 115);
-    // setStepOn(step);
     setActiveStep(step || '-1');
     if (item !== undefined) {
       setGeneralLog(item);
@@ -88,12 +74,7 @@ function ProjectPath() {
       setGransLog(null);
       setGeneralLog(null);
     }
-    // else {
-    //   setStepUserRole('');
-    //   setStepActionType('');
-    // }
   };
-  // console.log({ activeStep, stepGransLog, stepGeneralLog });
   const lastLog =
     proposal.proposal_logs && proposal.proposal_logs[proposal.proposal_logs.length - 1];
   const hasNonRejectAction =
@@ -127,7 +108,6 @@ function ProjectPath() {
       setLogs(tmpLogs);
       setActiveStep(tmpLogs[tmpLogs.length - 1]?.id || '-1');
     }
-    // const tmpLogProposal = [...proposal.proposal_logs].filter((item: Log) => item.action);
 
     setGransLog((current) => {
       const tmpData = { ...current };
@@ -151,7 +131,6 @@ function ProjectPath() {
       return {
         ...current,
         new_values: tmpLogs[tmpLogs.length - 1]?.new_values || null,
-        // proposal_log: tmpLogs[tmpLogs.length - 1]?.new_values || null,
         action: tmpLogs[tmpLogs.length - 1]?.action || '',
         message: tmpLogs[tmpLogs.length - 1]?.message || '',
         notes: tmpLogs[tmpLogs.length - 1]?.notes || '',
@@ -185,60 +164,91 @@ function ProjectPath() {
       return <Page500 error={errorTracks.message} />;
     }
   }
-  // console.log({ activeStep });
+
   return (
     <Grid container>
-      <Grid item md={4} xs={4} sx={{ backgroundColor: '#fff' }}>
-        <Stack direction="column" gap={2} justifyContent="start" sx={{ paddingBottom: '10px' }}>
-          <Typography variant="h6">مسار المشروع</Typography>
+      <Grid item xs={12} md={4} sx={{ backgroundColor: '#fff' }}>
+        <Stack
+          direction="column"
+          spacing={4}
+          justifyContent="start"
+          sx={{
+            paddingBottom: '10px',
+            width: '100%',
+            '> :not(style)+:not(style)': {
+              mt: '16px !important',
+            },
+          }}
+        >
+          <Typography variant="h6" sx={{ px: 3, pt: 2 }}>
+            مسار المشروع
+          </Typography>
           {(!logs || logs.length === 0) && (
             <Typography variant="body1">{translate('errors.no_project_path')}</Typography>
           )}
-          <Box sx={{ width: '100%', padding: '10px', maxHeight: '180vh', overflowY: 'scroll' }}>
-            <Stepper activeStep={logs && logs.length} orientation="vertical">
+          <Box
+            sx={{
+              width: '100%',
+              padding: '10px',
+              maxHeight: '180vh',
+              overflowY: 'scroll',
+            }}
+          >
+            <Stepper
+              activeStep={logs && logs.length}
+              orientation={isMobile ? 'horizontal' : 'vertical'}
+              sx={{ alignItems: 'flex-start' }}
+            >
               {logs &&
                 logs.length > 0 &&
                 logs.map((item: Log, index: number) => (
                   <Step key={index}>
-                    <Stack sx={{ direction: 'column', alignSelf: 'start' }}>
+                    <Stack component="div">
                       <Button
                         sx={{
                           padding: '0px',
                           justifyContent: 'start',
                           ':hover': { backgroundColor: '#fff' },
+                          minWidth: '105px !important',
                         }}
                         onClick={handleStep(item?.id || '-1', item)}
                       >
-                        <Stack direction="row" gap={2}>
+                        <Stack
+                          direction={{ xs: 'column', md: 'row' }}
+                          justifyContent={{ xs: 'flex-start', md: 'center' }}
+                          spacing={2}
+                        >
                           <PanoramaFishEyeTwoToneIcon
                             color={activeStep === item.id ? 'primary' : 'disabled'}
                             sx={{
-                              // color: activeStep === index ? '#0E8478' : '#000',
-                              alignSelf: 'center',
+                              alignSelf: { xs: 'flex-start', md: 'center' },
                             }}
                           />
-                          <Stack>
+                          <Stack spacing={0.25}>
                             <Typography
                               sx={{
-                                fontSize: activeStep === item.id ? '17px' : '12px',
+                                fontSize: activeStep === item.id ? '14px' : '12px',
                                 fontWeight: activeStep === item.id ? 800 : 600,
                                 color: '#000',
-                                alignSelf: 'start',
+                                alignSelf: 'flex-start',
+                                textAlign: {
+                                  xs: currentLang && currentLang.value === 'en' ? 'left' : 'right',
+                                },
                               }}
                             >
                               {translate(`permissions.${item.user_role ?? item.state}`)}
                             </Typography>
                             <Typography
                               sx={{
-                                fontSize: activeStep === item.id ? '17px' : '12px',
+                                fontSize: activeStep === item.id ? '14px' : '12px',
                                 fontWeight: activeStep === item.id ? 800 : 600,
                                 color: '#000',
-                                alignSelf: 'start',
+                                alignSelf: 'flex-start',
+                                textAlign: {
+                                  xs: currentLang && currentLang.value === 'en' ? 'left' : 'right',
+                                },
                               }}
                             >
-                              {/* {(item && item.reviewer && item.reviewer.employee_name) ||
-                                proposal?.user?.client_data?.entity ||
-                                proposal?.user?.employee_name} */}
                               {(item.user_role === 'CLIENT' &&
                                 (item?.old_values?.user?.client_data?.entity ||
                                   item?.reviewer?.employee_name)) ||
@@ -247,7 +257,14 @@ function ProjectPath() {
                                 proposal?.user?.employee_name}
                             </Typography>
                             <Typography
-                              sx={{ fontSize: '12px', color: '#000', alignSelf: 'start' }}
+                              sx={{
+                                fontSize: '12px',
+                                color: '#000',
+                                alignSelf: 'flex-start',
+                                textAlign: {
+                                  xs: currentLang && currentLang.value === 'en' ? 'left' : 'right',
+                                },
+                              }}
                             >
                               {formattedDateTime(item.created_at)}
                             </Typography>
@@ -260,7 +277,6 @@ function ProjectPath() {
               {REOPEN_TMRA_f92ada8c1019457c874d79fc6d592d2c &&
                 logs &&
                 logs[logs.length - 1].action !== 'reject' &&
-                // logs[logs.length - 1].user_role !== 'MODERATOR' &&
                 (activeRole! === 'tender_moderator' || hasNonRejectAction) &&
                 !isCompleted && (
                   <>
@@ -347,24 +363,23 @@ function ProjectPath() {
         </Stack>
       </Grid>
       {logs && logs.length > 0 && (
-        <Grid item md={8} xs={8} sx={{ backgroundColor: 'transparent', px: 6 }}>
-          <Stack direction="column" gap={2} justifyContent="start">
-            {/*  */}
-            {/* Order Status or Complete */}
+        <Grid
+          item
+          xs={12}
+          md={8}
+          sx={{ backgroundColor: 'transparent', px: { xs: 0, md: 6 }, mt: 3 }}
+        >
+          <Stack direction="column" spacing={2} justifyContent="start">
             {isCompleted && activeStep === '-1' ? (
               <Typography variant="h6">{translate(`review.complete`)}</Typography>
             ) : (
               <Typography variant="h6">{translate(`review.order_status`)}</Typography>
             )}
-            {/*  */}
 
-            {/*  */}
-            {/* ACCEPT, REJECT, and so on */}
             {activeStep !== '-1' ? (
               logs
                 .filter((item: Log, index: number) => item.id === activeStep)
                 .map((item: Log, index: number) => {
-                  // console.log({ item });
                   const { action, user_role } = item;
                   return (
                     <Stack key={index} direction="column" gap={2} sx={{ pb: 2 }}>
@@ -387,75 +402,64 @@ function ProjectPath() {
                   : translate('review.waiting')}
               </Typography>
             )}
-            {/*  */}
 
-            {/*  */}
             <React.Fragment>
               {(isCompleted && activeStep === '-1') ||
               (logs[logs.length - 1].id === activeStep &&
                 stepGeneralLog?.state === 'CLIENT' &&
                 stepGeneralLog?.user_role === 'CLIENT')
                 ? null
-                : // <Typography variant="h6">{translate(`review.notes`)}</Typography>
-                  logs
+                : logs
                     .filter((item: Log, index: number) => activeStep === item.id)
                     .map((item: Log, index: number) => (
-                      <Stack key={index} direction="column" gap={2}>
-                        {/* <Typography>
-                        {item?.user_role === 'PROJECT_MANAGER' && item?.action === 'set_by_supervisor'
-                          ? translate(`review.action.payment_rejected_by_pm`)
-                          : item.action
-                          ? translate(`review.action.${item.action}`)
-                          : item?.user_role === 'CLIENT'
-                          ? translate(`review.action.proposal_created`)
-                          : null}
-                      </Typography> */}
-                        <Typography variant="h6">
-                          {item.notes &&
-                          (item.action === 'reject' ||
-                            item.action === 'send_back_for_revision' ||
-                            item.action === 'send_revised_version' ||
-                            item.action === 'step_back' ||
-                            item.action === 'one_step_back' ||
-                            item.action === 'rejected_by_project_manager' ||
-                            item.action === 'study_again' ||
-                            item.action === 'accept_and_ask_for_consultation' ||
-                            item.action === 'ask_for_amandement_request' ||
-                            (item.action === 'accept' && item.user_role === 'MODERATOR'))
-                            ? translate(`review.notes`)
-                            : null}
-                        </Typography>
-                      </Stack>
+                      <>
+                        {item.notes &&
+                        (item.action === 'reject' ||
+                          item.action === 'send_back_for_revision' ||
+                          item.action === 'send_revised_version' ||
+                          item.action === 'step_back' ||
+                          item.action === 'one_step_back' ||
+                          item.action === 'rejected_by_project_manager' ||
+                          item.action === 'study_again' ||
+                          item.action === 'accept_and_ask_for_consultation' ||
+                          item.action === 'ask_for_amandement_request' ||
+                          (item.action === 'accept' && item.user_role === 'MODERATOR')) ? (
+                          <Stack key={index} direction="column" gap={2}>
+                            <Typography variant="h6">{translate(`review.notes`)}</Typography>
+                          </Stack>
+                        ) : null}
+                      </>
                     ))}
 
-              {activeStep === '-1' && !stepGeneralLog && !stepGransLog && (
+              {activeStep === '-1' && !stepGeneralLog && !stepGransLog ? (
                 <Typography variant="h6">{translate(`review.notes`)}</Typography>
-              )}
+              ) : null}
               {activeStep !== '-1' ? (
                 logs
                   .filter((item: Log, index: number) => activeStep === item.id)
                   .map((item: Log, index: number) => (
                     <React.Fragment key={index}>
-                      <Stack direction="column" gap={2} sx={{ pb: 2 }}>
-                        <Typography>
-                          {item.notes === 'Proposal has been revised'
-                            ? translate('proposal_has_been_revised')
-                            : (item.action === 'accept' || item.action === 'update') &&
-                              (item.user_role === 'PROJECT_MANAGER' ||
-                                item.user_role === 'CEO' ||
-                                item.user_role === 'PROJECT_SUPERVISOR')
-                            ? null
-                            : item.notes ?? null}
-                        </Typography>
-                      </Stack>
+                      {item.notes === 'Proposal has been revised' ? (
+                        <Stack direction="column" spacing={2} sx={{ pb: 2 }}>
+                          <Typography>{translate('proposal_has_been_revised')}</Typography>
+                        </Stack>
+                      ) : (item.action === 'accept' || item.action === 'update') &&
+                        (item.user_role === 'PROJECT_MANAGER' ||
+                          item.user_role === 'CEO' ||
+                          item.user_role === 'PROJECT_SUPERVISOR') ? null : (
+                        <Stack direction="column" spacing={2} sx={{ pb: 2 }}>
+                          <Typography>{item.notes}</Typography>
+                        </Stack>
+                      )}
                     </React.Fragment>
                   ))
               ) : (
-                <Typography>
-                  {/* {(isCompleted && activeStep === '-1') ||
-                  (logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT')
-                    ? null
-                    : !IsPaymentAction(logs[logs.length - 1].action) &&
+                <>
+                  {logs[logs.length - 1].id === activeStep &&
+                  stepGeneralLog?.state === 'CLIENT' &&
+                  activeStep !== '-1' ? null : (
+                    <Typography>
+                      {!IsPaymentAction(logs[logs.length - 1].action) &&
                       LogActionCheck({
                         action: logs[logs.length - 1].action as LogAction,
                         type: CheckType.notIn,
@@ -466,25 +470,11 @@ function ProjectPath() {
                           LogAction.RejectedByProjectManager,
                         ],
                       })
-                    ? translate('review.waiting')
-                    : null} */}
-                  {activeStep === '-1' && <>{translate('review.waiting')}</>}
-                  {logs[logs.length - 1].id === activeStep && stepGeneralLog?.state === 'CLIENT'
-                    ? null
-                    : !IsPaymentAction(logs[logs.length - 1].action) &&
-                      LogActionCheck({
-                        action: logs[logs.length - 1].action as LogAction,
-                        type: CheckType.notIn,
-                        logAction: [
-                          LogAction.Update,
-                          LogAction.Reject,
-                          LogAction.Accept,
-                          LogAction.RejectedByProjectManager,
-                        ],
-                      })
-                    ? translate('review.waiting')
-                    : null}
-                </Typography>
+                        ? translate('review.waiting')
+                        : '-'}
+                    </Typography>
+                  )}
+                </>
               )}
               {logs
                 .filter((item: Log, index: number) => activeStep === item.id)
@@ -493,17 +483,15 @@ function ProjectPath() {
                     {item.reject_reason && item.action === 'reject' ? (
                       <>
                         <Typography variant="h6">{translate(`review.reject_reason`)}</Typography>
-                        {/* <Space size="small" direction="vertical" /> */}
                         <Typography>{item.reject_reason || '-'}</Typography>
                       </>
                     ) : null}
                   </Stack>
                 ))}
             </React.Fragment>
-            {/*  */}
-            {/* CashierPaymentLog */}
+
             {isCompleted && activeStep === '-1' ? null : <Divider />}
-            {/*  */}
+
             {logs.filter(
               (item: Log, index: number) =>
                 activeStep === item.id &&
@@ -515,7 +503,7 @@ function ProjectPath() {
             ).length > 0 ? (
               <ClientProposalLog />
             ) : null}
-            {/*  */}
+
             {logs.filter(
               (item: Log, index: number) =>
                 activeStep === item.id &&
@@ -529,7 +517,7 @@ function ProjectPath() {
             ).length > 0 && stepGeneralLog ? (
               <FinancePaymentLog stepGeneralLog={stepGeneralLog} />
             ) : null}
-            {/*  */}
+
             {logs.filter(
               (item: Log, index: number) =>
                 activeStep === item.id &&
@@ -541,7 +529,7 @@ function ProjectPath() {
             ).length > 0 && stepGeneralLog ? (
               <CashierPaymentLog stepGeneralLog={stepGeneralLog} />
             ) : null}
-            {/*  */}
+
             {logs.filter(
               (item: Log, index: number) =>
                 activeStep === item.id &&
@@ -574,7 +562,7 @@ function ProjectPath() {
                 )}
               </>
             ) : null}
-            {/*  */}
+
             {logs.filter(
               (item: Log, index: number) =>
                 activeStep === item.id &&
@@ -592,7 +580,6 @@ function ProjectPath() {
             ).length > 0 &&
             isConsultation === false &&
             stepGeneralLog ? (
-              // <SupervisorGeneral stepGeneralLog={stepGeneralLog} />
               <>
                 {FEATURE_PROJECT_PATH_NEW ? (
                   <SupervisorGeneralRev stepGeneralLog={stepGeneralLog} />
@@ -601,8 +588,6 @@ function ProjectPath() {
                 )}
               </>
             ) : null}
-            {/*  */}
-            {/*  */}
             {logs.filter(
               (item: Log, index: number) =>
                 activeStep === item.id &&
@@ -620,7 +605,6 @@ function ProjectPath() {
             ).length > 0 &&
             isConsultation &&
             stepGransLog ? (
-              // <SupervisorGrants stepGransLog={stepGransLog} />
               <>
                 {FEATURE_PROJECT_PATH_NEW ? (
                   <SupervisorGrantsRev stepGransLog={stepGransLog} />
@@ -651,7 +635,6 @@ function ProjectPath() {
             stepGeneralLog ? (
               <RevisionLog stepGeneralLog={stepGeneralLog} />
             ) : null}
-            {/*  */}
           </Stack>
         </Grid>
       )}

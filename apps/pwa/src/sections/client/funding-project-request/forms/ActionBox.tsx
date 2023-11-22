@@ -21,12 +21,13 @@ const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft, isLoad }: PROPS)
       <Box
         sx={{
           borderRadius: 2,
-          height: '90px',
+          height: 'auto',
           backgroundColor: '#fff',
           padding: '24px',
+          width: '100%',
         }}
       >
-        <Stack justifyContent="center" direction="row" gap={3}>
+        <Stack justifyContent="center" direction={{ xs: 'column', sm: 'row' }} gap={3}>
           <LoadingButton
             onClick={onReturn}
             loading={isLoad}
@@ -39,7 +40,7 @@ const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft, isLoad }: PROPS)
           >
             {translate('going_back_one_step')}
           </LoadingButton>
-          <Box sx={{ width: '10px' }} />
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', sm: 'flex' } }} />
           <LoadingButton
             loading={isLoad}
             variant="outlined"
@@ -52,7 +53,6 @@ const ActionBox = ({ onReturn, lastStep, step, isStep, isDraft, isLoad }: PROPS)
             }}
             onClick={() => isDraft(true)}
             disabled={!FEATURE_PROJECT_SAVE_DRAFT ? true : step < 5 ? false : true}
-            // disabled
           >
             {translate('saving_as_draft')}
           </LoadingButton>

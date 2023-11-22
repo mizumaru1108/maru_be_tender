@@ -6,7 +6,6 @@ export const CheckIsInProcessProposal = (
   activeRole: FusionAuthRoles
 ): boolean => {
   let isInProcess = false;
-  console.log({ proposal });
   if (activeRole === 'tender_project_supervisor') {
     if (
       proposal.inner_status === 'ACCEPTED_BY_MODERATOR' &&

@@ -22,8 +22,7 @@ import Scrollbar from 'components/Scrollbar';
 import { SearchbarTable, TableHeadCustom, TableNoData } from 'components/table';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import useTable, { getComparator } from 'hooks/useTable';
-import useTabs from 'hooks/useTabs';
+import useTable from 'hooks/useTable';
 import axiosInstance from 'utils/axios';
 import { generateHeader } from '../../../utils/generateProposalNumber';
 import TableSkeleton from '../TableSkeleton';
@@ -157,8 +156,13 @@ export default function OldProposalTable() {
       <Typography variant="h3" gutterBottom sx={{ marginBottom: '50px' }}>
         {translate('old_proposal.page_title')}
       </Typography>
-      <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
-        <FormControl size="small" sx={{ m: 1, width: 200 }}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        alignItems="center"
+        justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}
+        spacing={2}
+      >
+        <FormControl size="small" sx={{ width: { xs: '100%', sm: 200 } }}>
           <InputLabel id="demo-multiple-checkbox-label">
             {translate('search_component.by_project_status')}
           </InputLabel>
@@ -169,7 +173,6 @@ export default function OldProposalTable() {
             value={projectStatus}
             onChange={handleSelectedStatus}
             input={<OutlinedInput label={translate('search_component.by_project_status')} />}
-            // renderValue={(selected) => selected.join(', ')}
             renderValue={(selected) => {
               const newSelected = selected.map((item) =>
                 translate(`portal_report.outter_status.${item.toLowerCase()}`)
@@ -195,7 +198,7 @@ export default function OldProposalTable() {
           </Select>
         </FormControl>
 
-        <FormControl size="small" sx={{ m: 1, width: 200 }}>
+        <FormControl size="small" sx={{ width: { xs: '100%', sm: 200 } }}>
           <InputLabel id="demo-multiple-checkbox-label">
             {translate('search_component.by_track_name')}
           </InputLabel>

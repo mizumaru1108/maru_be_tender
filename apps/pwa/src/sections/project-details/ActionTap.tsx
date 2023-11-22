@@ -86,10 +86,13 @@ function ActionTap() {
         onChange={handleChange}
         indicatorColor="primary"
         textColor="inherit"
+        variant="scrollable"
+        scrollButtons="auto"
         sx={{
           bgcolor: theme.palette.background.default,
           borderRadius: 2,
-          padding: 1.25,
+          padding: { xs: 1, sm: 1.25 },
+          width: '100%',
         }}
       >
         {Taps[`${activeRole!}`][
@@ -118,7 +121,6 @@ function ActionTap() {
                 borderRadius: '10px',
               },
             }}
-            // disabled={index === 3 && FEATURE_FOLLOW_UP_INTERNAL_EXTERNAL}
           />
         ))}
       </Tabs>
