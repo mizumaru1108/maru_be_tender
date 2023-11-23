@@ -18,7 +18,6 @@ export class SmsConfigUpdateProps {
   user_sender?: string;
   username?: string;
   is_active?: boolean;
-  is_default?: boolean;
   is_deleted?: boolean;
 }
 
@@ -30,6 +29,11 @@ export class SmsConfigFindManyProps {
   page?: number;
   sort_by?: string;
   sort_direction?: string;
+}
+export class SmsConfigFindFirstProps {
+  exclude_id?: string[];
+  is_active?: boolean;
+  is_deleted?: boolean;
 }
 
 @Injectable()
@@ -78,7 +82,6 @@ export class SmsConfigRepository {
           user_sender: props.user_sender,
           username: props.username,
           is_active: props.is_active,
-          is_default: props.is_default,
           is_deleted: props.is_deleted,
         },
       });
@@ -110,6 +113,55 @@ export class SmsConfigRepository {
     } catch (error) {
       console.trace(error);
       throw error;
+    }
+  }
+  findFirstFilter(props: SmsConfigFindFirstProps) {
+    let args: Prisma.SmsGatewayFindManyArgs = {};
+    let whereClause: Prisma.SmsGatewayWhereInput = {};
+
+    if (props.exclude_id) {
+      whereClause = {
+        ...whereClause,
+        id: {
+          notIn: props.exclude_id,
+        },
+      };
+    }
+
+    if (props.is_active) {
+      whereClause.is_active = props.is_active;
+    }
+
+    args.where = whereClause;
+
+    // if (props.include_relations && props.include_relations.length > 0) {
+    //   args.include = this.applyInclude(props.include_relations);
+    // }
+
+    return args;
+  }
+
+  async findFirst(
+    props: SmsConfigFindFirstProps,
+    tx?: PrismaService,
+  ): Promise<SmsGatewayEntity | null> {
+    let prisma = this.prismaService;
+    if (tx) prisma = tx;
+    try {
+      const args = this.findFirstFilter(props);
+      const raw = await prisma.smsGateway.findFirst({
+        where: args.where,
+      });
+
+      if (!raw) return null;
+
+      const entity = Builder<SmsGatewayEntity>(SmsGatewayEntity, {
+        ...raw,
+      }).build();
+
+      return entity;
+    } catch (err) {
+      throw err;
     }
   }
 
