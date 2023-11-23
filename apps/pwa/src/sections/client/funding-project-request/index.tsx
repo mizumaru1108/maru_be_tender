@@ -835,9 +835,17 @@ const FundingProjectRequestForm = () => {
       });
   };
 
+  // useEffect(() => {
+  //   BeneficiariesList();
+  //   // if (activeRole) {
+  //   //   dispatch(getBeneficiariesList(activeRole, true));
+  //   // }
+  //   //  eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
-    BeneficiariesList();
+    // BeneficiariesList();
     if (id) {
       const tuningTheState = () => {
         if (data?.proposal_by_pk) {
@@ -1010,7 +1018,7 @@ const FundingProjectRequestForm = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, id]);
-  if (loadingCount) return <>{translate('pages.common.loading')}</>;
+  // if (loadingCount) return <>{translate('pages.common.loading')}</>;
   return (
     <>
       <Box

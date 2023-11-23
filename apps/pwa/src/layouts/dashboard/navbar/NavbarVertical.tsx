@@ -53,8 +53,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
   const dispatch = useDispatch();
 
   const role = activeRole!;
-  const { isCollapse, collapseClick, collapseHover, onHoverEnter, onHoverLeave } =
-    useCollapseDrawer();
+  const { isCollapse, collapseClick, collapseHover } = useCollapseDrawer();
   useEffect(() => {
     if (isOpenSidebar) {
       onCloseSidebar();
@@ -151,8 +150,8 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
         <Drawer
           open
           variant="persistent"
-          onMouseEnter={onHoverEnter}
-          onMouseLeave={onHoverLeave}
+          // onMouseEnter={onHoverEnter}
+          // onMouseLeave={onHoverLeave}
           PaperProps={{
             sx: {
               width: NAVBAR.DASHBOARD_WIDTH,

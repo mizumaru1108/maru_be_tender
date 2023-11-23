@@ -3,14 +3,18 @@ import { Grid } from '@mui/material';
 import { FormProvider, RHFDatePicker, RHFTextField } from 'components/hook-form';
 import { CustomFile } from 'components/upload';
 import useLocales from 'hooks/useLocales';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'redux/store';
+import { dispatch, useSelector } from 'redux/store';
 import * as Yup from 'yup';
 import { AmandementFields } from '../../../../@types/proposal';
 import BaseField from '../../../../components/hook-form/BaseField';
 import RHFSelectNoGenerator from '../../../../components/hook-form/RHFSelectNoGen';
 import { RHFUploadSingleFileBe } from '../../../../components/hook-form/RHFUploadBe';
+import useAuth from '../../../../hooks/useAuth';
+import { getBeneficiariesList } from '../../../../redux/slices/proposal';
+import axiosInstance from '../../../../utils/axios';
 import { arabicToAlphabetical } from '../../../../utils/formatNumber';
 import { removeEmptyKey } from '../../../../utils/remove-empty-key';
 import { REGION } from '../../../../_mock/region';
@@ -43,6 +47,9 @@ type Props = {
 
 const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => {
   const { translate } = useLocales();
+  const { activeRole } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+
   const CreatingProposalForm1 = React.useMemo(() => {
     const tmpReivsed = revised || undefined;
     return Yup.object().shape({
@@ -134,20 +141,20 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
     reset,
   } = methods;
 
-  // const [beneficiaries, setBeneficiaries] = React.useState<IBeneficiaries[] | []>([]);
+  const [beneficiaries, setBeneficiaries] = React.useState<IBeneficiaries[] | []>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const { beneficiaries_list } = useSelector((state) => state.proposal);
+  const { beneficiaries_list, loadingProps } = useSelector((state) => state.proposal);
   // const getBeneficiaries = async () => {
-  //   setLoading(true);
   //   try {
+  //     setLoading(true);
   //     const rest = await axiosInstance.get(`/tender/proposal/beneficiaries/find-all?limit=0`, {
   //       headers: { 'x-hasura-role': activeRole! },
   //     });
   //     if (rest) {
-  //       const test = rest.data.data
-  //         .filter((bank: any) => bank.is_deleted === false || bank.is_deleted === null)
-  //         .map((bank: any) => bank);
-  //       setBeneficiaries(test);
+  //       const tmpValues = rest.data.data
+  //         .filter((beneficiary: IBeneficiaries) => beneficiary.is_deleted === false)
+  //         .map((beneficiary: IBeneficiaries) => beneficiary);
+  //       setBeneficiaries(tmpValues);
   //     }
   //   } catch (error) {
   //     // console.error(error.message);
@@ -197,8 +204,9 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
   const handleSubmitForm = async (data: FormValuesProps) => {
     let tmpValue = { ...data };
     const tmpBeneficiaries =
-      beneficiaries_list.find((beneficiaries: any) => beneficiaries.id === data.beneficiary_id)
-        ?.name || '';
+      beneficiaries.find(
+        (beneficiaries: IBeneficiaries) => beneficiaries.id === data.beneficiary_id
+      )?.name || '';
     // console.log({ tmpBeneficiaries });
     tmpValue.project_beneficiaries = tmpBeneficiaries;
     tmpValue = {
@@ -209,7 +217,20 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
     onSubmit(removeEmptyKey(tmpValue));
   };
 
-  if (loading) return <>{translate('pages.common.loading')}</>;
+  // useEffect(() => {
+  //   getBeneficiaries();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
+  useEffect(() => {
+    // BeneficiariesList();
+    if (activeRole) {
+      dispatch(getBeneficiariesList(activeRole, true));
+    }
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRole]);
+
+  if (loadingProps.loadingBeneficiary) return <>{translate('pages.common.loading')}</>;
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(handleSubmitForm)}>
@@ -323,14 +344,6 @@ const MainInfoForm = ({ onSubmit, children, defaultValues, revised }: Props) => 
               ))}
           </RHFSelectNoGenerator>
         </Grid>
-        {/* <Grid item md={12} xs={12}>
-          <RHFTextField
-            disabled={!!revised && revised.hasOwnProperty('project_beneficiaries_specific_type')}
-            name="project_beneficiaries_specific_type"
-            label={translate('نوع الفئة المستهدفة الخارجية')}
-            placeholder={translate('الرجاء كتابة نوع الفئة المستهدفة')}
-          />
-        </Grid> */}
         <Grid item md={12} xs={12}>
           <BaseField
             type="uploadLabel"

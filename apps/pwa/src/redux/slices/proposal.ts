@@ -558,7 +558,7 @@ export const getBeneficiariesList = (role: string, showActive: boolean) => async
   try {
     // dispatch(slice.actions.startLoading);
     dispatch(slice.actions.startLoadingBeneficiary(true));
-    dispatch(slice.actions.setLoadingCount(true));
+    // dispatch(slice.actions.setLoadingCount(true));
     const url = '/tender/proposal/beneficiaries/find-all?limit=0';
     try {
       const response = await axiosInstance.get(url, {
@@ -567,6 +567,7 @@ export const getBeneficiariesList = (role: string, showActive: boolean) => async
       if (response.data.statusCode === 200) {
         const tmpValues =
           response.data.data.filter((item: IBeneficiaries) => item.is_deleted !== true) || [];
+        // dispatch(slice.actions.setBeneficiariesList(showActive ? tmpValues : response.data.data));
         dispatch(slice.actions.setBeneficiariesList(showActive ? tmpValues : response.data.data));
       }
     } catch (error) {
@@ -576,7 +577,7 @@ export const getBeneficiariesList = (role: string, showActive: boolean) => async
     dispatch(slice.actions.hasError(error));
   } finally {
     // dispatch(slice.actions.endLoading);
-    dispatch(slice.actions.setLoadingCount(false));
+    // dispatch(slice.actions.setLoadingCount(false));
     dispatch(slice.actions.startLoadingBeneficiary(false));
   }
 };

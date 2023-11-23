@@ -2437,6 +2437,7 @@ const en = {
       send_revision_for_finance_amandement: 'Send Revision for Finance Amandement',
       send_revision_for_supervisor_amandement: 'Send Revision for Supervisor Amandement',
       send_revision_for_moderator_amandement: 'Send Revision for Moderator Amandement',
+      reject_amandement_payment: 'Reject Amandement Payment',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'Age 1 to 13',
@@ -2670,6 +2671,7 @@ const en = {
       exceed_limit: 'You cannot create cause already on limit from our company.',
       exceed_day_limit: 'You cannot create cause already on day limit from our company.',
       exceed_budgeet_limit: 'You cannot create cause already on budget limit from our company.',
+      disabled: 'Create project is disabled for now.',
     },
     headline: {
       track: 'Track',

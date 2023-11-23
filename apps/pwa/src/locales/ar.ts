@@ -2455,6 +2455,7 @@ const ar = {
       send_revision_for_finance_amandement: 'إرسال مراجعة لتعديل المالية',
       send_revision_for_supervisor_amandement: 'إرسال مراجعة لتعديل المشرف',
       send_revision_for_moderator_amandement: 'إرسال المراجعة لتعديل المشرف',
+      reject_amandement_payment: 'رفض التعديل',
     },
     target_group_age_enum: {
       AGE_1TH_TO_13TH: 'من 1 سنة إلى 13',
@@ -2690,6 +2691,7 @@ const ar = {
       exceed_limit: 'لا يمكنك إنشاء سبب بالفعل على الحد من شركتنا.',
       exceed_day_limit: 'لا يمكنك إنشاء سبب بالفعل في الحد الأقصى لليوم من شركتنا.',
       exceed_budgeet_limit: 'لا يمكنك إنشاء سبب بالفعل في حدود الميزانية من شركتنا.',
+      disabled: 'تم تعطيل إنشاء المشروع في الوقت الحالي.',
     },
     headline: {
       track: 'مسار',

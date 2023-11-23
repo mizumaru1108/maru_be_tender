@@ -14,6 +14,7 @@ import useLocales from '../../../hooks/useLocales';
 import {
   createMobileSetting,
   getMobileSettingById,
+  getOneMobileSetting,
   MobileSettingEntity,
   updateMobileSetting,
 } from '../../../redux/slices/mobile-settings';
@@ -141,11 +142,17 @@ export default function MobileSettingsForm(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [errorChangeState]);
 
+  // useEffect(() => {
+  //   if (activeRole && id && id !== 'add') {
+  //     dispatch(getMobileSettingById(activeRole, id));
+  //   }
+  // }, [id, activeRole]);
+
   useEffect(() => {
-    if (activeRole && id && id !== 'add') {
-      dispatch(getMobileSettingById(activeRole, id));
+    if (activeRole) {
+      dispatch(getOneMobileSetting(activeRole));
     }
-  }, [id, activeRole]);
+  }, [activeRole]);
 
   useEffect(() => {
     if (intialValues) {

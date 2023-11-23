@@ -29,8 +29,11 @@ const GregorianYear = Loadable(lazy(() => import('pages/admin/GregorianYear')));
 const ApplicationAndAdmissionSettings = Loadable(
   lazy(() => import('pages/admin/ApplicationAndAdmissionSettings'))
 );
-const MobileSettings = Loadable(lazy(() => import('pages/admin/MobileSetttings')));
-const MobileSettingsForm = Loadable(lazy(() => import('pages/admin/MobileSetttings/form')));
+// don't delete for now
+// const MobileSettings = Loadable(lazy(() => import('pages/admin/MobileSetttings')));
+// const MobileSettingsForm = Loadable(lazy(() => import('pages/admin/MobileSetttings/form')));
+const MobileSettings = Loadable(lazy(() => import('pages/admin/MobileSetttings/form')));
+//
 const SystemMessages = Loadable(lazy(() => import('pages/admin/SystemMessages')));
 const SystemMessagesInternalForm = Loadable(
   lazy(() => import('pages/admin/SystemMessages/InternalForm'))
@@ -142,14 +145,14 @@ export const adminRoute = {
               path: '',
               element: <MobileSettings />,
             },
-            {
-              path: ':id',
-              element: <MobileSettingsForm />,
-            },
-            {
-              path: 'add',
-              element: <MobileSettingsForm />,
-            },
+            // {
+            //   path: ':id',
+            //   element: <MobileSettingsForm />,
+            // },
+            // {
+            //   path: 'add',
+            //   element: <MobileSettingsForm />,
+            // },
           ],
         },
         // { path: 'system-messages', element: <SystemMessages /> },

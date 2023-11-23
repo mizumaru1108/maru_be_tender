@@ -45,6 +45,7 @@ const FundingProjectRequest = () => {
   const { data, fetching, error } = result;
 
   const totalProposal: number = data?.proposal_aggregate?.aggregate?.count;
+  // console.log({ totalProposal });
   const todayDate = dayjs().format('DD-MM-YYYY');
 
   const isOpen =
@@ -82,7 +83,7 @@ const FundingProjectRequest = () => {
   }, [application_admission_settings, isFetchingData]);
 
   useEffect(() => {
-    if (!!totalProposal && application_admission_settings.applying_status) {
+    if (application_admission_settings.applying_status) {
       if (
         application_admission_settings?.number_of_allowing_projects &&
         totalProposal >= application_admission_settings?.number_of_allowing_projects
@@ -110,7 +111,14 @@ const FundingProjectRequest = () => {
           }
         }
       }
+    } else {
+      setOpenModal(true);
+      const checkExistMessage = [...errorMessage].includes('modal.disable_proposal.disabled');
+      if (!checkExistMessage) {
+        setErrorMessage((prev) => [...prev, 'modal.disable_proposal.disabled']);
+      }
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalProposal, application_admission_settings, todayDate]);
 
@@ -131,9 +139,7 @@ const FundingProjectRequest = () => {
               {translate('create_a_new_support_request')}
             </Typography>
           </Box>
-          {(isOpen || openModal) && !isFetchingData && !fetching ? null : (
-            <FundingProjectRequestForm />
-          )}
+          {isOpen || openModal ? null : <FundingProjectRequestForm />}
         </ContentStyle>
       </Container>
     </Page>
