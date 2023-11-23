@@ -180,18 +180,22 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         message: `${translate('notification.error_exceeds_amount')} (${remainBudget})`,
       });
     } else {
-      const checkSpvId = [...responsibleSpv.map((item) => item.value)].includes(user?.id);
-      if (checkSpvId) {
-        onSubmit(removeEmptyKey(tmpValues));
+      if (activeRole === 'tender_project_supervisor') {
+        const checkSpvId = [...responsibleSpv.map((item) => item.value)].includes(user?.id);
+        if (checkSpvId) {
+          onSubmit(removeEmptyKey(tmpValues));
+        } else {
+          setBudgetError({
+            open: true,
+            message: `${translate('notification.error.not_responsible_spv')} : ${
+              responsibleSpv.length > 0
+                ? responsibleSpv.map((item) => item.label).join(', ')
+                : translate('notification.error.no_supervisor')
+            }`,
+          });
+        }
       } else {
-        setBudgetError({
-          open: true,
-          message: `${translate('notification.error.not_responsible_spv')} : ${
-            responsibleSpv.length > 0
-              ? responsibleSpv.map((item) => item.label).join(', ')
-              : translate('notification.error.no_supervisor')
-          }`,
-        });
+        onSubmit(removeEmptyKey(tmpValues));
       }
     }
   };
