@@ -1,22 +1,19 @@
+import ProjectManagementTableBE from 'components/table/ceo/project-management/ProjectManagementTableBE';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { getTrackList } from 'redux/slices/proposal';
+import { useDispatch, useSelector } from 'redux/store';
 import { useQuery } from 'urql';
 import {
   ProjectManagement,
   ProjectManagementTableHeader,
 } from '../../../components/table/ceo/project-management/project-management';
-import ProjectManagementTable from '../../../components/table/ceo/project-management/ProjectManagementTable';
-import useLocales from '../../../hooks/useLocales';
-import { GetProjectList } from '../../../queries/ceo/get-project-list';
-import { formatDistance } from 'date-fns';
-import { useDispatch, useSelector } from 'redux/store';
-import { getTrackList, setTracks } from 'redux/slices/proposal';
-import { generateHeader } from '../../../utils/generateProposalNumber';
-import { useSnackbar } from 'notistack';
 import useAuth from '../../../hooks/useAuth';
+import useLocales from '../../../hooks/useLocales';
+import { getOneEmployee } from '../../../queries/admin/getAllTheEmployees';
 import axiosInstance from '../../../utils/axios';
+import { generateHeader } from '../../../utils/generateProposalNumber';
 import { getDelayProjects } from '../../../utils/get-delay-projects';
-import ProjectManagementTableBE from 'components/table/ceo/project-management/ProjectManagementTableBE';
-import { REOPEN_TMRA_4601ec1d4d7e4d96ae17ecf65e2c2006 } from 'config';
 import { ProjectManagementFilterParams } from '../ceo-dashboard/ProjectManagement';
 
 export interface tracks {
@@ -35,7 +32,7 @@ function CeoProjectRejects() {
   //fetching using API
   const [isFetching, setIsLoading] = React.useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const { activeRole } = useAuth();
+  const { activeRole, user } = useAuth();
   // const [cardData, setCardData] = React.useState([]);
 
   const [searchName, setSearchName] = useState('');
@@ -49,6 +46,15 @@ function CeoProjectRejects() {
     range_end_date: null,
     track_id: null,
   });
+
+  const [result] = useQuery({
+    query: getOneEmployee,
+    variables: { id: user?.id },
+    pause: !user?.id,
+  });
+  const { data, fetching, error } = result;
+
+  const user_track_id = data?.data?.track_id || '';
 
   const fetchingIncoming = React.useCallback(async () => {
     setIsLoading(true);
@@ -131,9 +137,14 @@ function CeoProjectRejects() {
   }, [fetchingIncoming, isLoading, track_list]);
 
   useEffect(() => {
-    // dispatch(setTracks(filteredTrack));
-    dispatch(getTrackList(0, activeRole! as string, 0));
-  }, [dispatch, activeRole]);
+    if (activeRole === 'tender_project_manager') {
+      if (user_track_id) {
+        dispatch(getTrackList(0, activeRole! as string, 0, user_track_id));
+      }
+    } else {
+      dispatch(getTrackList(0, activeRole! as string, 0));
+    }
+  }, [dispatch, activeRole, user_track_id]);
 
   const headerCells: ProjectManagementTableHeader[] = [
     { id: 'projectNumber', label: translate('project_management_headercell.project_number') },
@@ -161,7 +172,8 @@ function CeoProjectRejects() {
     { id: 'events', label: translate('project_management_headercell.events'), align: 'left' },
   ];
 
-  if (isFetching && isLoading) return <>Loading</>;
+  // if (isFetching) return <>{translate('pages.common.loading')}</>;
+  if (error) return <>{translate('pages.common.error')}</>;
 
   return (
     <ProjectManagementTableBE

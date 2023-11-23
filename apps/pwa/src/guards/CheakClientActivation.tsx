@@ -3,7 +3,7 @@ import { useQuery } from 'urql';
 import useAuth from 'hooks/useAuth';
 import { checkClientStatus } from 'queries/client/checkClientStatus';
 import UnActivatedAccount from 'sections/client/dashboard/UnActivatedAccount';
-import { useDispatch, useSelector } from 'redux/store';
+import { dispatch, useDispatch, useSelector } from 'redux/store';
 import { getClientData } from 'redux/slices/clientData';
 
 type CheakClientActivationProp = {
@@ -13,13 +13,13 @@ type CheakClientActivationProp = {
 function CheakClientActivation({ children }: CheakClientActivationProp) {
   const { user, activeRole } = useAuth();
   const id = user?.id;
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const { fillUpData } = useSelector((state) => state.clientData);
 
   React.useEffect(() => {
     dispatch(getClientData(user?.id));
-  }, [dispatch, user?.id]);
+  }, [user?.id]);
 
   const [result] = useQuery({
     query: checkClientStatus,

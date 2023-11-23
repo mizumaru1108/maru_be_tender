@@ -122,26 +122,31 @@ const FundingProjectRequest = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalProposal, application_admission_settings, todayDate]);
 
-  if (fetching || isFetchingData) return <>{translate('pages.common.loading')}</>;
+  // if (fetching || isFetchingData) return <>{translate('pages.common.loading')}</>;
+  if (fetching) return <>{translate('pages.common.loading_common')}</>;
+  if (isFetchingData) return <>{translate('pages.common.loading_data')}</>;
   if (error || (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION))
     return <>{translate('pages.common.error')}</>;
 
   return (
     <Page title={translate('pages.common.funding_requests')}>
       <Container>
-        <ContentStyle>
-          <ProposalDisableModal
-            open={isOpen || openModal}
-            message={openModal ? errorMessage : [translate('modal.disable_proposal.message')]}
-          />
-          <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
-            <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
-              {translate('create_a_new_support_request')}
-            </Typography>
-          </Box>
-          {isOpen || openModal ? null : <FundingProjectRequestForm />}
-        </ContentStyle>
+        {!fetching && !isFetchingData ? (
+          <ContentStyle>
+            <ProposalDisableModal
+              open={isOpen || openModal}
+              message={openModal ? errorMessage : [translate('modal.disable_proposal.message')]}
+            />
+            <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+              <Typography variant="h4" gutterBottom sx={{ fontFamily: 'Cairo', fontStyle: 'Bold' }}>
+                {translate('create_a_new_support_request')}
+              </Typography>
+            </Box>
+            {isOpen || openModal ? null : <FundingProjectRequestForm />}
+          </ContentStyle>
+        ) : null}
       </Container>
+      {/* testing */}
     </Page>
   );
 };

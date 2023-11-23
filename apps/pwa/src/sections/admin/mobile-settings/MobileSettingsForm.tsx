@@ -52,7 +52,7 @@ export default function MobileSettingsForm(props: Props) {
       username: '',
       is_active: false,
     };
-    if (mobile_setting && id && id !== 'add') {
+    if (mobile_setting && !loadingProps.isLoading && !error) {
       tmpValues = {
         api_key: mobile_setting?.api_key || '',
         user_sender: mobile_setting?.user_sender || '',
@@ -61,7 +61,7 @@ export default function MobileSettingsForm(props: Props) {
       };
     }
     return tmpValues;
-  }, [mobile_setting, id]);
+  }, [mobile_setting, loadingProps.isLoading, error]);
 
   const methods = useForm<MobileSettingEntity>({
     resolver: yupResolver(MobileSettingsSchema),

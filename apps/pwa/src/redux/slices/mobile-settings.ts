@@ -137,7 +137,7 @@ export const getMobileSettingById = (role: string, id: string) => async () => {
 export const getOneMobileSetting = (role: string) => async () => {
   try {
     dispatch(slice.actions.setLoading(true));
-    const response = await axiosInstance.get(`/sms-config/settings`, {
+    const response = await axiosInstance.get(`/sms-config/find-settings`, {
       headers: { 'x-hasura-role': role },
     });
     if (response.data.statusCode === 200) {

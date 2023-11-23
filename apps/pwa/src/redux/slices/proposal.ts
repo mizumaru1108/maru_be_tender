@@ -522,38 +522,44 @@ export const getProposal = (id: string, role: string) => async () => {
     // dispatch(slice.actions.setLoadingCount(false));
   }
 };
-export const getTrackList = (isGeneral: number, role: string, isDeleted?: number) => async () => {
-  // console.log('masuk sini');
-  // const tmpIsDeleted = !!isDeleted ? isDeleted : undefined;
-  try {
-    dispatch(slice.actions.startLoadingTrack(true));
-    let url = '/tender/track';
-    const tmpParams = {
-      include_general: isGeneral ? '1' : undefined,
-      is_deleted: isDeleted === 1 ? '1' : isDeleted === 0 ? '0' : undefined,
-    };
+export const getTrackList =
+  (isGeneral: number, role: string, isDeleted?: number, track_id?: string) => async () => {
     try {
-      const response = await axiosInstance.get(url, {
-        headers: { 'x-hasura-role': role },
-        params: {
-          ...removeEmptyKey(tmpParams),
-          limit: 999,
-        },
-      });
-      if (response.data.statusCode === 200) {
-        dispatch(slice.actions.setTrackList(response.data.data));
+      dispatch(slice.actions.startLoadingTrack(true));
+      let url = '/tender/track';
+      const tmpParams = {
+        include_general: isGeneral ? '1' : undefined,
+        is_deleted: isDeleted === 1 ? '1' : isDeleted === 0 ? '0' : undefined,
+        track_id,
+      };
+      try {
+        const response = await axiosInstance.get(url, {
+          headers: { 'x-hasura-role': role },
+          params: {
+            ...removeEmptyKey(tmpParams),
+            limit: 999,
+          },
+        });
+        if (response.data.statusCode === 200) {
+          if (track_id) {
+            dispatch(
+              slice.actions.setTrackList(
+                response.data.data.filter((item: tracks) => item.id === track_id)
+              )
+            );
+          } else {
+            dispatch(slice.actions.setTrackList(response.data.data));
+          }
+        }
+      } catch (error) {
+        console.log(error);
       }
     } catch (error) {
-      console.log(error);
+      dispatch(slice.actions.hasError(error));
+    } finally {
+      dispatch(slice.actions.startLoadingTrack(false));
     }
-  } catch (error) {
-    dispatch(slice.actions.hasError(error));
-  } finally {
-    // dispatch(slice.actions.endLoading);
-    // dispatch(slice.actions.setLoadingCount(false));
-    dispatch(slice.actions.startLoadingTrack(false));
-  }
-};
+  };
 export const getBeneficiariesList = (role: string, showActive: boolean) => async () => {
   try {
     // dispatch(slice.actions.startLoading);

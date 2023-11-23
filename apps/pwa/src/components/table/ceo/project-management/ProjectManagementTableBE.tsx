@@ -146,10 +146,12 @@ export default function ProjectManagementTableBE({
             disabled={isLoading}
             onChange={(e) => {
               setSelectedTrack(e.target.value as string);
-              onFilterChange({
-                ...filterparams,
-                track_id: e.target.value as string,
-              });
+              if (e.target.value && e.target.value !== 'all') {
+                onFilterChange({
+                  ...filterparams,
+                  track_id: e.target.value as string,
+                });
+              }
             }}
             size="medium"
             fullWidth
