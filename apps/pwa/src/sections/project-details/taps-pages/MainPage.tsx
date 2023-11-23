@@ -63,7 +63,7 @@ function MainPage() {
   return (
     <Box sx={{ display: 'flex', gap: 3, flexDirection: 'column' }}>
       <Grid container spacing={2}>
-        <Grid item xs={6} md={3}>
+        <Grid item xs={6} sm={4} md={2}>
           <Typography
             sx={{
               color:
@@ -81,7 +81,7 @@ function MainPage() {
               '-No Data-'}
           </Typography>
         </Grid>
-        <Grid item xs={6} md={3}>
+        <Grid item xs={6} sm={4} md={2}>
           <Typography
             sx={{
               color: '#93A3B0',
@@ -100,7 +100,7 @@ function MainPage() {
               : proposal.execution_time && proposal.execution_time) ?? '-No Data-'}
           </Typography>
         </Grid>
-        <Grid item xs={6} md={3}>
+        <Grid item xs={6} sm={4} md={2}>
           <Typography
             sx={{
               color: tmpValues?.revised?.project_location !== undefined ? 'green' : '#93A3B0',
@@ -114,7 +114,7 @@ function MainPage() {
             {(proposal.project_location && proposal.project_location) ?? '-No Data-'}
           </Typography>
         </Grid>
-        <Grid item xs={6} md={3}>
+        <Grid item xs={6} sm={4} md={2}>
           <Typography
             sx={{
               color: tmpValues?.revised?.project_beneficiaries !== undefined ? 'green' : '#93A3B0',
@@ -128,7 +128,7 @@ function MainPage() {
             {proposal.beneficiary_details?.name || proposal.project_beneficiaries}
           </Typography>
         </Grid>
-        <Grid item xs={6} md={3}>
+        <Grid item xs={6} sm={4} md={2}>
           <Typography
             sx={{
               color: tmpValues?.revised?.project_implement_date !== undefined ? 'green' : '#93A3B0',
@@ -144,7 +144,7 @@ function MainPage() {
               '-No Data-'}
           </Typography>
         </Grid>
-        <Grid item xs={6} md={3}>
+        <Grid item xs={6} sm={4} md={2}>
           <Typography
             sx={{
               color:
@@ -167,7 +167,7 @@ function MainPage() {
       <Grid container columnSpacing={7}>
         <Grid item md={8} xs={12}>
           <Grid container spacing={2}>
-            <Grid item xs={6} md={3}>
+            <Grid item xs={6} sm={4} md={2}>
               <Typography
                 sx={{
                   color: tmpValues?.revised?.project_idea !== undefined ? 'green' : '#93A3B0',
@@ -180,7 +180,7 @@ function MainPage() {
                 {(proposal.project_idea && proposal.project_idea) ?? '-No Data'}
               </Typography>
             </Grid>
-            <Grid item xs={6} md={3}>
+            <Grid item xs={6} sm={4} md={2}>
               <Typography
                 sx={{
                   color: tmpValues?.revised?.project_goals !== undefined ? 'green' : '#93A3B0',
@@ -193,7 +193,7 @@ function MainPage() {
                 {(proposal.project_goals && proposal.project_goals) ?? '-No Data-'}
               </Typography>
             </Grid>
-            <Grid item xs={6} md={3}>
+            <Grid item xs={6} sm={4} md={2}>
               <Typography
                 sx={{
                   color: tmpValues?.revised?.project_outputs !== undefined ? 'green' : '#93A3B0',
@@ -206,7 +206,7 @@ function MainPage() {
                 {(proposal.project_outputs && proposal.project_outputs) ?? '-No Data-'}
               </Typography>
             </Grid>
-            <Grid item xs={6} md={3}>
+            <Grid item xs={6} sm={4} md={2}>
               <Typography
                 sx={{
                   color: tmpValues?.revised?.project_strengths !== undefined ? 'green' : '#93A3B0',
@@ -219,7 +219,7 @@ function MainPage() {
                 {(proposal.project_strengths && proposal.project_strengths) ?? '-No Data-'}
               </Typography>
             </Grid>
-            <Grid item xs={6} md={3}>
+            <Grid item xs={6} sm={4} md={2}>
               <Typography
                 sx={{
                   color: tmpValues?.revised?.project_risks !== undefined ? 'green' : '#93A3B0',
@@ -233,7 +233,7 @@ function MainPage() {
               </Typography>
             </Grid>
           </Grid>
-          <Grid container spacing={3}>
+          <Grid container spacing={3} sx={{ mt: 0.5 }}>
             <Grid item xs={12} sm={6}>
               {(proposal.letter_ofsupport_req && (
                 <ButtonDownloadFiles
@@ -261,22 +261,20 @@ function MainPage() {
           </Grid>
         </Grid>
         <Grid item xs={12} md={4} sx={{ mt: { xs: 3, md: 0 } }}>
-          <Stack direction="column">
-            <Stack direction="column">
+          <Grid container spacing={{ xs: 2, md: 3 }}>
+            <Grid item xs={6} sm={4} md={12}>
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('funding_project_request_form3.project_manager_name.label')}
               </Typography>
-              <Typography sx={{ mb: '15px' }}>{proposal?.pm_name || '-No Data-'}</Typography>
-            </Stack>
-            <Stack direction="column">
+              <Typography>{proposal?.pm_name || '-No Data-'}</Typography>
+            </Grid>
+            <Grid item xs={6} sm={4} md={12}>
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('pm_email')}
               </Typography>
-              <Typography sx={{ mb: '15px' }}>
-                {(proposal.pm_email && proposal.pm_email) ?? '-No Data-'}
-              </Typography>
-            </Stack>
-            <Stack direction="column" alignItems="start">
+              <Typography>{(proposal.pm_email && proposal.pm_email) ?? '-No Data-'}</Typography>
+            </Grid>
+            <Grid item xs={6} sm={4} md={12}>
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('pm_mobile')}
               </Typography>
@@ -285,26 +283,24 @@ function MainPage() {
               >
                 {(proposal.pm_mobile && proposal.pm_mobile) ?? '-No Data-'}
               </Typography>
-            </Stack>
-            <Stack direction="column">
+            </Grid>
+            <Grid item xs={6} sm={4} md={12}>
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('governorate')}
               </Typography>
               {tmpGovernorates.length > 0 ? (
                 tmpGovernorates.map((item) => (
-                  <Typography key={item.governorate_id} sx={{ mb: '15px' }}>
+                  <Typography key={item.governorate_id}>
                     {item?.governorate?.name || '-No Data-'}
                   </Typography>
                 ))
               ) : (
-                <Typography sx={{ mb: '15px' }}>
-                  {(proposal && proposal.governorate) ?? '-No Data-'}
-                </Typography>
+                <Typography>{(proposal && proposal.governorate) ?? '-No Data-'}</Typography>
               )}
-            </Stack>
-            {activeRole !== 'tender_client' && (
-              <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>
-                <Stack direction="column">
+            </Grid>
+            {activeRole !== 'tender_client' ? (
+              <Grid item xs={6} sm={4} md={12}>
+                <Box sx={{ backgroundColor: '#fff', py: '30px', pl: '10px', mb: '15px' }}>
                   <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                     {translate('project_owner_details.card_title')}
                   </Typography>
@@ -325,21 +321,21 @@ function MainPage() {
                   >
                     {translate('project_owner_details.card_href')}
                   </Typography>
-                </Stack>
-              </Box>
-            )}
-            <Box
-              sx={{
-                backgroundColor: '#fff',
-                border: `1px solid ${
-                  tmpValues?.revised?.amount_required_fsupport !== undefined ? 'green' : '#fff'
-                }`,
-                py: '30px',
-                pl: '10px',
-                mb: '15px',
-              }}
-            >
-              <Stack direction="column">
+                </Box>
+              </Grid>
+            ) : null}
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  backgroundColor: '#fff',
+                  border: `1px solid ${
+                    tmpValues?.revised?.amount_required_fsupport !== undefined ? 'green' : '#fff'
+                  }`,
+                  py: '30px',
+                  pl: '10px',
+                  mb: '15px',
+                }}
+              >
                 <Typography
                   sx={{
                     color:
@@ -357,9 +353,9 @@ function MainPage() {
                     fCurrencyNumber(proposal.amount_required_fsupport)) ??
                     '-No Data-'}
                 </Typography>
-              </Stack>
-            </Box>
-            <Stack>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={12}>
               <Typography sx={{ color: '#93A3B0', fontSize: '12px', mb: '5px' }}>
                 {translate('selected_bank')}
               </Typography>
@@ -374,9 +370,9 @@ function MainPage() {
                   type={proposal.bank_information?.card_image.type}
                   borderColor={proposal.bank_information?.card_image.border_color ?? 'transparent'}
                 />
-              )) ?? <Typography sx={{ mb: '15px' }}>-No Bank Information-</Typography>}
-            </Stack>
-          </Stack>
+              )) ?? <Typography>-No Bank Information-</Typography>}
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </Box>

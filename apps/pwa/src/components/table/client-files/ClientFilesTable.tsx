@@ -42,8 +42,6 @@ const status = [
   'Asked for Amandement',
 ];
 
-const tracks = ['Mosques', 'Concessional grants', 'Initiatives', 'Baptisms'];
-
 export default function ClientFilesTable() {
   const {
     dense,
@@ -190,15 +188,10 @@ export default function ClientFilesTable() {
   };
 
   const getDataClient = async () => {
-    // const tmpData = clientFilesMockData.map((item: ClientFiles) => ({
-    //   ...item,
-    // }));
-    // setTableData(tmpData);
     let currentPage = page + 1;
     try {
       setIsLoading(true);
       const response = await axiosInstance.get(
-        // `/tender/file-manager/fetch-all?sort=desc&page=2&limit=10`,
         `tender/file-manager/fetch-all?limit=${rowsPerPage}&page=${currentPage}${fileFilter}`,
         {
           headers: { 'x-hasura-role': activeRole! },
@@ -267,11 +260,9 @@ export default function ClientFilesTable() {
     // eslint-disable-next-line
   }, [page, rowsPerPage, orderBy, fileFilter]);
 
-  // if (error) return <>...Opss, something went wrong</>;
-
   return (
     <Box>
-      <Typography variant="h3" gutterBottom sx={{ ml: 2, marginBottom: '50px' }}>
+      <Typography variant="h3" gutterBottom sx={{ mb: 4 }}>
         {translate('client_files.title')}
       </Typography>
       <Box
@@ -288,60 +279,10 @@ export default function ClientFilesTable() {
           {translate('client_files.administrative_data')}
         </Typography>
       </Box>
-      <Typography variant="h3" gutterBottom sx={{ mt: 3, ml: 2, marginBottom: '50px' }}>
+      <Typography variant="h3" gutterBottom sx={{ my: 4 }}>
         {translate('client_files.title_read_only')}
       </Typography>
       <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
-        {/* <FormControl size="small" sx={{ m: 1, width: 200 }}>
-          <InputLabel id="demo-multiple-checkbox-label">
-            {translate('search_component.by_project_status')}
-          </InputLabel>
-          <Select
-            labelId="demo-multiple-checkbox-label"
-            id="demo-multiple-checkbox"
-            multiple
-            value={projectStatus}
-            onChange={handleSelectedStatus}
-            input={<OutlinedInput label={translate('search_component.by_project_status')} />}
-            renderValue={(selected) => selected.join(', ')}
-          >
-            {status.map((item) => (
-              <MenuItem key={item} value={item}>
-                <Checkbox checked={projectStatus.indexOf(item) > -1} />
-                <ListItemText
-                  primary={translate(
-                    `outter_status.${item.replace(/ /g, '_').toUpperCase()}`
-                  ).toLowerCase()}
-                />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl size="small" sx={{ m: 1, width: 200 }}>
-          <InputLabel id="demo-multiple-checkbox-label">
-            {translate('search_component.by_track_name')}
-          </InputLabel>
-          <Select
-            labelId="demo-multiple-checkbox-label"
-            id="demo-multiple-checkbox"
-            multiple
-            value={projectTrack}
-            onChange={handleSelectedTrack}
-            input={<OutlinedInput label={translate('search_component.by_track_name')} />}
-            renderValue={(selected) => selected.join(', ')}
-          >
-            {tracks.map((track) => (
-              <MenuItem key={track} value={track}>
-                <Checkbox checked={projectTrack.indexOf(track) > -1} />
-                <ListItemText
-                  primary={translate(`${track.replace(/ /g, '_').toUpperCase()}`).toLowerCase()}
-                />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl> */}
-
         <SearchbarTable onSearch={(data: string) => handleChange(data)} />
       </Stack>
       <Card sx={{ backgroundColor: '#fff', mt: 2 }}>

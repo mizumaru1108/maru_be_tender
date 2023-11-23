@@ -56,9 +56,10 @@ export default function NonClientProfile() {
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             justifyContent={{ xs: 'normal', sm: 'space-between' }}
+            alignItems="center"
             spacing={2}
           >
-            <Stack direction="column" sx={{ mb: '5px' }}>
+            <Stack direction="column" spacing={2}>
               {user?.fullName && <Typography variant="h5">{user?.fullName}</Typography>}
 
               <Typography variant="h6" sx={{ color: '#1E1E1E' }}>

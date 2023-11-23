@@ -71,7 +71,11 @@ function ProjectDetailsMainPage() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
       <Stack
-        direction={{ xs: 'column', sm: 'row' }}
+        direction={{
+          xs:
+            role === 'tender_client' && proposal.outter_status === 'ON_REVISION' ? 'column' : 'row',
+          sm: 'row',
+        }}
         justifyContent="space-between"
         alignItems={{ xs: 'flex-start', sm: 'center' }}
         spacing={2}
@@ -80,7 +84,7 @@ function ProjectDetailsMainPage() {
           color="inherit"
           variant="contained"
           onClick={() => navigate(-1)}
-          sx={{ padding: 2, minWidth: 35, minHeight: 25, mr: 3 }}
+          sx={{ padding: 1, minWidth: 35, minHeight: 25 }}
         >
           <Iconify
             icon={

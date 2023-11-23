@@ -25,14 +25,6 @@ import { getProposalCount, getTrackList } from 'redux/slices/proposal';
 import { FEATURE_PROPOSAL_COUNTING } from 'config';
 import { setFiltered } from 'redux/slices/searching';
 
-/**
- *
- * Todo: 1- starting with initializing the urql and having a query for the table.
- *       2- passing the paras as variables for the useQuesry.
- *       3- making the mutate.
- *       4- initializing the useQuery, useMutation.
- *       5- Finally, connecting everything with each other.
- */
 const inquiryStatusStyle = {
   canceled: { color: '#FF4842', backgroundColor: '#FF484229' },
   pending_canceled: {
@@ -46,14 +38,6 @@ const inquiryStatusStyle = {
   asked_for_amandement: { color: '#FFC107', backgroundColor: '#FFC10729' }, // this is the same as pending
   asked_for_amandement_payment: { color: '#FFC107', backgroundColor: '#FFC10729' }, // this is the same as pending
   ongoing: { color: '#0E8478', backgroundColor: '#0E847829' },
-};
-
-const cardFooterButtonActionLocal = {
-  'show-project': 'show_project',
-  'show-details': 'show_details',
-  'completing-exchange-permission': 'completing_exchange_permission',
-  'reject-project': 'reject-project',
-  draft: 'draft',
 };
 
 const RolesMap = {
@@ -178,7 +162,6 @@ const ProjectCard = ({
   };
   React.useEffect(() => {
     if (title.inquiryStatus) {
-      // console.log('title.inquiryStatus', title.inquiryStatus);
       if (
         (destination === 'incoming-funding-requests' ||
           destination === 'requests-in-process' ||

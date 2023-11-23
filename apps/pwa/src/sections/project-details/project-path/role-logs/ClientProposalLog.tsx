@@ -11,7 +11,6 @@ import BankImageComp from '../../../shared/BankImageComp';
 function ClientProposalLog() {
   const { proposal, isLoading } = useSelector((state) => state.proposal);
   const { translate, currentLang } = useLocales();
-  const { id: proposal_id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -23,7 +22,6 @@ function ClientProposalLog() {
   const handleOpenProjectOwnerDetails = () => {
     const submiterId = proposal.submitter_user_id;
     const urls = location.pathname.split('/');
-    const url = location.pathname.split('/').slice(0, 3).join('/');
     navigate(`/${urls[1]}/dashboard/current-project/owner/${submiterId}`);
   };
 
@@ -264,10 +262,10 @@ function ClientProposalLog() {
             </Stack>
           </Box>
         </Grid>
-        <Grid item md={12} xs={12}>
+        <Grid item xs={12} sm={6} md={12}>
           <Stack
             direction={{ xs: 'column', md: 'row' }}
-            justifyContent={{ xs: 'normal', md: 'space-between' }}
+            justifyContent={{ xs: 'normal', sm: 'space-between' }}
             spacing={3}
             sx={{ mr: { xs: '30px', md: 0 } }}
           >
@@ -295,7 +293,7 @@ function ClientProposalLog() {
               {translate('selected_bank')}
             </Typography>
             {(proposal.bank_information && (
-              <Grid item md={4} xs={12}>
+              <Grid item xs={12} sm={6}>
                 <BankImageComp
                   enableButton={true}
                   bankName={proposal.bank_information?.bank_name}

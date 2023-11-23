@@ -19,7 +19,6 @@ function ProjectOwnerDetails() {
     gap: 20,
   }));
   return (
-    // <Page title="Client Profile">
     <Page title={translate('pages.project_details.owner_details')}>
       <Container>
         <ContentStyle>

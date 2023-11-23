@@ -2,34 +2,21 @@ import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 import React from 'react';
 import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
-import { useLocation, useNavigate, useParams } from 'react-router';
-import CardTableBE from '../../../components/card-table/CardTableBE';
-import { getOwnerProposals } from '../../../queries/commons/getProposal';
+import { useNavigate, useParams } from 'react-router';
 import SummaryClientInfo from './SummaryClientInfo';
 import { ProjectOwnerDetails } from '../../../@types/project-details';
 import moment from 'moment';
 import { getSummaryProjectOwner } from '../../../queries/client/getSummaryProjectOwner';
 import { useQuery } from 'urql';
-import axiosInstance from 'utils/axios';
-import useAuth from 'hooks/useAuth';
-import NewCardTable from 'components/card-table/NewCardTable';
-import ClientProposaCardTable from 'components/card-table/ClientProposaCardTable';
 import CardTableByBE from '../../../components/card-table/CardTableByBE';
 
 function ProjectOwnerDetailsMainPage() {
   const { currentLang, translate } = useLocales();
-  const { activeRole } = useAuth();
   const navigate = useNavigate();
   const { submiterId } = useParams();
-  const location = useLocation();
-  const url = location.pathname.split('/');
-  // const destination = url[3] === 'current-project' ? url[3] : 'current-project';
-  const destination = 'current-project';
 
-  // const [isLoading, setIsLoading] = React.useState(false);
   const [userInfo, setUserInfo] = React.useState<ProjectOwnerDetails>({
     entity: 'maru',
-    // email: 'maru@gmail.com',
     user: {
       email: 'maru@gmail.com',
     },
@@ -42,10 +29,6 @@ function ProjectOwnerDetailsMainPage() {
     headquarters: 'Jakarta',
   });
 
-  const DATA_URL = `tender/client/proposals?user_id=${submiterId}`;
-
-  const HEADERS = { 'x-hasura-role': activeRole! };
-
   const [result, _] = useQuery({
     query: getSummaryProjectOwner,
     variables: { id: submiterId },
@@ -54,9 +37,7 @@ function ProjectOwnerDetailsMainPage() {
   const { fetching, data, error } = result;
 
   React.useEffect(() => {
-    // getAllProposalByClient();
     if (data) {
-      // console.log('data', data.user_by_pk.client_data);
       setUserInfo(data.user_by_pk.client_data);
     }
     // eslint-disable-next-line
@@ -67,12 +48,12 @@ function ProjectOwnerDetailsMainPage() {
   if (error) return <>{error.message}</>;
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
         <Button
           color="inherit"
           variant="contained"
           onClick={() => navigate(-1)}
-          sx={{ padding: 2, minWidth: 35, minHeight: 25, mr: 3 }}
+          sx={{ padding: 1, minWidth: 35, minHeight: 25 }}
         >
           <Iconify
             icon={
@@ -90,12 +71,11 @@ function ProjectOwnerDetailsMainPage() {
             maxWidth: '700px',
           }}
         >
-          {/* {proposal.project_name} */}
           {translate('project_owner_details.client_details_header')}
         </Typography>
       </Stack>
       <SummaryClientInfo dataClient={userInfo} />
-      <Divider sx={{ marginTop: '30px' }} />
+      <Divider sx={{ my: 3 }} />
       <CardTableByBE
         title={translate('project_owner_details.table_title') + userInfo.entity}
         destination="current-project"
@@ -107,14 +87,6 @@ function ProjectOwnerDetailsMainPage() {
           user_id: submiterId,
         }}
       />
-      {/* <ClientProposaCardTable
-        title={translate('project_owner_details.table_title') + userInfo.entity}
-        cardFooterButtonAction="show-project"
-        url={DATA_URL}
-        headersProps={HEADERS}
-      /> */}
-      {/* <ActionTap /> */}
-      {/* <FloatinActonBar /> */}
     </Box>
   );
 }

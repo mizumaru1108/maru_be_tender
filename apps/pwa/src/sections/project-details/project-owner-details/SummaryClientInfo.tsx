@@ -1,20 +1,9 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Grid, Button, Typography } from '@mui/material';
 import useLocales from 'hooks/useLocales';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { ProjectOwnerDetails } from '../../../@types/project-details';
 import { FEATURE_PROJECT_DETAILS } from '../../../config';
 
-// ----------------------------------------------------------------------
-const StylTextContent = {
-  fontWeight: 500,
-  fontSize: '22px',
-  fontFamily: 'Cairo',
-};
-const StylTextTitle = {
-  fontWeight: 700,
-  fontSize: '24px',
-  fontFamily: 'Cairo',
-};
 // ----------------------------------------------------------------------
 interface SummaryClientInfoProps {
   dataClient: ProjectOwnerDetails;
@@ -27,51 +16,113 @@ function SummaryClientInfo({ dataClient }: SummaryClientInfoProps) {
   const params = useParams();
   const urls = location.pathname.split('/');
   const url = `/${urls[1]}/dashboard/${params.submiterId}/details`;
-  const StylPhoneContent = {
-    fontWeight: 500,
-    fontSize: '22px',
-    fontFamily: 'Cairo',
-    direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
-  };
 
   const handleShowAllDetails = () => {
     navigate(`${url}`);
   };
 
   return (
-    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', gap: 2 }}>
-      <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          alignItems: 'start',
-        }}
-      >
-        <Typography sx={StylTextTitle}>
+    <Grid
+      container
+      spacing={2}
+      alignItems={{ xs: 'flex-start', lg: 'center' }}
+      sx={{ mt: { xs: 0, md: 2 } }}
+    >
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <Typography variant="h4" component="p" gutterBottom sx={{ fontWeight: 700 }}>
           {translate('project_owner_details.summary.title_main')}
         </Typography>
-        <Typography sx={StylTextContent}>{dataClient.entity}</Typography>
-        <Typography sx={StylTextContent}>{dataClient.user.email}</Typography>
-        <Typography sx={StylPhoneContent}>{dataClient.phone}</Typography>
-      </Box>
-      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Typography sx={StylTextTitle}>
+        <Typography
+          variant="subtitle1"
+          component="p"
+          sx={{ fontWeight: 500, fontSize: { xs: 16, sm: 18, md: 20 } }}
+          gutterBottom
+        >
+          {dataClient.entity}
+        </Typography>
+        <Typography
+          variant="subtitle1"
+          component="p"
+          sx={{ fontWeight: 500, fontSize: { xs: 16, sm: 18, md: 20 } }}
+          gutterBottom
+        >
+          {dataClient.user.email}
+        </Typography>
+        <Typography
+          variant="subtitle1"
+          component="p"
+          sx={{
+            fontWeight: 500,
+            fontSize: { xs: 16, sm: 18, md: 20 },
+            direction: `${currentLang.value}` === 'ar' ? 'rtl' : 'ltr',
+            textAlign: 'left',
+          }}
+          gutterBottom
+        >
+          {dataClient.phone}
+        </Typography>
+      </Grid>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <Typography variant="h4" component="p" gutterBottom sx={{ fontWeight: 700 }}>
           {translate('project_owner_details.summary.title_contact')}
         </Typography>
-        <Typography sx={StylTextContent}>{dataClient.region}</Typography>
-        <Typography sx={StylTextContent}>{dataClient.governorate}</Typography>
-        <Typography sx={StylTextContent}>{dataClient.center_administration}</Typography>
-      </Box>
-      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Typography sx={StylTextTitle}>
+        <Typography
+          variant="subtitle1"
+          component="p"
+          sx={{ fontWeight: 500, fontSize: { xs: 16, sm: 18, md: 20 } }}
+          gutterBottom
+        >
+          {dataClient.region}
+        </Typography>
+        <Typography
+          variant="subtitle1"
+          component="p"
+          sx={{ fontWeight: 500, fontSize: { xs: 16, sm: 18, md: 20 } }}
+          gutterBottom
+        >
+          {dataClient.governorate}
+        </Typography>
+        <Typography
+          variant="subtitle1"
+          component="p"
+          sx={{
+            fontWeight: 500,
+            fontSize: { xs: 16, sm: 18, md: 20 },
+          }}
+          gutterBottom
+        >
+          {dataClient.center_administration}
+        </Typography>
+      </Grid>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <Typography variant="h4" component="p" gutterBottom sx={{ fontWeight: 700 }}>
           {translate('project_owner_details.summary.title_license')}
         </Typography>
-        <Typography sx={StylTextContent}>{dataClient.license_number}</Typography>
-        <Typography sx={StylTextContent}>{dataClient.license_issue_date}</Typography>
-        {/* <Typography sx={StylTextContent}>{dataClient.headquarters}</Typography> */}
-        <Typography sx={StylTextContent}>
+        <Typography
+          variant="subtitle1"
+          component="p"
+          sx={{ fontWeight: 500, fontSize: { xs: 16, sm: 18, md: 20 } }}
+          gutterBottom
+        >
+          {dataClient.license_number}
+        </Typography>
+        <Typography
+          variant="subtitle1"
+          component="p"
+          sx={{ fontWeight: 500, fontSize: { xs: 16, sm: 18, md: 20 } }}
+          gutterBottom
+        >
+          {dataClient.license_issue_date}
+        </Typography>
+        <Typography
+          variant="subtitle1"
+          component="p"
+          sx={{
+            fontWeight: 500,
+            fontSize: { xs: 16, sm: 18, md: 20 },
+          }}
+          gutterBottom
+        >
           {[
             'register_form1.headquarters.options.own',
             'register_form1.headquarters.options.rent',
@@ -79,29 +130,20 @@ function SummaryClientInfo({ dataClient }: SummaryClientInfoProps) {
             ? translate(dataClient.headquarters)
             : dataClient.headquarters}
         </Typography>
-      </Box>
-      <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          justifyContent: 'flex-end',
-        }}
-      >
+      </Grid>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
         <Button
           onClick={handleShowAllDetails}
           disabled={!FEATURE_PROJECT_DETAILS}
-          sx={{
-            background: '#0E8478',
-            color: '#fff',
-            borderColor: '#000',
-          }}
+          color="primary"
+          variant="contained"
+          fullWidth
+          size="large"
         >
           {translate('project_owner_details.summary.button_show_all')}
         </Button>
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   );
 }
 

@@ -7,8 +7,6 @@ import { Loadable } from './Loadable';
 import { FEATURE_MENU_CLIENT_FILES } from 'config';
 
 const MainModeratorPage = Loadable(lazy(() => import('pages/moderator/MainModeratorPage')));
-const ModeratorProfile = Loadable(lazy(() => import('pages/moderator/ModeratorProfile')));
-// const ModeratorProfileEdit = Loadable(lazy(() => import('pages/moderator/ModeratorProfileEdit')));
 const ModeratorMessages = Loadable(lazy(() => import('pages/moderator/ModeratorMessages')));
 const OldProposal = Loadable(lazy(() => import('pages/moderator/OldProposal')));
 const ClientFiles = Loadable(lazy(() => import('pages/client-files/ClientFiles')));

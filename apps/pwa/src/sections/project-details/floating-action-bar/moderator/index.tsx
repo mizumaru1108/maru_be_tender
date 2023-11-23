@@ -3,21 +3,18 @@ import { LoadingButton } from '@mui/lab';
 import Iconify from 'components/Iconify';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import { nanoid } from 'nanoid';
 import { useSnackbar } from 'notistack';
-import { updateProposalByModerator } from 'queries/Moderator/updateProposalByModerator';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useMutation } from 'urql';
 import ProposalAcceptingForm from './ProposalAcceptingForm';
 import ProposalRejectingForm from './ProposalRejectingForm';
 import axiosInstance from 'utils/axios';
 import uuidv4 from 'utils/uuidv4';
-import { addConversation, setActiveConversationId, setMessageGrouped } from 'redux/slices/wschat';
-import { dispatch, useDispatch, useSelector } from 'redux/store';
+import { addConversation, setActiveConversationId } from 'redux/slices/wschat';
+import { dispatch, useSelector } from 'redux/store';
 import moment from 'moment';
 import { Conversation } from '../../../../@types/wschat';
-import { getProposalCount, getTrackList } from 'redux/slices/proposal';
+import { getProposalCount } from 'redux/slices/proposal';
 import { FEATURE_AMANDEMENT_PROPOSAL, FEATURE_PROPOSAL_COUNTING } from 'config';
 
 function ModeratorActionBar() {
@@ -60,16 +57,12 @@ function ModeratorActionBar() {
 
   const handleApproval = async (data: any) => {
     setIsSubmitting(true);
-    // console.log({ data });
-
     try {
       const payload = {
         proposal_id: id,
         action: 'accept',
         moderator_payload: {
-          // project_track: data.path,
           track_id: data.track_id,
-          // supervisor_id: data?.supervisors !== 'all' ? data?.supervisors : null,
           ...(data.supervisors !== 'all' && { supervisor_id: data.supervisors }),
         },
         message: 'تم قبول المشروع من قبل مسوؤل الفرز',
@@ -86,12 +79,11 @@ function ModeratorActionBar() {
               variant: 'success',
             });
           }
-          // for re count total proposal
-          // dispatch(getProposalCount(activeRole ?? 'test'));
+
           if (FEATURE_PROPOSAL_COUNTING) {
             dispatch(getProposalCount(activeRole ?? 'test'));
           }
-          //
+
           setIsSubmitting(false);
           navigate(`/moderator/dashboard/app`);
         })
@@ -105,11 +97,6 @@ function ModeratorActionBar() {
               });
             });
           } else {
-            // enqueueSnackbar(err.message, {
-            //   variant: 'error',
-            //   preventDuplicate: true,
-            //   autoHideDuration: 3000,
-            // });
             const statusCode = (err && err.statusCode) || 0;
             const message = (err && err.message) || null;
             enqueueSnackbar(
@@ -133,11 +120,6 @@ function ModeratorActionBar() {
           setIsSubmitting(false);
         });
     } catch (error) {
-      // enqueueSnackbar(error.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      // });
       const statusCode = (error && error.statusCode) || 0;
       const message = (error && error.message) || null;
       enqueueSnackbar(
@@ -159,14 +141,12 @@ function ModeratorActionBar() {
 
   const handleRejected = async (data: any) => {
     setIsSubmittingRejected(true);
-    // console.log({ data });
 
     try {
       const payload = {
         proposal_id: id,
         action: 'reject',
         moderator_payload: {
-          // project_track: data.path,
           track_id: data.path,
         },
         message: 'تم رفض المشروع من قبل مسوؤل الفرز',
@@ -185,12 +165,11 @@ function ModeratorActionBar() {
               variant: 'success',
             });
           }
-          // for re count total proposal
-          // dispatch(getProposalCount(activeRole ?? 'test'));
+
           if (FEATURE_PROPOSAL_COUNTING) {
             dispatch(getProposalCount(activeRole ?? 'test'));
           }
-          //
+
           setIsSubmittingRejected(false);
           navigate(`/moderator/dashboard/app`);
         })
@@ -204,11 +183,6 @@ function ModeratorActionBar() {
               });
             });
           } else {
-            // enqueueSnackbar(err.message, {
-            //   variant: 'error',
-            //   preventDuplicate: true,
-            //   autoHideDuration: 3000,
-            // });
             const statusCode = (err && err.statusCode) || 0;
             const message = (err && err.message) || null;
             enqueueSnackbar(
@@ -232,11 +206,6 @@ function ModeratorActionBar() {
           setIsSubmittingRejected(false);
         });
     } catch (error) {
-      // enqueueSnackbar(error.message, {
-      //   variant: 'error',
-      //   preventDuplicate: true,
-      //   autoHideDuration: 3000,
-      // });
       const statusCode = (error && error.statusCode) || 0;
       const message = (error && error.message) || null;
       enqueueSnackbar(
@@ -272,7 +241,6 @@ function ModeratorActionBar() {
           content_type_id: 'TEXT',
           receiver_id: proposalSubmitter.id,
           owner_id: user?.id,
-          // receiver_role_as: `tender_${proposalSubmitter.roles[0].role.id.toLowerCase()}`,
           receiver_role_as: `tender_${proposalSubmitter.roles[0]?.user_type_id.toLowerCase()}`,
           sender_role_as: `tender_${proposalStateRole.toLowerCase()}`,
           created_at: moment().toISOString(),
@@ -330,10 +298,6 @@ function ModeratorActionBar() {
     );
   };
 
-  // useEffect(() => {
-  //   dispatch(getTrackList(0, activeRole!));
-  // }, [activeRole]);
-
   if (isLoading) return null;
 
   return (
@@ -349,13 +313,16 @@ function ModeratorActionBar() {
           border: `1px solid ${theme.palette.grey[400]}`,
         }}
       >
-        <Stack direction={{ sm: 'column', md: 'row' }} spacing={2} justifyContent="space-between">
-          <Stack flexDirection={{ sm: 'column', md: 'row' }}>
+        <Stack
+          direction={{ sm: 'column', md: 'row' }}
+          spacing={2}
+          justifyContent={{ xs: 'normal', md: 'space-between' }}
+        >
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: { xs: 2, sm: 0 } }}>
             <LoadingButton
               loading={isSubmitting}
               variant="contained"
               color="primary"
-              sx={{ mr: { md: '1em' } }}
               onClick={() => setAction('accept')}
             >
               {translate('account_manager.accept_project')}
@@ -364,8 +331,6 @@ function ModeratorActionBar() {
               loading={isSubmittingRejected}
               variant="contained"
               sx={{
-                my: { xs: '1.3em', md: '0' },
-                mr: { md: '1em' },
                 backgroundColor: '#FF4842',
                 ':hover': { backgroundColor: '#FF170F' },
               }}
@@ -378,20 +343,11 @@ function ModeratorActionBar() {
               color="inherit"
               endIcon={<Iconify icon="eva:message-circle-outline" />}
               onClick={handleMessage}
-              sx={{ flex: 1 }}
             >
               {translate('send_message_to_partner')}
             </Button>
           </Stack>
 
-          {/* <Button
-            variant="contained"
-            onClick={() => {}}
-            sx={{ backgroundColor: '#0169DE', ':hover': { backgroundColor: '#1482FE' } }}
-            endIcon={<Iconify icon="eva:edit-2-outline" />}
-          >
-            {translate('submit_amendment_request')}
-          </Button> */}
           <Button
             id="demo-positioned-button"
             aria-controls={open ? 'demo-positioned-menu' : undefined}

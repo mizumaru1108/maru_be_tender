@@ -51,8 +51,6 @@ function NewCardTable({
     total: 0,
   });
 
-  // console.log({ activeOptions });
-
   const getData = async () => {
     try {
       setLoading(true);
@@ -84,7 +82,6 @@ function NewCardTable({
             autoHideDuration: 3000,
           });
         }
-        // return res.data;
       } else {
         const res = await axiosInstance.get(url, {
           params: { limit: params.limit, page: page },
@@ -93,7 +90,6 @@ function NewCardTable({
         if (res.data.statusCode === 200) {
           setData(res.data);
         }
-        // return res.data;
       }
     } catch (error) {
       throw error;
@@ -104,12 +100,6 @@ function NewCardTable({
 
   // It is used for the number of the pages that are rendered
   const pagesNumber = Math.ceil(data?.total / params.limit);
-
-  // The data showed in a single page
-  const dataSinglePage = data?.data.slice(
-    (page - 1) * params.limit,
-    (page - 1) * params.limit + params.limit
-  );
 
   // For the number of projects that are showed in a single page
   const handleLimitChange = (event: any) => {
@@ -136,18 +126,15 @@ function NewCardTable({
   }
   if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
     return (
-      <>
-        {' '}
-        <EmptyContent
-          title="لا يوجد بيانات"
-          img="/assets/icons/confirmation_information.svg"
-          description={`${translate('errors.something_wrong')}`}
-          errorMessage={errorFetchingData?.message || undefined}
-          sx={{
-            '& span.MuiBox-root': { height: 160 },
-          }}
-        />
-      </>
+      <EmptyContent
+        title="لا يوجد بيانات"
+        img="/assets/icons/confirmation_information.svg"
+        description={`${translate('errors.something_wrong')}`}
+        errorMessage={errorFetchingData?.message || undefined}
+        sx={{
+          '& span.MuiBox-root': { height: 160 },
+        }}
+      />
     );
 
   return (

@@ -2,7 +2,7 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import Iconify from 'components/Iconify';
 import useLocales from 'hooks/useLocales';
 import React from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useQuery } from 'urql';
 import { IEditedValues } from '../../../@types/client_data';
 import { gettingUserDataForEdit } from '../../../queries/client/gettingUserDataForEdit';
@@ -11,19 +11,10 @@ import ContactAccordion from './accordion/ContactAccordion';
 import LicenseAccording from './accordion/LicenseAccording';
 import MainAccordion from './accordion/MainAccordion';
 
-const sxPropsText = {
-  fontWeight: 500,
-  color: 'rgba(147, 163, 176, 0.8)',
-  fontSize: '1rem',
-  mb: 1,
-  mt: 1,
-};
-
 function DetailClientInfo() {
   const { currentLang, translate } = useLocales();
   const navigate = useNavigate();
   const params = useParams();
-  const location = useLocation();
   const id = params.submiterId;
   const [userInfo, setUserInfo] = React.useState<IEditedValues>();
   const [result] = useQuery({ query: gettingUserDataForEdit, variables: { id } });
@@ -46,7 +37,6 @@ function DetailClientInfo() {
         newval.push(newValues.board_ofdec_file);
       }
       newValues.board_ofdec_file = newval;
-      // console.log('data', newValues);
       setUserInfo(newValues);
     }
   }, [data]);
@@ -56,12 +46,18 @@ function DetailClientInfo() {
   if (error) return <>{error.message}</>;
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Stack direction="row" justifyContent="space-between">
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        spacing={2}
+        sx={{ mb: 1 }}
+      >
         <Button
           color="inherit"
           variant="contained"
           onClick={() => navigate(-1)}
-          sx={{ padding: 2, minWidth: 35, minHeight: 25, mr: 3 }}
+          sx={{ padding: 1, minWidth: 35, minHeight: 25 }}
         >
           <Iconify
             icon={
@@ -79,16 +75,13 @@ function DetailClientInfo() {
             maxWidth: '700px',
           }}
         >
-          {/* {proposal.project_name} */}
           {translate('project_owner_details.client_detail_profiles_header')}
         </Typography>
       </Stack>
-      {/* Test */}
       <MainAccordion userInfo={userInfo} />
       <ContactAccordion userInfo={userInfo} />
       <LicenseAccording userInfo={userInfo} />
       <AdministrativeAccording userInfo={userInfo} />
-      {/* <BankInformationAccording userInfo={userInfo} /> */}
     </Box>
   );
 }

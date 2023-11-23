@@ -19,12 +19,6 @@ interface TabPanelProps {
   value: string;
 }
 
-interface TopActionProps {
-  data: any;
-  activeTap: string;
-  setActiveTap: (newValue: string) => void;
-}
-
 function TabPanel({ children, value, index, ...other }: TabPanelProps) {
   return (
     <div

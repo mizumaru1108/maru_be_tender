@@ -7,7 +7,6 @@ import { moderatorStatistics } from '../../queries/Moderator/stactic';
 
 //
 import CardTableByBE from 'components/card-table/CardTableByBE';
-import moment from 'moment';
 import React, { useMemo } from 'react';
 import { getTrackList } from 'redux/slices/proposal';
 import { dispatch, useSelector } from 'redux/store';
@@ -30,7 +29,6 @@ function MainManagerPage() {
     query: moderatorStatistics,
   });
   const { data: statsData, fetching, error } = stats;
-  // console.log({ statsData });
 
   const count = useMemo(() => {
     let totalProject = 0;
@@ -55,7 +53,6 @@ function MainManagerPage() {
   if (fetching || loadingCount) return <>{translate('pages.common.loading')}</>;
 
   return (
-    // <Page title="Moderator Dashboard">
     <Page title={translate('pages.moderator.main')}>
       <Container>
         <ContentStyle>
@@ -64,7 +61,6 @@ function MainManagerPage() {
               <EmployeeCarousel />
             </Grid>
             <Grid item md={12} xs={12}>
-              {/* <EmployeeCarousel /> */}
               <CardInsight
                 headline={translate('account_manager.heading.daily_stats')}
                 data={Object.keys(statsData).map((item) => ({
@@ -75,8 +71,10 @@ function MainManagerPage() {
                       ? '/moderator/dashboard/incoming-support-requests'
                       : '/moderator/dashboard/previous-funding-requests',
                 }))}
-                cardContainerColumns={15}
-                cardContainerSpacing={1}
+                cardContainerSpacing={2}
+                cardItemXsBreakpoints={6}
+                cardItemSmBreakpoints={6}
+                cardItemMdBreakpoints={3}
                 cardStyle={{ p: 2, bgcolor: 'white' }}
               />
             </Grid>

@@ -37,8 +37,7 @@ function AdministrativeAccording({ userInfo }: Props) {
     <Accordion
       sx={{
         backgroundColor: 'rgba(147, 163, 176, 0.16)',
-        // my: 2,
-        p: 1.5,
+        p: 1,
         border: '1px solid rgba(147, 163, 176, 0.16)',
         borderRadius: 1,
         boxShadow: '0 8px 16px 0 rgb(145 158 171 / 24%)',

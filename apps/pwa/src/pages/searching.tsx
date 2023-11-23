@@ -39,10 +39,6 @@ function PreviousSupportRequests() {
       <Container>
         <ContentStyle>
           {activeRole !== 'tender_accounts_manager' ? (
-            // <CardSearching
-            //   title={translate('pages.common.search')}
-            //   cardFooterButtonAction="show-project"
-            // />
             <CardTableByBE
               title={translate('pages.common.search')}
               destination="current-project"

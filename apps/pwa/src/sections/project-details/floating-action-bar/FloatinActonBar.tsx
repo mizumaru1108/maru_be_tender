@@ -39,7 +39,7 @@ function FloatinActonBar() {
 
   return (
     <>
-      {/* ’Moderator is done */}
+      {/* ’Moderator */}
       {loadingPayment || isLoading ? null : (
         <React.Fragment>
           {activeTap &&
@@ -49,7 +49,7 @@ function FloatinActonBar() {
             !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) && (
               <ModeratorActionBar />
             )}
-          {/* Supervisor is done */}
+          {/* Supervisor */}
           {activeTap &&
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
@@ -58,7 +58,7 @@ function FloatinActonBar() {
             !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) && (
               <SupervisorFloatingActionBar />
             )}
-          {/* Projectmanager is done */}
+          {/* Projectmanager */}
           {activeTap &&
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
@@ -66,7 +66,7 @@ function FloatinActonBar() {
             !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) && (
               <ProjectManagerFloatingActionBar />
             )}
-          {/* CEO is done */}
+          {/* CEO */}
           {activeTap &&
             ['project-path', 'project-budget'].includes(activeTap) &&
             actionType === 'show-details' &&
@@ -74,7 +74,7 @@ function FloatinActonBar() {
             !['ASKED_FOR_AMANDEMENT_PAYMENT'].includes(proposal.outter_status) && (
               <CeoFloatingActionBar />
             )}
-          {/* Consultant is done */}
+          {/* Consultant */}
           {activeTap &&
             ['project-path', 'supervisor-revision'].includes(activeTap) &&
             actionType === 'show-details' &&
