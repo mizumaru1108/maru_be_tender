@@ -1,30 +1,25 @@
-import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Prisma } from '@prisma/client';
-import { request } from 'express';
+import { Builder } from 'builder-pattern';
+import { nanoid } from 'nanoid';
+import { v4 as uuidv4 } from 'uuid';
+import { PrismaService } from '../../../../prisma/prisma.service';
+import { DataNotFoundException } from '../../../../tender-commons/exceptions/data-not-found.exception';
+import { RequestErrorException } from '../../../../tender-commons/exceptions/request-error.exception';
+import {
+  TenderAppRoleEnum,
+  appRoleMappers,
+} from '../../../../tender-commons/types';
 import {
   OutterStatusEnum,
   ProposalAction,
 } from '../../../../tender-commons/types/proposal';
 import { TenderCurrentUser } from '../../../../tender-user/user/interfaces/current-user.interface';
 import { ProposalAskedEditRequestEntity } from '../../../asked-edit-request/entities/proposal.asked.edit.request.entity';
-import { AskAmandementRequestDto } from '../../dtos/requests';
-import { CreateProposalAskedEditRequestMapper } from '../../mappers/create-proposal-asked-edit-request.mapper';
-import { ProposalRepository } from '../../repositories/proposal.repository';
 import { ProposalAskedEditRequestRepository } from '../../../asked-edit-request/repositories/proposal.asked.edit.request.repository';
-import { PrismaService } from '../../../../prisma/prisma.service';
-import { ProposalUpdateProps } from '../../types';
-import { Builder } from 'builder-pattern';
-import { v4 as uuidv4 } from 'uuid';
-import {
-  TenderAppRoleEnum,
-  appRoleMappers,
-} from '../../../../tender-commons/types';
-import { PayloadErrorException } from '../../../../tender-commons/exceptions/payload-error.exception';
-import { RequestErrorException } from '../../../../tender-commons/exceptions/request-error.exception';
-import { DataNotFoundException } from '../../../../tender-commons/exceptions/data-not-found.exception';
 import { ProposalLogRepository } from '../../../proposal-log/repositories/proposal.log.repository';
-import { nanoid } from 'nanoid';
+import { AskAmandementRequestDto } from '../../dtos/requests';
+import { ProposalRepository } from '../../repositories/proposal.repository';
+import { ProposalUpdateProps } from '../../types';
 
 export class AskAmandementRequestCommand {
   currentUser: TenderCurrentUser;
@@ -70,7 +65,7 @@ export class AskAmandementRequestCommandHandler
         proposal_id: proposal.id,
         status: 'PENDING',
       });
-      // console.log({ alreadyExist });
+      console.log({ alreadyExist });
       if (alreadyExist) {
         throw new RequestErrorException(
           `Cannot proceed, proposal already asked for revision, (Has another pending request)`,
