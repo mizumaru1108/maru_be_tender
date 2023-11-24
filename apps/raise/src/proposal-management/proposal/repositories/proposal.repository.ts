@@ -3102,6 +3102,30 @@ export class ProposalRepository {
             },
           });
 
+          if (
+            proposalLogCreateInput.action ===
+            ProposalAction.REJECT_AMANDEMET_PAYMENT
+          ) {
+            const pending =
+              await prismaTrans.proposal_asked_edit_request.findFirst({
+                where: {
+                  proposal_id: proposal.id,
+                  status: 'PENDING',
+                },
+              });
+
+            if (pending) {
+              await prismaTrans.proposal_asked_edit_request.update({
+                where: {
+                  id: pending.id,
+                },
+                data: {
+                  status: 'REJECTED',
+                },
+              });
+            }
+          }
+
           // Update payment
           if (
             currentUser &&
