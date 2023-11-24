@@ -4,7 +4,6 @@ import DashboardLayout from '../layouts/dashboard';
 import AuthGuard from 'guards/AuthGuard';
 import RoleBasedGuard from 'guards/RoleBasedGuard';
 import { Loadable } from './Loadable';
-import ProjectOwnerDetailsMainPage from 'sections/project-details/project-owner-details/ProjectOwnerDetailsMainPage';
 import { FEATURE_MENU_CLIENT_FILES, FEATURE_NESTED_TRACK_BUDGET } from 'config';
 import TracksBudget from 'pages/admin/TracksBudget';
 import ViewNewSectionTracks from 'sections/admin/track-budget/section-track/ViewNewSectionTracks';

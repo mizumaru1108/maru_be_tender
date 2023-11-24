@@ -1,15 +1,5 @@
 // material
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Grid,
-  Stack,
-  styled,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Box, Button, Container, Divider, Grid, Stack, styled, Typography } from '@mui/material';
 // components
 import Iconify from 'components/Iconify';
 import Page from 'components/Page';
@@ -23,8 +13,7 @@ import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 
-import React, { useEffect } from 'react';
-import { PATH_ACCOUNTS_MANAGER } from 'routes/paths';
+import React from 'react';
 import { BaseAmandementRequest } from './types';
 import useLocales from '../../hooks/useLocales';
 import { LoadingButton } from '@mui/lab';
@@ -40,14 +29,6 @@ const ContentStyle = styled('div')(({ theme }) => ({
   flexDirection: 'column',
   rowGap: 24,
 }));
-
-type ValueMapper = {
-  [key: string]: {
-    page_name: string;
-    headline: string;
-    sub_headline: string;
-  };
-};
 
 export default function AmandementRequest() {
   const { currentLang, translate } = useLocales();
@@ -87,10 +68,10 @@ export default function AmandementRequest() {
   } = methods;
 
   const onSubmit = (data: BaseAmandementRequest) => {
-    // console.log(data.notes);
     setTmpValues(data);
     setOpen(true);
   };
+
   const onSubmtModal = async () => {
     const urls = location.pathname.split('/');
     const dashboardUrl = `/${urls[1]}/${urls[2]}/app`;
@@ -114,8 +95,6 @@ export default function AmandementRequest() {
         });
         navigate(dashboardUrl);
       } catch (error) {
-        // enqueueSnackbar(error.message, { variant: 'error' });
-        // handle error fetching
         const statusCode = (error && error.statusCode) || 0;
         const message = (error && error.message) || null;
         if (message && statusCode !== 0) {
@@ -144,7 +123,7 @@ export default function AmandementRequest() {
       }
     }
   };
-  // console.log('masuk sini');
+
   return (
     <Page title={translate(`proposal_amandement.${role}.page_name`)}>
       <Container>

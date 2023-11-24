@@ -1,9 +1,9 @@
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import { Container, Typography } from '@mui/material';
+import { Container } from '@mui/material';
 // sections
-import PortalReportsSection from 'sections/portal-reports';
 import useLocales from '../hooks/useLocales';
+import CardTableByBE from 'components/card-table/CardTableByBE';
 
 function PortalReports() {
   const { translate } = useLocales();
@@ -20,7 +20,21 @@ function PortalReports() {
     <Page title={translate('pages.common.portal_reports')}>
       <Container>
         <ContentStyle>
-          <PortalReportsSection />
+          <CardTableByBE
+            title={translate('section_portal_reports.heading.reports')}
+            endPoint="tender-proposal/previous"
+            destination="previous-funding-requests"
+            limitShowCard={6}
+            cardFooterButtonAction="show-project"
+            sorting={[
+              'sorting',
+              'project_name',
+              'project_status',
+              'range_date',
+              'client_name',
+              'track',
+            ]}
+          />
         </ContentStyle>
       </Container>
     </Page>

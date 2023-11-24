@@ -20,6 +20,7 @@ const PortalReportsPage = Loadable(lazy(() => import('pages/PortalReports')));
 const ProjectOwnerDetails = Loadable(
   lazy(() => import('pages/project-details/ProjectOwnerDetails'))
 );
+const ProjectPreview = Loadable(lazy(() => import('pages/ProposalPrintPreview')));
 
 export const portalReportRoute = {
   path: 'portal-report',
@@ -55,26 +56,23 @@ export const portalReportRoute = {
         { element: <Navigate to="/auditor-report/dashboard/app" replace />, index: true },
         { path: 'app', element: <PortalReportsPage /> },
         {
+          path: 'previous-funding-requests',
+          children: [
+            { path: '', element: <PortalReportsPage /> },
+            {
+              path: ':id/:actionType',
+              element: <ProjectDetails />,
+            },
+          ],
+        },
+        {
           path: 'current-project',
           children: [
             { path: ':id/:actionType', element: <ProjectDetails /> },
+            { path: 'preview/:id', element: <ProjectPreview /> },
             { path: 'owner/:submiterId', element: <ProjectOwnerDetails /> },
           ],
         },
-        // {
-        //   path: 'complete-project-report',
-        //   children: [
-        //     { path: '', element: <CompleteCloseReports /> },
-        //     {
-        //       path: ':id/:actionType',
-        //       element: <ProjectDetails />,
-        //     },
-        //     {
-        //       path: ':id/:actionType/finished',
-        //       element: <ProjectReportFinished />,
-        //     },
-        //   ],
-        // },
       ],
     },
   ],

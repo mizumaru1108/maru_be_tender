@@ -1,7 +1,6 @@
 import { Container } from '@mui/material';
 import Page from 'components/Page';
 import { styled } from '@mui/material/styles';
-import Appointments from 'sections/project-supervisor/appintments-with-partner';
 import useLocales from 'hooks/useLocales';
 import PrintProposal from 'sections/project-details/PrintProposal';
 
