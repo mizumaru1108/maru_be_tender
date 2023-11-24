@@ -534,7 +534,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={save || requestedBudget > remainBudget}
+            disabled={save || requestedBudget < remainBudget}
             data-cy="acc_form_consulation_support_type"
             type="radioGroup"
             name="support_type"

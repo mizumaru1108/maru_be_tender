@@ -12,6 +12,7 @@ interface Props {
 }
 
 function SupervisorGrantsRev({ stepGransLog }: Props) {
+  // console.log({ stepGransLog });
   const { proposal } = useSelector((state) => state.proposal);
   const { track } = useSelector((state) => state.tracks);
   const { translate, currentLang } = useLocales();
@@ -504,6 +505,24 @@ function SupervisorGrantsRev({ stepGransLog }: Props) {
                 </Grid>
               ))}
         </React.Fragment>
+      )}
+      {stepGransLog.action === 'reject_amandement_payment' && (
+        <Grid container spacing={2}>
+          <Stack direction="column" gap={2} sx={{ pb: 2, px: 2 }}>
+            <Typography>
+              {translate('project_already_reviewed_by_supervisor')}{' '}
+              {moment(stepGransLog.updated_at).locale(`${currentLang.value}`).fromNow()}
+            </Typography>
+          </Stack>
+          <Grid item xs={6}>
+            <Typography variant="h6">{translate(`review.reject_reason`)}</Typography>
+            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <Typography>{stepGransLog?.reject_reason || '-'}</Typography>
+              </Stack>
+            </Stack>
+          </Grid>
+        </Grid>
       )}
     </React.Fragment>
   );

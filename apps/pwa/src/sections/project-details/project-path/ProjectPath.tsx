@@ -63,6 +63,7 @@ function ProjectPath() {
   const { data: followUps, fetching, error } = result;
   const { data: listTracks, fetching: fetchingTracks, error: errorTracks } = tracks;
   const handleStep = (step: string, item: Log | undefined) => () => {
+    // console.log({ item });
     window.scrollTo(115, 115);
     setActiveStep(step || '-1');
     if (item !== undefined) {
@@ -124,6 +125,7 @@ function ProjectPath() {
         notes: tmpLogs[tmpLogs.length - 1]?.notes || '',
         updated_at: tmpLogs[tmpLogs.length - 1]?.updated_at || '',
         user_role: tmpLogs[tmpLogs.length - 1]?.user_role || '',
+        reject_reason: tmpLogs[tmpLogs.length - 1]?.reject_reason || '',
       };
     });
     setGeneralLog((current: any) => {
@@ -142,6 +144,7 @@ function ProjectPath() {
           employee_name: tmpLogs[tmpLogs.length - 1]?.reviewer?.employee_name || '',
         },
         employee_name: tmpLogs[tmpLogs.length - 1]?.employee_name || '',
+        reject_reason: tmpLogs[tmpLogs.length - 1]?.reject_reason || '',
       };
     });
   }, [followUps, proposal]);
@@ -413,17 +416,20 @@ function ProjectPath() {
                     .filter((item: Log, index: number) => activeStep === item.id)
                     .map((item: Log, index: number) => (
                       <>
-                        {item.notes &&
-                        (item.action === 'reject' ||
-                          item.action === 'send_back_for_revision' ||
-                          item.action === 'send_revised_version' ||
-                          item.action === 'step_back' ||
-                          item.action === 'one_step_back' ||
-                          item.action === 'rejected_by_project_manager' ||
-                          item.action === 'study_again' ||
-                          item.action === 'accept_and_ask_for_consultation' ||
-                          item.action === 'ask_for_amandement_request' ||
-                          (item.action === 'accept' && item.user_role === 'MODERATOR')) ? (
+                        {(item.notes &&
+                          [
+                            'reject',
+                            'send_back_for_rev1ision',
+                            'send_revised_version',
+                            'step_back',
+                            'one_step_back',
+                            'rejected_by_project_manager',
+                            'study_again',
+                            'accept_and_ask_for_consultation',
+                            'ask_for_amandement_request',
+                            'reject_amandement_payment',
+                          ].includes(item.action)) ||
+                        (item.action === 'accept' && item.user_role === 'MODERATOR') ? (
                           <Stack key={index} direction="column" gap={2}>
                             <Typography variant="h6">{translate(`review.notes`)}</Typography>
                           </Stack>
@@ -567,16 +573,18 @@ function ProjectPath() {
               (item: Log, index: number) =>
                 activeStep === item.id &&
                 (item.user_role === 'PROJECT_SUPERVISOR' || item.state === 'PROJECT_SUPERVISOR') &&
-                item.action !== 'send_back_for_revision' &&
-                item.action !== 'step_back' &&
-                item.action !== 'project_completed' &&
-                item.action !== 'sending_closing_report' &&
-                item.action !== 'send_revised_version' &&
-                item.action !== 'complete_payment' &&
-                item.action !== 'reject' &&
-                item.action !== 'ask_for_amandement_request' &&
-                item.action !== 'send_revision_for_finance_amandement' &&
-                item.action !== 'send_revision_for_supervisor_amandement'
+                ![
+                  'send_revision_for_supervisor_amandement',
+                  'send_revision_for_finance_amandement',
+                  'ask_for_amandement_request',
+                  'reject',
+                  'complete_payment',
+                  'send_revised_version',
+                  'sending_closing_report',
+                  'project_completed',
+                  'step_back',
+                  'send_back_for_revision',
+                ].includes(item.action)
             ).length > 0 &&
             isConsultation === false &&
             stepGeneralLog ? (
@@ -592,16 +600,18 @@ function ProjectPath() {
               (item: Log, index: number) =>
                 activeStep === item.id &&
                 (item.user_role === 'PROJECT_SUPERVISOR' || item.state === 'PROJECT_SUPERVISOR') &&
-                item.action !== 'send_back_for_revision' &&
-                item.action !== 'step_back' &&
-                item.action !== 'project_completed' &&
-                item.action !== 'sending_closing_report' &&
-                item.action !== 'complete_payment' &&
-                item.action !== 'send_revised_version' &&
-                item.action !== 'reject' &&
-                item.action !== 'ask_for_amandement_request' &&
-                item.action !== 'send_revision_for_finance_amandement' &&
-                item.action !== 'send_revision_for_supervisor_amandement'
+                ![
+                  'send_revision_for_supervisor_amandement',
+                  'send_revision_for_finance_amandement',
+                  'ask_for_amandement_request',
+                  'reject',
+                  'complete_payment',
+                  'send_revised_version',
+                  'sending_closing_report',
+                  'project_completed',
+                  'step_back',
+                  'send_back_for_revision',
+                ].includes(item.action)
             ).length > 0 &&
             isConsultation &&
             stepGransLog ? (

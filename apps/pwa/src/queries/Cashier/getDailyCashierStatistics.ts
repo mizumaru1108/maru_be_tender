@@ -10,7 +10,7 @@
 // new version
 export const getDailyCashierStatistics = `
 query MyQuery($user_id: String = "") {
-  acceptableRequest: proposal_aggregate(where: {proposal_logs: {_and: {action: {_in: ["uploaded_by_cashier"]}, user_role: {_eq: "CASHIER"}}}, step: {_eq: ZERO}, oid: {_is_null: true}, cashier_id: {_eq: $user_id}}) {
+  acceptableRequest: proposal_aggregate(where: {step: {_eq: ZERO}, oid: {_is_null: true}, _or: [{cashier_id: {_eq: $user_id}},{cashier_id: {_is_null:true}}], inner_status: {_in: [ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,DONE_BY_CASHIER,PROJECT_COMPLETED,REQUESTING_CLOSING_FORM]}}) {
     aggregate {
       count
     }

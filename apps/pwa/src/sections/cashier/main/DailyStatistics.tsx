@@ -31,7 +31,7 @@ function DailyStatistics() {
   const { user } = useAuth();
   const { loadingCount, proposalCount } = useSelector((state) => state.proposal);
 
-  const base_date = new Date();
+  // const base_date = new Date();
   const [result] = useQuery({
     query: getDailyCashierStatistics,
     variables: {
@@ -42,8 +42,8 @@ function DailyStatistics() {
 
   const counts = useMemo(() => {
     let incoming = 0;
-    if (proposalCount?.payment_adjustment && proposalCount?.inprocess) {
-      incoming = proposalCount?.payment_adjustment + proposalCount?.inprocess;
+    if (proposalCount?.payment_adjustment || proposalCount?.inprocess) {
+      incoming = (proposalCount?.payment_adjustment || 0) + (proposalCount?.inprocess || 0);
     }
     return {
       acceptableRequest: data?.acceptableRequest?.aggregate?.count || 0,

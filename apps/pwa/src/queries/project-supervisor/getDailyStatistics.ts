@@ -29,11 +29,11 @@ export const getDailySupervisorStatistics = `
 query MyQuery($user_id: String = "", $track_id: String = "",$_in_outter_status: [proposal_request_enum!] = []) {
   acceptableRequest: proposal_aggregate(where: {proposal_logs: {_and: {action: {_in: "accept"}, user_role: {_eq: "PROJECT_SUPERVISOR"}}}, step: {_eq: ZERO}, oid: {_is_null: true}, inner_status: {_neq: ACCEPTED_BY_MODERATOR}, supervisor_id: {_eq: $user_id}, track_id: {_eq: $track_id}}) {
     aggregate {
-      count
+      count 
     }
   }
 
-  incomingNewRequest: proposal_aggregate(where: {step: {_eq: ZERO}, oid: {_is_null: true}, inner_status: {_eq: ACCEPTED_BY_MODERATOR}, track_id: {_eq: $track_id}, outter_status: {_eq: ONGOING}, supervisor_id: {_in: [$user_id]}}) {
+  incomingNewRequest: proposal_aggregate(where: {step: {_eq: ZERO}, oid: {_is_null: true}, inner_status: {_eq: ACCEPTED_BY_MODERATOR}, track_id: {_eq: $track_id}, outter_status: {_eq: ONGOING}, supervisor_id: {_in: [$user_id]}, state: {_eq: PROJECT_SUPERVISOR}}) {
     aggregate {
       count
     }

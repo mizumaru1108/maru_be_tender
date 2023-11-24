@@ -549,7 +549,7 @@ export default function GeneralFirstForm({
         </Grid>
         <Grid item md={6} xs={12}>
           <BaseField
-            disabled={save || requestedBudget > remainBudget}
+            disabled={save || requestedBudget < remainBudget}
             data-cy="acc_form_non_consulation_support_type"
             type="radioGroup"
             name="support_type"

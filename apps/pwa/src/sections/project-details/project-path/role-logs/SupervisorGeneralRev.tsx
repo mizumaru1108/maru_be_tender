@@ -297,6 +297,24 @@ function SupervisorGeneralRev({ stepGeneralLog }: Props) {
               ))}
         </React.Fragment>
       )}
+      {stepGeneralLog.action === 'reject_amandement_payment' && (
+        <Grid container spacing={2}>
+          <Stack direction="column" gap={2} sx={{ pb: 2, px: 2 }}>
+            <Typography>
+              {translate('project_already_reviewed_by_supervisor')}{' '}
+              {moment(stepGeneralLog.updated_at).locale(`${currentLang.value}`).fromNow()}
+            </Typography>
+          </Stack>
+          <Grid item xs={6}>
+            <Typography variant="h6">{translate(`review.reject_reason`)}</Typography>
+            <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+              <Stack direction="column" gap={2} sx={{ pb: 2 }}>
+                <Typography>{stepGeneralLog?.reject_reason || '-'}</Typography>
+              </Stack>
+            </Stack>
+          </Grid>
+        </Grid>
+      )}
     </React.Fragment>
   );
 }

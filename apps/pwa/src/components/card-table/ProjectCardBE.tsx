@@ -210,6 +210,8 @@ const ProjectCardBE = ({
     }
   };
 
+  // console.log({ spvId: other.supervisor_id, support_outputs });
+
   const handleOnClick = async () => {
     dispatch(setFiltered(''));
     try {
@@ -226,7 +228,8 @@ const ProjectCardBE = ({
           (!other.project_manager_id && ['tender_project_manager'].includes(role)) ||
           (!other.finance_id && ['tender_finance'].includes(role)) ||
           (!other.cashier_id && ['tender_cashier'].includes(role)) ||
-          (!other.supervisor_id && ['tender_project_supervisor'].includes(role))
+          ((!other.supervisor_id || !support_outputs) &&
+            ['tender_project_supervisor'].includes(role))
         ) {
           handleUpdateAsigning();
         }

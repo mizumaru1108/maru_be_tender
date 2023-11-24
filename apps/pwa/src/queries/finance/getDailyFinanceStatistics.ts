@@ -10,7 +10,8 @@
 // new version
 export const getDailyFinanceStatistics = `
 query MyQuery($user_id: String = "") {
-  acceptableRequest: proposal_aggregate(where: {proposal_logs: {_and: {action: {_in: ["accepted_by_finance"]}, user_role: {_eq: "FINANCE"}}}, step: {_eq: ZERO}, oid: {_is_null: true}, finance_id: {_eq: $user_id}}) {
+
+  acceptableRequest: proposal_aggregate(where: {step: {_eq: ZERO}, oid: {_is_null: true}, _or: [{finance_id: {_eq: $user_id}}, {finance_id: {_is_null: true}}], payments: {status: {_in: [accepted_by_finance,done]}}}) {
     aggregate {
       count
     }

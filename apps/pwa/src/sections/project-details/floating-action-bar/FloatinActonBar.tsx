@@ -37,6 +37,10 @@ function FloatinActonBar() {
 
   const { data } = result;
 
+  const isFinanceAmandement = ['accepted_by_project_manager', 'uploaded_by_cashier'].includes(
+    proposal?.payments[0]?.status
+  );
+
   return (
     <>
       {/* ’Moderator */}
@@ -133,7 +137,9 @@ function FloatinActonBar() {
             ['ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR'].includes(proposal.inner_status) &&
             ['ONGOING'].includes(proposal.outter_status) &&
             ['tender_finance'].includes(role) &&
-            ['show-details'].includes(actionType!) && <FinanceFloatingActionBar />}
+            ['show-details', 'completing-exchange-permission'].includes(actionType!) &&
+            isFinanceAmandement && <FinanceFloatingActionBar />}
+
           {FEATURE_AMANDEMENT_FROM_FINANCE &&
             activeTap &&
             ['project-path'].includes(activeTap) &&
