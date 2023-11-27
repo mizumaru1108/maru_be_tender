@@ -12,23 +12,12 @@ import { SupervisorStep1 } from '../../../../../@types/supervisor-accepting-form
 import { removeEmptyKey } from 'utils/remove-empty-key';
 import BaseField from 'components/hook-form/BaseField';
 import { SectionSupervisor, TrackSection } from '../../../../../@types/commons';
-import selectDataById, { selectSectionProjectPath } from 'utils/generateParentChild';
+import selectDataById, {
+  getSupervisorId,
+  selectSectionProjectPath,
+} from 'utils/generateParentChild';
 import { arabicToAlphabetical } from '../../../../../utils/formatNumber';
 import { ComboBoxOption } from '../../../../../components/hook-form/RHFComboBox';
-
-function getSupervisorId(section_supervisor?: SectionSupervisor[]): ComboBoxOption[] {
-  let SpvId: ComboBoxOption[] = [];
-  if (section_supervisor) {
-    SpvId =
-      (section_supervisor &&
-        section_supervisor.map((item) => ({
-          label: item.supervisor.employee_name || '',
-          value: item.supervisor_user_id,
-        }))) ||
-      [];
-  }
-  return SpvId;
-}
 
 export default function GeneralFirstForm({
   children,

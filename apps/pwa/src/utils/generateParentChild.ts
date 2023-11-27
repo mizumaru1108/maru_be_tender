@@ -1,4 +1,5 @@
-import { TrackSection } from '../@types/commons';
+import { SectionSupervisor, TrackSection } from '../@types/commons';
+import { ComboBoxOption } from '../components/hook-form/RHFComboBox';
 
 interface IPropSelectedData {
   parent: TrackSection[];
@@ -122,4 +123,18 @@ export function selectSectionProjectPath({ parent, section_id }: IPropSelectedDa
   }
 
   return { levelOne, levelTwo, levelThree, levelFour };
+}
+
+export function getSupervisorId(section_supervisor?: SectionSupervisor[]): ComboBoxOption[] {
+  let SpvId: ComboBoxOption[] = [];
+  if (section_supervisor) {
+    SpvId =
+      (section_supervisor &&
+        section_supervisor.map((item) => ({
+          label: item.supervisor.employee_name || '',
+          value: item.supervisor_user_id,
+        }))) ||
+      [];
+  }
+  return SpvId;
 }

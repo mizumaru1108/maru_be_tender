@@ -17,16 +17,11 @@ import React from 'react';
 import { useNavigate } from 'react-router';
 import EmptyContent from '../../../components/EmptyContent';
 import useAuth from '../../../hooks/useAuth';
+import { UserEntity } from '../../../redux/slices/user';
 import axiosInstance from '../../../utils/axios';
-
-interface IClients {
-  employee_name: string;
-  id: string;
-}
 
 type Props = {
   handleOnOpen: () => void;
-  // open: boolean;
   handleSetId: (id: string) => void;
   handleSetPartnerName: (partnerName: string) => void;
 };
@@ -41,7 +36,7 @@ function StepOne({ handleOnOpen, handleSetId, handleSetPartnerName }: Props) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [clientField, setClientField] = React.useState<string>('main');
   const [clientName, setClientName] = React.useState<string>('');
-  const [clients, setClients] = React.useState<IClients[]>([]);
+  const [clients, setClients] = React.useState<UserEntity[]>([]);
 
   //pagination
   const [count, setCount] = React.useState(0);
@@ -59,9 +54,16 @@ function StepOne({ handleOnOpen, handleSetId, handleSetPartnerName }: Props) {
     setClients([]);
     setIsLoading(true);
     try {
-      const apiFindClients = `/tender-user/find-users?page=${page}&client_field=${clientField}&hide_internal=1`;
-      const apiFindClient = `/tender-user/find-users?page=${page}&employee_name=${clientName}&client_field=${clientField}&hide_internal=1`;
-      const res = await axiosInstance.get(clientName ? apiFindClient : apiFindClients, {
+      const url = '/tender-user/find-users';
+      // const apiFindClients = `/tender-user/find-users?page=${page}&client_field=${clientField}&hide_internal=1`;
+      // const apiFindClient = `/tender-user/find-users?page=${page}&employee_name=${clientName}&client_field=${clientField}&hide_internal=1`;
+      const res = await axiosInstance.get(url, {
+        params: {
+          page,
+          hide_internal: 1,
+          clientField: clientField || undefined,
+          employee_name: clientName || undefined,
+        },
         headers: { 'x-hasura-role': activeRole! },
       });
       // console.log(res.data);
@@ -278,7 +280,7 @@ function StepOne({ handleOnOpen, handleSetId, handleSetPartnerName }: Props) {
                                 <Typography
                                   sx={{ fontWeight: 500, fontSize: '15px', alignSelf: 'center' }}
                                 >
-                                  {item.employee_name}
+                                  {item?.client_data?.entity || translate('appointment.no_entity')}
                                 </Typography>
                                 <Button
                                   sx={{
@@ -309,8 +311,10 @@ function StepOne({ handleOnOpen, handleSetId, handleSetPartnerName }: Props) {
                                     </div>
                                   }
                                   onClick={() => {
-                                    handleSetPartnerName(item.employee_name);
-                                    handleSetId(item.id);
+                                    if (item?.client_data?.entity) {
+                                      handleSetPartnerName(item?.client_data?.entity);
+                                      handleSetId(item.id);
+                                    }
                                   }}
                                 >
                                   {translate('booking_an_appointment')}

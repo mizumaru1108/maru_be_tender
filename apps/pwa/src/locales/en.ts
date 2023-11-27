@@ -2817,6 +2817,7 @@ const en = {
     no_appointment: 'There is no available appointments',
     success: 'Successfully created an appointment',
     success_set_your_time: 'Successfully set your time',
+    no_entity: 'No Entity',
   },
   old_proposal: {
     page_title: 'Platform Projects',

@@ -4,7 +4,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import { Checkbox, Chip, TextField, Typography, useTheme } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
 import ListSubheader from '@mui/material/ListSubheader';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import * as React from 'react';
@@ -138,6 +138,7 @@ type IProps = {
   limitTags?: number;
   isMultiple?: boolean;
   size?: 'small' | 'medium';
+  onChange?: (option: ComboBoxOption[]) => void;
 };
 
 type Props = IProps;
@@ -154,6 +155,7 @@ export default function RHFComboBox({
   dataOption,
   limitTags = 2,
   size = 'medium',
+  onChange,
   ...other
 }: Props) {
   const { control, setValue, getValues, watch } = useFormContext();
@@ -173,8 +175,14 @@ export default function RHFComboBox({
     }
     if (isMultiple) {
       setValue(name, tmpFieldValue);
+      if (onChange) {
+        onChange(tmpFieldValue);
+      }
     } else {
       setValue(name, option);
+      if (onChange) {
+        onChange([option]);
+      }
     }
   };
 
@@ -197,6 +205,7 @@ export default function RHFComboBox({
       control={control}
       render={({ field, fieldState: { error } }) => (
         <Autocomplete
+          {...other}
           disabled={disabled}
           multiple={isMultiple}
           options={

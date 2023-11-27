@@ -68,6 +68,7 @@ export interface SupervisorStep1 {
   section_id_level_two?: string;
   section_id_level_three?: string;
   section_id_level_four?: string;
+  responsible_spv?: ComboBoxOption[];
 }
 
 export interface ProposalGovernorates {

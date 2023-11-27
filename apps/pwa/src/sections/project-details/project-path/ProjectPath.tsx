@@ -584,6 +584,7 @@ function ProjectPath() {
                   'project_completed',
                   'step_back',
                   'send_back_for_revision',
+                  'reject_amandement_payment',
                 ].includes(item.action)
             ).length > 0 &&
             isConsultation === false &&
@@ -611,6 +612,7 @@ function ProjectPath() {
                   'project_completed',
                   'step_back',
                   'send_back_for_revision',
+                  'reject_amandement_payment',
                 ].includes(item.action)
             ).length > 0 &&
             isConsultation &&

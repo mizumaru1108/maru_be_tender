@@ -21,11 +21,12 @@ import { ComboBoxOption } from '../../../../../../components/hook-form/RHFComboB
 
 function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubmited }: any) {
   const { translate } = useLocales();
-  const { activeRole } = useAuth();
+  const { activeRole, user } = useAuth();
   const isSupevisor = activeRole === 'tender_project_supervisor';
   const { proposal } = useSelector((state) => state.proposal);
   const { track } = useSelector((state) => state.tracks);
   const { step1 } = useSelector((state) => state.supervisorAcceptingForm);
+  // console.log({ step1 });
 
   const [sectionLevelOne, setSectionLevelOne] = useState<TrackSection[] | []>([]);
   const [sectionLevelTwo, setSectionLevelTwo] = useState<TrackSection[]>([]);
@@ -168,7 +169,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
     const tmpFSupport = Number(
       arabicToAlphabetical(data.fsupport_by_supervisor?.toString() || '0')
     );
-    const tmpValues: SupervisorStep1 = {
+    let tmpValues: SupervisorStep1 = {
       ...rest,
       vat_percentage: vat_percentage ? Number(vat_percentage) : undefined,
       payment_number: Number(arabicToAlphabetical(paymentNum?.toString() || '0')),
@@ -180,16 +181,22 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
         message: `${translate('notification.error_exceeds_amount')} (${remainBudget})`,
       });
     } else {
+      const tmpResponsibleSpv = step1?.responsible_spv || responsibleSpv;
+      console.log({ tmpResponsibleSpv, tmp: step1.responsible_spv });
       if (activeRole === 'tender_project_supervisor') {
-        const checkSpvId = [...responsibleSpv.map((item) => item.value)].includes(user?.id);
+        const checkSpvId = [...tmpResponsibleSpv.map((item) => item.value)].includes(user?.id);
         if (checkSpvId) {
+          tmpValues = {
+            ...tmpValues,
+            responsible_spv: responsibleSpv.length > 0 ? responsibleSpv : step1?.responsible_spv,
+          };
           onSubmit(removeEmptyKey(tmpValues));
         } else {
           setBudgetError({
             open: true,
             message: `${translate('notification.error.not_responsible_spv')} : ${
-              responsibleSpv.length > 0
-                ? responsibleSpv.map((item) => item.label).join(', ')
+              tmpResponsibleSpv.length > 0
+                ? tmpResponsibleSpv.map((item) => item.label).join(', ')
                 : translate('notification.error.no_supervisor')
             }`,
           });
@@ -338,6 +345,8 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
           setValue('section_id_level_one', testGenerate.tempLvlOne[0].id);
           setValue('section_id', testGenerate.tempLvlOne[0].id);
           setSectionLevelTwo(testGenerate.tempLvlOne[0].child_track_section ?? []);
+          const spvId = getSupervisorId(testGenerate?.tempLvlOne[0]?.section_supervisor);
+          setResponsibleSpv(spvId || []);
 
           if (testGenerate.tempLvlOne[0].child_track_section?.length) {
             const find = testGenerate.tempLvlOne[0].child_track_section?.find(
@@ -354,6 +363,8 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
           setValue('section_id_level_two', testGenerate.tempLvlTwo[0].id);
           setValue('section_id', testGenerate.tempLvlTwo[0].id);
           setSectionLevelThree(testGenerate.tempLvlTwo[0].child_track_section ?? []);
+          const spvId = getSupervisorId(testGenerate?.tempLvlTwo[0]?.section_supervisor);
+          setResponsibleSpv(spvId || []);
 
           if (testGenerate.tempLvlTwo[0].child_track_section?.length) {
             const find = testGenerate.tempLvlTwo[0].child_track_section?.find(
@@ -370,6 +381,8 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
           setValue('section_id_level_three', testGenerate.tempLvlThree[0].id);
           setValue('section_id', testGenerate.tempLvlThree[0].id);
           setSectionLevelFour(testGenerate.tempLvlThree[0].child_track_section ?? []);
+          const spvId = getSupervisorId(testGenerate?.tempLvlThree[0]?.section_supervisor);
+          setResponsibleSpv(spvId || []);
 
           if (testGenerate.tempLvlThree[0].child_track_section?.length) {
             const find = testGenerate.tempLvlThree[0].child_track_section?.find(
@@ -631,7 +644,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
               save ||
               (support_type === 'false' || !support_type || false
                 ? false
-                : requestedBudget <= remainBudget)
+                : requestedBudget > remainBudget)
             }
           />
         </Grid>

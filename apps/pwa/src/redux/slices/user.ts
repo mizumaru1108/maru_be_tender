@@ -22,6 +22,11 @@ export type UserEntity = {
   roles: {
     user_type_id: string;
   }[];
+  client_data?: {
+    client_field: string;
+    entity: string;
+    id: string;
+  };
 };
 
 type Employee = {

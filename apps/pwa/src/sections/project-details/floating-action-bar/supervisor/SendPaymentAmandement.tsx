@@ -39,7 +39,6 @@ function PaymentAmandementFloatingActionBar() {
         action: 'reject_amandement_payment',
         message: 'تم رفض المشروع من قبل مشرف المشاريع',
         notes: values.notes,
-        reject_reason: values.reject_reason,
         selectLang: currentLang.value,
       };
       await axiosInstance
@@ -208,6 +207,7 @@ function PaymentAmandementFloatingActionBar() {
             onClose={handleCloseModal}
             onSubmit={handleRejected}
             loading={isLoading}
+            needRejectReason={false}
             action={{
               actionType: action,
               actionLabel: 'رفض',

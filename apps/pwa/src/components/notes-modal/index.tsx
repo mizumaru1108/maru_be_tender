@@ -29,6 +29,7 @@ interface Propos {
   onClose: () => void;
   action: ActionPropos;
   loading?: boolean;
+  needRejectReason?: boolean;
 }
 
 interface FormInput {
@@ -37,7 +38,14 @@ interface FormInput {
   state: string;
 }
 
-function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
+function NotesModal({
+  title,
+  onSubmit,
+  onClose,
+  action,
+  loading,
+  needRejectReason = true,
+}: Propos) {
   const { activeRole } = useAuth();
   const { translate } = useLocales();
   const { proposal } = useSelector((state) => state.proposal);
@@ -54,6 +62,7 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
 
   const validationSchema = Yup.object().shape({
     ...(action.actionType === 'REJECT' &&
+      needRejectReason &&
       ['tender_project_manager', 'tender_project_supervisor'].includes(activeRole!) && {
         reject_reason: Yup.string().required(),
       }),
@@ -78,7 +87,7 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
   });
 
   const defaultValues = {
-    ...(action.actionType === 'REJECT' && { reject_reason: '' }),
+    ...(action.actionType === 'REJECT' && needRejectReason && { reject_reason: '' }),
     ...(action.actionType === 'STEP_BACK' && { notes: '', state: '' }),
   };
 
@@ -111,7 +120,8 @@ function NotesModal({ title, onSubmit, onClose, action, loading }: Propos) {
           <Grid container rowSpacing={4} columnSpacing={7} sx={{ mt: '10px' }}>
             {action.actionType &&
             action.actionType === 'REJECT' &&
-            ['tender_project_manager', 'tender_project_supervisor'].includes(activeRole!) ? (
+            ['tender_project_manager', 'tender_project_supervisor'].includes(activeRole!) &&
+            needRejectReason ? (
               <Grid item md={12} xs={12}>
                 <RHFSelect
                   name="reject_reason"

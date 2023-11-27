@@ -338,6 +338,7 @@ CardTablePropsByBE) {
               <SortingProjectTrackCardTable
                 isLoading={isLoading}
                 value={trackFilter || filter_project_track || '-'}
+                type="multiple"
                 onChangeSorting={handleSortingTrack}
               />
             </Grid>
@@ -348,6 +349,7 @@ CardTablePropsByBE) {
               <SortingProjectStatusCardTable
                 isLoading={isLoading}
                 value={statusFilter || filter_project_status || '-'}
+                type="multiple"
                 onChangeSorting={handleSortingProjectStatus}
               />
             </Grid>
