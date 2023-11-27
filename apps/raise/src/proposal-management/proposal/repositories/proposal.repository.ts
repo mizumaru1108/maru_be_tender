@@ -283,6 +283,7 @@ export class ProposalRepository {
           governorate_id: props.governorate_id,
           id: props.id || nanoid(),
           inclu_or_exclu: props.inclu_or_exclu,
+          incoming: props.incoming,
           inner_status: props.inner_status,
           letter_ofsupport_req: props.letter_ofsupport_req,
           most_clents_projects: props.most_clents_projects,
@@ -1574,7 +1575,7 @@ export class ProposalRepository {
         page = 1,
         limit = 10,
         sort = 'desc',
-        sorting_field,
+        sorting_field = 'updated_at',
         type = 'incoming',
         vat,
         track_id,
@@ -1773,7 +1774,8 @@ export class ProposalRepository {
           // };
           whereClause = {
             ...whereClause,
-            // incoming: true,
+            incoming: false,
+            finance_id: currentUser.id,
             outter_status: {
               equals: OutterStatusEnum.ONGOING,
             },

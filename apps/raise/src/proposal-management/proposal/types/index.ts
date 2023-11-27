@@ -164,6 +164,7 @@ export class ProposalUpdateProps {
   governorate_id?: string | null;
   id: string;
   inclu_or_exclu?: boolean | null;
+  incoming?: boolean;
   inner_status?: string | null;
   letter_ofsupport_req?: any; //Json?
   most_clents_projects?: string | null;

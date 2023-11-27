@@ -233,6 +233,7 @@ export class ProposalUpdatePaymentCommandHandler
             ProposalLogActionEnum.ACCEPTED_BY_PROJECT_MANAGER;
           updatePaymentPayload.status =
             PaymentStatusEnum.ACCEPTED_BY_PROJECT_MANAGER;
+          updateProposalPayloads.incoming = true;
         }
 
         if (action === 'reject') {
