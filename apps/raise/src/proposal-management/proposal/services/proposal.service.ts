@@ -826,7 +826,7 @@ export class ProposalService {
       proposalLogCreateInput.state = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalLogCreateInput.user_role = TenderAppRoleEnum.PROJECT_SUPERVISOR;
       proposalLogCreateInput.notes = request.notes;
-      proposalLogCreateInput.reject_reason = request.reject_reason;
+      // proposalLogCreateInput.reject_reason = request.reject_reason;
     }
     return {
       proposalUpdatePayload,
