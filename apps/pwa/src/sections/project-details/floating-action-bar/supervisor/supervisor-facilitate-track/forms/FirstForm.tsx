@@ -14,6 +14,7 @@ import useAuth from 'hooks/useAuth';
 import { removeEmptyKey } from 'utils/remove-empty-key';
 import { TrackSection } from '../../../../../../@types/commons';
 import selectDataById, {
+  getSupervisorId,
   selectSectionProjectPath,
 } from '../../../../../../utils/generateParentChild';
 import { arabicToAlphabetical } from 'utils/formatNumber';
@@ -182,7 +183,7 @@ function FirstForm({ children, onSubmit, setPaymentNumber, isSubmited, setIsSubm
       });
     } else {
       const tmpResponsibleSpv = step1?.responsible_spv || responsibleSpv;
-      console.log({ tmpResponsibleSpv, tmp: step1.responsible_spv });
+
       if (activeRole === 'tender_project_supervisor') {
         const checkSpvId = [...tmpResponsibleSpv.map((item) => item.value)].includes(user?.id);
         if (checkSpvId) {
