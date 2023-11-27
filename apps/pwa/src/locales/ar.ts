@@ -2684,6 +2684,7 @@ const ar = {
     attachment: 'مرفقات',
     edit: 'يحرر',
     back_to_homepage: 'الرجوع إلى الصفحة الرئيسية',
+    amandement_payment_reject: 'إعادة المشروع للمالية',
   },
   modal: {
     disable_proposal: {

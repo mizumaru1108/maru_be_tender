@@ -2664,6 +2664,7 @@ const en = {
     attachment: 'Project attachment',
     edit: 'Edit',
     back_to_homepage: 'Back to Homepage',
+    amandement_payment_reject: 'Reject Amandement',
   },
   modal: {
     disable_proposal: {

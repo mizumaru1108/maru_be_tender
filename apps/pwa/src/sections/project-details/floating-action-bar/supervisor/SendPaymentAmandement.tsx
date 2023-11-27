@@ -196,7 +196,7 @@ function PaymentAmandementFloatingActionBar() {
                 endIcon={<ClearIcon />}
                 loading={isLoading}
               >
-                {translate('account_manager.reject_project')}
+                {translate('button.amandement_payment_reject')}
               </LoadingButton>
             </Grid>
           </Grid>
