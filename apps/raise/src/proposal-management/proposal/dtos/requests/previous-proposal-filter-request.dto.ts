@@ -28,11 +28,23 @@ export class PreviousProposalFilterRequest extends BaseFilterRequest {
   @IsString()
   client_name?: string;
 
+  // @ApiPropertyOptional()
+  // @IsOptional()
+  // @IsNotEmpty()
+  // @IsString()
+  // track_id?: string;
+
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  track_id?: string;
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  @Transform(({ value }) => {
+    if (value && typeof value === 'string') {
+      return value.split(',');
+    }
+    return value;
+  })
+  track_id?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()

@@ -2072,7 +2072,8 @@ export class ProposalRepository {
           if (track_id) {
             whereClause = {
               ...whereClause,
-              track_id,
+              // track_id,
+              track_id: { in: track_id },
             };
           }
         }
