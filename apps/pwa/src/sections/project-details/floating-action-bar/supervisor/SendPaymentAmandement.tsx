@@ -210,7 +210,7 @@ function PaymentAmandementFloatingActionBar() {
             needRejectReason={false}
             action={{
               actionType: action,
-              actionLabel: 'رفض',
+              actionLabel: 'إعادة',
               backgroundColor: '#FF0000',
               hoverColor: '#FF4842',
             }}

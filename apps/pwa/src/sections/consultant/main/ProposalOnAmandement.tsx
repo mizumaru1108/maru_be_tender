@@ -70,28 +70,28 @@ function ProposalOnAmandement() {
     // fetchingPrevious();
   }, [fetchingIncoming]);
 
-  React.useEffect(() => {
-    dispatch(getApplicationAdmissionSettings(activeRole!));
-  }, [activeRole]);
+  // React.useEffect(() => {
+  //   dispatch(getApplicationAdmissionSettings(activeRole!));
+  // }, [activeRole]);
 
   if (isLoading || isFetchingData) {
     return <LoadingPage />;
   }
-  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
-    return (
-      <>
-        {' '}
-        <EmptyContent
-          title="لا يوجد بيانات"
-          img="/assets/icons/confirmation_information.svg"
-          description={`${translate('errors.something_wrong')}`}
-          errorMessage={errorFetchingData?.message || undefined}
-          sx={{
-            '& span.MuiBox-root': { height: 160 },
-          }}
-        />
-      </>
-    );
+  // if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
+  //   return (
+  //     <>
+  //       {' '}
+  //       <EmptyContent
+  //         title="لا يوجد بيانات"
+  //         img="/assets/icons/confirmation_information.svg"
+  //         description={`${translate('errors.something_wrong')}`}
+  //         errorMessage={errorFetchingData?.message || undefined}
+  //         sx={{
+  //           '& span.MuiBox-root': { height: 160 },
+  //         }}
+  //       />
+  //     </>
+  //   );
   return (
     <Grid container spacing={2}>
       <Grid item md={12} xs={12}>

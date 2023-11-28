@@ -103,28 +103,28 @@ function IncomingAmandementRequest() {
   // if (!props || props.length === 0) return null;
   // console.log({ cardData });
 
-  React.useEffect(() => {
-    dispatch(getApplicationAdmissionSettings(activeRole!));
-  }, [activeRole]);
+  // React.useEffect(() => {
+  //   dispatch(getApplicationAdmissionSettings(activeRole!));
+  // }, [activeRole]);
 
   if (isLoading || isFetchingData) {
     return <LoadingPage />;
   }
-  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
-    return (
-      <>
-        {' '}
-        <EmptyContent
-          title="لا يوجد بيانات"
-          img="/assets/icons/confirmation_information.svg"
-          description={`${translate('errors.something_wrong')}`}
-          errorMessage={errorFetchingData?.message || undefined}
-          sx={{
-            '& span.MuiBox-root': { height: 160 },
-          }}
-        />
-      </>
-    );
+  // if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
+  //   return (
+  //     <>
+  //       {' '}
+  //       <EmptyContent
+  //         title="لا يوجد بيانات"
+  //         img="/assets/icons/confirmation_information.svg"
+  //         description={`${translate('errors.something_wrong')}`}
+  //         errorMessage={errorFetchingData?.message || undefined}
+  //         sx={{
+  //           '& span.MuiBox-root': { height: 160 },
+  //         }}
+  //       />
+  //     </>
+  //   );
 
   return (
     <Grid item md={12}>

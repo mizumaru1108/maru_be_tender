@@ -18,12 +18,15 @@ function CheakClientActivation({ children }: CheakClientActivationProp) {
   const { fillUpData } = useSelector((state) => state.clientData);
 
   React.useEffect(() => {
-    dispatch(getClientData(user?.id));
-  }, [user?.id]);
+    if (id) {
+      dispatch(getClientData(id));
+    }
+  }, [id]);
 
   const [result] = useQuery({
     query: checkClientStatus,
     variables: { id },
+    pause: !id,
   });
   const { data, fetching, error } = result;
   if (fetching) return <p>Loading...</p>;

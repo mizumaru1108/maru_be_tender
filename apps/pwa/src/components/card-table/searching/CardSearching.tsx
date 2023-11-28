@@ -128,28 +128,28 @@ function CardSearching({
     // eslint-disable-next-line
   }, [params, page]);
 
-  useEffect(() => {
-    dispatch(getApplicationAdmissionSettings(activeRole!));
-  }, [activeRole]);
+  // useEffect(() => {
+  //   dispatch(getApplicationAdmissionSettings(activeRole!));
+  // }, [activeRole]);
 
   if (loading || isFetchingData) {
     return <LoadingPage />;
   }
-  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
-    return (
-      <>
-        {' '}
-        <EmptyContent
-          title="لا يوجد بيانات"
-          img="/assets/icons/confirmation_information.svg"
-          description={`${translate('errors.something_wrong')}`}
-          errorMessage={errorFetchingData?.message || undefined}
-          sx={{
-            '& span.MuiBox-root': { height: 160 },
-          }}
-        />
-      </>
-    );
+  // if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
+  //   return (
+  //     <>
+  //       {' '}
+  //       <EmptyContent
+  //         title="لا يوجد بيانات"
+  //         img="/assets/icons/confirmation_information.svg"
+  //         description={`${translate('errors.something_wrong')}`}
+  //         errorMessage={errorFetchingData?.message || undefined}
+  //         sx={{
+  //           '& span.MuiBox-root': { height: 160 },
+  //         }}
+  //       />
+  //     </>
+  //   );
 
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>

@@ -117,9 +117,9 @@ export default function ApplicationAndAdmissionSettingsForm(props: Props) {
     navigate(-1);
   };
 
-  useEffect(() => {
-    dispatch(getApplicationAdmissionSettings(activeRole!));
-  }, [activeRole]);
+  // useEffect(() => {
+  //   dispatch(getApplicationAdmissionSettings(activeRole!));
+  // }, [activeRole]);
 
   useEffect(() => {
     if (application_admission_settings && !isFetchingData && !errorFetchingData) {

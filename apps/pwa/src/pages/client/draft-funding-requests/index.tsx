@@ -63,9 +63,9 @@ function DraftsFundingRequest() {
     flexDirection: 'column',
   }));
 
-  useEffect(() => {
-    dispatch(getApplicationAdmissionSettings(activeRole!));
-  }, [activeRole]);
+  // useEffect(() => {
+  //   dispatch(getApplicationAdmissionSettings(activeRole!));
+  // }, [activeRole]);
 
   // useEffect(() => {
   //   if (!isFetchingData) {

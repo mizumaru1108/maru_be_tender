@@ -242,7 +242,9 @@ CardTablePropsByBE) {
 
   React.useEffect(() => {
     dispatch(getTrackList(1, activeRole! as string));
-    dispatch(getApplicationAdmissionSettings(activeRole!));
+    // if (activeRole && activeRole === 'tender_client') {
+    //   dispatch(getApplicationAdmissionSettings(activeRole!));
+    // }
   }, [activeRole]);
 
   React.useEffect(() => {
@@ -252,18 +254,18 @@ CardTablePropsByBE) {
   if (loadingProps.laodingTrack || isLoading || isFetchingData) {
     return <CardTableLoading />;
   }
-  if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
-    return (
-      <EmptyContent
-        title="لا يوجد بيانات"
-        img="/assets/icons/confirmation_information.svg"
-        description={`${translate('errors.something_wrong')}`}
-        errorMessage={errorFetchingData?.message || undefined}
-        sx={{
-          '& span.MuiBox-root': { height: 160 },
-        }}
-      />
-    );
+  // if (errorFetchingData && FEATURE_MENU_ADMIN_APLICATION_ADMISSION)
+  //   return (
+  //     <EmptyContent
+  //       title="لا يوجد بيانات"
+  //       img="/assets/icons/confirmation_information.svg"
+  //       description={`${translate('errors.something_wrong')}`}
+  //       errorMessage={errorFetchingData?.message || undefined}
+  //       sx={{
+  //         '& span.MuiBox-root': { height: 160 },
+  //       }}
+  //     />
+  //   );
 
   return (
     <Grid container spacing={2}>
