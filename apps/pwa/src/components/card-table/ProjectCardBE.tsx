@@ -71,7 +71,7 @@ const ProjectCardBE = ({
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const { translate } = useLocales();
+  const { translate, currentLang } = useLocales();
   const [, updateAsigning] = useMutation(asignProposalToAUser);
   const [, deleteDrPro] = useMutation(deleteDraftProposal);
   const [loading, setLoading] = React.useState(false);
@@ -561,7 +561,9 @@ const ProjectCardBE = ({
               alignItems="center"
             >
               <Typography variant="h6" color="#1E1E1E" sx={{ fontSize: '15px !important' }}>
-                {updated_at ? moment(updated_at).format('LLLL') : moment(created_at).format('LLLL')}
+                {updated_at
+                  ? moment(updated_at).locale(`${currentLang.value}`).format('LLLL')
+                  : moment(created_at).locale(`${currentLang.value}`).format('LLLL')}
               </Typography>
               {status !== 'COMPLETED' && (
                 <Chip
