@@ -139,32 +139,34 @@ export default function ProjectManagementTableBE({
         spacing={2}
         mb={2}
       >
-        <Grid item md={2} xs={12}>
-          <Select
-            data-cy="select-option-track-list"
-            value={selectedTrack}
-            disabled={isLoading}
-            onChange={(e) => {
-              setSelectedTrack(e.target.value as string);
-              if (e.target.value && e.target.value !== 'all') {
-                onFilterChange({
-                  ...filterparams,
-                  track_id: e.target.value as string,
-                });
-              }
-            }}
-            size="medium"
-            fullWidth
-            MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
-          >
-            <MenuItem value={'all'}>{'كل القائمة'}</MenuItem>
-            {track_list.map((item) => (
-              <MenuItem data-cy={`select-option-track-${item.id}`} key={item.id} value={item.id}>
-                {formatCapitalizeText(item.name)}
-              </MenuItem>
-            ))}
-          </Select>
-        </Grid>
+        {activeRole === 'tender_ceo' && (
+          <Grid item md={2} xs={12}>
+            <Select
+              data-cy="select-option-track-list"
+              value={selectedTrack}
+              disabled={isLoading}
+              onChange={(e) => {
+                setSelectedTrack(e.target.value as string);
+                if (e.target.value && e.target.value !== 'all') {
+                  onFilterChange({
+                    ...filterparams,
+                    track_id: e.target.value as string,
+                  });
+                }
+              }}
+              size="medium"
+              fullWidth
+              MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
+            >
+              <MenuItem value={'all'}>{'كل القائمة'}</MenuItem>
+              {track_list.map((item) => (
+                <MenuItem data-cy={`select-option-track-${item.id}`} key={item.id} value={item.id}>
+                  {formatCapitalizeText(item.name)}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+        )}
         {activeRole === 'tender_ceo' && table_type === 'show-details' ? (
           <>
             <Grid item md={4} xs={6}>
