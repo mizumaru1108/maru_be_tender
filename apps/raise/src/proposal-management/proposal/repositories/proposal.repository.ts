@@ -2025,6 +2025,15 @@ export class ProposalRepository {
           },
         };
       }
+
+      if (track_id) {
+        whereClause = {
+          ...whereClause,
+          // track_id,
+          track_id: { in: track_id },
+        };
+      }
+
       const order_by: Prisma.proposalOrderByWithRelationInput = {};
       const field =
         sorting_field as keyof Prisma.proposalOrderByWithRelationInput;
@@ -2070,14 +2079,6 @@ export class ProposalRepository {
               OR: [{ track_id: reviewer.track.id }, { track_id: null }],
             };
           }
-        } else {
-          if (track_id) {
-            whereClause = {
-              ...whereClause,
-              // track_id,
-              track_id: { in: track_id },
-            };
-          }
         }
 
         if (currentUser.choosenRole === 'tender_moderator') {
@@ -2091,11 +2092,22 @@ export class ProposalRepository {
           whereClause = {
             ...whereClause,
             supervisor_id: currentUser.id,
-            inner_status: {
-              notIn: [
-                InnerStatusEnum.CREATED_BY_CLIENT,
-                InnerStatusEnum.ACCEPTED_BY_MODERATOR,
-              ],
+            proposal_logs: {
+              some: {
+                AND: {
+                  user_role: TenderAppRoleEnum.PROJECT_SUPERVISOR,
+                  action: {
+                    in: [
+                      ProposalLogActionEnum.ACCEPT,
+                      ProposalLogActionEnum.UPDATE,
+                      ProposalLogActionEnum.REJECT,
+                      ProposalLogActionEnum.ASK_FOR_AMANDEMENT_REQUEST,
+                      ProposalLogActionEnum.SEND_BACK_FOR_REVISION,
+                      ProposalLogActionEnum.REJECT_AMANDEMENT_PAYMENT,
+                    ],
+                  },
+                },
+              },
             },
           };
         }
@@ -2104,6 +2116,16 @@ export class ProposalRepository {
           whereClause = {
             ...whereClause,
             OR: [{ cashier_id: currentUser.id }, { cashier_id: null }],
+            proposal_logs: {
+              some: {
+                AND: {
+                  user_role: TenderAppRoleEnum.CASHIER,
+                  action: {
+                    in: [ProposalLogActionEnum.UPLOADED_BY_CASHIER],
+                  },
+                },
+              },
+            },
             inner_status: {
               in: [
                 InnerStatusEnum.ACCEPTED_AND_SETUP_PAYMENT_BY_SUPERVISOR,
@@ -2119,10 +2141,17 @@ export class ProposalRepository {
           whereClause = {
             ...whereClause,
             OR: [{ finance_id: currentUser.id }, { finance_id: null }],
-            payments: {
+            proposal_logs: {
               some: {
-                status: {
-                  in: [ProposalAction.ACCEPTED_BY_FINANCE, ProposalAction.DONE],
+                AND: {
+                  user_role: TenderAppRoleEnum.FINANCE,
+                  action: {
+                    in: [
+                      ProposalLogActionEnum.ASK_FOR_AMANDEMENT_REQUEST,
+                      ProposalLogActionEnum.ACCEPTED_BY_FINANCE,
+                      ProposalLogActionEnum.DONE,
+                    ],
+                  },
                 },
               },
             },
@@ -2132,13 +2161,26 @@ export class ProposalRepository {
         if (currentUser.choosenRole === 'tender_project_manager') {
           whereClause = {
             ...whereClause,
-            project_manager_id: currentUser.id,
-            inner_status: {
-              notIn: [
-                InnerStatusEnum.CREATED_BY_CLIENT,
-                InnerStatusEnum.ACCEPTED_BY_MODERATOR,
-                InnerStatusEnum.REJECTED_BY_MODERATOR,
-              ],
+            OR: [
+              { project_manager_id: currentUser.id },
+              {
+                project_manager_id: null,
+              },
+            ],
+            proposal_logs: {
+              some: {
+                AND: {
+                  user_role: TenderAppRoleEnum.PROJECT_MANAGER,
+                  action: {
+                    in: [
+                      ProposalLogActionEnum.ACCEPT,
+                      ProposalLogActionEnum.REJECT,
+                      ProposalLogActionEnum.UPDATE,
+                      ProposalLogActionEnum.STEP_BACK,
+                    ],
+                  },
+                },
+              },
             },
           };
         }
@@ -2146,12 +2188,20 @@ export class ProposalRepository {
         if (currentUser.choosenRole === 'tender_ceo') {
           whereClause = {
             ...whereClause,
-            inner_status: {
-              notIn: [
-                InnerStatusEnum.CREATED_BY_CLIENT,
-                InnerStatusEnum.ACCEPTED_BY_MODERATOR,
-                InnerStatusEnum.REJECTED_BY_MODERATOR,
-              ],
+            proposal_logs: {
+              some: {
+                AND: {
+                  user_role: TenderAppRoleEnum.CEO,
+                  action: {
+                    in: [
+                      ProposalLogActionEnum.ACCEPT,
+                      ProposalLogActionEnum.UPDATE,
+                      ProposalLogActionEnum.STEP_BACK,
+                      ProposalLogActionEnum.REJECT,
+                    ],
+                  },
+                },
+              },
             },
           };
         }

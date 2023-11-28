@@ -63,5 +63,19 @@ export enum ProposalLogActionEnum {
    */
   ASK_FOR_AMANDEMENT_REQUEST = 'ask_for_amandement_request',
 
+  /**
+   * Brief: When supervisor ask for revision to client.
+   */
+  SEND_BACK_FOR_REVISION = 'send_back_for_revision',
+
+  /**
+   * Brief: When supervisor reject amandement request from finance.
+   */
+  REJECT_AMANDEMENT_PAYMENT = 'reject_amandement_payment',
+
   ACCEPT = 'accept',
+
+  UPDATE = 'update',
+
+  REJECT = 'reject',
 }
