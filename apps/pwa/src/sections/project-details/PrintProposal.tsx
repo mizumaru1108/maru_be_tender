@@ -52,7 +52,7 @@ export default function PrintProposal() {
 
   useEffect(() => {
     dispatch(getProposal(id as string, activeRole as string));
-    dispatch(getTrackList(1, activeRole as string));
+    // dispatch(getTrackList(1, activeRole as string));
   }, [id, activeRole]);
 
   if (isLoading || proposal.id === '-1') return <>Loading ...</>;

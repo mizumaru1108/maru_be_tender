@@ -240,12 +240,12 @@ CardTablePropsByBE) {
     }
   };
 
-  React.useEffect(() => {
-    dispatch(getTrackList(1, activeRole! as string));
-    // if (activeRole && activeRole === 'tender_client') {
-    //   dispatch(getApplicationAdmissionSettings(activeRole!));
-    // }
-  }, [activeRole]);
+  // React.useEffect(() => {
+  //   dispatch(getTrackList(1, activeRole! as string));
+  //   // if (activeRole && activeRole === 'tender_client') {
+  //   //   dispatch(getApplicationAdmissionSettings(activeRole!));
+  //   // }
+  // }, [activeRole]);
 
   React.useEffect(() => {
     fetchingPrevious();

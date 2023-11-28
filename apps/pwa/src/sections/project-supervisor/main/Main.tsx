@@ -44,7 +44,7 @@ function Main() {
     }
   }, [activeRole, data?.data?.track_id]);
 
-  if (loadingCount) return <>{translate('pages.common.loading')}</>;
+  if (loadingCount || fetching) return <>{translate('pages.common.loading')}</>;
 
   return (
     <Grid container spacing={4}>
