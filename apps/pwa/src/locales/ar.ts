@@ -3223,6 +3223,29 @@ const ar = {
       },
     },
   },
+  _gregorian_year: {
+    headercell: {
+      year: 'سنة',
+      actions: 'أجراءات',
+    },
+    modal: {
+      add: 'إضافة سنة ميلادية جديدة',
+      edit: 'تعديل السنة الميلادية',
+      delete_confirmation: 'هل أنت متأكد أنك تريد حذف هذا العام الميلادي؟',
+    },
+    button: {
+      add: 'إضافة سنة ميلادية جديدة',
+    },
+    fields: {
+      year: {
+        label: 'سنة',
+        placeholder: 'سنة',
+        error: {
+          required: 'الحقل مطلوب',
+        },
+      },
+    },
+  },
 };
 
 export default ar;

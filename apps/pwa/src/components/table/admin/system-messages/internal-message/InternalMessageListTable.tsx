@@ -5,7 +5,6 @@ import {
   Card,
   Grid,
   MenuItem,
-  Select,
   Table,
   TableBody,
   TableContainer,
@@ -16,21 +15,18 @@ import {
 import Scrollbar from 'components/Scrollbar';
 import SearchField from 'components/sorting/searchField';
 import { TableHeadCustom, TableNoData } from 'components/table';
-import { InternalMessageListMock } from 'components/table/admin/system-messages/mock';
 import { InternalMessagesList } from 'components/table/admin/system-messages/types';
+import dayjs from 'dayjs';
 import useAuth from 'hooks/useAuth';
 import useLocales from 'hooks/useLocales';
-import useTable, { getComparator } from 'hooks/useTable';
-import useTabs from 'hooks/useTabs';
+import useTable from 'hooks/useTable';
 import { useSnackbar } from 'notistack';
 import axiosInstance from 'utils/axios';
-import InternalMessageListRow from './InternalMessageListRow';
-import TableInternalMessageSkeleton from './TableInternalMessageSkeleton';
-import { useSelector } from '../../../../../redux/store';
-import RejectionModal from '../../../../modal-dialog/RejectionModal';
-import dayjs from 'dayjs';
 import { hasExpired } from 'utils/checkIsExpired';
 import { formatCapitalizeText } from 'utils/formatCapitalizeText';
+import { useSelector } from '../../../../../redux/store';
+import InternalMessageListRow from './InternalMessageListRow';
+import TableInternalMessageSkeleton from './TableInternalMessageSkeleton';
 
 const TABLE_HEAD = [
   { id: 'title', label: 'system_messages.headercell.title' },
@@ -49,8 +45,6 @@ export default function SystemMessageListTable() {
     rowsPerPage,
     setPage,
     selected,
-    onSelectRow,
-    onSelectAllRows,
     onSort,
     total,
     setTotal,
@@ -63,24 +57,13 @@ export default function SystemMessageListTable() {
   const { enqueueSnackbar } = useSnackbar();
   const { track_list } = useSelector((state) => state.proposal);
 
-  const [sortOrder, setSortOrder] = useState<any>({ employee_name: 'asc' });
   const [tableData, setTableData] = useState<Array<InternalMessagesList>>([]);
 
-  // console.log({ tableData });
-
-  const [filterName, setFilterName] = useState('');
-
-  const [filterRole, setFilterRole] = useState('all');
-
   const [isLoading, setIsLoading] = useState(false);
-
-  const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } = useTabs('all');
 
   const [sortValue, setSortValue] = useState<string>('');
 
   const [banerTitle, setBanerTitle] = useState('');
-
-  // console.debug({ track_list });
 
   const fetchingData = React.useCallback(async () => {
     setIsLoading(true);
@@ -103,18 +86,13 @@ export default function SystemMessageListTable() {
       const response = await axiosInstance.get(`${url}`, {
         headers: { 'x-hasura-role': activeRole! },
       });
-      // console.log({ response });
       if (response?.data?.data.length > 0) {
-        // console.log('test response', response?.data?.data);
         setTableData(
           response?.data?.data.map((item: InternalMessagesList, index: any) => ({
             id: item.id || '',
             title: item.title || '',
             content: item.content || '',
-            // desired_track: item.track_id || '',
-            // desired_track: track_list.find((track) => track.id === item.track_id)?.name || '',
             desired_track: item?.track?.name || '',
-            // status: item?.is_expired ? false : true,
             status:
               item &&
               item.expired_date &&
@@ -202,56 +180,19 @@ export default function SystemMessageListTable() {
     [activeRole, enqueueSnackbar]
   );
 
-  const handleFilterName = (filterName: string) => {
-    setFilterName(filterName);
-    setPage(0);
-  };
-
-  const handleFilterRole = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterRole(event.target.value);
-  };
-
-  const dataFiltered = applySortFilter({
-    tableData,
-    comparator: getComparator(order, orderBy),
-    filterName,
-    filterRole,
-    filterStatus,
-  });
-
-  const denseHeight = dense ? 52 : 72;
-
-  const isNotFound =
-    (!dataFiltered.length && !!filterName) ||
-    (!dataFiltered.length && !!filterRole) ||
-    (!dataFiltered.length && !!filterStatus);
-
-  // console.log({ sortValue });
   const handleSortData = (event: any) => {
     setSortValue(event.target.value);
     setPage(0);
-    // const { value } = event.target;
-    // setSortValue(event.target.value as string);
-    // const [key, order] = value.split(' ');
-    // if (key === 'governorate') {
-    //   const newOrder = { client_data: { [key]: order } };
-    //   setSortOrder(newOrder);
-    // } else {
-    //   const newOrder = { [key]: order };
-
-    //   setSortOrder(newOrder);
-    // }
   };
 
   const handleChange = (name: string) => {
-    // console.log(name);
     setBanerTitle(name);
     setPage(0);
   };
 
   React.useEffect(() => {
     fetchingData();
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchingData]);
 
   return (
@@ -264,7 +205,6 @@ export default function SystemMessageListTable() {
               isLoading={isLoading}
               onReturnSearch={handleChange}
               reFetch={() => {
-                // console.log('re-fetch');
                 handleChange('');
               }}
             />
@@ -326,15 +266,7 @@ export default function SystemMessageListTable() {
                         onDelete={handleDelete}
                       />
                     ))}
-                {!isLoading && dataFiltered.length === 0 && <TableNoData isNotFound={isNotFound} />}
-                {/* {InternalMessageListMock.map((row) => (
-                  <InternalMessageListRow
-                    data-cy={`table-row-custom-${row.id}`}
-                    key={row.id}
-                    row={row}
-                    selected={selected.includes(row?.id || '')}
-                  />
-                ))} */}
+                {!isLoading && tableData.length === 0 && <TableNoData isNotFound={true} />}
               </TableBody>
             </Table>
           </TableContainer>

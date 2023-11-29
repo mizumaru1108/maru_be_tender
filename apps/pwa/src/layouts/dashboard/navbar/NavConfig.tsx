@@ -20,6 +20,7 @@ import {
   FEATURE_MENU_ADMIN_APLICATION_ADMISSION,
   FEATURE_MENU_ADMIN_ENTITY_AREA,
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
+  FEATURE_MENU_ADMIN_GREGORIAN_YEAR,
   FEATURE_MENU_ADMIN_MOBILE_SETTINGS,
   FEATURE_MENU_ADMIN_REGIONS,
   FEATURE_MENU_CLIENT_FILES,
@@ -723,11 +724,11 @@ const navConfig = {
           icon: ICONS.tender_admin.tracks_budget,
         },
 
-        // {
-        //   title: 'gregorian_year',
-        //   path: PATH_ADMIN.gregorian_year,
-        //   icon: ICONS.tender_admin.gregorian_year,
-        // },
+        FEATURE_MENU_ADMIN_GREGORIAN_YEAR && {
+          title: 'gregorian_year',
+          path: PATH_ADMIN.gregorian_year,
+          icon: ICONS.tender_admin.gregorian_year,
+        },
         FEATURE_MENU_ADMIN_APLICATION_ADMISSION && {
           title: 'application_and_admission_settings',
           path: PATH_ADMIN.application_and_admission_settings,

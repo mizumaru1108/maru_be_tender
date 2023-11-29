@@ -369,5 +369,11 @@ export const FEATURE_MENU_ADMIN_MOBILE_SETTINGS: boolean =
     ? true
     : false;
 
+export const FEATURE_MENU_ADMIN_GREGORIAN_YEAR: boolean =
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_GREGORIAN_YEAR &&
+  process.env.REACT_APP_CONFIG_FEATURE_MENU_ADMIN_GREGORIAN_YEAR === 'true'
+    ? true
+    : false;
+
 export const FEATURE_DISABLE_PROPOSAL_DATE =
   process.env.REACT_APP_CONFIG_FEATURE_DISABLE_PROPOSAL_DATE;

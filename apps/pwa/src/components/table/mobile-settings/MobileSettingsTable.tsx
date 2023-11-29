@@ -133,17 +133,6 @@ export default function MobileSettingsTable() {
         </Grid>
       </Grid>
 
-      {/* <Stack
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          flexDirection: 'row',
-          marginBottom: 5,
-        }}
-      >
-        
-       
-      </Stack> */}
       <Card sx={{ backgroundColor: '#fff', mt: 2 }}>
         <Scrollbar>
           <TableContainer sx={{ minWidth: 800, position: 'relative' }}>

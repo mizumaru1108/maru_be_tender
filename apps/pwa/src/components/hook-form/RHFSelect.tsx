@@ -142,9 +142,9 @@ export default function RHFSelect({ name, children, placeholder, ...other }: Pro
               }}
             >
               {placeholder && (
-                <option value="" disabled selected>
+                <MenuItem value="" disabled selected>
                   {placeholder}
-                </option>
+                </MenuItem>
               )}
               {children}
             </TextField>

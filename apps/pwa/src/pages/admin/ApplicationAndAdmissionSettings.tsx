@@ -1,13 +1,13 @@
 import { Box, Container, styled, Typography } from '@mui/material';
 import Page from 'components/Page';
 import { useSnackbar } from 'notistack';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ApplicationAndAdmissionSettingsForm from 'sections/admin/application-and-admission-settings/ApplicationAndAdmissionSettingsForm';
 import { AdmissionProps } from '../../@types/commons';
 import useAuth from '../../hooks/useAuth';
 import useLocales from '../../hooks/useLocales';
 import { getApplicationAdmissionSettings } from '../../redux/slices/applicationAndAdmissionSettings';
-import { dispatch } from '../../redux/store';
+import { dispatch, useSelector } from '../../redux/store';
 import axiosInstance from '../../utils/axios';
 
 const ContentStyle = styled('div')(({ theme }) => ({
@@ -23,6 +23,10 @@ function ApplicationAndAdmissionSettings() {
   const { translate } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
   const { activeRole } = useAuth();
+
+  const { isLoading: isLoadingApplicationAndAdmissionSettings } = useSelector(
+    (state) => state.applicationAndAdmissionSettings
+  );
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -71,6 +75,10 @@ function ApplicationAndAdmissionSettings() {
     }
   };
 
+  useEffect(() => {
+    dispatch(getApplicationAdmissionSettings(activeRole!));
+  }, [activeRole]);
+
   return (
     // <Page title="Application and Admission Settings">
     <Page title={translate('pages.admin.application_and_admission')}>
@@ -82,7 +90,10 @@ function ApplicationAndAdmissionSettings() {
             </Typography>
           </Box>
           <Box sx={{ px: '30px' }}>
-            <ApplicationAndAdmissionSettingsForm onSubmit={handleSubmit} isLoading={isLoading} />
+            <ApplicationAndAdmissionSettingsForm
+              onSubmit={handleSubmit}
+              isLoading={isLoading || isLoadingApplicationAndAdmissionSettings}
+            />
           </Box>
         </ContentStyle>
       </Container>

@@ -75,8 +75,6 @@ const AddNewTrack = ({
   } = methods;
 
   const onSubmitForm = async (data: FormInput) => {
-    // onSubmit(data);
-    // navigate('/admin/dashboard/transaction-progression/add');
     let consultantValue: boolean = true;
 
     if (data.consultant === 'with_consultant') {

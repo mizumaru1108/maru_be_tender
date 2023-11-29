@@ -3205,6 +3205,29 @@ const en = {
       },
     },
   },
+  _gregorian_year: {
+    headercell: {
+      year: 'Year',
+      actions: 'Actions',
+    },
+    modal: {
+      add: 'Add New Gregorian Year',
+      edit: 'Edit Gregorian Year',
+      delete_confirmation: 'Are you sure you want to delete this Gregorian Year?',
+    },
+    button: {
+      add: 'Add New Gregorian Year',
+    },
+    fields: {
+      year: {
+        label: 'Year',
+        placeholder: 'Year',
+        error: {
+          required: 'Field is required',
+        },
+      },
+    },
+  },
 };
 
 export default en;

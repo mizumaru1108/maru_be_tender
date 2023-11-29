@@ -35,7 +35,6 @@ const slice = createSlice({
     },
     // HAS ERROR
     hasError(state, action) {
-      state.isLoading = false;
       state.error = action.payload;
     },
     // SET STATE APPLICATION ADMISSION SETTINGS
@@ -53,6 +52,7 @@ export default slice.reducer;
 
 export const getApplicationAdmissionSettings = (role: string) => async () => {
   try {
+    dispatch(slice.actions.hasError(null));
     dispatch(slice.actions.setLoading(true));
 
     const response = await axiosInstance.get(`/tender/proposal/configs/fetch`, {

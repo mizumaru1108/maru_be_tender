@@ -15,6 +15,7 @@ import {
   FEATURE_MENU_ADMIN_APLICATION_ADMISSION,
   FEATURE_MENU_ADMIN_ENTITY_AREA,
   FEATURE_MENU_ADMIN_ENTITY_CLASSIFICATION,
+  FEATURE_MENU_ADMIN_GREGORIAN_YEAR,
   FEATURE_MENU_ADMIN_MOBILE_SETTINGS,
   FEATURE_MENU_ADMIN_REGIONS,
   FEATURE_MENU_CLIENT_FILES,
@@ -137,7 +138,7 @@ export const adminRoute = {
             },
           ],
         },
-        { path: 'gregorian-year', element: <GregorianYear /> },
+        FEATURE_MENU_ADMIN_GREGORIAN_YEAR && { path: 'gregorian-year', element: <GregorianYear /> },
         FEATURE_MENU_ADMIN_MOBILE_SETTINGS && {
           path: 'mobile-settings',
           children: [

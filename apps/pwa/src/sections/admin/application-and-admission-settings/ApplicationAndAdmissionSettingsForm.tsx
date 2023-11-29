@@ -38,6 +38,7 @@ export default function ApplicationAndAdmissionSettingsForm(props: Props) {
     isLoading: isFetchingData,
     error: errorFetchingData,
   } = useSelector((state) => state.applicationAndAdmissionSettings);
+  console.log({ errorFetchingData });
 
   const ApplicationAndAdmissionSettingsSchema = Yup.object().shape({
     // applying_status: Yup.boolean().required(

@@ -15,6 +15,7 @@ import wschatReducer from './slices/wschat';
 import applicationAndAdmissionSettings from './slices/applicationAndAdmissionSettings';
 import user from './slices/user';
 import mobileSettings from './slices/mobile-settings';
+import gregorianYear from './slices/gregorian-year';
 
 // ----------------------------------------------------------------------
 
@@ -53,6 +54,7 @@ const rootReducer = combineReducers({
   applicationAndAdmissionSettings: applicationAndAdmissionSettings,
   user: user,
   mobileSetting: mobileSettings,
+  gregorianYear: gregorianYear,
 });
 
 export { rootPersistConfig, rootReducer };
